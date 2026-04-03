@@ -37,7 +37,7 @@
 
     --radius: 0.75rem;
 
-    /* Sidebar: deep purple (SermonSpark-inspired) */
+    /* Sidebar: deep purple */
     --sidebar-background: 263 45% 22%;
     --sidebar-foreground: 260 20% 90%;
     --sidebar-primary: 44 65% 58%;
@@ -88,6 +88,8 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6, .font-display {
@@ -122,5 +124,10 @@
   .watermark-free::after {
     content: '⚠️ Rascunho gerado com IA. Revise, ore e pregue com sua voz.';
     @apply absolute bottom-0 left-0 right-0 text-center text-xs py-2 text-muted-foreground bg-muted/80;
+  }
+
+  /* Safe area for mobile bottom nav */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
