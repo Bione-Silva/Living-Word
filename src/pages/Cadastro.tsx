@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -48,12 +49,34 @@ export default function Cadastro() {
         doctrine,
         pastoral_voice: voice,
       });
-      toast.success('Seu blog está no ar! 🎉');
-      navigate('/estudio');
+      toast.success(lang === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' : 'Account created! Generating your first devotionals...');
+
+      // Auto-generate 2 devotionals in background
+      generateInitialContent().catch(console.error);
+
+      navigate('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao criar conta');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generateInitialContent = async () => {
+    const passages = [
+      { passage: 'Salmo 23', title: lang === 'PT' ? 'O Senhor é meu pastor' : 'The Lord is my shepherd' },
+      { passage: 'Filipenses 4:13', title: lang === 'PT' ? 'Tudo posso naquele que me fortalece' : 'I can do all things through Christ' },
+    ];
+
+    for (const p of passages) {
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-blog-article', {
+          body: { passage: p.passage, language, title: p.title },
+        });
+        if (error) console.error('Auto-gen error:', error);
+      } catch (e) {
+        console.error('Auto-gen failed:', e);
+      }
     }
   };
 
