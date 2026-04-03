@@ -6,7 +6,7 @@ import { LanguageToggle } from '@/components/LanguageToggle';
 import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard, Wand2, BookOpen, Library, CalendarDays,
-  Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send
+  Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain
 } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
