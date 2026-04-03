@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: data.id,
           full_name: data.full_name || '',
           blog_handle: data.blog_handle || '',
-          plan: data.plan || 'free',
+          plan: (data.plan as UserProfile['plan']) || 'free',
           generations_used: data.generations_used || 0,
           generations_limit: data.generations_limit || 5,
           language: data.language || 'PT',
