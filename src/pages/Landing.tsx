@@ -273,10 +273,54 @@ const copy = {
     h2: { PT: 'Comece grátis. Cresça quando precisar.', EN: 'Start free. Grow when you need to.', ES: 'Empieza gratis. Crece cuando necesites.' },
   },
   plans: [
-    { name: 'Free', price: '$0', period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' }, features: { PT: ['5 gerações/mês', 'Sermão + esboço', '1 artigo/mês', 'Blog no ar'], EN: ['5 generations/month', 'Sermon + outline', '1 article/month', 'Blog live'], ES: ['5 generaciones/mes', 'Sermón + bosquejo', '1 artículo/mes', 'Blog en línea'] }, cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Empezar gratis' }, featured: false },
-    { name: 'Pastoral', price: '$9', period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' }, features: { PT: ['40 gerações/mês', 'Todos os 7+ formatos', '20 artigos/mês', 'Sem watermark', 'Todas as vozes pastorais'], EN: ['40 generations/month', 'All 7+ formats', '20 articles/month', 'No watermark', 'All pastoral voices'], ES: ['40 generaciones/mes', 'Los 7+ formatos', '20 artículos/mes', 'Sin marca de agua', 'Todas las voces pastorales'] }, cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' }, featured: true },
-    { name: 'Church', price: '$29', period: { PT: '/mês', EN: '/month', ES: '/mes' }, features: { PT: ['200 gerações/mês', 'Equipe (3 usuários)', '3 blogs conectados', 'Agendamento'], EN: ['200 generations/month', 'Team (3 users)', '3 connected blogs', 'Scheduling'], ES: ['200 generaciones/mes', 'Equipo (3 usuarios)', '3 blogs conectados', 'Agendamiento'] }, cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' }, featured: false },
-    { name: 'Ministry', price: '$79', period: { PT: '/mês', EN: '/month', ES: '/mes' }, features: { PT: ['500 gerações/mês', 'Equipe (10 usuários)', '10 blogs conectados', 'Analytics completo'], EN: ['500 generations/month', 'Team (10 users)', '10 connected blogs', 'Full analytics'], ES: ['500 generaciones/mes', 'Equipo (10 usuarios)', '10 blogs conectados', 'Analytics completo'] }, cta: { PT: 'Falar com equipe', EN: 'Contact team', ES: 'Contactar equipo' }, featured: false },
+    {
+      name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
+      price: '$0',
+      period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' },
+      features: {
+        PT: ['5 gerações/mês', 'Sermão + esboço', '1 artigo devocional/mês', 'Blog cristão no ar', 'PT, EN ou ES', 'Sem cartão de crédito', 'Ideal para testar'],
+        EN: ['5 generations/month', 'Sermon + outline', '1 devotional article/month', 'Christian blog live', 'PT, EN or ES', 'No credit card', 'Ideal to test'],
+        ES: ['5 generaciones/mes', 'Sermón + bosquejo', '1 artículo devocional/mes', 'Blog cristiano en línea', 'PT, EN o ES', 'Sin tarjeta de crédito', 'Ideal para probar'],
+      },
+      cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Empezar gratis' },
+      featured: false,
+    },
+    {
+      name: { PT: 'Pastoral', EN: 'Pastoral', ES: 'Pastoral' },
+      price: '$9',
+      period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' },
+      features: {
+        PT: ['40 gerações/mês', 'Todos os 7+ formatos', '20 artigos devocionais/mês', 'Sem watermark', 'Voz pastoral personalizada', 'Blog com publicação automática', '7 dias grátis sem cartão'],
+        EN: ['40 generations/month', 'All 7+ formats', '20 devotional articles/month', 'No watermark', 'Custom pastoral voice', 'Blog with auto-publishing', '7 days free, no card'],
+        ES: ['40 generaciones/mes', 'Los 7+ formatos', '20 artículos devocionales/mes', 'Sin marca de agua', 'Voz pastoral personalizada', 'Blog con publicación automática', '7 días gratis sin tarjeta'],
+      },
+      cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' },
+      featured: true,
+    },
+    {
+      name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
+      price: '$29',
+      period: { PT: '/mês', EN: '/month', ES: '/mes' },
+      features: {
+        PT: ['200 gerações/mês', 'Equipe (3 usuários)', '3 blogs conectados', 'Agendamento editorial', 'Séries devocionais', 'Biblioteca compartilhada', 'Fluxo editorial completo'],
+        EN: ['200 generations/month', 'Team (3 users)', '3 connected blogs', 'Editorial scheduling', 'Devotional series', 'Shared library', 'Full editorial workflow'],
+        ES: ['200 generaciones/mes', 'Equipo (3 usuarios)', '3 blogs conectados', 'Agendamiento editorial', 'Series devocionales', 'Biblioteca compartida', 'Flujo editorial completo'],
+      },
+      cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' },
+      featured: false,
+    },
+    {
+      name: { PT: 'Ministério', EN: 'Ministry', ES: 'Ministerio' },
+      price: '$79',
+      period: { PT: '/mês', EN: '/month', ES: '/mes' },
+      features: {
+        PT: ['500 gerações/mês', 'Equipe (10 usuários)', '10 blogs conectados', 'Analytics completo', 'Múltiplas marcas/ministérios', 'Prioridade de suporte', 'Operação editorial em escala'],
+        EN: ['500 generations/month', 'Team (10 users)', '10 connected blogs', 'Full analytics', 'Multiple brands/ministries', 'Priority support', 'Editorial operations at scale'],
+        ES: ['500 generaciones/mes', 'Equipo (10 usuarios)', '10 blogs conectados', 'Analytics completo', 'Múltiples marcas/ministerios', 'Prioridad de soporte', 'Operación editorial a escala'],
+      },
+      cta: { PT: 'Falar com equipe', EN: 'Contact team', ES: 'Contactar equipo' },
+      featured: false,
+    },
   ],
   faq: {
     tag: { PT: 'Perguntas frequentes', EN: 'FAQ', ES: 'Preguntas frecuentes' },
@@ -284,23 +328,43 @@ const copy = {
     items: [
       {
         q: { PT: 'A IA substitui o pastor?', EN: 'Does AI replace the pastor?', ES: '¿La IA reemplaza al pastor?' },
-        a: { PT: 'Não. O Living Word é um copiloto — como um comentário bíblico digital. Você ensina. A IA ajuda a preparar, escrever e publicar.', EN: 'No. Living Word is a copilot — like a digital Bible commentary. You teach. AI helps prepare, write and publish.', ES: 'No. Living Word es un copiloto — como un comentario bíblico digital. Tú enseñas. La IA ayuda a preparar, escribir y publicar.' },
+        a: { PT: 'Não. O Living Word é um copiloto de ensino bíblico — como um comentário bíblico digital. Você continua ensinando e pregando. A IA ajuda a preparar, escrever e publicar conteúdo devocional e artigos cristãos a partir do seu ensino.', EN: 'No. Living Word is a Bible teaching copilot — like a digital commentary. You continue teaching and preaching. AI helps prepare, write and publish devotional content and Christian articles from your teaching.', ES: 'No. Living Word es un copiloto de enseñanza bíblica — como un comentario bíblico digital. Tú sigues enseñando y predicando. La IA ayuda a preparar, escribir y publicar contenido devocional y artículos cristianos a partir de tu enseñanza.' },
       },
       {
-        q: { PT: 'É feito para qual público?', EN: 'Who is it made for?', ES: '¿Para quién está hecho?' },
-        a: { PT: 'Para pastores, líderes, ensinadores bíblicos e criadores de conteúdo do ecossistema evangélico global. Suporta diferentes tradições: batista, pentecostal, carismática, reformada e outras.', EN: 'For pastors, leaders, Bible teachers and content creators in the global evangelical ecosystem. Supports different traditions: Baptist, Pentecostal, charismatic, Reformed and others.', ES: 'Para pastores, líderes, enseñadores bíblicos y creadores de contenido del ecosistema evangélico global. Soporta diferentes tradiciones: bautista, pentecostal, carismática, reformada y otras.' },
+        q: { PT: 'Para quem o Living Word foi feito?', EN: 'Who is Living Word made for?', ES: '¿Para quién fue hecho Living Word?' },
+        a: { PT: 'Para pastores, líderes de célula, ensinadores bíblicos, criadores de conteúdo cristão e ministérios do ecossistema evangélico global. Suporta tradições como batista, pentecostal, carismática, reformada e outras.', EN: 'For pastors, cell leaders, Bible teachers, Christian content creators and ministries in the global evangelical ecosystem. Supports traditions like Baptist, Pentecostal, charismatic, Reformed and others.', ES: 'Para pastores, líderes de célula, enseñadores bíblicos, creadores de contenido cristiano y ministerios del ecosistema evangélico global. Soporta tradiciones como bautista, pentecostal, carismática, reformada y otras.' },
       },
       {
-        q: { PT: 'Posso usar mesmo sem equipe ou sem site?', EN: 'Can I use it without a team or a website?', ES: '¿Puedo usarlo sin equipo o sin sitio web?' },
-        a: { PT: 'Sim! No cadastro seu blog (seu-nome.livingword.app) já está no ar. Não precisa de WordPress, designer ou equipe de mídia.', EN: 'Yes! At signup your blog (your-name.livingword.app) is already live. No need for WordPress, a designer or a media team.', ES: '¡Sí! Al registrarte tu blog (tu-nombre.livingword.app) ya está en línea. No necesitas WordPress, diseñador o equipo de medios.' },
+        q: { PT: 'O Living Word cria blog cristão automaticamente?', EN: 'Does Living Word create a Christian blog automatically?', ES: '¿Living Word crea un blog cristiano automáticamente?' },
+        a: { PT: 'Sim. Ao se cadastrar, seu blog devocional (seu-nome.livingword.app) já está no ar. Artigos e devocionais são publicados automaticamente com seu nome, prontos para compartilhar com sua congregação.', EN: 'Yes. When you sign up, your devotional blog (your-name.livingword.app) is already live. Articles and devotionals are published automatically under your name, ready to share with your congregation.', ES: 'Sí. Al registrarte, tu blog devocional (tu-nombre.livingword.app) ya está en línea. Artículos y devocionales se publican automáticamente con tu nombre, listos para compartir con tu congregación.' },
       },
       {
-        q: { PT: 'O que acontece no cadastro?', EN: 'What happens at signup?', ES: '¿Qué pasa al registrarse?' },
-        a: { PT: 'Em menos de 2 minutos seu blog está no ar com artigos publicados com seu nome. Grátis, sem cartão de crédito.', EN: 'In less than 2 minutes your blog is live with articles published under your name. Free, no credit card.', ES: 'En menos de 2 minutos tu blog está en línea con artículos publicados con tu nombre. Gratis, sin tarjeta.' },
+        q: { PT: 'Posso transformar sermão em artigo de blog?', EN: 'Can I turn a sermon into a blog article?', ES: '¿Puedo transformar un sermón en artículo de blog?' },
+        a: { PT: 'Sim. Você informa a passagem bíblica, o público e o contexto. O Living Word transforma seu sermão em artigo de blog cristão, devocional, esboço, pontos para Reels e mais — tudo em uma geração, pronto para publicação automática.', EN: 'Yes. You enter the Bible passage, audience and context. Living Word transforms your sermon into a Christian blog article, devotional, outline, Reels points and more — all in one generation, ready for auto-publishing.', ES: 'Sí. Ingresas el pasaje bíblico, la audiencia y el contexto. Living Word transforma tu sermón en artículo de blog cristiano, devocional, bosquejo, puntos para Reels y más — todo en una generación, listo para publicación automática.' },
+      },
+      {
+        q: { PT: 'O Living Word funciona em português, inglês e espanhol?', EN: 'Does Living Word work in Portuguese, English and Spanish?', ES: '¿Living Word funciona en portugués, inglés y español?' },
+        a: { PT: 'Sim. O Living Word é trilíngue nativo — gera conteúdo cristão em português, inglês e espanhol com voz pastoral nativa em cada idioma, não tradução automática. Ideal para ministérios que atendem congregações multilíngues.', EN: 'Yes. Living Word is natively trilingual — it generates Christian content in Portuguese, English and Spanish with native pastoral voice in each language, not automatic translation. Ideal for ministries serving multilingual congregations.', ES: 'Sí. Living Word es trilingüe nativo — genera contenido cristiano en portugués, inglés y español con voz pastoral nativa en cada idioma, no traducción automática. Ideal para ministerios que atienden congregaciones multilingües.' },
+      },
+      {
+        q: { PT: 'Preciso ter site ou WordPress para usar?', EN: 'Do I need a website or WordPress to use it?', ES: '¿Necesito tener sitio web o WordPress para usarlo?' },
+        a: { PT: 'Não. O Living Word cria seu blog cristão automaticamente no cadastro. Você não precisa de WordPress, designer ou equipe de mídia. Seu ministério ganha presença digital imediata.', EN: 'No. Living Word creates your Christian blog automatically at signup. You don\'t need WordPress, a designer or a media team. Your ministry gets immediate digital presence.', ES: 'No. Living Word crea tu blog cristiano automáticamente al registrarte. No necesitas WordPress, diseñador o equipo de medios. Tu ministerio obtiene presencia digital inmediata.' },
+      },
+      {
+        q: { PT: 'Que tipos de conteúdo o Living Word gera?', EN: 'What types of content does Living Word generate?', ES: '¿Qué tipos de contenido genera Living Word?' },
+        a: { PT: 'Em uma única geração: sermão completo, esboço de pregação, devocional diário, pontos para Reels, versão bilíngue, adaptação para célula e artigo de blog cristão. São mais de 7 formatos de conteúdo de ensino bíblico prontos para circular.', EN: 'In a single generation: full sermon, preaching outline, daily devotional, Reels points, bilingual version, cell group adaptation and Christian blog article. Over 7 Bible teaching content formats ready to circulate.', ES: 'En una sola generación: sermón completo, bosquejo de predicación, devocional diario, puntos para Reels, versión bilingüe, adaptación para célula y artículo de blog cristiano. Más de 7 formatos de contenido de enseñanza bíblica listos para circular.' },
+      },
+      {
+        q: { PT: 'O conteúdo mantém fidelidade bíblica?', EN: 'Does the content maintain biblical faithfulness?', ES: '¿El contenido mantiene fidelidad bíblica?' },
+        a: { PT: 'Sim. O Living Word usa guardrails teológicos reais: exegese antes de aplicação, distinção entre texto, interpretação e aplicação, e alerta de eisegese integrado. O conteúdo respeita sua linha doutrinária e sua voz de ensino.', EN: 'Yes. Living Word uses real theological guardrails: exegesis before application, text/interpretation/application distinction, and built-in eisegesis alerts. The content respects your doctrinal line and teaching voice.', ES: 'Sí. Living Word usa guardrails teológicos reales: exégesis antes de aplicación, distinción entre texto, interpretación y aplicación, y alerta de eiségesis integrado. El contenido respeta tu línea doctrinal y tu voz de enseñanza.' },
+      },
+      {
+        q: { PT: 'Posso usar o Living Word sendo líder de célula ou ministério pequeno?', EN: 'Can I use Living Word as a cell leader or small ministry?', ES: '¿Puedo usar Living Word siendo líder de célula o ministerio pequeño?' },
+        a: { PT: 'Sim. O plano gratuito já inclui 5 gerações por mês, sermão, esboço, artigo devocional e blog no ar. Líderes de célula e ministérios pequenos usam o Living Word para chegar toda semana com material de ensino bíblico pronto.', EN: 'Yes. The free plan already includes 5 generations per month, sermon, outline, devotional article and live blog. Cell leaders and small ministries use Living Word to arrive every week with ready Bible teaching material.', ES: 'Sí. El plan gratuito ya incluye 5 generaciones por mes, sermón, bosquejo, artículo devocional y blog en línea. Líderes de célula y ministerios pequeños usan Living Word para llegar cada semana con material de enseñanza bíblica listo.' },
       },
       {
         q: { PT: 'Precisa de cartão para o trial de 7 dias?', EN: 'Do I need a card for the 7-day trial?', ES: '¿Necesito tarjeta para la prueba de 7 días?' },
-        a: { PT: 'Não. Só solicitamos cartão no 8º dia se quiser continuar no plano Pastoral.', EN: 'No. We only ask for a card on day 8 if you want to continue on the Pastoral plan.', ES: 'No. Solo solicitamos tarjeta el día 8 si deseas continuar en el plan Pastoral.' },
+        a: { PT: 'Não. O trial de 7 dias do plano Pastoral é sem cartão de crédito. Só solicitamos pagamento no 8º dia se você quiser continuar com acesso completo a todos os formatos e publicação automática.', EN: 'No. The 7-day Pastoral plan trial requires no credit card. We only ask for payment on day 8 if you want to continue with full access to all formats and auto-publishing.', ES: 'No. La prueba de 7 días del plan Pastoral no requiere tarjeta de crédito. Solo solicitamos pago el día 8 si deseas continuar con acceso completo a todos los formatos y publicación automática.' },
       },
     ],
   },
@@ -581,7 +645,7 @@ export default function Landing() {
                     {lang === 'PT' ? 'Mais escolhido' : lang === 'EN' ? 'Most popular' : 'Más elegido'}
                   </span>
                 )}
-                <p className="text-[15px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{plan.name}</p>
+                <p className="text-[15px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{plan.name[lang]}</p>
                 <div className="flex items-baseline gap-0.5 mb-1">
                   <span className="font-display text-[32px] font-semibold" style={{ color: '#3D2B1F' }}>{plan.price}</span>
                 </div>
@@ -605,21 +669,25 @@ export default function Landing() {
       </section>
 
       {/* ===== FAQ ===== */}
-      <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }}>
+      <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }} itemScope itemType="https://schema.org/FAQPage">
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.faq.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-6" style={{ color: '#3D2B1F' }}>{copy.faq.h2[lang]}</h2>
           <div className="space-y-3">
             {copy.faq.items.map((item, i) => (
-              <button key={i} onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full text-left rounded-xl p-5 transition-shadow hover:shadow-sm" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)' }}>
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-[15px] font-semibold" style={{ color: '#3D2B1F' }}>{item.q[lang]}</h3>
-                  <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} style={{ color: '#6B4F3A' }} />
-                </div>
-                {openFaq === i && (
-                  <p className="text-[15px] leading-[1.65] mt-3" style={{ color: '#6B4F3A' }}>{item.a[lang]}</p>
-                )}
-              </button>
+              <div key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full text-left rounded-xl p-5 transition-shadow hover:shadow-sm" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)' }}>
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-[15px] font-semibold" itemProp="name" style={{ color: '#3D2B1F' }}>{item.q[lang]}</h3>
+                    <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} style={{ color: '#6B4F3A' }} />
+                  </div>
+                  {openFaq === i && (
+                    <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                      <p className="text-[15px] leading-[1.65] mt-3" itemProp="text" style={{ color: '#6B4F3A' }}>{item.a[lang]}</p>
+                    </div>
+                  )}
+                </button>
+              </div>
             ))}
           </div>
         </div>
