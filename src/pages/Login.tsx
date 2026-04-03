@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -21,8 +22,11 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       if (forgotMode) {
+        if (!supabase) throw new Error('Recuperação de senha indisponível enquanto o Supabase não estiver configurado.');
+
         await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`,
         });
@@ -53,6 +57,14 @@ export default function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {!isSupabaseConfigured && (
+                <Alert>
+                  <AlertDescription>
+                    O formulário está visível, mas a autenticação real depende das credenciais do Supabase no projeto.
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">{t('auth.email')}</Label>
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -63,7 +75,7 @@ export default function Login() {
                   <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
               )}
-              <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? '...' : forgotMode ? 'Enviar link' : t('auth.login')}
               </Button>
               <div className="text-center space-y-2">
@@ -72,7 +84,7 @@ export default function Login() {
                 </button>
                 {!forgotMode && (
                   <p className="text-sm text-muted-foreground">
-                    {' '}<Link to="/cadastro" className="text-primary hover:underline">{t('auth.create')}</Link>
+                    <Link to="/cadastro" className="text-primary hover:underline">{t('auth.create')}</Link>
                   </p>
                 )}
               </div>
