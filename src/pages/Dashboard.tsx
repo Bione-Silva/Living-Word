@@ -7,6 +7,7 @@ import {
   Search, Globe, Quote, Clapperboard, ScrollText, Lightbulb, Sparkles, BookText
 } from 'lucide-react';
 import { useState } from 'react';
+import { ToolModal } from '@/components/ToolModal';
 
 interface ToolCard {
   id: string;
@@ -15,66 +16,76 @@ interface ToolCard {
   description: { PT: string; EN: string; ES: string };
   path?: string;
   locked?: boolean;
+  hasModal?: boolean;
 }
 
 const researchTools: ToolCard[] = [
-  { id: 'topic-explorer', icon: Search, title: { PT: 'Explorador de Tópicos', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: 'Descubra subtemas e ângulos para sua pregação', EN: 'Discover subtopics and angles for your sermon', ES: 'Descubre subtemas y ángulos para tu sermón' }, path: '/estudio' },
-  { id: 'verse-finder', icon: BookOpen, title: { PT: 'Encontre Versículos sobre o Tema', EN: 'Find Verses on Topic', ES: 'Encuentra Versículos por Tema' }, description: { PT: 'Busque versículos relevantes por tema ou palavra-chave', EN: 'Search relevant verses by topic or keyword', ES: 'Busca versículos relevantes por tema' }, path: '/estudio' },
-  { id: 'historical-context', icon: Globe, title: { PT: 'Contexto Histórico do Verso', EN: 'Verse Historical Context', ES: 'Contexto Histórico del Verso' }, description: { PT: 'Entenda o contexto cultural e histórico da passagem', EN: 'Understand the cultural and historical context', ES: 'Entiende el contexto cultural e histórico' }, path: '/estudio' },
-  { id: 'quote-finder', icon: Quote, title: { PT: 'Localizador de Citações', EN: 'Quote Finder', ES: 'Buscador de Citas' }, description: { PT: 'Encontre citações de teólogos e pensadores cristãos', EN: 'Find quotes from theologians and Christian thinkers', ES: 'Encuentra citas de teólogos y pensadores' }, path: '/estudio' },
-  { id: 'movie-scenes', icon: Clapperboard, title: { PT: 'Localizador de Cenas de Filmes', EN: 'Movie Scene Finder', ES: 'Buscador de Escenas de Películas' }, description: { PT: 'Cenas de filmes aplicáveis ao seu sermão', EN: 'Movie scenes applicable to your sermon', ES: 'Escenas de películas aplicables a tu sermón' }, path: '/estudio' },
+  { id: 'topic-explorer', icon: Search, title: { PT: 'Explorador de Tópicos', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: 'Descubra subtemas e ângulos para sua pregação', EN: 'Discover subtopics and angles for your sermon', ES: 'Descubre subtemas y ángulos para tu sermón' }, hasModal: true },
+  { id: 'verse-finder', icon: BookOpen, title: { PT: 'Encontre Versículos sobre o Tema', EN: 'Find Verses on Topic', ES: 'Encuentra Versículos por Tema' }, description: { PT: 'Busque versículos relevantes por tema ou palavra-chave', EN: 'Search relevant verses by topic or keyword', ES: 'Busca versículos relevantes por tema' }, hasModal: true },
+  { id: 'historical-context', icon: Globe, title: { PT: 'Contexto Histórico do Verso', EN: 'Verse Historical Context', ES: 'Contexto Histórico del Verso' }, description: { PT: 'Entenda o contexto cultural e histórico da passagem', EN: 'Understand the cultural and historical context', ES: 'Entiende el contexto cultural e histórico' }, hasModal: true },
+  { id: 'quote-finder', icon: Quote, title: { PT: 'Localizador de Citações', EN: 'Quote Finder', ES: 'Buscador de Citas' }, description: { PT: 'Encontre citações de teólogos e pensadores cristãos', EN: 'Find quotes from theologians and Christian thinkers', ES: 'Encuentra citas de teólogos y pensadores' }, hasModal: true },
+  { id: 'movie-scenes', icon: Clapperboard, title: { PT: 'Localizador de Cenas de Filmes', EN: 'Movie Scene Finder', ES: 'Buscador de Escenas de Películas' }, description: { PT: 'Cenas de filmes aplicáveis ao seu sermão', EN: 'Movie scenes applicable to your sermon', ES: 'Escenas de películas aplicables a tu sermón' }, hasModal: true },
   { id: 'original-text', icon: ScrollText, title: { PT: 'Explorador de Texto Original', EN: 'Original Text Explorer', ES: 'Explorador de Texto Original' }, description: { PT: 'Explore o Grego e Hebraico simplificado', EN: 'Explore simplified Greek and Hebrew', ES: 'Explora Griego y Hebreo simplificado' }, locked: true },
   { id: 'lexical', icon: Languages, title: { PT: 'Pesquisa Lexical / Línguas Clássicas', EN: 'Lexical Research / Classical Languages', ES: 'Investigación Léxica / Lenguas Clásicas' }, description: { PT: 'Análise de palavras originais e raízes linguísticas', EN: 'Original word analysis and linguistic roots', ES: 'Análisis de palabras originales y raíces' }, locked: true },
 ];
 
 const createTools: ToolCard[] = [
   { id: 'studio', icon: Wand2, title: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, description: { PT: 'Gere sermões, esboços e devocionais a partir de passagens bíblicas', EN: 'Generate sermons, outlines and devotionals from Bible passages', ES: 'Genera sermones, bosquejos y devocionales' }, path: '/estudio' },
-  { id: 'title-gen', icon: Type, title: { PT: 'Gerador de Títulos Criativos', EN: 'Creative Title Generator', ES: 'Generador de Títulos Creativos' }, description: { PT: 'Ideias criativas de títulos para seus sermões', EN: 'Creative title ideas for your sermons', ES: 'Ideas creativas de títulos para sermones' }, path: '/estudio' },
-  { id: 'metaphor-creator', icon: Lightbulb, title: { PT: 'Criador de Metáforas', EN: 'Metaphor Creator', ES: 'Creador de Metáforas' }, description: { PT: 'Metáforas e analogias poderosas para sua mensagem', EN: 'Powerful metaphors and analogies for your message', ES: 'Metáforas y analogías poderosas para tu mensaje' }, path: '/estudio' },
+  { id: 'title-gen', icon: Type, title: { PT: 'Gerador de Títulos Criativos', EN: 'Creative Title Generator', ES: 'Generador de Títulos Creativos' }, description: { PT: 'Ideias criativas de títulos para seus sermões', EN: 'Creative title ideas for your sermons', ES: 'Ideas creativas de títulos para sermones' }, hasModal: true },
+  { id: 'metaphor-creator', icon: Lightbulb, title: { PT: 'Criador de Metáforas', EN: 'Metaphor Creator', ES: 'Creador de Metáforas' }, description: { PT: 'Metáforas e analogias poderosas para sua mensagem', EN: 'Powerful metaphors and analogies for your message', ES: 'Metáforas y analogías poderosas para tu mensaje' }, hasModal: true },
   { id: 'illustrations', icon: Film, title: { PT: 'Ilustrações para Sermões', EN: 'Sermon Illustrations', ES: 'Ilustraciones para Sermones' }, description: { PT: 'Histórias e ilustrações contemporâneas para seu sermão', EN: 'Contemporary stories and illustrations for your sermon', ES: 'Historias e ilustraciones contemporáneas' }, locked: true },
-  { id: 'bible-modernizer', icon: Sparkles, title: { PT: 'Modernizador de Histórias Bíblicas', EN: 'Bible Story Modernizer', ES: 'Modernizador de Historias Bíblicas' }, description: { PT: 'Recontextualize histórias bíblicas para o mundo atual', EN: 'Recontextualize Bible stories for the modern world', ES: 'Recontextualiza historias bíblicas al mundo actual' }, path: '/estudio' },
-  { id: 'free-article', icon: PenLine, title: { PT: 'Artigo Livre / Redator Universal', EN: 'Free Article / Universal Writer', ES: 'Artículo Libre / Redactor Universal' }, description: { PT: 'Crie artigos de blog a partir de um tema ou ideia', EN: 'Create blog articles from a topic or idea', ES: 'Crea artículos de blog desde un tema' }, path: '/estudio' },
+  { id: 'bible-modernizer', icon: Sparkles, title: { PT: 'Modernizador de Histórias Bíblicas', EN: 'Bible Story Modernizer', ES: 'Modernizador de Historias Bíblicas' }, description: { PT: 'Recontextualize histórias bíblicas para o mundo atual', EN: 'Recontextualize Bible stories for the modern world', ES: 'Recontextualiza historias bíblicas al mundo actual' }, hasModal: true },
+  { id: 'free-article', icon: PenLine, title: { PT: 'Artigo Livre / Redator Universal', EN: 'Free Article / Universal Writer', ES: 'Artículo Libre / Redactor Universal' }, description: { PT: 'Crie artigos de blog a partir de um tema ou ideia', EN: 'Create blog articles from a topic or idea', ES: 'Crea artículos de blog desde un tema' }, hasModal: true },
 ];
 
 const outreachTools: ToolCard[] = [
-  { id: 'youtube-blog', icon: Video, title: { PT: 'Transformar Vídeo em Blog', EN: 'Video to Blog', ES: 'Video a Blog' }, description: { PT: 'Transforme vídeos do YouTube em artigos de blog', EN: 'Turn YouTube videos into blog articles', ES: 'Transforma videos de YouTube en artículos' }, path: '/estudio' },
+  { id: 'youtube-blog', icon: Video, title: { PT: 'Transformar Vídeo em Blog', EN: 'Video to Blog', ES: 'Video a Blog' }, description: { PT: 'Transforme vídeos do YouTube em artigos de blog', EN: 'Turn YouTube videos into blog articles', ES: 'Transforma videos de YouTube en artículos' }, hasModal: true },
 ];
-
-function ToolCardComponent({ tool, lang, isFree }: { tool: ToolCard; lang: 'PT' | 'EN' | 'ES'; isFree: boolean }) {
-  const isLocked = tool.locked && isFree;
-  const Icon = tool.icon;
-  const content = (
-    <Card className={`group cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${isLocked ? 'opacity-75' : ''}`}>
-      <CardContent className="p-5">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <Icon className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-sm">{tool.title[lang]}</h3>
-              {isLocked && <Lock className="h-3.5 w-3.5 text-accent" />}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{tool.description[lang]}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-  if (isLocked) return <Link to="/upgrade">{content}</Link>;
-  if (tool.path) return <Link to={tool.path}>{content}</Link>;
-  return content;
-}
 
 export default function Dashboard() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
   const isFree = profile?.plan === 'free';
   const [showBanner, setShowBanner] = useState(true);
+  const [activeModal, setActiveModal] = useState<{ id: string; title: string } | null>(null);
 
   const sectionLabel = (emoji: string, pt: string, en: string, es: string) => {
     const labels = { PT: pt, EN: en, ES: es };
     return `${emoji} ${labels[lang]}`;
+  };
+
+  const handleToolClick = (tool: ToolCard) => {
+    if (tool.locked && isFree) return;
+    if (tool.hasModal) {
+      setActiveModal({ id: tool.id, title: tool.title[lang] });
+    }
+  };
+
+  const renderToolCard = (tool: ToolCard) => {
+    const isLocked = tool.locked && isFree;
+    const Icon = tool.icon;
+    const content = (
+      <Card className={`group cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${isLocked ? 'opacity-75' : ''}`}>
+        <CardContent className="p-5">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Icon className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-sm">{tool.title[lang]}</h3>
+                {isLocked && <Lock className="h-3.5 w-3.5 text-accent" />}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{tool.description[lang]}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+
+    if (isLocked) return <Link key={tool.id} to="/upgrade">{content}</Link>;
+    if (tool.path) return <Link key={tool.id} to={tool.path}>{content}</Link>;
+    return <div key={tool.id} onClick={() => handleToolClick(tool)}>{content}</div>;
   };
 
   return (
@@ -119,7 +130,7 @@ export default function Dashboard() {
           {sectionLabel('🔎', 'FERRAMENTAS DE PESQUISA', 'RESEARCH TOOLS', 'HERRAMIENTAS DE INVESTIGACIÓN')}
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {researchTools.map((t) => <ToolCardComponent key={t.id} tool={t} lang={lang} isFree={isFree} />)}
+          {researchTools.map(renderToolCard)}
         </div>
       </section>
 
@@ -128,7 +139,7 @@ export default function Dashboard() {
           {sectionLabel('🖋️', 'ESCRITA E CRIAÇÃO', 'WRITING & CREATION', 'ESCRITURA Y CREACIÓN')}
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {createTools.map((t) => <ToolCardComponent key={t.id} tool={t} lang={lang} isFree={isFree} />)}
+          {createTools.map(renderToolCard)}
         </div>
       </section>
 
@@ -137,9 +148,18 @@ export default function Dashboard() {
           {sectionLabel('📢', 'FERRAMENTAS DE ALCANCE', 'OUTREACH TOOLS', 'HERRAMIENTAS DE ALCANCE')}
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {outreachTools.map((t) => <ToolCardComponent key={t.id} tool={t} lang={lang} isFree={isFree} />)}
+          {outreachTools.map(renderToolCard)}
         </div>
       </section>
+
+      {activeModal && (
+        <ToolModal
+          open={true}
+          onOpenChange={(open) => !open && setActiveModal(null)}
+          toolId={activeModal.id}
+          toolTitle={activeModal.title}
+        />
+      )}
     </div>
   );
 }
