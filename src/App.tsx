@@ -59,6 +59,8 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<Cadastro />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/blog/:handle" element={<BlogPublic />} />
+              <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
 
               {/* Protected routes with AppLayout */}
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
