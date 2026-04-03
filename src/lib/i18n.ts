@@ -108,6 +108,8 @@ const translations: Record<string, Record<Language, string>> = {
   'settings.doctrine': { PT: 'Doutrina', EN: 'Doctrine', ES: 'Doctrina' },
   'settings.language': { PT: 'Idioma', EN: 'Language', ES: 'Idioma' },
   'settings.account': { PT: 'Conta', EN: 'Account', ES: 'Cuenta' },
+  // Nav extras
+  'nav.tools': { PT: 'FERRAMENTAS', EN: 'TOOLS', ES: 'HERRAMIENTAS' },
   // Landing extras
   'landing.already_have_account': { PT: 'Já tem conta?', EN: 'Already have an account?', ES: '¿Ya tienes cuenta?' },
   'landing.forgot_password': { PT: 'Esqueceu sua senha?', EN: 'Forgot your password?', ES: '¿Olvidaste tu contraseña?' },
