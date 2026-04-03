@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import {
   Wand2, PenLine, Type, Video, BookOpen, Film, Languages, Lock, X,
-  Search, Globe, Quote, Clapperboard, ScrollText, Lightbulb, Sparkles, BookText
+  Search, Globe, Quote, Clapperboard, ScrollText, Lightbulb, Sparkles, BookText, Crown
 } from 'lucide-react';
 import { useState } from 'react';
 import { ToolModal } from '@/components/ToolModal';
@@ -39,7 +39,7 @@ const createTools: ToolCard[] = [
 ];
 
 const outreachTools: ToolCard[] = [
-  { id: 'youtube-blog', icon: Video, title: { PT: 'Transformar Vídeo em Blog', EN: 'Video to Blog', ES: 'Video a Blog' }, description: { PT: 'Transforme vídeos do YouTube em artigos de blog', EN: 'Turn YouTube videos into blog articles', ES: 'Transforma videos de YouTube en artículos' }, hasModal: true },
+  { id: 'youtube-blog', icon: Video, title: { PT: 'Transformar Vídeo em Blog', EN: 'Video to Blog', ES: 'Video a Blog' }, description: { PT: 'Transforme vídeos do YouTube em artigos de blog', EN: 'Turn YouTube videos into blog articles', ES: 'Transforma videos de YouTube en artículos' }, locked: true, hasModal: true },
 ];
 
 export default function Dashboard() {
@@ -65,18 +65,22 @@ export default function Dashboard() {
     const isLocked = tool.locked && isFree;
     const Icon = tool.icon;
     const content = (
-      <Card className={`group cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${isLocked ? 'opacity-75' : ''}`}>
-        <CardContent className="p-5">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon className="h-5 w-5 text-primary" />
+      <Card className={`group relative cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 border-border/60 ${isLocked ? 'opacity-60' : 'hover:border-primary/30'}`}>
+        {isLocked && (
+          <div className="absolute top-2.5 right-2.5">
+            <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center">
+              <Crown className="h-3 w-3 text-accent" />
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-sm">{tool.title[lang]}</h3>
-                {isLocked && <Lock className="h-3.5 w-3.5 text-accent" />}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{tool.description[lang]}</p>
+          </div>
+        )}
+        <CardContent className="p-4">
+          <div className="flex flex-col items-center text-center gap-2.5">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isLocked ? 'bg-muted/50' : 'bg-primary/10'}`}>
+              <Icon className={`h-5 w-5 ${isLocked ? 'text-muted-foreground' : 'text-primary'}`} />
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-sm leading-tight">{tool.title[lang]}</h3>
+              <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{tool.description[lang]}</p>
             </div>
           </div>
         </CardContent>
@@ -89,35 +93,40 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-6 max-w-5xl">
       <div>
-        <h1 className="font-display text-3xl font-bold">
+        <h1 className="font-display text-2xl md:text-3xl font-bold">
           {lang === 'PT' ? 'Ferramentas pastorais ao seu alcance' : lang === 'EN' ? 'Pastoral tools at your fingertips' : 'Herramientas pastorales a tu alcance'}
         </h1>
-        <p className="text-muted-foreground mt-1">
-          {lang === 'PT' ? 'As ferramentas disponíveis estão listadas abaixo, organizadas por categoria.' : lang === 'EN' ? 'Available tools are listed below, organized by category.' : 'Las herramientas disponibles están a continuación.'}
+        <p className="text-muted-foreground text-sm mt-1">
+          {lang === 'PT' ? 'Escolha uma ferramenta para começar.' : lang === 'EN' ? 'Choose a tool to get started.' : 'Elige una herramienta para comenzar.'}
         </p>
       </div>
 
       {showBanner && isFree && (
         <Card className="border-accent/30 bg-accent/5">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-sm">
-                {lang === 'PT' ? 'Personalize sua saída' : lang === 'EN' ? 'Personalize your output' : 'Personaliza tu salida'}
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {lang === 'PT' ? 'Aprimore seus sermões adicionando sua denominação e versão bíblica preferida. Disponível no plano Pastoral.' : lang === 'EN' ? 'Enhance your sermons by adding your denomination and preferred Bible version. Available on the Pastoral plan.' : 'Mejora tus sermones añadiendo tu denominación y versión bíblica. Disponible en el plan Pastoral.'}
-              </p>
+          <CardContent className="p-3.5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center shrink-0">
+                <Crown className="h-4 w-4 text-accent" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-xs">
+                  {lang === 'PT' ? 'Desbloqueie todas as ferramentas' : lang === 'EN' ? 'Unlock all tools' : 'Desbloquea todas las herramientas'}
+                </h3>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {lang === 'PT' ? 'Teste grátis por 7 dias, sem cartão de crédito.' : lang === 'EN' ? 'Free 7-day trial, no credit card needed.' : 'Prueba gratis 7 días, sin tarjeta.'}
+                </p>
+              </div>
             </div>
-            <button onClick={() => setShowBanner(false)} className="text-muted-foreground hover:text-foreground shrink-0 ml-4"><X className="h-4 w-4" /></button>
+            <button onClick={() => setShowBanner(false)} className="text-muted-foreground hover:text-foreground shrink-0"><X className="h-4 w-4" /></button>
           </CardContent>
         </Card>
       )}
 
       {profile?.blog_handle && (
         <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="p-4">
+          <CardContent className="p-3.5">
             <p className="text-sm">🎉 {lang === 'PT' ? 'Seu blog está no ar:' : lang === 'EN' ? 'Your blog is live:' : 'Tu blog está en línea:'}{' '}
               <a href={`/blog/${profile.blog_handle}`} className="text-primary font-semibold underline underline-offset-2">{profile.blog_handle}.livingword.app</a>
             </p>
@@ -126,31 +135,49 @@ export default function Dashboard() {
       )}
 
       <section>
-        <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-3">
-          {sectionLabel('🔎', 'FERRAMENTAS DE PESQUISA', 'RESEARCH TOOLS', 'HERRAMIENTAS DE INVESTIGACIÓN')}
-        </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="flex items-center gap-2 mb-3">
+          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+            {sectionLabel('🔎', 'FERRAMENTAS DE PESQUISA', 'RESEARCH TOOLS', 'HERRAMIENTAS DE INVESTIGACIÓN')}
+          </h2>
+          <div className="flex-1 h-px bg-border/50" />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {researchTools.map(renderToolCard)}
         </div>
       </section>
 
       <section>
-        <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-3">
-          {sectionLabel('🖋️', 'ESCRITA E CRIAÇÃO', 'WRITING & CREATION', 'ESCRITURA Y CREACIÓN')}
-        </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="flex items-center gap-2 mb-3">
+          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+            {sectionLabel('🖋️', 'ESCRITA E CRIAÇÃO', 'WRITING & CREATION', 'ESCRITURA Y CREACIÓN')}
+          </h2>
+          <div className="flex-1 h-px bg-border/50" />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {createTools.map(renderToolCard)}
         </div>
       </section>
 
       <section>
-        <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-3">
-          {sectionLabel('📢', 'FERRAMENTAS DE ALCANCE', 'OUTREACH TOOLS', 'HERRAMIENTAS DE ALCANCE')}
-        </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="flex items-center gap-2 mb-3">
+          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+            {sectionLabel('📢', 'FERRAMENTAS DE ALCANCE', 'OUTREACH TOOLS', 'HERRAMIENTAS DE ALCANCE')}
+          </h2>
+          <div className="flex-1 h-px bg-border/50" />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {outreachTools.map(renderToolCard)}
         </div>
       </section>
+
+      {isFree && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+          <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center">
+            <Crown className="h-3 w-3 text-accent" />
+          </div>
+          <span>{lang === 'PT' ? 'Itens com este ícone estão disponíveis no plano Pastoral' : lang === 'EN' ? 'Items with this icon are available on the Pastoral plan' : 'Los ítems con este ícono están disponibles en el plan Pastoral'}</span>
+        </div>
+      )}
 
       {activeModal && (
         <ToolModal
