@@ -86,7 +86,7 @@ export default function AppLayout() {
         </main>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border px-2 py-1 safe-area-bottom">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-sidebar-border px-2 py-1 safe-area-bottom">
           <div className="flex justify-around items-center">
             {mobileNavItems.map((item) => {
               const Icon = item.icon;
