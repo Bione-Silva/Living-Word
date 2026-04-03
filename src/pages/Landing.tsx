@@ -448,13 +448,15 @@ export default function Landing() {
             {copy.problem.cards.map((c, i) => {
               const Icon = c.icon;
               return (
-                <div key={i} className="rounded-xl p-5" style={{ background: '#F5F0E8', border: '1px solid rgba(107,79,58,0.12)' }}>
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ background: '#EDD9C8' }}>
-                    <Icon className="h-4 w-4" style={{ color: '#6B4F3A' }} />
+                <RevealOnScroll key={i} delay={i * 0.12}>
+                  <div className="rounded-xl p-5 h-full" style={{ background: '#F5F0E8', border: '1px solid rgba(107,79,58,0.12)' }}>
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ background: '#EDD9C8' }}>
+                      <Icon className="h-4 w-4" style={{ color: '#6B4F3A' }} />
+                    </div>
+                    <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>{c.title[lang]}</h3>
+                    <p className="text-[14px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{c.desc[lang]}</p>
                   </div>
-                  <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>{c.title[lang]}</h3>
-                  <p className="text-[14px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{c.desc[lang]}</p>
-                </div>
+                </RevealOnScroll>
               );
             })}
           </div>
