@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import {
   Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
   ChevronDown, Check, X as XIcon, Menu, X, BookOpen, PenTool,
