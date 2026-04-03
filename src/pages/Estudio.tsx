@@ -1,307 +1,159 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from 'sonner';
-import { Wand2, Copy, BookOpen, Save, Lock, Loader2 } from 'lucide-react';
-import { LockedTab } from '@/components/LockedTab';
+import { ToolCard, type ToolCardData } from '@/components/ToolCard';
+import { ToolSheet } from '@/components/ToolSheet';
+import {
+  Search, BookOpen, Quote, Film, FileText, Languages as LanguagesIcon,
+  Lightbulb, PenTool, Sparkles, Repeat, Palette, Wand2,
+  Video, Users, MessageSquare, Mail, Megaphone,
+  HelpCircle, Feather, Baby, Globe,
+} from 'lucide-react';
 
-const audiences = [
-  { value: 'general', label: { PT: 'Congregação geral', EN: 'General congregation', ES: 'Congregación general' } },
-  { value: 'youth', label: { PT: 'Jovens', EN: 'Youth', ES: 'Jóvenes' } },
-  { value: 'immigrants', label: { PT: 'Imigrantes brasileiros', EN: 'Brazilian immigrants', ES: 'Inmigrantes brasileños' } },
-  { value: 'women', label: { PT: 'Mulheres', EN: 'Women', ES: 'Mujeres' } },
-  { value: 'leaders', label: { PT: 'Líderes de célula', EN: 'Cell leaders', ES: 'Líderes de célula' } },
+type L = 'PT' | 'EN' | 'ES';
+
+interface ToolSection {
+  label: Record<L, string>;
+  subtitle: Record<L, string>;
+  tools: ToolCardData[];
+}
+
+const sections: ToolSection[] = [
+  {
+    label: { PT: '🔍 Pesquisa & Estudo', EN: '🔍 Research & Study', ES: '🔍 Investigación & Estudio' },
+    subtitle: {
+      PT: 'Aprofunde-se antes de escrever. Contexto, versículos, citações e mais.',
+      EN: 'Go deeper before you write. Context, verses, quotes and more.',
+      ES: 'Profundiza antes de escribir. Contexto, versículos, citas y más.',
+    },
+    tools: [
+      { id: 'topic-explorer', icon: Lightbulb, title: { PT: 'Explorador de Temas', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: 'Descubra subtópicos e ângulos para seu sermão', EN: 'Discover subtopics and angles for your sermon', ES: 'Descubre subtemas y ángulos para tu sermón' } },
+      { id: 'verse-finder', icon: Search, title: { PT: 'Localizador de Versículos', EN: 'Verse Finder', ES: 'Localizador de Versículos' }, description: { PT: 'Encontre versículos relevantes por tema', EN: 'Find relevant verses by topic', ES: 'Encuentra versículos relevantes por tema' } },
+      { id: 'historical-context', icon: BookOpen, title: { PT: 'Contexto Histórico', EN: 'Historical Context', ES: 'Contexto Histórico' }, description: { PT: 'Contexto cultural e histórico da passagem', EN: 'Cultural and historical context of the passage', ES: 'Contexto cultural e histórico del pasaje' } },
+      { id: 'quote-finder', icon: Quote, title: { PT: 'Citações Teológicas', EN: 'Theological Quotes', ES: 'Citas Teológicas' }, description: { PT: 'Citações de teólogos e autores cristãos', EN: 'Quotes from theologians and Christian authors', ES: 'Citas de teólogos y autores cristianos' } },
+      { id: 'movie-scenes', icon: Film, title: { PT: 'Cenas de Filmes', EN: 'Movie Scenes', ES: 'Escenas de Películas' }, description: { PT: 'Ilustrações de filmes para o sermão', EN: 'Movie illustrations for the sermon', ES: 'Ilustraciones de películas para el sermón' } },
+      { id: 'original-text', icon: FileText, title: { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original' }, description: { PT: 'Grego e Hebraico com análise palavra a palavra', EN: 'Greek and Hebrew with word-by-word analysis', ES: 'Griego y Hebreo con análisis palabra por palabra' }, locked: true },
+      { id: 'lexical', icon: LanguagesIcon, title: { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico' }, description: { PT: 'Estudo profundo de termos originais', EN: 'Deep study of original terms', ES: 'Estudio profundo de términos originales' }, locked: true },
+    ],
+  },
+  {
+    label: { PT: '✍️ Escrita & Criação', EN: '✍️ Writing & Creation', ES: '✍️ Escritura & Creación' },
+    subtitle: {
+      PT: 'Gere títulos, metáforas, artigos e mais — com sua voz pastoral.',
+      EN: 'Generate titles, metaphors, articles and more — with your pastoral voice.',
+      ES: 'Genera títulos, metáforas, artículos y más — con tu voz pastoral.',
+    },
+    tools: [
+      { id: 'title-gen', icon: Sparkles, title: { PT: 'Gerador de Títulos', EN: 'Title Generator', ES: 'Generador de Títulos' }, description: { PT: '10 títulos criativos para seu sermão', EN: '10 creative titles for your sermon', ES: '10 títulos creativos para tu sermón' } },
+      { id: 'metaphor-creator', icon: Palette, title: { PT: 'Criador de Metáforas', EN: 'Metaphor Creator', ES: 'Creador de Metáforas' }, description: { PT: 'Analogias modernas para conceitos bíblicos', EN: 'Modern analogies for biblical concepts', ES: 'Analogías modernas para conceptos bíblicos' } },
+      { id: 'bible-modernizer', icon: Repeat, title: { PT: 'Modernizador Bíblico', EN: 'Bible Modernizer', ES: 'Modernizador Bíblico' }, description: { PT: 'Recontar histórias bíblicas no contexto atual', EN: 'Retell Bible stories in a modern context', ES: 'Recontar historias bíblicas en contexto actual' } },
+      { id: 'illustrations', icon: PenTool, title: { PT: 'Ilustrações para Sermão', EN: 'Sermon Illustrations', ES: 'Ilustraciones para Sermón' }, description: { PT: 'Histórias reais para enriquecer a pregação', EN: 'Real stories to enrich your preaching', ES: 'Historias reales para enriquecer la predicación' } },
+      { id: 'free-article', icon: Wand2, title: { PT: 'Artigo de Blog', EN: 'Blog Article', ES: 'Artículo de Blog' }, description: { PT: 'Artigo devocional completo pronto para publicar', EN: 'Complete devotional article ready to publish', ES: 'Artículo devocional completo listo para publicar' } },
+      { id: 'youtube-blog', icon: Video, title: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' }, description: { PT: 'Transforme vídeos em artigos cristãos', EN: 'Turn videos into Christian articles', ES: 'Transforma videos en artículos cristianos' }, locked: true },
+    ],
+  },
+  {
+    label: { PT: '📣 Alcance & Distribuição', EN: '📣 Outreach & Distribution', ES: '📣 Alcance & Distribución' },
+    subtitle: {
+      PT: 'Leve sua mensagem além do púlpito — redes, célula, newsletter.',
+      EN: 'Take your message beyond the pulpit — social, cell group, newsletter.',
+      ES: 'Lleva tu mensaje más allá del púlpito — redes, célula, newsletter.',
+    },
+    tools: [
+      { id: 'reels-script', icon: Video, title: { PT: 'Roteiro para Reels', EN: 'Reels Script', ES: 'Guión para Reels' }, description: { PT: 'Script de 30-60s com gancho, conteúdo e CTA', EN: '30-60s script with hook, content and CTA', ES: 'Script de 30-60s con gancho, contenido y CTA' } },
+      { id: 'cell-group', icon: Users, title: { PT: 'Material de Célula', EN: 'Cell Group Material', ES: 'Material de Célula' }, description: { PT: 'Estudo completo com perguntas e dinâmica', EN: 'Complete study with questions and dynamics', ES: 'Estudio completo con preguntas y dinámica' } },
+      { id: 'social-caption', icon: MessageSquare, title: { PT: 'Legendas para Redes', EN: 'Social Captions', ES: 'Leyendas para Redes' }, description: { PT: '5 opções de legenda com emojis e hashtags', EN: '5 caption options with emojis and hashtags', ES: '5 opciones de leyenda con emojis y hashtags' } },
+      { id: 'newsletter', icon: Mail, title: { PT: 'Newsletter Semanal', EN: 'Weekly Newsletter', ES: 'Newsletter Semanal' }, description: { PT: 'Newsletter completa com devocional e avisos', EN: 'Complete newsletter with devotional and announcements', ES: 'Newsletter completa con devocional y avisos' } },
+      { id: 'announcements', icon: Megaphone, title: { PT: 'Avisos do Culto', EN: 'Service Announcements', ES: 'Avisos del Culto' }, description: { PT: 'Avisos claros e acolhedores para o boletim', EN: 'Clear, warm announcements for the bulletin', ES: 'Avisos claros y acogedores para el boletín' } },
+    ],
+  },
+  {
+    label: { PT: '🎲 Divertidas & Dinâmicas', EN: '🎲 Fun & Dynamic', ES: '🎲 Divertidas & Dinámicas' },
+    subtitle: {
+      PT: 'Quiz bíblico, poesia, história para crianças e tradução profunda.',
+      EN: 'Bible trivia, poetry, kids stories and deep translation.',
+      ES: 'Trivia bíblica, poesía, historias infantiles y traducción profunda.',
+    },
+    tools: [
+      { id: 'trivia', icon: HelpCircle, title: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' }, description: { PT: '10 perguntas divertidas com alternativas', EN: '10 fun questions with multiple choice', ES: '10 preguntas divertidas con alternativas' } },
+      { id: 'poetry', icon: Feather, title: { PT: 'Poesia Cristã', EN: 'Christian Poetry', ES: 'Poesía Cristiana' }, description: { PT: 'Poema inspirado em passagem ou tema', EN: 'Poem inspired by passage or topic', ES: 'Poema inspirado en pasaje o tema' } },
+      { id: 'kids-story', icon: Baby, title: { PT: 'História Infantil', EN: 'Kids Story', ES: 'Historia Infantil' }, description: { PT: 'Reconto bíblico para crianças de 5-10 anos', EN: 'Bible retelling for children 5-10 years', ES: 'Recuento bíblico para niños de 5-10 años' } },
+      { id: 'deep-translation', icon: Globe, title: { PT: 'Tradução Profunda', EN: 'Deep Translation', ES: 'Traducción Profunda' }, description: { PT: 'Tradução teológica com nuance e contexto', EN: 'Theological translation with nuance and context', ES: 'Traducción teológica con matiz y contexto' }, locked: true },
+    ],
+  },
 ];
 
-const bibleVersions = [
-  { value: 'ARA', label: 'ARA (Almeida Revista)', free: true },
-  { value: 'NVI', label: 'NVI (Nova Versão Internacional)', free: true },
-  { value: 'NAA', label: 'NAA (Nova Almeida Atualizada)', free: false },
-  { value: 'ESV', label: 'ESV (English Standard)', free: false },
-  { value: 'RVR', label: 'RVR (Reina Valera)', free: false },
-];
-
-const voices = [
-  { value: 'acolhedor', label: { PT: 'Acolhedor', EN: 'Welcoming', ES: 'Acogedor' }, free: true },
-  { value: 'profético', label: { PT: 'Profético', EN: 'Prophetic', ES: 'Profético' }, free: false },
-  { value: 'expositivo', label: { PT: 'Expositivo', EN: 'Expository', ES: 'Expositivo' }, free: false },
-  { value: 'jovem', label: { PT: 'Jovem', EN: 'Youth', ES: 'Joven' }, free: false },
-];
-
-const formatTabs = [
-  { id: 'sermon', label: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón' }, free: true },
-  { id: 'outline', label: { PT: 'Esboço', EN: 'Outline', ES: 'Esquema' }, free: true },
-  { id: 'devotional', label: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' }, free: true },
-  { id: 'reels', label: { PT: 'Reels', EN: 'Reels', ES: 'Reels' }, free: false },
-  { id: 'bilingual', label: { PT: 'Bilíngue', EN: 'Bilingual', ES: 'Bilingüe' }, free: false },
-  { id: 'cell', label: { PT: 'Célula', EN: 'Cell Group', ES: 'Célula' }, free: false },
-];
+const greeting: Record<L, { h1: string; sub: string }> = {
+  PT: {
+    h1: 'Seu estúdio pastoral está pronto.',
+    sub: 'Escolha uma ferramenta abaixo e comece a criar. Cada clique abre um painel focado — sem complicação.',
+  },
+  EN: {
+    h1: 'Your pastoral studio is ready.',
+    sub: 'Choose a tool below and start creating. Each click opens a focused panel — no complications.',
+  },
+  ES: {
+    h1: 'Tu estudio pastoral está listo.',
+    sub: 'Elige una herramienta abajo y empieza a crear. Cada clic abre un panel enfocado — sin complicaciones.',
+  },
+};
 
 export default function Estudio() {
-  const { user, profile } = useAuth();
-  const { t, lang } = useLanguage();
+  const { profile } = useAuth();
+  const { lang } = useLanguage();
   const isFree = profile?.plan === 'free';
 
-  const [passage, setPassage] = useState('');
-  const [audience, setAudience] = useState('general');
-  const [context, setContext] = useState('');
-  const [version, setVersion] = useState('ARA');
-  const [voice, setVoice] = useState('acolhedor');
-  const [generating, setGenerating] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [outputs, setOutputs] = useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = useState('sermon');
-  const [upgradeHint, setUpgradeHint] = useState('');
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [activeTool, setActiveTool] = useState<ToolCardData | null>(null);
 
-  const handleGenerate = async () => {
-    if (!passage.trim()) {
-      toast.error(lang === 'PT' ? 'Informe uma passagem bíblica' : 'Enter a Bible passage');
-      return;
-    }
-    setGenerating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-pastoral-material', {
-        body: {
-          bible_passage: passage,
-          audience,
-          pain_point: context,
-          language: lang,
-          bible_version: version,
-          output_modes: ['sermon', 'outline', 'devotional'],
-        },
-      });
-      if (error) throw error;
-      if (data?.outputs) {
-        setOutputs(data.outputs);
-      }
-      if (data?.upgrade_hint) {
-        setUpgradeHint(data.upgrade_hint);
-      }
-      toast.success(lang === 'PT' ? 'Material gerado com sucesso!' : 'Material generated!');
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao gerar material');
-    } finally {
-      setGenerating(false);
-    }
-  };
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(lang === 'PT' ? 'Copiado!' : 'Copied!');
-  };
-
-  const handleSave = async (tabId: string) => {
-    if (!user || !outputs[tabId]) return;
-    setSaving(true);
-    try {
-      const tabMeta = formatTabs.find((f) => f.id === tabId);
-      const title = `${tabMeta?.label[lang] || tabId} — ${passage}`;
-
-      const { error } = await supabase.from('materials').insert({
-        user_id: user.id,
-        title,
-        type: tabId,
-        passage,
-        content: outputs[tabId],
-        language: lang,
-        bible_version: version,
-      });
-      if (error) throw error;
-      toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : 'Saved to Library!');
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao salvar');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handlePublish = async (tabId: string) => {
-    if (!user || !outputs[tabId]) return;
-    setSaving(true);
-    try {
-      const tabMeta = formatTabs.find((f) => f.id === tabId);
-      const title = `${tabMeta?.label[lang] || tabId} — ${passage}`;
-
-      // Insert material
-      const { data: material, error: matErr } = await supabase
-        .from('materials')
-        .insert({
-          user_id: user.id,
-          title,
-          type: tabId === 'devotional' ? 'blog_article' : tabId,
-          passage,
-          content: outputs[tabId],
-          language: lang,
-          bible_version: version,
-        })
-        .select('id')
-        .single();
-      if (matErr) throw matErr;
-
-      // Insert into editorial queue as published
-      const { error: qErr } = await supabase.from('editorial_queue').insert({
-        user_id: user.id,
-        material_id: material.id,
-        status: 'published',
-        published_at: new Date().toISOString(),
-      });
-      if (qErr) throw qErr;
-
-      toast.success(lang === 'PT' ? 'Publicado no blog!' : 'Published to blog!');
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao publicar');
-    } finally {
-      setSaving(false);
-    }
+  const handleToolClick = (tool: ToolCardData) => {
+    setActiveTool(tool);
+    setSheetOpen(true);
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="font-display text-3xl font-bold">{t('studio.title')}</h1>
-
-      {upgradeHint && isFree && (
-        <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 flex items-center justify-between">
-          <p className="text-sm text-primary">{upgradeHint}</p>
-          <Button size="sm" variant="outline" className="border-primary text-primary" asChild>
-            <a href="/upgrade">{t('upgrade.cta')}</a>
-          </Button>
-        </div>
-      )}
-
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Input Column */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-display text-lg">Input</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>{t('studio.passage')}</Label>
-              <Input value={passage} onChange={(e) => setPassage(e.target.value)} placeholder="Ex: João 15:1-8" />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('studio.audience')}</Label>
-              <Select value={audience} onValueChange={setAudience}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {audiences.map((a) => (
-                    <SelectItem key={a.value} value={a.value}>{a.label[lang]}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t('studio.context')}</Label>
-              <Textarea value={context} onChange={(e) => setContext(e.target.value)} placeholder="Solidão, saudade de casa..." rows={3} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>{t('studio.version')}</Label>
-                <Select value={version} onValueChange={setVersion}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {bibleVersions.map((v) => (
-                      <SelectItem key={v.value} value={v.value} disabled={!v.free && isFree}>
-                        <span className="flex items-center gap-2">
-                          {v.label}
-                          {!v.free && <Lock className="h-3 w-3" />}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>{t('studio.voice')}</Label>
-                <Select value={voice} onValueChange={setVoice}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {voices.map((v) => (
-                      <SelectItem key={v.value} value={v.value} disabled={!v.free && isFree}>
-                        <span className="flex items-center gap-2">
-                          {v.label[lang]}
-                          {!v.free && <Lock className="h-3 w-3" />}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <Button onClick={handleGenerate} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2 text-base h-12" disabled={generating}>
-              {generating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5" />}
-              {t('studio.generate')}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Output Column */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-display text-lg">Output</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="flex flex-wrap h-auto gap-1 bg-secondary/50 p-1">
-                {formatTabs.map((tab) => (
-                  <TabsTrigger key={tab.id} value={tab.id} disabled={!tab.free && isFree} className="gap-1 text-xs data-[state=active]:bg-card">
-                    {!tab.free && <Lock className="h-3 w-3" />}
-                    {tab.label[lang]}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              {formatTabs.map((tab) => (
-                <TabsContent key={tab.id} value={tab.id} className="mt-4">
-                  {!tab.free && isFree ? (
-                    <LockedTab formatName={tab.label[lang]} />
-                  ) : (
-                    <div>
-                      {outputs[tab.id] ? (
-                        <div className="relative">
-                          <div className="prose prose-sm max-w-none whitespace-pre-wrap text-sm leading-relaxed">
-                            {outputs[tab.id]}
-                          </div>
-                          {isFree && (
-                            <div className="mt-4 p-3 bg-muted/80 rounded text-center text-xs text-muted-foreground">
-                              ⚠️ Rascunho gerado com IA. Revise, ore e pregue com sua voz.
-                            </div>
-                          )}
-                          <div className="flex gap-2 mt-4">
-                            <Button size="sm" variant="outline" className="gap-1" onClick={() => handleCopy(outputs[tab.id])}>
-                              <Copy className="h-3 w-3" /> {t('studio.copy')}
-                            </Button>
-                            <Button size="sm" variant="outline" className="gap-1" onClick={() => handleSave(tab.id)} disabled={saving}>
-                              <Save className="h-3 w-3" /> {t('studio.save')}
-                            </Button>
-                            <Button size="sm" variant="outline" className="gap-1" onClick={() => handlePublish(tab.id)} disabled={saving}>
-                              <BookOpen className="h-3 w-3" /> {t('studio.publish')}
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center py-16 text-muted-foreground">
-                          <Wand2 className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                          <p className="text-sm">
-                            {lang === 'PT' ? 'Gere um material para ver o resultado aqui' : 'Generate material to see results here'}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </TabsContent>
-              ))}
-            </Tabs>
-          </CardContent>
-        </Card>
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+          {greeting[lang].h1}
+        </h1>
+        <p className="text-[15px] text-muted-foreground mt-2 max-w-xl">
+          {greeting[lang].sub}
+        </p>
       </div>
+
+      {/* Tool Sections */}
+      {sections.map((section, si) => (
+        <section key={si}>
+          <div className="mb-3">
+            <h2 className="text-lg font-semibold text-foreground">{section.label[lang]}</h2>
+            <p className="text-[13px] text-muted-foreground">{section.subtitle[lang]}</p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            {section.tools.map((tool, ti) => (
+              <ToolCard
+                key={tool.id}
+                tool={tool}
+                lang={lang}
+                isFree={isFree}
+                onClick={handleToolClick}
+                index={si * 7 + ti}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {/* Sheet for tool interaction */}
+      {activeTool && (
+        <ToolSheet
+          open={sheetOpen}
+          onOpenChange={setSheetOpen}
+          toolId={activeTool.id}
+          toolTitle={activeTool.title[lang]}
+        />
+      )}
     </div>
   );
 }
