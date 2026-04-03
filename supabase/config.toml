@@ -1,0 +1,4 @@
+project_id = "livingword"
+
+[api]
+port = 54321
