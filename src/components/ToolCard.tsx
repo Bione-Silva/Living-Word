@@ -17,19 +17,22 @@ interface ToolCardProps {
   lang: 'PT' | 'EN' | 'ES';
   isFree: boolean;
   onClick: (tool: ToolCardData) => void;
+  index?: number;
 }
 
-export function ToolCard({ tool, lang, isFree, onClick }: ToolCardProps) {
+export function ToolCard({ tool, lang, isFree, onClick, index = 0 }: ToolCardProps) {
   const isLocked = tool.locked && isFree;
   const Icon = tool.icon;
+  const animDelay = `${index * 60}ms`;
 
   const card = (
     <Card
-      className={`group relative cursor-pointer transition-all duration-200 border-border/60 bg-card hover:shadow-lg hover:-translate-y-0.5 ${
+      className={`group relative cursor-pointer border-border/60 bg-card hover:shadow-lg hover:-translate-y-0.5 animate-[fade-in_0.4s_ease-out_both] transition-all duration-200 ${
         isLocked
           ? 'opacity-60 hover:opacity-80'
           : 'hover:border-accent/50 hover:shadow-[0_0_20px_-5px_hsl(44,65%,58%,0.25)]'
       }`}
+      style={{ animationDelay: animDelay }}
     >
       {isLocked && (
         <div className="absolute top-2.5 right-2.5 z-10">
