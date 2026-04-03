@@ -171,7 +171,7 @@ export default function Dashboard() {
       {/* Grid 4: Fun & Dynamic */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground whitespace-nowrap">
+          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
             {sectionLabel('🎮', 'DIVERTIDAS E DINÂMICAS', 'FUN & DYNAMIC', 'DIVERTIDAS Y DINÁMICAS')}
           </h2>
           <div className="flex-1 h-px bg-border/50" />
