@@ -645,7 +645,7 @@ export default function Landing() {
                     {lang === 'PT' ? 'Mais escolhido' : lang === 'EN' ? 'Most popular' : 'Más elegido'}
                   </span>
                 )}
-                <p className="text-[15px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{plan.name}</p>
+                <p className="text-[15px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{plan.name[lang]}</p>
                 <div className="flex items-baseline gap-0.5 mb-1">
                   <span className="font-display text-[32px] font-semibold" style={{ color: '#3D2B1F' }}>{plan.price}</span>
                 </div>
