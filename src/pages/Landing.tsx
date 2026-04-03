@@ -57,15 +57,15 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
-        <div className="container mx-auto flex items-center justify-between h-16 px-4">
-          <span className="font-display text-2xl font-bold text-gradient-gold">Living Word</span>
-          <div className="flex items-center gap-3">
+        <div className="container mx-auto flex items-center justify-between h-14 sm:h-16 px-4">
+          <span className="font-display text-xl sm:text-2xl font-bold text-gradient-gold shrink-0">Living Word</span>
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <LanguageToggle />
-            <Link to="/login">
+            <Link to="/login" className="hidden sm:inline-flex">
               <Button variant="ghost" size="sm">{t('nav.login')}</Button>
             </Link>
             <Link to="/cadastro">
-              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs sm:text-sm">
                 {t('nav.signup')}
               </Button>
             </Link>
