@@ -193,6 +193,22 @@ export default function AppLayout() {
             );
           })}
 
+          {/* Mentes Brilhantes — Premium */}
+          <Link
+            to="/mentes"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname.startsWith('/mentes')
+                ? 'bg-[hsl(43,55%,58%)]/15 text-[hsl(43,55%,58%)]'
+                : 'text-[hsl(43,55%,58%)]/70 hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,58%)]'
+            }`}
+          >
+            <Brain className="h-4 w-4" />
+            {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
+            <Badge variant="outline" className="ml-auto text-[9px] border-[hsl(43,55%,58%)]/40 text-[hsl(43,55%,58%)] px-1.5 py-0">
+              Premium
+            </Badge>
+          </Link>
+
           {/* Settings */}
           <Link
             to="/configuracoes"
