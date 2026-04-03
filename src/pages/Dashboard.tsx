@@ -132,8 +132,8 @@ export default function Dashboard() {
           <div className="flex-1 h-px bg-border/50" />
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {researchTools.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} lang={lang} isFree={isFree} onClick={handleToolClick} />
+          {researchTools.map((tool, i) => (
+            <ToolCard key={tool.id} tool={tool} lang={lang} isFree={isFree} onClick={handleToolClick} index={i} />
           ))}
         </div>
       </section>
