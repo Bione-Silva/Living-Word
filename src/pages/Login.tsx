@@ -60,7 +60,7 @@ export default function Login() {
               {!isSupabaseConfigured && (
                 <Alert>
                   <AlertDescription>
-                    O formulário está visível, mas a autenticação real depende das credenciais do Supabase no projeto.
+                    O formulário está visível, mas a autenticação real será ativada quando o backend estiver configurado.
                   </AlertDescription>
                 </Alert>
               )}

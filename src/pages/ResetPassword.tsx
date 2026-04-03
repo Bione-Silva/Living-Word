@@ -48,7 +48,7 @@ export default function ResetPassword() {
             {!isSupabaseConfigured && (
               <Alert>
                 <AlertDescription>
-                  A tela de recuperação está pronta, mas a troca real de senha depende das credenciais do Supabase no projeto.
+                  A tela de recuperação está pronta, mas a troca real de senha será ativada quando o backend estiver configurado.
                 </AlertDescription>
               </Alert>
             )}
