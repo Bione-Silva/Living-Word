@@ -9,9 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Wand2, Copy, BookOpen, Save, Lock, Crown, Loader2 } from 'lucide-react';
+import { Wand2, Copy, BookOpen, Save, Lock, Loader2 } from 'lucide-react';
 import { LockedTab } from '@/components/LockedTab';
 
 const audiences = [
@@ -47,7 +46,7 @@ const formatTabs = [
 ];
 
 export default function Estudio() {
-  const { profile, session } = useAuth();
+  const { user, profile } = useAuth();
   const { t, lang } = useLanguage();
   const isFree = profile?.plan === 'free';
 
@@ -57,13 +56,14 @@ export default function Estudio() {
   const [version, setVersion] = useState('ARA');
   const [voice, setVoice] = useState('acolhedor');
   const [generating, setGenerating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [outputs, setOutputs] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState('sermon');
   const [upgradeHint, setUpgradeHint] = useState('');
 
   const handleGenerate = async () => {
     if (!passage.trim()) {
-      toast.error('Informe uma passagem bíblica');
+      toast.error(lang === 'PT' ? 'Informe uma passagem bíblica' : 'Enter a Bible passage');
       return;
     }
     setGenerating(true);
@@ -85,7 +85,7 @@ export default function Estudio() {
       if (data?.upgrade_hint) {
         setUpgradeHint(data.upgrade_hint);
       }
-      toast.success('Material gerado com sucesso!');
+      toast.success(lang === 'PT' ? 'Material gerado com sucesso!' : 'Material generated!');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao gerar material');
     } finally {
@@ -95,14 +95,78 @@ export default function Estudio() {
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copiado!');
+    toast.success(lang === 'PT' ? 'Copiado!' : 'Copied!');
+  };
+
+  const handleSave = async (tabId: string) => {
+    if (!user || !outputs[tabId]) return;
+    setSaving(true);
+    try {
+      const tabMeta = formatTabs.find((f) => f.id === tabId);
+      const title = `${tabMeta?.label[lang] || tabId} — ${passage}`;
+
+      const { error } = await supabase.from('materials').insert({
+        user_id: user.id,
+        title,
+        type: tabId,
+        passage,
+        content: outputs[tabId],
+        language: lang,
+        bible_version: version,
+      });
+      if (error) throw error;
+      toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : 'Saved to Library!');
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao salvar');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePublish = async (tabId: string) => {
+    if (!user || !outputs[tabId]) return;
+    setSaving(true);
+    try {
+      const tabMeta = formatTabs.find((f) => f.id === tabId);
+      const title = `${tabMeta?.label[lang] || tabId} — ${passage}`;
+
+      // Insert material
+      const { data: material, error: matErr } = await supabase
+        .from('materials')
+        .insert({
+          user_id: user.id,
+          title,
+          type: tabId === 'devotional' ? 'blog_article' : tabId,
+          passage,
+          content: outputs[tabId],
+          language: lang,
+          bible_version: version,
+        })
+        .select('id')
+        .single();
+      if (matErr) throw matErr;
+
+      // Insert into editorial queue as published
+      const { error: qErr } = await supabase.from('editorial_queue').insert({
+        user_id: user.id,
+        material_id: material.id,
+        status: 'published',
+        published_at: new Date().toISOString(),
+      });
+      if (qErr) throw qErr;
+
+      toast.success(lang === 'PT' ? 'Publicado no blog!' : 'Published to blog!');
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao publicar');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <h1 className="font-display text-3xl font-bold">{t('studio.title')}</h1>
 
-      {/* Upgrade hint bar */}
       {upgradeHint && isFree && (
         <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 flex items-center justify-between">
           <p className="text-sm text-primary">{upgradeHint}</p>
@@ -121,11 +185,7 @@ export default function Estudio() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>{t('studio.passage')}</Label>
-              <Input
-                value={passage}
-                onChange={(e) => setPassage(e.target.value)}
-                placeholder="Ex: João 15:1-8"
-              />
+              <Input value={passage} onChange={(e) => setPassage(e.target.value)} placeholder="Ex: João 15:1-8" />
             </div>
             <div className="space-y-2">
               <Label>{t('studio.audience')}</Label>
@@ -140,12 +200,7 @@ export default function Estudio() {
             </div>
             <div className="space-y-2">
               <Label>{t('studio.context')}</Label>
-              <Textarea
-                value={context}
-                onChange={(e) => setContext(e.target.value)}
-                placeholder="Solidão, saudade de casa..."
-                rows={3}
-              />
+              <Textarea value={context} onChange={(e) => setContext(e.target.value)} placeholder="Solidão, saudade de casa..." rows={3} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -181,11 +236,7 @@ export default function Estudio() {
                 </Select>
               </div>
             </div>
-            <Button
-              onClick={handleGenerate}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2 text-base h-12"
-              disabled={generating}
-            >
+            <Button onClick={handleGenerate} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2 text-base h-12" disabled={generating}>
               {generating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5" />}
               {t('studio.generate')}
             </Button>
@@ -201,12 +252,7 @@ export default function Estudio() {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="flex flex-wrap h-auto gap-1 bg-secondary/50 p-1">
                 {formatTabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab.id}
-                    value={tab.id}
-                    disabled={!tab.free && isFree}
-                    className="gap-1 text-xs data-[state=active]:bg-card"
-                  >
+                  <TabsTrigger key={tab.id} value={tab.id} disabled={!tab.free && isFree} className="gap-1 text-xs data-[state=active]:bg-card">
                     {!tab.free && <Lock className="h-3 w-3" />}
                     {tab.label[lang]}
                   </TabsTrigger>
@@ -220,7 +266,7 @@ export default function Estudio() {
                     <div>
                       {outputs[tab.id] ? (
                         <div className="relative">
-                          <div className="prose prose-sm max-w-none dark:prose-invert whitespace-pre-wrap text-sm leading-relaxed">
+                          <div className="prose prose-sm max-w-none whitespace-pre-wrap text-sm leading-relaxed">
                             {outputs[tab.id]}
                           </div>
                           {isFree && (
@@ -232,10 +278,10 @@ export default function Estudio() {
                             <Button size="sm" variant="outline" className="gap-1" onClick={() => handleCopy(outputs[tab.id])}>
                               <Copy className="h-3 w-3" /> {t('studio.copy')}
                             </Button>
-                            <Button size="sm" variant="outline" className="gap-1">
+                            <Button size="sm" variant="outline" className="gap-1" onClick={() => handleSave(tab.id)} disabled={saving}>
                               <Save className="h-3 w-3" /> {t('studio.save')}
                             </Button>
-                            <Button size="sm" variant="outline" className="gap-1">
+                            <Button size="sm" variant="outline" className="gap-1" onClick={() => handlePublish(tab.id)} disabled={saving}>
                               <BookOpen className="h-3 w-3" /> {t('studio.publish')}
                             </Button>
                           </div>
@@ -243,7 +289,9 @@ export default function Estudio() {
                       ) : (
                         <div className="text-center py-16 text-muted-foreground">
                           <Wand2 className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                          <p className="text-sm">Gere um material para ver o resultado aqui</p>
+                          <p className="text-sm">
+                            {lang === 'PT' ? 'Gere um material para ver o resultado aqui' : 'Generate material to see results here'}
+                          </p>
                         </div>
                       )}
                     </div>
