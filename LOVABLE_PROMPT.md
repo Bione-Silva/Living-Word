@@ -100,55 +100,50 @@ Os 3 primeiros sem cadeado (Free). Os outros 4 com badge "Pastoral".
 
 ---
 
-### Tela 3: Estúdio Pastoral (`/estudio`) — TELA PRINCIPAL
+### Tela 3: Dashboard Principal (`/dashboard`) — TELA PRINCIPAL
 
-Esta é a tela de trabalho diário do pastor. Layout em duas colunas:
+**INSTRUÇÃO CRÍTICA DE UX (Baseada nos anexos do SermonSpark):** 
+O Estúdio NÃO deve abrir direto em um formulário vazio gigante ou chat estilo ChatGPT (isso gera "Síndrome da folha em branco"). Ele deve ser um **Hub/Dashboard visual em Grid**, idêntico às imagens de referência `sermonspark.ai` anexadas ao projeto.
 
-**Coluna Esquerda — Entrada:**
-- Campo obrigatório: **Passagem Bíblica** (input com autocomplete dos 66 livros)
-- Campo: **Público-alvo** (dropdown com opções: Igreja geral, Jovens, Casais, Líderes, Imigrantes, Enlutados, Novos convertidos)
-- Campo: **Contexto/Dor** (textarea: "Qual situação sua congregação está vivendo?")
-- Campo: **Idioma** (PT / EN / ES)
-- Campo: **Versão Bíblica** (ARA / NVI🔒 / KJV / ESV🔒 / RVR60 / NVI-ES🔒 — aqui as bloqueadas mostram badge Pastoral)
-- Botão: **"Gerar Material"** (grande, dourado, com ícone de cruz/livro)
+**Layout Principal (Inspirado nas Referências Visuais):**
+- **Sidebar Fixa (Esquerda):** Fundo escuro/roxo ministerial.
+  - Título/Logo do Living Word.
+  - Navegação agrupada: "Criar", "Pesquisar", "Publicar".
+  - Seção Minha Conta com botão de upgrade.
+  - **Componente `<GenerationCounter />`:** Badge colorido (ex: "1000 créditos" / "5 gerações") sempre visível, preenchendo a psicologia de consumo de créditos.
+- **Painel Central (Main Area):** Fundo limpo (slate-50).
+  - Título H1 "Ferramentas Pastorais ao seu alcance".
+  - Banner dinâmico de Upsell alertando personalizações (ex: "Personalize sua voz pastoral em todos os materiais").
 
-**Coluna Direita — Saída (Tabs):**
-Tabs horizontais para cada formato gerado:
-- ✅ **Sermão** (sempre ativo)
-- ✅ **Esboço** (sempre ativo)
-- ✅ **Devocional** (sempre ativo)
-- 🔒 **Reels** (badge Pastoral)
-- 🔒 **Bilíngue** (badge Pastoral)
-- 🔒 **Célula** (badge Pastoral)
+**Sessões do Grid de Ferramentas (Cards brancos clicáveis):**
 
-Cada tab exibe o conteúdo gerado com:
-- Formatação rica (markdown renderizado com títulos, listas, citações bíblicas destacadas)
-- Tags de auditoria visíveis: `[CITAÇÃO DIRETA]`, `[PARÁFRASE]`, `[APLICAÇÃO]` com cores diferentes
-- Rodapé com watermark (Free): "⚠️ Rascunho gerado com IA. Revise, ore e pregue com sua voz."
-- Botões: "Copiar" | "Salvar na Biblioteca" | "Publicar no Blog"
+1. **Grid: 🖋️ Escrever e Criar**
+   - *Estúdio Pastoral (O Clássico)*: Abre o modal/tela dividida com a Passagem Bíblica, Público-Alvo e outputs simultâneos (Esboço, Devocional, Reels, etc).
+   - *Artigo Livre*: Gerador de conteúdo de blog puro a partir de um tema.
+   - *Gerador de Títulos (🔒 Pastoral)*.
+
+2. **Grid: 🎥 Vídeo para Blog (NOVA FEATURE PRIORITÁRIA)**
+   - *Transformar Vídeo em Blog*: Ao clicar neste card, abre um modal simples pedindo apenas:
+     - URL do vídeo do YouTube.
+     - Público-alvo.
+     - Seleção de Voz Pastoral (Configurações herdadas).
+   - Ao confirmar, dispara disparo POST para o endpoint `/process-youtube-audio`. Mostrar Loading State elegante ("Extraindo legendas e gerando sabedoria..."). Retorna texto para publicação no blog.
+
+3. **Grid: 🔎 Pesquisar (Ferramentas Rápidas)**
+   - *Explorador de Versículo* (Input de tema → Traz as referências).
+   - *Ilustrações Contemporâneas* (Traz cenas de filmes/histórias diárias aplicáveis).
+   - *Pesquisa Lexical (🔒 Pastoral)* (Explora Grego e Hebraico simplificado via Vector Search).
+
+**Dinâmica dos Cards:**
+- Cards contêm: Ícone (Lucide), Título curto, Descrição em 1 linha.
+- Cards bloqueados no plano Free exibem um pequeno cadeado laranja ou dourado 🔒. Se clicados, disparam o `<UpgradeModal />`.
+
+**Após interagir com o Estúdio ou Youtube, a tela se divide para mostrar o resultado e botões de ação final:**
+- Botões: "Copiar" | "Salvar na Biblioteca" | "Publicar no Blog (WordPress)".
 
 **COMPONENTES DE CONVERSÃO (implementar da Conversion Strategy):**
-
-1. `<GenerationCounter />` — Header do estúdio
-   - Barra de progresso: "X de Y gerações usadas"
-   - Verde (0-60%) → Amarelo (60-80%) → Vermelho (80-100%)
-   - Na geração 4/5 (Free): exibir inline "Você usou 4 das suas 5 gerações este mês. Ainda tem um domingo pela frente?"
-
-2. `<LockedTab />` — Tabs bloqueados
-   - Ícone de cadeado + badge "Pastoral"
-   - Ao clicar: drawer lateral abre com preview do que seria gerado + CTA "7 dias grátis, sem cartão"
-   - REGRA: Nunca esconder os tabs bloqueados. Sempre mostrar e bloquear.
-
-3. `<VoiceSelector />` — Nas configurações avançadas
-   - "Acolhedor" (único free)
-   - "Expositivo 🔒", "Narrativo 🔒", "Apologético 🔒", "Profético 🔒"
-   - Ao clicar em bloqueado: mini-card "No Pastoral, seu conteúdo é gerado com sua voz expositiva"
-
-4. `<UpgradeModal />` — Chamado por qualquer gatilho
-   - Props: trigger, userType
-   - Texto personalizado por tipo de usuário
-   - CTA: "Comece 7 dias grátis — sem cartão de crédito"
-   - Regra: sessionStorage para não empilhar (máx 1 gatilho por sessão)
+1. `<LockedTab />` e Cards Bloqueados: Sempre visíveis para despertar o desejo.
+2. `<UpgradeModal />`: Trial de 7 dias grátis focado no benefício sem usar culpa.
 
 ---
 

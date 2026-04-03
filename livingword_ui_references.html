@@ -1,0 +1,385 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.w{padding:1rem 0;max-width:920px}
+.tabs{display:flex;gap:4px;border-bottom:.5px solid var(--color-border-tertiary);margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{font-size:12px;padding:8px 14px;cursor:pointer;color:var(--color-text-secondary);border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none}
+.tab.active{border-bottom-color:#6B4F3A;color:#6B4F3A;font-weight:500}
+.panel{display:none}.panel.active{display:block}
+.sec{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-secondary);margin-bottom:12px}
+
+.ref-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;padding:14px;background:var(--color-background-secondary);border-radius:12px}
+.ref-logo{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;flex-shrink:0}
+.ref-name{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.ref-type{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px}
+.ref-tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.tg{background:#e8f2eb;color:#1e4d2b}
+.tr{background:#fce8e8;color:#991b1b}
+.tb{background:#e8eef8;color:#1a4fa0}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.col-card{border:.5px solid var(--color-border-tertiary);border-radius:12px;overflow:hidden}
+.col-header{padding:8px 12px;font-size:11px;font-weight:500}
+.ch-copy{background:#e8f2eb;color:#1e4d2b}
+.ch-avoid{background:#fce8e8;color:#991b1b}
+.col-body{padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+.col-item{display:flex;gap:8px;font-size:12px;color:var(--color-text-primary);line-height:1.4;align-items:flex-start}
+.ci-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot-g{background:#1e4d2b}
+.dot-r{background:#991b1b}
+
+.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.feat-card{border:.5px solid var(--color-border-tertiary);border-radius:10px;padding:10px 12px;background:var(--color-background-primary)}
+.feat-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:7px}
+.feat-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.feat-desc{font-size:11px;color:var(--color-text-secondary);line-height:1.4}
+
+.verdict{border-radius:10px;padding:12px 14px;margin-top:4px;border-left:3px solid;border-radius:0}
+.verdict-title{font-size:12px;font-weight:500;margin-bottom:4px}
+.verdict-body{font-size:12px;line-height:1.5}
+
+.mock-phone{background:#1a1a1a;border-radius:28px;padding:10px;width:240px;margin:0 auto}
+.mock-screen{background:#fff;border-radius:20px;overflow:hidden}
+
+.ss-header{background:#2C3E50;padding:10px 12px;display:flex;align-items:center;gap:8px}
+.ss-dot{width:6px;height:6px;border-radius:50%}
+.ss-title{font-size:11px;font-weight:500;color:#fff}
+
+.ns-card{background:#f7f7f5;margin:6px;border-radius:8px;padding:8px 10px}
+.ns-title{font-size:11px;font-weight:500;color:#1a1a1a;margin-bottom:2px}
+.ns-body{font-size:10px;color:#666;line-height:1.4}
+
+.sm-header{padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:.5px solid #eee}
+.sm-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.sm-tool-title{font-size:11px;font-weight:500;color:#1a1a1a}
+.sm-tool-cat{font-size:9px;color:#888}
+.sm-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:8px}
+.sm-tool-item{background:#f0f0f0;border-radius:6px;padding:6px 8px;font-size:9px;color:#333}
+
+.lw-phone-header{background:#6B4F3A;padding:10px 12px;display:flex;align-items:center;gap:8px}
+.lw-input{background:#F5F0E8;margin:6px;border-radius:8px;padding:8px 10px;border:.5px solid rgba(107,79,58,.15)}
+.lw-label{font-size:9px;color:#8B6B54;font-weight:500;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.lw-field{font-size:10px;color:#3D2B1F}
+.lw-btn{background:#6B4F3A;margin:0 6px;border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:500;color:#fff}
+.lw-tabs{display:flex;gap:0;padding:0 6px;margin-bottom:4px}
+.lw-tab{font-size:9px;padding:4px 8px;border-radius:20px;color:#8B6B54;flex:1;text-align:center}
+.lw-tab.a{background:#EDD9C8;color:#6B4F3A;font-weight:500}
+</style>
+
+<div class="w">
+<div class="tabs">
+  <button class="tab active" onclick="sw('sermonspark')">1 · SermonSpark</button>
+  <button class="tab" onclick="sw('notion')">2 · Notion AI</button>
+  <button class="tab" onclick="sw('sermonmaker')">3 · Sermon Maker</button>
+  <button class="tab" onclick="sw('sintese')">Síntese Living Word</button>
+</div>
+
+<div class="panel active" id="panel-sermonspark">
+  <div class="ref-header">
+    <div class="ref-logo" style="background:#1a2d4a;color:#fff">SS</div>
+    <div>
+      <div class="ref-name">SermonSpark</div>
+      <div class="ref-type">sermonspark.ai · Web-based · Gratuito · Missional Marketing</div>
+      <div class="ref-tags">
+        <span class="tag tb">3.000+ pastores em 1 ano sem publicidade</span>
+        <span class="tag tg">Ferramenta mais próxima do Living Word</span>
+        <span class="tag tr">Sem PT/ES · Sem blog · Sem publicação</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:14px;margin-bottom:14px;align-items:flex-start">
+    <div style="flex:1">
+      <p class="sec">o que o sermonspark faz bem</p>
+      <div class="two-col" style="grid-template-columns:1fr">
+        <div class="col-card">
+          <div class="col-header ch-copy">Copiar para o Living Word</div>
+          <div class="col-body">
+            <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Organização por categoria:</strong> Research / Writing / Reach — três fases do processo pastoral. Intuitivo porque segue o fluxo mental do pastor, não da tecnologia.</div></div>
+            <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Social media posts como output:</strong> gera posts alinhados ao sermão. O Living Word faz isso via aba Reels — correto.</div></div>
+            <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Transcription → repurpose:</strong> upload de áudio do sermão e geração de derivados. Feature do nosso Sprint 3 — validada aqui.</div></div>
+            <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Posicionamento como suplemento:</strong> "como um comentário bíblico, não um substituto do pastor." Exato posicionamento do Living Word.</div></div>
+            <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">53% dos usuários usam em todas as fases</strong> (brainstorming, escrita e alcance) — dado que confirma o valor de oferecer as 3 frentes.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-card" style="margin-top:8px">
+        <div class="col-header ch-avoid">O que evitar — limitações claras</div>
+        <div class="col-body">
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Web-only, sem app nativo:</strong> não tem iOS/Android dedicado. O Living Word sendo mobile-first já é diferencial imediato.</div></div>
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Apenas inglês:</strong> mercado brasileiro e hispânico completamente ignorado — gap de mercado real.</div></div>
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Sem publicação direta:</strong> gera conteúdo mas não publica. O pastor ainda precisa copiar e colar no WordPress manualmente.</div></div>
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Interface de "caixa de ferramentas":</strong> lista de tools separadas, sem fluxo unificado. Parece uma coleção de features, não um produto coeso.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:200px;flex-shrink:0">
+      <p class="sec" style="text-align:center">interface simulada</p>
+      <div style="background:var(--color-background-secondary);border-radius:12px;padding:10px">
+        <div style="background:#fff;border-radius:8px;overflow:hidden;border:.5px solid rgba(0,0,0,.08)">
+          <div class="sm-header">
+            <div class="sm-icon" style="background:#1a2d4a;color:#fff">SS</div>
+            <div>
+              <div class="sm-tool-title">SermonSpark</div>
+              <div class="sm-tool-cat">Writing Tools</div>
+            </div>
+          </div>
+          <div class="sm-tool-grid">
+            <div class="sm-tool-item">Outline Generator</div>
+            <div class="sm-tool-item">Title Ideas</div>
+            <div class="sm-tool-item">Illustrations</div>
+            <div class="sm-tool-item">Metaphors</div>
+            <div class="sm-tool-item">Blog Creator</div>
+            <div class="sm-tool-item">Social Posts</div>
+            <div class="sm-tool-item">Verse Finder</div>
+            <div class="sm-tool-item">Greek Tools</div>
+          </div>
+          <div style="padding:8px;background:#f7f7f5;margin:0 6px 6px;border-radius:6px;font-size:9px;color:#666">
+            Clique em qualquer ferramenta para começar
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--color-text-secondary);text-align:center;margin-top:6px">Grid de ferramentas — sem fluxo unificado</div>
+    </div>
+  </div>
+
+  <div class="verdict" style="background:#e8eef8;border-color:#1a4fa0">
+    <div class="verdict-title" style="color:#1a4fa0">Veredicto para o Living Word</div>
+    <div class="verdict-body" style="color:#1a4fa0">SermonSpark prova que pastores pagam por ferramentas de IA para sermão — 3.000 usuários sem publicidade é sinal forte. O Living Word supera em 4 dimensões: PT/ES nativo, app mobile, publicação automática no blog, e fluxo unificado em vez de toolbox. É o concorrente mais próximo e mais fraco ao mesmo tempo.</div>
+  </div>
+</div>
+
+<div class="panel" id="panel-notion">
+  <div class="ref-header">
+    <div class="ref-logo" style="background:#1a1a1a;color:#fff;font-family:Georgia,serif">N</div>
+    <div>
+      <div class="ref-name">Notion AI</div>
+      <div class="ref-type">notion.com · Web + Mobile nativo · $10/mês add-on · ~30M usuários</div>
+      <div class="ref-tags">
+        <span class="tag tb">Referência de UX de editor com IA</span>
+        <span class="tag tg">Melhor exemplo de IA inline não intrusiva</span>
+        <span class="tag tr">Não é pastoral — referência de padrão de interação</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:14px;margin-bottom:14px;align-items:flex-start">
+    <div style="flex:1">
+      <p class="sec">padrões de ux para copiar</p>
+      <div class="col-card" style="margin-bottom:8px">
+        <div class="col-header ch-copy">O que o Notion faz que você deve replicar</div>
+        <div class="col-body">
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">IA aparece quando você precisa, some quando não precisa:</strong> o botão de IA no Notion surge com "/" ou seleção de texto — não fica visível o tempo todo. Princípio: IA como assistente, não protagonista da tela.</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Resultado editável inline:</strong> o conteúdo gerado aparece direto no documento, editável imediatamente. No Living Word: o output em tabs deve ser editável inline antes de publicar.</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Sidebar de navegação com hierarquia clara:</strong> sidebar escura com itens ativos destacados por borda lateral colorida. Exatamente o padrão do nosso design system.</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Mobile: bottom navigation com 4 ícones:</strong> o app do Notion usa bottom nav com 4 seções. Mesma estrutura que o Living Word deve usar: Dashboard · Estúdio · Blog · Biblioteca.</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Loading states com skeleton screens:</strong> Notion nunca deixa a tela em branco — mostra skeletons animados enquanto carrega. Obrigatório no Living Word durante geração (5–15s).</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Copiar com 1 clique:</strong> botão de cópia discreto no canto de cada bloco. No Living Word: cada tab de output tem "Copiar" no canto superior direito.</div></div>
+        </div>
+      </div>
+      <div class="col-card">
+        <div class="col-header ch-avoid">O que NÃO copiar do Notion</div>
+        <div class="col-body">
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Complexidade de blocos:</strong> Notion tem 50+ tipos de bloco. Para o pastor mobile, isso é sobrecarga cognitiva. O Living Word precisa de zero aprendizado — campo + botão.</div></div>
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Hierarquia infinita de páginas:</strong> poderoso para produtividade, confuso para quem só quer preparar o sermão da semana. Estrutura flat: material → biblioteca.</div></div>
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Tipografia neutra demais:</strong> Notion usa Inter/system-ui em tudo. O Living Word precisa de Cormorant Garamond nos títulos para comunicar seriedade pastoral.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:200px;flex-shrink:0">
+      <p class="sec" style="text-align:center">padrão notion — mobile</p>
+      <div style="background:var(--color-background-secondary);border-radius:12px;padding:10px">
+        <div style="background:#fff;border-radius:8px;overflow:hidden;border:.5px solid rgba(0,0,0,.08)">
+          <div style="background:#f7f7f5;padding:8px 10px;border-bottom:.5px solid #eee;font-size:11px;font-weight:500;color:#1a1a1a">Minha página</div>
+          <div style="padding:10px">
+            <div class="ns-card" style="margin:0 0 6px">
+              <div class="ns-title">Sermão — João 15</div>
+              <div class="ns-body">Bloco de texto editável inline</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#f0f0ee;border-radius:6px;font-size:10px;color:#555;margin-bottom:6px">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4" stroke="#555" stroke-width="1.2"/><path d="M4 6h4M6 4v4" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg>
+              Pedir ao Notion AI...
+            </div>
+            <div style="font-size:9px;color:#aaa;padding:0 2px">/ para comandos · @IA para acionar</div>
+          </div>
+          <div style="border-top:.5px solid #eee;display:flex;padding:8px">
+            <div style="flex:1;text-align:center;font-size:9px;color:#555;font-weight:500">Home</div>
+            <div style="flex:1;text-align:center;font-size:9px;color:#aaa">Busca</div>
+            <div style="flex:1;text-align:center;font-size:9px;color:#aaa">IA</div>
+            <div style="flex:1;text-align:center;font-size:9px;color:#aaa">Mais</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--color-text-secondary);text-align:center;margin-top:6px">IA inline + bottom nav 4 itens</div>
+    </div>
+  </div>
+
+  <div class="verdict" style="background:#e8f2eb;border-color:#1e4d2b">
+    <div class="verdict-title" style="color:#1e4d2b">O que aprender do Notion</div>
+    <div class="verdict-body" style="color:#1e4d2b">Notion é a melhor referência de UX para IA que não invade a tela. Os três princípios: IA aparece quando chamada, resultado é editável direto, loading nunca deixa tela em branco. O bottom navigation de 4 itens e o skeleton durante geração são padrões de implementação obrigatória no Lovable.</div>
+  </div>
+</div>
+
+<div class="panel" id="panel-sermonmaker">
+  <div class="ref-header">
+    <div class="ref-logo" style="background:#8B4513;color:#fff">SM</div>
+    <div>
+      <div class="ref-name">Sermon Maker</div>
+      <div class="ref-type">sermonmaker.net · Web + iPad nativo · Pago · Foco em apresentação</div>
+      <div class="ref-tags">
+        <span class="tag tb">Melhor UX de "modo pregação" — referência de pulpit mode</span>
+        <span class="tag tg">Editor de sermão mais elegante do mercado</span>
+        <span class="tag tr">Caro · Sem IA real · Sem PT/ES · Sem blog</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:14px;margin-bottom:14px;align-items:flex-start">
+    <div style="flex:1">
+      <p class="sec">o que o sermon maker faz que ninguém mais faz</p>
+      <div class="col-card" style="margin-bottom:8px">
+        <div class="col-header ch-copy">Funcionalidades únicas para copiar (Sprint 3+)</div>
+        <div class="col-body">
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Preaching mode no iPad:</strong> modo de tela cheia com fonte grande, código de cores por seção (introdução=azul, ponto principal=verde, conclusão=vermelho), timer integrado. Pastor prega direto da tela. Funcionalidade única no mercado.</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Color-coded sermon cues:</strong> cada parte do sermão tem cor diferente para o pastor saber onde está sem precisar ler tudo. Reduz erro ao pregar. O Living Word pode implementar isso na aba Sermão no Sprint 3.</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Split view — sermão + Bíblia lado a lado:</strong> dois painéis no iPad: sermão em um, passagem bíblica no outro. Referência para o layout desktop do Living Word.</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Timer de pregação integrado:</strong> pastor configura quanto tempo tem e o app sinaliza quando está acabando. Feature simples, valor enorme para pastores bivocacionais com culto cronometrado.</div></div>
+          <div class="col-item"><span class="ci-dot dot-g"></span><div><strong style="font-weight:500">Biblioteca de sermões como legado:</strong> organiza todo histórico de pregações como "sermon legacy" — não só arquivos, mas ministério documentado. Framing emocional poderoso.</div></div>
+        </div>
+      </div>
+      <div class="col-card">
+        <div class="col-header ch-avoid">O que evitar</div>
+        <div class="col-body">
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">IA como assistente de busca, não geração:</strong> o "AI assistant" do Sermon Maker é basicamente busca inteligente de ilustrações e citações — não gera sermão. Em 2026 isso é insuficiente.</div></div>
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Focado demais em iPad:</strong> o produto assumiu que pastores pregam de iPad. A realidade do pastor brasileiro e hispânico é smartphone. Mobile-first não é tablet-first.</div></div>
+          <div class="col-item"><span class="ci-dot dot-r"></span><div><strong style="font-weight:500">Sem publicação de conteúdo:</strong> excelente para preparar e pregar, zero para distribuir. A Palavra pregada não circula. Exatamente o gap que o Living Word fecha.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:200px;flex-shrink:0">
+      <p class="sec" style="text-align:center">preaching mode</p>
+      <div style="background:var(--color-background-secondary);border-radius:12px;padding:10px">
+        <div style="background:#1a1a1a;border-radius:8px;overflow:hidden">
+          <div style="background:#2d2d2d;padding:8px 10px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:9px;color:#aaa">Preaching Mode</span>
+            <span style="font-size:9px;color:#4CAF50;font-weight:500">12:45</span>
+          </div>
+          <div style="padding:10px">
+            <div style="font-size:9px;font-weight:500;color:#64B5F6;margin-bottom:6px;padding:3px 6px;background:rgba(100,181,246,.15);border-radius:4px;display:inline-block">INTRODUÇÃO</div>
+            <div style="font-size:11px;color:#fff;line-height:1.5;margin-bottom:8px">A videira verdadeira não é sobre produtividade. É sobre conexão.</div>
+            <div style="font-size:9px;font-weight:500;color:#81C784;margin-bottom:6px;padding:3px 6px;background:rgba(129,199,132,.15);border-radius:4px;display:inline-block">PONTO PRINCIPAL</div>
+            <div style="font-size:11px;color:#fff;line-height:1.5">João 15:5 — "Separados de mim, nada podeis fazer"</div>
+          </div>
+          <div style="background:#2d2d2d;padding:6px 10px;display:flex;justify-content:space-between">
+            <span style="font-size:9px;color:#aaa">◀ Anterior</span>
+            <span style="font-size:9px;color:#aaa">2/5</span>
+            <span style="font-size:9px;color:#aaa">Próximo ▶</span>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--color-text-secondary);text-align:center;margin-top:6px">Color-coded + timer — Sprint 3 do Living Word</div>
+    </div>
+  </div>
+
+  <div class="verdict" style="background:#fdf0e0;border-color:#7a4a10">
+    <div class="verdict-title" style="color:#7a4a10">O que roubar do Sermon Maker</div>
+    <div class="verdict-body" style="color:#7a4a10">O preaching mode com color-coding e timer é a feature mais diferenciada do mercado e ninguém copiou ainda em PT/ES. O Living Word pode implementar isso na aba Sermão como "Modo Pregação" — Sprint 3. O framing de "sermon legacy" (legado ministerial) é um copy poderoso que devemos usar na biblioteca.</div>
+  </div>
+</div>
+
+<div class="panel" id="panel-sintese">
+  <p class="sec">o que o living word faz que nenhum dos três faz</p>
+
+  <div class="feature-grid">
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#EDD9C8">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#6B4F3A" stroke-width="1.5"/><path d="M5.5 8h5M8 5.5v5" stroke="#6B4F3A" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="feat-title">Trilíngue nativo</div>
+      <div class="feat-desc">PT, EN, ES gerados com voz pastoral nativa — não tradução. Nenhum dos 3 faz isso.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#EDD9C8">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" rx="1.5" stroke="#6B4F3A" stroke-width="1.5"/><path d="M5 7h6M5 9.5h4" stroke="#6B4F3A" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="feat-title">Blog + publicação automática</div>
+      <div class="feat-desc">Do sermão ao blog publicado em 1 clique. Nenhum dos 3 publica diretamente no WordPress.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#EDD9C8">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3v10" stroke="#6B4F3A" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="feat-title">Contexto imigrante embutido</div>
+      <div class="feat-desc">12 temas pré-configurados: saudade, documentos, família dividida. Único no mercado.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#EDD9C8">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="#6B4F3A" stroke-width="1.5"/><path d="M3 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#6B4F3A" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="feat-title">Voz pastoral personalizada</div>
+      <div class="feat-desc">Expositivo, narrativo, apologético — o conteúdo soa como o pastor, não como template.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#EDD9C8">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="#6B4F3A" stroke-width="1.5"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="#6B4F3A" stroke-width="1.5"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="#6B4F3A" stroke-width="1.5"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="#6B4F3A" stroke-width="1.5"/></svg>
+      </div>
+      <div class="feat-title">7 formatos em 1 geração</div>
+      <div class="feat-desc">Sermão + esboço + devocional + reels + bilíngue + célula. SermonSpark requer 7 cliques separados.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#EDD9C8">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-7" stroke="#6B4F3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="feat-title">Blog no ar no cadastro</div>
+      <div class="feat-desc">2 artigos publicados antes do primeiro input. Aha moment que nenhum concorrente tem.</div>
+    </div>
+  </div>
+
+  <p class="sec" style="margin-top:4px">o que copiar de cada referência — resumo executivo</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+    <div style="border:.5px solid var(--color-border-tertiary);border-radius:10px;padding:12px">
+      <div style="font-size:12px;font-weight:500;color:#1a2d4a;margin-bottom:8px">Do SermonSpark</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.6">
+        → Organização Research / Writing / Reach<br>
+        → Posicionamento como suplemento<br>
+        → Social posts como output obrigatório<br>
+        → Transcription → repurpose (Sprint 3)
+      </div>
+    </div>
+    <div style="border:.5px solid var(--color-border-tertiary);border-radius:10px;padding:12px">
+      <div style="font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:8px">Do Notion AI</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.6">
+        → IA inline, não protagonista<br>
+        → Resultado editável antes de publicar<br>
+        → Bottom nav 4 itens no mobile<br>
+        → Skeleton screens durante loading<br>
+        → Copiar com 1 clique em cada bloco
+      </div>
+    </div>
+    <div style="border:.5px solid var(--color-border-tertiary);border-radius:10px;padding:12px">
+      <div style="font-size:12px;font-weight:500;color:#8B4513;margin-bottom:8px">Do Sermon Maker</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.6">
+        → Modo Pregação (Sprint 3)<br>
+        → Color-coding por seção<br>
+        → Timer de pregação<br>
+        → Framing "legado ministerial"<br>
+        → Split view sermão + Bíblia (desktop)
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function sw(n){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-'+n).classList.add('active');
+}
+</script>

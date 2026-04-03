@@ -16,6 +16,7 @@
 | 4 | `schedule-publication` | POST manual | B |
 | 5 | `provision-user-blog` | Webhook Supabase Auth (novo usuário) | Core |
 | 6 | `fetch-bible-verse` | Chamada interna das funções 1 e 2 | Core |
+| 7 | `process-youtube-audio` | POST manual | B |
 
 ---
 
@@ -566,6 +567,80 @@ async function fetchBibleVerse(passage, version, language) {
 3. Se ambas falharem: retornar null
    → Funções 1 e 2 marcam a citação como [PARÁFRASE] e usam o texto gerado pelo modelo
    → Nunca bloqueia a geração principal
+```
+
+---
+
+## 7. `process-youtube-audio`
+
+**Responsabilidade:** extrair transcrição de vídeos do YouTube e gerar materiais/artigos a partir dela.
+
+### Request
+```http
+POST /functions/v1/process-youtube-audio
+Authorization: Bearer <user_jwt>
+Content-Type: application/json
+```
+
+```json
+{
+  "youtube_url": "https://www.youtube.com/watch?v=...",
+  "audience": "Imigrantes brasileiros",
+  "doctrine_line": "evangelical_general",
+  "language": "PT",
+  "pastoral_voice": "expository",
+  "target_length": "medium"
+}
+```
+
+**Campos obrigatórios:** `youtube_url`, `language`
+
+### Lógica interna
+
+```typescript
+// 1. Auth + limite (pode cobrar "3 gerações" em vez de 1 devido ao tamanho)
+const { plan, generation_count_month } = await getUser(user.id)
+if (generation_count_month + 3 > limit) return 429 
+
+// 2. Extração de Closed Captions
+// Usa biblioteca 'youtube-transcript' ou equivalente nativo
+const transcriptText = await fetchYoutubeTranscript(youtube_url)
+if (!transcriptText) return 400 // Erro se não tiver CC disponível e precisarmos de Whisper
+
+// 3. Montar Prompt Específico para YouTube
+const prompt = buildYoutubePrompt({
+  language, doctrine_line, pastoral_voice, audience, target_length,
+  rawTranscript: transcriptText
+})
+
+// 4. Chamar OpenAI
+const response = await openai.chat.completions.create({
+  model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+  messages: [{ role: "user", content: prompt }],
+  max_tokens: 3000,
+  temperature: 0.7
+})
+
+// 5. Salvar como material
+const article = parseArticle(response.choices[0].message.content)
+
+const material = await supabase.from("materials").insert({
+  user_id: user.id,
+  mode: "blog",
+  language, audience,
+  doctrine_line, pastoral_voice,
+  output_blog: article.body,
+  category: "sermon_article"
+})
+
+// 6. Colocar na fila
+await supabase.from("editorial_queue").insert({
+  user_id: user.id,
+  material_id: material.id,
+  status: "draft"
+})
+
+return { material_id, article }
 ```
 
 ---
