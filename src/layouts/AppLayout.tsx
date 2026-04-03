@@ -6,7 +6,7 @@ import { LanguageToggle } from '@/components/LanguageToggle';
 import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard, Wand2, BookOpen, Library, CalendarDays,
-  Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send
+  Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain
 } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -46,8 +46,8 @@ const navGroups: NavGroup[] = [
 const mobileNavItems = [
   { key: 'nav.dashboard', path: '/dashboard', icon: LayoutDashboard },
   { key: 'nav.studio', path: '/estudio', icon: Wand2 },
+  { key: 'nav.minds', path: '/mentes', icon: Brain },
   { key: 'nav.blog', path: '/blog', icon: BookOpen },
-  { key: 'nav.library', path: '/biblioteca', icon: Library },
   { key: 'nav.settings', path: '/configuracoes', icon: Settings },
 ];
 
@@ -192,6 +192,22 @@ export default function AppLayout() {
               </div>
             );
           })}
+
+          {/* Mentes Brilhantes — Premium */}
+          <Link
+            to="/mentes"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname.startsWith('/mentes')
+                ? 'bg-[hsl(43,55%,58%)]/15 text-[hsl(43,55%,58%)]'
+                : 'text-[hsl(43,55%,58%)]/70 hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,58%)]'
+            }`}
+          >
+            <Brain className="h-4 w-4" />
+            {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
+            <Badge variant="outline" className="ml-auto text-[9px] border-[hsl(43,55%,58%)]/40 text-[hsl(43,55%,58%)] px-1.5 py-0">
+              Premium
+            </Badge>
+          </Link>
 
           {/* Settings */}
           <Link

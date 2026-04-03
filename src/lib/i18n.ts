@@ -54,6 +54,7 @@ const translations: Record<string, Record<Language, string>> = {
   'nav.library': { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' },
   'nav.calendar': { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' },
   'nav.settings': { PT: 'Configurações', EN: 'Settings', ES: 'Configuración' },
+  'nav.minds': { PT: 'Mentes', EN: 'Minds', ES: 'Mentes' },
   'nav.upgrade': { PT: 'Fazer upgrade', EN: 'Upgrade', ES: 'Mejorar plan' },
   'nav.login': { PT: 'Entrar', EN: 'Login', ES: 'Iniciar sesión' },
   'nav.signup': { PT: 'Criar conta', EN: 'Sign up', ES: 'Registrarse' },

@@ -18,6 +18,8 @@ import Biblioteca from "./pages/Biblioteca";
 import Calendario from "./pages/Calendario";
 import Configuracoes from "./pages/Configuracoes";
 import Upgrade from "./pages/Upgrade";
+import MentesBrilhantes from "./pages/MentesBrilhantes";
+import MenteChat from "./pages/MenteChat";
 import AppLayout from "./layouts/AppLayout";
 import BlogPublic from "./pages/BlogPublic";
 import BlogArticle from "./pages/BlogArticle";
@@ -71,6 +73,8 @@ const App = () => (
                 <Route path="/calendario" element={<Calendario />} />
                 <Route path="/configuracoes" element={<Configuracoes />} />
                 <Route path="/upgrade" element={<Upgrade />} />
+                <Route path="/mentes" element={<MentesBrilhantes />} />
+                <Route path="/mentes/:id" element={<MenteChat />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
