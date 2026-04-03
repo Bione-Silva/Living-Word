@@ -1,0 +1,396 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.w{padding:1rem 0;max-width:900px}
+.tabs{display:flex;gap:4px;border-bottom:.5px solid var(--color-border-tertiary);margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{font-size:12px;padding:8px 12px;cursor:pointer;color:var(--color-text-secondary);border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none}
+.tab.active{border-bottom-color:#6B4F3A;color:#6B4F3A;font-weight:500}
+.panel{display:none}.panel.active{display:block}
+.sec{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-secondary);margin-bottom:12px}
+
+.swatch-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.swatch{border-radius:10px;padding:12px 16px;flex:1;min-width:100px}
+.swatch-name{font-size:11px;font-weight:500;margin-bottom:2px}
+.swatch-hex{font-size:10px;font-family:var(--font-mono);opacity:.8}
+
+.scale-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:20px}
+.scale-stop{border-radius:6px;padding:10px 6px;text-align:center}
+.scale-label{font-size:9px;font-family:var(--font-mono);margin-top:4px}
+
+.type-row{margin-bottom:20px}
+.type-sample{padding:12px 0;border-bottom:.5px solid var(--color-border-tertiary)}
+.type-meta{font-size:10px;color:var(--color-text-secondary);margin-top:4px;font-family:var(--font-mono)}
+
+.mobile-frame{background:#F5F0E8;border-radius:32px;padding:16px;width:280px;margin:0 auto;border:.5px solid rgba(0,0,0,.12)}
+.mob-status{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px}
+.mob-time{font-size:11px;font-weight:500;color:#3D2B1F}
+.mob-header{background:#6B4F3A;border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.mob-avatar{width:36px;height:36px;border-radius:50%;background:#C4956A;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
+.mob-title{font-size:14px;font-weight:500;color:#fff}
+.mob-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px}
+.mob-card{background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:8px;border:.5px solid rgba(107,79,58,.15)}
+.mob-card-title{font-size:13px;font-weight:500;color:#3D2B1F;margin-bottom:4px}
+.mob-card-sub{font-size:11px;color:#8B6B54;line-height:1.4}
+.mob-badge{font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;font-weight:500;margin-top:6px}
+.mob-counter{background:#F5F0E8;border-radius:12px;padding:10px 14px;margin-bottom:8px}
+.mob-counter-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mob-counter-label{font-size:11px;color:#8B6B54;font-weight:500}
+.mob-counter-num{font-size:11px;color:#3D2B1F;font-weight:500}
+.mob-bar-bg{height:5px;background:#E8DDD4;border-radius:3px;overflow:hidden}
+.mob-bar-fill{height:100%;border-radius:3px;background:#6B4F3A}
+.mob-btn{background:#6B4F3A;color:#fff;border-radius:12px;padding:12px;text-align:center;font-size:13px;font-weight:500;margin-top:4px}
+.mob-btn-soft{background:#F0E6D8;color:#6B4F3A;border-radius:12px;padding:10px;text-align:center;font-size:12px;font-weight:500;margin-top:6px}
+
+.desktop-mock{background:#F5F0E8;border-radius:16px;padding:0;overflow:hidden;border:.5px solid rgba(0,0,0,.1)}
+.desk-sidebar{background:#3D2B1F;width:180px;flex-shrink:0;padding:16px 0}
+.desk-logo{padding:0 16px 16px;border-bottom:.5px solid rgba(255,255,255,.1);margin-bottom:12px}
+.desk-logo-text{font-size:15px;font-weight:500;color:#F5F0E8;font-family:Georgia,serif}
+.desk-logo-sub{font-size:10px;color:#C4956A;margin-top:1px}
+.desk-nav-item{padding:8px 16px;font-size:12px;color:rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;gap:8px}
+.desk-nav-item.active{background:rgba(196,149,106,.2);color:#F5F0E8;border-right:2px solid #C4956A}
+.desk-main{flex:1;padding:16px;overflow:hidden}
+.desk-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.desk-title{font-size:15px;font-weight:500;color:#3D2B1F}
+.desk-btn{background:#6B4F3A;color:#fff;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:500}
+.desk-card{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px;border:.5px solid rgba(107,79,58,.12)}
+.desk-card-title{font-size:12px;font-weight:500;color:#3D2B1F;margin-bottom:3px}
+.desk-card-sub{font-size:10px;color:#8B6B54}
+.desk-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.desk-stat{background:#F0E6D8;border-radius:8px;padding:10px;text-align:center}
+.desk-stat-val{font-size:16px;font-weight:500;color:#3D2B1F}
+.desk-stat-lbl{font-size:9px;color:#8B6B54;margin-top:2px}
+
+.contrast-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.contrast-card{border-radius:10px;padding:12px;text-align:center;border:.5px solid rgba(0,0,0,.08)}
+.contrast-ratio{font-size:18px;font-weight:500;margin-bottom:2px}
+.contrast-label{font-size:10px;margin-bottom:4px}
+.contrast-wcag{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px}
+.pass{background:#e8f2eb;color:#1e4d2b}
+.fail{background:#fce8e8;color:#991b1b}
+</style>
+
+<div class="w">
+<div class="tabs">
+  <button class="tab active" onclick="sw('paleta')">Paleta completa</button>
+  <button class="tab" onclick="sw('tipografia')">Tipografia</button>
+  <button class="tab" onclick="sw('mobile')">Mobile mockup</button>
+  <button class="tab" onclick="sw('desktop')">Desktop mockup</button>
+  <button class="tab" onclick="sw('contraste')">Acessibilidade</button>
+</div>
+
+<div class="panel active" id="panel-paleta">
+  <p class="sec">cores primárias — identidade Living Word</p>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#6B4F3A">
+      <div class="swatch-name" style="color:#F5F0E8">Café Ministerial</div>
+      <div class="swatch-hex" style="color:rgba(245,240,232,.7)">#6B4F3A</div>
+    </div>
+    <div class="swatch" style="background:#C4956A">
+      <div class="swatch-name" style="color:#3D2B1F">Âmbar Pastoral</div>
+      <div class="swatch-hex" style="color:#5D3D20">#C4956A</div>
+    </div>
+    <div class="swatch" style="background:#3D2B1F">
+      <div class="swatch-name" style="color:#F5F0E8">Teca Profunda</div>
+      <div class="swatch-hex" style="color:rgba(245,240,232,.7)">#3D2B1F</div>
+    </div>
+    <div class="swatch" style="background:#F5F0E8;border:.5px solid rgba(107,79,58,.15)">
+      <div class="swatch-name" style="color:#3D2B1F">Pergaminho</div>
+      <div class="swatch-hex" style="color:#8B6B54">#F5F0E8</div>
+    </div>
+    <div class="swatch" style="background:#F0E6D8;border:.5px solid rgba(107,79,58,.15)">
+      <div class="swatch-name" style="color:#3D2B1F">Linho Quente</div>
+      <div class="swatch-hex" style="color:#8B6B54">#F0E6D8</div>
+    </div>
+  </div>
+
+  <p class="sec" style="margin-top:8px">escala completa — café ministerial (cor primária)</p>
+  <div class="scale-row">
+    <div><div class="scale-stop" style="background:#F7F1EC;height:40px"></div><div class="scale-label" style="color:var(--color-text-secondary)">50</div></div>
+    <div><div class="scale-stop" style="background:#EDD9C8;height:40px"></div><div class="scale-label" style="color:var(--color-text-secondary)">100</div></div>
+    <div><div class="scale-stop" style="background:#D4AE90;height:40px"></div><div class="scale-label" style="color:var(--color-text-secondary)">200</div></div>
+    <div><div class="scale-stop" style="background:#A87455;height:40px"></div><div class="scale-label" style="color:var(--color-text-secondary)">400</div></div>
+    <div><div class="scale-stop" style="background:#6B4F3A;height:40px"></div><div class="scale-label" style="color:var(--color-text-secondary)">600</div></div>
+    <div><div class="scale-stop" style="background:#4A3328;height:40px"></div><div class="scale-label" style="color:var(--color-text-secondary)">800</div></div>
+    <div><div class="scale-stop" style="background:#3D2B1F;height:40px"></div><div class="scale-label" style="color:var(--color-text-secondary)">900</div></div>
+  </div>
+
+  <p class="sec">cores de suporte — estados e semântica</p>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#E8F4E8;border:.5px solid rgba(46,100,46,.2)">
+      <div class="swatch-name" style="color:#2E642E">Sucesso</div>
+      <div class="swatch-hex" style="color:#4A8A4A">#E8F4E8 / #2E642E</div>
+    </div>
+    <div class="swatch" style="background:#FDF3E8;border:.5px solid rgba(180,100,20,.2)">
+      <div class="swatch-name" style="color:#A05C14">Atenção</div>
+      <div class="swatch-hex" style="color:#C07030">#FDF3E8 / #A05C14</div>
+    </div>
+    <div class="swatch" style="background:#FBEEE8;border:.5px solid rgba(160,60,30,.2)">
+      <div class="swatch-name" style="color:#A03820">Erro / Bloqueio</div>
+      <div class="swatch-hex" style="color:#C04030">#FBEEE8 / #A03820</div>
+    </div>
+    <div class="swatch" style="background:#EEF3F8;border:.5px solid rgba(50,80,130,.2)">
+      <div class="swatch-name" style="color:#325082">Informação</div>
+      <div class="swatch-hex" style="color:#4A70A8">#EEF3F8 / #325082</div>
+    </div>
+  </div>
+
+  <p class="sec" style="margin-top:8px">tokens CSS — cole no Lovable</p>
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:12px;font-family:var(--font-mono);font-size:11px;color:var(--color-text-primary);line-height:1.7">
+    --lw-primary: #6B4F3A;<br>
+    --lw-primary-dark: #3D2B1F;<br>
+    --lw-primary-light: #EDD9C8;<br>
+    --lw-amber: #C4956A;<br>
+    --lw-amber-light: #F0E6D8;<br>
+    --lw-bg: #F5F0E8;<br>
+    --lw-bg-card: #FFFFFF;<br>
+    --lw-text: #3D2B1F;<br>
+    --lw-text-muted: #8B6B54;<br>
+    --lw-border: rgba(107, 79, 58, 0.15);<br>
+    --lw-success: #2E642E;<br>
+    --lw-warning: #A05C14;<br>
+    --lw-danger: #A03820;<br>
+    --lw-info: #325082;
+  </div>
+</div>
+
+<div class="panel" id="panel-tipografia">
+  <p class="sec">hierarquia tipográfica — mobile-first</p>
+
+  <div class="type-row">
+    <div class="type-sample">
+      <div style="font-family:Georgia,serif;font-size:28px;font-weight:400;color:#3D2B1F;line-height:1.2">Living Word</div>
+    </div>
+    <div class="type-meta">Logotipo / Display · Georgia · 28px · Regular · #3D2B1F</div>
+  </div>
+
+  <div class="type-row">
+    <div class="type-sample">
+      <div style="font-family:Georgia,serif;font-size:22px;font-weight:400;color:#3D2B1F;line-height:1.3">Do púlpito ao leitor</div>
+    </div>
+    <div class="type-meta">H1 mobile · Georgia · 22px · Regular · uso: títulos de seção, taglines</div>
+  </div>
+
+  <div class="type-row">
+    <div class="type-sample">
+      <div style="font-family:Georgia,serif;font-size:18px;font-weight:400;color:#3D2B1F;line-height:1.3">João 15:1-8 — A videira verdadeira</div>
+    </div>
+    <div class="type-meta">H2 mobile · Georgia · 18px · Regular · uso: títulos de cards, passagens</div>
+  </div>
+
+  <div class="type-row">
+    <div class="type-sample">
+      <div style="font-family:system-ui,sans-serif;font-size:15px;font-weight:500;color:#3D2B1F">Gerar material pastoral</div>
+    </div>
+    <div class="type-meta">Label / CTA · System UI · 15px · Medium 500 · uso: botões, labels de campo</div>
+  </div>
+
+  <div class="type-row">
+    <div class="type-sample">
+      <div style="font-family:system-ui,sans-serif;font-size:14px;font-weight:400;color:#3D2B1F;line-height:1.6">Você traz a passagem e a dor do seu povo. A plataforma transforma isso em Palavra que alcança, edifica e circula.</div>
+    </div>
+    <div class="type-meta">Body · System UI · 14px · Regular · line-height 1.6 · uso: descrições, conteúdo</div>
+  </div>
+
+  <div class="type-row">
+    <div class="type-sample">
+      <div style="font-family:system-ui,sans-serif;font-size:12px;font-weight:400;color:#8B6B54;line-height:1.5">Gerado em 03/04/2026 · ARA · Evangélica Geral · Voz: Acolhedor</div>
+    </div>
+    <div class="type-meta">Caption / Meta · System UI · 12px · Regular · #8B6B54 · uso: metadata, watermark</div>
+  </div>
+
+  <div style="margin-top:16px;padding:12px 14px;background:#F5F0E8;border-radius:10px;border-left:3px solid #C4956A;border-radius:0">
+    <div style="font-size:12px;font-weight:500;color:#3D2B1F;margin-bottom:6px">Regras mobile-first obrigatórias</div>
+    <div style="font-size:11px;color:#6B4F3A;line-height:1.6">
+      Mínimo 14px em qualquer texto tocável · Touch target mínimo 44×44px · Espaçamento entre linhas 1.5–1.7 em corpo · Georgia apenas para display/títulos · System UI para tudo interativo · Nunca fontes externas pesadas em mobile
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-mobile">
+  <p class="sec">mockup mobile — tela principal do estúdio</p>
+  <div style="background:var(--color-background-secondary);border-radius:16px;padding:20px;display:flex;justify-content:center">
+    <div class="mobile-frame">
+      <div class="mob-status">
+        <span class="mob-time">9:41</span>
+        <div style="display:flex;gap:4px;align-items:center">
+          <div style="width:14px;height:8px;border:1.5px solid #3D2B1F;border-radius:2px;position:relative"><div style="position:absolute;top:1px;left:1px;right:3px;bottom:1px;background:#3D2B1F;border-radius:1px"></div></div>
+        </div>
+      </div>
+
+      <div class="mob-header">
+        <div class="mob-avatar">SB</div>
+        <div>
+          <div class="mob-title">Pr. Severino</div>
+          <div class="mob-sub">joao.livingword.app</div>
+        </div>
+      </div>
+
+      <div class="mob-counter">
+        <div class="mob-counter-row">
+          <span class="mob-counter-label">Gerações este mês</span>
+          <span class="mob-counter-num">3 / 5</span>
+        </div>
+        <div class="mob-bar-bg"><div class="mob-bar-fill" style="width:60%"></div></div>
+      </div>
+
+      <div style="font-size:10px;font-weight:500;color:#8B6B54;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">O que criar hoje?</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+        <div style="background:#6B4F3A;border-radius:10px;padding:10px;text-align:center">
+          <div style="font-size:12px;font-weight:500;color:#fff">Sermão</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">6 formatos</div>
+        </div>
+        <div style="background:#F0E6D8;border-radius:10px;padding:10px;text-align:center">
+          <div style="font-size:12px;font-weight:500;color:#6B4F3A">Blog</div>
+          <div style="font-size:10px;color:#8B6B54;margin-top:2px">1 artigo/mês</div>
+        </div>
+        <div style="background:#F0E6D8;border-radius:10px;padding:10px;text-align:center;opacity:.5">
+          <div style="font-size:12px;font-weight:500;color:#6B4F3A">Devocional</div>
+          <div style="font-size:9px;color:#8B6B54;margin-top:2px">🔒 Pastoral</div>
+        </div>
+        <div style="background:#F0E6D8;border-radius:10px;padding:10px;text-align:center;opacity:.5">
+          <div style="font-size:12px;font-weight:500;color:#6B4F3A">Reels</div>
+          <div style="font-size:9px;color:#8B6B54;margin-top:2px">🔒 Pastoral</div>
+        </div>
+      </div>
+
+      <div class="mob-card">
+        <div class="mob-card-title">Último gerado</div>
+        <div class="mob-card-sub">João 15:1-8 — "Imigrantes, solidão"</div>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <span class="mob-badge" style="background:#EDD9C8;color:#6B4F3A">Sermão</span>
+          <span class="mob-badge" style="background:#F5F0E8;color:#8B6B54">Esboço</span>
+        </div>
+      </div>
+
+      <div class="mob-btn">Gerar material →</div>
+      <div class="mob-btn-soft">7 dias grátis, sem cartão</div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-desktop">
+  <p class="sec">mockup desktop — dashboard</p>
+  <div class="desktop-mock">
+    <div style="display:flex">
+      <div class="desk-sidebar">
+        <div class="desk-logo">
+          <div class="desk-logo-text">Living Word</div>
+          <div class="desk-logo-sub">Palavra Viva · Palabra Viva</div>
+        </div>
+        <div class="desk-nav-item active">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="rgba(245,240,232,.8)"/><rect x="8" y="1" width="5" height="5" rx="1" fill="rgba(245,240,232,.8)"/><rect x="1" y="8" width="5" height="5" rx="1" fill="rgba(245,240,232,.8)"/><rect x="8" y="8" width="5" height="5" rx="1" fill="rgba(245,240,232,.5)"/></svg>
+          Dashboard
+        </div>
+        <div class="desk-nav-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/><path d="M5 7h4M7 5v4" stroke="rgba(255,255,255,.4)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Estúdio
+        </div>
+        <div class="desk-nav-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/><path d="M4 6h6M4 8.5h4" stroke="rgba(255,255,255,.4)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Blog
+        </div>
+        <div class="desk-nav-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="1.5" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/><path d="M4 4h6M4 7h4M4 10h5" stroke="rgba(255,255,255,.4)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Biblioteca
+        </div>
+        <div style="margin-top:auto;padding:12px 16px;margin-top:16px">
+          <div style="background:rgba(196,149,106,.2);border-radius:8px;padding:8px;border:.5px solid rgba(196,149,106,.3)">
+            <div style="font-size:10px;color:#C4956A;font-weight:500;margin-bottom:3px">Plano Free</div>
+            <div style="font-size:10px;color:rgba(245,240,232,.6);margin-bottom:6px">3/5 gerações usadas</div>
+            <div style="background:rgba(245,240,232,.15);height:3px;border-radius:2px;overflow:hidden">
+              <div style="background:#C4956A;width:60%;height:100%;border-radius:2px"></div>
+            </div>
+            <div style="font-size:9px;color:#C4956A;margin-top:6px;cursor:pointer">↑ Upgrade Pastoral</div>
+          </div>
+        </div>
+      </div>
+      <div class="desk-main">
+        <div class="desk-topbar">
+          <div class="desk-title">Bom dia, Pr. Severino</div>
+          <div class="desk-btn">+ Gerar material</div>
+        </div>
+        <div class="desk-stats">
+          <div class="desk-stat">
+            <div class="desk-stat-val">12</div>
+            <div class="desk-stat-lbl">Materiais gerados</div>
+          </div>
+          <div class="desk-stat">
+            <div class="desk-stat-val">3</div>
+            <div class="desk-stat-lbl">Artigos publicados</div>
+          </div>
+          <div class="desk-stat">
+            <div class="desk-stat-val">2</div>
+            <div class="desk-stat-lbl">Gerações restantes</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:500;color:#8B6B54;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Recentes</div>
+        <div class="desk-card">
+          <div class="desk-card-title">João 15:1-8 — Sermão + 6 formatos</div>
+          <div class="desk-card-sub">03/04/2026 · ARA · Evangélica Geral</div>
+        </div>
+        <div class="desk-card">
+          <div class="desk-card-title">Sal da terra: luz em terra estranha</div>
+          <div class="desk-card-sub">Blog devocional · Publicado · 712 palavras</div>
+        </div>
+        <div class="desk-card" style="opacity:.6">
+          <div class="desk-card-title" style="display:flex;align-items:center;gap:6px">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5" width="8" height="6" rx="1" stroke="#8B6B54" stroke-width="1.2"/><path d="M4 5V3.5a2 2 0 014 0V5" stroke="#8B6B54" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Série de sermões — 4 semanas
+          </div>
+          <div class="desk-card-sub">Disponível no Pastoral · $9/mês</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-contraste">
+  <p class="sec">acessibilidade — contraste WCAG 2.1 mobile</p>
+  <div class="contrast-grid">
+    <div class="contrast-card" style="background:#6B4F3A">
+      <div class="contrast-ratio" style="color:#fff">8.4:1</div>
+      <div class="contrast-label" style="color:rgba(255,255,255,.7);font-size:11px">Branco em Café</div>
+      <span class="contrast-wcag pass">AAA</span>
+    </div>
+    <div class="contrast-card" style="background:#F5F0E8">
+      <div class="contrast-ratio" style="color:#3D2B1F">11.2:1</div>
+      <div class="contrast-label" style="color:#8B6B54;font-size:11px">Teca em Pergaminho</div>
+      <span class="contrast-wcag pass">AAA</span>
+    </div>
+    <div class="contrast-card" style="background:#C4956A">
+      <div class="contrast-ratio" style="color:#3D2B1F">4.6:1</div>
+      <div class="contrast-label" style="color:#5D3D20;font-size:11px">Teca em Âmbar</div>
+      <span class="contrast-wcag pass">AA</span>
+    </div>
+    <div class="contrast-card" style="background:#F0E6D8">
+      <div class="contrast-ratio" style="color:#6B4F3A">4.8:1</div>
+      <div class="contrast-label" style="color:#8B6B54;font-size:11px">Café em Linho</div>
+      <span class="contrast-wcag pass">AA</span>
+    </div>
+    <div class="contrast-card" style="background:#EDD9C8">
+      <div class="contrast-ratio" style="color:#C4956A">2.1:1</div>
+      <div class="contrast-label" style="color:#8B6B54;font-size:11px">Âmbar em Creme</div>
+      <span class="contrast-wcag fail">Só decorativo</span>
+    </div>
+    <div class="contrast-card" style="background:#3D2B1F">
+      <div class="contrast-ratio" style="color:#C4956A">5.1:1</div>
+      <div class="contrast-label" style="color:rgba(196,149,106,.7);font-size:11px">Âmbar em Teca</div>
+      <span class="contrast-wcag pass">AA</span>
+    </div>
+  </div>
+  <div style="margin-top:12px;padding:10px 14px;background:var(--color-background-secondary);border-radius:8px;font-size:11px;color:var(--color-text-secondary);line-height:1.6">
+    <strong style="color:var(--color-text-primary);font-weight:500">Regra mobile:</strong> todo texto de leitura precisa ≥ 4.5:1 (AA). Touch targets e ícones decorativos podem usar 3:1. A combinação Âmbar em Creme (#EDD9C8) é proibida para texto — usar apenas como fundo de badge sem texto crítico.
+  </div>
+</div>
+</div>
+
+<script>
+function sw(n){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-'+n).classList.add('active');
+}
+</script>

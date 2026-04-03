@@ -1,13 +1,33 @@
 # Living Word — Guia de Integração para o Lovable
 
-## Conexão Supabase
+## 🔑 Credenciais Completas
 
-O Lovable precisa dessas informações para conectar ao seu banco de dados:
+### Supabase (Cole em Settings > Supabase no Lovable)
 
-- **Project URL:** `https://priumwdestycikzfcysg.supabase.co`
-- **Anon Key:** (salva no `.env.local` da pasta)
+| Campo | Valor |
+|---|---|
+| **Project ID** | `priumwdestycikzfcysg` |
+| **Project URL** | `https://priumwdestycikzfcysg.supabase.co` |
+| **Anon Key (publishable)** | `sb_publishable_4rbffmxsDVKYaJDiA85K3Q_1QBzi3gI` |
+| **Service Role Key** | `cTHoHWKgbS7pOwUHBYQUBJ60FNWs5FS/po/tD2L9dQOateoBWtoRH0e9qjlXC8BPm/j7YXUXulRj+Q149TYMVw==` |
+| **Access Token** | `sbp_731e6b92e13d0842c91aca79821b39489a176e93` |
 
-No Lovable, vá em **Settings > Supabase** e cole essas informações.
+> ⚠️ **NUNCA exponha a Service Role Key** no frontend. Use apenas a Anon Key no Lovable.
+> A Service Role Key é usada APENAS nas Edge Functions (server-side).
+
+### GitHub
+
+| Campo | Valor |
+|---|---|
+| **Repositório** | `https://github.com/Bione-Silva/Living-Word.git` |
+| **Conta** | `bionicaosilva@gmail.com` |
+| **Branch principal** | `main` |
+
+No Lovable, vá em **Settings > GitHub** e conecte ao repositório `Bione-Silva/Living-Word`.
+
+### No Lovable, configure:
+1. **Settings > Supabase** → Cole a **Project URL** e a **Anon Key**
+2. **Settings > GitHub** → Conecte ao repositório `Bione-Silva/Living-Word`
 
 ---
 
