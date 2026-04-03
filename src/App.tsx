@@ -19,6 +19,8 @@ import Calendario from "./pages/Calendario";
 import Configuracoes from "./pages/Configuracoes";
 import Upgrade from "./pages/Upgrade";
 import AppLayout from "./layouts/AppLayout";
+import BlogPublic from "./pages/BlogPublic";
+import BlogArticle from "./pages/BlogArticle";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +59,8 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<Cadastro />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/blog/:handle" element={<BlogPublic />} />
+              <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
 
               {/* Protected routes with AppLayout */}
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
