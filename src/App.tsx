@@ -73,8 +73,8 @@ const App = () => (
                 <Route path="/calendario" element={<Calendario />} />
                 <Route path="/configuracoes" element={<Configuracoes />} />
                 <Route path="/upgrade" element={<Upgrade />} />
-                <Route path="/mentes" element={<MentesBrilhantes />} />
-                <Route path="/mentes/:id" element={<MenteChat />} />
+                <Route path="/dashboard/mentes" element={<MentesBrilhantes />} />
+                <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />

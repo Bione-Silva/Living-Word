@@ -195,9 +195,9 @@ export default function AppLayout() {
 
           {/* Mentes Brilhantes — Premium */}
           <Link
-            to="/mentes"
+            to="/dashboard/mentes"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname.startsWith('/mentes')
+              location.pathname.startsWith('/dashboard/mentes')
                 ? 'bg-[hsl(43,55%,58%)]/15 text-[hsl(43,55%,58%)]'
                 : 'text-[hsl(43,55%,58%)]/70 hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,58%)]'
             }`}
