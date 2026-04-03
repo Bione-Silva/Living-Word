@@ -16,7 +16,7 @@ export default function BlogPublic() {
         .from('profiles')
         .select('id, full_name, bio, avatar_url, blog_handle, plan')
         .eq('blog_handle', handle!)
-        .single();
+        .maybeSingle();
       if (error) throw error;
       return data;
     },

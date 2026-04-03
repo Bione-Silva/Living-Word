@@ -31,7 +31,7 @@ export default function BlogArticle() {
         .from('materials')
         .select('*')
         .eq('id', articleId!)
-        .single();
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
