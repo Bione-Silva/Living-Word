@@ -156,7 +156,7 @@ export default function Dashboard() {
       {/* Grid 3: Outreach */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground whitespace-nowrap">
+          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
             {sectionLabel('📢', 'FERRAMENTAS DE ALCANCE', 'OUTREACH TOOLS', 'HERRAMIENTAS DE ALCANCE')}
           </h2>
           <div className="flex-1 h-px bg-border/50" />
