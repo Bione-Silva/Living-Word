@@ -10,13 +10,14 @@
 
 | # | Função | Trigger | Frente |
 |---|---|---|---|
-| 1 | `generate-pastoral-material` | POST manual | A |
-| 2 | `generate-blog-article` | POST manual | B |
-| 3 | `publish-to-wordpress` | POST manual / auto | B |
-| 4 | `schedule-publication` | POST manual | B |
-| 5 | `provision-user-blog` | Webhook Supabase Auth (novo usuário) | Core |
-| 6 | `fetch-bible-verse` | Chamada interna das funções 1 e 2 | Core |
-| 7 | `process-youtube-audio` | POST manual | B |
+| 1 | `generate-pastoral-material` | POST manual | A | GPT-4o-mini / GPT-4o |
+| 2 | `generate-blog-article` | POST manual | B | GPT-4o-mini / GPT-4o |
+| 3 | `publish-to-wordpress` | POST manual / auto | B | N/A |
+| 4 | `schedule-publication` | POST manual | B | N/A |
+| 5 | `provision-user-blog` | Webhook Supabase Auth | Core | GPT-4o-mini |
+| 6 | `fetch-bible-verse` | Chamada interna | Core | API + Gemini 2.5 Flash |
+| 7 | `process-youtube-audio` | POST manual | B | GPT-4o-mini / GPT-4o |
+| 8 | `search-pastoral-tools` | POST manual | A/C | Gemini 2.5 Flash |
 
 ---
 
@@ -78,10 +79,11 @@ const prompt = buildPromptMaster({
   outputModes
 })
 
-// 5. Chamar OpenAI
+// 5. Determinar Modelo por Plano e Chamar OpenAI
 const start = Date.now()
+const modelToUse = (plan === 'free') ? "gpt-4o-mini" : "gpt-4o"
 const response = await openai.chat.completions.create({
-  model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+  model: modelToUse,
   messages: [{ role: "user", content: prompt }],
   max_tokens: 4000,
   temperature: 0.7
@@ -207,9 +209,10 @@ const prompt = buildBlogPrompt({
   category, targetLength, articleGoal, sensitiveTopics
 })
 
-// 6. Chamar OpenAI
+// 6. Chamar OpenAI com modelo baseado no plano
+const modelToUse = (plan === 'free') ? "gpt-4o-mini" : "gpt-4o"
 const response = await openai.chat.completions.create({
-  model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+  model: modelToUse,
   messages: [{ role: "user", content: prompt }],
   max_tokens: 2000,
   temperature: 0.75
@@ -536,15 +539,22 @@ const BIBLE_API_ROUTER: Record<BibleVersion, () => Promise<string>> = {
 
 async function fetchBibleVerse(passage, version, language) {
   const fetcher = BIBLE_API_ROUTER[version]
-  if (!fetcher) return null
+  
+  if (fetcher) {
+    try {
+      const text = await fetcher()
+      return { text, source: version, version }
+    } catch (e) {
+      console.error(`Bible API failed for ${version}:`, e)
+    }
+  }
 
+  // Fallback Inteligente via RAG / Gemini 2.5 Flash
   try {
-    const text = await fetcher()
-    return { text, source: version, version }
+    const geminiText = await fetchFromGemini(passage, version, language);
+    return { text: geminiText, source: "Gemini", version }
   } catch (e) {
-    // Fallback: retorna null, modelo usa conhecimento de treinamento + marca como PARÁFRASE
-    console.error(`Bible API failed for ${version}:`, e)
-    return null
+    return null; // As funções assumirão PARÁFRASE
   }
 }
 ```
@@ -613,9 +623,10 @@ const prompt = buildYoutubePrompt({
   rawTranscript: transcriptText
 })
 
-// 4. Chamar OpenAI
+// 4. Chamar OpenAI (Roteado por Plano)
+const modelToUse = (plan === 'free') ? "gpt-4o-mini" : "gpt-4o"
 const response = await openai.chat.completions.create({
-  model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+  model: modelToUse,
   messages: [{ role: "user", content: prompt }],
   max_tokens: 3000,
   temperature: 0.7
@@ -640,7 +651,53 @@ await supabase.from("editorial_queue").insert({
   status: "draft"
 })
 
+// Colocar na fila (continuação original omitida na edição)
 return { material_id, article }
+```
+
+---
+
+## 8. `search-pastoral-tools`
+
+**Responsabilidade:** Fornecer buscas de dados rápidos para a aba de Pesquisa do Grid Pastoral, utilizando exclusivamente o Gemini 2.5 Flash para altíssima performance e baixo custo.
+
+### Request
+```http
+POST /functions/v1/search-pastoral-tools
+Authorization: Bearer <user_jwt>
+Content-Type: application/json
+```
+
+```json
+{
+  "tool": "topics",
+  "query": "graça e perdão",
+  "language": "PT"
+}
+```
+
+**Valores para `tool`:** `topics | verses | context | quotes | movies | songs | original_text`
+
+### Lógica interna
+
+```typescript
+// 1. Auth + Limite Reduzido de Controle (Pesquisas custam menos, mas ainda são rate-limited)
+const { plan } = await getUser(user.id) // Controle: Original Text / Movies apenas Pastoral+
+
+// 2. Montar prompt Gemini para a Tool
+const prompt = buildGeminiSearchPrompt(tool, query, language)
+
+// 3. Chamada via REST para Gemini API
+const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${Deno.env.get("GEMINI_API_KEY")}`, {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+})
+
+const data = await response.json()
+const result = data.candidates[0].content.parts[0].text
+
+return { result, tool, query }
 ```
 
 ---

@@ -273,9 +273,11 @@ serve(async (req) => {
   const start = Date.now()
   let llmResponse
 
+  const modelToUse = (isFree) ? "gpt-4o-mini" : "gpt-4o"
+
   try {
     llmResponse = await openai.chat.completions.create({
-      model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+      model: modelToUse,
       messages: [{ role: "user", content: prompt }],
       max_tokens: 4000,
       temperature: 0.7,
@@ -284,7 +286,7 @@ serve(async (req) => {
     // Retry 1x em timeout
     try {
       llmResponse = await openai.chat.completions.create({
-        model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+        model: modelToUse,
         messages: [{ role: "user", content: prompt }],
         max_tokens: 4000,
         temperature: 0.7,
@@ -346,7 +348,7 @@ serve(async (req) => {
     input_tokens: inputTokens,
     output_tokens: outputTokens,
     generation_time_ms: generationMs,
-    llm_model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+    llm_model: modelToUse,
     theology_guardrails_triggered: layersMarked,
     sensitive_topic_detected: sensitiveTopics.join(",") || null,
     cost_usd: costUsd,

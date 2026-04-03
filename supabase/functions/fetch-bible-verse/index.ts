@@ -237,6 +237,33 @@ async function fetchFromApiBiblia(passage: string, version: "rvr60" | "nvi"): Pr
 }
 
 // ============================================================
+// Gemini Fallback
+// ============================================================
+async function fetchGeminiFallback(passage: string, version: string, language: string): Promise<string | null> {
+  try {
+    const geminiKey = Deno.env.get("GEMINI_API_KEY")
+    if (!geminiKey) return null
+
+    const prompt = `Traga exatamente o texto bíblico da passagem "${passage}" na versão ${version} (idioma: ${language}). Retorne APENAS o texto bíblico, sem aspas, sem introdução.`
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 800 }
+      })
+    })
+
+    if (!res.ok) return null
+    const data = await res.json()
+    return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null
+  } catch {
+    return null
+  }
+}
+
+// ============================================================
 // Função Principal de Busca
 // ============================================================
 export async function fetchBibleVerse(
@@ -286,7 +313,16 @@ export async function fetchBibleVerse(
       break
   }
 
-  if (!text) return null
+  if (!text) {
+    text = await fetchGeminiFallback(passage, version, _language)
+    if (text) {
+       source = "Gemini Fallback"
+       is_official = false
+    } else {
+       return null
+    }
+  }
+
   return { text, source, version, is_official }
 }
 

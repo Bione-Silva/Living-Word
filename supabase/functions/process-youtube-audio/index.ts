@@ -134,8 +134,9 @@ serve(async (req) => {
   })
 
   const start = Date.now()
+  const modelToUse = (userData.plan === 'free') ? "gpt-4o-mini" : "gpt-4o"
   const llmResponse = await openai.chat.completions.create({
-    model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+    model: modelToUse,
     messages: [{ role: "user", content: prompt }],
     max_tokens: 3000,
     temperature: 0.7,
@@ -193,7 +194,7 @@ serve(async (req) => {
     input_tokens: inputTokens,
     output_tokens: outputTokens,
     generation_time_ms: generationMs,
-    llm_model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+    llm_model: modelToUse,
     cost_usd: costUsd,
   })
 

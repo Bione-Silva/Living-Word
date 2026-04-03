@@ -103,47 +103,52 @@ Os 3 primeiros sem cadeado (Free). Os outros 4 com badge "Pastoral".
 ### Tela 3: Dashboard Principal (`/dashboard`) — TELA PRINCIPAL
 
 **INSTRUÇÃO CRÍTICA DE UX (Baseada nos anexos do SermonSpark):** 
-O Estúdio NÃO deve abrir direto em um formulário vazio gigante ou chat estilo ChatGPT (isso gera "Síndrome da folha em branco"). Ele deve ser um **Hub/Dashboard visual em Grid**, idêntico às imagens de referência `sermonspark.ai` anexadas ao projeto.
+O Estúdio NÃO deve abrir direto em um formulário vazio gigante ou chat estilo ChatGPT. Ele deve ser um **Hub/Dashboard visual em Grid**, usando a ESTRUTURA das imagens de referência (`sermonspark.ai`) anexadas, **MAS ATENÇÃO: NÃO COPIE A IDENTIDADE VISUAL DO CONCORRENTE.** 
+Siga estritamente o nosso **DESIGN SYSTEM** e nossa paleta de cores detalhada na seção abaixo: fundos escuros (slate-950) e acentos em Âmbar/Dourado (#D4A853). Nada de roxo!
 
-**Layout Principal (Inspirado nas Referências Visuais):**
-- **Sidebar Fixa (Esquerda):** Fundo escuro/roxo ministerial.
-  - Título/Logo do Living Word.
+**Layout Principal:**
+- **Sidebar Fixa (Esquerda):** Fundo escuro (slate-950).
+  - Título/Logo do Living Word em Dourado.
   - Navegação agrupada: "Criar", "Pesquisar", "Publicar".
   - Seção Minha Conta com botão de upgrade.
-  - **Componente `<GenerationCounter />`:** Badge colorido (ex: "1000 créditos" / "5 gerações") sempre visível, preenchendo a psicologia de consumo de créditos.
+  - **Componente `<GenerationCounter />`:** Badge colorido visual sempre mostrando o consumo de créditos.
 - **Painel Central (Main Area):** Fundo limpo (slate-50).
-  - Título H1 "Ferramentas Pastorais ao seu alcance".
-  - Banner dinâmico de Upsell alertando personalizações (ex: "Personalize sua voz pastoral em todos os materiais").
+  - Título H1 "Ferramentas de preparação de sermões ao seu alcance".
+  - Banner dinâmico de Upsell: "Personalize sua saída - Aprimore a apresentação... Disponível no plano Pastoral."
 
-**Sessões do Grid de Ferramentas (Cards brancos clicáveis):**
+**OFEREÇA EXATAMENTE ESTES CARDS NO GRID DE FERRAMENTAS:**
+*(Estes cards foram inspirados nos 80% que estavam ocultos da referência visual, construa TODOS com os devidos modais/telas e com o badge 🔒 nos itens marcados).*
 
-1. **Grid: 🖋️ Escrever e Criar**
-   - *Estúdio Pastoral (O Clássico)*: Abre o modal/tela dividida com a Passagem Bíblica, Público-Alvo e outputs simultâneos (Esboço, Devocional, Reels, etc).
-   - *Artigo Livre*: Gerador de conteúdo de blog puro a partir de um tema.
-   - *Gerador de Títulos (🔒 Pastoral)*.
+**1. FERRAMENTAS DE PESQUISA (Grid 1)**
+- *Explorador de Tópicos*
+- *Encontre Versículos sobre o Tema*
+- *Contexto Histórico do Verso*
+- *Localizador de Cotações*
+- *Localizador de Cenas de Filmes*
+- *Explorador de Texto Original* (🔒)
+- *Localizador de Letras originais/Línguas Clássicas* (🔒)
 
-2. **Grid: 🎥 Vídeo para Blog (NOVA FEATURE PRIORITÁRIA)**
-   - *Transformar Vídeo em Blog*: Ao clicar neste card, abre um modal simples pedindo apenas:
-     - URL do vídeo do YouTube.
-     - Público-alvo.
-     - Seleção de Voz Pastoral (Configurações herdadas).
-   - Ao confirmar, dispara disparo POST para o endpoint `/process-youtube-audio`. Mostrar Loading State elegante ("Extraindo legendas e gerando sabedoria..."). Retorna texto para publicação no blog.
+**2. FERRAMENTAS DE ESCRITA & CRIAÇÃO (Grid 2)**
+- *Estúdio Pastoral (O Clássico)*: Produção de Esboços e Sermões.
+- *Gerador de Títulos Criativos para Sermões*
+- *Criador de Metáforas*
+- *Ilustrações para Sermões* (🔒)
+- *Modernizador de Histórias Bíblicas*
+- *Artigo Livre e Redator Universal*
 
-3. **Grid: 🔎 Pesquisar (Ferramentas Rápidas)**
-   - *Explorador de Versículo* (Input de tema → Traz as referências).
-   - *Ilustrações Contemporâneas* (Traz cenas de filmes/histórias diárias aplicáveis).
-   - *Pesquisa Lexical (🔒 Pastoral)* (Explora Grego e Hebraico simplificado via Vector Search).
+**3. FERRAMENTAS DE ALCANCE (Grid 3)**
+- *Transformar Vídeo em Blog*: Ao clicar, abre modal "Vídeo para Blog" (Youtube URL → Processa na Edge Function `/process-youtube-audio`). Retorna o texto extraído para virar conteúdo.
 
 **Dinâmica dos Cards:**
-- Cards contêm: Ícone (Lucide), Título curto, Descrição em 1 linha.
-- Cards bloqueados no plano Free exibem um pequeno cadeado laranja ou dourado 🔒. Se clicados, disparam o `<UpgradeModal />`.
+- Cards contêm: Ícone correspondente (do Lucide), Título curto, Descrição em 1 linha.
+- Cards bloqueados no plano Free exigem um clic + modal `<UpgradeModal />`.
 
-**Após interagir com o Estúdio ou Youtube, a tela se divide para mostrar o resultado e botões de ação final:**
-- Botões: "Copiar" | "Salvar na Biblioteca" | "Publicar no Blog (WordPress)".
+**Após interagir com as ferramentas, a tela exibe o resultado final com as ações:**
+- Botões obrigatórios na saída: "Copiar" | "Salvar na Biblioteca" | "Publicar no Blog (WordPress)".
 
-**COMPONENTES DE CONVERSÃO (implementar da Conversion Strategy):**
-1. `<LockedTab />` e Cards Bloqueados: Sempre visíveis para despertar o desejo.
-2. `<UpgradeModal />`: Trial de 7 dias grátis focado no benefício sem usar culpa.
+**COMPONENTES DE CONVERSÃO:**
+1. `<LockedTab />` e Cards Bloqueados sempre visíveis (nunca oculte a ferramenta premium, desperte o desejo).
+2. `<UpgradeModal />` para forçar o Trial sem culpa.
 
 ---
 
