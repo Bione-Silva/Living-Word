@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Brain, Send } from 'lucide-react';
@@ -10,13 +10,24 @@ const mindNames: Record<string, string> = {
   'martyn-lloyd-jones': 'Martyn Lloyd-Jones',
 };
 
+const modalityLabels: Record<string, Record<string, string>> = {
+  devocional: { PT: 'Devocional Diário', EN: 'Daily Devotional', ES: 'Devocional Diario' },
+  sermao: { PT: 'Preparação de Sermão', EN: 'Sermon Preparation', ES: 'Preparación de Sermón' },
+  aconselhamento: { PT: 'Aconselhamento Pastoral', EN: 'Pastoral Counseling', ES: 'Consejería Pastoral' },
+  estudo: { PT: 'Estudo Teológico', EN: 'Theological Study', ES: 'Estudio Teológico' },
+};
+
 export default function MenteChat() {
-  const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const [message, setMessage] = useState('');
-  const name = mindNames[id || ''] || 'Mentor';
+
+  const menteId = searchParams.get('mente') || '';
+  const modalidade = searchParams.get('modalidade') || '';
+  const name = mindNames[menteId] || 'Mentor';
   const initials = name.split(' ').map(w => w[0]).join('');
+  const modLabel = modalityLabels[modalidade]?.[lang] || modalidade;
 
   const placeholder: Record<string, string> = {
     PT: `Pergunte algo a ${name}...`,
@@ -34,7 +45,7 @@ export default function MenteChat() {
     <div className="flex flex-col h-[calc(100vh-80px)]">
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 border-b border-border">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/mentes')}>
+        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard/mentes')}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[hsl(43,55%,58%)]/30 to-[hsl(43,55%,58%)]/10 border-2 border-[hsl(43,55%,58%)]/40 flex items-center justify-center">
@@ -42,10 +53,7 @@ export default function MenteChat() {
         </div>
         <div>
           <h2 className="font-display text-lg font-bold text-foreground">{name}</h2>
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span className="text-[11px] text-emerald-500">Online</span>
-          </div>
+          <p className="text-xs text-muted-foreground">{modLabel}</p>
         </div>
       </div>
 

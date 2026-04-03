@@ -46,7 +46,7 @@ const navGroups: NavGroup[] = [
 const mobileNavItems = [
   { key: 'nav.dashboard', path: '/dashboard', icon: LayoutDashboard },
   { key: 'nav.studio', path: '/estudio', icon: Wand2 },
-  { key: 'nav.minds', path: '/mentes', icon: Brain },
+  { key: 'nav.minds', path: '/dashboard/mentes', icon: Brain },
   { key: 'nav.blog', path: '/blog', icon: BookOpen },
   { key: 'nav.settings', path: '/configuracoes', icon: Settings },
 ];
@@ -195,9 +195,9 @@ export default function AppLayout() {
 
           {/* Mentes Brilhantes — Premium */}
           <Link
-            to="/mentes"
+            to="/dashboard/mentes"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname.startsWith('/mentes')
+              location.pathname.startsWith('/dashboard/mentes')
                 ? 'bg-[hsl(43,55%,58%)]/15 text-[hsl(43,55%,58%)]'
                 : 'text-[hsl(43,55%,58%)]/70 hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,58%)]'
             }`}
