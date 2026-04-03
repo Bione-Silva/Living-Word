@@ -72,7 +72,7 @@ export default function AppLayout() {
     return (
       <div className="theme-app min-h-screen bg-background flex flex-col">
         {/* Mobile Header */}
-        <header className="sticky top-0 z-50 bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between shadow-sm">
+        <header className="sticky top-0 z-50 bg-sidebar text-sidebar-foreground px-4 py-3 flex items-center justify-between shadow-sm">
           <Link to="/dashboard" className="font-display text-lg font-bold truncate">Living Word</Link>
           <div className="flex items-center gap-2 shrink-0">
             <GenerationCounter compact />
@@ -86,7 +86,7 @@ export default function AppLayout() {
         </main>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border px-2 py-1 safe-area-bottom">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-sidebar-border px-2 py-1 safe-area-bottom">
           <div className="flex justify-around items-center">
             {mobileNavItems.map((item) => {
               const Icon = item.icon;
@@ -96,7 +96,7 @@ export default function AppLayout() {
                   key={item.path}
                   to={item.path}
                   className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                    active ? 'text-primary' : 'text-muted-foreground'
+                    active ? 'text-sidebar-primary' : 'text-sidebar-foreground/60'
                   }`}
                 >
                   <Icon className="h-5 w-5" />

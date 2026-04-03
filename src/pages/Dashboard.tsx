@@ -126,7 +126,7 @@ export default function Dashboard() {
       {/* Grid 1: Research */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground whitespace-nowrap">
+          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
             {sectionLabel('🔎', 'FERRAMENTAS DE PESQUISA', 'RESEARCH TOOLS', 'HERRAMIENTAS DE INVESTIGACIÓN')}
           </h2>
           <div className="flex-1 h-px bg-border/50" />
@@ -141,7 +141,7 @@ export default function Dashboard() {
       {/* Grid 2: Writing & Creation */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground whitespace-nowrap">
+          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
             {sectionLabel('🖋️', 'ESCRITA E CRIAÇÃO', 'WRITING & CREATION', 'ESCRITURA Y CREACIÓN')}
           </h2>
           <div className="flex-1 h-px bg-border/50" />
@@ -156,7 +156,7 @@ export default function Dashboard() {
       {/* Grid 3: Outreach */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground whitespace-nowrap">
+          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
             {sectionLabel('📢', 'FERRAMENTAS DE ALCANCE', 'OUTREACH TOOLS', 'HERRAMIENTAS DE ALCANCE')}
           </h2>
           <div className="flex-1 h-px bg-border/50" />
@@ -171,7 +171,7 @@ export default function Dashboard() {
       {/* Grid 4: Fun & Dynamic */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground whitespace-nowrap">
+          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
             {sectionLabel('🎮', 'DIVERTIDAS E DINÂMICAS', 'FUN & DYNAMIC', 'DIVERTIDAS Y DINÁMICAS')}
           </h2>
           <div className="flex-1 h-px bg-border/50" />
