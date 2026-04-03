@@ -669,21 +669,25 @@ export default function Landing() {
       </section>
 
       {/* ===== FAQ ===== */}
-      <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }}>
+      <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }} itemScope itemType="https://schema.org/FAQPage">
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.faq.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-6" style={{ color: '#3D2B1F' }}>{copy.faq.h2[lang]}</h2>
           <div className="space-y-3">
             {copy.faq.items.map((item, i) => (
-              <button key={i} onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full text-left rounded-xl p-5 transition-shadow hover:shadow-sm" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)' }}>
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-[15px] font-semibold" style={{ color: '#3D2B1F' }}>{item.q[lang]}</h3>
-                  <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} style={{ color: '#6B4F3A' }} />
-                </div>
-                {openFaq === i && (
-                  <p className="text-[15px] leading-[1.65] mt-3" style={{ color: '#6B4F3A' }}>{item.a[lang]}</p>
-                )}
-              </button>
+              <div key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full text-left rounded-xl p-5 transition-shadow hover:shadow-sm" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)' }}>
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-[15px] font-semibold" itemProp="name" style={{ color: '#3D2B1F' }}>{item.q[lang]}</h3>
+                    <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} style={{ color: '#6B4F3A' }} />
+                  </div>
+                  {openFaq === i && (
+                    <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                      <p className="text-[15px] leading-[1.65] mt-3" itemProp="text" style={{ color: '#6B4F3A' }}>{item.a[lang]}</p>
+                    </div>
+                  )}
+                </button>
+              </div>
             ))}
           </div>
         </div>
