@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 
 export default function ResetPassword() {
@@ -22,7 +23,9 @@ export default function ResetPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
+      if (!supabase) throw new Error('Atualização de senha indisponível enquanto o Supabase não estiver configurado.');
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast.success('Senha atualizada!');
@@ -42,11 +45,18 @@ export default function ResetPassword() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {!isSupabaseConfigured && (
+              <Alert>
+                <AlertDescription>
+                  A tela de recuperação está pronta, mas a troca real de senha depende das credenciais do Supabase no projeto.
+                </AlertDescription>
+              </Alert>
+            )}
             <div className="space-y-2">
               <Label>Nova senha</Label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
             </div>
-            <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={loading}>
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? '...' : 'Atualizar senha'}
             </Button>
           </form>
