@@ -25,7 +25,7 @@ export default function Login() {
 
     try {
       if (forgotMode) {
-        if (!supabase) throw new Error('Recuperação de senha indisponível enquanto o Supabase não estiver configurado.');
+        
 
         await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`,
