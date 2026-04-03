@@ -46,7 +46,7 @@ const navGroups: NavGroup[] = [
 const mobileNavItems = [
   { key: 'nav.dashboard', path: '/dashboard', icon: LayoutDashboard },
   { key: 'nav.studio', path: '/estudio', icon: Wand2 },
-  { key: 'nav.minds', path: '/mentes', icon: Brain },
+  { key: 'nav.minds', path: '/dashboard/mentes', icon: Brain },
   { key: 'nav.blog', path: '/blog', icon: BookOpen },
   { key: 'nav.settings', path: '/configuracoes', icon: Settings },
 ];
