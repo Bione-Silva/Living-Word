@@ -2,7 +2,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Progress } from '@/components/ui/progress';
 
-export function GenerationCounter() {
+interface GenerationCounterProps {
+  compact?: boolean;
+}
+
+export function GenerationCounter({ compact }: GenerationCounterProps) {
   const { profile } = useAuth();
   const { t } = useLanguage();
 
@@ -12,16 +16,24 @@ export function GenerationCounter() {
   const limit = profile.generations_limit;
   const pct = Math.round((used / limit) * 100);
 
-  const colorClass = pct >= 80 ? 'bg-destructive' : pct >= 60 ? 'bg-yellow-500' : 'bg-green-500';
+  if (compact) {
+    return (
+      <div className="flex items-center gap-1.5 bg-primary-foreground/10 rounded-full px-2.5 py-1">
+        <div className={`w-2 h-2 rounded-full shrink-0 ${pct >= 80 ? 'bg-destructive' : pct >= 60 ? 'bg-yellow-500' : 'bg-emerald-500'}`} />
+        <span className="text-[11px] font-mono whitespace-nowrap">
+          {used}/{limit}
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-3 px-3">
-      <div className="flex-1 min-w-[100px]">
-        <Progress value={pct} className="h-2 [&>div]:transition-all" />
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] text-sidebar-foreground/60">{t('dashboard.generations')}</span>
+        <span className="text-[11px] font-mono text-sidebar-foreground/80">{used}/{limit}</span>
       </div>
-      <span className="text-xs font-mono text-muted-foreground whitespace-nowrap">
-        {used}/{limit} {t('dashboard.generations')}
-      </span>
+      <Progress value={pct} className="h-1.5 [&>div]:transition-all" />
     </div>
   );
 }

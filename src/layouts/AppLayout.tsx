@@ -48,6 +48,7 @@ const mobileNavItems = [
   { key: 'nav.studio', path: '/estudio', icon: Wand2 },
   { key: 'nav.blog', path: '/blog', icon: BookOpen },
   { key: 'nav.library', path: '/biblioteca', icon: Library },
+  { key: 'nav.settings', path: '/configuracoes', icon: Settings },
 ];
 
 export default function AppLayout() {
@@ -70,33 +71,40 @@ export default function AppLayout() {
   if (isMobile) {
     return (
       <div className="theme-app min-h-screen bg-background flex flex-col">
-        <header className="sticky top-0 z-50 bg-primary text-primary-foreground px-4 py-3 rounded-b-2xl flex items-center justify-between">
-          <Link to="/dashboard" className="font-display text-xl font-bold">Living Word</Link>
-          <div className="flex items-center gap-2">
-            <GenerationCounter />
+        {/* Mobile Header */}
+        <header className="sticky top-0 z-50 bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between shadow-sm">
+          <Link to="/dashboard" className="font-display text-lg font-bold truncate">Living Word</Link>
+          <div className="flex items-center gap-2 shrink-0">
+            <GenerationCounter compact />
             <LanguageToggle />
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-4 pb-20">
+
+        {/* Mobile Main Content */}
+        <main className="flex-1 overflow-auto px-4 py-4 pb-20">
           <Outlet />
         </main>
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border flex justify-around py-2">
-          {mobileNavItems.map((item) => {
-            const Icon = item.icon;
-            const active = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex flex-col items-center gap-1 px-3 py-1 text-xs transition-colors ${
-                  active ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{t(item.key)}</span>
-              </Link>
-            );
-          })}
+
+        {/* Mobile Bottom Navigation */}
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border px-2 py-1 safe-area-bottom">
+          <div className="flex justify-around items-center">
+            {mobileNavItems.map((item) => {
+              const Icon = item.icon;
+              const active = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                    active ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="truncate">{t(item.key)}</span>
+                </Link>
+              );
+            })}
+          </div>
         </nav>
       </div>
     );
@@ -104,31 +112,31 @@ export default function AppLayout() {
 
   return (
     <div className="theme-app min-h-screen bg-background flex">
-      {/* Desktop Sidebar — deep purple */}
+      {/* Desktop Sidebar */}
       <aside className="w-[260px] min-h-screen flex flex-col fixed left-0 top-0 bottom-0 z-40 bg-sidebar text-sidebar-foreground">
         {/* Logo */}
-        <div className="p-5 pb-3">
+        <div className="p-4 pb-2 shrink-0">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg bg-sidebar-primary/20 flex items-center justify-center">
-              <Wand2 className="h-5 w-5 text-sidebar-primary" />
+            <div className="w-8 h-8 rounded-lg bg-sidebar-primary/20 flex items-center justify-center shrink-0">
+              <Wand2 className="h-4 w-4 text-sidebar-primary" />
             </div>
-            <span className="font-display text-2xl font-bold text-sidebar-primary">Living Word</span>
+            <span className="font-display text-xl font-bold text-sidebar-primary">Living Word</span>
           </Link>
         </div>
 
         {/* Tools label */}
-        <div className="px-5 pt-3 pb-2">
-          <span className="text-[11px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
+        <div className="px-5 pt-2 pb-1 shrink-0">
+          <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
             {t('nav.tools') || 'FERRAMENTAS'}
           </span>
         </div>
 
-        {/* Grouped Navigation */}
-        <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+        {/* Grouped Navigation — scrollable */}
+        <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto min-h-0">
           {/* Dashboard link */}
           <Link
             to="/dashboard"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/dashboard'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
@@ -147,7 +155,7 @@ export default function AppLayout() {
               <div key={group.label.PT}>
                 <button
                   onClick={() => toggleGroup(group.label.PT)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
                 >
                   <GroupIcon className="h-4 w-4" />
                   <span className="flex-1 text-left">{groupLabel}</span>
@@ -163,7 +171,7 @@ export default function AppLayout() {
                         <Link
                           key={item.path}
                           to={item.path}
-                          className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors ${
                             active
                               ? 'bg-sidebar-accent text-sidebar-primary font-medium'
                               : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground'
@@ -188,7 +196,7 @@ export default function AppLayout() {
           {/* Settings */}
           <Link
             to="/configuracoes"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/configuracoes'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
@@ -199,43 +207,39 @@ export default function AppLayout() {
           </Link>
         </nav>
 
-        {/* My Account section */}
-        <div className="px-3 pb-2">
-          <div className="px-3 pt-3 pb-2">
-            <span className="text-[11px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
-              MINHA CONTA
-            </span>
-          </div>
-
-          {/* Generation counter badge */}
-          <div className="px-3 pb-2">
+        {/* Bottom section — fixed, never overlaps */}
+        <div className="shrink-0 border-t border-sidebar-border">
+          {/* Generation counter */}
+          <div className="px-3 py-2">
             <GenerationCounter />
           </div>
 
           {/* Upgrade CTA */}
           {profile?.plan === 'free' && (
-            <Link to="/upgrade">
-              <Button className="w-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 gap-2 mb-2" size="sm">
-                <Crown className="h-4 w-4" />
-                {t('nav.upgrade')}
-              </Button>
-            </Link>
+            <div className="px-3 pb-2">
+              <Link to="/upgrade">
+                <Button className="w-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 gap-2" size="sm">
+                  <Crown className="h-4 w-4" />
+                  {t('nav.upgrade')}
+                </Button>
+              </Link>
+            </div>
           )}
-        </div>
 
-        {/* User / Logout */}
-        <div className="p-3 border-t border-sidebar-border">
-          <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-bold text-sidebar-primary">
-              {profile?.full_name?.charAt(0) || 'U'}
+          {/* User info / Logout */}
+          <div className="px-3 py-2 border-t border-sidebar-border">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-bold text-sidebar-primary shrink-0">
+                {profile?.full_name?.charAt(0) || 'U'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
+                <p className="text-[11px] text-sidebar-foreground/50 capitalize">{profile?.plan || 'free'}</p>
+              </div>
+              <button onClick={handleSignOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground shrink-0" title="Sair">
+                <LogOut className="h-4 w-4" />
+              </button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
-              <p className="text-xs text-sidebar-foreground/50 capitalize">{profile?.plan || 'free'}</p>
-            </div>
-            <button onClick={handleSignOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground" title="Sair">
-              <LogOut className="h-4 w-4" />
-            </button>
           </div>
         </div>
       </aside>
