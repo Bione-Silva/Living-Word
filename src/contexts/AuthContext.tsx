@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UserProfile {
   id: string;
@@ -11,6 +11,9 @@ interface UserProfile {
   generations_limit: number;
   language: string;
   avatar_url?: string;
+  doctrine?: string;
+  pastoral_voice?: string;
+  bible_version?: string;
 }
 
 interface AuthContextType {
@@ -26,72 +29,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const PREVIEW_USER_ID = 'preview-user';
-const PREVIEW_EMAIL = 'preview@livingword.app';
-
-const buildPreviewUser = (email = PREVIEW_EMAIL): User => ({
-  id: PREVIEW_USER_ID,
-  aud: 'authenticated',
-  role: 'authenticated',
-  email,
-  phone: '',
-  app_metadata: { provider: 'email', providers: ['email'] },
-  user_metadata: { preview: true },
-  identities: [],
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-} as User);
-
-const buildPreviewSession = (email = PREVIEW_EMAIL): Session => ({
-  access_token: 'preview-access-token',
-  refresh_token: 'preview-refresh-token',
-  token_type: 'bearer',
-  expires_in: 3600,
-  expires_at: Math.floor(Date.now() / 1000) + 3600,
-  user: buildPreviewUser(email),
-} as Session);
-
-const buildPreviewProfile = (metadata?: Record<string, unknown>): UserProfile => ({
-  id: PREVIEW_USER_ID,
-  full_name: typeof metadata?.full_name === 'string' && metadata.full_name.trim()
-    ? metadata.full_name
-    : 'Pastor de Preview',
-  blog_handle: typeof metadata?.blog_handle === 'string' && metadata.blog_handle.trim()
-    ? metadata.blog_handle
-    : 'pastor-preview',
-  plan: 'free',
-  generations_used: 2,
-  generations_limit: 5,
-  language: typeof metadata?.language === 'string' ? metadata.language : 'PT',
-});
-
-const requireSupabase = () => {
-  if (!supabase || !isSupabaseConfigured) {
-    throw new Error('Autenticação indisponível no preview porque as credenciais do Supabase não estão configuradas.');
-  }
-
-  return supabase;
-};
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const applyPreviewAuth = (email = PREVIEW_EMAIL, metadata?: Record<string, unknown>) => {
-    setUser(buildPreviewUser(email));
-    setSession(buildPreviewSession(email));
-    setProfile(buildPreviewProfile(metadata));
-    setLoading(false);
-  };
-
   const fetchProfile = async (userId: string) => {
-    if (!supabase) return;
-
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
@@ -99,13 +46,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data && !error) {
         setProfile({
           id: data.id,
-          full_name: data.full_name || data.name || '',
+          full_name: data.full_name || '',
           blog_handle: data.blog_handle || '',
           plan: data.plan || 'free',
           generations_used: data.generations_used || 0,
           generations_limit: data.generations_limit || 5,
           language: data.language || 'PT',
           avatar_url: data.avatar_url,
+          doctrine: data.doctrine,
+          pastoral_voice: data.pastoral_voice,
+          bible_version: data.bible_version,
         });
       }
     } catch (err) {
@@ -114,11 +64,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (!supabase) {
-      applyPreviewAuth();
-      return;
-    }
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_, nextSession) => {
@@ -126,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(nextSession?.user ?? null);
 
       if (nextSession?.user) {
-        void fetchProfile(nextSession.user.id);
+        setTimeout(() => fetchProfile(nextSession.user.id), 0);
       } else {
         setProfile(null);
       }
@@ -134,12 +79,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    void supabase.auth.getSession().then(({ data: { session: nextSession } }) => {
+    supabase.auth.getSession().then(({ data: { session: nextSession } }) => {
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
 
       if (nextSession?.user) {
-        void fetchProfile(nextSession.user.id);
+        fetchProfile(nextSession.user.id);
       }
 
       setLoading(false);
@@ -149,13 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, metadata?: Record<string, unknown>) => {
-    if (!supabase || !isSupabaseConfigured) {
-      applyPreviewAuth(email, metadata);
-      return;
-    }
-
-    const client = requireSupabase();
-    const { error } = await client.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -167,24 +106,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    if (!supabase || !isSupabaseConfigured) {
-      applyPreviewAuth(email);
-      return;
-    }
-
-    const client = requireSupabase();
-    const { error } = await client.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
   const signOut = async () => {
-    if (!supabase) {
-      setProfile(null);
-      setUser(null);
-      setSession(null);
-      return;
-    }
-
     await supabase.auth.signOut();
     setProfile(null);
   };
