@@ -17,6 +17,7 @@ interface ToolCardProps {
   lang: 'PT' | 'EN' | 'ES';
   isFree: boolean;
   onClick: (tool: ToolCardData) => void;
+  index?: number;
 }
 
 export function ToolCard({ tool, lang, isFree, onClick }: ToolCardProps) {
