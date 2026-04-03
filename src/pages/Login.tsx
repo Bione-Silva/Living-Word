@@ -57,7 +57,7 @@ export default function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isSupabaseConfigured && (
+              {false && (
                 <Alert>
                   <AlertDescription>
                     O formulário está visível, mas a autenticação real será ativada quando o backend estiver configurado.

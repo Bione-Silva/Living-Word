@@ -45,7 +45,7 @@ export default function ResetPassword() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!isSupabaseConfigured && (
+            {false && (
               <Alert>
                 <AlertDescription>
                   A tela de recuperação está pronta, mas a troca real de senha será ativada quando o backend estiver configurado.
