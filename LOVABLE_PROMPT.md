@@ -137,7 +137,19 @@ Siga estritamente o nosso **DESIGN SYSTEM** e nossa paleta de cores detalhada na
 - *Artigo Livre e Redator Universal*
 
 **3. FERRAMENTAS DE ALCANCE (Grid 3)**
-- *Transformar Vídeo em Blog*: Ao clicar, abre modal "Vídeo para Blog" (Youtube URL → Processa na Edge Function `/process-youtube-audio`). Retorna o texto extraído para virar conteúdo.
+*(Atenção Lovable: Estas front-ends chamam as rotas que já criamos no backend, apenas expondo-as de forma independente para abundância visual)*
+- *Transformar Vídeo em Blog*: Ao clicar, abre modal "Vídeo para Blog" (Youtube URL → `/process-youtube-audio`).
+- *Postagens para Redes Sociais*: Aciona a geração focando apenas em ideias de post/reels (usa a saída `reels`).
+- *Perguntas para Grupos / Célula*: Aciona a geração focando no roteiro interativo (usa a saída `cell`).
+- *Resumo Rápido de Sermão*: Gera um abstract executivo para boletins de igreja.
+- *Criador de Boletim / Newsletter Semanal*: Formulário simples para disparar e-mails semanais para a igreja.
+
+**4. FERRAMENTAS DIVERTIDAS E DINÂMICAS (Grid 4)**
+*(Atenção Lovable: Estas conectam-se à Edge Function `search-pastoral-tools` usando o Google Gemini)*
+- *Curiosidades Bíblicas Obscuras* (tool: `trivia`)
+- *Textos em Poesia / Compositor* (tool: `poetry`)
+- *Histórias para o Ministério Infantil* (tool: `kids_story`)
+- *Tradução Exegética Profunda* (tool: `deep_translation`) (🔒)
 
 **Dinâmica dos Cards:**
 - Cards contêm: Ícone correspondente (do Lucide), Título curto, Descrição em 1 linha.

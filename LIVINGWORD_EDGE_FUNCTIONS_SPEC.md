@@ -676,13 +676,16 @@ Content-Type: application/json
 }
 ```
 
-**Valores para `tool`:** `topics | verses | context | quotes | movies | songs | original_text`
+**Valores para `tool`:**
+- Pesquisa Acadêmica: `topics | verses | context | quotes | original_text`
+- Recursos Criativos: `movies | songs`
+- Ferramentas Dinâmicas/Divertidas: `trivia | poetry | kids_story | deep_translation`
 
 ### Lógica interna
 
 ```typescript
 // 1. Auth + Limite Reduzido de Controle (Pesquisas custam menos, mas ainda são rate-limited)
-const { plan } = await getUser(user.id) // Controle: Original Text / Movies apenas Pastoral+
+const { plan } = await getUser(user.id) // Controle: Original Text / Deep Translation apenas Pastoral+
 
 // 2. Montar prompt Gemini para a Tool
 const prompt = buildGeminiSearchPrompt(tool, query, language)

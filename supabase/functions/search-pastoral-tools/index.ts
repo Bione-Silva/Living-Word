@@ -75,6 +75,14 @@ serve(async (req) => {
       prompt = `Liste 5 hinos cristãos clássicos ou músicas evangélicas conhecidas que reforcem a mensagem de: "${query}". \n\nDiga o nome, autor e um trecho chave. Responda em ${language}.`
     } else if (tool === 'original_text') {
       prompt = `O pastor está buscando a raiz original da palavra ou termo bíblico: "${query}". \n\nExplique o radical em Grego ou Hebraico, a concordância de Strong recomendada e os principais sentidos teológicos profundos dessa palavra original. Responda em ${language}.`
+    } else if (tool === 'trivia') {
+      prompt = `O usuário quer saber sobre fatos curiosos: "${query}". \n\nConte 3 curiosidades obscuras ou pouco conhecidas sobre esse tema, lugar ou personagem na Bíblia. Responda em ${language}.`
+    } else if (tool === 'poetry') {
+      prompt = `Reescreva a seguinte mensagem ou passagem bíblica de forma poética e inspiradora, com rimas simples ou métrica tocante: "${query}". Responda em ${language}.`
+    } else if (tool === 'kids_story') {
+      prompt = `Reescreva a passagem ou tema "${query}" como se estivesse contando uma história lúdica para crianças no ministério infantil. Responda em ${language}.`
+    } else if (tool === 'deep_translation') {
+      prompt = `Faça uma exegese profunda e tradução reversa da palavra ou versículo "${query}". Desdobre as raízes em hebraico/grego trazendo todos os significados originais possíveis. Responda em ${language}.`
     } else {
       prompt = `Pesquise e responda sobre a dúvida cristã: ${query}. Responda em ${language}.`
     }
