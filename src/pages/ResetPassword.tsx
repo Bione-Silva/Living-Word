@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,7 +25,6 @@ export default function ResetPassword() {
     setLoading(true);
 
     try {
-      if (!supabase) throw new Error('Atualização de senha indisponível enquanto o Supabase não estiver configurado.');
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast.success('Senha atualizada!');
@@ -45,7 +44,7 @@ export default function ResetPassword() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!isSupabaseConfigured && (
+            {false && (
               <Alert>
                 <AlertDescription>
                   A tela de recuperação está pronta, mas a troca real de senha será ativada quando o backend estiver configurado.

@@ -14,7 +14,140 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      editorial_queue: {
+        Row: {
+          created_at: string
+          id: string
+          material_id: string | null
+          published_at: string | null
+          scheduled_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          material_id?: string | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          material_id?: string | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "editorial_queue_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      materials: {
+        Row: {
+          bible_version: string | null
+          content: string
+          created_at: string
+          favorite: boolean | null
+          id: string
+          language: string | null
+          passage: string | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bible_version?: string | null
+          content?: string
+          created_at?: string
+          favorite?: boolean | null
+          id?: string
+          language?: string | null
+          passage?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bible_version?: string | null
+          content?: string
+          created_at?: string
+          favorite?: boolean | null
+          id?: string
+          language?: string | null
+          passage?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bible_version: string | null
+          bio: string | null
+          blog_handle: string | null
+          created_at: string
+          doctrine: string | null
+          full_name: string
+          generations_limit: number
+          generations_used: number
+          id: string
+          language: string
+          pastoral_voice: string | null
+          plan: string
+          updated_at: string
+          wordpress_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bible_version?: string | null
+          bio?: string | null
+          blog_handle?: string | null
+          created_at?: string
+          doctrine?: string | null
+          full_name?: string
+          generations_limit?: number
+          generations_used?: number
+          id: string
+          language?: string
+          pastoral_voice?: string | null
+          plan?: string
+          updated_at?: string
+          wordpress_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bible_version?: string | null
+          bio?: string | null
+          blog_handle?: string | null
+          created_at?: string
+          doctrine?: string | null
+          full_name?: string
+          generations_limit?: number
+          generations_used?: number
+          id?: string
+          language?: string
+          pastoral_voice?: string | null
+          plan?: string
+          updated_at?: string
+          wordpress_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

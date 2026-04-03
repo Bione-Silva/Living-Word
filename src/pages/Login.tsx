@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ export default function Login() {
 
     try {
       if (forgotMode) {
-        if (!supabase) throw new Error('Recuperação de senha indisponível enquanto o Supabase não estiver configurado.');
+        
 
         await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`,
@@ -57,7 +57,7 @@ export default function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isSupabaseConfigured && (
+              {false && (
                 <Alert>
                   <AlertDescription>
                     O formulário está visível, mas a autenticação real será ativada quando o backend estiver configurado.
