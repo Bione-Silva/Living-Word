@@ -25,7 +25,6 @@ export default function ResetPassword() {
     setLoading(true);
 
     try {
-      if (!supabase) throw new Error('Atualização de senha indisponível enquanto o Supabase não estiver configurado.');
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast.success('Senha atualizada!');
