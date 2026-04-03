@@ -96,6 +96,13 @@ export default function Landing() {
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
+          <p className="text-sm text-muted-foreground animate-fade-in mt-6" style={{ animationDelay: '0.45s' }}>
+            {t('landing.already_have_account')}{' '}
+            <Link to="/login" className="text-primary font-medium hover:underline">{t('auth.login')}</Link>
+            {' · '}
+            {t('landing.forgot_password')}{' '}
+            <Link to="/login" className="text-primary font-medium hover:underline">{t('landing.recover_here')}</Link>
+          </p>
         </div>
       </section>
 
