@@ -382,27 +382,27 @@ export default function Landing() {
       {/* ===== HERO ===== */}
       <section className="pt-16 text-center" style={{ background: '#3D2B1F' }}>
         <div className="max-w-3xl mx-auto px-5 sm:px-6 py-14 sm:py-20">
-          <p className="text-[12px] font-semibold tracking-[0.14em] uppercase mb-5" style={{ color: '#C4956A' }}>{copy.hero.eyebrow[lang]}</p>
-          <h1 className="font-display text-[34px] sm:text-[48px] font-semibold leading-[1.12] mb-5" style={{ color: '#F5F0E8' }}>
+          <p className="text-[12px] font-semibold tracking-[0.14em] uppercase mb-5 animate-[fadeSlideUp_0.6s_ease-out_0.1s_both]" style={{ color: '#C4956A' }}>{copy.hero.eyebrow[lang]}</p>
+          <h1 className="font-display text-[34px] sm:text-[48px] font-semibold leading-[1.12] mb-5 animate-[fadeSlideUp_0.7s_ease-out_0.25s_both]" style={{ color: '#F5F0E8' }}>
             {copy.hero.h1_line1[lang]}
             <br /><em style={{ color: '#C4956A' }}>{copy.hero.h1_em[lang]}</em>
           </h1>
-          <p className="text-[16px] sm:text-[17px] leading-[1.7] max-w-[600px] mx-auto mb-8" style={{ color: 'rgba(245,240,232,0.75)' }}>{copy.hero.sub[lang]}</p>
+          <p className="text-[16px] sm:text-[17px] leading-[1.7] max-w-[600px] mx-auto mb-8 animate-[fadeSlideUp_0.7s_ease-out_0.45s_both]" style={{ color: 'rgba(245,240,232,0.75)' }}>{copy.hero.sub[lang]}</p>
 
           {/* Audience badges */}
-          <div className="flex flex-wrap gap-2.5 justify-center mb-8">
+          <div className="flex flex-wrap gap-2.5 justify-center mb-8 animate-[fadeSlideUp_0.6s_ease-out_0.6s_both]">
             {copy.badges.map((b, i) => (
               <span key={i} className="text-[12px] font-medium px-3.5 py-1.5 rounded-full" style={{ background: 'rgba(196,149,106,0.15)', color: '#C4956A', border: '1px solid rgba(196,149,106,0.25)' }}>{b[lang]}</span>
             ))}
           </div>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10 animate-[fadeSlideUp_0.6s_ease-out_0.75s_both]">
             <Link to="/cadastro" className="inline-block text-[16px] font-semibold px-8 py-4 rounded-xl transition-transform hover:scale-[1.02]" style={{ background: '#C4956A', color: '#3D2B1F' }}>{copy.hero.cta1[lang]}</Link>
             <button onClick={() => scrollTo('how')} className="inline-block text-[15px] font-medium px-7 py-3.5 rounded-xl transition-colors" style={{ border: '1px solid rgba(196,149,106,0.4)', color: 'rgba(245,240,232,0.8)' }}>{copy.hero.cta2[lang]}</button>
           </div>
 
-          <p className="font-display text-[14px] italic" style={{ color: 'rgba(245,240,232,0.4)' }}>{copy.hero.verse[lang]}</p>
+          <p className="font-display text-[14px] italic animate-[fadeSlideUp_0.6s_ease-out_0.9s_both]" style={{ color: 'rgba(245,240,232,0.4)' }}>{copy.hero.verse[lang]}</p>
         </div>
       </section>
 
