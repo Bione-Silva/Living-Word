@@ -156,8 +156,11 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const config = toolConfigs[toolId];
-  if (!config) return null;
+  const config = toolConfigs[toolId] || {
+    inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },
+    placeholder: { PT: 'Ex: tema, passagem ou ideia...', EN: 'E.g.: topic, passage or idea...', ES: 'Ej: tema, pasaje o idea...' },
+    systemPrompt: (lang: string) => `You are a helpful pastoral assistant. Given the user's input, generate useful, well-structured content for a Christian leader. Be creative, theologically sound, and practical. Write in ${lang}. Format with Markdown.`,
+  };
 
   const langLabel = lang === 'PT' ? 'Portuguese (Brazilian)' : lang === 'EN' ? 'English' : 'Spanish';
 
