@@ -151,7 +151,8 @@ export default function Biblioteca() {
       ) : (
         <div className="grid gap-3">
           {filtered.map((item: any, i: number) => {
-            const Icon = typeIcons[item.type] || FileText;
+            const typeInfo = typeLabels[item.type];
+            const Icon = typeInfo?.icon || FileText;
             const isLocked = isFree && i >= 10;
 
             return (
