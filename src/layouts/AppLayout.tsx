@@ -198,13 +198,13 @@ export default function AppLayout() {
             to="/dashboard/mentes"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname.startsWith('/dashboard/mentes')
-                ? 'bg-[hsl(43,55%,58%)]/15 text-[hsl(43,55%,58%)]'
-                : 'text-[hsl(43,55%,58%)]/70 hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,58%)]'
+                ? 'bg-sidebar-accent text-sidebar-primary'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
           >
             <Brain className="h-4 w-4" />
             {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
-            <Badge variant="outline" className="ml-auto text-[9px] border-[hsl(43,55%,58%)]/40 text-[hsl(43,55%,58%)] px-1.5 py-0">
+            <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
               Premium
             </Badge>
           </Link>
