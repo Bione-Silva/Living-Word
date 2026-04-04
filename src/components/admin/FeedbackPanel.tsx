@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { ThumbsUp, ThumbsDown, MessageSquare, TrendingUp } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, TrendingUp, Download, CalendarIcon } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface FeedbackRow {
   id: string;
@@ -43,28 +48,60 @@ const toolLabels: Record<string, string> = {
 export function FeedbackPanel() {
   const [feedbacks, setFeedbacks] = useState<FeedbackRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     loadFeedbacks();
-  }, []);
+  }, [dateFrom, dateTo]);
 
   const loadFeedbacks = async () => {
-    const { data } = await supabase
+    setLoading(true);
+    let query = supabase
       .from('material_feedback')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(500);
+
+    if (dateFrom) {
+      query = query.gte('created_at', dateFrom.toISOString());
+    }
+    if (dateTo) {
+      const end = new Date(dateTo);
+      end.setHours(23, 59, 59, 999);
+      query = query.lte('created_at', end.toISOString());
+    }
+
+    const { data } = await query;
     if (data) setFeedbacks(data as FeedbackRow[]);
     setLoading(false);
+  };
+
+  const exportCSV = () => {
+    if (feedbacks.length === 0) return;
+    const headers = ['Data', 'Ferramenta', 'Título', 'Avaliação', 'Comentário'];
+    const rows = feedbacks.map(f => [
+      new Date(f.created_at).toLocaleDateString('pt-BR'),
+      toolLabels[f.tool_id || f.material_type] || f.material_type,
+      f.material_title || '',
+      f.rating === 'positive' ? 'Positivo' : 'Negativo',
+      (f.comment || '').replace(/"/g, '""'),
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `feedbacks_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const totalPositive = feedbacks.filter(f => f.rating === 'positive').length;
   const totalNegative = feedbacks.filter(f => f.rating === 'negative').length;
   const total = feedbacks.length;
   const satisfactionRate = total > 0 ? Math.round((totalPositive / total) * 100) : 0;
-  const withComments = feedbacks.filter(f => f.comment).length;
 
-  // By tool chart data
   const byTool: Record<string, { positive: number; negative: number }> = {};
   feedbacks.forEach(f => {
     const key = f.tool_id || f.material_type || 'outro';
@@ -97,10 +134,50 @@ export function FeedbackPanel() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-bold admin-text flex items-center gap-2">
-        <MessageSquare className="h-5 w-5" />
-        Satisfação dos Usuários
-      </h2>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h2 className="text-lg font-bold admin-text flex items-center gap-2">
+          <MessageSquare className="h-5 w-5" />
+          Satisfação dos Usuários
+        </h2>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Date From */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("text-xs gap-1", !dateFrom && "text-muted-foreground")}>
+                <CalendarIcon className="h-3.5 w-3.5" />
+                {dateFrom ? format(dateFrom, 'dd/MM/yyyy') : 'De'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus className="p-3 pointer-events-auto" />
+            </PopoverContent>
+          </Popover>
+
+          {/* Date To */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("text-xs gap-1", !dateTo && "text-muted-foreground")}>
+                <CalendarIcon className="h-3.5 w-3.5" />
+                {dateTo ? format(dateTo, 'dd/MM/yyyy') : 'Até'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus className="p-3 pointer-events-auto" />
+            </PopoverContent>
+          </Popover>
+
+          {(dateFrom || dateTo) && (
+            <Button variant="ghost" size="sm" className="text-xs" onClick={() => { setDateFrom(undefined); setDateTo(undefined); }}>
+              Limpar
+            </Button>
+          )}
+
+          <Button variant="outline" size="sm" className="text-xs gap-1" onClick={exportCSV} disabled={feedbacks.length === 0}>
+            <Download className="h-3.5 w-3.5" />
+            Exportar CSV
+          </Button>
+        </div>
+      </div>
 
       {/* KPI row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -121,7 +198,6 @@ export function FeedbackPanel() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        {/* Bar chart - by tool */}
         <div className="xl:col-span-2 admin-card rounded-xl p-4">
           <h3 className="text-sm font-semibold admin-text mb-3">Satisfação por Ferramenta</h3>
           {barData.length === 0 ? (
@@ -139,7 +215,6 @@ export function FeedbackPanel() {
           )}
         </div>
 
-        {/* Pie chart */}
         <div className="admin-card rounded-xl p-4">
           <h3 className="text-sm font-semibold admin-text mb-3">Distribuição Geral</h3>
           {total === 0 ? (
@@ -160,7 +235,6 @@ export function FeedbackPanel() {
         </div>
       </div>
 
-      {/* Recent comments */}
       {recentComments.length > 0 && (
         <div className="admin-card rounded-xl p-4">
           <h3 className="text-sm font-semibold admin-text mb-3">Comentários Recentes</h3>
