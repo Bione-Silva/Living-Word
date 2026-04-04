@@ -18,6 +18,7 @@ export default function Login() {
   const { signIn } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const planParam = new URLSearchParams(window.location.search).get('plan');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +33,7 @@ export default function Login() {
         setForgotMode(false);
       } else {
         await signIn(email, password);
-        navigate('/dashboard');
+        navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/dashboard');
       }
     } catch (err: any) {
       toast.error(err.message || 'Erro ao entrar');
@@ -122,7 +123,7 @@ export default function Login() {
               </button>
               {!forgotMode && (
                 <p className="text-sm" style={{ color: 'hsl(24, 15%, 50%)' }}>
-                  <Link to="/cadastro" className="font-medium hover:underline" style={{ color: 'hsl(28, 42%, 42%)' }}>
+                  <Link to={planParam ? `/cadastro?plan=${planParam}` : '/cadastro'} className="font-medium hover:underline" style={{ color: 'hsl(28, 42%, 42%)' }}>
                     {t('auth.create') || 'Criar conta'}
                   </Link>
                 </p>

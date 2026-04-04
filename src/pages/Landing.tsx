@@ -282,6 +282,7 @@ const copy = {
     return [
     {
       name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
+      planKey: null as string | null,
       price: `${p.symbol}0`,
       period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' },
       features: {
@@ -295,6 +296,7 @@ const copy = {
     },
     {
       name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
+      planKey: 'starter' as string | null,
       price: fmt(p.plans.starter.amount),
       period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' },
       features: {
@@ -308,6 +310,7 @@ const copy = {
     },
     {
       name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
+      planKey: 'pro' as string | null,
       price: fmt(p.plans.pro.amount),
       period: { PT: '/mês', EN: '/month', ES: '/mes' },
       features: {
@@ -321,6 +324,7 @@ const copy = {
     },
     {
       name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
+      planKey: 'church' as string | null,
       price: fmt(p.plans.church.amount),
       period: { PT: '/mês', EN: '/month', ES: '/mes' },
       features: {
@@ -683,7 +687,7 @@ export default function Landing() {
                     </div>
                   ))}
                 </div>
-                <Link to="/cadastro" className="block text-center text-[14px] font-semibold py-3 rounded-lg transition-transform hover:scale-[1.02]" style={{
+                <Link to={plan.planKey ? `/cadastro?plan=${plan.planKey}` : '/cadastro'} className="block text-center text-[14px] font-semibold py-3 rounded-lg transition-transform hover:scale-[1.02]" style={{
                   background: plan.featured ? '#6B4F3A' : '#EDD9C8',
                   color: plan.featured ? '#FFFFFF' : '#6B4F3A',
                 }}>{plan.cta[lang]}</Link>

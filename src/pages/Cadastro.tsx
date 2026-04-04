@@ -38,6 +38,7 @@ export default function Cadastro() {
   const { signUp } = useAuth();
   const { t, lang, setLang } = useLanguage();
   const navigate = useNavigate();
+  const planParam = new URLSearchParams(window.location.search).get('plan');
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -54,7 +55,7 @@ export default function Cadastro() {
       toast.success(language === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' : language === 'EN' ? 'Account created! Generating your first devotionals...' : '¡Cuenta creada! Generando tus primeros devocionales...');
 
       generateInitialContent().catch(console.error);
-      navigate('/blog-onboarding');
+      navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/blog-onboarding');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao criar conta');
     } finally {

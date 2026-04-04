@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -99,14 +100,31 @@ const plans: PlanData[] = [
 export default function Upgrade() {
   const { lang } = useLanguage();
   const { profile } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentPlan = profile?.plan || 'free';
   const [extraSeats, setExtraSeats] = useState(0);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const autoCheckoutFired = useRef(false);
 
   const churchTotal = useMemo(() => {
     const base = pricing.plans.church.amount;
     return base + extraSeats * pricing.addon.amount;
   }, [extraSeats]);
+
+  // Auto-checkout from landing page flow
+  useEffect(() => {
+    const autoCheckout = searchParams.get('autoCheckout');
+    if (!autoCheckout || autoCheckoutFired.current) return;
+    autoCheckoutFired.current = true;
+
+    const targetPlan = plans.find(p => p.planKey === autoCheckout);
+    if (targetPlan && !targetPlan.isFree) {
+      // Clean up the URL param
+      setSearchParams({}, { replace: true });
+      // Small delay to ensure component is fully mounted
+      setTimeout(() => handleSubscribe(targetPlan), 300);
+    }
+  }, [searchParams]);
 
   const handleSubscribe = async (plan: PlanData) => {
     if (!plan.planKey || plan.isFree) return;
