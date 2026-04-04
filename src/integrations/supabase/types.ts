@@ -56,6 +56,7 @@ export type Database = {
         Row: {
           bible_version: string | null
           content: string
+          cover_image_url: string | null
           created_at: string
           favorite: boolean | null
           id: string
@@ -69,6 +70,7 @@ export type Database = {
         Insert: {
           bible_version?: string | null
           content?: string
+          cover_image_url?: string | null
           created_at?: string
           favorite?: boolean | null
           id?: string
@@ -82,6 +84,7 @@ export type Database = {
         Update: {
           bible_version?: string | null
           content?: string
+          cover_image_url?: string | null
           created_at?: string
           favorite?: boolean | null
           id?: string
