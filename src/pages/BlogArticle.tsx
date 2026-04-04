@@ -189,51 +189,54 @@ export default function BlogArticle() {
   // Remove cover from intercalation images (first image is usually the cover)
   const bodyImages = coverUrl && articleImages[0] === coverUrl ? articleImages.slice(1) : articleImages;
 
-  const articleUrl = typeof window !== 'undefined' ? window.location.href : '';
+  // Build the canonical public URL (never share a preview/localhost URL)
+  const articleUrl = useMemo(() => {
+    if (typeof window === 'undefined') return '';
+    const { origin, pathname } = window.location;
+    // If we're on a preview/localhost, use the published domain instead
+    const isPreview = origin.includes('localhost') || origin.includes('preview');
+    const publicOrigin = isPreview ? 'https://living-word.lovable.app' : origin;
+    return `${publicOrigin}${pathname}`;
+  }, []);
+
   const shareTitle = article?.title || 'Living Word';
-  const shareText = `${shareTitle}\n\n${articleUrl}`;
 
   const estimateReadTime = (content: string) => {
     const words = content?.split(/\s+/).length || 0;
     return Math.max(1, Math.ceil(words / 200));
   };
 
-  const openExternalShare = (url: string) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setShareOpen(false);
-  };
-
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(articleUrl);
-    toast.success('Link copiado!');
+    navigator.clipboard.writeText(articleUrl).then(() => {
+      toast.success('Link copiado!');
+    });
     setShareOpen(false);
   };
 
   const handleShareWhatsApp = () => {
-    openExternalShare(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`);
+    const text = `${shareTitle}\n\n${articleUrl}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    setShareOpen(false);
   };
 
   const handleShareX = () => {
-    openExternalShare(`https://x.com/intent/post?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(articleUrl)}`);
+    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(shareTitle)}`, '_blank', 'noopener,noreferrer');
+    setShareOpen(false);
   };
 
   const handleShareTelegram = () => {
-    openExternalShare(`https://t.me/share/url?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(shareTitle)}`);
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(shareTitle)}`, '_blank', 'noopener,noreferrer');
+    setShareOpen(false);
   };
 
   const handleShareLinkedIn = () => {
-    openExternalShare(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`);
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`, '_blank', 'noopener,noreferrer');
+    setShareOpen(false);
   };
 
   const handleShareFacebook = () => {
-    openExternalShare(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`, '_blank', 'noopener,noreferrer');
+    setShareOpen(false);
   };
 
   // Close share dropdown on outside click
