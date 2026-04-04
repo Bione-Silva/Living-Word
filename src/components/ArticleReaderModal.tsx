@@ -101,63 +101,60 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
 
         <DialogTitle className="sr-only">{item.title}</DialogTitle>
 
-        {/* Cover image */}
-        {item.cover_image_url && (
-          <div className="w-full h-56 md:h-72 overflow-hidden rounded-t-2xl">
-            <img
-              src={item.cover_image_url}
-              alt={item.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-
-        {/* Article content */}
-        <div className="px-6 md:px-12 py-8 md:py-10 max-w-3xl mx-auto">
-          {/* Title */}
-          <h1
-            className="font-display text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4"
-            style={{ color: '#3c2f21' }}
-          >
-            {item.title}
-          </h1>
-
-          {/* Passage */}
-          {item.passage && (
-            <p className="text-sm flex items-center gap-1.5 mb-6" style={{ color: '#8B7355' }}>
-              <BookOpen className="w-4 h-4" /> {item.passage}
-            </p>
+        <div ref={contentRef} style={{ backgroundColor: '#f7f5f0' }}>
+          {/* Cover image */}
+          {item.cover_image_url && (
+            <div className="w-full h-56 md:h-72 overflow-hidden rounded-t-2xl">
+              <img
+                src={item.cover_image_url}
+                alt={item.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
           )}
 
-          {/* Divider */}
-          <div className="w-16 h-0.5 mb-8" style={{ backgroundColor: '#C4956A' }} />
+          {/* Article content */}
+          <div className="px-6 md:px-12 py-8 md:py-10 max-w-3xl mx-auto">
+            <h1
+              className="font-display text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4"
+              style={{ color: '#3c2f21' }}
+            >
+              {item.title}
+            </h1>
 
-          {/* Prose content */}
-          <div
-            className="prose prose-stone prose-lg max-w-none
-              prose-headings:font-display prose-headings:font-bold
-              prose-p:leading-relaxed
-              prose-blockquote:border-l-4 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-              prose-img:w-full prose-img:rounded-xl prose-img:shadow-sm prose-img:my-6
-              prose-a:underline
-            "
-            style={{
-              '--tw-prose-headings': '#3c2f21',
-              '--tw-prose-body': '#4a3f35',
-              '--tw-prose-bold': '#3c2f21',
-              '--tw-prose-quotes': '#5a4a3a',
-              '--tw-prose-quote-borders': '#C4956A',
-              '--tw-prose-links': '#6B4F3A',
-            } as React.CSSProperties}
-          >
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {finalContent}
-            </ReactMarkdown>
-          </div>
+            {item.passage && (
+              <p className="text-sm flex items-center gap-1.5 mb-6" style={{ color: '#8B7355' }}>
+                <BookOpen className="w-4 h-4" /> {item.passage}
+              </p>
+            )}
 
-          {/* Footer signature */}
-          <div className="mt-10 pt-6 border-t text-center text-xs" style={{ borderColor: '#d4c8b8', color: '#a0906e' }}>
-            Feito com ❤️ pela Living Word
+            <div className="w-16 h-0.5 mb-8" style={{ backgroundColor: '#C4956A' }} />
+
+            <div
+              className="prose prose-stone prose-lg max-w-none
+                prose-headings:font-display prose-headings:font-bold
+                prose-p:leading-relaxed
+                prose-blockquote:border-l-4 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+                prose-img:w-full prose-img:rounded-xl prose-img:shadow-sm prose-img:my-6
+                prose-a:underline
+              "
+              style={{
+                '--tw-prose-headings': '#3c2f21',
+                '--tw-prose-body': '#4a3f35',
+                '--tw-prose-bold': '#3c2f21',
+                '--tw-prose-quotes': '#5a4a3a',
+                '--tw-prose-quote-borders': '#C4956A',
+                '--tw-prose-links': '#6B4F3A',
+              } as React.CSSProperties}
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {finalContent}
+              </ReactMarkdown>
+            </div>
+
+            <div className="mt-10 pt-6 border-t text-center text-xs" style={{ borderColor: '#d4c8b8', color: '#a0906e' }}>
+              Feito com ❤️ pela Living Word
+            </div>
           </div>
         </div>
       </DialogContent>
