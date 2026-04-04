@@ -69,7 +69,7 @@ export default function Configuracoes() {
                 <Label>{t('auth.email')}</Label>
                 <Input disabled value="email@example.com" />
               </div>
-              <Button className="bg-primary text-primary-foreground">Salvar</Button>
+              <Button className="bg-primary text-primary-foreground">{t('settings.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
