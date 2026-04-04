@@ -126,6 +126,7 @@ export default function AppLayout() {
   };
 
   const isFree = profile?.plan === 'free';
+  const isAdmin = user?.email === 'bionicaosilva@gmail.com';
 
   const handleToolClick = (tool: SidebarToolItem) => {
     if (tool.locked && isFree) {
