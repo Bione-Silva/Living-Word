@@ -254,7 +254,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         status: 'published',
         published_at: new Date().toISOString(),
       });
-      toast.success(lang === 'PT' ? 'Publicado no blog!' : 'Published to blog!');
+      toast.success(lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!');
     } catch (err: any) {
       toast.error(err.message);
     } finally {
