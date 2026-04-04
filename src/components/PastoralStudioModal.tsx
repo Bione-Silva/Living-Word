@@ -16,6 +16,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { minds } from '@/data/minds';
+import { MaterialFeedback } from '@/components/MaterialFeedback';
 
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
