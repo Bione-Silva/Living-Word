@@ -123,7 +123,7 @@ export default function Login() {
               </button>
               {!forgotMode && (
                 <p className="text-sm" style={{ color: 'hsl(24, 15%, 50%)' }}>
-                  <Link to="/cadastro" className="font-medium hover:underline" style={{ color: 'hsl(28, 42%, 42%)' }}>
+                  <Link to={planParam ? `/cadastro?plan=${planParam}` : '/cadastro'} className="font-medium hover:underline" style={{ color: 'hsl(28, 42%, 42%)' }}>
                     {t('auth.create') || 'Criar conta'}
                   </Link>
                 </p>
