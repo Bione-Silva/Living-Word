@@ -70,11 +70,11 @@ export default function MentesBrilhantes() {
       </div>
 
       {/* Grid */}
-      <div className="relative rounded-3xl border border-[hsl(43,55%,58%)]/15 bg-gradient-to-b from-[hsl(215,50%,7%)] to-[hsl(210,40%,5%)] p-6 sm:p-10 overflow-hidden">
+      <div className="relative rounded-3xl border border-border/40 bg-muted/30 p-6 sm:p-10 overflow-hidden">
         {/* Decorative */}
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[hsl(43,55%,58%)]/[0.03] rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-[hsl(43,55%,58%)]/[0.02] rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(43,55%,58%)]/15 to-transparent" />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/[0.03] rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-primary/[0.02] rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
 
         <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {minds.map((mind, index) => (
@@ -92,21 +92,21 @@ export default function MentesBrilhantes() {
 
       {/* Paywall Dialog */}
       <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
-        <DialogContent className="bg-gradient-to-b from-[hsl(215,50%,8%)] to-[hsl(210,40%,5%)] border-[hsl(43,55%,58%)]/20 text-white max-w-md">
+        <DialogContent className="bg-card border-border max-w-md">
           <DialogHeader className="text-center">
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-[hsl(43,55%,58%)]/10 flex items-center justify-center mb-3">
-              <Lock className="h-7 w-7 text-[hsl(43,55%,58%)]" />
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
+              <Lock className="h-7 w-7 text-primary" />
             </div>
-            <DialogTitle className="font-display text-2xl text-[hsl(43,55%,58%)]">
+            <DialogTitle className="font-display text-2xl text-primary">
               {lang === 'EN' ? 'Unlock Historical Wisdom' : lang === 'ES' ? 'Desbloquea la Sabiduría Histórica' : 'Desbloqueie a Sabedoria Histórica'}
             </DialogTitle>
-            <DialogDescription className="text-white/50 mt-2">
+            <DialogDescription className="text-muted-foreground mt-2">
               {lang === 'EN' ? 'Upgrade for $100/month to access all Brilliant Minds and unlock their full theological intelligence.' : lang === 'ES' ? 'Mejora por $100/mes para acceder a todas las Mentes Brillantes y desbloquear su inteligencia teológica completa.' : 'Faça o upgrade por $100/mês para acessar todas as Mentes Brilhantes e desbloquear toda a inteligência teológica.'}
             </DialogDescription>
           </DialogHeader>
           <Button
             onClick={() => { setShowPaywall(false); navigate('/upgrade'); }}
-            className="w-full py-6 text-base font-bold bg-gradient-to-r from-[hsl(43,55%,58%)] to-[hsl(35,55%,50%)] hover:from-[hsl(43,55%,65%)] hover:to-[hsl(35,55%,57%)] text-[hsl(210,40%,6%)] gap-2 rounded-xl shadow-[0_0_40px_hsl(43,55%,58%,0.2)]"
+            className="w-full py-6 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground gap-2 rounded-xl"
           >
             <Crown className="h-5 w-5" />
             {lang === 'EN' ? 'Upgrade Now' : lang === 'ES' ? 'Mejorar Ahora' : 'Fazer Upgrade'}
