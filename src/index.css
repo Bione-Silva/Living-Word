@@ -58,8 +58,9 @@
     --sidebar-ring: 28 42% 42%;
   }
 
-  /* Warm parchment theme for authenticated app */
-  .theme-app {
+  /* Warm parchment theme for authenticated app + public blog */
+  .theme-app,
+  .theme-blog {
     --background: 36 30% 95%;
     --foreground: 24 30% 15%;
 
@@ -87,6 +88,11 @@
     --border: 30 15% 85%;
     --input: 30 15% 85%;
     --ring: 28 42% 42%;
+
+    --blog-heading: 24 30% 15%;
+    --blog-body: 24 22% 24%;
+    --blog-meta: 24 18% 40%;
+    --blog-quote: 24 18% 32%;
 
     /* Sidebar: warm beige, slightly distinct from main bg */
     --sidebar-background: 33 25% 92%;
@@ -144,6 +150,27 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(38,52%,58%)] to-[hsl(45,60%,70%)];
   }
 
+  .blog-prose {
+    color: hsl(var(--blog-body));
+  }
+
+  .blog-prose :where(h1, h2, h3, h4, h5, h6, strong) {
+    color: hsl(var(--blog-heading));
+  }
+
+  .blog-prose :where(p, li, em) {
+    color: hsl(var(--blog-body));
+  }
+
+  .blog-prose :where(a) {
+    color: hsl(var(--primary));
+  }
+
+  .blog-prose :where(blockquote) {
+    color: hsl(var(--blog-quote));
+    border-left-color: hsl(var(--accent));
+  }
+
   .watermark-free {
     @apply relative;
   }
@@ -152,7 +179,6 @@
     @apply absolute bottom-0 left-0 right-0 text-center text-xs py-2 text-muted-foreground bg-muted/80;
   }
 
-  /* Safe area for mobile bottom nav */
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
