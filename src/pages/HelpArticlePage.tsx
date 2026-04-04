@@ -248,7 +248,7 @@ export default function HelpArticlePage() {
               {article.ctaLabel[lang]}
             </Button>
           )}
-          <Button variant="outline" onClick={() => navigate('/ajuda')} className="rounded-xl gap-2">
+          <Button variant="outline" onClick={() => navigate('/ajuda')} className="rounded-xl gap-2 text-[hsl(24,30%,20%)] border-[hsl(30,15%,78%)]">
             <ArrowLeft className="h-4 w-4" />
             {labels.backCta[lang]}
           </Button>
