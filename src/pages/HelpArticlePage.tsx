@@ -242,7 +242,7 @@ export default function HelpArticlePage() {
           {article.ctaRoute && (
             <Button
               onClick={() => navigate(article.ctaRoute!)}
-              className="px-8 py-5 text-sm font-bold bg-gradient-to-r from-[hsl(35,50%,45%)] to-[hsl(30,40%,38%)] hover:from-[hsl(35,50%,52%)] hover:to-[hsl(30,40%,45%)] text-white gap-2 rounded-xl"
+              className="px-8 py-5 text-sm font-bold bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
             >
               <Icon className="h-4 w-4" />
               {article.ctaLabel[lang]}
