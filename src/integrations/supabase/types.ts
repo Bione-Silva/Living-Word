@@ -215,7 +215,18 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      get_admin_saas_metrics: {
+        Args: never
+        Returns: {
+          estimated_mrr_usd: number
+          total_users_registered: number
+          users_church: number
+          users_free: number
+          users_ministry: number
+          users_pastoral: number
+          users_trialing: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
