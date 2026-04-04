@@ -43,12 +43,9 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
       )}
 
       {/* Avatar */}
-      <div className="relative mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-[hsl(43,55%,58%)]/20 to-[hsl(43,55%,58%)]/5 border-2 border-[hsl(43,55%,58%)]/30 group-hover:border-[hsl(43,55%,58%)]/50 transition-colors flex items-center justify-center mb-4">
-        <span className="text-xl font-display font-bold text-[hsl(43,55%,58%)]">
-          {initials}
-        </span>
-        {/* Glow ring on hover */}
-        <div className="absolute inset-0 rounded-full bg-[hsl(43,55%,58%)]/0 group-hover:bg-[hsl(43,55%,58%)]/5 transition-colors" />
+      <div className="relative mx-auto w-20 h-20 rounded-full border-2 border-[hsl(43,55%,58%)]/30 group-hover:border-[hsl(43,55%,58%)]/50 transition-colors overflow-hidden mb-4">
+        <img src={mind.image} alt={mind.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" loading="lazy" width={80} height={80} />
+        <div className="absolute inset-0 rounded-full bg-[hsl(43,55%,58%)]/0 group-hover:bg-[hsl(43,55%,58%)]/10 transition-colors" />
       </div>
 
       {/* Info */}
