@@ -134,12 +134,13 @@ export default function BlogArticle() {
           )}
         </div>
 
-        <div className="prose prose-lg prose-stone max-w-none
-          prose-headings:font-serif prose-headings:text-foreground
-          prose-p:text-muted-foreground prose-p:leading-relaxed
+        <div className="prose prose-lg max-w-none
+          prose-headings:font-serif prose-headings:text-[hsl(20,30%,15%)]
+          prose-p:text-[hsl(20,20%,25%)] prose-p:leading-relaxed
+          prose-li:text-[hsl(20,20%,25%)]
           prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-          prose-blockquote:border-l-accent prose-blockquote:bg-card/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
-          prose-strong:text-foreground
+          prose-blockquote:border-l-accent prose-blockquote:bg-card/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:text-[hsl(20,20%,30%)] prose-blockquote:italic
+          prose-strong:text-[hsl(20,30%,15%)] prose-em:text-[hsl(20,20%,28%)]
         ">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
         </div>
