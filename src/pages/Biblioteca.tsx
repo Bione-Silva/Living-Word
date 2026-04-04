@@ -180,40 +180,11 @@ export default function Biblioteca() {
         </div>
       )}
 
-      <Dialog open={!!viewItem} onOpenChange={(open) => !open && setViewItem(null)}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-[hsl(35,30%,95%)] border-[hsl(30,20%,80%)] text-[hsl(25,30%,20%)]">
-          {/* Cover image */}
-          {viewItem?.cover_image_url && (
-            <div className="w-full h-48 md:h-64 rounded-lg overflow-hidden -mt-2 mb-2">
-              <img
-                src={viewItem.cover_image_url}
-                alt={viewItem.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          <DialogHeader>
-            <DialogTitle className="font-display text-xl md:text-2xl text-[hsl(25,30%,20%)]">{viewItem?.title}</DialogTitle>
-          </DialogHeader>
-          {viewItem?.passage && (
-            <p className="text-sm text-[hsl(25,25%,45%)] flex items-center gap-1.5">
-              <BookOpen className="w-4 h-4" /> {viewItem.passage}
-            </p>
-          )}
-          <div className="prose prose-sm md:prose-base max-w-none
-            prose-headings:text-[hsl(25,30%,20%)] prose-headings:font-display
-            prose-p:text-[hsl(25,20%,30%)] prose-p:leading-relaxed
-            prose-strong:text-[hsl(25,30%,20%)]
-            prose-blockquote:border-l-[hsl(30,40%,65%)] prose-blockquote:bg-[hsl(35,25%,90%)] prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:text-[hsl(25,20%,35%)] prose-blockquote:not-italic
-            prose-img:w-full prose-img:rounded-xl prose-img:shadow-sm prose-img:my-6
-            prose-a:text-[hsl(25,40%,40%)]
-          ">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {viewItem ? intercalateImages(viewItem.content || '', getBodyImages(viewItem)) : ''}
-            </ReactMarkdown>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ArticleReaderModal
+        open={!!viewItem}
+        onOpenChange={(open) => !open && setViewItem(null)}
+        item={viewItem}
+      />
     </div>
   );
 }
