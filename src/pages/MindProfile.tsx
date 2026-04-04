@@ -258,20 +258,20 @@ export default function MindProfile() {
       {/* ═══════════════════════════════════════════════════════════════
           ENGAGEMENT MODULE — Start a session
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="mt-5 rounded-3xl border border-[hsl(43,55%,58%)]/25 bg-gradient-to-b from-[hsl(215,50%,8%)] via-[hsl(210,40%,6%)] to-[hsl(215,45%,4%)] p-8 sm:p-10 overflow-hidden relative">
-        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-[hsl(43,55%,58%)]/[0.03] rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(43,55%,58%)]/25 to-transparent" />
+      <section className="mt-5 rounded-3xl border border-border/40 bg-gradient-to-b from-[hsl(30,25%,88%)] via-[hsl(33,22%,85%)] to-[hsl(30,20%,82%)] p-8 sm:p-10 overflow-hidden relative">
+        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-[hsl(28,42%,55%)]/[0.06] rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(28,42%,55%)]/25 to-transparent" />
 
         {isLocked ? (
           <div className="relative z-10 text-center space-y-5 py-8">
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-[hsl(43,55%,58%)]/10 flex items-center justify-center">
-              <Lock className="h-8 w-8 text-[hsl(43,55%,58%)]/60" />
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-[hsl(28,42%,42%)]/10 flex items-center justify-center">
+              <Lock className="h-8 w-8 text-[hsl(28,42%,42%)]/60" />
             </div>
-            <h2 className="font-display text-3xl font-bold text-[hsl(43,55%,58%)]">{sectionLabels.unlock[lang]}</h2>
-            <p className="text-sm text-white/50 max-w-md mx-auto">{sectionLabels.upgradePrice[lang]}</p>
+            <h2 className="font-display text-3xl font-bold text-[hsl(28,42%,42%)]">{sectionLabels.unlock[lang]}</h2>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">{sectionLabels.upgradePrice[lang]}</p>
             <Button
               onClick={() => navigate('/upgrade')}
-              className="px-10 py-6 text-base font-bold bg-gradient-to-r from-[hsl(43,55%,58%)] to-[hsl(35,55%,50%)] hover:from-[hsl(43,55%,65%)] hover:to-[hsl(35,55%,57%)] text-[hsl(210,40%,6%)] gap-2 rounded-xl shadow-[0_0_40px_hsl(43,55%,58%,0.2)]"
+              className="px-10 py-6 text-base font-bold bg-gradient-to-r from-primary to-[hsl(35,45%,38%)] hover:from-primary/90 hover:to-[hsl(35,45%,45%)] text-primary-foreground gap-2 rounded-xl shadow-lg"
             >
               <Crown className="h-5 w-5" />
               {sectionLabels.upgradeBtn[lang]}
@@ -280,12 +280,12 @@ export default function MindProfile() {
         ) : (
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-9 h-9 rounded-lg bg-[hsl(43,55%,58%)]/10 flex items-center justify-center">
-                <MessageSquare className="h-5 w-5 text-[hsl(43,55%,58%)]" />
+              <div className="w-9 h-9 rounded-lg bg-[hsl(28,42%,42%)]/10 flex items-center justify-center">
+                <MessageSquare className="h-5 w-5 text-[hsl(28,42%,42%)]" />
               </div>
-              <h2 className="text-xl font-bold text-white">{sectionLabels.engage[lang]}</h2>
+              <h2 className="text-xl font-bold text-foreground">{sectionLabels.engage[lang]}</h2>
             </div>
-            <p className="text-sm text-white/40 mb-7 pl-12">{sectionLabels.chooseMode[lang]}</p>
+            <p className="text-sm text-muted-foreground mb-7 pl-12">{sectionLabels.chooseMode[lang]}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {modalities.map((mod) => {
@@ -294,17 +294,17 @@ export default function MindProfile() {
                   <button
                     key={mod.id}
                     onClick={() => handleModality(mod.id)}
-                    className="group flex items-start gap-4 p-6 rounded-2xl border border-[hsl(43,55%,58%)]/10 bg-gradient-to-br from-white/[0.03] to-transparent hover:border-[hsl(43,55%,58%)]/30 hover:bg-white/[0.06] transition-all duration-300 text-left"
+                    className="group flex items-start gap-4 p-6 rounded-2xl border border-border/30 bg-card/60 hover:border-[hsl(28,42%,42%)]/30 hover:bg-card/90 transition-all duration-300 text-left"
                   >
                     <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${mod.color} flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform`}>
                       {mod.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-base font-bold text-white">{mod.label[lang]}</p>
-                        <ChevronRight className="h-4 w-4 text-[hsl(43,55%,58%)]/40 group-hover:text-[hsl(43,55%,58%)]/80 group-hover:translate-x-0.5 transition-all" />
+                        <p className="text-base font-bold text-foreground">{mod.label[lang]}</p>
+                        <ChevronRight className="h-4 w-4 text-primary/40 group-hover:text-primary/80 group-hover:translate-x-0.5 transition-all" />
                       </div>
-                      <p className="text-[13px] text-white/45 mt-1.5 leading-relaxed">{mod.description[lang]}</p>
+                      <p className="text-[13px] text-muted-foreground mt-1.5 leading-relaxed">{mod.description[lang]}</p>
                     </div>
                   </button>
                 );
