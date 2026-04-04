@@ -7,15 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2 } from 'lucide-react';
-import { detectGeoRegion, PRICING_MAP, formatPrice, type GeoRegion } from '@/utils/geoPricing';
+import { formatPrice } from '@/utils/geoPricing';
+import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 type L = 'PT' | 'EN' | 'ES';
 type PlanKey = 'starter' | 'pro' | 'church';
-
-const region: GeoRegion = detectGeoRegion();
-const pricing = PRICING_MAP[region];
 
 const labels = {
   title: { PT: 'Escolha seu plano de produção', EN: 'Choose your production plan', ES: 'Elige tu plan de producción' } as Record<L, string>,
@@ -100,6 +98,7 @@ const plans: PlanData[] = [
 export default function Upgrade() {
   const { lang } = useLanguage();
   const { profile } = useAuth();
+  const { pricing, loading: regionLoading } = useGeoRegion();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPlan = profile?.plan || 'free';
   const [extraSeats, setExtraSeats] = useState(0);
@@ -107,16 +106,17 @@ export default function Upgrade() {
   const autoCheckoutFired = useRef(false);
 
   const churchTotal = useMemo(() => {
+    if (!pricing) return 0;
     const base = pricing.plans.church.amount;
     return base + extraSeats * pricing.addon.amount;
-  }, [extraSeats]);
+  }, [extraSeats, pricing]);
 
   const autoCheckoutPlan = searchParams.get('autoCheckout');
   const isAutoCheckout = !!autoCheckoutPlan && !autoCheckoutFired.current;
 
-  // Auto-checkout from landing page flow
+  // Auto-checkout from landing page flow (wait for pricing to load)
   useEffect(() => {
-    if (!autoCheckoutPlan || autoCheckoutFired.current) return;
+    if (!autoCheckoutPlan || autoCheckoutFired.current || !pricing) return;
     autoCheckoutFired.current = true;
 
     const targetPlan = plans.find(p => p.planKey === autoCheckoutPlan);
@@ -124,10 +124,10 @@ export default function Upgrade() {
       setSearchParams({}, { replace: true });
       setTimeout(() => handleSubscribe(targetPlan), 300);
     }
-  }, [searchParams]);
+  }, [searchParams, pricing]);
 
   const handleSubscribe = async (plan: PlanData) => {
-    if (!plan.planKey || plan.isFree) return;
+    if (!plan.planKey || plan.isFree || !pricing) return;
 
     setLoadingPlan(plan.id);
     try {
@@ -156,7 +156,7 @@ export default function Upgrade() {
     }
   };
 
-  if (isAutoCheckout || loadingPlan) {
+  if (regionLoading || isAutoCheckout || loadingPlan) {
     const loadingLabels = {
       PT: 'Preparando seu checkout…',
       EN: 'Preparing your checkout…',

@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
-import { detectGeoRegion, PRICING_MAP, formatPrice } from '@/utils/geoPricing';
+import { formatPrice } from '@/utils/geoPricing';
+import { useGeoRegion } from '@/hooks/useGeoRegion';
 import {
   Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
   ChevronDown, Check, X as XIcon, Menu, X, BookOpen, PenTool,
@@ -275,69 +276,16 @@ const copy = {
     tag: { PT: 'Planos', EN: 'Plans', ES: 'Planes' },
     h2: { PT: 'Comece grátis. Cresça quando precisar.', EN: 'Start free. Grow when you need to.', ES: 'Empieza gratis. Crece cuando necesites.' },
   },
-  plans: (() => {
-    const r = detectGeoRegion();
-    const p = PRICING_MAP[r];
-    const fmt = (amt: number) => formatPrice(amt, p.symbol, p.currency);
-    return [
-    {
-      name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
-      planKey: null as string | null,
-      price: `${p.symbol}0`,
-      period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' },
-      features: {
-        PT: ['5 gerações/mês', 'Sermão + esboço básico', '1 artigo devocional/mês', 'Blog cristão no ar', 'PT, EN ou ES'],
-        EN: ['5 generations/month', 'Sermon + basic outline', '1 devotional article/month', 'Christian blog live', 'PT, EN or ES'],
-        ES: ['5 generaciones/mes', 'Sermón + bosquejo básico', '1 artículo devocional/mes', 'Blog cristiano en línea', 'PT, EN o ES'],
-      },
-      cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Empezar gratis' },
-      featured: false,
-      capacity: { PT: 'Uso básico', EN: 'Basic usage', ES: 'Uso básico' },
-    },
-    {
-      name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
-      planKey: 'starter' as string | null,
-      price: fmt(p.plans.starter.amount),
-      period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' },
-      features: {
-        PT: ['Até 15 sermões/mês', 'Até 50 conteúdos totais', 'Todos os 7+ formatos', 'Blog com publicação automática', 'Sem watermark', '7 dias grátis sem cartão'],
-        EN: ['Up to 15 sermons/month', 'Up to 50 total contents', 'All 7+ formats', 'Blog with auto-publishing', 'No watermark', '7 days free, no card'],
-        ES: ['Hasta 15 sermones/mes', 'Hasta 50 contenidos totales', 'Los 7+ formatos', 'Blog con publicación automática', 'Sin marca de agua', '7 días gratis sin tarjeta'],
-      },
-      cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' },
-      featured: false,
-      capacity: { PT: 'Produção semanal', EN: 'Weekly production', ES: 'Producción semanal' },
-    },
-    {
-      name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
-      planKey: 'pro' as string | null,
-      price: fmt(p.plans.pro.amount),
-      period: { PT: '/mês', EN: '/month', ES: '/mes' },
-      features: {
-        PT: ['Até 60 sermões/mês', 'Produção completa semanal', 'Acesso a Mentes Brilhantes', 'Estudo bíblico profundo', 'Séries devocionais automáticas', 'Voz pastoral personalizada', 'Calendário editorial'],
-        EN: ['Up to 60 sermons/month', 'Full weekly production', 'Brilliant Minds access', 'Deep Bible study', 'Automatic devotional series', 'Custom pastoral voice', 'Editorial calendar'],
-        ES: ['Hasta 60 sermones/mes', 'Producción completa semanal', 'Acceso a Mentes Brillantes', 'Estudio bíblico profundo', 'Series devocionales automáticas', 'Voz pastoral personalizada', 'Calendario editorial'],
-      },
-      cta: { PT: 'Começar agora →', EN: 'Get started →', ES: 'Empezar ahora →' },
-      featured: true,
-      capacity: { PT: 'Produção completa', EN: 'Full production', ES: 'Producción completa' },
-    },
-    {
-      name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
-      planKey: 'church' as string | null,
-      price: fmt(p.plans.church.amount),
-      period: { PT: '/mês', EN: '/month', ES: '/mes' },
-      features: {
-        PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', `+${fmt(p.addon.amount)} por usuário extra`, 'Capacidade escala com a equipe'],
-        EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', `+${fmt(p.addon.amount)} per extra user`, 'Capacity scales with team'],
-        ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', `+${fmt(p.addon.amount)} por usuario extra`, 'Capacidad escala con el equipo'],
-      },
-      cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' },
-      featured: false,
-      capacity: { PT: 'Escala ministerial', EN: 'Ministry scale', ES: 'Escala ministerial' },
-    },
-  ];
-  })(),
+  plans: [] as Array<{
+    name: Record<L, string>;
+    planKey: string | null;
+    price: string;
+    period: Record<L, string>;
+    features: Record<L, string[]>;
+    cta: Record<L, string>;
+    featured: boolean;
+    capacity: Record<L, string>;
+  }>,
   faq: {
     tag: { PT: 'Perguntas frequentes', EN: 'FAQ', ES: 'Preguntas frecuentes' },
     h2: { PT: 'Respostas diretas.', EN: 'Straight answers.', ES: 'Respuestas directas.' },
@@ -424,6 +372,70 @@ export default function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   usePageviewTracker('/');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { pricing, loading: regionLoading } = useGeoRegion();
+
+  const pricingPlans = useMemo(() => {
+    if (!pricing) return copy.plans;
+    const fmt = (amt: number) => formatPrice(amt, pricing.symbol, pricing.currency);
+    return [
+      {
+        name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' } as Record<L, string>,
+        planKey: null as string | null,
+        price: `${pricing.symbol}0`,
+        period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' } as Record<L, string>,
+        features: {
+          PT: ['5 gerações/mês', 'Sermão + esboço básico', '1 artigo devocional/mês', 'Blog cristão no ar', 'PT, EN ou ES'],
+          EN: ['5 generations/month', 'Sermon + basic outline', '1 devotional article/month', 'Christian blog live', 'PT, EN or ES'],
+          ES: ['5 generaciones/mes', 'Sermón + bosquejo básico', '1 artículo devocional/mes', 'Blog cristiano en línea', 'PT, EN o ES'],
+        } as Record<L, string[]>,
+        cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Empezar gratis' } as Record<L, string>,
+        featured: false,
+        capacity: { PT: 'Uso básico', EN: 'Basic usage', ES: 'Uso básico' } as Record<L, string>,
+      },
+      {
+        name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' } as Record<L, string>,
+        planKey: 'starter' as string | null,
+        price: fmt(pricing.plans.starter.amount),
+        period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' } as Record<L, string>,
+        features: {
+          PT: ['Até 15 sermões/mês', 'Até 50 conteúdos totais', 'Todos os 7+ formatos', 'Blog com publicação automática', 'Sem watermark', '7 dias grátis sem cartão'],
+          EN: ['Up to 15 sermons/month', 'Up to 50 total contents', 'All 7+ formats', 'Blog with auto-publishing', 'No watermark', '7 days free, no card'],
+          ES: ['Hasta 15 sermones/mes', 'Hasta 50 contenidos totales', 'Los 7+ formatos', 'Blog con publicación automática', 'Sin marca de agua', '7 días gratis sin tarjeta'],
+        } as Record<L, string[]>,
+        cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' } as Record<L, string>,
+        featured: false,
+        capacity: { PT: 'Produção semanal', EN: 'Weekly production', ES: 'Producción semanal' } as Record<L, string>,
+      },
+      {
+        name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' } as Record<L, string>,
+        planKey: 'pro' as string | null,
+        price: fmt(pricing.plans.pro.amount),
+        period: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
+        features: {
+          PT: ['Até 60 sermões/mês', 'Produção completa semanal', 'Acesso a Mentes Brilhantes', 'Estudo bíblico profundo', 'Séries devocionais automáticas', 'Voz pastoral personalizada', 'Calendário editorial'],
+          EN: ['Up to 60 sermons/month', 'Full weekly production', 'Brilliant Minds access', 'Deep Bible study', 'Automatic devotional series', 'Custom pastoral voice', 'Editorial calendar'],
+          ES: ['Hasta 60 sermones/mes', 'Producción completa semanal', 'Acceso a Mentes Brillantes', 'Estudio bíblico profundo', 'Series devocionales automáticas', 'Voz pastoral personalizada', 'Calendario editorial'],
+        } as Record<L, string[]>,
+        cta: { PT: 'Começar agora →', EN: 'Get started →', ES: 'Empezar ahora →' } as Record<L, string>,
+        featured: true,
+        capacity: { PT: 'Produção completa', EN: 'Full production', ES: 'Producción completa' } as Record<L, string>,
+      },
+      {
+        name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' } as Record<L, string>,
+        planKey: 'church' as string | null,
+        price: fmt(pricing.plans.church.amount),
+        period: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
+        features: {
+          PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', `+${fmt(pricing.addon.amount)} por usuário extra`, 'Capacidade escala com a equipe'],
+          EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', `+${fmt(pricing.addon.amount)} per extra user`, 'Capacity scales with team'],
+          ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', `+${fmt(pricing.addon.amount)} por usuario extra`, 'Capacidad escala con el equipo'],
+        } as Record<L, string[]>,
+        cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' } as Record<L, string>,
+        featured: false,
+        capacity: { PT: 'Escala ministerial', EN: 'Ministry scale', ES: 'Escala ministerial' } as Record<L, string>,
+      },
+    ];
+  }, [pricing]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -661,7 +673,20 @@ export default function Landing() {
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.pricing.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.pricing.h2[lang]}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {copy.plans.map((plan, i) => (
+            {regionLoading ? (
+              [0,1,2,3].map(i => (
+                <div key={i} className="rounded-xl p-5 flex flex-col gap-3 animate-pulse" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.12)' }}>
+                  <div className="h-4 w-16 rounded" style={{ background: '#EDD9C8' }} />
+                  <div className="h-9 w-24 rounded" style={{ background: '#EDD9C8' }} />
+                  <div className="h-3 w-20 rounded" style={{ background: '#EDD9C8' }} />
+                  <div className="space-y-2 mt-4">
+                    {[0,1,2,3].map(j => <div key={j} className="h-3 w-full rounded" style={{ background: '#EDD9C8' }} />)}
+                  </div>
+                  <div className="h-10 w-full rounded-lg mt-auto" style={{ background: '#EDD9C8' }} />
+                </div>
+              ))
+            ) : (
+              pricingPlans.map((plan, i) => (
               <div key={i} className="rounded-xl p-5 flex flex-col" style={{
                 background: plan.featured ? '#F5F0E8' : '#FFFFFF',
                 border: plan.featured ? '2px solid #6B4F3A' : '1px solid rgba(107,79,58,0.12)',
@@ -692,7 +717,8 @@ export default function Landing() {
                   color: plan.featured ? '#FFFFFF' : '#6B4F3A',
                 }}>{plan.cta[lang]}</Link>
               </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
