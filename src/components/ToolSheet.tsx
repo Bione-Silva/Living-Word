@@ -193,6 +193,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       });
       if (error) throw error;
       setResult(data?.content || 'No response');
+      setHistoricalSources(data?.historical_sources_used || null);
       // Show blog prompt for non-article tools
       if (!isArticleTool) {
         setShowBlogPrompt(true);
