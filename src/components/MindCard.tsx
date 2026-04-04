@@ -25,7 +25,7 @@ interface MindCardProps {
 
 export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) {
   const isLocked = mind.locked && isFree;
-  const initials = mind.name.split(' ').map(w => w[0]).join('');
+  const initials = (mind.name || '').split(' ').map(w => w[0]).join('');
 
   return (
     <button
