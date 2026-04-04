@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
 import { formatPrice } from '@/utils/geoPricing';
