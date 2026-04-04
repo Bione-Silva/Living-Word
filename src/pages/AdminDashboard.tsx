@@ -201,6 +201,7 @@ export default function AdminDashboard() {
       <GeographyChart />
       <LeadsTable />
       <FeedbackPanel />
+      <MindToggleSection />
       <TeamSection />
 
       <VaultSection

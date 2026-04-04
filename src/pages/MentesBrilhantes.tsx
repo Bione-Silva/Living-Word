@@ -31,6 +31,22 @@ export default function MentesBrilhantes() {
   const isFree = profile?.plan === 'free';
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedMind, setSelectedMind] = useState<MindFullData | null>(null);
+  const [activeMinds, setActiveMinds] = useState<string[]>([]);
+  const [loadingMinds, setLoadingMinds] = useState(true);
+
+  useEffect(() => {
+    const loadActiveMinds = async () => {
+      const { data } = await supabase
+        .from('mind_settings')
+        .select('mind_id')
+        .eq('active', true);
+      if (data) setActiveMinds(data.map((d: any) => d.mind_id));
+      setLoadingMinds(false);
+    };
+    loadActiveMinds();
+  }, []);
+
+  const visibleMinds = minds.filter(m => activeMinds.includes(m.id));
 
   const handleMindClick = (mind: MindFullData) => {
     if (mind.locked && isFree) {
