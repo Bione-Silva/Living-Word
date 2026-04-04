@@ -111,17 +111,17 @@ export default function Upgrade() {
     return base + extraSeats * pricing.addon.amount;
   }, [extraSeats]);
 
+  const autoCheckoutPlan = searchParams.get('autoCheckout');
+  const isAutoCheckout = !!autoCheckoutPlan && !autoCheckoutFired.current;
+
   // Auto-checkout from landing page flow
   useEffect(() => {
-    const autoCheckout = searchParams.get('autoCheckout');
-    if (!autoCheckout || autoCheckoutFired.current) return;
+    if (!autoCheckoutPlan || autoCheckoutFired.current) return;
     autoCheckoutFired.current = true;
 
-    const targetPlan = plans.find(p => p.planKey === autoCheckout);
+    const targetPlan = plans.find(p => p.planKey === autoCheckoutPlan);
     if (targetPlan && !targetPlan.isFree) {
-      // Clean up the URL param
       setSearchParams({}, { replace: true });
-      // Small delay to ensure component is fully mounted
       setTimeout(() => handleSubscribe(targetPlan), 300);
     }
   }, [searchParams]);
@@ -155,6 +155,20 @@ export default function Upgrade() {
       setLoadingPlan(null);
     }
   };
+
+  if (isAutoCheckout || loadingPlan) {
+    const loadingLabels = {
+      PT: 'Preparando seu checkout…',
+      EN: 'Preparing your checkout…',
+      ES: 'Preparando tu checkout…',
+    };
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <Loader2 className="h-10 w-10 text-primary animate-spin" />
+        <p className="text-lg font-medium text-muted-foreground animate-pulse">{loadingLabels[lang]}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
