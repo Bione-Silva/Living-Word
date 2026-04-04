@@ -179,7 +179,7 @@ export default function Biblioteca() {
                       {new Date(item.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] capitalize shrink-0">{item.type}</Badge>
+                  <Badge variant="secondary" className="text-[10px] shrink-0">{typeLabels[item.type]?.[lang] || item.type}</Badge>
                   <div className="flex gap-1 shrink-0">
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => toggleFavMutation.mutate({ id: item.id, favorite: item.favorite })}>
                       <Star className={`h-3 w-3 ${item.favorite ? 'fill-primary text-primary' : ''}`} />
