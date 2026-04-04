@@ -23,6 +23,7 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
 
     if (!lovableApiKey) {
@@ -35,6 +36,9 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
+
+    // Service role client for storage uploads
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
     const token = authHeader.replace("Bearer ", "");
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
@@ -79,13 +83,13 @@ Output a complete devotional blog article in Markdown format with:
 - Bible passage reference and commentary
 - Practical application for daily life
 - Closing prayer
-Keep it between 600-900 words. Be warm, theologically sound, and accessible.`;
+Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
 
     const userPrompt = inputTitle
       ? `Write a devotional article about "${passage}" with the title "${inputTitle}".`
       : `Write a devotional article based on the passage: ${passage}.`;
 
-    // Call Lovable AI
+    // Call Lovable AI for article content
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -131,6 +135,53 @@ Keep it between 600-900 words. Be warm, theologically sound, and accessible.`;
     const h1Match = content.match(/^#\s+(.+)$/m);
     const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
 
+    // Generate cover image using AI
+    let coverImageUrl: string | null = null;
+    try {
+      const imagePrompt = `A beautiful, warm, serene Christian devotional cover image for an article about "${passage}". Pastoral landscape with soft golden light, peaceful atmosphere. No text, no words, no letters. Photographic style, high quality, warm tones.`;
+
+      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3.1-flash-image-preview",
+          prompt: imagePrompt,
+          n: 1,
+          size: "1024x576",
+        }),
+      });
+
+      if (imageResponse.ok) {
+        const imageData = await imageResponse.json();
+        const b64 = imageData.data?.[0]?.b64_json;
+        if (b64) {
+          const imageBytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+          const imagePath = `${userId}/${crypto.randomUUID()}.png`;
+
+          const { error: uploadErr } = await supabaseAdmin.storage
+            .from("blog-images")
+            .upload(imagePath, imageBytes, { contentType: "image/png", upsert: true });
+
+          if (!uploadErr) {
+            const { data: publicUrl } = supabaseAdmin.storage
+              .from("blog-images")
+              .getPublicUrl(imagePath);
+            coverImageUrl = publicUrl?.publicUrl || null;
+          } else {
+            console.error("Image upload error:", uploadErr);
+          }
+        }
+      } else {
+        console.error("Image generation error:", imageResponse.status);
+      }
+    } catch (imgErr) {
+      console.error("Cover image generation failed:", imgErr);
+      // Continue without image — not critical
+    }
+
     // Save to materials table
     const { data: material, error: matErr } = await supabase
       .from("materials")
@@ -142,7 +193,8 @@ Keep it between 600-900 words. Be warm, theologically sound, and accessible.`;
         content,
         language,
         bible_version: profile?.bible_version || "NVI",
-      })
+        cover_image_url: coverImageUrl,
+      } as any)
       .select("id")
       .single();
 
@@ -168,6 +220,7 @@ Keep it between 600-900 words. Be warm, theologically sound, and accessible.`;
         success: true,
         material_id: material.id,
         title: articleTitle,
+        cover_image_url: coverImageUrl,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
