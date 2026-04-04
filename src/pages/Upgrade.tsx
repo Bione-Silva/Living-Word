@@ -7,15 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2 } from 'lucide-react';
-import { detectGeoRegion, PRICING_MAP, formatPrice, type GeoRegion } from '@/utils/geoPricing';
+import { formatPrice } from '@/utils/geoPricing';
+import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 type L = 'PT' | 'EN' | 'ES';
 type PlanKey = 'starter' | 'pro' | 'church';
-
-const region: GeoRegion = detectGeoRegion();
-const pricing = PRICING_MAP[region];
 
 const labels = {
   title: { PT: 'Escolha seu plano de produção', EN: 'Choose your production plan', ES: 'Elige tu plan de producción' } as Record<L, string>,
