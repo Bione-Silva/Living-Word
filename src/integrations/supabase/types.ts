@@ -54,6 +54,7 @@ export type Database = {
       }
       materials: {
         Row: {
+          article_images: Json | null
           bible_version: string | null
           content: string
           cover_image_url: string | null
@@ -68,6 +69,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          article_images?: Json | null
           bible_version?: string | null
           content?: string
           cover_image_url?: string | null
@@ -82,6 +84,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          article_images?: Json | null
           bible_version?: string | null
           content?: string
           cover_image_url?: string | null
@@ -103,6 +106,7 @@ export type Database = {
           bible_version: string | null
           bio: string | null
           blog_handle: string | null
+          blog_name: string | null
           created_at: string
           doctrine: string | null
           full_name: string
@@ -120,6 +124,7 @@ export type Database = {
           bible_version?: string | null
           bio?: string | null
           blog_handle?: string | null
+          blog_name?: string | null
           created_at?: string
           doctrine?: string | null
           full_name?: string
@@ -137,6 +142,7 @@ export type Database = {
           bible_version?: string | null
           bio?: string | null
           blog_handle?: string | null
+          blog_name?: string | null
           created_at?: string
           doctrine?: string | null
           full_name?: string
