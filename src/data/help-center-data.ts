@@ -166,6 +166,7 @@ function generateSimpleArticles(): HelpFullArticle[] {
     ...a,
     heroBullets: generateBullets(a.toolId),
     sections: generateSections(a.toolId, a.title),
+    quickSummary: generateQuickSummary(a.toolId),
   }));
 }
 
