@@ -1,27 +1,23 @@
 
 
-# Redesign da Página Interna de Ferramentas (Dashboard)
+## Problema
+Os botões na página de artigo da Central de Ajuda (`HelpArticlePage.tsx`) têm contraste insuficiente — o texto não é legível. O problema afeta:
 
-## Mudanças
+1. **Botão CTA principal** (linhas 70-78 e 243-249): usa `text-white` sobre gradiente `hsl(35,50%,45%)` — lightness de 45% é insuficiente para branco.
+2. **Botão "Voltar" ghost** (linha 65): usa `text-[hsl(220,10%,50%)]` — texto cinza claro sobre fundo claro.
+3. **Botão outline "Voltar para a Central"** (linha 251): herda cores do tema que podem ter baixo contraste.
 
-### 1. Header — boas-vindas com nome do usuário (não "Pastor")
-- Greeting usa `profile?.full_name?.split(' ')[0]` com fallback genérico (não "Pastor")
-- Copy explicativa abaixo mais acolhedora e contextual, trilíngue
+## Correções
 
-### 2. Cada seção ganha copy explicativa trilíngue
-- Pesquisa: "Aprofunde-se no texto bíblico..." / "Dive deeper into the biblical text..." / "Profundice en el texto bíblico..."
-- Escrita: "Transforme seu estudo em conteúdo..." / "Turn your study into ready content..." / "Transforma tu estudio en contenido..."
-- Alcance: "Leve sua mensagem além do púlpito..." / "Take your message beyond the pulpit..." / "Lleva tu mensaje más allá del púlpito..."
-- Divertidas: "Engaje sua comunidade..." / "Engage your community..." / "Involucra a tu comunidad..."
+### Arquivo: `src/pages/HelpArticlePage.tsx`
 
-### 3. ToolCard horizontal
-- `src/components/ToolCard.tsx`: flex-col → flex-row, ícone à esquerda, texto à direita
-- Card mais largo e baixo
+1. **Botões CTA com gradiente** (linhas 73 e 245): escurecer o gradiente para garantir contraste com texto branco:
+   - `from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)]` (mais escuro, lightness ~30%)
+   - Hover: `from-[hsl(28,45%,38%)] to-[hsl(25,40%,32%)]`
 
-### 4. Grid ajustado
-- `src/pages/Dashboard.tsx`: grid de 4-5 cols → 2 cols desktop, 1 col mobile
+2. **Botão ghost "Voltar"** (linha 65): trocar `text-[hsl(220,10%,50%)]` por `text-[hsl(24,30%,30%)]` (mais escuro e no tom quente correto).
 
-### Arquivos editados
-- `src/components/ToolCard.tsx`
-- `src/pages/Dashboard.tsx`
+3. **Botão outline "Voltar para a Central"** (linha 251): adicionar `text-[hsl(24,30%,20%)] border-[hsl(30,15%,78%)]` para garantir texto escuro e borda visível.
+
+Todas as alterações são apenas em `src/pages/HelpArticlePage.tsx`, ajustando valores HSL inline para garantir ratio de contraste WCAG AA (4.5:1+).
 
