@@ -452,6 +452,12 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                   <RefreshCw className="h-3 w-3" /> {lang === 'PT' ? 'Novo' : lang === 'EN' ? 'New' : 'Nuevo'}
                 </Button>
               </div>
+
+              <MaterialFeedback
+                materialType={toolId}
+                materialTitle={toolTitle}
+                toolId={toolId}
+              />
             </div>
           )}
         </div>
