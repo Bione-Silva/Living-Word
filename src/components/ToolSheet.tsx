@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -100,7 +100,6 @@ const toolConfigs: Record<string, {
     systemPrompt: (lang) => `You are a content repurposing specialist. The user will paste a video transcript or key points. Transform this content into a well-structured, SEO-friendly blog article in Markdown format (600-800 words) with H1 title, introduction, 2-3 sections with H2 headings, and conclusion. Write in ${lang}.`,
     useTextarea: true,
   },
-  // Outreach tools
   'reels-script': {
     inputLabel: { PT: 'Tema ou versículo', EN: 'Topic or verse', ES: 'Tema o versículo' },
     placeholder: { PT: 'Ex: Filipenses 4:13', EN: 'E.g.: Philippians 4:13', ES: 'Ej: Filipenses 4:13' },
@@ -126,7 +125,6 @@ const toolConfigs: Record<string, {
     placeholder: { PT: 'Ex: Culto de jovens sexta, bazar sábado', EN: 'E.g.: Youth service Friday, bazaar Saturday', ES: 'Ej: Culto de jóvenes viernes, bazar sábado' },
     systemPrompt: (lang) => `You are a church announcements writer. Given event info, create clear, warm, engaging announcements for the church bulletin/slides. Include date, time, and calls to action. Write in ${lang}.`,
   },
-  // Fun & Dynamic tools
   'trivia': {
     inputLabel: { PT: 'Tema ou livro da Bíblia', EN: 'Topic or Bible book', ES: 'Tema o libro de la Biblia' },
     placeholder: { PT: 'Ex: Gênesis, milagres de Jesus', EN: 'E.g.: Genesis, miracles of Jesus', ES: 'Ej: Génesis, milagros de Jesús' },
@@ -194,7 +192,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       if (error) throw error;
       setResult(data?.content || 'No response');
       setHistoricalSources(data?.historical_sources_used || null);
-      // Show blog prompt for non-article tools
       if (!isArticleTool) {
         setShowBlogPrompt(true);
       }
@@ -208,7 +205,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const handleCopy = () => {
     navigator.clipboard.writeText(result);
     toast.success(lang === 'PT' ? 'Copiado!' : 'Copied!');
-    resetForm();
   };
 
   const handleSave = async () => {
@@ -224,7 +220,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       });
       if (error) throw error;
       toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : 'Saved to Library!');
-      resetForm();
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -256,7 +251,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         published_at: new Date().toISOString(),
       });
       toast.success(lang === 'PT' ? 'Publicado no blog!' : 'Published to blog!');
-      resetForm();
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -269,7 +263,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setConvertingToBlog(true);
     setShowBlogPrompt(false);
     try {
-      // Use generate-blog-article which creates text + 4 contextual images + saves + publishes
       const { data, error } = await supabase.functions.invoke('generate-blog-article', {
         body: {
           passage: input,
@@ -295,7 +288,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     }
   };
 
-  const handleSheetClose = (isOpen: boolean) => {
+  const handleDialogClose = (isOpen: boolean) => {
     if (!isOpen) {
       resetForm();
     }
@@ -303,18 +296,18 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   };
 
   return (
-    <Sheet open={open} onOpenChange={handleSheetClose}>
-      <SheetContent side="right" className="theme-app w-full sm:max-w-lg overflow-y-auto bg-background text-foreground border-l border-border">
-        <SheetHeader>
-          <SheetTitle className="font-display text-xl">{toolTitle}</SheetTitle>
-          <SheetDescription className="sr-only">
+    <Dialog open={open} onOpenChange={handleDialogClose}>
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background text-foreground">
+        <DialogHeader>
+          <DialogTitle className="font-display text-2xl">{toolTitle}</DialogTitle>
+          <DialogDescription className="sr-only">
             {lang === 'PT' ? 'Ferramenta pastoral' : 'Pastoral tool'}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="space-y-4 mt-4">
+        <div className="space-y-4 mt-2">
           <div className="space-y-2">
-            <Label>{config.inputLabel[lang]}</Label>
+            <Label className="font-medium">{config.inputLabel[lang]}</Label>
             {config.useTextarea ? (
               <Textarea
                 value={input}
@@ -359,14 +352,12 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
           {result && (
             <div className="space-y-3">
-              {/* RAG Historical Sources */}
               <HistoricalSourcesCard sources={historicalSources} lang={lang} />
 
               <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>
 
-              {/* Blog conversion prompt for non-article tools */}
               {showBlogPrompt && !isArticleTool && (
                 <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
                   <p className="text-sm font-medium text-foreground">
@@ -432,7 +423,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
             </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

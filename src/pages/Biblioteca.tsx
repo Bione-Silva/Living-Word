@@ -15,11 +15,32 @@ import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 
 
 
-const typeIcons: Record<string, React.ElementType> = {
-  sermon: BookOpen,
-  outline: FileText,
-  devotional: Heart,
-  blog_article: FileText,
+const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: React.ElementType }> = {
+  sermon: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón', icon: BookOpen },
+  outline: { PT: 'Esboço', EN: 'Outline', ES: 'Esquema', icon: FileText },
+  devotional: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional', icon: Heart },
+  blog_article: { PT: 'Artigo', EN: 'Article', ES: 'Artículo', icon: FileText },
+  'topic-explorer': { PT: 'Explorador de Temas', EN: 'Topic Explorer', ES: 'Explorador de Temas', icon: FileText },
+  'verse-finder': { PT: 'Versículos', EN: 'Verses', ES: 'Versículos', icon: BookOpen },
+  'historical-context': { PT: 'Contexto Histórico', EN: 'Historical Context', ES: 'Contexto Histórico', icon: BookOpen },
+  'quote-finder': { PT: 'Citações', EN: 'Quotes', ES: 'Citas', icon: FileText },
+  'movie-scenes': { PT: 'Cenas de Filmes', EN: 'Movie Scenes', ES: 'Escenas', icon: FileText },
+  'original-text': { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original', icon: FileText },
+  'lexical': { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico', icon: FileText },
+  'title-gen': { PT: 'Títulos', EN: 'Titles', ES: 'Títulos', icon: FileText },
+  'metaphor-creator': { PT: 'Metáforas', EN: 'Metaphors', ES: 'Metáforas', icon: FileText },
+  'bible-modernizer': { PT: 'Modernizador', EN: 'Modernizer', ES: 'Modernizador', icon: FileText },
+  'illustrations': { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones', icon: FileText },
+  'free-article': { PT: 'Artigo', EN: 'Article', ES: 'Artículo', icon: FileText },
+  'reels-script': { PT: 'Roteiro Reels', EN: 'Reels Script', ES: 'Guión Reels', icon: FileText },
+  'cell-group': { PT: 'Célula', EN: 'Cell Group', ES: 'Célula', icon: FileText },
+  'social-caption': { PT: 'Legendas', EN: 'Captions', ES: 'Leyendas', icon: FileText },
+  'newsletter': { PT: 'Newsletter', EN: 'Newsletter', ES: 'Newsletter', icon: FileText },
+  'announcements': { PT: 'Avisos', EN: 'Announcements', ES: 'Avisos', icon: FileText },
+  'trivia': { PT: 'Quiz', EN: 'Trivia', ES: 'Trivia', icon: FileText },
+  'poetry': { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía', icon: FileText },
+  'kids-story': { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil', icon: FileText },
+  'deep-translation': { PT: 'Tradução', EN: 'Translation', ES: 'Traducción', icon: FileText },
 };
 
 export default function Biblioteca() {
