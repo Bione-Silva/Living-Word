@@ -81,20 +81,19 @@ export default function Cadastro() {
       ],
     };
 
-    const targetLanguages: Language[] = ['PT', 'EN', 'ES'];
+    // Fire all 9 article generations in parallel (fire-and-forget)
+    const allCalls = (['PT', 'EN', 'ES'] as Language[]).flatMap(targetLang =>
+      localizedTitles[targetLang].map(p =>
+        supabase.functions.invoke('generate-blog-article', {
+          body: { passage: p.passage, language: targetLang, title: p.title },
+        }).catch(e => console.error('Auto-gen failed:', e))
+      )
+    );
 
-    for (const targetLanguage of targetLanguages) {
-      for (const p of localizedTitles[targetLanguage]) {
-        try {
-          const { error } = await supabase.functions.invoke('generate-blog-article', {
-            body: { passage: p.passage, language: targetLanguage, title: p.title },
-          });
-          if (error) console.error('Auto-gen error:', error);
-        } catch (e) {
-          console.error('Auto-gen failed:', e);
-        }
-      }
-    }
+    Promise.allSettled(allCalls).then(results => {
+      const failed = results.filter(r => r.status === 'rejected').length;
+      if (failed > 0) console.warn(`${failed} article(s) failed to generate`);
+    });
   };
 
   const steps = [
