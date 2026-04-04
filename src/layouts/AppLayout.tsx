@@ -450,6 +450,15 @@ export default function AppLayout() {
             </Link>
           )}
 
+          {/* Help Center */}
+          <button
+            onClick={() => setHelpToolId('studio')}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+          >
+            <HelpCircle className="h-4 w-4" />
+            {lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda'}
+          </button>
+
           {/* Settings */}
           <Link
             to="/configuracoes"
