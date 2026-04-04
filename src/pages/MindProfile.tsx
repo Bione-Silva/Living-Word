@@ -96,37 +96,37 @@ export default function MindProfile() {
       {/* ═══════════════════════════════════════════════════════════════
           HERO SECTION — Cinematic header
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative rounded-3xl border border-[hsl(43,55%,58%)]/20 bg-gradient-to-b from-[hsl(215,50%,8%)] via-[hsl(210,40%,6%)] to-[hsl(215,45%,5%)] p-8 sm:p-14 text-center overflow-hidden">
+      <section className="relative rounded-3xl border border-border/40 bg-gradient-to-b from-[hsl(30,25%,88%)] via-[hsl(33,22%,85%)] to-[hsl(30,20%,82%)] p-8 sm:p-14 text-center overflow-hidden">
         {/* Decorative orbs */}
-        <div className="absolute top-[-80px] left-1/4 w-[500px] h-[500px] bg-[hsl(43,55%,58%)]/[0.04] rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-[-60px] right-1/3 w-[400px] h-[400px] bg-[hsl(43,55%,58%)]/[0.03] rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(43,55%,58%)]/20 to-transparent" />
+        <div className="absolute top-[-80px] left-1/4 w-[500px] h-[500px] bg-[hsl(28,42%,55%)]/[0.08] rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-[-60px] right-1/3 w-[400px] h-[400px] bg-[hsl(28,42%,55%)]/[0.06] rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(28,42%,55%)]/25 to-transparent" />
 
         <div className="relative z-10">
           {/* Photo */}
-          <div className="mx-auto w-36 h-36 sm:w-44 sm:h-44 rounded-full border-[3px] border-[hsl(43,55%,58%)]/40 overflow-hidden shadow-[0_0_80px_hsl(43,55%,58%,0.12),0_0_30px_hsl(43,55%,58%,0.08)] mb-6 ring-4 ring-[hsl(43,55%,58%)]/[0.06] ring-offset-4 ring-offset-[hsl(215,50%,8%)]">
+          <div className="mx-auto w-36 h-36 sm:w-44 sm:h-44 rounded-full border-[3px] border-[hsl(28,42%,55%)]/50 overflow-hidden shadow-[0_0_60px_hsl(28,42%,55%,0.15),0_0_30px_hsl(28,42%,55%,0.1)] mb-6 ring-4 ring-[hsl(28,42%,55%)]/[0.1] ring-offset-4 ring-offset-[hsl(30,25%,88%)]">
             <img src={mind.image} alt={mind.name} className="w-full h-full object-cover" width={176} height={176} />
           </div>
 
           {/* Name & subtitle */}
-          <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight">{mind.name}</h1>
-          <p className="text-lg sm:text-xl italic text-[hsl(43,55%,58%)]/80 mt-2 font-display">{mind.subtitle[lang]}</p>
+          <h1 className="font-display text-4xl sm:text-5xl font-bold text-[hsl(24,30%,15%)] tracking-tight">{mind.name}</h1>
+          <p className="text-lg sm:text-xl italic text-[hsl(28,42%,42%)]/80 mt-2 font-display">{mind.subtitle[lang]}</p>
 
           {/* Online indicator */}
           <div className="flex items-center justify-center gap-2 mt-4">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
             </span>
-            <span className="text-xs text-emerald-400 font-semibold tracking-wide uppercase">{sectionLabels.mentorOnline[lang]}</span>
+            <span className="text-xs text-emerald-600 font-semibold tracking-wide uppercase">{sectionLabels.mentorOnline[lang]}</span>
           </div>
 
           {/* Data weight badges */}
           <div className="flex flex-wrap justify-center gap-2.5 mt-7">
             {mind.badges.map((badge, i) => (
-              <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-full border border-[hsl(43,55%,58%)]/15 bg-[hsl(43,55%,58%)]/[0.06] backdrop-blur-sm">
-                <Database className="h-3.5 w-3.5 text-[hsl(43,55%,58%)]/70" />
-                <span className="text-xs font-medium text-[hsl(43,55%,58%)]/90">{badge[lang]}</span>
+              <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-full border border-[hsl(28,42%,42%)]/20 bg-[hsl(28,42%,42%)]/[0.08]">
+                <Database className="h-3.5 w-3.5 text-[hsl(28,42%,42%)]/70" />
+                <span className="text-xs font-medium text-[hsl(24,30%,20%)]/80">{badge[lang]}</span>
               </div>
             ))}
           </div>
