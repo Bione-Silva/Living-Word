@@ -209,6 +209,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
           {result && (
             <div className="space-y-3">
+              <HistoricalSourcesCard sources={historicalSources} lang={lang} />
               <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[40vh] overflow-y-auto">
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>
