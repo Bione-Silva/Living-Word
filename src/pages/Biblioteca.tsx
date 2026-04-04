@@ -95,8 +95,8 @@ export default function Biblioteca() {
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[160px]">
-            <Filter className="h-3 w-3 mr-1" />
+          <SelectTrigger className="w-[160px] border-lw-amber/40 bg-background text-foreground shadow-sm">
+            <Filter className="h-3 w-3 mr-1 text-lw-cafe" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -111,7 +111,7 @@ export default function Biblioteca() {
           variant={favFilter ? 'default' : 'outline'}
           size="icon"
           onClick={() => setFavFilter(!favFilter)}
-          className="shrink-0"
+          className={`shrink-0 border-lw-amber/40 shadow-sm ${favFilter ? '' : 'text-lw-cafe'}`}
         >
           <Star className={`h-4 w-4 ${favFilter ? 'fill-current' : ''}`} />
         </Button>
