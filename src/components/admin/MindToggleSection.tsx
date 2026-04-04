@@ -101,7 +101,36 @@ export function MindToggleSection() {
           <h2 className="text-lg font-bold admin-text">Controle de Mentes</h2>
           <p className="text-xs admin-muted">Ative ou desative mentes visíveis na plataforma</p>
         </div>
+        <div className="ml-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-xs gap-1.5"
+            onClick={checkInactiveMinds}
+            disabled={checkingInactive}
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${checkingInactive ? 'animate-spin' : ''}`} />
+            Verificar alertas
+          </Button>
+        </div>
       </div>
+
+      {inactiveAlert && inactiveAlert.count > 0 && (
+        <div className="mb-4 p-3.5 rounded-xl border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+              {inactiveAlert.count} mente(s) desativada(s) há mais de 7 dias
+            </p>
+            <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
+              {inactiveAlert.minds.map(m => m.id).join(', ')} — desde {new Date(inactiveAlert.minds[0]?.since).toLocaleDateString('pt-BR')}
+            </p>
+            <p className="text-[10px] text-amber-600 dark:text-amber-500 mt-1">
+              Última verificação: {new Date(inactiveAlert.checked_at).toLocaleString('pt-BR')}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-2">
         {minds.map(mind => {
