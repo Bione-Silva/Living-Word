@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect, useRef } from 'react';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
+import { detectGeoRegion, PRICING_MAP, formatPrice } from '@/utils/geoPricing';
 import {
   Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
   ChevronDown, Check, X as XIcon, Menu, X, BookOpen, PenTool,
@@ -274,10 +275,14 @@ const copy = {
     tag: { PT: 'Planos', EN: 'Plans', ES: 'Planes' },
     h2: { PT: 'Comece grátis. Cresça quando precisar.', EN: 'Start free. Grow when you need to.', ES: 'Empieza gratis. Crece cuando necesites.' },
   },
-  plans: [
+  plans: (() => {
+    const r = detectGeoRegion();
+    const p = PRICING_MAP[r];
+    const fmt = (amt: number) => formatPrice(amt, p.symbol, p.currency);
+    return [
     {
       name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
-      price: 'R$0',
+      price: `${p.symbol}0`,
       period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' },
       features: {
         PT: ['5 gerações/mês', 'Sermão + esboço básico', '1 artigo devocional/mês', 'Blog cristão no ar', 'PT, EN ou ES'],
@@ -290,7 +295,7 @@ const copy = {
     },
     {
       name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
-      price: 'R$9,90',
+      price: fmt(p.plans.starter.amount),
       period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' },
       features: {
         PT: ['Até 15 sermões/mês', 'Até 50 conteúdos totais', 'Todos os 7+ formatos', 'Blog com publicação automática', 'Sem watermark', '7 dias grátis sem cartão'],
@@ -303,7 +308,7 @@ const copy = {
     },
     {
       name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
-      price: 'R$29,90',
+      price: fmt(p.plans.pro.amount),
       period: { PT: '/mês', EN: '/month', ES: '/mes' },
       features: {
         PT: ['Até 60 sermões/mês', 'Produção completa semanal', 'Acesso a Mentes Brilhantes', 'Estudo bíblico profundo', 'Séries devocionais automáticas', 'Voz pastoral personalizada', 'Calendário editorial'],
@@ -316,18 +321,19 @@ const copy = {
     },
     {
       name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
-      price: 'R$79,90',
+      price: fmt(p.plans.church.amount),
       period: { PT: '/mês', EN: '/month', ES: '/mes' },
       features: {
-        PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', '+R$9,90 por usuário extra', 'Capacidade escala com a equipe'],
-        EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', '+R$9.90 per extra user', 'Capacity scales with team'],
-        ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', '+R$9,90 por usuario extra', 'Capacidad escala con el equipo'],
+        PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', `+${fmt(p.addon.amount)} por usuário extra`, 'Capacidade escala com a equipe'],
+        EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', `+${fmt(p.addon.amount)} per extra user`, 'Capacity scales with team'],
+        ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', `+${fmt(p.addon.amount)} por usuario extra`, 'Capacidad escala con el equipo'],
       },
       cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' },
       featured: false,
       capacity: { PT: 'Escala ministerial', EN: 'Ministry scale', ES: 'Escala ministerial' },
     },
-  ],
+  ];
+  })(),
   faq: {
     tag: { PT: 'Perguntas frequentes', EN: 'FAQ', ES: 'Preguntas frecuentes' },
     h2: { PT: 'Respostas diretas.', EN: 'Straight answers.', ES: 'Respuestas directas.' },
