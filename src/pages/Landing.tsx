@@ -324,6 +324,7 @@ const copy = {
     },
     {
       name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
+      planKey: 'church' as string | null,
       price: fmt(p.plans.church.amount),
       period: { PT: '/mês', EN: '/month', ES: '/mes' },
       features: {
