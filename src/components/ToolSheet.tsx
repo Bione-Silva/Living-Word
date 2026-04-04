@@ -220,7 +220,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         title: `${toolTitle} — ${input.substring(0, 50)}`,
         type: toolId,
         content: result,
-        language: lang,
+        language: generationLang,
       });
       if (error) throw error;
       toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : 'Saved to Library!');
