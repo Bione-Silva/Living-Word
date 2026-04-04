@@ -13,7 +13,7 @@ interface StudyActionsProps {
 }
 
 export function StudyActions({ study }: StudyActionsProps) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { lang } = useLanguage();
   const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null);
 
