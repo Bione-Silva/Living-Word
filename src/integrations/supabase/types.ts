@@ -52,6 +52,48 @@ export type Database = {
           },
         ]
       }
+      global_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      master_api_vault: {
+        Row: {
+          api_key: string
+          id: string
+          provider_id: string
+          updated_at: string
+        }
+        Insert: {
+          api_key: string
+          id?: string
+          provider_id: string
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          id?: string
+          provider_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       materials: {
         Row: {
           article_images: Json | null
@@ -159,10 +201,32 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_saas_metrics: {
+        Row: {
+          estimated_mrr_usd: number | null
+          total_users_registered: number | null
+          users_church: number | null
+          users_free: number | null
+          users_ministry: number | null
+          users_pastoral: number | null
+          users_trialing: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_admin_saas_metrics: {
+        Args: never
+        Returns: {
+          estimated_mrr_usd: number
+          total_users_registered: number
+          users_church: number
+          users_free: number
+          users_ministry: number
+          users_pastoral: number
+          users_trialing: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

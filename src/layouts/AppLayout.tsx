@@ -16,12 +16,13 @@ import {
   Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain,
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon,
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
-  HelpCircle, Feather, Baby, Globe, Gamepad2
+  HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert
 } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
+import { SupportChatBubble } from '@/components/SupportChatBubble';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -97,7 +98,7 @@ const mobileNavItems = [
 ];
 
 export default function AppLayout() {
-  const { profile, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { t, lang } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
@@ -125,6 +126,7 @@ export default function AppLayout() {
   };
 
   const isFree = profile?.plan === 'free';
+  const isAdmin = user?.email === 'bionicaosilva@gmail.com';
 
   const handleToolClick = (tool: SidebarToolItem) => {
     if (tool.locked && isFree) {
@@ -279,6 +281,7 @@ export default function AppLayout() {
             toolTitle={activeTool.title}
           />
         )}
+        <SupportChatBubble />
       </div>
     );
   }
@@ -430,6 +433,21 @@ export default function AppLayout() {
             </Badge>
           </Link>
 
+          {/* Admin - Master only */}
+          {isAdmin && (
+            <Link
+              to="/admin/dashboard"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/admin/dashboard'
+                  ? 'bg-destructive/10 text-destructive'
+                  : 'text-destructive/70 hover:bg-destructive/10 hover:text-destructive'
+              }`}
+            >
+              <ShieldAlert className="h-4 w-4" />
+              Back-office (Master)
+            </Link>
+          )}
+
           {/* Settings */}
           <Link
             to="/configuracoes"
@@ -496,6 +514,7 @@ export default function AppLayout() {
           toolTitle={activeTool.title}
         />
       )}
+      <SupportChatBubble />
     </div>
   );
 }

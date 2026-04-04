@@ -26,6 +26,7 @@ import BlogArticle from "./pages/BlogArticle";
 import BlogOnboarding from "./pages/BlogOnboarding";
 import NotFound from "./pages/NotFound";
 import EstudoBiblicoPage from "./pages/EstudoBiblicoPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -92,7 +93,8 @@ const App = () => (
                 <Route path="/upgrade" element={<Upgrade />} />
                 <Route path="/dashboard/mentes" element={<MentesBrilhantes />} />
                 <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
-                <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
+              <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
