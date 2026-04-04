@@ -133,16 +133,16 @@ Style: ${voice} tone, ${doctrine} tradition.
 Output a complete devotional blog article in Markdown format with:
 - A compelling title (H1)
 - Opening reflection (2-3 paragraphs)
-- Bible passage reference and commentary
+- Bible passage reference and commentary with historical and cultural context
 - Practical application for daily life
-- Closing prayer
-Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
+- Closing prayer or reflection
+The article MUST have between 400 and 700 words. Structure it like a well-organized sermon with scannable sections (use H2/H3 headings). Be warm, theologically sound, and accessible.`;
 
     const userPrompt = inputTitle
       ? `Write a devotional article about "${passage}" with the title "${inputTitle}".`
       : `Write a devotional article based on the passage: ${passage}.`;
 
-    // Generate article content
+    // Generate article content using GPT-5 for superior writing quality
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -150,7 +150,7 @@ Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "openai/gpt-5",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -183,10 +183,12 @@ Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
     const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
 
     // Generate up to 3 images in parallel
+    // Generate historically accurate, epoch-representative images (max 4)
     const imagePrompts = [
-      `A beautiful, warm, serene Christian devotional cover image about "${passage}". Pastoral landscape with soft golden light, peaceful atmosphere. No text, no words, no letters. Photographic style, high quality, warm earth tones.`,
-      `A contemplative Christian scene inspired by "${passage}". Soft morning light, open Bible on a wooden table, warm colors, peaceful setting. No text or letters. Artistic, editorial style photo.`,
-      `A spiritual, uplifting image representing the message of "${passage}". Nature scene with divine light rays, warm golden hour atmosphere. No text or words. Cinematic photography style.`,
+      `A historically accurate, epoch-representative scene from the Bible passage "${passage}". Ancient Middle Eastern setting with period-appropriate architecture, clothing, and landscape. If this is about Genesis, show ancient Mesopotamian aesthetics; if about Psalms, show ancient Israel with shepherds and rolling hills; if about the Gospels, show 1st century Judea. Warm earth tones, golden light, painterly oil painting style. No text, no words, no letters.`,
+      `A contemplative biblical scene inspired by "${passage}" with historical accuracy. Ancient setting with period-correct details: clay vessels, olive trees, stone buildings, desert landscape. Warm golden hour light. No text or letters. Renaissance painting style.`,
+      `A spiritual illustration of "${passage}" showing the cultural context of the biblical era. Include period-accurate clothing, tools, and environment. If Old Testament: ancient Near East aesthetics. If New Testament: Roman-era Judea. Artistic, warm tones, dramatic lighting. No text or words.`,
+      `A serene, devotional image representing the theological message of "${passage}". Biblical landscape with divine light rays, ancient architecture in the background, warm earth and gold tones. Historical accuracy in any human figures shown. Cinematic photography style. No text.`,
     ];
 
     const imageResults = await Promise.allSettled(

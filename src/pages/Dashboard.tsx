@@ -1,16 +1,18 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import {
   Wand2, PenLine, Type, Video, BookOpen, Languages, X,
   Search, Globe, Quote, Clapperboard, ScrollText, Lightbulb, Sparkles,
   Crown, Film, Megaphone, MessageSquare, Mail, Newspaper,
-  Gamepad2, Feather, Baby, ArrowRightLeft
+  Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy
 } from 'lucide-react';
 import { useState } from 'react';
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
+import { toast } from 'sonner';
 
 const researchTools: ToolCardData[] = [
   { id: 'topic-explorer', icon: Search, title: { PT: 'Explorador de Tópicos', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: 'Descubra subtemas e ângulos para sua pregação', EN: 'Discover subtopics and angles for your sermon', ES: 'Descubre subtemas y ángulos para tu sermón' }, hasModal: true },
@@ -109,16 +111,45 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Blog Status */}
+      {/* Blog Portal */}
       {profile?.blog_handle && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="p-3.5">
-            <p className="text-sm">
-              🎉 {lang === 'PT' ? 'Seu blog está no ar:' : lang === 'EN' ? 'Your blog is live:' : 'Tu blog está en línea:'}{' '}
-              <a href={`/blog/${profile.blog_handle}`} className="text-primary font-semibold underline underline-offset-2">
-                {profile.blog_handle}.livingword.app
-              </a>
-            </p>
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 overflow-hidden">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                  <Globe className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    {lang === 'PT' ? 'Seu Portal do Blog' : lang === 'EN' ? 'Your Blog Portal' : 'Tu Portal del Blog'}
+                  </p>
+                  <p className="text-sm font-mono font-semibold text-primary mt-0.5">
+                    {profile.blog_handle}.livingword.app
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5 text-xs h-8"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/blog/${profile.blog_handle}`);
+                    toast.success(lang === 'PT' ? 'Link copiado!' : 'Link copied!');
+                  }}
+                >
+                  <Copy className="w-3 h-3" />
+                  {lang === 'PT' ? 'Copiar' : 'Copy'}
+                </Button>
+                <Link to={`/blog/${profile.blog_handle}`} target="_blank">
+                  <Button size="sm" className="gap-1.5 text-xs h-8">
+                    <ExternalLink className="w-3 h-3" />
+                    {lang === 'PT' ? 'Acessar Portal' : lang === 'EN' ? 'Visit Portal' : 'Acceder al Portal'}
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
