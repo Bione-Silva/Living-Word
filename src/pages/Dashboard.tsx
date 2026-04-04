@@ -168,6 +168,8 @@ export default function Dashboard() {
         </p>
       </div>
 
+      <TrialCountdown />
+
       {showBanner && isFree && (
         <Card className="border-accent/30 bg-accent/5">
           <CardContent className="p-3.5 flex items-center justify-between gap-3">
