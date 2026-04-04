@@ -48,12 +48,37 @@ const funTools: ToolCardData[] = [
   { id: 'deep-translation', icon: ArrowRightLeft, title: { PT: 'Tradução Teológica', EN: 'Theological Translation', ES: 'Traducción Teológica' }, description: { PT: 'Tradução profunda com nuance teológica', EN: 'Deep translation with theological nuance', ES: 'Traducción profunda con matiz teológico' }, locked: true, hasModal: true },
 ];
 
+const sectionDescriptions = {
+  research: {
+    PT: 'Aprofunde-se no texto bíblico antes de preparar sua mensagem. Encontre contexto, versículos e citações relevantes.',
+    EN: 'Dive deeper into the biblical text before preparing your message. Find context, verses and relevant quotes.',
+    ES: 'Profundice en el texto bíblico antes de preparar su mensaje. Encuentre contexto, versículos y citas relevantes.',
+  },
+  create: {
+    PT: 'Transforme seu estudo em conteúdo pronto para usar: sermões, devocionais, títulos criativos e artigos.',
+    EN: 'Turn your study into ready-to-use content: sermons, devotionals, creative titles and articles.',
+    ES: 'Transforma tu estudio en contenido listo para usar: sermones, devocionales, títulos creativos y artículos.',
+  },
+  outreach: {
+    PT: 'Leve sua mensagem além do púlpito com conteúdo para redes sociais, células e newsletters.',
+    EN: 'Take your message beyond the pulpit with content for social media, cell groups and newsletters.',
+    ES: 'Lleva tu mensaje más allá del púlpito con contenido para redes sociales, células y newsletters.',
+  },
+  fun: {
+    PT: 'Engaje sua comunidade com quizzes, poesias e histórias para todas as idades.',
+    EN: 'Engage your community with quizzes, poetry and stories for all ages.',
+    ES: 'Involucra a tu comunidad con quizzes, poesía e historias para todas las edades.',
+  },
+};
+
 export default function Dashboard() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
   const isFree = profile?.plan === 'free';
   const [showBanner, setShowBanner] = useState(true);
   const [activeSheet, setActiveSheet] = useState<{ id: string; title: string } | null>(null);
+
+  const userName = profile?.full_name?.split(' ')[0] || (lang === 'PT' ? 'Amigo' : lang === 'EN' ? 'Friend' : 'Amigo');
 
   const copyLinkToast = lang === 'PT' ? 'Link copiado!' : lang === 'EN' ? 'Link copied!' : '¡Enlace copiado!';
   const copyLabel = lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar';
@@ -71,18 +96,50 @@ export default function Dashboard() {
     return `${emoji} ${labels[lang]}`;
   };
 
+  const renderSection = (
+    emoji: string,
+    ptLabel: string,
+    enLabel: string,
+    esLabel: string,
+    description: { PT: string; EN: string; ES: string },
+    tools: ToolCardData[]
+  ) => (
+    <section>
+      <div className="mb-4">
+        <div className="flex items-center gap-2 mb-1.5">
+          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
+            {sectionLabel(emoji, ptLabel, enLabel, esLabel)}
+          </h2>
+          <div className="flex-1 h-px bg-border/50" />
+        </div>
+        <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-2xl">
+          {description[lang]}
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {tools.map((tool, i) => (
+          <ToolCard key={tool.id} tool={tool} lang={lang} isFree={isFree} onClick={handleToolClick} index={i} />
+        ))}
+      </div>
+    </section>
+  );
+
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-8 max-w-5xl">
       <div>
         <h1 className="font-display text-2xl md:text-3xl font-bold">
-          {`Shalom, ${profile?.full_name?.split(' ')[0] || 'Pastor'}! 🕊️`}
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">
           {lang === 'PT'
-            ? 'Todas as suas ferramentas pastorais em um só lugar. Escolha e comece a criar.'
+            ? `Olá, ${userName}! 👋`
             : lang === 'EN'
-              ? 'All your pastoral tools in one place. Pick one and start creating.'
-              : 'Todas tus herramientas pastorales en un solo lugar. Elige y empieza a crear.'}
+              ? `Hello, ${userName}! 👋`
+              : `¡Hola, ${userName}! 👋`}
+        </h1>
+        <p className="text-muted-foreground text-sm mt-1.5 leading-relaxed max-w-xl">
+          {lang === 'PT'
+            ? 'Aqui estão todas as ferramentas para ajudar você a preparar, criar e compartilhar conteúdo. Escolha uma categoria e comece.'
+            : lang === 'EN'
+              ? 'Here are all the tools to help you prepare, create and share content. Pick a category and get started.'
+              : 'Aquí tienes todas las herramientas para ayudarte a preparar, crear y compartir contenido. Elige una categoría y comienza.'}
         </p>
       </div>
 
@@ -151,61 +208,10 @@ export default function Dashboard() {
         </Card>
       )}
 
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
-            {sectionLabel('🔎', 'FERRAMENTAS DE PESQUISA', 'RESEARCH TOOLS', 'HERRAMIENTAS DE INVESTIGACIÓN')}
-          </h2>
-          <div className="flex-1 h-px bg-border/50" />
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {researchTools.map((tool, i) => (
-            <ToolCard key={tool.id} tool={tool} lang={lang} isFree={isFree} onClick={handleToolClick} index={i} />
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
-            {sectionLabel('🖋️', 'ESCRITA E CRIAÇÃO', 'WRITING & CREATION', 'ESCRITURA Y CREACIÓN')}
-          </h2>
-          <div className="flex-1 h-px bg-border/50" />
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {createTools.map((tool, i) => (
-            <ToolCard key={tool.id} tool={tool} lang={lang} isFree={isFree} onClick={handleToolClick} index={i} />
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
-            {sectionLabel('📢', 'FERRAMENTAS DE ALCANCE', 'OUTREACH TOOLS', 'HERRAMIENTAS DE ALCANCE')}
-          </h2>
-          <div className="flex-1 h-px bg-border/50" />
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {outreachTools.map((tool, i) => (
-            <ToolCard key={tool.id} tool={tool} lang={lang} isFree={isFree} onClick={handleToolClick} index={i} />
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
-            {sectionLabel('🎮', 'DIVERTIDAS E DINÂMICAS', 'FUN & DYNAMIC', 'DIVERTIDAS Y DINÁMICAS')}
-          </h2>
-          <div className="flex-1 h-px bg-border/50" />
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {funTools.map((tool, i) => (
-            <ToolCard key={tool.id} tool={tool} lang={lang} isFree={isFree} onClick={handleToolClick} index={i} />
-          ))}
-        </div>
-      </section>
+      {renderSection('🔎', 'FERRAMENTAS DE PESQUISA', 'RESEARCH TOOLS', 'HERRAMIENTAS DE INVESTIGACIÓN', sectionDescriptions.research, researchTools)}
+      {renderSection('🖋️', 'ESCRITA E CRIAÇÃO', 'WRITING & CREATION', 'ESCRITURA Y CREACIÓN', sectionDescriptions.create, createTools)}
+      {renderSection('📢', 'FERRAMENTAS DE ALCANCE', 'OUTREACH TOOLS', 'HERRAMIENTAS DE ALCANCE', sectionDescriptions.outreach, outreachTools)}
+      {renderSection('🎮', 'DIVERTIDAS E DINÂMICAS', 'FUN & DYNAMIC', 'DIVERTIDAS Y DINÁMICAS', sectionDescriptions.fun, funTools)}
 
       {isFree && (
         <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
