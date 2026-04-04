@@ -276,69 +276,16 @@ const copy = {
     tag: { PT: 'Planos', EN: 'Plans', ES: 'Planes' },
     h2: { PT: 'Comece grátis. Cresça quando precisar.', EN: 'Start free. Grow when you need to.', ES: 'Empieza gratis. Crece cuando necesites.' },
   },
-  plans: (() => {
-    const r = detectGeoRegion();
-    const p = PRICING_MAP[r];
-    const fmt = (amt: number) => formatPrice(amt, p.symbol, p.currency);
-    return [
-    {
-      name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
-      planKey: null as string | null,
-      price: `${p.symbol}0`,
-      period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' },
-      features: {
-        PT: ['5 gerações/mês', 'Sermão + esboço básico', '1 artigo devocional/mês', 'Blog cristão no ar', 'PT, EN ou ES'],
-        EN: ['5 generations/month', 'Sermon + basic outline', '1 devotional article/month', 'Christian blog live', 'PT, EN or ES'],
-        ES: ['5 generaciones/mes', 'Sermón + bosquejo básico', '1 artículo devocional/mes', 'Blog cristiano en línea', 'PT, EN o ES'],
-      },
-      cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Empezar gratis' },
-      featured: false,
-      capacity: { PT: 'Uso básico', EN: 'Basic usage', ES: 'Uso básico' },
-    },
-    {
-      name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
-      planKey: 'starter' as string | null,
-      price: fmt(p.plans.starter.amount),
-      period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' },
-      features: {
-        PT: ['Até 15 sermões/mês', 'Até 50 conteúdos totais', 'Todos os 7+ formatos', 'Blog com publicação automática', 'Sem watermark', '7 dias grátis sem cartão'],
-        EN: ['Up to 15 sermons/month', 'Up to 50 total contents', 'All 7+ formats', 'Blog with auto-publishing', 'No watermark', '7 days free, no card'],
-        ES: ['Hasta 15 sermones/mes', 'Hasta 50 contenidos totales', 'Los 7+ formatos', 'Blog con publicación automática', 'Sin marca de agua', '7 días gratis sin tarjeta'],
-      },
-      cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' },
-      featured: false,
-      capacity: { PT: 'Produção semanal', EN: 'Weekly production', ES: 'Producción semanal' },
-    },
-    {
-      name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
-      planKey: 'pro' as string | null,
-      price: fmt(p.plans.pro.amount),
-      period: { PT: '/mês', EN: '/month', ES: '/mes' },
-      features: {
-        PT: ['Até 60 sermões/mês', 'Produção completa semanal', 'Acesso a Mentes Brilhantes', 'Estudo bíblico profundo', 'Séries devocionais automáticas', 'Voz pastoral personalizada', 'Calendário editorial'],
-        EN: ['Up to 60 sermons/month', 'Full weekly production', 'Brilliant Minds access', 'Deep Bible study', 'Automatic devotional series', 'Custom pastoral voice', 'Editorial calendar'],
-        ES: ['Hasta 60 sermones/mes', 'Producción completa semanal', 'Acceso a Mentes Brillantes', 'Estudio bíblico profundo', 'Series devocionales automáticas', 'Voz pastoral personalizada', 'Calendario editorial'],
-      },
-      cta: { PT: 'Começar agora →', EN: 'Get started →', ES: 'Empezar ahora →' },
-      featured: true,
-      capacity: { PT: 'Produção completa', EN: 'Full production', ES: 'Producción completa' },
-    },
-    {
-      name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
-      planKey: 'church' as string | null,
-      price: fmt(p.plans.church.amount),
-      period: { PT: '/mês', EN: '/month', ES: '/mes' },
-      features: {
-        PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', `+${fmt(p.addon.amount)} por usuário extra`, 'Capacidade escala com a equipe'],
-        EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', `+${fmt(p.addon.amount)} per extra user`, 'Capacity scales with team'],
-        ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', `+${fmt(p.addon.amount)} por usuario extra`, 'Capacidad escala con el equipo'],
-      },
-      cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' },
-      featured: false,
-      capacity: { PT: 'Escala ministerial', EN: 'Ministry scale', ES: 'Escala ministerial' },
-    },
-  ];
-  })(),
+  plans: [] as Array<{
+    name: Record<L, string>;
+    planKey: string | null;
+    price: string;
+    period: Record<L, string>;
+    features: Record<L, string[]>;
+    cta: Record<L, string>;
+    featured: boolean;
+    capacity: Record<L, string>;
+  }>,
   faq: {
     tag: { PT: 'Perguntas frequentes', EN: 'FAQ', ES: 'Preguntas frecuentes' },
     h2: { PT: 'Respostas diretas.', EN: 'Straight answers.', ES: 'Respuestas directas.' },
