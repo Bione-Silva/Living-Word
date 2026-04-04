@@ -18,7 +18,7 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
   return (
     <button
       onClick={() => onClick(mind)}
-      className="group relative text-left rounded-2xl border border-[hsl(43,55%,58%)]/10 bg-gradient-to-b from-[hsl(210,40%,10%)] to-[hsl(210,40%,7%)] hover:border-[hsl(43,55%,58%)]/30 transition-all duration-500 p-6 sm:p-7 overflow-hidden animate-fade-in"
+      className="group relative text-left rounded-2xl border border-[hsl(30,15%,80%)]/40 bg-card hover:border-[hsl(30,15%,70%)]/60 hover:shadow-lg transition-all duration-500 p-6 sm:p-7 overflow-hidden animate-fade-in"
       style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'backwards' }}
     >
       {/* Glow effect on hover */}
