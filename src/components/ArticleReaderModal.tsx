@@ -139,12 +139,12 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
                 prose-a:underline
               "
               style={{
-                '--tw-prose-headings': '#3c2f21',
-                '--tw-prose-body': '#4a3f35',
-                '--tw-prose-bold': '#3c2f21',
-                '--tw-prose-quotes': '#5a4a3a',
+                '--tw-prose-headings': '#2a1f14',
+                '--tw-prose-body': '#2e2318',
+                '--tw-prose-bold': '#2a1f14',
+                '--tw-prose-quotes': '#3a2e22',
                 '--tw-prose-quote-borders': '#C4956A',
-                '--tw-prose-links': '#6B4F3A',
+                '--tw-prose-links': '#5a3e28',
               } as React.CSSProperties}
             >
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
