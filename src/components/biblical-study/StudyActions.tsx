@@ -4,12 +4,17 @@ import { FileDown, FileText, ChevronDown, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BiblicalStudyOutput } from '@/types/biblical-study';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StudyActionsProps {
   study: BiblicalStudyOutput;
 }
 
 export function StudyActions({ study }: StudyActionsProps) {
+  const { user } = useAuth();
+  const { lang } = useLanguage();
+
   const handleExportPDF = async () => {
     try {
       const html2pdf = (await import('html2pdf.js')).default;
@@ -37,25 +42,67 @@ export function StudyActions({ study }: StudyActionsProps) {
     toast.info('Exportação DOCX em breve!');
   };
 
-  const handleTransform = async (mode: string, voice?: string) => {
+  const handleTransform = async (mode: 'sermon' | 'devotional' | 'lesson' | 'blog') => {
     try {
-      toast.info('Transformando conteúdo...');
+      toast.info(lang === 'PT' ? 'Transformando conteúdo...' : lang === 'EN' ? 'Transforming content...' : 'Transformando contenido...');
       if (mode === 'blog') {
-        await supabase.functions.invoke('generate-blog-article', {
-          body: { title: study.title, content: study.summary },
-        });
-      } else {
-        await supabase.functions.invoke('generate-pastoral-material', {
+        const { error } = await supabase.functions.invoke('generate-blog-article', {
           body: {
-            mode,
             passage: study.bible_passage,
-            pastoral_voice: voice || 'welcoming',
+            language: study.language,
+            title: study.title,
           },
         });
+        if (error) throw error;
+      } else {
+        const outputMode = mode === 'lesson' ? 'outline' : mode;
+        const { data, error } = await supabase.functions.invoke('generate-pastoral-material', {
+          body: {
+            bible_passage: study.bible_passage,
+            pain_point: study.central_idea,
+            language: study.language,
+            bible_version: study.bible_text?.[0]?.version || 'ARA',
+            output_modes: [outputMode],
+          },
+        });
+
+        if (error) throw error;
+
+        const content = data?.outputs?.[outputMode];
+        if (!content || !user) {
+          throw new Error('missing_generated_content');
+        }
+
+        const materialType = mode === 'lesson' ? 'outline' : outputMode;
+        const label = mode === 'sermon' ? 'Sermão' : mode === 'devotional' ? 'Devocional' : 'Aula';
+
+        const { error: saveError } = await supabase.from('materials').insert({
+          user_id: user.id,
+          title: `${label} — ${study.title}`,
+          type: materialType,
+          content,
+          language: study.language,
+          passage: study.bible_passage,
+          bible_version: study.bible_text?.[0]?.version || 'ARA',
+        });
+
+        if (saveError) throw saveError;
       }
-      toast.success('Conteúdo transformado! Verifique sua Biblioteca.');
+      toast.success(
+        lang === 'PT'
+          ? 'Conteúdo transformado com sucesso!'
+          : lang === 'EN'
+            ? 'Content transformed successfully!'
+            : '¡Contenido transformado con éxito!'
+      );
     } catch {
-      toast.error('Erro ao transformar conteúdo.');
+      toast.error(
+        lang === 'PT'
+          ? 'Erro ao transformar conteúdo.'
+          : lang === 'EN'
+            ? 'Error transforming content.'
+            : 'Error al transformar el contenido.'
+      );
     }
   };
 
@@ -78,13 +125,13 @@ export function StudyActions({ study }: StudyActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleTransform('pastoral')}>
+          <DropdownMenuItem onClick={() => handleTransform('sermon')}>
             Transformar em Sermão
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleTransform('devotional')}>
             Transformar em Devocional
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleTransform('pastoral', 'didactic')}>
+          <DropdownMenuItem onClick={() => handleTransform('lesson')}>
             Transformar em Aula
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleTransform('blog')}>

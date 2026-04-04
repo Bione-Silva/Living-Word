@@ -214,7 +214,7 @@ export default function Blog() {
             <p className="text-sm text-muted-foreground">{t('blog.subtitle')}</p>
           </div>
         </div>
-        <Button className="gap-2" onClick={() => navigate('/estudio')}>
+        <Button className="gap-2" onClick={() => navigate('/dashboard?tool=free-article')}>
           <Plus className="w-4 h-4" /> {t('blog.create_new')}
         </Button>
       </div>
@@ -268,7 +268,7 @@ export default function Blog() {
             {searchQuery ? t('blog.no_results_hint') : t('blog.no_articles_hint')}
           </p>
           {!searchQuery && (
-            <Button onClick={() => navigate('/estudio')} className="gap-2">
+            <Button onClick={() => navigate('/dashboard?tool=free-article')} className="gap-2">
               <Plus className="w-4 h-4" /> {t('blog.create_first')}
             </Button>
           )}

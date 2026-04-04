@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,7 +11,6 @@ import {
   Crown, Film, Megaphone, MessageSquare, Mail, Newspaper,
   Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy
 } from 'lucide-react';
-import { useState } from 'react';
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
 import { toast } from 'sonner';
@@ -25,7 +26,7 @@ const researchTools: ToolCardData[] = [
 ];
 
 const createTools: ToolCardData[] = [
-  { id: 'studio', icon: Wand2, title: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, description: { PT: 'Gere sermões, esboços e devocionais', EN: 'Generate sermons, outlines and devotionals', ES: 'Genera sermones, bosquejos y devocionales' }, path: '/estudio' },
+  { id: 'studio', icon: Wand2, title: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, description: { PT: 'Gere sermões, esboços e devocionais', EN: 'Generate sermons, outlines and devotionals', ES: 'Genera sermones, bosquejos y devocionales' } },
   { id: 'title-gen', icon: Type, title: { PT: 'Títulos Criativos', EN: 'Creative Titles', ES: 'Títulos Creativos' }, description: { PT: 'Ideias criativas de títulos para sermões', EN: 'Creative title ideas for sermons', ES: 'Ideas creativas de títulos' }, hasModal: true },
   { id: 'metaphor-creator', icon: Lightbulb, title: { PT: 'Criador de Metáforas', EN: 'Metaphor Creator', ES: 'Creador de Metáforas' }, description: { PT: 'Metáforas poderosas para sua mensagem', EN: 'Powerful metaphors for your message', ES: 'Metáforas poderosas para tu mensaje' }, hasModal: true },
   { id: 'illustrations', icon: Film, title: { PT: 'Ilustrações para Sermões', EN: 'Sermon Illustrations', ES: 'Ilustraciones' }, description: { PT: 'Histórias e ilustrações contemporâneas', EN: 'Contemporary stories and illustrations', ES: 'Historias e ilustraciones contemporáneas' }, locked: true, hasModal: true },
@@ -47,6 +48,8 @@ const funTools: ToolCardData[] = [
   { id: 'kids-story', icon: Baby, title: { PT: 'Histórias Infantis', EN: 'Kids Stories', ES: 'Historias Infantiles' }, description: { PT: 'Histórias bíblicas para crianças', EN: 'Bible stories for children', ES: 'Historias bíblicas para niños' }, hasModal: true },
   { id: 'deep-translation', icon: ArrowRightLeft, title: { PT: 'Tradução Teológica', EN: 'Theological Translation', ES: 'Traducción Teológica' }, description: { PT: 'Tradução profunda com nuance teológica', EN: 'Deep translation with theological nuance', ES: 'Traducción profunda con matiz teológico' }, locked: true, hasModal: true },
 ];
+
+const allTools: ToolCardData[] = [...researchTools, ...createTools, ...outreachTools, ...funTools];
 
 const sectionDescriptions = {
   research: {
@@ -74,15 +77,35 @@ const sectionDescriptions = {
 export default function Dashboard() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isFree = profile?.plan === 'free';
   const [showBanner, setShowBanner] = useState(true);
   const [activeSheet, setActiveSheet] = useState<{ id: string; title: string } | null>(null);
+  const requestedToolId = searchParams.get('tool');
 
   const userName = profile?.full_name?.split(' ')[0] || (lang === 'PT' ? 'Amigo' : lang === 'EN' ? 'Friend' : 'Amigo');
 
   const copyLinkToast = lang === 'PT' ? 'Link copiado!' : lang === 'EN' ? 'Link copied!' : '¡Enlace copiado!';
   const copyLabel = lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar';
   const portalLabel = lang === 'PT' ? 'Acessar Portal' : lang === 'EN' ? 'Visit Portal' : 'Acceder al Portal';
+
+  useEffect(() => {
+    if (!requestedToolId) return;
+
+    const requestedTool = allTools.find((tool) => tool.id === requestedToolId);
+    if (!requestedTool) return;
+
+    if (requestedTool.locked && isFree) {
+      setSearchParams({}, { replace: true });
+      return;
+    }
+
+    setActiveSheet((current) =>
+      current?.id === requestedTool.id
+        ? current
+        : { id: requestedTool.id, title: requestedTool.title[lang] }
+    );
+  }, [requestedToolId, isFree, lang, setSearchParams]);
 
   const handleToolClick = (tool: ToolCardData) => {
     if (tool.locked && isFree) return;
@@ -231,7 +254,14 @@ export default function Dashboard() {
       {activeSheet && (
         <ToolSheet
           open={true}
-          onOpenChange={(open) => !open && setActiveSheet(null)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setActiveSheet(null);
+              if (requestedToolId) {
+                setSearchParams({}, { replace: true });
+              }
+            }
+          }}
           toolId={activeSheet.id}
           toolTitle={activeSheet.title}
         />

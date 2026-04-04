@@ -12,7 +12,6 @@ import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
-import Estudio from "./pages/Estudio";
 import Blog from "./pages/Blog";
 import Biblioteca from "./pages/Biblioteca";
 import Calendario from "./pages/Calendario";
@@ -84,7 +83,7 @@ const App = () => (
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/blog-onboarding" element={<BlogOnboarding />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/estudio" element={<Estudio />} />
+                <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
                 <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/biblioteca" element={<Biblioteca />} />
