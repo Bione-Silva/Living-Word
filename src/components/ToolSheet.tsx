@@ -345,6 +345,9 @@ ${result}`;
 
           {result && (
             <div className="space-y-3">
+              {/* RAG Historical Sources */}
+              <HistoricalSourcesCard sources={historicalSources} lang={lang} />
+
               <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>
