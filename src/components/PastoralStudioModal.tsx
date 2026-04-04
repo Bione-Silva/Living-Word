@@ -319,7 +319,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
               <div className="space-y-2">
                 <Label>{text.mindLabel}</Label>
                 <div className="flex flex-wrap gap-2">
-                  {unlockedMinds.map((mind) => {
+                  {allMinds.map((mind) => {
                     const isSelected = formData.mind_id === mind.id;
                     return (
                       <button
