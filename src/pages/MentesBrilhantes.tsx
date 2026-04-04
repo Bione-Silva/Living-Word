@@ -4,6 +4,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { MindCard, type MindData } from '@/components/MindCard';
 import { MindProfileSheet } from '@/components/MindProfileSheet';
 import { Brain, Sparkles } from 'lucide-react';
+import billyGrahamImg from '@/assets/minds/billy-graham.jpg';
+import spurgeonImg from '@/assets/minds/charles-spurgeon.jpg';
+import lloydJonesImg from '@/assets/minds/martyn-lloyd-jones.jpg';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -11,6 +14,7 @@ const minds: MindData[] = [
   {
     id: 'billy-graham',
     name: 'Billy Graham',
+    image: billyGrahamImg,
     subtitle: { PT: 'O Evangelista da América', EN: 'America\'s Evangelist', ES: 'El Evangelista de América' },
     role: { PT: 'Apelo & Evangelismo em Massa', EN: 'Appeal & Mass Evangelism', ES: 'Apelación & Evangelismo Masivo' },
     locked: false,
@@ -32,6 +36,7 @@ const minds: MindData[] = [
   {
     id: 'charles-spurgeon',
     name: 'Charles Spurgeon',
+    image: spurgeonImg,
     subtitle: { PT: 'O Príncipe dos Pregadores', EN: 'The Prince of Preachers', ES: 'El Príncipe de los Predicadores' },
     role: { PT: 'Pregação Poética e Puritana', EN: 'Poetic & Puritan Preaching', ES: 'Predicación Poética y Puritana' },
     locked: true,
@@ -53,6 +58,7 @@ const minds: MindData[] = [
   {
     id: 'martyn-lloyd-jones',
     name: 'Martyn Lloyd-Jones',
+    image: lloydJonesImg,
     subtitle: { PT: 'O Doutor', EN: 'The Doctor', ES: 'El Doctor' },
     role: { PT: 'Método e Diagnóstico Lógico', EN: 'Method & Logical Diagnosis', ES: 'Método y Diagnóstico Lógico' },
     locked: true,
