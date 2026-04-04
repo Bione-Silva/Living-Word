@@ -22,7 +22,7 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
       style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'backwards' }}
     >
       {/* Glow effect on hover */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-b from-[hsl(43,55%,58%)]/[0.04] to-transparent pointer-events-none" />
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-b from-[hsl(30,30%,85%)]/20 to-transparent pointer-events-none" />
 
       {isLocked && (
         <div className="absolute top-4 right-4 z-10">
