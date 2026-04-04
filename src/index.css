@@ -88,15 +88,15 @@
     --input: 30 15% 85%;
     --ring: 28 42% 42%;
 
-    /* Sidebar: light warm */
-    --sidebar-background: 36 30% 95%;
+    /* Sidebar: warm beige, slightly distinct from main bg */
+    --sidebar-background: 33 25% 92%;
     --sidebar-foreground: 24 30% 18%;
-    --sidebar-primary: 28 42% 42%;
+    --sidebar-primary: 28 42% 38%;
     --sidebar-primary-foreground: 36 30% 97%;
-    --sidebar-accent: 30 20% 88%;
+    --sidebar-accent: 32 18% 86%;
     --sidebar-accent-foreground: 24 30% 15%;
-    --sidebar-border: 30 15% 85%;
-    --sidebar-ring: 28 42% 42%;
+    --sidebar-border: 30 12% 82%;
+    --sidebar-ring: 28 42% 38%;
   }
 }
 
