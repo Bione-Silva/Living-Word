@@ -673,7 +673,20 @@ export default function Landing() {
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.pricing.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.pricing.h2[lang]}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {copy.plans.map((plan, i) => (
+            {regionLoading ? (
+              [0,1,2,3].map(i => (
+                <div key={i} className="rounded-xl p-5 flex flex-col gap-3 animate-pulse" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.12)' }}>
+                  <div className="h-4 w-16 rounded" style={{ background: '#EDD9C8' }} />
+                  <div className="h-9 w-24 rounded" style={{ background: '#EDD9C8' }} />
+                  <div className="h-3 w-20 rounded" style={{ background: '#EDD9C8' }} />
+                  <div className="space-y-2 mt-4">
+                    {[0,1,2,3].map(j => <div key={j} className="h-3 w-full rounded" style={{ background: '#EDD9C8' }} />)}
+                  </div>
+                  <div className="h-10 w-full rounded-lg mt-auto" style={{ background: '#EDD9C8' }} />
+                </div>
+              ))
+            ) : (
+              pricingPlans.map((plan, i) => (
               <div key={i} className="rounded-xl p-5 flex flex-col" style={{
                 background: plan.featured ? '#F5F0E8' : '#FFFFFF',
                 border: plan.featured ? '2px solid #6B4F3A' : '1px solid rgba(107,79,58,0.12)',
@@ -704,7 +717,8 @@ export default function Landing() {
                   color: plan.featured ? '#FFFFFF' : '#6B4F3A',
                 }}>{plan.cta[lang]}</Link>
               </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
