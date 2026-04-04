@@ -116,16 +116,15 @@ export default function Biblioteca() {
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[160px] border-lw-amber/40 bg-background text-foreground shadow-sm">
+          <SelectTrigger className="w-[200px] border-lw-amber/40 bg-background text-foreground shadow-sm">
             <Filter className="h-3 w-3 mr-1 text-lw-cafe" />
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-60">
             <SelectItem value="all">{lang === 'PT' ? 'Todos' : 'All'}</SelectItem>
-            <SelectItem value="sermon">{lang === 'PT' ? 'Sermão' : 'Sermon'}</SelectItem>
-            <SelectItem value="outline">{lang === 'PT' ? 'Esboço' : 'Outline'}</SelectItem>
-            <SelectItem value="devotional">{lang === 'PT' ? 'Devocional' : 'Devotional'}</SelectItem>
-            <SelectItem value="blog_article">{lang === 'PT' ? 'Artigo' : 'Article'}</SelectItem>
+            {Object.entries(typeLabels).map(([key, val]) => (
+              <SelectItem key={key} value={key}>{val[lang]}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Button
