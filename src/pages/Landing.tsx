@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect, useRef } from 'react';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
+import { detectGeoRegion, PRICING_MAP, formatPrice } from '@/utils/geoPricing';
 import {
   Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
   ChevronDown, Check, X as XIcon, Menu, X, BookOpen, PenTool,
