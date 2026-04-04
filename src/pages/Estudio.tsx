@@ -140,6 +140,7 @@ export default function Estudio() {
                 lang={lang}
                 isFree={isFree}
                 onClick={handleToolClick}
+                onHelp={(id) => setHelpToolId(id)}
                 index={si * 7 + ti}
               />
             ))}
