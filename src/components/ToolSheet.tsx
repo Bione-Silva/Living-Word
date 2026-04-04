@@ -163,14 +163,14 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [showBlogPrompt, setShowBlogPrompt] = useState(false);
   const [generationLang, setGenerationLang] = useState<Language>(lang);
 
-  if (toolId === 'studio') {
-    return <PastoralStudioModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
-  }
-
   // Sync generation language when platform language changes
   useEffect(() => {
     setGenerationLang(lang);
   }, [lang]);
+
+  if (toolId === 'studio') {
+    return <PastoralStudioModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
+  }
 
   const config = toolConfigs[toolId] || {
     inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },
