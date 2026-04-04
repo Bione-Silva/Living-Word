@@ -16,6 +16,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { minds } from '@/data/minds';
+import { MaterialFeedback } from '@/components/MaterialFeedback';
 
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
@@ -509,6 +510,12 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                       </TabsContent>
                     ))}
                   </Tabs>
+
+                  <MaterialFeedback
+                    materialType={`pastoral-${activeTab}`}
+                    materialTitle={`${outputLabels[activeTab][lang]} — ${formData.bible_passage}`}
+                    toolId="pastoral-studio"
+                  />
                 </CardContent>
               </Card>
             )}
