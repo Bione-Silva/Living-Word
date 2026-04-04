@@ -6,6 +6,7 @@ type L = 'PT' | 'EN' | 'ES';
 export interface MindData {
   id: string;
   name: string;
+  image: string;
   subtitle: Record<L, string>;
   role: Record<L, string>;
   locked: boolean;
