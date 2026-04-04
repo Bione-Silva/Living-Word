@@ -5,6 +5,13 @@ import { GenerationCounter } from '@/components/GenerationCounter';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { Button } from '@/components/ui/button';
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
+import {
   LayoutDashboard, Wand2, BookOpen, Library, CalendarDays,
   Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain,
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon,
@@ -98,6 +105,10 @@ export default function AppLayout() {
     Pesquisa: true, Criar: true, Alcance: false, Divertidas: false,
   });
   const [activeTool, setActiveTool] = useState<{ id: string; title: string } | null>(null);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({
+    Pesquisa: true, Criar: true, Alcance: true, Divertidas: true,
+  });
 
   const handleSignOut = async () => {
     await signOut();
@@ -108,6 +119,10 @@ export default function AppLayout() {
     setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const toggleMobileGroup = (key: string) => {
+    setMobileOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const isFree = profile?.plan === 'free';
 
   const handleToolClick = (tool: SidebarToolItem) => {
@@ -115,6 +130,7 @@ export default function AppLayout() {
       navigate('/upgrade');
       return;
     }
+    setMobileToolsOpen(false);
     setActiveTool({ id: tool.id, title: tool.label[lang] });
   };
 
@@ -135,24 +151,125 @@ export default function AppLayout() {
 
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border px-2 py-1 safe-area-bottom">
           <div className="flex justify-around items-center">
-            {mobileNavItems.map((item) => {
-              const Icon = item.icon;
-              const active = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                    active ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span className="truncate">{t(item.key)}</span>
-                </Link>
-              );
-            })}
+            <Link
+              to="/dashboard"
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                location.pathname === '/dashboard' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <LayoutDashboard className="h-5 w-5" />
+              <span className="truncate">{t('nav.dashboard')}</span>
+            </Link>
+
+            {/* Tools bottom sheet trigger */}
+            <button
+              onClick={() => setMobileToolsOpen(true)}
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                mobileToolsOpen ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Wand2 className="h-5 w-5" />
+              <span className="truncate">{t('nav.studio')}</span>
+            </button>
+
+            <Link
+              to="/dashboard/mentes"
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                location.pathname.startsWith('/dashboard/mentes') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Brain className="h-5 w-5" />
+              <span className="truncate">{lang === 'PT' ? 'Mentes' : 'Minds'}</span>
+            </Link>
+
+            <Link
+              to="/blog"
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                location.pathname === '/blog' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <BookOpen className="h-5 w-5" />
+              <span className="truncate">{t('nav.blog')}</span>
+            </Link>
+
+            <Link
+              to="/configuracoes"
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                location.pathname === '/configuracoes' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Settings className="h-5 w-5" />
+              <span className="truncate">{t('nav.settings')}</span>
+            </Link>
           </div>
         </nav>
+
+        {/* Mobile Tools Bottom Sheet */}
+        <Sheet open={mobileToolsOpen} onOpenChange={setMobileToolsOpen}>
+          <SheetContent side="bottom" className="theme-app max-h-[80vh] overflow-y-auto rounded-t-2xl bg-background">
+            <SheetHeader className="pb-2">
+              <SheetTitle className="font-display text-lg">
+                {lang === 'PT' ? '⚡ Ferramentas' : lang === 'EN' ? '⚡ Tools' : '⚡ Herramientas'}
+              </SheetTitle>
+              <SheetDescription className="sr-only">
+                {lang === 'PT' ? 'Selecione uma ferramenta' : 'Select a tool'}
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="space-y-3 mt-2">
+              {toolGroups.map((group) => {
+                const groupKey = group.label.PT;
+                const isOpen = mobileOpenGroups[groupKey] ?? true;
+                const GroupIcon = group.icon;
+
+                return (
+                  <div key={groupKey}>
+                    <button
+                      onClick={() => toggleMobileGroup(groupKey)}
+                      className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm font-semibold text-foreground"
+                    >
+                      <GroupIcon className="h-4 w-4 text-primary" />
+                      <span className="flex-1 text-left">{group.label[lang]}</span>
+                      <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isOpen ? '' : '-rotate-90'}`} />
+                    </button>
+
+                    {isOpen && (
+                      <div className="grid grid-cols-3 gap-2 px-1 pb-2">
+                        {group.tools.map((tool) => {
+                          const Icon = tool.icon;
+                          const isLocked = tool.locked && isFree;
+                          return (
+                            <button
+                              key={tool.id}
+                              onClick={() => handleToolClick(tool)}
+                              className={`relative flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-colors text-center ${
+                                isLocked
+                                  ? 'border-border/40 opacity-50'
+                                  : 'border-border/60 hover:border-primary/30 hover:bg-primary/5 active:bg-primary/10'
+                              }`}
+                            >
+                              {isLocked && (
+                                <Crown className="absolute top-1.5 right-1.5 h-3 w-3 text-primary/50" />
+                              )}
+                              <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                                isLocked ? 'bg-muted/50' : 'bg-primary/10'
+                              }`}>
+                                <Icon className={`h-4 w-4 ${isLocked ? 'text-muted-foreground' : 'text-primary'}`} />
+                              </div>
+                              <span className="text-[11px] leading-tight font-medium line-clamp-2">
+                                {tool.label[lang]}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </SheetContent>
+        </Sheet>
 
         {activeTool && (
           <ToolSheet
