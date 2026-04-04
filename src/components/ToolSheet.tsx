@@ -168,7 +168,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     systemPrompt: (lang: string) => `You are a helpful pastoral assistant. Given the user's input, generate useful, well-structured content for a Christian leader. Be creative, theologically sound, and practical. Write in ${lang}. Format with Markdown.`,
   };
 
-  const langLabel = lang === 'PT' ? 'Portuguese (Brazilian)' : lang === 'EN' ? 'English' : 'Spanish';
+  const genLangLabel = generationLang === 'PT' ? 'Portuguese (Brazilian)' : generationLang === 'EN' ? 'English' : 'Spanish';
 
   const isArticleTool = toolId === 'free-article' || toolId === 'youtube-blog';
 
