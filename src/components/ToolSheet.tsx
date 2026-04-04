@@ -14,8 +14,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
 
 interface ToolSheetProps {
   open: boolean;
