@@ -34,7 +34,7 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
 
       <div className="relative z-10">
         {/* Photo */}
-        <div className="mx-auto w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[hsl(43,55%,58%)]/25 group-hover:border-[hsl(43,55%,58%)]/50 transition-all duration-500 overflow-hidden mb-5 shadow-[0_0_40px_hsl(43,55%,58%,0.08)] ring-2 ring-[hsl(43,55%,58%)]/[0.04] ring-offset-2 ring-offset-[hsl(210,40%,9%)]">
+        <div className="mx-auto w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[hsl(30,20%,75%)]/40 group-hover:border-primary/50 transition-all duration-500 overflow-hidden mb-5 shadow-md ring-2 ring-primary/[0.06] ring-offset-2 ring-offset-card">
           <img
             src={mind.image}
             alt={mind.name}
