@@ -28,6 +28,8 @@ import NotFound from "./pages/NotFound";
 import EstudoBiblicoPage from "./pages/EstudoBiblicoPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AcceptInvite from "./pages/AcceptInvite";
+import HelpCenter from "./pages/HelpCenter";
+import HelpArticlePage from "./pages/HelpArticlePage";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +99,8 @@ const App = () => (
                 <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
               <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/ajuda" element={<HelpCenter />} />
+              <Route path="/ajuda/:toolId" element={<HelpArticlePage />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
