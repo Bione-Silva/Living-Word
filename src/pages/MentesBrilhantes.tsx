@@ -5,9 +5,10 @@ import { MindCard } from '@/components/MindCard';
 import { MindDetailSheet } from '@/components/MindDetailSheet';
 import { minds, type MindFullData } from '@/data/minds';
 import { Brain, Sparkles, Lock, Crown, Database, Cpu } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 type L = 'PT' | 'EN' | 'ES';
 
