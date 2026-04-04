@@ -98,6 +98,7 @@ const plans: PlanData[] = [
 export default function Upgrade() {
   const { lang } = useLanguage();
   const { profile } = useAuth();
+  const { pricing, loading: regionLoading } = useGeoRegion();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPlan = profile?.plan || 'free';
   const [extraSeats, setExtraSeats] = useState(0);
@@ -105,9 +106,10 @@ export default function Upgrade() {
   const autoCheckoutFired = useRef(false);
 
   const churchTotal = useMemo(() => {
+    if (!pricing) return 0;
     const base = pricing.plans.church.amount;
     return base + extraSeats * pricing.addon.amount;
-  }, [extraSeats]);
+  }, [extraSeats, pricing]);
 
   const autoCheckoutPlan = searchParams.get('autoCheckout');
   const isAutoCheckout = !!autoCheckoutPlan && !autoCheckoutFired.current;
