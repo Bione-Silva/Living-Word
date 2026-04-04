@@ -117,8 +117,62 @@ export default function BlogArticle() {
     },
     enabled: !!article?.user_id && !!article?.passage,
   });
+  // Dynamic Open Graph & Twitter Card meta tags for rich social sharing
+  useEffect(() => {
+    if (!article) return;
 
-  const availableLangs = useMemo(() => {
+    const url = window.location.href;
+    const description = article.content
+      ? article.content.replace(/[#*_\[\]()>`~]/g, '').substring(0, 160).trim() + '…'
+      : '';
+    const coverImg = (article as any)?.cover_image_url || '';
+    const authorName = profile?.full_name || 'Living Word';
+
+    const metaTags: Record<string, string> = {
+      'og:type': 'article',
+      'og:url': url,
+      'og:title': article.title,
+      'og:description': description,
+      'og:image': coverImg,
+      'og:site_name': `${authorName} — Living Word`,
+      'og:locale': article.language === 'EN' ? 'en_US' : article.language === 'ES' ? 'es_ES' : 'pt_BR',
+      'twitter:card': 'summary_large_image',
+      'twitter:title': article.title,
+      'twitter:description': description,
+      'twitter:image': coverImg,
+      'article:published_time': article.created_at,
+      'article:author': authorName,
+    };
+
+    const cleanups: (() => void)[] = [];
+
+    const prevTitle = document.title;
+    document.title = `${article.title} — ${authorName}`;
+    cleanups.push(() => { document.title = prevTitle; });
+
+    Object.entries(metaTags).forEach(([key, value]) => {
+      if (!value) return;
+      const isOg = key.startsWith('og:') || key.startsWith('article:');
+      const attr = isOg ? 'property' : 'name';
+      let el = document.querySelector(`meta[${attr}="${key}"]`) as HTMLMetaElement | null;
+      const existed = !!el;
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      const prev = el.getAttribute('content');
+      el.setAttribute('content', value);
+      cleanups.push(() => {
+        if (!existed && el?.parentNode) el.parentNode.removeChild(el);
+        else if (existed && el) el.setAttribute('content', prev || '');
+      });
+    });
+
+    return () => cleanups.forEach(fn => fn());
+  }, [article, profile]);
+
+
     const langs = new Set<Lang>();
     langs.add((article?.language as Lang) || 'PT');
     siblings?.forEach(s => {
