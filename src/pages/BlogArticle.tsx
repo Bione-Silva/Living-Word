@@ -61,6 +61,8 @@ function intercalateImages(markdown: string, images: string[]): string {
 export default function BlogArticle() {
   const { handle, articleId } = useParams<{ handle: string; articleId: string }>();
   const [lang, setLang] = useState<Lang>('PT');
+  const [shareOpen, setShareOpen] = useState(false);
+  const shareRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.documentElement.classList.add('theme-blog');
