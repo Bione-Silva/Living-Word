@@ -188,7 +188,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
-          systemPrompt: config.systemPrompt(langLabel),
+          systemPrompt: config.systemPrompt(genLangLabel),
           userPrompt: input,
         },
       });
