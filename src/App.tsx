@@ -24,6 +24,7 @@ import MenteChat from "./pages/MenteChat";
 import AppLayout from "./layouts/AppLayout";
 import BlogPublic from "./pages/BlogPublic";
 import BlogArticle from "./pages/BlogArticle";
+import BlogOnboarding from "./pages/BlogOnboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
