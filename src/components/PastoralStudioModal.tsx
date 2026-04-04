@@ -180,7 +180,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     [outputs]
   );
 
-  const unlockedMinds = useMemo(() => minds.filter((m) => !m.locked), []);
+  const allMinds = minds;
 
   const resetState = () => {
     setFormData(createInitialFormData(lang, profile?.bible_version));
