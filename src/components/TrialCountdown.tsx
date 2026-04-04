@@ -100,7 +100,7 @@ export function TrialCountdown() {
         <p className="text-xs text-muted-foreground mt-0.5">{t.activeMsg}</p>
       </div>
       <Link to="/upgrade">
-        <Button size="sm" variant={urgency ? 'default' : 'outline'} className="gap-1.5 shrink-0">
+        <Button size="sm" className="gap-1.5 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
           <Crown className="h-3.5 w-3.5" />
           {t.upgrade}
         </Button>
