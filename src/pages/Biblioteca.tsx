@@ -15,11 +15,32 @@ import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 
 
 
-const typeIcons: Record<string, React.ElementType> = {
-  sermon: BookOpen,
-  outline: FileText,
-  devotional: Heart,
-  blog_article: FileText,
+const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: React.ElementType }> = {
+  sermon: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón', icon: BookOpen },
+  outline: { PT: 'Esboço', EN: 'Outline', ES: 'Esquema', icon: FileText },
+  devotional: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional', icon: Heart },
+  blog_article: { PT: 'Artigo', EN: 'Article', ES: 'Artículo', icon: FileText },
+  'topic-explorer': { PT: 'Explorador de Temas', EN: 'Topic Explorer', ES: 'Explorador de Temas', icon: FileText },
+  'verse-finder': { PT: 'Versículos', EN: 'Verses', ES: 'Versículos', icon: BookOpen },
+  'historical-context': { PT: 'Contexto Histórico', EN: 'Historical Context', ES: 'Contexto Histórico', icon: BookOpen },
+  'quote-finder': { PT: 'Citações', EN: 'Quotes', ES: 'Citas', icon: FileText },
+  'movie-scenes': { PT: 'Cenas de Filmes', EN: 'Movie Scenes', ES: 'Escenas', icon: FileText },
+  'original-text': { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original', icon: FileText },
+  'lexical': { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico', icon: FileText },
+  'title-gen': { PT: 'Títulos', EN: 'Titles', ES: 'Títulos', icon: FileText },
+  'metaphor-creator': { PT: 'Metáforas', EN: 'Metaphors', ES: 'Metáforas', icon: FileText },
+  'bible-modernizer': { PT: 'Modernizador', EN: 'Modernizer', ES: 'Modernizador', icon: FileText },
+  'illustrations': { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones', icon: FileText },
+  'free-article': { PT: 'Artigo', EN: 'Article', ES: 'Artículo', icon: FileText },
+  'reels-script': { PT: 'Roteiro Reels', EN: 'Reels Script', ES: 'Guión Reels', icon: FileText },
+  'cell-group': { PT: 'Célula', EN: 'Cell Group', ES: 'Célula', icon: FileText },
+  'social-caption': { PT: 'Legendas', EN: 'Captions', ES: 'Leyendas', icon: FileText },
+  'newsletter': { PT: 'Newsletter', EN: 'Newsletter', ES: 'Newsletter', icon: FileText },
+  'announcements': { PT: 'Avisos', EN: 'Announcements', ES: 'Avisos', icon: FileText },
+  'trivia': { PT: 'Quiz', EN: 'Trivia', ES: 'Trivia', icon: FileText },
+  'poetry': { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía', icon: FileText },
+  'kids-story': { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil', icon: FileText },
+  'deep-translation': { PT: 'Tradução', EN: 'Translation', ES: 'Traducción', icon: FileText },
 };
 
 export default function Biblioteca() {
@@ -95,16 +116,15 @@ export default function Biblioteca() {
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[160px] border-lw-amber/40 bg-background text-foreground shadow-sm">
+          <SelectTrigger className="w-[200px] border-lw-amber/40 bg-background text-foreground shadow-sm">
             <Filter className="h-3 w-3 mr-1 text-lw-cafe" />
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-60">
             <SelectItem value="all">{lang === 'PT' ? 'Todos' : 'All'}</SelectItem>
-            <SelectItem value="sermon">{lang === 'PT' ? 'Sermão' : 'Sermon'}</SelectItem>
-            <SelectItem value="outline">{lang === 'PT' ? 'Esboço' : 'Outline'}</SelectItem>
-            <SelectItem value="devotional">{lang === 'PT' ? 'Devocional' : 'Devotional'}</SelectItem>
-            <SelectItem value="blog_article">{lang === 'PT' ? 'Artigo' : 'Article'}</SelectItem>
+            {Object.entries(typeLabels).map(([key, val]) => (
+              <SelectItem key={key} value={key}>{val[lang]}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Button
@@ -131,7 +151,8 @@ export default function Biblioteca() {
       ) : (
         <div className="grid gap-3">
           {filtered.map((item: any, i: number) => {
-            const Icon = typeIcons[item.type] || FileText;
+            const typeInfo = typeLabels[item.type];
+            const Icon = typeInfo?.icon || FileText;
             const isLocked = isFree && i >= 10;
 
             return (
@@ -158,7 +179,7 @@ export default function Biblioteca() {
                       {new Date(item.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] capitalize shrink-0">{item.type}</Badge>
+                  <Badge variant="secondary" className="text-[10px] shrink-0">{typeLabels[item.type]?.[lang] || item.type}</Badge>
                   <div className="flex gap-1 shrink-0">
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => toggleFavMutation.mutate({ id: item.id, favorite: item.favorite })}>
                       <Star className={`h-3 w-3 ${item.favorite ? 'fill-primary text-primary' : ''}`} />
