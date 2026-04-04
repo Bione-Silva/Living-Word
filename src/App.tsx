@@ -99,6 +99,8 @@ const App = () => (
                 <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
               <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/ajuda" element={<HelpCenter />} />
+              <Route path="/ajuda/:toolId" element={<HelpArticlePage />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
