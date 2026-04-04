@@ -62,7 +62,7 @@ export default function HelpArticlePage() {
 
       {/* ── Back + Actions ── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/ajuda')} className="text-[hsl(220,10%,50%)] hover:text-[hsl(220,15%,20%)] gap-2 -ml-2">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/ajuda')} className="text-[hsl(24,30%,30%)] hover:text-[hsl(24,30%,15%)] gap-2 -ml-2">
           <ArrowLeft className="h-4 w-4" />
           {labels.back[lang]}
         </Button>
@@ -70,7 +70,7 @@ export default function HelpArticlePage() {
           <Button
             onClick={() => navigate(article.ctaRoute!)}
             size="sm"
-            className="bg-gradient-to-r from-[hsl(35,50%,45%)] to-[hsl(30,40%,38%)] hover:from-[hsl(35,50%,52%)] hover:to-[hsl(30,40%,45%)] text-white gap-2 rounded-xl"
+            className="bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             {labels.useTool[lang]}
@@ -242,13 +242,13 @@ export default function HelpArticlePage() {
           {article.ctaRoute && (
             <Button
               onClick={() => navigate(article.ctaRoute!)}
-              className="px-8 py-5 text-sm font-bold bg-gradient-to-r from-[hsl(35,50%,45%)] to-[hsl(30,40%,38%)] hover:from-[hsl(35,50%,52%)] hover:to-[hsl(30,40%,45%)] text-white gap-2 rounded-xl"
+              className="px-8 py-5 text-sm font-bold bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
             >
               <Icon className="h-4 w-4" />
               {article.ctaLabel[lang]}
             </Button>
           )}
-          <Button variant="outline" onClick={() => navigate('/ajuda')} className="rounded-xl gap-2">
+          <Button variant="outline" onClick={() => navigate('/ajuda')} className="rounded-xl gap-2 text-[hsl(24,30%,20%)] border-[hsl(30,15%,78%)]">
             <ArrowLeft className="h-4 w-4" />
             {labels.backCta[lang]}
           </Button>
