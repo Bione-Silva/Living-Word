@@ -208,7 +208,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   const handleCopy = () => {
     navigator.clipboard.writeText(result);
-    toast.success(lang === 'PT' ? 'Copiado!' : 'Copied!');
+    toast.success(lang === 'PT' ? 'Copiado!' : lang === 'EN' ? 'Copied!' : '¡Copiado!');
   };
 
   const handleSave = async () => {
