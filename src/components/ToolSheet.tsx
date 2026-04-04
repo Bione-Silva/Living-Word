@@ -270,7 +270,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       const { data, error } = await supabase.functions.invoke('generate-blog-article', {
         body: {
           passage: input,
-          language: lang,
+          language: generationLang,
           title: `${toolTitle} — ${input.substring(0, 50)}`,
         },
       });
