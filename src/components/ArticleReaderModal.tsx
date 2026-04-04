@@ -135,7 +135,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
                 prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight
                 prose-p:leading-relaxed
                 prose-blockquote:border-l-4 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-                prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto prose-img:w-full prose-img:object-cover prose-img:my-10
+                prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-8
                 prose-a:underline
               "
               style={{

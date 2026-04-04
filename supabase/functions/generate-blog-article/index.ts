@@ -182,25 +182,11 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     const h1Match = content.match(/^#\s+(.+)$/m);
     const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
 
-    // Generate up to 3 images in parallel
-    // Generate historically accurate, epoch-representative images (max 4)
-    const imagePrompts = [
-      `A historically accurate, epoch-representative scene from the Bible passage "${passage}". Ancient Middle Eastern setting with period-appropriate architecture, clothing, and landscape. If this is about Genesis, show ancient Mesopotamian aesthetics; if about Psalms, show ancient Israel with shepherds and rolling hills; if about the Gospels, show 1st century Judea. Warm earth tones, golden light, painterly oil painting style. No text, no words, no letters.`,
-      `A contemplative biblical scene inspired by "${passage}" with historical accuracy. Ancient setting with period-correct details: clay vessels, olive trees, stone buildings, desert landscape. Warm golden hour light. No text or letters. Renaissance painting style.`,
-      `A spiritual illustration of "${passage}" showing the cultural context of the biblical era. Include period-accurate clothing, tools, and environment. If Old Testament: ancient Near East aesthetics. If New Testament: Roman-era Judea. Artistic, warm tones, dramatic lighting. No text or words.`,
-      `A serene, devotional image representing the theological message of "${passage}". Biblical landscape with divine light rays, ancient architecture in the background, warm earth and gold tones. Historical accuracy in any human figures shown. Cinematic photography style. No text.`,
-    ];
+    // Generate exactly 1 cover image per article
+    const coverPrompt = `A historically accurate, epoch-representative scene from the Bible passage "${passage}". Ancient Middle Eastern setting with period-appropriate architecture, clothing, and landscape. Warm earth tones, golden light, painterly oil painting style. No text, no words, no letters.`;
 
-    const imageResults = await Promise.allSettled(
-      imagePrompts.map((prompt) => generateImage(lovableApiKey, prompt, supabaseAdmin, userId))
-    );
-
-    const articleImages: string[] = [];
-    for (const result of imageResults) {
-      if (result.status === "fulfilled" && result.value) {
-        articleImages.push(result.value);
-      }
-    }
+    const coverImage = await generateImage(lovableApiKey, coverPrompt, supabaseAdmin, userId);
+    const articleImages: string[] = coverImage ? [coverImage] : [];
 
     const coverImageUrl = articleImages[0] || null;
 
