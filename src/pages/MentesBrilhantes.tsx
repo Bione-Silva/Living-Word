@@ -1,83 +1,14 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { MindCard, type MindData } from '@/components/MindCard';
-import { MindProfileSheet } from '@/components/MindProfileSheet';
-import { Brain, Sparkles } from 'lucide-react';
-import billyGrahamImg from '@/assets/minds/billy-graham.jpg';
-import spurgeonImg from '@/assets/minds/charles-spurgeon.jpg';
-import lloydJonesImg from '@/assets/minds/martyn-lloyd-jones.jpg';
+import { MindCard } from '@/components/MindCard';
+import { minds, type MindFullData } from '@/data/minds';
+import { Brain, Sparkles, Lock } from 'lucide-react';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 type L = 'PT' | 'EN' | 'ES';
-
-const minds: MindData[] = [
-  {
-    id: 'billy-graham',
-    name: 'Billy Graham',
-    image: billyGrahamImg,
-    subtitle: { PT: 'O Evangelista da América', EN: 'America\'s Evangelist', ES: 'El Evangelista de América' },
-    role: { PT: 'Apelo & Evangelismo em Massa', EN: 'Appeal & Mass Evangelism', ES: 'Apelación & Evangelismo Masivo' },
-    locked: false,
-    badges: [
-      { PT: '350+ horas de pregações', EN: '350+ hours of sermons', ES: '350+ horas de predicaciones' },
-      { PT: '32 Milhões de Tokens Lidos', EN: '32 Million Tokens Read', ES: '32 Millones de Tokens Leídos' },
-    ],
-    skills: [
-      { PT: 'Apelo Evangelístico', EN: 'Evangelistic Appeal', ES: 'Apelación Evangelística' },
-      { PT: 'Simplificação Teológica', EN: 'Theological Simplification', ES: 'Simplificación Teológica' },
-      { PT: '"A Bíblia diz..." (Assinatura Homilética)', EN: '"The Bible says..." (Homiletic Signature)', ES: '"La Biblia dice..." (Firma Homilética)' },
-    ],
-    theology: {
-      PT: 'A abordagem desta mente foca na conversão visceral, a cruz de Cristo e o amor incondicional de Deus. Billy Graham é reconhecido por sua capacidade de comunicar verdades profundas com simplicidade tocante, alcançando milhões ao redor do mundo.',
-      EN: 'This mind focuses on visceral conversion, the cross of Christ and God\'s unconditional love. Billy Graham is renowned for communicating deep truths with touching simplicity, reaching millions worldwide.',
-      ES: 'Este mentor se enfoca en la conversión visceral, la cruz de Cristo y el amor incondicional de Dios. Billy Graham es reconocido por comunicar verdades profundas con simplicidad conmovedora, alcanzando millones alrededor del mundo.',
-    },
-  },
-  {
-    id: 'charles-spurgeon',
-    name: 'Charles Spurgeon',
-    image: spurgeonImg,
-    subtitle: { PT: 'O Príncipe dos Pregadores', EN: 'The Prince of Preachers', ES: 'El Príncipe de los Predicadores' },
-    role: { PT: 'Pregação Poética e Puritana', EN: 'Poetic & Puritan Preaching', ES: 'Predicación Poética y Puritana' },
-    locked: true,
-    badges: [
-      { PT: '500+ sermões analisados', EN: '500+ sermons analyzed', ES: '500+ sermones analizados' },
-      { PT: '45 Milhões de Tokens Lidos', EN: '45 Million Tokens Read', ES: '45 Millones de Tokens Leídos' },
-    ],
-    skills: [
-      { PT: 'Retórica Vitoriana Refinada', EN: 'Refined Victorian Rhetoric', ES: 'Retórica Victoriana Refinada' },
-      { PT: 'Metáforas Teológicas Profundas', EN: 'Deep Theological Metaphors', ES: 'Metáforas Teológicas Profundas' },
-      { PT: 'Soberania de Deus (Calvinismo Pastoral)', EN: 'God\'s Sovereignty (Pastoral Calvinism)', ES: 'Soberanía de Dios (Calvinismo Pastoral)' },
-    ],
-    theology: {
-      PT: 'Spurgeon é reconhecido pela densidade poética e fervor puritano. Sua mente digital replica a maestria homilética de sermões que transformaram Londres no séc. XIX, com foco na graça soberana e na paixão pela Palavra.',
-      EN: 'Spurgeon is recognized for his poetic density and puritan fervor. His digital mind replicates the homiletic mastery of sermons that transformed 19th-century London, focusing on sovereign grace and passion for the Word.',
-      ES: 'Spurgeon es reconocido por su densidad poética y fervor puritano. Su mente digital replica la maestría homilética de sermones que transformaron el Londres del siglo XIX, con enfoque en la gracia soberana y la pasión por la Palabra.',
-    },
-  },
-  {
-    id: 'martyn-lloyd-jones',
-    name: 'Martyn Lloyd-Jones',
-    image: lloydJonesImg,
-    subtitle: { PT: 'O Doutor', EN: 'The Doctor', ES: 'El Doctor' },
-    role: { PT: 'Método e Diagnóstico Lógico', EN: 'Method & Logical Diagnosis', ES: 'Método y Diagnóstico Lógico' },
-    locked: true,
-    badges: [
-      { PT: '400+ pregações indexadas', EN: '400+ sermons indexed', ES: '400+ predicaciones indexadas' },
-      { PT: '28 Milhões de Tokens Lidos', EN: '28 Million Tokens Read', ES: '28 Millones de Tokens Leídos' },
-    ],
-    skills: [
-      { PT: 'Exposição Bíblica Sistemática', EN: 'Systematic Bible Exposition', ES: 'Exposición Bíblica Sistemática' },
-      { PT: 'Diagnóstico Espiritual Preciso', EN: 'Precise Spiritual Diagnosis', ES: 'Diagnóstico Espiritual Preciso' },
-      { PT: 'Pregação como "Lógica em Chamas"', EN: 'Preaching as "Logic on Fire"', ES: 'Predicación como "Lógica en Llamas"' },
-    ],
-    theology: {
-      PT: 'Lloyd-Jones traz a precisão de um médico à pregação. Sua mente digital analisa textos com rigor exegético, construindo argumentos teológicos irrefutáveis com aplicação pastoral que penetra a alma.',
-      EN: 'Lloyd-Jones brings a physician\'s precision to preaching. His digital mind analyzes texts with exegetical rigor, building irrefutable theological arguments with pastoral application that penetrates the soul.',
-      ES: 'Lloyd-Jones trae la precisión de un médico a la predicación. Su mente digital analiza textos con rigor exegético, construyendo argumentos teológicos irrefutables con aplicación pastoral que penetra el alma.',
-    },
-  },
-];
 
 const pageTitle: Record<L, string> = {
   PT: 'Mentes Brilhantes',
@@ -94,19 +25,20 @@ const pageSubtitle: Record<L, string> = {
 export default function MentesBrilhantes() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const isFree = profile?.plan === 'free';
+  const [showPaywall, setShowPaywall] = useState(false);
 
-  const [selectedMind, setSelectedMind] = useState<MindData | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
-
-  const handleMindClick = (mind: MindData) => {
-    setSelectedMind(mind);
-    setSheetOpen(true);
+  const handleMindClick = (mind: MindFullData) => {
+    if (mind.locked && isFree) {
+      setShowPaywall(true);
+    } else {
+      navigate(`/dashboard/mentes/${mind.id}`);
+    }
   };
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-[hsl(43,55%,58%)]/20 flex items-center justify-center">
           <Brain className="h-5 w-5 text-[hsl(43,55%,58%)]" />
@@ -122,9 +54,7 @@ export default function MentesBrilhantes() {
         </div>
       </div>
 
-      {/* Premium Grid */}
       <div className="relative rounded-2xl border border-[hsl(43,55%,58%)]/20 bg-[hsl(210,40%,6%)] p-6 sm:p-8 overflow-hidden">
-        {/* Subtle gold reflections */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[hsl(43,55%,58%)]/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-[hsl(43,55%,58%)]/3 rounded-full blur-3xl pointer-events-none" />
 
@@ -142,16 +72,28 @@ export default function MentesBrilhantes() {
         </div>
       </div>
 
-      {/* Profile Sheet */}
-      {selectedMind && (
-        <MindProfileSheet
-          open={sheetOpen}
-          onOpenChange={setSheetOpen}
-          mind={selectedMind}
-          lang={lang}
-          isFree={isFree}
-        />
-      )}
+      {/* Paywall Dialog */}
+      <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
+        <DialogContent className="bg-[hsl(210,40%,6%)] border-[hsl(43,55%,58%)]/20 text-white max-w-md">
+          <DialogHeader className="text-center">
+            <div className="mx-auto w-14 h-14 rounded-full bg-[hsl(43,55%,58%)]/10 flex items-center justify-center mb-2">
+              <Lock className="h-6 w-6 text-[hsl(43,55%,58%)]" />
+            </div>
+            <DialogTitle className="font-display text-xl text-[hsl(43,55%,58%)]">
+              {lang === 'EN' ? 'Unlock Historical Wisdom' : lang === 'ES' ? 'Desbloquea la Sabiduría Histórica' : 'Desbloqueie a Sabedoria Histórica'}
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              {lang === 'EN' ? 'Upgrade for $100/month to access all Brilliant Minds.' : lang === 'ES' ? 'Mejora por $100/mes para acceder a todas las Mentes Brillantes.' : 'Faça o upgrade por $100/mês para acessar todas as Mentes Brilhantes.'}
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => { setShowPaywall(false); navigate('/upgrade'); }}
+            className="w-full py-5 text-base font-semibold bg-gradient-to-r from-[hsl(43,55%,58%)] to-[hsl(35,55%,50%)] text-[hsl(210,40%,6%)] gap-2"
+          >
+            {lang === 'EN' ? 'Upgrade Now' : lang === 'ES' ? 'Mejorar Ahora' : 'Fazer Upgrade'}
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

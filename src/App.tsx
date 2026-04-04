@@ -19,6 +19,7 @@ import Calendario from "./pages/Calendario";
 import Configuracoes from "./pages/Configuracoes";
 import Upgrade from "./pages/Upgrade";
 import MentesBrilhantes from "./pages/MentesBrilhantes";
+import MindProfile from "./pages/MindProfile";
 import MenteChat from "./pages/MenteChat";
 import AppLayout from "./layouts/AppLayout";
 import BlogPublic from "./pages/BlogPublic";
@@ -74,6 +75,7 @@ const App = () => (
                 <Route path="/configuracoes" element={<Configuracoes />} />
                 <Route path="/upgrade" element={<Upgrade />} />
                 <Route path="/dashboard/mentes" element={<MentesBrilhantes />} />
+                <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
                 <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
               </Route>
 
