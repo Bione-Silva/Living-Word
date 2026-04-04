@@ -71,9 +71,10 @@ const toolConfigs: Record<string, {
     useTextarea: true,
   },
   'youtube-blog': {
-    inputLabel: { PT: 'URL do vídeo do YouTube', EN: 'YouTube video URL', ES: 'URL del video de YouTube' },
-    placeholder: { PT: 'Ex: https://youtube.com/watch?v=...', EN: 'E.g.: https://youtube.com/watch?v=...', ES: 'Ej: https://youtube.com/watch?v=...' },
-    systemPrompt: (lang) => `You are a content repurposing specialist. The user will provide a YouTube URL. Since you cannot access the video, ask the user to paste the transcript or key points, then convert them into a blog article in Markdown format. Write in ${lang}. For now, generate a template article structure the user can fill in.`,
+    inputLabel: { PT: 'Cole a transcrição do vídeo', EN: 'Paste the video transcript', ES: 'Pega la transcripción del video' },
+    placeholder: { PT: 'Cole aqui a transcrição completa ou os pontos-chave do vídeo do YouTube...', EN: 'Paste here the full transcript or key points from the YouTube video...', ES: 'Pega aquí la transcripción completa o los puntos clave del video de YouTube...' },
+    systemPrompt: (lang) => `You are a content repurposing specialist. The user will paste a video transcript or key points. Transform this content into a well-structured, SEO-friendly blog article in Markdown format (600-800 words) with H1 title, introduction, 2-3 sections with H2 headings, and conclusion. Write in ${lang}.`,
+    useTextarea: true,
   },
 };
 
