@@ -43,25 +43,25 @@ export function ToolCard({ tool, lang, isFree, onClick, index = 0 }: ToolCardPro
         </div>
       )}
       <CardContent className="p-4">
-        <div className="flex flex-col items-center text-center gap-2.5">
+        <div className="flex items-center text-left gap-3.5">
           <div
-            className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+            className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
               isLocked
                 ? 'bg-muted/50'
                 : 'bg-primary/10 group-hover:bg-primary/15'
             }`}
           >
             <Icon
-              className={`h-5.5 w-5.5 ${
+              className={`h-5 w-5 ${
                 isLocked ? 'text-muted-foreground' : 'text-primary'
               }`}
             />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-sm leading-tight">
               {tool.title[lang]}
             </h3>
-            <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+            <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
               {tool.description[lang]}
             </p>
           </div>
