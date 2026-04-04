@@ -445,7 +445,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
               <Button
                 type="button"
                 onClick={handleGenerate}
-                className="w-full gap-2"
+                className="w-full gap-2 min-h-[48px]"
                 disabled={loading || !formData.bible_passage.trim() || !formData.output_modes.length}
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
