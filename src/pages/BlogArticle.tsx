@@ -63,7 +63,7 @@ export default function BlogArticle() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
@@ -71,7 +71,7 @@ export default function BlogArticle() {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-foreground">Artigo não encontrado</h1>
           <Link to={`/blog/${handle}`}>
@@ -85,7 +85,7 @@ export default function BlogArticle() {
   return (
     <div className="min-h-screen bg-background theme-app">
       {/* Header */}
-      <header className="bg-[hsl(40,30%,96%)] border-b border-border/30 sticky top-0 z-10">
+      <header className="bg-background border-b border-border/30 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to={`/blog/${handle}`} className="flex items-center gap-2 text-sm text-primary hover:text-foreground">
             <ArrowLeft className="w-4 h-4" />
