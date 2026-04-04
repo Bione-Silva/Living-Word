@@ -173,6 +173,7 @@ export default function BlogArticle() {
   }, [article, profile]);
 
 
+  const availableLangs = useMemo(() => {
     const langs = new Set<Lang>();
     langs.add((article?.language as Lang) || 'PT');
     siblings?.forEach(s => {
