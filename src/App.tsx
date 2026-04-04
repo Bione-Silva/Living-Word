@@ -68,6 +68,7 @@ const App = () => (
 
               {/* Protected routes with AppLayout */}
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                <Route path="/blog-onboarding" element={<BlogOnboarding />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/estudio" element={<Estudio />} />
                 <Route path="/blog" element={<Blog />} />
