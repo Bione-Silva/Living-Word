@@ -36,6 +36,7 @@ const minds: MindData[] = [
   {
     id: 'charles-spurgeon',
     name: 'Charles Spurgeon',
+    image: spurgeonImg,
     subtitle: { PT: 'O Príncipe dos Pregadores', EN: 'The Prince of Preachers', ES: 'El Príncipe de los Predicadores' },
     role: { PT: 'Pregação Poética e Puritana', EN: 'Poetic & Puritan Preaching', ES: 'Predicación Poética y Puritana' },
     locked: true,
