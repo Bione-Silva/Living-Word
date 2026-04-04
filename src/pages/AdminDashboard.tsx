@@ -14,6 +14,7 @@ import { ConversionFunnel } from '@/components/admin/ConversionFunnel';
 import { LeadsTable } from '@/components/admin/LeadsTable';
 import { TeamSection } from '@/components/admin/TeamSection';
 import { VaultSection } from '@/components/admin/VaultSection';
+import { FeedbackPanel } from '@/components/admin/FeedbackPanel';
 
 const MASTER_EMAIL = 'bionicaosilva@gmail.com';
 
