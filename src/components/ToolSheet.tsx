@@ -403,8 +403,8 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                     >
                       {convertingToBlog ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
                       {convertingToBlog
-                        ? (lang === 'PT' ? 'Gerando...' : 'Generating...')
-                        : (lang === 'PT' ? 'Sim, gerar artigo com ilustrações!' : 'Yes, generate with illustrations!')}
+                        ? (lang === 'PT' ? 'Gerando...' : lang === 'EN' ? 'Generating...' : 'Generando...')
+                        : (lang === 'PT' ? 'Sim, gerar artigo com ilustrações!' : lang === 'EN' ? 'Yes, generate with illustrations!' : '¡Sí, generar con ilustraciones!')}
                     </Button>
                     <Button
                       size="sm"
@@ -414,7 +414,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                       disabled={loading}
                     >
                       <RefreshCw className="h-3 w-3" />
-                      {lang === 'PT' ? 'Melhorar' : 'Improve'}
+                      {lang === 'PT' ? 'Melhorar' : lang === 'EN' ? 'Improve' : 'Mejorar'}
                     </Button>
                     <Button
                       size="sm"
@@ -422,7 +422,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                       className="gap-1"
                       onClick={() => setShowBlogPrompt(false)}
                     >
-                      {lang === 'PT' ? 'Não, obrigado' : 'No, thanks'}
+                      {lang === 'PT' ? 'Não, obrigado' : lang === 'EN' ? 'No, thanks' : 'No, gracias'}
                     </Button>
                   </div>
                 </div>
