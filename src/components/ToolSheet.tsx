@@ -156,6 +156,8 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [convertingToBlog, setConvertingToBlog] = useState(false);
+  const [showBlogPrompt, setShowBlogPrompt] = useState(false);
 
   const config = toolConfigs[toolId] || {
     inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },
@@ -165,10 +167,19 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   const langLabel = lang === 'PT' ? 'Portuguese (Brazilian)' : lang === 'EN' ? 'English' : 'Spanish';
 
+  const isArticleTool = toolId === 'free-article' || toolId === 'youtube-blog';
+
+  const resetForm = () => {
+    setResult('');
+    setInput('');
+    setShowBlogPrompt(false);
+  };
+
   const handleGenerate = async () => {
     if (!input.trim()) return;
     setLoading(true);
     setResult('');
+    setShowBlogPrompt(false);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
@@ -178,6 +189,10 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       });
       if (error) throw error;
       setResult(data?.content || 'No response');
+      // Show blog prompt for non-article tools
+      if (!isArticleTool) {
+        setShowBlogPrompt(true);
+      }
     } catch (err: any) {
       toast.error(err.message || 'Error generating content');
     } finally {
@@ -188,6 +203,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const handleCopy = () => {
     navigator.clipboard.writeText(result);
     toast.success(lang === 'PT' ? 'Copiado!' : 'Copied!');
+    resetForm();
   };
 
   const handleSave = async () => {
@@ -203,6 +219,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       });
       if (error) throw error;
       toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : 'Saved to Library!');
+      resetForm();
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -234,6 +251,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         published_at: new Date().toISOString(),
       });
       toast.success(lang === 'PT' ? 'Publicado no blog!' : 'Published to blog!');
+      resetForm();
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -241,8 +259,48 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     }
   };
 
+  const handleConvertToBlog = async () => {
+    if (!result) return;
+    setConvertingToBlog(true);
+    setShowBlogPrompt(false);
+    try {
+      const blogPrompt = `Transform the following study/content into a complete, well-structured blog article in Markdown format (600-800 words). Include:
+- An engaging H1 title
+- A warm introduction paragraph
+- 2-3 sections with H2 headings
+- A powerful conclusion
+- A sharing call-to-action at the end in italics
+
+The tone should be pastoral, warm, and accessible. Write in ${langLabel}.
+
+Original content to transform:
+${result}`;
+
+      const { data, error } = await supabase.functions.invoke('ai-tool', {
+        body: {
+          systemPrompt: `You are a professional Christian blog writer. Transform studies, devotionals, and pastoral content into beautifully structured blog articles. Write in ${langLabel}. Always use Markdown formatting.`,
+          userPrompt: blogPrompt,
+        },
+      });
+      if (error) throw error;
+      setResult(data?.content || result);
+      toast.success(lang === 'PT' ? 'Artigo de blog gerado!' : 'Blog article generated!');
+    } catch (err: any) {
+      toast.error(err.message || 'Error converting to blog');
+    } finally {
+      setConvertingToBlog(false);
+    }
+  };
+
+  const handleSheetClose = (isOpen: boolean) => {
+    if (!isOpen) {
+      resetForm();
+    }
+    onOpenChange(isOpen);
+  };
+
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleSheetClose}>
       <SheetContent side="right" className="theme-app w-full sm:max-w-lg overflow-y-auto bg-background text-foreground border-l border-border">
         <SheetHeader>
           <SheetTitle className="font-display text-xl">{toolTitle}</SheetTitle>
@@ -285,6 +343,47 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>
+
+              {/* Blog conversion prompt for non-article tools */}
+              {showBlogPrompt && !isArticleTool && (
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+                  <p className="text-sm font-medium text-foreground">
+                    {lang === 'PT' ? '✨ Gostou? Quer transformar isso num artigo de blog?' :
+                     lang === 'EN' ? '✨ Liked it? Want to turn this into a blog article?' :
+                     '✨ ¿Te gustó? ¿Quieres convertirlo en un artículo de blog?'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      className="gap-1 bg-primary text-primary-foreground"
+                      onClick={handleConvertToBlog}
+                      disabled={convertingToBlog}
+                    >
+                      {convertingToBlog ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
+                      {lang === 'PT' ? 'Sim, gerar artigo!' : 'Yes, generate article!'}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1"
+                      onClick={handleGenerate}
+                      disabled={loading}
+                    >
+                      <RefreshCw className="h-3 w-3" />
+                      {lang === 'PT' ? 'Melhorar' : 'Improve'}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="gap-1"
+                      onClick={() => setShowBlogPrompt(false)}
+                    >
+                      {lang === 'PT' ? 'Não, obrigado' : 'No, thanks'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
                   <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : 'Copy'}
@@ -294,6 +393,9 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handlePublish} disabled={saving}>
                   <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : 'Publish'}
+                </Button>
+                <Button size="sm" variant="ghost" className="gap-1 ml-auto" onClick={resetForm}>
+                  <RefreshCw className="h-3 w-3" /> {lang === 'PT' ? 'Novo' : 'New'}
                 </Button>
               </div>
             </div>
