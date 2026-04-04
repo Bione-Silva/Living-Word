@@ -128,7 +128,7 @@ const toolConfigs: Record<string, {
   'trivia': {
     inputLabel: { PT: 'Tema ou livro da Bíblia', EN: 'Topic or Bible book', ES: 'Tema o libro de la Biblia' },
     placeholder: { PT: 'Ex: Gênesis, milagres de Jesus', EN: 'E.g.: Genesis, miracles of Jesus', ES: 'Ej: Génesis, milagros de Jesús' },
-    systemPrompt: (lang) => `You are a Bible trivia expert. Create 10 fun and challenging Bible trivia questions with 4 multiple-choice options each. Include the correct answer and a brief explanation. Mix easy and hard questions. Write in ${lang}.`,
+    systemPrompt: (lang) => `You are a Bible trivia expert. Create 10 fun and challenging Bible trivia questions with 4 multiple-choice options each (A, B, C, D). IMPORTANT: Do NOT use bold or any formatting to highlight the correct answer within the options — all options must look identical. After the 4 options, write "Resposta:" followed by the correct letter and a brief explanation. Mix easy and hard questions. Write in ${lang}.`,
   },
   'poetry': {
     inputLabel: { PT: 'Tema ou passagem', EN: 'Topic or passage', ES: 'Tema o pasaje' },
