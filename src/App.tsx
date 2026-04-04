@@ -27,6 +27,7 @@ import BlogOnboarding from "./pages/BlogOnboarding";
 import NotFound from "./pages/NotFound";
 import EstudoBiblicoPage from "./pages/EstudoBiblicoPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AcceptInvite from "./pages/AcceptInvite";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/blog/:handle" element={<BlogPublic />} />
               <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
+              <Route path="/invite/:token" element={<AcceptInvite />} />
 
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/blog-onboarding" element={<BlogOnboarding />} />

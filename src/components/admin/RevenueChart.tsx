@@ -1,22 +1,43 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
-const mockData = [
-  { month: 'Jan', receita: 890, despesas: 420 },
-  { month: 'Fev', receita: 1200, despesas: 480 },
-  { month: 'Mar', receita: 1800, despesas: 520 },
-  { month: 'Abr', receita: 2400, despesas: 580 },
-  { month: 'Mai', receita: 3100, despesas: 640 },
-  { month: 'Jun', receita: 3800, despesas: 700 },
-  { month: 'Jul', receita: 4200, despesas: 750 },
-  { month: 'Ago', receita: 4800, despesas: 800 },
-  { month: 'Set', receita: 5200, despesas: 820 },
-  { month: 'Out', receita: 5900, despesas: 880 },
-  { month: 'Nov', receita: 6400, despesas: 920 },
-  { month: 'Dez', receita: 7200, despesas: 980 },
-];
+interface MonthData { month: string; receita: number; despesas: number; }
+
+const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 export function RevenueChart() {
+  const [data, setData] = useState<MonthData[]>([]);
+
+  useEffect(() => {
+    loadRevenue();
+  }, []);
+
+  const loadRevenue = async () => {
+    const { data: rows } = await supabase
+      .from('monthly_financials')
+      .select('month, revenue, expenses')
+      .order('month', { ascending: true })
+      .limit(12);
+
+    if (rows && rows.length > 0) {
+      setData(rows.map((r: any) => ({
+        month: monthLabels[new Date(r.month).getMonth()] || r.month,
+        receita: Number(r.revenue),
+        despesas: Number(r.expenses),
+      })));
+    } else {
+      // Show empty state with current month
+      const now = new Date();
+      const emptyData = Array.from({ length: 6 }, (_, i) => {
+        const d = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1);
+        return { month: monthLabels[d.getMonth()], receita: 0, despesas: 0 };
+      });
+      setData(emptyData);
+    }
+  };
+
   return (
     <Card className="admin-card border-0">
       <CardHeader className="pb-2">
@@ -25,7 +46,7 @@ export function RevenueChart() {
       <CardContent>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={mockData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+            <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorReceita" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
