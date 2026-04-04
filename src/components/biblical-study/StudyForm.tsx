@@ -47,15 +47,20 @@ const languageOptions = [
 ];
 
 export function StudyForm({ onSubmit, isLoading }: StudyFormProps) {
+  const { lang } = useLanguage();
   const [formData, setFormData] = useState<BiblicalStudyFormData>({
     bible_passage: '',
     theme: '',
-    language: 'PT',
+    language: lang,
     bible_version: 'ARA',
     doctrine_line: 'evangelical_general',
     pastoral_voice: 'welcoming',
     depth_level: 'intermediate',
   });
+
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, language: lang }));
+  }, [lang]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
