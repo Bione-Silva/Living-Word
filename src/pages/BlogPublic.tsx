@@ -1,16 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { BookOpen, Calendar, Search, Clock } from 'lucide-react';
+import { BookOpen, Search, Clock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BlogPublic() {
   const { handle } = useParams<{ handle: string }>();
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    document.documentElement.classList.add('theme-blog');
+    document.body.classList.add('theme-blog');
+
+    return () => {
+      document.documentElement.classList.remove('theme-blog');
+      document.body.classList.remove('theme-blog');
+    };
+  }, []);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['blog-profile', handle],
@@ -76,7 +86,7 @@ export default function BlogPublic() {
 
   if (profileLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center theme-app">
+      <div className="min-h-screen bg-background theme-blog flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
@@ -84,7 +94,7 @@ export default function BlogPublic() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center theme-app">
+      <div className="min-h-screen bg-background theme-blog flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-foreground">Blog não encontrado</h1>
           <p className="text-muted-foreground">O handle "{handle}" não existe.</p>
@@ -97,24 +107,19 @@ export default function BlogPublic() {
   }
 
   return (
-    <div className="min-h-screen bg-background theme-app">
-      {/* Top Navigation */}
+    <div className="min-h-screen bg-background theme-blog">
       <header className="bg-background border-b border-border/30 sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h2 className="font-serif text-xl font-bold text-primary">
-            {profile.full_name}
-          </h2>
+          <h2 className="font-serif text-xl font-bold text-primary">{profile.full_name}</h2>
           <nav className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="hover:text-primary cursor-pointer">Início</span>
           </nav>
         </div>
       </header>
 
-      {/* Hero Banner — warm tones */}
       <div className="bg-gradient-to-b from-primary/10 to-background py-14 text-center">
         <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-6">Blog</h1>
 
-        {/* Search */}
         <div className="max-w-md mx-auto flex items-center gap-2 px-4">
           <div className="relative flex-1">
             <Input
@@ -130,7 +135,6 @@ export default function BlogPublic() {
         </div>
       </div>
 
-      {/* Articles Section */}
       <main className="max-w-6xl mx-auto px-4 py-10">
         <h2 className="font-serif text-2xl font-bold text-foreground text-center mb-10">
           Últimos Artigos Publicados
@@ -166,7 +170,6 @@ export default function BlogPublic() {
               return (
                 <Link key={article.id} to={`/blog/${handle}/${article.id}`} className="group">
                   <Card className="overflow-hidden bg-card border-border/20 hover:shadow-lg transition-all duration-300 h-full flex flex-col rounded-xl">
-                    {/* Cover Image */}
                     <div className="relative h-52 overflow-hidden bg-muted/30">
                       {coverUrl ? (
                         <img
@@ -182,22 +185,21 @@ export default function BlogPublic() {
                       )}
                     </div>
 
-                    {/* Card Content */}
                     <CardContent className="p-5 flex flex-col flex-1">
                       <h3 className="font-serif text-lg font-bold text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors">
                         {article.title}
                       </h3>
-                      <p className="text-xs text-muted-foreground mb-3">
+                      <p className="text-xs text-[hsl(var(--blog-meta))] mb-3">
                         {new Date(article.published_at || article.created_at).toLocaleDateString('pt-BR', {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric',
                         })}
                       </p>
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-3 flex-1">
+                      <p className="text-sm text-[hsl(var(--blog-body))] mb-3 line-clamp-3 flex-1">
                         {getExcerpt(article.content)}
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground mt-auto pt-3 border-t border-border/20">
+                      <div className="flex items-center gap-3 text-xs text-[hsl(var(--blog-meta))] mt-auto pt-3 border-t border-border/20">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {estimateReadTime(article.content)} min de leitura
@@ -211,7 +213,6 @@ export default function BlogPublic() {
           </div>
         )}
 
-        {/* Watermark */}
         {isFree && (
           <div className="text-center py-10 mt-8 border-t border-border/20">
             <p className="text-xs text-accent">

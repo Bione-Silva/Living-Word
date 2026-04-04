@@ -150,6 +150,27 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(38,52%,58%)] to-[hsl(45,60%,70%)];
   }
 
+  .blog-prose {
+    color: hsl(var(--blog-body));
+  }
+
+  .blog-prose :where(h1, h2, h3, h4, h5, h6, strong) {
+    color: hsl(var(--blog-heading));
+  }
+
+  .blog-prose :where(p, li, em) {
+    color: hsl(var(--blog-body));
+  }
+
+  .blog-prose :where(a) {
+    color: hsl(var(--primary));
+  }
+
+  .blog-prose :where(blockquote) {
+    color: hsl(var(--blog-quote));
+    border-left-color: hsl(var(--accent));
+  }
+
   .watermark-free {
     @apply relative;
   }
@@ -158,7 +179,6 @@
     @apply absolute bottom-0 left-0 right-0 text-center text-xs py-2 text-muted-foreground bg-muted/80;
   }
 
-  /* Safe area for mobile bottom nav */
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
