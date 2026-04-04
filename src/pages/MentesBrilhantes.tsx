@@ -4,6 +4,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { MindCard, type MindData } from '@/components/MindCard';
 import { MindProfileSheet } from '@/components/MindProfileSheet';
 import { Brain, Sparkles } from 'lucide-react';
+import billyGrahamImg from '@/assets/minds/billy-graham.jpg';
+import spurgeonImg from '@/assets/minds/charles-spurgeon.jpg';
+import lloydJonesImg from '@/assets/minds/martyn-lloyd-jones.jpg';
 
 type L = 'PT' | 'EN' | 'ES';
 
