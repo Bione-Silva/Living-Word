@@ -38,6 +38,7 @@ export default function Cadastro() {
   const { signUp } = useAuth();
   const { t, lang, setLang } = useLanguage();
   const navigate = useNavigate();
+  const planParam = new URLSearchParams(window.location.search).get('plan');
 
   const handleSubmit = async () => {
     setLoading(true);
