@@ -58,6 +58,7 @@ const copy = {
   ],
   stats: [
     { num: '3', label: { PT: 'Idiomas nativos', EN: 'Native languages', ES: 'Idiomas nativos' } },
+    { num: '20+', label: { PT: 'Ferramentas pastorais', EN: 'Pastoral tools', ES: 'Herramientas pastorales' } },
     { num: '7+', label: { PT: 'Formatos por geração', EN: 'Formats per generation', ES: 'Formatos por generación' } },
     { num: '60s', label: { PT: 'Do input ao blog publicado', EN: 'From input to published blog', ES: 'Del input al blog publicado' } },
     { num: '$0', label: { PT: 'Para começar', EN: 'To get started', ES: 'Para empezar' } },
