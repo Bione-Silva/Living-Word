@@ -168,7 +168,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="theme-app max-w-2xl max-h-[85vh] overflow-y-auto bg-background text-foreground border-border">
         <DialogHeader>
           <DialogTitle className="font-display">{toolTitle}</DialogTitle>
         </DialogHeader>
