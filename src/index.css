@@ -47,15 +47,15 @@
     --lw-text: 24 30% 12%;
     --lw-muted: 20 25% 43%;
 
-    /* Sidebar: warm taupe */
-    --sidebar-background: 30 12% 28%;
-    --sidebar-foreground: 36 20% 90%;
-    --sidebar-primary: 38 45% 65%;
-    --sidebar-primary-foreground: 30 12% 15%;
-    --sidebar-accent: 30 10% 34%;
-    --sidebar-accent-foreground: 36 20% 95%;
-    --sidebar-border: 30 10% 36%;
-    --sidebar-ring: 38 45% 65%;
+    /* Sidebar: light warm */
+    --sidebar-background: 36 30% 95%;
+    --sidebar-foreground: 24 30% 18%;
+    --sidebar-primary: 28 42% 42%;
+    --sidebar-primary-foreground: 36 30% 97%;
+    --sidebar-accent: 30 20% 88%;
+    --sidebar-accent-foreground: 24 30% 15%;
+    --sidebar-border: 30 15% 85%;
+    --sidebar-ring: 28 42% 42%;
   }
 
   /* Warm parchment theme for authenticated app */
