@@ -199,6 +199,7 @@ export default function AdminDashboard() {
       <TrafficChart />
       <GeographyChart />
       <LeadsTable />
+      <FeedbackPanel />
       <TeamSection />
 
       <VaultSection
