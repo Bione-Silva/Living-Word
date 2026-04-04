@@ -1,16 +1,18 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import {
   Wand2, PenLine, Type, Video, BookOpen, Languages, X,
   Search, Globe, Quote, Clapperboard, ScrollText, Lightbulb, Sparkles,
   Crown, Film, Megaphone, MessageSquare, Mail, Newspaper,
-  Gamepad2, Feather, Baby, ArrowRightLeft
+  Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy
 } from 'lucide-react';
 import { useState } from 'react';
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
+import { toast } from 'sonner';
 
 const researchTools: ToolCardData[] = [
   { id: 'topic-explorer', icon: Search, title: { PT: 'Explorador de Tópicos', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: 'Descubra subtemas e ângulos para sua pregação', EN: 'Discover subtopics and angles for your sermon', ES: 'Descubre subtemas y ángulos para tu sermón' }, hasModal: true },
