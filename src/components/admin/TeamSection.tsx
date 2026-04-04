@@ -3,15 +3,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { UserPlus, Copy, Mail, Shield, Eye, Edit3, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { UserPlus, Copy, Mail, Shield, Eye, Edit3, Trash2, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
-const mockTeam = [
-  { id: '1', email: 'carlos@equipe.com', role: 'admin', status: 'active', name: 'Carlos Admin' },
-  { id: '2', email: 'maria@equipe.com', role: 'editor', status: 'active', name: 'Maria Editora' },
-  { id: '3', email: 'joao@equipe.com', role: 'viewer', status: 'pending', name: '' },
-];
+interface TeamMember {
+  id: string;
+  email: string;
+  role: string;
+  status: string;
+  invite_token: string | null;
+  user_id: string | null;
+  created_at: string;
+}
 
 const roleLabels: Record<string, { label: string; icon: typeof Shield; color: string }> = {
   admin: { label: 'Admin', icon: Shield, color: 'bg-red-500/20 text-red-400 border-red-500/30' },
@@ -22,20 +27,66 @@ const roleLabels: Record<string, { label: string; icon: typeof Shield; color: st
 export function TeamSection() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('viewer');
-  const inviteLink = 'https://living-word.lovable.app/invite/abc123xyz';
+  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [latestInviteLink, setLatestInviteLink] = useState('');
 
-  const handleInvite = () => {
+  useEffect(() => {
+    loadMembers();
+  }, []);
+
+  const loadMembers = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('team_members')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (data) setMembers(data as TeamMember[]);
+    setLoading(false);
+  };
+
+  const handleInvite = async () => {
     if (!inviteEmail.includes('@')) {
       toast.error('Email inválido');
       return;
     }
-    toast.success(`Convite enviado para ${inviteEmail}`);
-    setInviteEmail('');
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-team-invite', {
+        body: { email: inviteEmail, role: inviteRole },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.success(`Convite enviado para ${inviteEmail}`);
+        setLatestInviteLink(data?.invite_url || '');
+        setInviteEmail('');
+        loadMembers();
+      }
+    } catch {
+      toast.error('Erro ao enviar convite');
+    }
+    setSending(false);
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(inviteLink);
+    if (!latestInviteLink) {
+      toast.error('Envie um convite primeiro');
+      return;
+    }
+    navigator.clipboard.writeText(latestInviteLink);
     toast.success('Link de convite copiado!');
+  };
+
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from('team_members').delete().eq('id', id);
+    if (error) toast.error('Erro ao remover membro');
+    else {
+      toast.success('Membro removido');
+      loadMembers();
+    }
   };
 
   return (
@@ -74,25 +125,31 @@ export function TeamSection() {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={handleInvite} className="gap-1.5">
-            <Mail className="h-3.5 w-3.5" />
+          <Button onClick={handleInvite} disabled={sending} className="gap-1.5">
+            {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />}
             Enviar Convite
           </Button>
         </div>
 
         {/* Invite link */}
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/5 border border-border/20">
-          <span className="text-xs admin-muted flex-1 truncate font-mono">{inviteLink}</span>
-          <Button variant="ghost" size="sm" onClick={handleCopyLink} className="gap-1">
-            <Copy className="h-3 w-3" />
-            Copiar link
-          </Button>
-        </div>
+        {latestInviteLink && (
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/5 border border-border/20">
+            <span className="text-xs admin-muted flex-1 truncate font-mono">{latestInviteLink}</span>
+            <Button variant="ghost" size="sm" onClick={handleCopyLink} className="gap-1">
+              <Copy className="h-3 w-3" />
+              Copiar link
+            </Button>
+          </div>
+        )}
 
         {/* Team list */}
         <div className="space-y-2">
-          {mockTeam.map((m) => {
-            const r = roleLabels[m.role];
+          {loading && <p className="text-sm admin-muted">Carregando...</p>}
+          {!loading && members.length === 0 && (
+            <p className="text-sm admin-muted italic">Nenhum membro convidado ainda.</p>
+          )}
+          {members.map((m) => {
+            const r = roleLabels[m.role] || roleLabels.viewer;
             return (
               <div
                 key={m.id}
@@ -100,11 +157,11 @@ export function TeamSection() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-muted/30 flex items-center justify-center text-xs font-bold admin-text">
-                    {(m.name || m.email).charAt(0).toUpperCase()}
+                    {m.email.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-medium admin-text">{m.name || m.email}</p>
-                    <p className="text-xs admin-muted">{m.email}</p>
+                    <p className="text-sm font-medium admin-text">{m.email}</p>
+                    <p className="text-xs admin-muted">{new Date(m.created_at).toLocaleDateString('pt-BR')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -113,11 +170,21 @@ export function TeamSection() {
                       Pendente
                     </Badge>
                   )}
+                  {m.status === 'active' && (
+                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+                      Ativo
+                    </Badge>
+                  )}
                   <Badge variant="outline" className={`text-[10px] ${r.color}`}>
                     <r.icon className="h-3 w-3 mr-1" />
                     {r.label}
                   </Badge>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-300 hover:bg-red-500/10">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDelete(m.id)}
+                    className="h-7 w-7 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                  >
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
