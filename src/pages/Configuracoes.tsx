@@ -103,7 +103,7 @@ export default function Configuracoes() {
               <div className="flex items-center gap-3">
                 <Badge variant="secondary" className="capitalize text-sm px-3 py-1">{profile?.plan || 'free'}</Badge>
                 <span className="text-sm text-muted-foreground">
-                  {profile?.generations_used || 0}/{profile?.generations_limit || 5} gerações usadas
+                  {profile?.generations_used || 0}/{profile?.generations_limit || 5} {t('settings.generations_used')}
                 </span>
               </div>
               {isFree && (
