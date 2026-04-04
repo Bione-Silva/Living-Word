@@ -142,6 +142,78 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_financials: {
+        Row: {
+          created_at: string
+          expenses: number
+          id: string
+          month: string
+          notes: string | null
+          revenue: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expenses?: number
+          id?: string
+          month: string
+          notes?: string | null
+          revenue?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expenses?: number
+          id?: string
+          month?: string
+          notes?: string | null
+          revenue?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      page_views: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device: string | null
+          id: string
+          path: string
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          id?: string
+          path: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          id?: string
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -149,15 +221,23 @@ export type Database = {
           bio: string | null
           blog_handle: string | null
           blog_name: string | null
+          church_name: string | null
+          city: string | null
+          country: string | null
           created_at: string
+          denomination: string | null
           doctrine: string | null
+          favorite_preacher: string | null
           full_name: string
           generations_limit: number
           generations_used: number
           id: string
           language: string
           pastoral_voice: string | null
+          phone: string | null
           plan: string
+          preaching_style: string | null
+          profile_completed: boolean | null
           trial_ends_at: string | null
           trial_started_at: string | null
           updated_at: string
@@ -169,15 +249,23 @@ export type Database = {
           bio?: string | null
           blog_handle?: string | null
           blog_name?: string | null
+          church_name?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
+          denomination?: string | null
           doctrine?: string | null
+          favorite_preacher?: string | null
           full_name?: string
           generations_limit?: number
           generations_used?: number
           id: string
           language?: string
           pastoral_voice?: string | null
+          phone?: string | null
           plan?: string
+          preaching_style?: string | null
+          profile_completed?: boolean | null
           trial_ends_at?: string | null
           trial_started_at?: string | null
           updated_at?: string
@@ -189,19 +277,66 @@ export type Database = {
           bio?: string | null
           blog_handle?: string | null
           blog_name?: string | null
+          church_name?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
+          denomination?: string | null
           doctrine?: string | null
+          favorite_preacher?: string | null
           full_name?: string
           generations_limit?: number
           generations_used?: number
           id?: string
           language?: string
           pastoral_voice?: string | null
+          phone?: string | null
           plan?: string
+          preaching_style?: string | null
+          profile_completed?: boolean | null
           trial_ends_at?: string | null
           trial_started_at?: string | null
           updated_at?: string
           wordpress_url?: string | null
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          id: string
+          invite_token: string | null
+          invited_by: string | null
+          role: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          invite_token?: string | null
+          invited_by?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          invite_token?: string | null
+          invited_by?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
