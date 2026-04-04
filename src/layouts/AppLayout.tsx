@@ -514,6 +514,7 @@ export default function AppLayout() {
           toolTitle={activeTool.title}
         />
       )}
+      <SupportChatBubble />
     </div>
   );
 }
