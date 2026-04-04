@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, Loader2 } from 'lucide-react';
 import type { BiblicalStudyFormData } from '@/types/biblical-study';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StudyFormProps {
   onSubmit: (data: BiblicalStudyFormData) => void;
@@ -46,15 +47,20 @@ const languageOptions = [
 ];
 
 export function StudyForm({ onSubmit, isLoading }: StudyFormProps) {
+  const { lang } = useLanguage();
   const [formData, setFormData] = useState<BiblicalStudyFormData>({
     bible_passage: '',
     theme: '',
-    language: 'PT',
+    language: lang,
     bible_version: 'ARA',
     doctrine_line: 'evangelical_general',
     pastoral_voice: 'welcoming',
     depth_level: 'intermediate',
   });
+
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, language: lang }));
+  }, [lang]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -13,7 +13,7 @@ interface StudyActionsProps {
 }
 
 export function StudyActions({ study }: StudyActionsProps) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { lang } = useLanguage();
   const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null);
 
@@ -267,6 +267,7 @@ export function StudyActions({ study }: StudyActionsProps) {
             language: study.language,
             bible_version: study.bible_text?.[0]?.version || 'ARA',
             output_modes: [outputMode],
+            pastoral_voice: profile?.pastoral_voice || '',
           },
         });
 
