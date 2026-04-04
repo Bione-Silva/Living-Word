@@ -3,7 +3,7 @@ import spurgeonImg from '@/assets/minds/charles-spurgeon.jpg';
 import lloydJonesImg from '@/assets/minds/martyn-lloyd-jones.jpg';
 import johnWesleyImg from '@/assets/minds/john-wesley.jpg';
 import joaoCalvinoImg from '@/assets/minds/joao-calvino.jpg';
-import marcoFelicianoImg from '@/assets/minds/marco-feliciano.jpg';
+import marcoFelicianoImg from '@/assets/minds/marco-feliciano.png';
 import tiagoBrunetImg from '@/assets/minds/tiago-brunet.png';
 
 type L = 'PT' | 'EN' | 'ES';
