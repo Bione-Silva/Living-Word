@@ -237,7 +237,7 @@ export default function Cadastro() {
 
             {step === 1 && (
               <p className="text-center text-sm text-muted-foreground mt-4">
-                Já tem conta? <Link to="/login" className="text-primary hover:underline">{t('auth.login')}</Link>
+                Já tem conta? <Link to={planParam ? `/login?plan=${planParam}` : '/login'} className="text-primary hover:underline">{t('auth.login')}</Link>
               </p>
             )}
           </CardContent>
