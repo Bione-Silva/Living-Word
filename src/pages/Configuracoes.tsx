@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,13 +9,39 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 import { Crown } from 'lucide-react';
 import type { Language } from '@/lib/i18n';
 
 export default function Configuracoes() {
-  const { profile } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const { t, lang, setLang } = useLanguage();
   const isFree = profile?.plan === 'free';
+  const [savingLanguage, setSavingLanguage] = useState(false);
+
+  const handleLanguageChange = async (value: Language) => {
+    const previousLang = lang;
+    setLang(value);
+
+    if (!profile?.id) return;
+
+    setSavingLanguage(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ language: value, updated_at: new Date().toISOString() })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+      await refreshProfile();
+      toast.success(value === 'PT' ? 'Idioma da conta atualizado.' : value === 'EN' ? 'Account language updated.' : 'Idioma de la cuenta actualizado.');
+    } catch {
+      setLang(previousLang);
+      toast.error(previousLang === 'PT' ? 'Não foi possível salvar o idioma da conta.' : previousLang === 'EN' ? 'Could not save account language.' : 'No fue posible guardar el idioma de la cuenta.');
+    } finally {
+      setSavingLanguage(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -118,7 +145,7 @@ export default function Configuracoes() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>{t('auth.language')}</Label>
-                <Select value={lang} onValueChange={(v) => setLang(v as Language)}>
+                <Select value={lang} onValueChange={(v) => void handleLanguageChange(v as Language)} disabled={savingLanguage}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PT">Português</SelectItem>

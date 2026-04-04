@@ -5,7 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { LanguageProvider } from "@/contexts/LanguageContext";
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -49,16 +49,30 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function SyncLanguageWithProfile() {
+  const { profile } = useAuth();
+  const { lang, setLang } = useLanguage();
+
+  React.useEffect(() => {
+    const profileLang = profile?.language as "PT" | "EN" | "ES" | undefined;
+    if (profileLang && profileLang !== lang) {
+      setLang(profileLang);
+    }
+  }, [profile?.language, lang, setLang]);
+
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <AuthProvider>
+        <SyncLanguageWithProfile />
         <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Public routes */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<Cadastro />} />
@@ -66,7 +80,6 @@ const App = () => (
               <Route path="/blog/:handle" element={<BlogPublic />} />
               <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
 
-              {/* Protected routes with AppLayout */}
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/blog-onboarding" element={<BlogOnboarding />} />
                 <Route path="/dashboard" element={<Dashboard />} />

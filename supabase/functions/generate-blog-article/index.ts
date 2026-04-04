@@ -103,7 +103,7 @@ serve(async (req) => {
     }
     const userId = claimsData.claims.sub as string;
 
-    const { passage, language = "PT", title: inputTitle } = await req.json();
+    const { passage, language: requestedLanguage, title: inputTitle } = await req.json();
 
     if (!passage) {
       return new Response(JSON.stringify({ error: "passage is required" }), {
@@ -112,10 +112,9 @@ serve(async (req) => {
       });
     }
 
-    // Fetch user profile
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, doctrine, pastoral_voice, bible_version")
+      .select("full_name, doctrine, pastoral_voice, bible_version, language")
       .eq("id", userId)
       .maybeSingle();
 
@@ -124,7 +123,8 @@ serve(async (req) => {
       EN: "English",
       ES: "Spanish",
     };
-    const targetLang = langMap[language] || "Portuguese (Brazilian)";
+    const resolvedLanguage = requestedLanguage || profile?.language || "PT";
+    const targetLang = langMap[resolvedLanguage] || "Portuguese (Brazilian)";
     const doctrine = profile?.doctrine || "evangelical";
     const voice = profile?.pastoral_voice || "acolhedor";
 
@@ -213,7 +213,7 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
         type: "blog_article",
         passage,
         content,
-        language,
+        language: resolvedLanguage,
         bible_version: profile?.bible_version || "NVI",
         cover_image_url: coverImageUrl,
         article_images: articleImages,

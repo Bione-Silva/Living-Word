@@ -36,7 +36,7 @@ export default function Cadastro() {
   const [voice, setVoice] = useState('acolhedor');
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
-  const { t, lang } = useLanguage();
+  const { t, lang, setLang } = useLanguage();
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
@@ -49,12 +49,11 @@ export default function Cadastro() {
         doctrine,
         pastoral_voice: voice,
       });
-      toast.success(lang === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' : 'Account created! Generating your first devotionals...');
 
-      // Auto-generate articles in background
+      setLang(language);
+      toast.success(language === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' : language === 'EN' ? 'Account created! Generating your first devotionals...' : '¡Cuenta creada! Generando tus primeros devocionales...');
+
       generateInitialContent().catch(console.error);
-
-      // Redirect to blog onboarding
       navigate('/blog-onboarding');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao criar conta');
@@ -64,20 +63,36 @@ export default function Cadastro() {
   };
 
   const generateInitialContent = async () => {
-    const passages = [
-      { passage: 'Salmo 23', title: lang === 'PT' ? 'O Senhor é meu pastor: encontrando paz em tempos difíceis' : lang === 'ES' ? 'El Señor es mi pastor: encontrando paz en tiempos difíciles' : 'The Lord is my shepherd: finding peace in difficult times' },
-      { passage: 'Filipenses 4:13', title: lang === 'PT' ? 'Tudo posso naquele que me fortalece: a força que vem de Deus' : lang === 'ES' ? 'Todo lo puedo en Cristo que me fortalece' : 'I can do all things through Christ who strengthens me' },
-      { passage: 'Provérbios 3:5-6', title: lang === 'PT' ? 'Confia no Senhor de todo o teu coração: um caminho de fé' : lang === 'ES' ? 'Confía en el Señor con todo tu corazón' : 'Trust in the Lord with all your heart: a path of faith' },
-    ];
+    const localizedTitles: Record<Language, { passage: string; title: string }[]> = {
+      PT: [
+        { passage: 'Salmo 23', title: 'O Senhor é meu pastor: encontrando paz em tempos difíceis' },
+        { passage: 'Filipenses 4:13', title: 'Tudo posso naquele que me fortalece: a força que vem de Deus' },
+        { passage: 'Provérbios 3:5-6', title: 'Confia no Senhor de todo o teu coração: um caminho de fé' },
+      ],
+      EN: [
+        { passage: 'Psalm 23', title: 'The Lord is my shepherd: finding peace in difficult times' },
+        { passage: 'Philippians 4:13', title: 'I can do all things through Christ who strengthens me' },
+        { passage: 'Proverbs 3:5-6', title: 'Trust in the Lord with all your heart: a path of faith' },
+      ],
+      ES: [
+        { passage: 'Salmo 23', title: 'El Señor es mi pastor: encontrando paz en tiempos difíciles' },
+        { passage: 'Filipenses 4:13', title: 'Todo lo puedo en Cristo que me fortalece' },
+        { passage: 'Proverbios 3:5-6', title: 'Confía en el Señor con todo tu corazón: un camino de fe' },
+      ],
+    };
 
-    for (const p of passages) {
-      try {
-        const { data, error } = await supabase.functions.invoke('generate-blog-article', {
-          body: { passage: p.passage, language, title: p.title },
-        });
-        if (error) console.error('Auto-gen error:', error);
-      } catch (e) {
-        console.error('Auto-gen failed:', e);
+    const targetLanguages: Language[] = ['PT', 'EN', 'ES'];
+
+    for (const targetLanguage of targetLanguages) {
+      for (const p of localizedTitles[targetLanguage]) {
+        try {
+          const { error } = await supabase.functions.invoke('generate-blog-article', {
+            body: { passage: p.passage, language: targetLanguage, title: p.title },
+          });
+          if (error) console.error('Auto-gen error:', error);
+        } catch (e) {
+          console.error('Auto-gen failed:', e);
+        }
       }
     }
   };
