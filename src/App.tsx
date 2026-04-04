@@ -19,6 +19,7 @@ import Calendario from "./pages/Calendario";
 import Configuracoes from "./pages/Configuracoes";
 import Upgrade from "./pages/Upgrade";
 import MentesBrilhantes from "./pages/MentesBrilhantes";
+import MindProfile from "./pages/MindProfile";
 import MenteChat from "./pages/MenteChat";
 import AppLayout from "./layouts/AppLayout";
 import BlogPublic from "./pages/BlogPublic";
