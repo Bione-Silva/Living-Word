@@ -76,7 +76,7 @@ export default function BlogPublic() {
 
   if (profileLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center theme-app">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
@@ -84,7 +84,7 @@ export default function BlogPublic() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center theme-app">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-foreground">Blog não encontrado</h1>
           <p className="text-muted-foreground">O handle "{handle}" não existe.</p>
