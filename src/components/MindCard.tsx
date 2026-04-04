@@ -47,8 +47,8 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
 
         {/* Name & subtitle */}
         <div className="text-center space-y-2">
-          <h3 className="font-display text-xl font-bold text-white tracking-tight">{mind.name}</h3>
-          <p className="text-[13px] italic text-[hsl(43,55%,58%)]/70 font-display">{mind.subtitle[lang]}</p>
+          <h3 className="font-display text-xl font-bold text-foreground tracking-tight">{mind.name}</h3>
+          <p className="text-[13px] italic text-primary/70 font-display">{mind.subtitle[lang]}</p>
 
           {/* Online indicator */}
           {!isLocked && (
