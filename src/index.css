@@ -182,4 +182,33 @@
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+
+  /* Admin Dashboard Dark Theme */
+  .admin-dark .admin-card {
+    background: hsl(230 15% 12%);
+    color: hsl(0 0% 95%);
+  }
+  .admin-dark .admin-text { color: hsl(0 0% 95%); }
+  .admin-dark .admin-muted { color: hsl(230 10% 55%); }
+  .admin-dark .admin-input {
+    background: hsl(230 15% 15%);
+    border-color: hsl(230 12% 22%);
+    color: hsl(0 0% 95%);
+  }
+  .admin-dark .admin-bg { background: hsl(230 15% 8%); }
+
+  /* Admin Dashboard Light Theme (default) */
+  .admin-card {
+    background: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  }
+  .admin-text { color: hsl(var(--foreground)); }
+  .admin-muted { color: hsl(var(--muted-foreground)); }
+  .admin-input {
+    background: hsl(var(--background));
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+  .admin-bg { background: hsl(var(--background)); }
 }
