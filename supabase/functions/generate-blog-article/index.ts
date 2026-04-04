@@ -213,7 +213,7 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
         type: "blog_article",
         passage,
         content,
-        language,
+        language: resolvedLanguage,
         bible_version: profile?.bible_version || "NVI",
         cover_image_url: coverImageUrl,
         article_images: articleImages,

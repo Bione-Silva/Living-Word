@@ -80,6 +80,7 @@ export default function Blog() {
         queue_status: statusMap.get(m.id)?.status || 'draft',
         published_at: statusMap.get(m.id)?.published_at || null,
         queue_id: statusMap.get(m.id)?.id || null,
+        language: m.language || 'PT',
       }));
     },
     enabled: !!user?.id,
