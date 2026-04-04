@@ -490,7 +490,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                         <p className="text-sm text-muted-foreground">{formData.bible_passage}</p>
                         {profile?.plan !== 'free' && (
                           <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                            ⚡ Alta Exegese
+                            ⚡ GPT-4o
                           </span>
                         )}
                       </div>
