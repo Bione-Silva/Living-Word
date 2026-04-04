@@ -12,6 +12,34 @@ import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+function intercalateImages(markdown: string, images: string[]): string {
+  if (!images.length) return markdown;
+  const lines = markdown.split('\n');
+  const headingIndices: number[] = [];
+  lines.forEach((line, i) => {
+    if (/^#{2,3}\s/.test(line.trim())) headingIndices.push(i);
+  });
+  const insertPoints = headingIndices.slice(1);
+  const result = [...lines];
+  let offset = 0;
+  images.forEach((imgUrl, idx) => {
+    if (idx < insertPoints.length) {
+      const insertAt = insertPoints[idx] + offset + 2;
+      result.splice(insertAt, 0, `\n![Ilustração ${idx + 1}](${imgUrl})\n`);
+      offset += 1;
+    }
+  });
+  return result.join('\n');
+}
+
+function getBodyImages(item: any): string[] {
+  const images: string[] = (item?.article_images || []).filter(Boolean);
+  const cover = item?.cover_image_url;
+  return cover && images[0] === cover ? images.slice(1) : images;
+}
+
 
 const typeIcons: Record<string, React.ElementType> = {
   sermon: BookOpen,
