@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import { Loader2, Copy, Save, BookOpen, Wand2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
 
 interface ToolModalProps {
   open: boolean;
