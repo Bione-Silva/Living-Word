@@ -8,6 +8,18 @@ import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+export default function BlogArticle() {
+  const { handle, articleId } = useParams<{ handle: string; articleId: string }>();
+
+  useEffect(() => {
+    document.documentElement.classList.add('theme-blog');
+    document.body.classList.add('theme-blog');
+    return () => {
+      document.documentElement.classList.remove('theme-blog');
+      document.body.classList.remove('theme-blog');
+    };
+  }, []);
+
   const { data: profile } = useQuery({
     queryKey: ['blog-profile', handle],
     queryFn: async () => {
