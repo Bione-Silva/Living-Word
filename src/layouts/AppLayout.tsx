@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { HelpArticleModal } from '@/components/HelpArticleModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GenerationCounter } from '@/components/GenerationCounter';
 import { LanguageToggle } from '@/components/LanguageToggle';
@@ -108,6 +109,7 @@ export default function AppLayout() {
   });
   const [activeTool, setActiveTool] = useState<{ id: string; title: string } | null>(null);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const [helpToolId, setHelpToolId] = useState<string | null>(null);
   const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({
     Pesquisa: true, Criar: true, Alcance: true, Divertidas: true,
   });
@@ -448,6 +450,15 @@ export default function AppLayout() {
             </Link>
           )}
 
+          {/* Help Center */}
+          <button
+            onClick={() => setHelpToolId('studio')}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+          >
+            <HelpCircle className="h-4 w-4" />
+            {lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda'}
+          </button>
+
           {/* Settings */}
           <Link
             to="/configuracoes"
@@ -512,6 +523,13 @@ export default function AppLayout() {
           onOpenChange={(open) => !open && setActiveTool(null)}
           toolId={activeTool.id}
           toolTitle={activeTool.title}
+        />
+      )}
+      {helpToolId && (
+        <HelpArticleModal
+          open={!!helpToolId}
+          onOpenChange={(open) => !open && setHelpToolId(null)}
+          toolId={helpToolId}
         />
       )}
       <SupportChatBubble />

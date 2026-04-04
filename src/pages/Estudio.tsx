@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
+import { HelpArticleModal } from '@/components/HelpArticleModal';
 import {
   Search, BookOpen, Quote, Film, FileText, Languages as LanguagesIcon,
   Lightbulb, PenTool, Sparkles, Repeat, Palette, Wand2,
@@ -105,6 +106,7 @@ export default function Estudio() {
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeTool, setActiveTool] = useState<ToolCardData | null>(null);
+  const [helpToolId, setHelpToolId] = useState<string | null>(null);
 
   const handleToolClick = (tool: ToolCardData) => {
     setActiveTool(tool);
@@ -138,6 +140,7 @@ export default function Estudio() {
                 lang={lang}
                 isFree={isFree}
                 onClick={handleToolClick}
+                onHelp={(id) => setHelpToolId(id)}
                 index={si * 7 + ti}
               />
             ))}
@@ -152,6 +155,14 @@ export default function Estudio() {
           onOpenChange={setSheetOpen}
           toolId={activeTool.id}
           toolTitle={activeTool.title[lang]}
+        />
+      )}
+
+      {helpToolId && (
+        <HelpArticleModal
+          open={!!helpToolId}
+          onOpenChange={(open) => !open && setHelpToolId(null)}
+          toolId={helpToolId}
         />
       )}
     </div>
