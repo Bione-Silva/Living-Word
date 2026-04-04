@@ -78,15 +78,26 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
         className="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto p-0 border-none rounded-2xl shadow-2xl"
         style={{ backgroundColor: '#f7f5f0' }}
       >
-        {/* Close button */}
-        <button
-          onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 z-20 rounded-full p-2 hover:bg-black/5 transition-colors"
-          style={{ color: '#6B4F3A' }}
-        >
-          <X className="h-5 w-5" />
-          <span className="sr-only">Fechar</span>
-        </button>
+        {/* Action buttons */}
+        <div className="absolute right-4 top-4 z-20 flex items-center gap-1">
+          <button
+            onClick={handleExportPDF}
+            disabled={exporting}
+            className="rounded-full p-2 hover:bg-black/5 transition-colors"
+            style={{ color: '#6B4F3A' }}
+            title="Exportar PDF"
+          >
+            {exporting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}
+          </button>
+          <button
+            onClick={() => onOpenChange(false)}
+            className="rounded-full p-2 hover:bg-black/5 transition-colors"
+            style={{ color: '#6B4F3A' }}
+          >
+            <X className="h-5 w-5" />
+            <span className="sr-only">Fechar</span>
+          </button>
+        </div>
 
         <DialogTitle className="sr-only">{item.title}</DialogTitle>
 
