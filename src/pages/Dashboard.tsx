@@ -160,6 +160,7 @@ export default function Dashboard() {
 
       <TrialCountdown />
       <PWAInstallBanner />
+      <ProductionCapacityBar />
 
       {showBanner && isFree && (
         <Card className="border-accent/30 bg-accent/5">
