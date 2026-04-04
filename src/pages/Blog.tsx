@@ -182,6 +182,27 @@ export default function Blog() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      // Delete from editorial_queue first (if exists)
+      if (deleteTarget.queue_id) {
+        await supabase.from('editorial_queue').delete().eq('id', deleteTarget.queue_id);
+      }
+      // Delete the material
+      const { error } = await supabase.from('materials').delete().eq('id', deleteTarget.id);
+      if (error) throw error;
+      toast.success('Artigo excluído com sucesso.');
+      queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
+    } catch {
+      toast.error('Erro ao excluir artigo.');
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
