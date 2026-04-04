@@ -1,51 +1,55 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Check, Crown, Sparkles, Users, Plus, Minus, Brain, BookOpen, Zap, BarChart3 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Slider } from '@/components/ui/slider';
+import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2 } from 'lucide-react';
+import { detectGeoRegion, PRICING_MAP, formatPrice, type GeoRegion } from '@/utils/geoPricing';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 type L = 'PT' | 'EN' | 'ES';
+type PlanKey = 'starter' | 'pro' | 'church';
+
+const region: GeoRegion = detectGeoRegion();
+const pricing = PRICING_MAP[region];
 
 const labels = {
   title: { PT: 'Escolha seu plano de produção', EN: 'Choose your production plan', ES: 'Elige tu plan de producción' } as Record<L, string>,
   subtitle: { PT: 'Escale sua produção pastoral. Sem créditos técnicos, sem complicação.', EN: 'Scale your pastoral production. No technical credits, no hassle.', ES: 'Escala tu producción pastoral. Sin créditos técnicos, sin complicación.' } as Record<L, string>,
   current: { PT: 'Plano atual', EN: 'Current plan', ES: 'Plan actual' } as Record<L, string>,
   popular: { PT: 'Mais escolhido', EN: 'Most popular', ES: 'Más elegido' } as Record<L, string>,
-  cta: { PT: 'Começar teste grátis', EN: 'Start free trial', ES: 'Iniciar prueba gratis' } as Record<L, string>,
+  cta: { PT: 'Assinar agora', EN: 'Subscribe now', ES: 'Suscribirse ahora' } as Record<L, string>,
   ctaFree: { PT: 'Plano atual', EN: 'Current plan', ES: 'Plan actual' } as Record<L, string>,
+  ctaTrial: { PT: '7 dias grátis', EN: '7 days free', ES: '7 días gratis' } as Record<L, string>,
   month: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
   forever: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' } as Record<L, string>,
-  users: { PT: 'usuários', EN: 'users', ES: 'usuarios' } as Record<L, string>,
-  capacity: { PT: 'Capacidade', EN: 'Capacity', ES: 'Capacidad' } as Record<L, string>,
-  addUser: { PT: 'Adicionar usuário', EN: 'Add user', ES: 'Agregar usuario' } as Record<L, string>,
-  extraUserCost: { PT: '+R$9,90 por usuário extra', EN: '+R$9.90 per extra user', ES: '+R$9,90 por usuario extra' } as Record<L, string>,
-  included: { PT: 'incluídos', EN: 'included', ES: 'incluidos' } as Record<L, string>,
-  extra: { PT: 'extras', EN: 'extras', ES: 'extras' } as Record<L, string>,
-  churchExpand: { PT: 'Adicione usuários extras conforme sua equipe cresce', EN: 'Add extra users as your team grows', ES: 'Agrega usuarios extras a medida que tu equipo crece' } as Record<L, string>,
-  compare: { PT: 'Comparação completa', EN: 'Full comparison', ES: 'Comparación completa' } as Record<L, string>,
+  extraSeats: { PT: 'Membros da equipe extras', EN: 'Extra team members', ES: 'Miembros del equipo extras' } as Record<L, string>,
+  perSeat: { PT: 'por assento extra', EN: 'per extra seat', ES: 'por asiento extra' } as Record<L, string>,
+  totalPrice: { PT: 'Preço total', EN: 'Total price', ES: 'Precio total' } as Record<L, string>,
+  included: { PT: '10 incluídos', EN: '10 included', ES: '10 incluidos' } as Record<L, string>,
+  capacityBoost: { PT: 'de capacidade extra', EN: 'extra capacity', ES: 'de capacidad extra' } as Record<L, string>,
 };
 
 interface PlanData {
   id: string;
+  planKey: PlanKey | null;
   name: Record<L, string>;
-  price: string;
-  priceNum: number;
-  period: 'forever' | 'month';
   icon: React.ElementType;
   features: Record<L, string[]>;
   featured: boolean;
   capacity: Record<L, string>;
   sermonsMonth: Record<L, string>;
+  isFree: boolean;
 }
 
 const plans: PlanData[] = [
   {
-    id: 'free', name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
-    price: 'R$0', priceNum: 0, period: 'forever', icon: BookOpen, featured: false,
+    id: 'free', planKey: null,
+    name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
+    icon: BookOpen, featured: false, isFree: true,
     capacity: { PT: 'Uso básico', EN: 'Basic usage', ES: 'Uso básico' },
     sermonsMonth: { PT: '5 gerações/mês', EN: '5 generations/month', ES: '5 generaciones/mes' },
     features: {
@@ -55,8 +59,9 @@ const plans: PlanData[] = [
     },
   },
   {
-    id: 'starter', name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
-    price: 'R$9,90', priceNum: 9.90, period: 'month', icon: Zap, featured: false,
+    id: 'starter', planKey: 'starter',
+    name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
+    icon: Zap, featured: false, isFree: false,
     capacity: { PT: 'Produção semanal', EN: 'Weekly production', ES: 'Producción semanal' },
     sermonsMonth: { PT: 'Até 15 sermões/mês', EN: 'Up to 15 sermons/month', ES: 'Hasta 15 sermones/mes' },
     features: {
@@ -66,8 +71,9 @@ const plans: PlanData[] = [
     },
   },
   {
-    id: 'pro', name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
-    price: 'R$29,90', priceNum: 29.90, period: 'month', icon: Brain, featured: true,
+    id: 'pro', planKey: 'pro',
+    name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
+    icon: Brain, featured: true, isFree: false,
     capacity: { PT: 'Produção completa', EN: 'Full production', ES: 'Producción completa' },
     sermonsMonth: { PT: 'Até 60 sermões/mês', EN: 'Up to 60 sermons/month', ES: 'Hasta 60 sermones/mes' },
     features: {
@@ -77,8 +83,9 @@ const plans: PlanData[] = [
     },
   },
   {
-    id: 'church', name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
-    price: 'R$79,90', priceNum: 79.90, period: 'month', icon: Users, featured: false,
+    id: 'church', planKey: 'church',
+    name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
+    icon: Users, featured: false, isFree: false,
     capacity: { PT: 'Escala ministerial', EN: 'Ministry scale', ES: 'Escala ministerial' },
     sermonsMonth: { PT: 'Produção compartilhada', EN: 'Shared production', ES: 'Producción compartida' },
     features: {
@@ -89,98 +96,47 @@ const plans: PlanData[] = [
   },
 ];
 
-function ChurchExpansionCard({ lang }: { lang: L }) {
-  const [extraUsers, setExtraUsers] = useState(0);
-  const baseUsers = 10;
-  const basePrice = 79.90;
-  const perUser = 9.90;
-  const totalUsers = baseUsers + extraUsers;
-  const totalPrice = basePrice + (extraUsers * perUser);
-  const capacityPct = (totalUsers / baseUsers) * 100;
-
-  return (
-    <Card className="border-primary/30 bg-primary/5 mt-6">
-      <CardContent className="p-5 sm:p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-            <Users className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-foreground">{lang === 'PT' ? 'Expansão do Plano Igreja' : lang === 'EN' ? 'Church Plan Expansion' : 'Expansión del Plan Iglesia'}</h3>
-            <p className="text-xs text-muted-foreground">{labels.churchExpand[lang]}</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div className="rounded-xl border border-border/60 bg-card p-4">
-            <p className="text-xs text-muted-foreground mb-2">{labels.users[lang]}</p>
-            <div className="flex items-center gap-3">
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-8 w-8 min-h-[44px] min-w-[44px]"
-                onClick={() => setExtraUsers(Math.max(0, extraUsers - 1))}
-                disabled={extraUsers === 0}
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <div className="text-center flex-1">
-                <span className="text-2xl font-bold font-mono text-foreground">{totalUsers}</span>
-                <p className="text-[10px] text-muted-foreground">
-                  {baseUsers} {labels.included[lang]} {extraUsers > 0 && `+ ${extraUsers} ${labels.extra[lang]}`}
-                </p>
-              </div>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-8 w-8 min-h-[44px] min-w-[44px]"
-                onClick={() => setExtraUsers(extraUsers + 1)}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-card p-4">
-            <p className="text-xs text-muted-foreground mb-2">{labels.capacity[lang]}</p>
-            <div className="space-y-2">
-              <div className="flex items-baseline justify-between">
-                <span className="text-2xl font-bold font-mono text-foreground">{capacityPct.toFixed(0)}%</span>
-                <span className="text-xs text-muted-foreground">{baseUsers} → {totalUsers}</span>
-              </div>
-              <Progress value={Math.min(capacityPct, 200) / 2} className="h-2" />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-border/60 bg-card p-4 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-muted-foreground">{lang === 'PT' ? 'Preço total' : lang === 'EN' ? 'Total price' : 'Precio total'}</p>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-foreground">R${totalPrice.toFixed(2).replace('.', ',')}</span>
-              <span className="text-sm text-muted-foreground">{labels.month[lang]}</span>
-            </div>
-          </div>
-          <Button className="gap-2 min-h-[48px]">
-            <Crown className="h-4 w-4" />
-            {labels.cta[lang]}
-          </Button>
-        </div>
-
-        {extraUsers > 0 && (
-          <p className="text-[11px] text-muted-foreground text-center mt-3">
-            {labels.extraUserCost[lang]} · {extraUsers} {labels.extra[lang]} = +R${(extraUsers * perUser).toFixed(2).replace('.', ',')}
-          </p>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function Upgrade() {
   const { lang } = useLanguage();
   const { profile } = useAuth();
   const currentPlan = profile?.plan || 'free';
+  const [extraSeats, setExtraSeats] = useState(0);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const churchTotal = useMemo(() => {
+    const base = pricing.plans.church.amount;
+    return base + extraSeats * pricing.addon.amount;
+  }, [extraSeats]);
+
+  const handleSubscribe = async (plan: PlanData) => {
+    if (!plan.planKey || plan.isFree) return;
+
+    setLoadingPlan(plan.id);
+    try {
+      const body: Record<string, unknown> = {
+        priceId: pricing.plans[plan.planKey].id,
+        successUrl: `${window.location.origin}/dashboard?checkout_success=true`,
+        cancelUrl: `${window.location.origin}/upgrade`,
+      };
+
+      if (plan.planKey === 'church' && extraSeats > 0) {
+        body.extraSeats = extraSeats;
+        body.stripeAddonPriceId = pricing.addon.id;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', { body });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Checkout error';
+      toast({ title: 'Erro', description: message, variant: 'destructive' });
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
@@ -194,6 +150,18 @@ export default function Upgrade() {
         {plans.map((plan) => {
           const Icon = plan.icon;
           const isCurrent = currentPlan === plan.id;
+          const isLoading = loadingPlan === plan.id;
+
+          const displayPrice = plan.isFree
+            ? `${pricing.symbol}0`
+            : plan.planKey
+            ? formatPrice(
+                plan.planKey === 'church' ? churchTotal : pricing.plans[plan.planKey].amount,
+                pricing.symbol,
+                pricing.currency
+              )
+            : '';
+
           return (
             <Card
               key={plan.id}
@@ -225,10 +193,10 @@ export default function Upgrade() {
                 </div>
 
                 <div className="flex items-baseline gap-0.5 mb-1">
-                  <span className="text-3xl font-bold">{plan.price}</span>
+                  <span className="text-3xl font-bold">{displayPrice}</span>
                 </div>
                 <p className="text-xs text-muted-foreground mb-1">
-                  {plan.period === 'forever' ? labels.forever[lang] : labels.month[lang]}
+                  {plan.isFree ? labels.forever[lang] : labels.month[lang]}
                 </p>
                 <Badge variant="secondary" className="text-[10px] mb-4 self-start gap-1">
                   <BarChart3 className="h-3 w-3" />
@@ -236,6 +204,37 @@ export default function Upgrade() {
                 </Badge>
 
                 <p className="text-sm font-semibold text-foreground mb-3">{plan.sermonsMonth[lang]}</p>
+
+                {/* Church plan slider */}
+                {plan.planKey === 'church' && (
+                  <div className="rounded-lg border border-border/60 bg-muted/30 p-3 mb-3 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-medium text-foreground">{labels.extraSeats[lang]}</span>
+                      <span className="font-mono font-bold text-foreground">{extraSeats}</span>
+                    </div>
+                    <Slider
+                      value={[extraSeats]}
+                      onValueChange={([v]) => setExtraSeats(v)}
+                      min={0}
+                      max={40}
+                      step={1}
+                      className="py-1"
+                    />
+                    <div className="flex justify-between text-[10px] text-muted-foreground">
+                      <span>{labels.included[lang]}</span>
+                      {extraSeats > 0 && (
+                        <span className="text-primary font-semibold">
+                          +{extraSeats * 10}% {labels.capacityBoost[lang]}
+                        </span>
+                      )}
+                    </div>
+                    {extraSeats > 0 && (
+                      <p className="text-[11px] text-muted-foreground">
+                        +{formatPrice(pricing.addon.amount, pricing.symbol, pricing.currency)} {labels.perSeat[lang]} × {extraSeats} = +{formatPrice(extraSeats * pricing.addon.amount, pricing.symbol, pricing.currency)}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <ul className="space-y-2 mb-5 flex-1">
                   {plan.features[lang].map((f, j) => (
@@ -247,16 +246,21 @@ export default function Upgrade() {
                 </ul>
 
                 <Button
-                  className={`w-full gap-1.5 min-h-[48px] ${plan.featured ? '' : ''}`}
+                  className="w-full gap-1.5 min-h-[48px]"
                   variant={plan.featured ? 'default' : isCurrent ? 'outline' : 'secondary'}
-                  disabled={isCurrent}
+                  disabled={isCurrent || isLoading}
+                  onClick={() => handleSubscribe(plan)}
                 >
-                  {isCurrent ? (
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : isCurrent ? (
+                    labels.ctaFree[lang]
+                  ) : plan.isFree ? (
                     labels.ctaFree[lang]
                   ) : (
                     <>
                       <Crown className="h-4 w-4" />
-                      {labels.cta[lang]}
+                      {plan.planKey === 'starter' ? labels.ctaTrial[lang] : labels.cta[lang]}
                     </>
                   )}
                 </Button>
@@ -265,9 +269,6 @@ export default function Upgrade() {
           );
         })}
       </div>
-
-      {/* Igreja expansion module */}
-      <ChurchExpansionCard lang={lang} />
     </div>
   );
 }
