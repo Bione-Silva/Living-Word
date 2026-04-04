@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, Copy, Loader2, Sparkles } from 'lucide-react';
+import { BookOpen, Copy, Loader2, Save, Sparkles } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,11 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import { minds } from '@/data/minds';
 
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
@@ -30,6 +32,7 @@ interface PastoralStudioFormData {
   language: 'PT' | 'EN' | 'ES';
   bible_version: string;
   output_modes: OutputMode[];
+  mind_id?: string;
 }
 
 const bibleVersions = ['ARA', 'NVI', 'NAA', 'KJV', 'ESV', 'NKJV', 'NIV', 'ARC'];
@@ -80,11 +83,16 @@ const copy = {
     empty: 'Preencha a passagem e gere seu conteúdo pastoral.',
     emptyHint: 'O resultado aparecerá aqui em abas, sem redirecionar você para outra tela.',
     copied: 'Conteúdo copiado!',
+    saved: 'Material salvo na biblioteca!',
+    saveError: 'Erro ao salvar material.',
     genericError: 'Erro ao gerar material pastoral.',
     limitError: 'Você atingiu o limite do seu plano.',
     results: 'Resultados gerados',
-    copyCurrent: 'Copiar aba atual',
+    copyCurrent: 'Copiar',
+    saveCurrent: 'Salvar',
     requiredFormat: 'Selecione pelo menos um formato.',
+    mindLabel: 'Escolha uma mente (opcional)',
+    mindNone: 'Nenhuma — geração padrão',
   },
   EN: {
     subtitle: 'Generate sermons, outlines and devotionals without leaving the dashboard.',
@@ -101,11 +109,16 @@ const copy = {
     empty: 'Fill in the passage and generate your pastoral content.',
     emptyHint: 'The result will appear here in tabs, without sending you to another screen.',
     copied: 'Content copied!',
+    saved: 'Material saved to library!',
+    saveError: 'Error saving material.',
     genericError: 'Error generating pastoral material.',
     limitError: 'You reached your plan limit.',
     results: 'Generated results',
-    copyCurrent: 'Copy current tab',
+    copyCurrent: 'Copy',
+    saveCurrent: 'Save',
     requiredFormat: 'Select at least one format.',
+    mindLabel: 'Choose a mind (optional)',
+    mindNone: 'None — default generation',
   },
   ES: {
     subtitle: 'Genera sermones, bosquejos y devocionales sin salir del dashboard.',
@@ -122,11 +135,16 @@ const copy = {
     empty: 'Completa el pasaje y genera tu contenido pastoral.',
     emptyHint: 'El resultado aparecerá aquí en pestañas, sin enviarte a otra pantalla.',
     copied: '¡Contenido copiado!',
+    saved: '¡Material guardado en la biblioteca!',
+    saveError: 'Error al guardar material.',
     genericError: 'Error al generar material pastoral.',
     limitError: 'Has alcanzado el límite de tu plan.',
     results: 'Resultados generados',
-    copyCurrent: 'Copiar pestaña actual',
+    copyCurrent: 'Copiar',
+    saveCurrent: 'Guardar',
     requiredFormat: 'Selecciona al menos un formato.',
+    mindLabel: 'Elige una mente (opcional)',
+    mindNone: 'Ninguna — generación estándar',
   },
 } as const;
 
@@ -137,12 +155,13 @@ function createInitialFormData(language: 'PT' | 'EN' | 'ES', bibleVersion?: stri
     pain_point: '',
     language,
     bible_version: bibleVersion || 'ARA',
-    output_modes: ['sermon', 'outline', 'devotional'],
+    output_modes: [],
+    mind_id: undefined,
   };
 }
 
 export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralStudioModalProps) {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const { lang } = useLanguage();
   const text = copy[lang];
 
@@ -154,11 +173,14 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [upgradeHint, setUpgradeHint] = useState<string | null>(null);
   const [blockedFormats, setBlockedFormats] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const availableTabs = useMemo(
     () => (['sermon', 'outline', 'devotional'] as OutputMode[]).filter((mode) => Boolean(outputs[mode])),
     [outputs]
   );
+
+  const unlockedMinds = useMemo(() => minds.filter((m) => !m.locked), []);
 
   const resetState = () => {
     setFormData(createInitialFormData(lang, profile?.bible_version));
@@ -176,7 +198,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     onOpenChange(nextOpen);
   };
 
-  const update = (field: keyof PastoralStudioFormData, value: string | OutputMode[]) => {
+  const update = (field: keyof PastoralStudioFormData, value: string | OutputMode[] | undefined) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -188,6 +210,13 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
         output_modes: exists ? prev.output_modes.filter((item) => item !== mode) : [...prev.output_modes, mode],
       };
     });
+  };
+
+  const toggleMind = (mindId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      mind_id: prev.mind_id === mindId ? undefined : mindId,
+    }));
   };
 
   const handleGenerate = async () => {
@@ -203,8 +232,13 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     setBlockedFormats([]);
 
     try {
+      const body: Record<string, unknown> = { ...formData };
+      if (formData.mind_id) {
+        body.mind_id = formData.mind_id;
+      }
+
       const { data, error } = await supabase.functions.invoke('generate-pastoral-material', {
-        body: formData,
+        body,
       });
 
       if (error) {
@@ -242,6 +276,34 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     toast.success(text.copied);
   };
 
+  const handleSave = async () => {
+    const currentContent = outputs[activeTab];
+    if (!currentContent || !user) return;
+
+    setSaving(true);
+    try {
+      const modeLabel = outputLabels[activeTab][lang];
+      const title = `${modeLabel} — ${formData.bible_passage}`;
+
+      const { error } = await supabase.from('materials').insert({
+        user_id: user.id,
+        title,
+        content: currentContent,
+        type: activeTab === 'sermon' ? 'sermon' : activeTab === 'outline' ? 'outline' : 'devotional',
+        passage: formData.bible_passage,
+        language: formData.language,
+        bible_version: formData.bible_version,
+      });
+
+      if (error) throw error;
+      toast.success(text.saved);
+    } catch {
+      toast.error(text.saveError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground">
@@ -253,6 +315,34 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
         <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
           <Card className="border-border/60 bg-card h-fit">
             <CardContent className="p-4 space-y-4">
+              {/* Mind selector */}
+              <div className="space-y-2">
+                <Label>{text.mindLabel}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {unlockedMinds.map((mind) => {
+                    const isSelected = formData.mind_id === mind.id;
+                    return (
+                      <button
+                        key={mind.id}
+                        type="button"
+                        onClick={() => toggleMind(mind.id)}
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                          isSelected
+                            ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                            : 'bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground'
+                        }`}
+                      >
+                        <Avatar className="h-5 w-5">
+                          <AvatarImage src={mind.image} alt={mind.name} />
+                          <AvatarFallback className="text-[9px]">{mind.name[0]}</AvatarFallback>
+                        </Avatar>
+                        {mind.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="space-y-1.5">
                 <Label htmlFor="pastoral-bible-passage">{text.passage}</Label>
                 <Input
@@ -347,7 +437,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                 type="button"
                 onClick={handleGenerate}
                 className="w-full gap-2"
-                disabled={loading || !formData.bible_passage.trim()}
+                disabled={loading || !formData.bible_passage.trim() || !formData.output_modes.length}
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 {loading ? text.generating : text.generate}
@@ -389,10 +479,16 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                       <p className="font-medium text-foreground">{text.results}</p>
                       <p className="text-sm text-muted-foreground">{formData.bible_passage}</p>
                     </div>
-                    <Button variant="outline" size="sm" className="gap-2" onClick={handleCopy}>
-                      <Copy className="h-4 w-4" />
-                      {text.copyCurrent}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="gap-2" onClick={handleCopy}>
+                        <Copy className="h-4 w-4" />
+                        {text.copyCurrent}
+                      </Button>
+                      <Button variant="outline" size="sm" className="gap-2" onClick={handleSave} disabled={saving}>
+                        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                        {text.saveCurrent}
+                      </Button>
+                    </div>
                   </div>
 
                   <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as OutputMode)}>
