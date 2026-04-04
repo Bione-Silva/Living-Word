@@ -665,8 +665,11 @@ export default function Landing() {
                 <div className="flex items-baseline gap-0.5 mb-1">
                   <span className="font-display text-[32px] font-semibold" style={{ color: '#3D2B1F' }}>{plan.price}</span>
                 </div>
-                <p className="text-[13px] mb-4 pb-4 font-medium" style={{ color: '#6B4F3A', borderBottom: '1px solid rgba(107,79,58,0.1)' }}>{plan.period[lang]}</p>
-                <div className="space-y-2 mb-4 flex-1">
+                <p className="text-[13px] mb-2 font-medium" style={{ color: '#6B4F3A' }}>{plan.period[lang]}</p>
+                <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-4 self-start" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>
+                  {plan.capacity[lang]}
+                </span>
+                <div className="space-y-2 mb-4 flex-1 pt-3" style={{ borderTop: '1px solid rgba(107,79,58,0.1)' }}>
                   {plan.features[lang].map((f, j) => (
                     <div key={j} className="flex items-start gap-2 text-[14px]" style={{ color: '#3D2B1F' }}>
                       <span className="shrink-0 font-semibold" style={{ color: '#6B4F3A' }}>✓</span>
