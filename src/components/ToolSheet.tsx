@@ -14,8 +14,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
 
 interface ToolSheetProps {
   open: boolean;
@@ -154,6 +155,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const { lang } = useLanguage();
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
+  const [historicalSources, setHistoricalSources] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [convertingToBlog, setConvertingToBlog] = useState(false);
@@ -173,6 +175,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setResult('');
     setInput('');
     setShowBlogPrompt(false);
+    setHistoricalSources(null);
   };
 
   const handleGenerate = async () => {
@@ -180,6 +183,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setLoading(true);
     setResult('');
     setShowBlogPrompt(false);
+    setHistoricalSources(null);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
@@ -189,6 +193,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       });
       if (error) throw error;
       setResult(data?.content || 'No response');
+      setHistoricalSources(data?.historical_sources_used || null);
       // Show blog prompt for non-article tools
       if (!isArticleTool) {
         setShowBlogPrompt(true);
@@ -340,6 +345,9 @@ ${result}`;
 
           {result && (
             <div className="space-y-3">
+              {/* RAG Historical Sources */}
+              <HistoricalSourcesCard sources={historicalSources} lang={lang} />
+
               <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>

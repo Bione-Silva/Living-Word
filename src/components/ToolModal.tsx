@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import { Loader2, Copy, Save, BookOpen, Wand2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
 
 interface ToolModalProps {
   open: boolean;
@@ -83,6 +84,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
   const { lang } = useLanguage();
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
+  const [historicalSources, setHistoricalSources] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -95,6 +97,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
     if (!input.trim()) return;
     setLoading(true);
     setResult('');
+    setHistoricalSources(null);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
@@ -104,6 +107,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
       });
       if (error) throw error;
       setResult(data?.content || 'No response');
+      setHistoricalSources(data?.historical_sources_used || null);
     } catch (err: any) {
       toast.error(err.message || 'Error generating content');
     } finally {
@@ -205,6 +209,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
           {result && (
             <div className="space-y-3">
+              <HistoricalSourcesCard sources={historicalSources} lang={lang} />
               <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[40vh] overflow-y-auto">
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>
