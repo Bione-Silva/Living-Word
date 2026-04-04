@@ -5,6 +5,13 @@ import { GenerationCounter } from '@/components/GenerationCounter';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { Button } from '@/components/ui/button';
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
+import {
   LayoutDashboard, Wand2, BookOpen, Library, CalendarDays,
   Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain,
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon,
