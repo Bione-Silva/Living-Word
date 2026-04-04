@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
+import { HelpArticleModal } from '@/components/HelpArticleModal';
 import {
   Search, BookOpen, Quote, Film, FileText, Languages as LanguagesIcon,
   Lightbulb, PenTool, Sparkles, Repeat, Palette, Wand2,
