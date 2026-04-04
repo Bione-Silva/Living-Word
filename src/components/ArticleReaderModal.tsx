@@ -132,10 +132,10 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
 
             <div
               className="prose prose-stone prose-lg max-w-none
-                prose-headings:font-display prose-headings:font-bold
+                prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight
                 prose-p:leading-relaxed
                 prose-blockquote:border-l-4 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-                prose-img:w-full prose-img:rounded-xl prose-img:shadow-sm prose-img:my-6
+                prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto prose-img:w-full prose-img:object-cover prose-img:my-10
                 prose-a:underline
               "
               style={{
