@@ -14,6 +14,7 @@ import {
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
 import { toast } from 'sonner';
+import { TrialCountdown } from '@/components/TrialCountdown';
 
 const researchTools: ToolCardData[] = [
   { id: 'topic-explorer', icon: Search, title: { PT: 'Explorador de Tópicos', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: 'Descubra subtemas e ângulos para sua pregação', EN: 'Discover subtopics and angles for your sermon', ES: 'Descubre subtemas y ángulos para tu sermón' }, hasModal: true },
@@ -166,6 +167,8 @@ export default function Dashboard() {
               : 'Aquí tienes todas las herramientas para ayudarte a preparar, crear y compartir contenido. Elige una categoría y comienza.'}
         </p>
       </div>
+
+      <TrialCountdown />
 
       {showBanner && isFree && (
         <Card className="border-accent/30 bg-accent/5">
