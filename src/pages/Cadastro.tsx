@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,10 +40,25 @@ export default function Cadastro() {
   const navigate = useNavigate();
   const planParam = new URLSearchParams(window.location.search).get('plan');
 
+  // Auth state listener — handles redirect after email confirmation
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        const plan = new URLSearchParams(window.location.search).get('plan');
+        if (plan) {
+          navigate(`/upgrade?autoCheckout=${plan}`);
+        } else {
+          navigate('/dashboard');
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await signUp(email, password, {
+      const { needsConfirmation } = await signUp(email, password, {
         full_name: name,
         blog_handle: handle,
         language,
@@ -52,11 +67,27 @@ export default function Cadastro() {
       });
 
       setLang(language);
-      toast.success(language === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' : language === 'EN' ? 'Account created! Generating your first devotionals...' : '¡Cuenta creada! Generando tus primeros devocionales...');
+
+      if (needsConfirmation) {
+        toast.info(
+          language === 'PT' ? 'Verifique seu e-mail para confirmar a conta!' :
+          language === 'EN' ? 'Check your email to confirm your account!' :
+          '¡Revisa tu correo para confirmar tu cuenta!'
+        );
+        // Don't navigate — wait for email confirmation via auth listener
+        return;
+      }
+
+      toast.success(
+        language === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' :
+        language === 'EN' ? 'Account created! Generating your first devotionals...' :
+        '¡Cuenta creada! Generando tus primeros devocionales...'
+      );
 
       generateInitialContent().catch(console.error);
       navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/blog-onboarding');
     } catch (err: any) {
+      console.error('Signup error:', err);
       toast.error(err.message || 'Erro ao criar conta');
     } finally {
       setLoading(false);
