@@ -93,6 +93,7 @@ export interface HelpFullArticle {
     content: Record<L, string>;
     type?: 'normal' | 'tip' | 'warning' | 'steps' | 'list';
   }[];
+  quickSummary?: { label: Record<L, string>; content: Record<L, string> }[];
   relatedTools: string[];
   ctaLabel: Record<L, string>;
   ctaRoute?: string;
