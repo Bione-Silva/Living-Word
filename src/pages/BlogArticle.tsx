@@ -132,11 +132,9 @@ import remarkGfm from 'remark-gfm';
           )}
         </div>
 
-        <div
-          className="prose prose-lg max-w-none prose-headings:font-serif [&]:text-[#4A3728] [&_h1]:text-[#3D2B1F] [&_h2]:text-[#3D2B1F] [&_h3]:text-[#3D2B1F] [&_h4]:text-[#3D2B1F] [&_p]:text-[#4A3728] [&_li]:text-[#4A3728] [&_strong]:text-[#3D2B1F] [&_em]:text-[#4A3728] [&_a]:text-[#6B4F3A] [&_blockquote]:text-[#5A4738] [&_blockquote]:border-l-[#C4956A] [&_blockquote]:bg-white/50 [&_blockquote]:py-2 [&_blockquote]:px-4 [&_blockquote]:rounded-r-lg"
-        >
+        <section className="blog-prose prose prose-lg max-w-none prose-headings:font-serif prose-blockquote:bg-card/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
-        </div>
+        </section>
 
         {/* Additional article images */}
         {articleImages.length > 1 && (
