@@ -20,6 +20,26 @@ export default function Login() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const planParam = new URLSearchParams(window.location.search).get('plan');
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast.error('Erro ao entrar com Google');
+        return;
+      }
+      if (result.redirected) return;
+      navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/dashboard');
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao entrar com Google');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
