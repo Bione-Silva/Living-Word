@@ -62,7 +62,7 @@ export default function HelpArticlePage() {
 
       {/* ── Back + Actions ── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/ajuda')} className="text-[hsl(220,10%,50%)] hover:text-[hsl(220,15%,20%)] gap-2 -ml-2">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/ajuda')} className="text-[hsl(24,30%,30%)] hover:text-[hsl(24,30%,15%)] gap-2 -ml-2">
           <ArrowLeft className="h-4 w-4" />
           {labels.back[lang]}
         </Button>
