@@ -113,13 +113,12 @@ export default function Cadastro() {
       ],
     };
 
-    // Fire all 9 article generations in parallel (fire-and-forget)
-    const allCalls = (['PT', 'EN', 'ES'] as Language[]).flatMap(targetLang =>
-      localizedTitles[targetLang].map(p =>
-        supabase.functions.invoke('generate-blog-article', {
-          body: { passage: p.passage, language: targetLang, title: p.title },
-        }).catch(e => console.error('Auto-gen failed:', e))
-      )
+    // Generate exactly 3 articles in the user's selected language only
+    const userTitles = localizedTitles[language] || localizedTitles['PT'];
+    const allCalls = userTitles.map(p =>
+      supabase.functions.invoke('generate-blog-article', {
+        body: { passage: p.passage, language, title: p.title },
+      }).catch(e => console.error('Auto-gen failed:', e))
     );
 
     Promise.allSettled(allCalls).then(results => {
