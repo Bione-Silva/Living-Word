@@ -282,6 +282,7 @@ const copy = {
     return [
     {
       name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
+      planKey: null as string | null,
       price: `${p.symbol}0`,
       period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' },
       features: {
