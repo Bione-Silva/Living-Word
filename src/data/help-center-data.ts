@@ -123,6 +123,11 @@ export const helpFullArticles: HelpFullArticle[] = [
       { id: 'pro-tip', heading: { PT: 'Dica Pro', EN: 'Pro Tip', ES: 'Consejo Pro' }, emoji: '🚀', content: { PT: 'Use o Explorador no início da semana e deixe os subtópicos "marinarem" na sua mente. Muitas vezes, o melhor ângulo não é o primeiro — é o que fica te incomodando durante 2-3 dias. Esse é o ângulo que o Espírito está destacando.', EN: 'Use the Explorer at the beginning of the week and let the subtopics "marinate" in your mind. Often, the best angle isn\'t the first one — it\'s the one that keeps nagging you for 2-3 days. That\'s the angle the Spirit is highlighting.', ES: 'Usa el Explorador al inicio de la semana y deja que los subtemas "marinen" en tu mente. Muchas veces el mejor ángulo no es el primero — es el que te sigue molestando por 2-3 días.' }, type: 'tip' },
       { id: 'limits', heading: { PT: 'Limites e boas práticas', EN: 'Limits & best practices', ES: 'Límites y buenas prácticas' }, emoji: '⚠️', content: { PT: '• Os subtópicos são sugestões de IA — sempre valide com estudo bíblico pessoal\n• Nem todo ângulo sugerido serve para todo contexto — use discernimento pastoral\n• A ferramenta funciona melhor com temas específicos do que genéricos\n• Revise cada sugestão à luz da sua linha doutrinária', EN: '• Subtopics are AI suggestions — always validate with personal Bible study\n• Not every suggested angle fits every context — use pastoral discernment\n• The tool works better with specific themes than generic ones\n• Review each suggestion in light of your doctrinal line', ES: '• Los subtemas son sugerencias de IA — siempre valida con estudio bíblico personal\n• No todo ángulo sugerido sirve para todo contexto\n• La herramienta funciona mejor con temas específicos' }, type: 'warning' },
     ],
+    quickSummary: [
+      { label: { PT: 'Para que serve', EN: 'What it\'s for', ES: 'Para qué sirve' }, content: { PT: 'Mapear subtópicos, ângulos criativos e conexões bíblicas para qualquer tema ou passagem.', EN: 'Map subtopics, creative angles and biblical connections for any theme or passage.', ES: 'Mapear subtemas, ángulos creativos y conexiones bíblicas para cualquier tema o pasaje.' } },
+      { label: { PT: 'Principal resultado', EN: 'Main result', ES: 'Resultado principal' }, content: { PT: 'De 5 a 10 ângulos únicos que transformam uma passagem "óbvia" em múltiplos sermões.', EN: '5-10 unique angles that transform an "obvious" passage into multiple sermons.', ES: '5-10 ángulos únicos que transforman un pasaje "obvio" en múltiples sermones.' } },
+      { label: { PT: 'Ideal para', EN: 'Ideal for', ES: 'Ideal para' }, content: { PT: 'Pastores, pregadores e professores bíblicos que querem sair do bloqueio criativo rapidamente.', EN: 'Pastors, preachers and Bible teachers who want to break creative block quickly.', ES: 'Pastores, predicadores y profesores bíblicos que quieren romper el bloqueo creativo.' } },
+    ],
     relatedTools: ['verse-finder', 'studio', 'historical-context'],
     ctaLabel: { PT: 'Abrir Explorador de Tópicos', EN: 'Open Topic Explorer', ES: 'Abrir Explorador de Temas' },
     ctaRoute: '/dashboard?tool=topic-explorer',
@@ -161,7 +166,138 @@ function generateSimpleArticles(): HelpFullArticle[] {
     ...a,
     heroBullets: generateBullets(a.toolId),
     sections: generateSections(a.toolId, a.title),
+    quickSummary: generateQuickSummary(a.toolId),
   }));
+}
+
+function generateQuickSummary(toolId: string): HelpFullArticle['quickSummary'] {
+  const map: Record<string, { purpose: Record<L, string>; result: Record<L, string>; audience: Record<L, string> }> = {
+    'verse-finder': {
+      purpose: { PT: 'Buscar versículos bíblicos por tema, emoção ou situação pastoral específica.', EN: 'Search Bible verses by theme, emotion or specific pastoral situation.', ES: 'Buscar versículos bíblicos por tema, emoción o situación pastoral.' },
+      result: { PT: 'Passagens relevantes com explicação contextual, prontas para uso em pregações e estudos.', EN: 'Relevant passages with contextual explanation, ready for sermons and studies.', ES: 'Pasajes relevantes con explicación contextual, listos para sermones y estudios.' },
+      audience: { PT: 'Pregadores, líderes de célula e professores de EBD que precisam de versículos na hora.', EN: 'Preachers, cell leaders and Sunday school teachers who need verses quickly.', ES: 'Predicadores, líderes de célula y profesores que necesitan versículos rápido.' },
+    },
+    'historical-context': {
+      purpose: { PT: 'Revelar o cenário cultural, político e social por trás de qualquer passagem bíblica.', EN: 'Reveal the cultural, political and social background behind any Bible passage.', ES: 'Revelar el escenario cultural, político y social detrás de cualquier pasaje bíblico.' },
+      result: { PT: 'Contexto histórico detalhado que enriquece a pregação com profundidade acadêmica acessível.', EN: 'Detailed historical context that enriches preaching with accessible academic depth.', ES: 'Contexto histórico detallado que enriquece la predicación con profundidad accesible.' },
+      audience: { PT: 'Pastores e pregadores que querem pregar com profundidade sem passar horas pesquisando.', EN: 'Pastors and preachers who want depth without hours of research.', ES: 'Pastores y predicadores que quieren profundidad sin horas de investigación.' },
+    },
+    'quote-finder': {
+      purpose: { PT: 'Encontrar citações de teólogos e pastores renomados para embasar sermões e estudos.', EN: 'Find quotes from renowned theologians and pastors to support sermons.', ES: 'Encontrar citas de teólogos y pastores reconocidos para respaldar sermones.' },
+      result: { PT: 'Citações relevantes com autor, obra e contexto — prontas para inserir na mensagem.', EN: 'Relevant quotes with author, work and context — ready to insert.', ES: 'Citas relevantes con autor, obra y contexto — listas para insertar.' },
+      audience: { PT: 'Pregadores que querem reforçar argumentos com autoridade teológica reconhecida.', EN: 'Preachers who want to reinforce arguments with recognized theological authority.', ES: 'Predicadores que quieren reforzar argumentos con autoridad teológica reconocida.' },
+    },
+    'movie-scenes': {
+      purpose: { PT: 'Encontrar cenas de filmes e séries que ilustram perfeitamente pontos do sermão.', EN: 'Find movie and series scenes that perfectly illustrate sermon points.', ES: 'Encontrar escenas de películas que ilustren perfectamente puntos del sermón.' },
+      result: { PT: 'Cenas descritas com contexto, diálogo-chave e conexão com o tema bíblico.', EN: 'Scenes described with context, key dialogue and biblical theme connection.', ES: 'Escenas descritas con contexto, diálogo clave y conexión con el tema bíblico.' },
+      audience: { PT: 'Pregadores criativos que querem conectar cultura contemporânea com verdades bíblicas.', EN: 'Creative preachers who want to connect contemporary culture with biblical truths.', ES: 'Predicadores creativos que quieren conectar cultura contemporánea con verdades bíblicas.' },
+    },
+    'original-text': {
+      purpose: { PT: 'Acessar textos bíblicos em grego e hebraico com análise palavra por palavra.', EN: 'Access biblical texts in Greek and Hebrew with word-by-word analysis.', ES: 'Acceder a textos bíblicos en griego y hebreo con análisis palabra por palabra.' },
+      result: { PT: 'Análise detalhada das palavras originais com significados, variantes e aplicações.', EN: 'Detailed analysis of original words with meanings, variants and applications.', ES: 'Análisis detallado de las palabras originales con significados y aplicaciones.' },
+      audience: { PT: 'Pastores e estudantes de teologia que querem profundidade sem anos de seminário.', EN: 'Pastors and theology students who want depth without years of seminary.', ES: 'Pastores y estudiantes de teología que quieren profundidad sin años de seminario.' },
+    },
+    'lexical': {
+      purpose: { PT: 'Estudo lexical completo de termos bíblicos com raízes, cognatos e evolução semântica.', EN: 'Complete lexical study of biblical terms with roots, cognates and semantic evolution.', ES: 'Estudio léxico completo de términos bíblicos con raíces y evolución semántica.' },
+      result: { PT: 'Análise acadêmica acessível que revela nuances invisíveis nas traduções.', EN: 'Accessible academic analysis revealing nuances invisible in translations.', ES: 'Análisis académico accesible que revela matices invisibles en las traducciones.' },
+      audience: { PT: 'Pregadores e professores que querem ensinar com precisão linguística e teológica.', EN: 'Preachers and teachers who want to teach with linguistic and theological precision.', ES: 'Predicadores y profesores que quieren enseñar con precisión lingüística y teológica.' },
+    },
+    'bible-study': {
+      purpose: { PT: 'Gerar estudos bíblicos completos com exegese, teologia, aplicação e perguntas.', EN: 'Generate complete Bible studies with exegesis, theology, application and questions.', ES: 'Generar estudios bíblicos completos con exégesis, teología, aplicación y preguntas.' },
+      result: { PT: 'Estudo estruturado com 8 seções: contexto, exegese, teologia, aplicação e mais.', EN: 'Structured study with 8 sections: context, exegesis, theology, application and more.', ES: 'Estudio estructurado con 8 secciones: contexto, exégesis, teología, aplicación y más.' },
+      audience: { PT: 'Líderes que precisam de material profundo para EBD, discipulado ou ensino.', EN: 'Leaders who need deep material for Sunday school, discipleship or teaching.', ES: 'Líderes que necesitan material profundo para escuela dominical o discipulado.' },
+    },
+    'studio': {
+      purpose: { PT: 'Transformar passagens bíblicas em sermões, esboços e devocionais com sua voz pastoral.', EN: 'Transform Bible passages into sermons, outlines and devotionals with your pastoral voice.', ES: 'Transformar pasajes bíblicos en sermones, bosquejos y devocionales con tu voz pastoral.' },
+      result: { PT: 'Sermão completo, esboço ou devocional estruturado — pronto para revisar e pregar.', EN: 'Complete sermon, outline or structured devotional — ready to review and preach.', ES: 'Sermón completo, bosquejo o devocional estructurado — listo para revisar y predicar.' },
+      audience: { PT: 'Pastores, pregadores, líderes de célula e criadores de conteúdo cristão.', EN: 'Pastors, preachers, cell leaders and Christian content creators.', ES: 'Pastores, predicadores, líderes de célula y creadores de contenido cristiano.' },
+    },
+    'title-gen': {
+      purpose: { PT: 'Gerar 10 opções de títulos criativos e impactantes para sermões e conteúdo.', EN: 'Generate 10 creative and impactful title options for sermons and content.', ES: 'Generar 10 opciones de títulos creativos e impactantes para sermones y contenido.' },
+      result: { PT: 'Lista de títulos envolventes que capturam atenção e comunicam o tema com clareza.', EN: 'List of engaging titles that capture attention and clearly communicate the theme.', ES: 'Lista de títulos envolventes que capturan atención y comunican el tema con claridad.' },
+      audience: { PT: 'Pregadores e criadores de conteúdo que querem títulos memoráveis rapidamente.', EN: 'Preachers and content creators who want memorable titles quickly.', ES: 'Predicadores y creadores de contenido que quieren títulos memorables rápidamente.' },
+    },
+    'metaphor-creator': {
+      purpose: { PT: 'Criar analogias modernas e acessíveis para conceitos bíblicos complexos.', EN: 'Create modern, accessible analogies for complex biblical concepts.', ES: 'Crear analogías modernas y accesibles para conceptos bíblicos complejos.' },
+      result: { PT: 'Metáforas contemporâneas que iluminam verdades espirituais de forma memorável.', EN: 'Contemporary metaphors that illuminate spiritual truths memorably.', ES: 'Metáforas contemporáneas que iluminan verdades espirituales de forma memorable.' },
+      audience: { PT: 'Pregadores que querem comunicar verdades profundas de forma simples e criativa.', EN: 'Preachers who want to communicate deep truths simply and creatively.', ES: 'Predicadores que quieren comunicar verdades profundas de forma simple y creativa.' },
+    },
+    'illustrations': {
+      purpose: { PT: 'Gerar ilustrações e histórias com arco narrativo para enriquecer sermões.', EN: 'Generate illustrations and stories with narrative arc to enrich sermons.', ES: 'Generar ilustraciones e historias con arco narrativo para enriquecer sermones.' },
+      result: { PT: 'Histórias com personagem, conflito e resolução conectadas à mensagem bíblica.', EN: 'Stories with character, conflict and resolution connected to the biblical message.', ES: 'Historias con personaje, conflicto y resolución conectadas al mensaje bíblico.' },
+      audience: { PT: 'Pregadores que querem sermões memoráveis com conexão emocional e humana.', EN: 'Preachers who want memorable sermons with emotional and human connection.', ES: 'Predicadores que quieren sermones memorables con conexión emocional y humana.' },
+    },
+    'bible-modernizer': {
+      purpose: { PT: 'Recontar histórias bíblicas em cenários contemporâneos da vida real.', EN: 'Retell biblical stories in contemporary real-life settings.', ES: 'Recontar historias bíblicas en escenarios contemporáneos de la vida real.' },
+      result: { PT: 'A parábola do bom samaritano acontecendo hoje, na sua cidade — pronta para usar.', EN: 'The Good Samaritan parable happening today, in your city — ready to use.', ES: 'La parábola del buen samaritano sucediendo hoy, en tu ciudad — lista para usar.' },
+      audience: { PT: 'Pregadores, professores infantis e líderes que querem tornar a Bíblia mais tangível.', EN: 'Preachers, children\'s teachers and leaders who want to make the Bible more tangible.', ES: 'Predicadores, profesores infantiles y líderes que quieren hacer la Biblia más tangible.' },
+    },
+    'free-article': {
+      purpose: { PT: 'Gerar artigos devocionais completos de 800-1500 palavras, otimizados para blog.', EN: 'Generate complete devotional articles of 800-1500 words, blog-optimized.', ES: 'Generar artículos devocionales completos de 800-1500 palabras, optimizados para blog.' },
+      result: { PT: 'Artigo completo com título, introdução, desenvolvimento e conclusão — pronto para publicar.', EN: 'Complete article with title, introduction, development and conclusion — ready to publish.', ES: 'Artículo completo con título, introducción, desarrollo y conclusión — listo para publicar.' },
+      audience: { PT: 'Pastores blogueiros e criadores de conteúdo que publicam regularmente.', EN: 'Blogger pastors and content creators who publish regularly.', ES: 'Pastores blogueros y creadores de contenido que publican regularmente.' },
+    },
+    'reels-script': {
+      purpose: { PT: 'Criar roteiros profissionais para Reels, Shorts e TikTok de até 60 segundos.', EN: 'Create professional scripts for Reels, Shorts and TikTok up to 60 seconds.', ES: 'Crear guiones profesionales para Reels, Shorts y TikTok de hasta 60 segundos.' },
+      result: { PT: 'Roteiro com gancho de atenção, conteúdo impactante e chamada para ação.', EN: 'Script with attention hook, impactful content and call to action.', ES: 'Guión con gancho de atención, contenido impactante y llamada a la acción.' },
+      audience: { PT: 'Pastores e igrejas que querem presença forte nas redes sociais.', EN: 'Pastors and churches wanting a strong social media presence.', ES: 'Pastores e iglesias que quieren presencia fuerte en redes sociales.' },
+    },
+    'cell-group': {
+      purpose: { PT: 'Gerar material completo para reuniões de célula com estudo, perguntas e dinâmicas.', EN: 'Generate complete cell group meeting material with study, questions and activities.', ES: 'Generar material completo para reuniones de célula con estudio, preguntas y dinámicas.' },
+      result: { PT: 'Estudo pronto com quebra-gelo, passagem, perguntas para discussão e oração final.', EN: 'Ready study with icebreaker, passage, discussion questions and closing prayer.', ES: 'Estudio listo con rompehielo, pasaje, preguntas para discusión y oración final.' },
+      audience: { PT: 'Líderes de célula e pequenos grupos que precisam de material semanal rápido.', EN: 'Cell and small group leaders who need quick weekly material.', ES: 'Líderes de célula y grupos pequeños que necesitan material semanal rápido.' },
+    },
+    'social-caption': {
+      purpose: { PT: 'Gerar legendas para Instagram, Facebook e Twitter com emojis, hashtags e CTA.', EN: 'Generate captions for Instagram, Facebook and Twitter with emojis, hashtags and CTA.', ES: 'Generar leyendas para Instagram, Facebook y Twitter con emojis, hashtags y CTA.' },
+      result: { PT: '5 opções de legenda criativa otimizada para engajamento em cada rede.', EN: '5 creative caption options optimized for engagement on each network.', ES: '5 opciones de leyenda creativa optimizada para engagement en cada red.' },
+      audience: { PT: 'Equipes de comunicação, pastores e voluntários que gerenciam redes da igreja.', EN: 'Communication teams, pastors and volunteers managing church social media.', ES: 'Equipos de comunicación, pastores y voluntarios que gestionan redes de la iglesia.' },
+    },
+    'newsletter': {
+      purpose: { PT: 'Criar newsletters semanais completas com devocional, avisos e palavra pastoral.', EN: 'Create complete weekly newsletters with devotional, announcements and pastoral word.', ES: 'Crear newsletters semanales completas con devocional, avisos y palabra pastoral.' },
+      result: { PT: 'Newsletter estruturada e acolhedora — pronta para enviar por e-mail ou WhatsApp.', EN: 'Structured and welcoming newsletter — ready to send by email or WhatsApp.', ES: 'Newsletter estructurada y acogedora — lista para enviar por email o WhatsApp.' },
+      audience: { PT: 'Igrejas que querem manter comunicação regular e profissional com os membros.', EN: 'Churches wanting regular and professional member communication.', ES: 'Iglesias que quieren mantener comunicación regular y profesional con los miembros.' },
+    },
+    'announcements': {
+      purpose: { PT: 'Transformar listas de avisos em comunicações claras e acolhedoras para o culto.', EN: 'Transform announcement lists into clear, welcoming service communications.', ES: 'Transformar listas de avisos en comunicaciones claras y acogedoras para el culto.' },
+      result: { PT: 'Avisos organizados, breves e com tom pastoral — para boletim ou projeção.', EN: 'Organized, brief announcements with pastoral tone — for bulletin or projection.', ES: 'Avisos organizados, breves y con tono pastoral — para boletín o proyección.' },
+      audience: { PT: 'Secretárias, equipes de comunicação e pastores que fazem avisos no culto.', EN: 'Secretaries, communication teams and pastors making service announcements.', ES: 'Secretarias, equipos de comunicación y pastores que hacen avisos en el culto.' },
+    },
+    'trivia': {
+      purpose: { PT: 'Criar quizzes bíblicos divertidos com 10 perguntas de múltipla escolha e respostas.', EN: 'Create fun Bible quizzes with 10 multiple choice questions and answers.', ES: 'Crear quizzes bíblicos divertidos con 10 preguntas de opción múltiple y respuestas.' },
+      result: { PT: 'Quiz pronto com perguntas, alternativas, respostas corretas e explicações bíblicas.', EN: 'Ready quiz with questions, alternatives, correct answers and biblical explanations.', ES: 'Quiz listo con preguntas, alternativas, respuestas correctas y explicaciones bíblicas.' },
+      audience: { PT: 'Líderes de célula, professores de EBD e organizadores de eventos da igreja.', EN: 'Cell leaders, Sunday school teachers and church event organizers.', ES: 'Líderes de célula, profesores de escuela dominical y organizadores de eventos.' },
+    },
+    'poetry': {
+      purpose: { PT: 'Criar poemas cristãos inspirados em passagens bíblicas e temas de fé.', EN: 'Create Christian poems inspired by Bible passages and faith themes.', ES: 'Crear poemas cristianos inspirados en pasajes bíblicos y temas de fe.' },
+      result: { PT: 'Poema original com métrica, emoção e profundidade teológica — pronto para compartilhar.', EN: 'Original poem with meter, emotion and theological depth — ready to share.', ES: 'Poema original con métrica, emoción y profundidad teológica — listo para compartir.' },
+      audience: { PT: 'Pastores, músicos, poetas e criadores de conteúdo devocional.', EN: 'Pastors, musicians, poets and devotional content creators.', ES: 'Pastores, músicos, poetas y creadores de contenido devocional.' },
+    },
+    'kids-story': {
+      purpose: { PT: 'Adaptar histórias bíblicas para crianças de 5-10 anos com linguagem simples.', EN: 'Adapt Bible stories for children ages 5-10 with simple language.', ES: 'Adaptar historias bíblicas para niños de 5-10 años con lenguaje simple.' },
+      result: { PT: 'História bíblica infantil com lição prática, perguntas e atividade sugerida.', EN: 'Children\'s Bible story with practical lesson, questions and suggested activity.', ES: 'Historia bíblica infantil con lección práctica, preguntas y actividad sugerida.' },
+      audience: { PT: 'Professores de EBD infantil, pais e líderes de ministério com crianças.', EN: 'Children\'s Sunday school teachers, parents and children\'s ministry leaders.', ES: 'Profesores de escuela dominical infantil, padres y líderes de ministerio infantil.' },
+    },
+    'deep-translation': {
+      purpose: { PT: 'Traduzir textos teológicos mantendo nuances, termos técnicos e sentido original.', EN: 'Translate theological texts preserving nuances, technical terms and original meaning.', ES: 'Traducir textos teológicos manteniendo matices, términos técnicos y sentido original.' },
+      result: { PT: 'Tradução fiel que preserva terminologia teológica entre PT, EN e ES.', EN: 'Faithful translation preserving theological terminology between PT, EN and ES.', ES: 'Traducción fiel que preserva terminología teológica entre PT, EN y ES.' },
+      audience: { PT: 'Pastores bilíngues, missionários e teólogos que trabalham entre idiomas.', EN: 'Bilingual pastors, missionaries and theologians working across languages.', ES: 'Pastores bilingües, misioneros y teólogos que trabajan entre idiomas.' },
+    },
+  };
+
+  const data = map[toolId];
+  if (!data) {
+    return [
+      { label: { PT: 'Para que serve', EN: 'What it\'s for', ES: 'Para qué sirve' }, content: { PT: 'Gerar conteúdo pastoral de alta qualidade com IA treinada com fidelidade bíblica.', EN: 'Generate high-quality pastoral content with AI trained for biblical faithfulness.', ES: 'Generar contenido pastoral de alta calidad con IA entrenada con fidelidad bíblica.' } },
+      { label: { PT: 'Principal resultado', EN: 'Main result', ES: 'Resultado principal' }, content: { PT: 'Material pronto para uso em segundos — revise, personalize e publique.', EN: 'Material ready for use in seconds — review, customize and publish.', ES: 'Material listo para usar en segundos — revisa, personaliza y publica.' } },
+      { label: { PT: 'Ideal para', EN: 'Ideal for', ES: 'Ideal para' }, content: { PT: 'Pastores, pregadores e líderes que querem otimizar tempo sem perder qualidade.', EN: 'Pastors, preachers and leaders who want to optimize time without losing quality.', ES: 'Pastores, predicadores y líderes que quieren optimizar tiempo sin perder calidad.' } },
+    ];
+  }
+
+  return [
+    { label: { PT: 'Para que serve', EN: 'What it\'s for', ES: 'Para qué sirve' }, content: data.purpose },
+    { label: { PT: 'Principal resultado', EN: 'Main result', ES: 'Resultado principal' }, content: data.result },
+    { label: { PT: 'Ideal para', EN: 'Ideal for', ES: 'Ideal para' }, content: data.audience },
+  ];
 }
 
 function generateBullets(toolId: string): Record<'PT' | 'EN' | 'ES', string>[] {
