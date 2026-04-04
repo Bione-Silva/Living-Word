@@ -44,9 +44,33 @@ function getBodyImages(item: any): string[] {
 }
 
 export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderModalProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [exporting, setExporting] = useState(false);
+
   if (!item) return null;
 
   const finalContent = intercalateImages(item.content || '', getBodyImages(item));
+
+  const handleExportPDF = async () => {
+    if (!contentRef.current) return;
+    setExporting(true);
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `${item.title.replace(/[^a-zA-Z0-9À-ú ]/g, '').substring(0, 60)}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+      };
+      await html2pdf().set(opt).from(contentRef.current).save();
+    } catch (err) {
+      console.error('PDF export error:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
