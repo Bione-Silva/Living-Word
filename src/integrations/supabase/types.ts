@@ -158,6 +158,8 @@ export type Database = {
           language: string
           pastoral_voice: string | null
           plan: string
+          trial_ends_at: string | null
+          trial_started_at: string | null
           updated_at: string
           wordpress_url: string | null
         }
@@ -176,6 +178,8 @@ export type Database = {
           language?: string
           pastoral_voice?: string | null
           plan?: string
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string
           wordpress_url?: string | null
         }
@@ -194,6 +198,8 @@ export type Database = {
           language?: string
           pastoral_voice?: string | null
           plan?: string
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string
           wordpress_url?: string | null
         }
