@@ -213,14 +213,13 @@ export default function BlogPublic() {
           </div>
         )}
 
-        {isFree && (
-          <div className="text-center py-10 mt-8 border-t border-border/20">
-            <p className="text-xs text-accent">
-              ✝️ Gerado com{' '}
-              <Link to="/" className="underline hover:text-primary">Living Word</Link>
-            </p>
-          </div>
-        )}
+        {/* Powered by Living Word — always visible */}
+        <footer className="text-center py-10 mt-8 border-t border-border/20">
+          <p className="text-xs text-muted-foreground">
+            Feito com ❤️ por{' '}
+            <Link to="/" className="font-semibold text-primary hover:underline">Living Word</Link>
+          </p>
+        </footer>
       </main>
     </div>
   );

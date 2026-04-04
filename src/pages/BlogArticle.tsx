@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +10,15 @@ import remarkGfm from 'remark-gfm';
 
 export default function BlogArticle() {
   const { handle, articleId } = useParams<{ handle: string; articleId: string }>();
+
+  useEffect(() => {
+    document.documentElement.classList.add('theme-blog');
+    document.body.classList.add('theme-blog');
+    return () => {
+      document.documentElement.classList.remove('theme-blog');
+      document.body.classList.remove('theme-blog');
+    };
+  }, []);
 
   const { data: profile } = useQuery({
     queryKey: ['blog-profile', handle],
@@ -134,11 +144,9 @@ export default function BlogArticle() {
           )}
         </div>
 
-        <div
-          className="prose prose-lg max-w-none prose-headings:font-serif [&]:text-[#4A3728] [&_h1]:text-[#3D2B1F] [&_h2]:text-[#3D2B1F] [&_h3]:text-[#3D2B1F] [&_h4]:text-[#3D2B1F] [&_p]:text-[#4A3728] [&_li]:text-[#4A3728] [&_strong]:text-[#3D2B1F] [&_em]:text-[#4A3728] [&_a]:text-[#6B4F3A] [&_blockquote]:text-[#5A4738] [&_blockquote]:border-l-[#C4956A] [&_blockquote]:bg-white/50 [&_blockquote]:py-2 [&_blockquote]:px-4 [&_blockquote]:rounded-r-lg"
-        >
+        <section className="blog-prose prose prose-lg max-w-none prose-headings:font-serif prose-blockquote:bg-card/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
-        </div>
+        </section>
 
         {/* Additional article images */}
         {articleImages.length > 1 && (
@@ -167,15 +175,13 @@ export default function BlogArticle() {
           </div>
         </div>
 
-        {/* Watermark */}
-        {isFree && (
-          <div className="mt-8 text-center">
-            <p className="text-xs text-accent">
-              ✝️ Gerado com{' '}
-              <Link to="/" className="underline hover:text-primary">Living Word</Link>
-            </p>
-          </div>
-        )}
+        {/* Powered by Living Word — always visible */}
+        <footer className="mt-10 pt-6 border-t border-border/20 text-center">
+          <p className="text-xs text-muted-foreground">
+            Feito com ❤️ por{' '}
+            <Link to="/" className="font-semibold text-primary hover:underline">Living Word</Link>
+          </p>
+        </footer>
       </article>
     </div>
   );
