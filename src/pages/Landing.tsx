@@ -372,6 +372,70 @@ export default function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   usePageviewTracker('/');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { pricing, loading: regionLoading } = useGeoRegion();
+
+  const pricingPlans = useMemo(() => {
+    if (!pricing) return copy.plans;
+    const fmt = (amt: number) => formatPrice(amt, pricing.symbol, pricing.currency);
+    return [
+      {
+        name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' } as Record<L, string>,
+        planKey: null as string | null,
+        price: `${pricing.symbol}0`,
+        period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' } as Record<L, string>,
+        features: {
+          PT: ['5 gerações/mês', 'Sermão + esboço básico', '1 artigo devocional/mês', 'Blog cristão no ar', 'PT, EN ou ES'],
+          EN: ['5 generations/month', 'Sermon + basic outline', '1 devotional article/month', 'Christian blog live', 'PT, EN or ES'],
+          ES: ['5 generaciones/mes', 'Sermón + bosquejo básico', '1 artículo devocional/mes', 'Blog cristiano en línea', 'PT, EN o ES'],
+        } as Record<L, string[]>,
+        cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Empezar gratis' } as Record<L, string>,
+        featured: false,
+        capacity: { PT: 'Uso básico', EN: 'Basic usage', ES: 'Uso básico' } as Record<L, string>,
+      },
+      {
+        name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' } as Record<L, string>,
+        planKey: 'starter' as string | null,
+        price: fmt(pricing.plans.starter.amount),
+        period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' } as Record<L, string>,
+        features: {
+          PT: ['Até 15 sermões/mês', 'Até 50 conteúdos totais', 'Todos os 7+ formatos', 'Blog com publicação automática', 'Sem watermark', '7 dias grátis sem cartão'],
+          EN: ['Up to 15 sermons/month', 'Up to 50 total contents', 'All 7+ formats', 'Blog with auto-publishing', 'No watermark', '7 days free, no card'],
+          ES: ['Hasta 15 sermones/mes', 'Hasta 50 contenidos totales', 'Los 7+ formatos', 'Blog con publicación automática', 'Sin marca de agua', '7 días gratis sin tarjeta'],
+        } as Record<L, string[]>,
+        cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' } as Record<L, string>,
+        featured: false,
+        capacity: { PT: 'Produção semanal', EN: 'Weekly production', ES: 'Producción semanal' } as Record<L, string>,
+      },
+      {
+        name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' } as Record<L, string>,
+        planKey: 'pro' as string | null,
+        price: fmt(pricing.plans.pro.amount),
+        period: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
+        features: {
+          PT: ['Até 60 sermões/mês', 'Produção completa semanal', 'Acesso a Mentes Brilhantes', 'Estudo bíblico profundo', 'Séries devocionais automáticas', 'Voz pastoral personalizada', 'Calendário editorial'],
+          EN: ['Up to 60 sermons/month', 'Full weekly production', 'Brilliant Minds access', 'Deep Bible study', 'Automatic devotional series', 'Custom pastoral voice', 'Editorial calendar'],
+          ES: ['Hasta 60 sermones/mes', 'Producción completa semanal', 'Acceso a Mentes Brillantes', 'Estudio bíblico profundo', 'Series devocionales automáticas', 'Voz pastoral personalizada', 'Calendario editorial'],
+        } as Record<L, string[]>,
+        cta: { PT: 'Começar agora →', EN: 'Get started →', ES: 'Empezar ahora →' } as Record<L, string>,
+        featured: true,
+        capacity: { PT: 'Produção completa', EN: 'Full production', ES: 'Producción completa' } as Record<L, string>,
+      },
+      {
+        name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' } as Record<L, string>,
+        planKey: 'church' as string | null,
+        price: fmt(pricing.plans.church.amount),
+        period: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
+        features: {
+          PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', `+${fmt(pricing.addon.amount)} por usuário extra`, 'Capacidade escala com a equipe'],
+          EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', `+${fmt(pricing.addon.amount)} per extra user`, 'Capacity scales with team'],
+          ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', `+${fmt(pricing.addon.amount)} por usuario extra`, 'Capacidad escala con el equipo'],
+        } as Record<L, string[]>,
+        cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' } as Record<L, string>,
+        featured: false,
+        capacity: { PT: 'Escala ministerial', EN: 'Ministry scale', ES: 'Escala ministerial' } as Record<L, string>,
+      },
+    ];
+  }, [pricing]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
