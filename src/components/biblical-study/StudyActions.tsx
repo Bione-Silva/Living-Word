@@ -267,6 +267,7 @@ export function StudyActions({ study }: StudyActionsProps) {
             language: study.language,
             bible_version: study.bible_text?.[0]?.version || 'ARA',
             output_modes: [outputMode],
+            pastoral_voice: profile?.pastoral_voice || '',
           },
         });
 
