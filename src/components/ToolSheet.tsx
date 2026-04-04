@@ -265,31 +265,29 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   };
 
   const handleConvertToBlog = async () => {
-    if (!result) return;
+    if (!result || !user) return;
     setConvertingToBlog(true);
     setShowBlogPrompt(false);
     try {
-      const blogPrompt = `Transform the following study/content into a complete, well-structured blog article in Markdown format (600-800 words). Include:
-- An engaging H1 title
-- A warm introduction paragraph
-- 2-3 sections with H2 headings
-- A powerful conclusion
-- A sharing call-to-action at the end in italics
-
-The tone should be pastoral, warm, and accessible. Write in ${langLabel}.
-
-Original content to transform:
-${result}`;
-
-      const { data, error } = await supabase.functions.invoke('ai-tool', {
+      // Use generate-blog-article which creates text + 4 contextual images + saves + publishes
+      const { data, error } = await supabase.functions.invoke('generate-blog-article', {
         body: {
-          systemPrompt: `You are a professional Christian blog writer. Transform studies, devotionals, and pastoral content into beautifully structured blog articles. Write in ${langLabel}. Always use Markdown formatting.`,
-          userPrompt: blogPrompt,
+          passage: input,
+          language: lang,
+          title: `${toolTitle} — ${input.substring(0, 50)}`,
         },
       });
       if (error) throw error;
-      setResult(data?.content || result);
-      toast.success(lang === 'PT' ? 'Artigo de blog gerado!' : 'Blog article generated!');
+      if (data?.success) {
+        toast.success(
+          lang === 'PT' ? '🎨 Artigo com ilustrações publicado no blog!' :
+          lang === 'EN' ? '🎨 Article with illustrations published to blog!' :
+          '🎨 ¡Artículo con ilustraciones publicado en el blog!'
+        );
+        resetForm();
+      } else {
+        throw new Error(data?.error || 'Unknown error');
+      }
     } catch (err: any) {
       toast.error(err.message || 'Error converting to blog');
     } finally {
