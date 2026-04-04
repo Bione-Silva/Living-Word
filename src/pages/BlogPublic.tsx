@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { BookOpen, Calendar, ArrowLeft, Search, Clock, ExternalLink } from 'lucide-react';
+import { BookOpen, Calendar, Search, Clock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BlogPublic() {
@@ -76,22 +76,20 @@ export default function BlogPublic() {
 
   if (profileLoading) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6B4F3A]" />
+      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
+      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold text-[#3D2B1F]">Blog não encontrado</h1>
-          <p className="text-[#6B4F3A]">O handle "{handle}" não existe.</p>
+          <h1 className="text-2xl font-bold text-foreground">Blog não encontrado</h1>
+          <p className="text-muted-foreground">O handle "{handle}" não existe.</p>
           <Link to="/">
-            <Button variant="outline">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Voltar ao início
-            </Button>
+            <Button variant="outline">Voltar ao início</Button>
           </Link>
         </div>
       </div>
@@ -99,76 +97,50 @@ export default function BlogPublic() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen bg-[hsl(40,30%,96%)]">
       {/* Top Navigation */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <h2 className="font-serif text-lg font-bold text-[#3D2B1F]">{profile.full_name}</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-[#6B4F3A] hidden sm:inline">Início</span>
-            <div className="relative hidden sm:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar..."
-                className="pl-9 h-9 w-48 bg-gray-50 border-gray-200 text-sm"
-              />
-            </div>
-            {profile.blog_handle && (
-              <Button size="sm" variant="outline" className="text-xs gap-1 border-[#6B4F3A] text-[#6B4F3A] hover:bg-[#6B4F3A] hover:text-white">
-                <ExternalLink className="w-3 h-3" /> Visite nosso site
-              </Button>
-            )}
-          </div>
+      <header className="bg-[hsl(40,30%,96%)] border-b border-border/30 sticky top-0 z-20">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <h2 className="font-serif text-xl font-bold text-primary">
+            {profile.full_name}
+          </h2>
+          <nav className="flex items-center gap-4 text-sm text-muted-foreground">
+            <span className="hover:text-primary cursor-pointer">Início</span>
+          </nav>
         </div>
       </header>
 
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#6B4F3A] via-[#8B6F5A] to-[#C4956A] text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4yIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00eiIvPjwvZz48L2c+PC9zdmc+')] bg-repeat" />
-        </div>
-        <div className="relative max-w-6xl mx-auto px-4 py-16 text-center">
-          <div className="flex justify-center mb-4">
-            {profile.avatar_url ? (
-              <img src={profile.avatar_url} alt={profile.full_name} className="w-20 h-20 rounded-full object-cover border-4 border-white/30" />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold backdrop-blur">
-                {profile.full_name?.charAt(0) || '?'}
-              </div>
-            )}
+      {/* Hero Banner — warm tones */}
+      <div className="bg-gradient-to-b from-primary/10 to-[hsl(40,30%,96%)] py-14 text-center">
+        <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-6">Blog</h1>
+
+        {/* Search */}
+        <div className="max-w-md mx-auto flex items-center gap-2 px-4">
+          <div className="relative flex-1">
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar artigos no blog..."
+              className="pl-4 pr-10 h-11 bg-card border-border/50 text-foreground placeholder:text-muted-foreground rounded-lg"
+            />
           </div>
-          <h1 className="font-serif text-3xl md:text-4xl font-bold mb-3">{profile.full_name}</h1>
-          {profile.bio && (
-            <p className="text-white/80 text-base max-w-lg mx-auto mb-6">{profile.bio}</p>
-          )}
-          {/* Mobile search */}
-          <div className="max-w-md mx-auto flex gap-2 sm:hidden">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar artigos no blog..."
-                className="pl-9 bg-white/90 text-[#3D2B1F] border-0 placeholder:text-gray-400"
-              />
-            </div>
-          </div>
+          <Button size="icon" variant="outline" className="h-11 w-11 border-border/50">
+            <Search className="w-5 h-5" />
+          </Button>
         </div>
       </div>
 
       {/* Articles Section */}
       <main className="max-w-6xl mx-auto px-4 py-10">
-        <h2 className="font-serif text-2xl font-bold text-[#3D2B1F] text-center mb-8">
+        <h2 className="font-serif text-2xl font-bold text-foreground text-center mb-10">
           Últimos Artigos Publicados
         </h2>
 
         {articlesLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Card key={i} className="overflow-hidden bg-white border-gray-100">
-                <Skeleton className="h-48 w-full rounded-none" />
+              <Card key={i} className="overflow-hidden bg-card border-border/30">
+                <Skeleton className="h-52 w-full rounded-none" />
                 <CardContent className="p-5 space-y-3">
                   <Skeleton className="h-5 w-3/4" />
                   <Skeleton className="h-4 w-1/3" />
@@ -179,11 +151,11 @@ export default function BlogPublic() {
           </div>
         ) : !filteredArticles?.length ? (
           <div className="text-center py-16">
-            <BookOpen className="w-12 h-12 mx-auto text-[#C4956A] mb-4" />
-            <h3 className="text-xl font-serif text-[#3D2B1F]">
+            <BookOpen className="w-12 h-12 mx-auto text-accent mb-4" />
+            <h3 className="text-xl font-serif text-foreground">
               {searchQuery ? 'Nenhum artigo encontrado' : 'Nenhum artigo publicado ainda'}
             </h3>
-            <p className="text-[#6B4F3A] mt-2">
+            <p className="text-muted-foreground mt-2">
               {searchQuery ? 'Tente buscar com outros termos.' : 'Volte em breve para novos conteúdos.'}
             </p>
           </div>
@@ -193,9 +165,9 @@ export default function BlogPublic() {
               const coverUrl = (article as any).cover_image_url;
               return (
                 <Link key={article.id} to={`/blog/${handle}/${article.id}`} className="group">
-                  <Card className="overflow-hidden bg-white border-gray-100 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                  <Card className="overflow-hidden bg-card border-border/20 hover:shadow-lg transition-all duration-300 h-full flex flex-col rounded-xl">
                     {/* Cover Image */}
-                    <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[#E8DDD0] to-[#D4C5B5]">
+                    <div className="relative h-52 overflow-hidden bg-muted/30">
                       {coverUrl ? (
                         <img
                           src={coverUrl}
@@ -204,32 +176,31 @@ export default function BlogPublic() {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <BookOpen className="w-12 h-12 text-[#C4956A]/50" />
+                        <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                          <BookOpen className="w-12 h-12 text-primary/30" />
                         </div>
                       )}
                     </div>
 
                     {/* Card Content */}
                     <CardContent className="p-5 flex flex-col flex-1">
-                      <h3 className="font-serif text-lg font-bold text-[#3D2B1F] mb-2 line-clamp-2 group-hover:text-[#6B4F3A] transition-colors">
+                      <h3 className="font-serif text-lg font-bold text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors">
                         {article.title}
                       </h3>
-                      <p className="text-sm text-[#6B4F3A]/80 mb-3 line-clamp-3 flex-1">
+                      <p className="text-xs text-muted-foreground mb-3">
+                        {new Date(article.published_at || article.created_at).toLocaleDateString('pt-BR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-3 flex-1">
                         {getExcerpt(article.content)}
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-[#9B8A7A] mt-auto pt-3 border-t border-gray-50">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(article.published_at || article.created_at).toLocaleDateString('pt-BR', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
-                        </span>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mt-auto pt-3 border-t border-border/20">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {estimateReadTime(article.content)} min
+                          {estimateReadTime(article.content)} min de leitura
                         </span>
                       </div>
                     </CardContent>
@@ -240,12 +211,12 @@ export default function BlogPublic() {
           </div>
         )}
 
-        {/* Watermark for free plan */}
+        {/* Watermark */}
         {isFree && (
-          <div className="text-center py-10 mt-8 border-t border-gray-100">
-            <p className="text-xs text-[#C4956A]">
+          <div className="text-center py-10 mt-8 border-t border-border/20">
+            <p className="text-xs text-accent">
               ✝️ Gerado com{' '}
-              <Link to="/" className="underline hover:text-[#6B4F3A]">Living Word</Link>
+              <Link to="/" className="underline hover:text-primary">Living Word</Link>
             </p>
           </div>
         )}

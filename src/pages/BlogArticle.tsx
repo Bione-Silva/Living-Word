@@ -41,6 +41,7 @@ export default function BlogArticle() {
   const isFree = profile?.plan === 'free';
   const articleUrl = window.location.href;
   const coverUrl = (article as any)?.cover_image_url;
+  const articleImages: string[] = (article as any)?.article_images || [];
 
   const estimateReadTime = (content: string) => {
     const words = content?.split(/\s+/).length || 0;
@@ -62,17 +63,17 @@ export default function BlogArticle() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6B4F3A]" />
+      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
+      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold text-[#3D2B1F]">Artigo não encontrado</h1>
+          <h1 className="text-2xl font-bold text-foreground">Artigo não encontrado</h1>
           <Link to={`/blog/${handle}`}>
             <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" /> Voltar ao blog</Button>
           </Link>
@@ -82,11 +83,11 @@ export default function BlogArticle() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen bg-[hsl(40,30%,96%)]">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
+      <header className="bg-[hsl(40,30%,96%)] border-b border-border/30 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to={`/blog/${handle}`} className="flex items-center gap-2 text-sm text-[#6B4F3A] hover:text-[#3D2B1F]">
+          <Link to={`/blog/${handle}`} className="flex items-center gap-2 text-sm text-primary hover:text-foreground">
             <ArrowLeft className="w-4 h-4" />
             {profile?.full_name || 'Blog'}
           </Link>
@@ -107,21 +108,17 @@ export default function BlogArticle() {
       {/* Cover Image */}
       {coverUrl && (
         <div className="w-full h-64 md:h-80 overflow-hidden">
-          <img
-            src={coverUrl}
-            alt={article.title}
-            className="w-full h-full object-cover"
-          />
+          <img src={coverUrl} alt={article.title} className="w-full h-full object-cover" />
         </div>
       )}
 
       {/* Article */}
       <article className="max-w-3xl mx-auto px-4 py-10">
-        <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#3D2B1F] mb-4 leading-tight">
+        <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
           {article.title}
         </h1>
 
-        <div className="flex items-center gap-4 text-sm text-[#6B4F3A] mb-8 pb-6 border-b border-gray-100">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-8 pb-6 border-b border-border/20">
           <span className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
             {new Date(article.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -138,26 +135,37 @@ export default function BlogArticle() {
         </div>
 
         <div className="prose prose-lg prose-stone max-w-none
-          prose-headings:font-serif prose-headings:text-[#3D2B1F]
-          prose-p:text-[#4A3728] prose-p:leading-relaxed
-          prose-a:text-[#C4956A] prose-a:no-underline hover:prose-a:underline
-          prose-blockquote:border-l-[#C4956A] prose-blockquote:bg-white/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
-          prose-strong:text-[#3D2B1F]
+          prose-headings:font-serif prose-headings:text-foreground
+          prose-p:text-muted-foreground prose-p:leading-relaxed
+          prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+          prose-blockquote:border-l-accent prose-blockquote:bg-card/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
+          prose-strong:text-foreground
         ">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
         </div>
 
+        {/* Additional article images */}
+        {articleImages.length > 1 && (
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {articleImages.slice(1).map((imgUrl, idx) => (
+              <div key={idx} className="rounded-xl overflow-hidden shadow-sm">
+                <img src={imgUrl} alt={`${article.title} — imagem ${idx + 2}`} className="w-full h-48 object-cover" loading="lazy" />
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Share footer */}
-        <div className="mt-12 pt-6 border-t border-gray-100 flex flex-col items-center gap-4">
-          <p className="text-sm text-[#6B4F3A]">Compartilhe esta mensagem</p>
+        <div className="mt-12 pt-6 border-t border-border/20 flex flex-col items-center gap-4">
+          <p className="text-sm text-muted-foreground">Compartilhe esta mensagem</p>
           <div className="flex gap-3">
-            <Button variant="outline" size="sm" onClick={handleShareWhatsApp} className="border-gray-200">
+            <Button variant="outline" size="sm" onClick={handleShareWhatsApp} className="border-border/40">
               <MessageCircle className="w-4 h-4 mr-2" /> WhatsApp
             </Button>
-            <Button variant="outline" size="sm" onClick={handleShareX} className="border-gray-200">
+            <Button variant="outline" size="sm" onClick={handleShareX} className="border-border/40">
               <Share2 className="w-4 h-4 mr-2" /> X / Twitter
             </Button>
-            <Button variant="outline" size="sm" onClick={handleCopyLink} className="border-gray-200">
+            <Button variant="outline" size="sm" onClick={handleCopyLink} className="border-border/40">
               <Copy className="w-4 h-4 mr-2" /> Copiar Link
             </Button>
           </div>
@@ -166,9 +174,9 @@ export default function BlogArticle() {
         {/* Watermark */}
         {isFree && (
           <div className="mt-8 text-center">
-            <p className="text-xs text-[#C4956A]">
+            <p className="text-xs text-accent">
               ✝️ Gerado com{' '}
-              <Link to="/" className="underline hover:text-[#6B4F3A]">Living Word</Link>
+              <Link to="/" className="underline hover:text-primary">Living Word</Link>
             </p>
           </div>
         )}

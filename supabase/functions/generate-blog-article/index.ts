@@ -7,6 +7,61 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function generateImage(
+  lovableApiKey: string,
+  prompt: string,
+  supabaseAdmin: any,
+  userId: string
+): Promise<string | null> {
+  try {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${lovableApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [{ role: "user", content: prompt }],
+        modalities: ["image", "text"],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("Image gen error:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!imageUrl || !imageUrl.startsWith("data:image")) return null;
+
+    const base64Data = imageUrl.split(",")[1];
+    if (!base64Data) return null;
+
+    const imageBytes = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+    const imagePath = `${userId}/${crypto.randomUUID()}.png`;
+
+    const { error: uploadErr } = await supabaseAdmin.storage
+      .from("blog-images")
+      .upload(imagePath, imageBytes, { contentType: "image/png", upsert: true });
+
+    if (uploadErr) {
+      console.error("Upload error:", uploadErr);
+      return null;
+    }
+
+    const { data: publicUrl } = supabaseAdmin.storage
+      .from("blog-images")
+      .getPublicUrl(imagePath);
+
+    return publicUrl?.publicUrl || null;
+  } catch (err) {
+    console.error("Image generation failed:", err);
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -36,8 +91,6 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-
-    // Service role client for storage uploads
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
     const token = authHeader.replace("Bearer ", "");
@@ -59,7 +112,7 @@ serve(async (req) => {
       });
     }
 
-    // Fetch user profile for personalization
+    // Fetch user profile
     const { data: profile } = await supabase
       .from("profiles")
       .select("full_name, doctrine, pastoral_voice, bible_version")
@@ -89,7 +142,7 @@ Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
       ? `Write a devotional article about "${passage}" with the title "${inputTitle}".`
       : `Write a devotional article based on the passage: ${passage}.`;
 
-    // Call Lovable AI for article content
+    // Generate article content
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -119,68 +172,35 @@ Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const errText = await aiResponse.text();
-      console.error("AI error:", status, errText);
       throw new Error("AI generation failed");
     }
 
     const aiData = await aiResponse.json();
     const content = aiData.choices?.[0]?.message?.content || "";
+    if (!content) throw new Error("Empty AI response");
 
-    if (!content) {
-      throw new Error("Empty AI response");
-    }
-
-    // Extract title from markdown H1 or use input title
     const h1Match = content.match(/^#\s+(.+)$/m);
     const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
 
-    // Generate cover image using AI
-    let coverImageUrl: string | null = null;
-    try {
-      const imagePrompt = `A beautiful, warm, serene Christian devotional cover image for an article about "${passage}". Pastoral landscape with soft golden light, peaceful atmosphere. No text, no words, no letters. Photographic style, high quality, warm tones.`;
+    // Generate up to 3 images in parallel
+    const imagePrompts = [
+      `A beautiful, warm, serene Christian devotional cover image about "${passage}". Pastoral landscape with soft golden light, peaceful atmosphere. No text, no words, no letters. Photographic style, high quality, warm earth tones.`,
+      `A contemplative Christian scene inspired by "${passage}". Soft morning light, open Bible on a wooden table, warm colors, peaceful setting. No text or letters. Artistic, editorial style photo.`,
+      `A spiritual, uplifting image representing the message of "${passage}". Nature scene with divine light rays, warm golden hour atmosphere. No text or words. Cinematic photography style.`,
+    ];
 
-      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3.1-flash-image-preview",
-          prompt: imagePrompt,
-          n: 1,
-          size: "1024x576",
-        }),
-      });
+    const imageResults = await Promise.allSettled(
+      imagePrompts.map((prompt) => generateImage(lovableApiKey, prompt, supabaseAdmin, userId))
+    );
 
-      if (imageResponse.ok) {
-        const imageData = await imageResponse.json();
-        const b64 = imageData.data?.[0]?.b64_json;
-        if (b64) {
-          const imageBytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-          const imagePath = `${userId}/${crypto.randomUUID()}.png`;
-
-          const { error: uploadErr } = await supabaseAdmin.storage
-            .from("blog-images")
-            .upload(imagePath, imageBytes, { contentType: "image/png", upsert: true });
-
-          if (!uploadErr) {
-            const { data: publicUrl } = supabaseAdmin.storage
-              .from("blog-images")
-              .getPublicUrl(imagePath);
-            coverImageUrl = publicUrl?.publicUrl || null;
-          } else {
-            console.error("Image upload error:", uploadErr);
-          }
-        }
-      } else {
-        console.error("Image generation error:", imageResponse.status);
+    const articleImages: string[] = [];
+    for (const result of imageResults) {
+      if (result.status === "fulfilled" && result.value) {
+        articleImages.push(result.value);
       }
-    } catch (imgErr) {
-      console.error("Cover image generation failed:", imgErr);
-      // Continue without image — not critical
     }
+
+    const coverImageUrl = articleImages[0] || null;
 
     // Save to materials table
     const { data: material, error: matErr } = await supabase
@@ -194,6 +214,7 @@ Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
         language,
         bible_version: profile?.bible_version || "NVI",
         cover_image_url: coverImageUrl,
+        article_images: articleImages,
       } as any)
       .select("id")
       .single();
@@ -211,9 +232,7 @@ Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
       published_at: new Date().toISOString(),
     });
 
-    if (qErr) {
-      console.error("Queue insert error:", qErr);
-    }
+    if (qErr) console.error("Queue insert error:", qErr);
 
     return new Response(
       JSON.stringify({
@@ -221,19 +240,15 @@ Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
         material_id: material.id,
         title: articleTitle,
         cover_image_url: coverImageUrl,
+        article_images: articleImages,
       }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
     console.error("generate-blog-article error:", e);
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
