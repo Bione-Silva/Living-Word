@@ -296,6 +296,7 @@ const copy = {
     },
     {
       name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
+      planKey: 'starter' as string | null,
       price: fmt(p.plans.starter.amount),
       period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' },
       features: {
