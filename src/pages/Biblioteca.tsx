@@ -13,11 +13,6 @@ import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 
 
-function getBodyImages(item: any): string[] {
-  const images: string[] = (item?.article_images || []).filter(Boolean);
-  const cover = item?.cover_image_url;
-  return cover && images[0] === cover ? images.slice(1) : images;
-}
 
 
 const typeIcons: Record<string, React.ElementType> = {
