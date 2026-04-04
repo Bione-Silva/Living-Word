@@ -16,12 +16,13 @@ import {
   Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain,
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon,
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
-  HelpCircle, Feather, Baby, Globe, Gamepad2
+  HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert
 } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
+import { SupportChatBubble } from '@/components/SupportChatBubble';
 
 type L = 'PT' | 'EN' | 'ES';
 
