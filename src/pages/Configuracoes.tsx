@@ -91,7 +91,7 @@ export default function Configuracoes() {
                   <Input placeholder="https://seu-site.com" />
                 </div>
               )}
-              <Button className="bg-primary text-primary-foreground">Salvar</Button>
+              <Button className="bg-primary text-primary-foreground">{t('settings.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
