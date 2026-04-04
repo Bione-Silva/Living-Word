@@ -112,7 +112,11 @@ export default function MentesBrilhantes() {
 
       {/* ── Minds Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {minds.map((mind, index) => (
+        {loadingMinds ? (
+          <p className="col-span-full text-center text-muted-foreground py-8">Carregando mentes...</p>
+        ) : visibleMinds.length === 0 ? (
+          <p className="col-span-full text-center text-muted-foreground py-8">Nenhuma mente disponível no momento.</p>
+        ) : visibleMinds.map((mind, index) => (
           <MindCard
             key={mind.id}
             mind={mind}
