@@ -13,10 +13,14 @@ import {
 } from '@/components/ui/dialog';
 import {
   FileText, Plus, Search, Globe, Pencil, BookOpen, MoreHorizontal,
-  Archive, ArchiveRestore, Save, X, Eye,
+  Archive, ArchiveRestore, Save, X, Eye, Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
