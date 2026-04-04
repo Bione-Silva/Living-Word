@@ -97,6 +97,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
     if (!input.trim()) return;
     setLoading(true);
     setResult('');
+    setHistoricalSources(null);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
