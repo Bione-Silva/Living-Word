@@ -175,6 +175,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setResult('');
     setInput('');
     setShowBlogPrompt(false);
+    setHistoricalSources(null);
   };
 
   const handleGenerate = async () => {
