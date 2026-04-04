@@ -58,6 +58,7 @@ const minds: MindData[] = [
   {
     id: 'martyn-lloyd-jones',
     name: 'Martyn Lloyd-Jones',
+    image: lloydJonesImg,
     subtitle: { PT: 'O Doutor', EN: 'The Doctor', ES: 'El Doctor' },
     role: { PT: 'Método e Diagnóstico Lógico', EN: 'Method & Logical Diagnosis', ES: 'Método y Diagnóstico Lógico' },
     locked: true,
