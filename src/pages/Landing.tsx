@@ -310,6 +310,7 @@ const copy = {
     },
     {
       name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
+      planKey: 'pro' as string | null,
       price: fmt(p.plans.pro.amount),
       period: { PT: '/mês', EN: '/month', ES: '/mes' },
       features: {
