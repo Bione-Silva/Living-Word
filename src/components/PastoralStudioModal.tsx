@@ -315,7 +315,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground">
+      <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">{toolTitle}</DialogTitle>
           <DialogDescription>{text.subtitle}</DialogDescription>
