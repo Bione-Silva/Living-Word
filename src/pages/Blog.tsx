@@ -49,7 +49,6 @@ export default function Blog() {
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Editor state
   const [editArticle, setEditArticle] = useState<ArticleRow | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
@@ -109,18 +108,18 @@ export default function Blog() {
     return matchesTab && matchesSearch;
   });
 
-  const tabs: { key: TabFilter; label: string }[] = [
-    { key: 'all', label: 'Todos' },
-    { key: 'published', label: 'Publicados' },
-    { key: 'draft', label: 'Rascunhos' },
-    { key: 'archived', label: 'Arquivados' },
+  const tabs: { key: TabFilter; labelKey: string }[] = [
+    { key: 'all', labelKey: 'blog.tab_all' },
+    { key: 'published', labelKey: 'blog.tab_published' },
+    { key: 'draft', labelKey: 'blog.tab_draft' },
+    { key: 'archived', labelKey: 'blog.tab_archived' },
   ];
 
   const handleCopyLink = (articleId: string) => {
     const handle = profile?.blog_handle;
-    if (!handle) { toast.error('Configure seu blog handle nas Configurações.'); return; }
+    if (!handle) { toast.error(t('blog.handle_missing')); return; }
     navigator.clipboard.writeText(`${window.location.origin}/blog/${handle}/${articleId}`);
-    toast.success('Link copiado!');
+    toast.success(t('blog.link_copied'));
   };
 
   const formatDate = (dateStr: string | null) => {
@@ -128,7 +127,6 @@ export default function Blog() {
     return new Date(dateStr).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
-  // Open editor
   const openEditor = (article: ArticleRow) => {
     setEditArticle(article);
     setEditTitle(article.title);
@@ -136,7 +134,6 @@ export default function Blog() {
     setPreviewMode(false);
   };
 
-  // Save edits
   const handleSave = async () => {
     if (!editArticle) return;
     setSaving(true);
@@ -146,17 +143,16 @@ export default function Blog() {
         .update({ title: editTitle, content: editContent, updated_at: new Date().toISOString() })
         .eq('id', editArticle.id);
       if (error) throw error;
-      toast.success('Artigo salvo com sucesso!');
+      toast.success(t('blog.saved_ok'));
       setEditArticle(null);
       queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
     } catch {
-      toast.error('Erro ao salvar artigo.');
+      toast.error(t('blog.save_error'));
     } finally {
       setSaving(false);
     }
   };
 
-  // Archive / Unarchive
   const handleToggleArchive = async (article: ArticleRow) => {
     const newStatus = article.queue_status === 'archived' ? 'published' : 'archived';
     try {
@@ -175,10 +171,10 @@ export default function Blog() {
         });
         if (error) throw error;
       }
-      toast.success(newStatus === 'archived' ? 'Artigo arquivado.' : 'Artigo restaurado.');
+      toast.success(newStatus === 'archived' ? t('blog.archived_ok') : t('blog.restored_ok'));
       queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
     } catch {
-      toast.error('Erro ao atualizar status.');
+      toast.error(t('blog.status_error'));
     }
   };
 
@@ -186,21 +182,25 @@ export default function Blog() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      // Delete from editorial_queue first (if exists)
       if (deleteTarget.queue_id) {
         await supabase.from('editorial_queue').delete().eq('id', deleteTarget.queue_id);
       }
-      // Delete the material
       const { error } = await supabase.from('materials').delete().eq('id', deleteTarget.id);
       if (error) throw error;
-      toast.success('Artigo excluído com sucesso.');
+      toast.success(t('blog.deleted_ok'));
       queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
     } catch {
-      toast.error('Erro ao excluir artigo.');
+      toast.error(t('blog.delete_error'));
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
     }
+  };
+
+  const statusLabel = (status: string) => {
+    if (status === 'published') return t('blog.status_published');
+    if (status === 'archived') return t('blog.status_archived');
+    return t('blog.status_draft');
   };
 
   return (
@@ -210,12 +210,12 @@ export default function Blog() {
         <div className="flex items-center gap-3">
           <FileText className="w-7 h-7 text-primary" />
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">Meus Artigos</h1>
-            <p className="text-sm text-muted-foreground">Gerencie todos os seus artigos em um só lugar</p>
+            <h1 className="font-display text-2xl font-bold text-foreground">{t('blog.title')}</h1>
+            <p className="text-sm text-muted-foreground">{t('blog.subtitle')}</p>
           </div>
         </div>
         <Button className="gap-2" onClick={() => navigate('/estudio')}>
-          <Plus className="w-4 h-4" /> Criar Novo
+          <Plus className="w-4 h-4" /> {t('blog.create_new')}
         </Button>
       </div>
 
@@ -230,7 +230,7 @@ export default function Blog() {
                 activeTab === tab.key ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {tab.label}
+              {t(tab.labelKey)}
               <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.key ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                 {counts[tab.key]}
               </span>
@@ -239,11 +239,11 @@ export default function Blog() {
         </div>
         <div className="relative flex-1 max-w-xs ml-auto">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Buscar por título..." className="pl-9 h-9 text-sm" />
+          <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={t('blog.search_placeholder')} className="pl-9 h-9 text-sm" />
         </div>
       </div>
 
-      <p className="text-sm text-muted-foreground">{filtered?.length || 0} artigo(s)</p>
+      <p className="text-sm text-muted-foreground">{filtered?.length || 0} {t('blog.article_count')}</p>
 
       {/* Articles Grid */}
       {isLoading ? (
@@ -262,14 +262,14 @@ export default function Blog() {
         <div className="text-center py-16">
           <BookOpen className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" />
           <h3 className="text-lg font-display font-semibold text-foreground">
-            {searchQuery ? 'Nenhum artigo encontrado' : 'Nenhum artigo ainda'}
+            {searchQuery ? t('blog.no_results') : t('blog.no_articles')}
           </h3>
           <p className="text-sm text-muted-foreground mt-1 mb-4">
-            {searchQuery ? 'Tente buscar com outros termos.' : 'Crie seu primeiro artigo no Estúdio Pastoral.'}
+            {searchQuery ? t('blog.no_results_hint') : t('blog.no_articles_hint')}
           </p>
           {!searchQuery && (
             <Button onClick={() => navigate('/estudio')} className="gap-2">
-              <Plus className="w-4 h-4" /> Criar Primeiro Artigo
+              <Plus className="w-4 h-4" /> {t('blog.create_first')}
             </Button>
           )}
         </div>
@@ -302,7 +302,7 @@ export default function Blog() {
                         'bg-muted text-muted-foreground'
                       }`}
                     >
-                      {isPublished ? 'Publicado' : isArchived ? 'Arquivado' : 'Rascunho'}
+                      {statusLabel(article.queue_status)}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
                       {formatDate(article.published_at || article.created_at)}
@@ -313,12 +313,12 @@ export default function Blog() {
                     {isPublished && profile?.blog_handle && (
                       <Link to={`/blog/${profile.blog_handle}/${article.id}`} target="_blank">
                         <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8">
-                          <Globe className="w-3 h-3" /> Abrir
+                          <Globe className="w-3 h-3" /> {t('blog.open')}
                         </Button>
                       </Link>
                     )}
                     <Button size="sm" variant={isPublished ? 'outline' : 'default'} className="gap-1.5 text-xs h-8" onClick={() => openEditor(article)}>
-                      <Pencil className="w-3 h-3" /> Editar
+                      <Pencil className="w-3 h-3" /> {t('blog.edit')}
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -327,18 +327,18 @@ export default function Blog() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleCopyLink(article.id)}>Copiar link</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleCopyLink(article.id)}>{t('blog.copy_link')}</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
                           window.open(`https://wa.me/?text=${encodeURIComponent(article.title + ' ' + window.location.origin + '/blog/' + profile?.blog_handle + '/' + article.id)}`, '_blank');
                         }}>
-                          Compartilhar no WhatsApp
+                          {t('blog.share_whatsapp')}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleToggleArchive(article)}>
                           {isArchived ? (
-                            <><ArchiveRestore className="w-3.5 h-3.5 mr-2" /> Restaurar</>
+                            <><ArchiveRestore className="w-3.5 h-3.5 mr-2" /> {t('blog.restore')}</>
                           ) : (
-                            <><Archive className="w-3.5 h-3.5 mr-2" /> Arquivar</>
+                            <><Archive className="w-3.5 h-3.5 mr-2" /> {t('blog.archive')}</>
                           )}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -346,7 +346,7 @@ export default function Blog() {
                           onClick={() => setDeleteTarget(article)}
                           className="text-destructive focus:text-destructive"
                         >
-                          <Trash2 className="w-3.5 h-3.5 mr-2" /> Excluir
+                          <Trash2 className="w-3.5 h-3.5 mr-2" /> {t('blog.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -362,8 +362,8 @@ export default function Blog() {
       {isFree && (
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-5 text-center">
-            <p className="text-sm font-medium">Plano Free: 1 artigo de blog por mês</p>
-            <p className="text-xs text-muted-foreground mt-1 mb-3">Desbloqueie publicação ilimitada com o Pastoral</p>
+            <p className="text-sm font-medium">{t('blog.free_notice')}</p>
+            <p className="text-xs text-muted-foreground mt-1 mb-3">{t('blog.free_hint')}</p>
             <Button size="sm" className="bg-primary text-primary-foreground" asChild>
               <a href="/upgrade">{t('upgrade.cta')}</a>
             </Button>
@@ -375,21 +375,21 @@ export default function Blog() {
       <Dialog open={!!editArticle} onOpenChange={(open) => { if (!open) setEditArticle(null); }}>
         <DialogContent className="theme-app max-w-3xl max-h-[90vh] flex flex-col bg-background text-foreground">
           <DialogHeader>
-            <DialogTitle className="font-display text-xl text-foreground">Editar Artigo</DialogTitle>
+            <DialogTitle className="font-display text-xl text-foreground">{t('blog.edit_title')}</DialogTitle>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto space-y-4 py-2">
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">Título</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('blog.field_title')}</label>
               <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="font-display text-base bg-background text-foreground border-input" />
             </div>
 
             <div className="flex items-center gap-2">
               <Button size="sm" variant={previewMode ? 'outline' : 'default'} onClick={() => setPreviewMode(false)} className="gap-1.5 text-xs">
-                <Pencil className="w-3 h-3" /> Editar
+                <Pencil className="w-3 h-3" /> {t('blog.edit')}
               </Button>
               <Button size="sm" variant={previewMode ? 'default' : 'outline'} onClick={() => setPreviewMode(true)} className="gap-1.5 text-xs">
-                <Eye className="w-3 h-3" /> Pré-visualizar
+                <Eye className="w-3 h-3" /> {t('blog.preview')}
               </Button>
             </div>
 
@@ -402,17 +402,17 @@ export default function Blog() {
                 value={editContent}
                 onChange={e => setEditContent(e.target.value)}
                 className="min-h-[350px] font-mono text-sm leading-relaxed bg-background text-foreground border-input"
-                placeholder="Conteúdo em Markdown..."
+                placeholder={t('blog.content_placeholder')}
               />
             )}
           </div>
 
           <DialogFooter className="gap-2 pt-4 border-t border-border">
             <Button variant="outline" onClick={() => setEditArticle(null)} className="gap-1.5">
-              <X className="w-4 h-4" /> Cancelar
+              <X className="w-4 h-4" /> {t('blog.cancel')}
             </Button>
             <Button onClick={handleSave} disabled={saving} className="gap-1.5">
-              <Save className="w-4 h-4" /> {saving ? 'Salvando...' : 'Salvar'}
+              <Save className="w-4 h-4" /> {saving ? t('blog.saving') : t('blog.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -422,19 +422,19 @@ export default function Blog() {
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
         <AlertDialogContent className="bg-background text-foreground">
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir artigo?</AlertDialogTitle>
+            <AlertDialogTitle>{t('blog.delete_confirm_title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Essa ação não pode ser desfeita. O artigo "{deleteTarget?.title}" será removido permanentemente.
+              {t('blog.delete_confirm_desc')} "{deleteTarget?.title}"
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleting}>{t('blog.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {deleting ? 'Excluindo...' : 'Excluir'}
+              {deleting ? t('blog.deleting') : t('blog.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
