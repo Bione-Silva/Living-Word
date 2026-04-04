@@ -432,6 +432,21 @@ export default function AppLayout() {
             </Badge>
           </Link>
 
+          {/* Admin - Master only */}
+          {isAdmin && (
+            <Link
+              to="/admin/dashboard"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/admin/dashboard'
+                  ? 'bg-destructive/10 text-destructive'
+                  : 'text-destructive/70 hover:bg-destructive/10 hover:text-destructive'
+              }`}
+            >
+              <ShieldAlert className="h-4 w-4" />
+              Back-office (Master)
+            </Link>
+          )}
+
           {/* Settings */}
           <Link
             to="/configuracoes"
