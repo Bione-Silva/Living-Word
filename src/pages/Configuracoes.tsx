@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Crown } from 'lucide-react';
+import { TrialCountdown } from '@/components/TrialCountdown';
 import type { Language } from '@/lib/i18n';
 
 export default function Configuracoes() {
