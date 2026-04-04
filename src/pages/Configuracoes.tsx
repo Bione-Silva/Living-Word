@@ -124,7 +124,7 @@ export default function Configuracoes() {
             <CardHeader><CardTitle className="font-display">{t('settings.doctrine')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Doutrina / Tradição</Label>
+                <Label>{t('settings.doctrine_label')}</Label>
                 <Select defaultValue="Interdenominacional">
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
