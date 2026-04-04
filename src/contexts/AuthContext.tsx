@@ -58,6 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           doctrine: data.doctrine,
           pastoral_voice: data.pastoral_voice,
           bible_version: data.bible_version,
+          trial_started_at: data.trial_started_at,
+          trial_ends_at: data.trial_ends_at,
         });
       }
     } catch (err) {
