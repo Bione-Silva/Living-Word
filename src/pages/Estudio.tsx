@@ -106,6 +106,7 @@ export default function Estudio() {
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeTool, setActiveTool] = useState<ToolCardData | null>(null);
+  const [helpToolId, setHelpToolId] = useState<string | null>(null);
 
   const handleToolClick = (tool: ToolCardData) => {
     setActiveTool(tool);
