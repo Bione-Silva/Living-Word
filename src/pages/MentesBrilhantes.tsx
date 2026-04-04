@@ -13,7 +13,7 @@ type L = 'PT' | 'EN' | 'ES';
 const minds: MindData[] = [
   {
     id: 'billy-graham',
-    name: 'Billy Graham',
+    image: billyGrahamImg,
     subtitle: { PT: 'O Evangelista da América', EN: 'America\'s Evangelist', ES: 'El Evangelista de América' },
     role: { PT: 'Apelo & Evangelismo em Massa', EN: 'Appeal & Mass Evangelism', ES: 'Apelación & Evangelismo Masivo' },
     locked: false,
