@@ -72,7 +72,7 @@ export default function AppLayout() {
     return (
       <div className="theme-app min-h-screen bg-background flex flex-col">
         {/* Mobile Header */}
-        <header className="sticky top-0 z-50 bg-sidebar text-sidebar-foreground px-4 py-3 flex items-center justify-between shadow-sm">
+        <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
           <Link to="/dashboard" className="font-display text-lg font-bold truncate">Living Word</Link>
           <div className="flex items-center gap-2 shrink-0">
             <GenerationCounter compact />
