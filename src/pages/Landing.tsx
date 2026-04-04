@@ -687,7 +687,7 @@ export default function Landing() {
                     </div>
                   ))}
                 </div>
-                <Link to="/cadastro" className="block text-center text-[14px] font-semibold py-3 rounded-lg transition-transform hover:scale-[1.02]" style={{
+                <Link to={plan.planKey ? `/cadastro?plan=${plan.planKey}` : '/cadastro'} className="block text-center text-[14px] font-semibold py-3 rounded-lg transition-transform hover:scale-[1.02]" style={{
                   background: plan.featured ? '#6B4F3A' : '#EDD9C8',
                   color: plan.featured ? '#FFFFFF' : '#6B4F3A',
                 }}>{plan.cta[lang]}</Link>

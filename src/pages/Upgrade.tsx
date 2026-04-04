@@ -111,6 +111,21 @@ export default function Upgrade() {
     return base + extraSeats * pricing.addon.amount;
   }, [extraSeats]);
 
+  // Auto-checkout from landing page flow
+  useEffect(() => {
+    const autoCheckout = searchParams.get('autoCheckout');
+    if (!autoCheckout || autoCheckoutFired.current) return;
+    autoCheckoutFired.current = true;
+
+    const targetPlan = plans.find(p => p.planKey === autoCheckout);
+    if (targetPlan && !targetPlan.isFree) {
+      // Clean up the URL param
+      setSearchParams({}, { replace: true });
+      // Small delay to ensure component is fully mounted
+      setTimeout(() => handleSubscribe(targetPlan), 300);
+    }
+  }, [searchParams]);
+
   const handleSubscribe = async (plan: PlanData) => {
     if (!plan.planKey || plan.isFree) return;
 

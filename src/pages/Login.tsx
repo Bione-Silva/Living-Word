@@ -33,7 +33,7 @@ export default function Login() {
         setForgotMode(false);
       } else {
         await signIn(email, password);
-        navigate('/dashboard');
+        navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/dashboard');
       }
     } catch (err: any) {
       toast.error(err.message || 'Erro ao entrar');
