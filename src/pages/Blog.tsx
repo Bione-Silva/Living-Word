@@ -33,6 +33,7 @@ interface ArticleRow {
   queue_status: string;
   published_at: string | null;
   queue_id: string | null;
+  language: string | null;
 }
 
 export default function Blog() {
