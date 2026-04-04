@@ -27,6 +27,7 @@ import BlogOnboarding from "./pages/BlogOnboarding";
 import NotFound from "./pages/NotFound";
 import EstudoBiblicoPage from "./pages/EstudoBiblicoPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AcceptInvite from "./pages/AcceptInvite";
 
 const queryClient = new QueryClient();
 

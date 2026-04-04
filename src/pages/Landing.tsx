@@ -407,6 +407,7 @@ function RevealOnScroll({ children, delay = 0, className = '' }: { children: Rea
 export default function Landing() {
   const { lang, setLang } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  usePageviewTracker('/');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const scrollTo = (id: string) => {
