@@ -18,6 +18,7 @@ export default function Login() {
   const { signIn } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const planParam = new URLSearchParams(window.location.search).get('plan');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
