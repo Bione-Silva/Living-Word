@@ -175,6 +175,27 @@ export type Database = {
         }
         Relationships: []
       }
+      mind_settings: {
+        Row: {
+          active: boolean
+          id: string
+          mind_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          id?: string
+          mind_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          id?: string
+          mind_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       monthly_financials: {
         Row: {
           created_at: string
