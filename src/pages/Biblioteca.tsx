@@ -1,19 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Filter } from 'lucide-react';
+import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Filter, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 
-
-
+const PAGE_SIZE = 20;
 
 const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: React.ElementType }> = {
   sermon: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón', icon: BookOpen },
@@ -52,21 +51,63 @@ export default function Biblioteca() {
   const [favFilter, setFavFilter] = useState(false);
   const [viewItem, setViewItem] = useState<any>(null);
   const isFree = profile?.plan === 'free';
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { data: materials = [], isLoading } = useQuery({
-    queryKey: ['materials', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-      const { data, error } = await supabase
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['materials', user?.id, typeFilter, favFilter, search],
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!user) return { items: [], nextPage: null };
+      let query = supabase
         .from('materials')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(pageParam, pageParam + PAGE_SIZE - 1);
+
+      if (typeFilter !== 'all') {
+        query = query.eq('type', typeFilter);
+      }
+      if (favFilter) {
+        query = query.eq('favorite', true);
+      }
+      if (search.trim()) {
+        query = query.or(`title.ilike.%${search}%,passage.ilike.%${search}%`);
+      }
+
+      const { data: items, error } = await query;
       if (error) throw error;
-      return data || [];
+      return {
+        items: items || [],
+        nextPage: (items?.length || 0) >= PAGE_SIZE ? pageParam + PAGE_SIZE : null,
+      };
     },
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0,
     enabled: !!user,
   });
+
+  const allItems = data?.pages.flatMap((p) => p.items) || [];
+
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!sentinelRef.current || !hasNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -85,13 +126,6 @@ export default function Biblioteca() {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['materials'] }),
-  });
-
-  const filtered = materials.filter((m: any) => {
-    const matchSearch = !search || m.title?.toLowerCase().includes(search.toLowerCase()) || m.passage?.toLowerCase().includes(search.toLowerCase());
-    const matchType = typeFilter === 'all' || m.type === typeFilter;
-    const matchFav = !favFilter || m.favorite;
-    return matchSearch && matchType && matchFav;
   });
 
   const handleCopy = (text: string) => {
@@ -143,14 +177,14 @@ export default function Biblioteca() {
             <Card key={i}><CardContent className="p-4 h-16 animate-pulse bg-muted/30" /></Card>
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : allItems.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="text-sm">{lang === 'PT' ? 'Nenhum material encontrado' : 'No materials found'}</p>
         </div>
       ) : (
         <div className="grid gap-3">
-          {filtered.map((item: any, i: number) => {
+          {allItems.map((item: any, i: number) => {
             const typeInfo = typeLabels[item.type];
             const Icon = typeInfo?.icon || FileText;
             const isLocked = isFree && i >= 10;
@@ -198,6 +232,13 @@ export default function Biblioteca() {
               </Card>
             );
           })}
+
+          {/* Infinite scroll sentinel */}
+          <div ref={sentinelRef} className="py-4 flex justify-center">
+            {isFetchingNextPage && (
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            )}
+          </div>
         </div>
       )}
 
