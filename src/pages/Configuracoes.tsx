@@ -162,7 +162,7 @@ export default function Configuracoes() {
           <Card>
             <CardHeader><CardTitle className="font-display">{t('settings.account')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <Button variant="destructive">Excluir conta</Button>
+              <Button variant="destructive">{t('settings.delete_account')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
