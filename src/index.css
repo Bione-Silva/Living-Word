@@ -60,33 +60,43 @@
 
   /* Warm parchment theme for authenticated app */
   .theme-app {
-    --background: 240 5% 96%;
-    --foreground: 240 10% 15%;
+    --background: 36 30% 95%;
+    --foreground: 24 30% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 15%;
+    --card-foreground: 24 30% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 15%;
+    --popover-foreground: 24 30% 15%;
 
-    --primary: 263 45% 35%;
+    --primary: 28 42% 42%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 92%;
-    --secondary-foreground: 240 10% 15%;
+    --secondary: 36 20% 90%;
+    --secondary-foreground: 24 30% 15%;
 
-    --muted: 240 5% 92%;
-    --muted-foreground: 240 5% 45%;
+    --muted: 36 15% 90%;
+    --muted-foreground: 24 15% 45%;
 
-    --accent: 44 65% 58%;
-    --accent-foreground: 263 45% 22%;
+    --accent: 28 42% 55%;
+    --accent-foreground: 24 30% 12%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 87%;
-    --input: 240 5% 87%;
-    --ring: 263 45% 35%;
+    --border: 30 15% 85%;
+    --input: 30 15% 85%;
+    --ring: 28 42% 42%;
+
+    /* Sidebar: light warm */
+    --sidebar-background: 36 30% 95%;
+    --sidebar-foreground: 24 30% 18%;
+    --sidebar-primary: 28 42% 42%;
+    --sidebar-primary-foreground: 36 30% 97%;
+    --sidebar-accent: 30 20% 88%;
+    --sidebar-accent-foreground: 24 30% 15%;
+    --sidebar-border: 30 15% 85%;
+    --sidebar-ring: 28 42% 42%;
   }
 }
 
