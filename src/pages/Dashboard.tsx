@@ -15,6 +15,7 @@ import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
 import { toast } from 'sonner';
 import { TrialCountdown } from '@/components/TrialCountdown';
+import { PWAInstallBanner } from '@/components/PWAInstallBanner';
 
 const researchTools: ToolCardData[] = [
   { id: 'topic-explorer', icon: Search, title: { PT: 'Explorador de Tópicos', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: 'Descubra subtemas e ângulos para sua pregação', EN: 'Discover subtopics and angles for your sermon', ES: 'Descubre subtemas y ángulos para tu sermón' }, hasModal: true },
@@ -78,7 +79,7 @@ const sectionDescriptions = {
 
 export default function Dashboard() {
   const { profile } = useAuth();
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFree = profile?.plan === 'free';
   const [showBanner, setShowBanner] = useState(true);
@@ -86,10 +87,6 @@ export default function Dashboard() {
   const requestedToolId = searchParams.get('tool');
 
   const userName = profile?.full_name?.split(' ')[0] || (lang === 'PT' ? 'Amigo' : lang === 'EN' ? 'Friend' : 'Amigo');
-
-  const copyLinkToast = lang === 'PT' ? 'Link copiado!' : lang === 'EN' ? 'Link copied!' : '¡Enlace copiado!';
-  const copyLabel = lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar';
-  const portalLabel = lang === 'PT' ? 'Acessar Portal' : lang === 'EN' ? 'Visit Portal' : 'Acceder al Portal';
 
   useEffect(() => {
     if (!requestedToolId) return;
@@ -153,22 +150,15 @@ export default function Dashboard() {
     <div className="space-y-8 max-w-5xl">
       <div>
         <h1 className="font-display text-2xl md:text-3xl font-bold">
-          {lang === 'PT'
-            ? `Olá, ${userName}! 👋`
-            : lang === 'EN'
-              ? `Hello, ${userName}! 👋`
-              : `¡Hola, ${userName}! 👋`}
+          {t('dashboard.greeting')}, {userName}! 👋
         </h1>
         <p className="text-muted-foreground text-sm mt-1.5 leading-relaxed max-w-xl">
-          {lang === 'PT'
-            ? 'Aqui estão todas as ferramentas para ajudar você a preparar, criar e compartilhar conteúdo. Escolha uma categoria e comece.'
-            : lang === 'EN'
-              ? 'Here are all the tools to help you prepare, create and share content. Pick a category and get started.'
-              : 'Aquí tienes todas las herramientas para ayudarte a preparar, crear y compartir contenido. Elige una categoría y comienza.'}
+          {t('dashboard.subtitle')}
         </p>
       </div>
 
       <TrialCountdown />
+      <PWAInstallBanner />
 
       {showBanner && isFree && (
         <Card className="border-accent/30 bg-accent/5">
@@ -178,12 +168,8 @@ export default function Dashboard() {
                 <Crown className="h-4 w-4 text-accent" />
               </div>
               <div>
-                <h3 className="font-semibold text-xs">
-                  {lang === 'PT' ? 'Desbloqueie todas as ferramentas' : lang === 'EN' ? 'Unlock all tools' : 'Desbloquea todas las herramientas'}
-                </h3>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {lang === 'PT' ? 'Teste grátis por 7 dias, sem cartão de crédito.' : lang === 'EN' ? 'Free 7-day trial, no credit card needed.' : 'Prueba gratis 7 días, sin tarjeta.'}
-                </p>
+                <h3 className="font-semibold text-xs">{t('dashboard.unlock_tools')}</h3>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{t('dashboard.trial_hint')}</p>
               </div>
             </div>
             <button onClick={() => setShowBanner(false)} className="text-muted-foreground hover:text-foreground shrink-0">
@@ -203,7 +189,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    {lang === 'PT' ? 'Seu Portal do Blog' : lang === 'EN' ? 'Your Blog Portal' : 'Tu Portal del Blog'}
+                    {t('dashboard.blog_portal')}
                   </p>
                   <p className="text-sm font-mono font-semibold text-primary mt-0.5">
                     {profile.blog_handle}.livingword.app
@@ -214,19 +200,19 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="gap-1.5 text-xs h-8"
+                  className="gap-1.5 text-xs h-8 min-h-[44px]"
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/blog/${profile.blog_handle}`);
-                    toast.success(copyLinkToast);
+                    toast.success(t('dashboard.link_copied'));
                   }}
                 >
                   <Copy className="w-3 h-3" />
-                  {copyLabel}
+                  {t('dashboard.copy')}
                 </Button>
                 <Link to={`/blog/${profile.blog_handle}`} target="_blank">
-                  <Button size="sm" className="gap-1.5 text-xs h-8">
+                  <Button size="sm" className="gap-1.5 text-xs h-8 min-h-[44px]">
                     <ExternalLink className="w-3 h-3" />
-                    {portalLabel}
+                    {t('dashboard.visit_portal')}
                   </Button>
                 </Link>
               </div>
@@ -245,13 +231,7 @@ export default function Dashboard() {
           <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center">
             <Crown className="h-3 w-3 text-accent" />
           </div>
-          <span>
-            {lang === 'PT'
-              ? 'Itens com este ícone estão disponíveis no plano Pastoral'
-              : lang === 'EN'
-                ? 'Items with this icon are available on the Pastoral plan'
-                : 'Los ítems con este ícono están disponibles en el plan Pastoral'}
-          </span>
+          <span>{t('dashboard.pastoral_hint')}</span>
         </div>
       )}
 

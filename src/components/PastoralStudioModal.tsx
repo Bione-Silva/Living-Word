@@ -315,7 +315,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground">
+      <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">{toolTitle}</DialogTitle>
           <DialogDescription>{text.subtitle}</DialogDescription>
@@ -445,7 +445,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
               <Button
                 type="button"
                 onClick={handleGenerate}
-                className="w-full gap-2"
+                className="w-full gap-2 min-h-[48px]"
                 disabled={loading || !formData.bible_passage.trim() || !formData.output_modes.length}
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
@@ -490,7 +490,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                         <p className="text-sm text-muted-foreground">{formData.bible_passage}</p>
                         {profile?.plan !== 'free' && (
                           <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                            ⚡ Alta Exegese
+                            ⚡ GPT-4o
                           </span>
                         )}
                       </div>

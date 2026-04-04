@@ -14,31 +14,15 @@ interface StudyFormProps {
 }
 
 const doctrineOptions = [
-  { value: 'evangelical_general', label: 'Evangélico Geral' },
-  { value: 'reformed', label: 'Reformada / Calvinista' },
-  { value: 'pentecostal', label: 'Pentecostal / Carismática' },
-  { value: 'baptist', label: 'Batista' },
-  { value: 'methodist', label: 'Metodista' },
-  { value: 'catholic', label: 'Católica' },
-  { value: 'lutheran', label: 'Luterana' },
-  { value: 'interdenominational', label: 'Interdenominacional' },
+  'evangelical_general', 'reformed', 'pentecostal', 'baptist',
+  'methodist', 'catholic', 'lutheran', 'interdenominational',
 ];
 
-const voiceOptions = [
-  { value: 'welcoming', label: 'Acolhedor' },
-  { value: 'prophetic', label: 'Profético' },
-  { value: 'didactic', label: 'Didático' },
-  { value: 'evangelistic', label: 'Evangelístico' },
-  { value: 'contemplative', label: 'Contemplativo' },
-];
+const voiceOptions = ['welcoming', 'prophetic', 'didactic', 'evangelistic', 'contemplative'];
 
 const bibleVersions = ['ARA', 'NVI', 'NAA', 'KJV', 'ESV', 'NKJV', 'NIV', 'ARC'];
 
-const depthOptions = [
-  { value: 'basic', label: 'Básico (grupos, células, iniciantes)' },
-  { value: 'intermediate', label: 'Intermediário (líderes, professores)' },
-  { value: 'advanced', label: 'Avançado (pastores, teólogos)' },
-];
+const depthOptions = ['basic', 'intermediate', 'advanced'];
 
 const languageOptions = [
   { value: 'PT', label: 'Português' },
@@ -47,7 +31,7 @@ const languageOptions = [
 ];
 
 export function StudyForm({ onSubmit, isLoading }: StudyFormProps) {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const [formData, setFormData] = useState<BiblicalStudyFormData>({
     bible_passage: '',
     theme: '',
@@ -77,60 +61,62 @@ export function StudyForm({ onSubmit, isLoading }: StudyFormProps) {
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-display flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-primary" />
-          Configurar Estudo
+          {t('study.configure')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="bible_passage">Passagem Bíblica *</Label>
+            <Label htmlFor="bible_passage">{t('study.passage')} *</Label>
             <Input
               id="bible_passage"
-              placeholder="Ex: João 3:16 ou Romanos 8:1-11"
+              placeholder={t('study.passage_placeholder')}
               value={formData.bible_passage}
               onChange={e => update('bible_passage', e.target.value)}
+              className="min-h-[48px]"
               required
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="theme">Tema ou Foco (opcional)</Label>
+            <Label htmlFor="theme">{t('study.theme')}</Label>
             <Input
               id="theme"
-              placeholder="Ex: graça, fé, cura, salvação"
+              placeholder={t('study.theme_placeholder')}
               value={formData.theme}
               onChange={e => update('theme', e.target.value)}
+              className="min-h-[48px]"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label>Linha Doutrinária</Label>
+            <Label>{t('study.doctrine')}</Label>
             <Select value={formData.doctrine_line} onValueChange={v => update('doctrine_line', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="min-h-[48px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {doctrineOptions.map(o => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  <SelectItem key={o} value={o}>{t(`study.doctrine.${o}`)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
-            <Label>Tom Pastoral</Label>
+            <Label>{t('study.voice')}</Label>
             <Select value={formData.pastoral_voice} onValueChange={v => update('pastoral_voice', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="min-h-[48px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {voiceOptions.map(o => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  <SelectItem key={o} value={o}>{t(`study.voice.${o}`)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
-            <Label>Versão Bíblica</Label>
+            <Label>{t('study.version')}</Label>
             <Select value={formData.bible_version} onValueChange={v => update('bible_version', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="min-h-[48px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {bibleVersions.map(v => (
                   <SelectItem key={v} value={v}>{v}</SelectItem>
@@ -140,21 +126,21 @@ export function StudyForm({ onSubmit, isLoading }: StudyFormProps) {
           </div>
 
           <div className="space-y-1.5">
-            <Label>Profundidade</Label>
+            <Label>{t('study.depth')}</Label>
             <Select value={formData.depth_level} onValueChange={v => update('depth_level', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="min-h-[48px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {depthOptions.map(o => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  <SelectItem key={o} value={o}>{t(`study.depth.${o}`)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
-            <Label>Idioma do Estudo</Label>
+            <Label>{t('study.language')}</Label>
             <Select value={formData.language} onValueChange={v => update('language', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="min-h-[48px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {languageOptions.map(o => (
                   <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
@@ -163,16 +149,16 @@ export function StudyForm({ onSubmit, isLoading }: StudyFormProps) {
             </Select>
           </div>
 
-          <Button type="submit" className="w-full gap-2" disabled={isLoading || !formData.bible_passage.trim()}>
+          <Button type="submit" className="w-full gap-2 min-h-[48px]" disabled={isLoading || !formData.bible_passage.trim()}>
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Gerando estudo teológico...
+                {t('study.generating')}
               </>
             ) : (
               <>
                 <BookOpen className="h-4 w-4" />
-                Gerar Estudo Bíblico
+                {t('study.generate')}
               </>
             )}
           </Button>
