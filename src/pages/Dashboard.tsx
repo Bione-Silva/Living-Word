@@ -55,6 +55,10 @@ export default function Dashboard() {
   const [showBanner, setShowBanner] = useState(true);
   const [activeSheet, setActiveSheet] = useState<{ id: string; title: string } | null>(null);
 
+  const copyLinkToast = lang === 'PT' ? 'Link copiado!' : lang === 'EN' ? 'Link copied!' : '¡Enlace copiado!';
+  const copyLabel = lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar';
+  const portalLabel = lang === 'PT' ? 'Acessar Portal' : lang === 'EN' ? 'Visit Portal' : 'Acceder al Portal';
+
   const handleToolClick = (tool: ToolCardData) => {
     if (tool.locked && isFree) return;
     if (tool.hasModal) {
@@ -69,25 +73,19 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 max-w-6xl">
-      {/* Welcome Header */}
       <div>
         <h1 className="font-display text-2xl md:text-3xl font-bold">
-          {lang === 'PT'
-            ? `Shalom, ${profile?.full_name?.split(' ')[0] || 'Pastor'}! 🕊️`
-            : lang === 'EN'
-            ? `Shalom, ${profile?.full_name?.split(' ')[0] || 'Pastor'}! 🕊️`
-            : `Shalom, ${profile?.full_name?.split(' ')[0] || 'Pastor'}! 🕊️`}
+          {`Shalom, ${profile?.full_name?.split(' ')[0] || 'Pastor'}! 🕊️`}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
           {lang === 'PT'
             ? 'Todas as suas ferramentas pastorais em um só lugar. Escolha e comece a criar.'
             : lang === 'EN'
-            ? 'All your pastoral tools in one place. Pick one and start creating.'
-            : 'Todas tus herramientas pastorales en un solo lugar. Elige y empieza a crear.'}
+              ? 'All your pastoral tools in one place. Pick one and start creating.'
+              : 'Todas tus herramientas pastorales en un solo lugar. Elige y empieza a crear.'}
         </p>
       </div>
 
-      {/* Upgrade Banner */}
       {showBanner && isFree && (
         <Card className="border-accent/30 bg-accent/5">
           <CardContent className="p-3.5 flex items-center justify-between gap-3">
@@ -111,7 +109,6 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Blog Portal */}
       {profile?.blog_handle && (
         <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 overflow-hidden">
           <CardContent className="p-5">
@@ -136,16 +133,16 @@ export default function Dashboard() {
                   className="gap-1.5 text-xs h-8"
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/blog/${profile.blog_handle}`);
-                    toast.success(lang === 'PT' ? 'Link copiado!' : 'Link copied!');
+                    toast.success(copyLinkToast);
                   }}
                 >
                   <Copy className="w-3 h-3" />
-                  {lang === 'PT' ? 'Copiar' : 'Copy'}
+                  {copyLabel}
                 </Button>
                 <Link to={`/blog/${profile.blog_handle}`} target="_blank">
                   <Button size="sm" className="gap-1.5 text-xs h-8">
                     <ExternalLink className="w-3 h-3" />
-                    {lang === 'PT' ? 'Acessar Portal' : lang === 'EN' ? 'Visit Portal' : 'Acceder al Portal'}
+                    {portalLabel}
                   </Button>
                 </Link>
               </div>
@@ -154,7 +151,6 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Grid 1: Research */}
       <section>
         <div className="flex items-center gap-2 mb-3">
           <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
@@ -169,7 +165,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Grid 2: Writing & Creation */}
       <section>
         <div className="flex items-center gap-2 mb-3">
           <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
@@ -184,7 +179,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Grid 3: Outreach */}
       <section>
         <div className="flex items-center gap-2 mb-3">
           <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
@@ -199,7 +193,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Grid 4: Fun & Dynamic */}
       <section>
         <div className="flex items-center gap-2 mb-3">
           <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
@@ -214,7 +207,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Legend */}
       {isFree && (
         <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
           <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center">
@@ -224,13 +216,12 @@ export default function Dashboard() {
             {lang === 'PT'
               ? 'Itens com este ícone estão disponíveis no plano Pastoral'
               : lang === 'EN'
-              ? 'Items with this icon are available on the Pastoral plan'
-              : 'Los ítems con este ícono están disponibles en el plan Pastoral'}
+                ? 'Items with this icon are available on the Pastoral plan'
+                : 'Los ítems con este ícono están disponibles en el plan Pastoral'}
           </span>
         </div>
       )}
 
-      {/* Tool Sheet */}
       {activeSheet && (
         <ToolSheet
           open={true}

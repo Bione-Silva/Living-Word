@@ -179,40 +179,15 @@ export default function AppLayout() {
               }`}
             >
               <Brain className="h-5 w-5" />
-              <span className="truncate">{lang === 'PT' ? 'Mentes' : 'Minds'}</span>
+              <span className="truncate">{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
             </Link>
-
-            <Link
-              to="/blog"
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                location.pathname === '/blog' ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <BookOpen className="h-5 w-5" />
-              <span className="truncate">{t('nav.blog')}</span>
-            </Link>
-
-            <Link
-              to="/configuracoes"
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                location.pathname === '/configuracoes' ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <Settings className="h-5 w-5" />
-              <span className="truncate">{t('nav.settings')}</span>
-            </Link>
-          </div>
-        </nav>
-
-        {/* Mobile Tools Bottom Sheet */}
-        <Sheet open={mobileToolsOpen} onOpenChange={setMobileToolsOpen}>
-          <SheetContent side="bottom" className="theme-app max-h-[80vh] overflow-y-auto rounded-t-2xl bg-background">
+...
             <SheetHeader className="pb-2">
               <SheetTitle className="font-display text-lg">
                 {lang === 'PT' ? '⚡ Ferramentas' : lang === 'EN' ? '⚡ Tools' : '⚡ Herramientas'}
               </SheetTitle>
               <SheetDescription className="sr-only">
-                {lang === 'PT' ? 'Selecione uma ferramenta' : 'Select a tool'}
+                {lang === 'PT' ? 'Selecione uma ferramenta' : lang === 'EN' ? 'Select a tool' : 'Selecciona una herramienta'}
               </SheetDescription>
             </SheetHeader>
 

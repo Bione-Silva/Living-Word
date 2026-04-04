@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -53,6 +53,22 @@ export default function Biblioteca() {
   const isFree = profile?.plan === 'free';
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  const searchPlaceholder = lang === 'PT'
+    ? 'Buscar por título, passagem...'
+    : lang === 'EN'
+      ? 'Search by title, passage...'
+      : 'Buscar por título, pasaje...';
+
+  const allLabel = lang === 'PT' ? 'Todos' : lang === 'EN' ? 'All' : 'Todos';
+  const deletedToast = lang === 'PT' ? 'Material excluído' : lang === 'EN' ? 'Material deleted' : 'Material eliminado';
+  const copiedToast = lang === 'PT' ? 'Copiado!' : lang === 'EN' ? 'Copied!' : '¡Copiado!';
+  const emptyLabel = lang === 'PT' ? 'Nenhum material encontrado' : lang === 'EN' ? 'No materials found' : 'No se encontraron materiales';
+  const archivedLabel = lang === 'PT'
+    ? 'Arquivado — desbloqueie no Pastoral'
+    : lang === 'EN'
+      ? 'Archived — unlock on Pastoral'
+      : 'Archivado — desbloquéalo en Pastoral';
+
   const {
     data,
     isLoading,
@@ -94,7 +110,6 @@ export default function Biblioteca() {
 
   const allItems = data?.pages.flatMap((p) => p.items) || [];
 
-  // Infinite scroll observer
   useEffect(() => {
     if (!sentinelRef.current || !hasNextPage) return;
     const observer = new IntersectionObserver(
@@ -116,7 +131,7 @@ export default function Biblioteca() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['materials'] });
-      toast.success(lang === 'PT' ? 'Material excluído' : 'Material deleted');
+      toast.success(deletedToast);
     },
   });
 
@@ -130,7 +145,7 @@ export default function Biblioteca() {
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(lang === 'PT' ? 'Copiado!' : 'Copied!');
+    toast.success(copiedToast);
   };
 
   return (
@@ -145,7 +160,7 @@ export default function Biblioteca() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={lang === 'PT' ? 'Buscar por título, passagem...' : 'Search by title, passage...'}
+            placeholder={searchPlaceholder}
             className="pl-10"
           />
         </div>
@@ -155,7 +170,7 @@ export default function Biblioteca() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="max-h-60">
-            <SelectItem value="all">{lang === 'PT' ? 'Todos' : 'All'}</SelectItem>
+            <SelectItem value="all">{allLabel}</SelectItem>
             {Object.entries(typeLabels).map(([key, val]) => (
               <SelectItem key={key} value={key}>{val[lang]}</SelectItem>
             ))}
@@ -180,7 +195,7 @@ export default function Biblioteca() {
       ) : allItems.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">{lang === 'PT' ? 'Nenhum material encontrado' : 'No materials found'}</p>
+          <p className="text-sm">{emptyLabel}</p>
         </div>
       ) : (
         <div className="grid gap-3">
@@ -195,7 +210,7 @@ export default function Biblioteca() {
                   <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
                     <div className="text-center">
                       <Lock className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm font-medium">{lang === 'PT' ? 'Arquivado — desbloqueie no Pastoral' : 'Archived — unlock on Pastoral'}</p>
+                      <p className="text-sm font-medium">{archivedLabel}</p>
                       <Button size="sm" className="mt-2 gap-1 bg-primary text-primary-foreground" asChild>
                         <a href="/upgrade"><Crown className="h-3 w-3" /> {t('upgrade.cta')}</a>
                       </Button>
@@ -233,7 +248,6 @@ export default function Biblioteca() {
             );
           })}
 
-          {/* Infinite scroll sentinel */}
           <div ref={sentinelRef} className="py-4 flex justify-center">
             {isFetchingNextPage && (
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />

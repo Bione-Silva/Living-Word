@@ -57,9 +57,36 @@ export default function Calendario() {
     Array.from({ length: daysInMonth }, (_, i) => i + 1)
   );
 
-  // Fetch editorial queue for this month
-  const startOfMonth = new Date(year, month, 1).toISOString();
-  const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+  const statusPublished = lang === 'PT' ? 'Publicado' : lang === 'EN' ? 'Published' : 'Publicado';
+  const statusScheduled = lang === 'PT' ? 'Agendado' : lang === 'EN' ? 'Scheduled' : 'Programado';
+  const scheduledToast = lang === 'PT' ? 'Conteúdo agendado!' : lang === 'EN' ? 'Content scheduled!' : '¡Contenido programado!';
+  const tooltipText = lang === 'PT'
+    ? 'Agendar disponível no Pastoral'
+    : lang === 'EN'
+      ? 'Scheduling available on Pastoral'
+      : 'La programación está disponible en Pastoral';
+  const editorialScheduling = lang === 'PT'
+    ? 'Agendamento editorial'
+    : lang === 'EN'
+      ? 'Editorial scheduling'
+      : 'Programación editorial';
+  const planAvailability = lang === 'PT'
+    ? 'Disponível no plano Pastoral'
+    : lang === 'EN'
+      ? 'Available on the Pastoral plan'
+      : 'Disponible en el plan Pastoral';
+  const schedulePublication = lang === 'PT'
+    ? 'Agendar publicação'
+    : lang === 'EN'
+      ? 'Schedule publication'
+      : 'Programar publicación';
+  const selectMaterial = lang === 'PT'
+    ? 'Selecione um material...'
+    : lang === 'EN'
+      ? 'Select a material...'
+      : 'Selecciona un material...';
+  const scheduleLabel = lang === 'PT' ? 'Agendar' : lang === 'EN' ? 'Schedule' : 'Programar';
+  const untitledLabel = lang === 'PT' ? 'Sem título' : lang === 'EN' ? 'Untitled' : 'Sin título';
 
   const { data: queueItems = [] } = useQuery({
     queryKey: ['editorial-queue', user?.id, year, month],
@@ -76,7 +103,6 @@ export default function Calendario() {
     enabled: !!user,
   });
 
-  // Fetch unscheduled materials for scheduling
   const { data: unscheduledMaterials = [] } = useQuery({
     queryKey: ['unscheduled-materials', user?.id],
     queryFn: async () => {
@@ -93,7 +119,6 @@ export default function Calendario() {
     enabled: !!user && !isFree,
   });
 
-  // Map items to calendar days
   const dayItems = useMemo(() => {
     const map: Record<number, QueueItem[]> = {};
     queueItems.forEach((item) => {
@@ -124,7 +149,7 @@ export default function Calendario() {
       queryClient.invalidateQueries({ queryKey: ['editorial-queue'] });
       setScheduleModal(null);
       setSelectedMaterial('');
-      toast.success(lang === 'PT' ? 'Conteúdo agendado!' : 'Content scheduled!');
+      toast.success(scheduledToast);
     },
     onError: (err: any) => toast.error(err.message),
   });
@@ -157,11 +182,11 @@ export default function Calendario() {
           <div className="flex gap-2">
             <Badge variant="outline" className="gap-1 text-xs">
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
-              {lang === 'PT' ? 'Publicado' : 'Published'}
+              {statusPublished}
             </Badge>
             <Badge variant="outline" className="gap-1 text-xs">
               <div className="w-2 h-2 rounded-full bg-blue-500" />
-              {lang === 'PT' ? 'Agendado' : 'Scheduled'}
+              {statusScheduled}
             </Badge>
           </div>
         </div>
@@ -216,7 +241,7 @@ export default function Calendario() {
                               className={`flex items-center gap-1 text-[10px] rounded px-1 py-0.5 text-white ${statusColor(item.status)}`}
                             >
                               {statusIcon(item.status)}
-                              <span className="truncate">{item.materials?.title?.substring(0, 15) || 'Untitled'}</span>
+                              <span className="truncate">{item.materials?.title?.substring(0, 15) || untitledLabel}</span>
                             </div>
                           ))}
                           {items.length > 2 && (
@@ -229,7 +254,7 @@ export default function Calendario() {
                       <TooltipContent>
                         <p className="text-xs flex items-center gap-1">
                           <Lock className="h-3 w-3" />
-                          {lang === 'PT' ? 'Agendar disponível no Pastoral' : 'Scheduling available on Pastoral'}
+                          {tooltipText}
                         </p>
                       </TooltipContent>
                     )}
@@ -244,12 +269,8 @@ export default function Calendario() {
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-5 text-center">
               <Lock className="h-6 w-6 text-primary mx-auto mb-2" />
-              <p className="text-sm font-medium">
-                {lang === 'PT' ? 'Agendamento editorial' : 'Editorial scheduling'}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1 mb-3">
-                {lang === 'PT' ? 'Disponível no plano Pastoral' : 'Available on the Pastoral plan'}
-              </p>
+              <p className="text-sm font-medium">{editorialScheduling}</p>
+              <p className="text-xs text-muted-foreground mt-1 mb-3">{planAvailability}</p>
               <Button size="sm" className="bg-primary text-primary-foreground gap-1" asChild>
                 <a href="/upgrade"><Crown className="h-3 w-3" /> {t('upgrade.cta')}</a>
               </Button>
@@ -257,19 +278,18 @@ export default function Calendario() {
           </Card>
         )}
 
-        {/* Schedule Modal */}
         <Dialog open={!!scheduleModal} onOpenChange={(open) => !open && setScheduleModal(null)}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle className="font-display flex items-center gap-2">
                 <CalendarPlus className="h-5 w-5" />
-                {lang === 'PT' ? 'Agendar publicação' : 'Schedule publication'} — {scheduleModal?.day}/{month + 1}
+                {schedulePublication} — {scheduleModal?.day}/{month + 1}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
                 <SelectTrigger>
-                  <SelectValue placeholder={lang === 'PT' ? 'Selecione um material...' : 'Select a material...'} />
+                  <SelectValue placeholder={selectMaterial} />
                 </SelectTrigger>
                 <SelectContent>
                   {unscheduledMaterials.map((m: any) => (
@@ -291,7 +311,7 @@ export default function Calendario() {
                   }
                 }}
               >
-                {lang === 'PT' ? 'Agendar' : 'Schedule'}
+                {scheduleLabel}
               </Button>
             </div>
           </DialogContent>

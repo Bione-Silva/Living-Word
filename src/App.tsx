@@ -51,14 +51,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function SyncLanguageWithProfile() {
   const { profile } = useAuth();
-  const { lang, setLang } = useLanguage();
+  const { setLang } = useLanguage();
 
   React.useEffect(() => {
     const profileLang = profile?.language as "PT" | "EN" | "ES" | undefined;
-    if (profileLang && profileLang !== lang) {
+    if (profileLang) {
       setLang(profileLang);
     }
-  }, [profile?.language, lang, setLang]);
+  }, [profile?.language, setLang]);
 
   return null;
 }

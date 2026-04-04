@@ -93,6 +93,15 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
   const langLabel = lang === 'PT' ? 'Portuguese (Brazilian)' : lang === 'EN' ? 'English' : 'Spanish';
 
+  const copyLabel = lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar';
+  const saveLabel = lang === 'PT' ? 'Salvar' : lang === 'EN' ? 'Save' : 'Guardar';
+  const publishLabel = lang === 'PT' ? 'Publicar' : lang === 'EN' ? 'Publish' : 'Publicar';
+  const generateLabel = lang === 'PT' ? 'Gerar' : lang === 'EN' ? 'Generate' : 'Generar';
+  const copiedToast = lang === 'PT' ? 'Copiado!' : lang === 'EN' ? 'Copied!' : '¡Copiado!';
+  const savedToast = lang === 'PT' ? 'Salvo na Biblioteca!' : lang === 'EN' ? 'Saved to Library!' : '¡Guardado en la Biblioteca!';
+  const publishedToast = lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!';
+  const generateError = lang === 'PT' ? 'Erro ao gerar conteúdo' : lang === 'EN' ? 'Error generating content' : 'Error al generar contenido';
+
   const handleGenerate = async () => {
     if (!input.trim()) return;
     setLoading(true);
@@ -109,7 +118,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
       setResult(data?.content || 'No response');
       setHistoricalSources(data?.historical_sources_used || null);
     } catch (err: any) {
-      toast.error(err.message || 'Error generating content');
+      toast.error(err.message || generateError);
     } finally {
       setLoading(false);
     }
@@ -117,7 +126,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
   const handleCopy = () => {
     navigator.clipboard.writeText(result);
-    toast.success(lang === 'PT' ? 'Copiado!' : 'Copied!');
+    toast.success(copiedToast);
   };
 
   const handleSave = async () => {
@@ -132,7 +141,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
         language: lang,
       });
       if (error) throw error;
-      toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : 'Saved to Library!');
+      toast.success(savedToast);
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -163,7 +172,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
         status: 'published',
         published_at: new Date().toISOString(),
       });
-      toast.success(lang === 'PT' ? 'Publicado no blog!' : 'Published to blog!');
+      toast.success(publishedToast);
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -204,7 +213,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
             className="w-full gap-2 bg-primary text-primary-foreground"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-            {lang === 'PT' ? 'Gerar' : lang === 'EN' ? 'Generate' : 'Generar'}
+            {generateLabel}
           </Button>
 
           {result && (
@@ -215,13 +224,13 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
               </div>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
-                  <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : 'Copy'}
+                  <Copy className="h-3 w-3" /> {copyLabel}
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleSave} disabled={saving}>
-                  <Save className="h-3 w-3" /> {lang === 'PT' ? 'Salvar' : 'Save'}
+                  <Save className="h-3 w-3" /> {saveLabel}
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handlePublish} disabled={saving}>
-                  <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : 'Publish'}
+                  <BookOpen className="h-3 w-3" /> {publishLabel}
                 </Button>
               </div>
             </div>
