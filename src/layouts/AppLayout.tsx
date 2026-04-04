@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { HelpArticleModal } from '@/components/HelpArticleModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GenerationCounter } from '@/components/GenerationCounter';
 import { LanguageToggle } from '@/components/LanguageToggle';
