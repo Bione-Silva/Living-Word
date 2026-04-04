@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, BookOpen, Calendar, Share2, Copy, MessageCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, Calendar, Share2, Copy, MessageCircle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -40,6 +40,12 @@ export default function BlogArticle() {
 
   const isFree = profile?.plan === 'free';
   const articleUrl = window.location.href;
+  const coverUrl = (article as any)?.cover_image_url;
+
+  const estimateReadTime = (content: string) => {
+    const words = content?.split(/\s+/).length || 0;
+    return Math.max(1, Math.ceil(words / 200));
+  };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(articleUrl);
@@ -56,7 +62,7 @@ export default function BlogArticle() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F5F0E8] flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6B4F3A]" />
       </div>
     );
@@ -64,7 +70,7 @@ export default function BlogArticle() {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-[#F5F0E8] flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-[#3D2B1F]">Artigo não encontrado</h1>
           <Link to={`/blog/${handle}`}>
@@ -76,15 +82,15 @@ export default function BlogArticle() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F0E8]">
+    <div className="min-h-screen bg-[#FAFAF8]">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur border-b border-[#E8DDD0] sticky top-0 z-10">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to={`/blog/${handle}`} className="flex items-center gap-2 text-sm text-[#6B4F3A] hover:text-[#3D2B1F]">
             <ArrowLeft className="w-4 h-4" />
             {profile?.full_name || 'Blog'}
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={handleCopyLink} title="Copiar link">
               <Copy className="w-4 h-4" />
             </Button>
@@ -98,16 +104,31 @@ export default function BlogArticle() {
         </div>
       </header>
 
+      {/* Cover Image */}
+      {coverUrl && (
+        <div className="w-full h-64 md:h-80 overflow-hidden">
+          <img
+            src={coverUrl}
+            alt={article.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
       {/* Article */}
       <article className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#3D2B1F] mb-4 leading-tight">
           {article.title}
         </h1>
 
-        <div className="flex items-center gap-4 text-sm text-[#6B4F3A] mb-8 pb-6 border-b border-[#E8DDD0]">
+        <div className="flex items-center gap-4 text-sm text-[#6B4F3A] mb-8 pb-6 border-b border-gray-100">
           <span className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
             {new Date(article.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="w-4 h-4" />
+            {estimateReadTime(article.content)} min de leitura
           </span>
           {article.passage && (
             <span className="flex items-center gap-1">
@@ -127,16 +148,16 @@ export default function BlogArticle() {
         </div>
 
         {/* Share footer */}
-        <div className="mt-12 pt-6 border-t border-[#E8DDD0] flex flex-col items-center gap-4">
+        <div className="mt-12 pt-6 border-t border-gray-100 flex flex-col items-center gap-4">
           <p className="text-sm text-[#6B4F3A]">Compartilhe esta mensagem</p>
           <div className="flex gap-3">
-            <Button variant="outline" size="sm" onClick={handleShareWhatsApp} className="border-[#E8DDD0]">
+            <Button variant="outline" size="sm" onClick={handleShareWhatsApp} className="border-gray-200">
               <MessageCircle className="w-4 h-4 mr-2" /> WhatsApp
             </Button>
-            <Button variant="outline" size="sm" onClick={handleShareX} className="border-[#E8DDD0]">
+            <Button variant="outline" size="sm" onClick={handleShareX} className="border-gray-200">
               <Share2 className="w-4 h-4 mr-2" /> X / Twitter
             </Button>
-            <Button variant="outline" size="sm" onClick={handleCopyLink} className="border-[#E8DDD0]">
+            <Button variant="outline" size="sm" onClick={handleCopyLink} className="border-gray-200">
               <Copy className="w-4 h-4 mr-2" /> Copiar Link
             </Button>
           </div>
