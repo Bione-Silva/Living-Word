@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { minds } from '@/data/minds';
-import { Brain, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Brain, ToggleLeft, ToggleRight, AlertTriangle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 interface MindSetting {
   mind_id: string;
   active: boolean;
+  updated_at?: string;
+}
+
+interface InactiveAlert {
+  count: number;
+  minds: { id: string; since: string }[];
+  checked_at: string;
 }
 
 export function MindToggleSection() {
