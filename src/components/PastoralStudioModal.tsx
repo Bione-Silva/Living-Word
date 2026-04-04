@@ -509,6 +509,12 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                       </TabsContent>
                     ))}
                   </Tabs>
+
+                  <MaterialFeedback
+                    materialType={`pastoral-${activeTab}`}
+                    materialTitle={`${outputLabels[activeTab][lang]} — ${formData.bible_passage}`}
+                    toolId="pastoral-studio"
+                  />
                 </CardContent>
               </Card>
             )}
