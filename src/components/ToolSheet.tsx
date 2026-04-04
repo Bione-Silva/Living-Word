@@ -430,16 +430,16 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
-                  <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : 'Copy'}
+                  <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleSave} disabled={saving}>
-                  <Save className="h-3 w-3" /> {lang === 'PT' ? 'Salvar' : 'Save'}
+                  <Save className="h-3 w-3" /> {lang === 'PT' ? 'Salvar' : lang === 'EN' ? 'Save' : 'Guardar'}
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handlePublish} disabled={saving}>
-                  <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : 'Publish'}
+                  <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : lang === 'EN' ? 'Publish' : 'Publicar'}
                 </Button>
                 <Button size="sm" variant="ghost" className="gap-1 ml-auto" onClick={resetForm}>
-                  <RefreshCw className="h-3 w-3" /> {lang === 'PT' ? 'Novo' : 'New'}
+                  <RefreshCw className="h-3 w-3" /> {lang === 'PT' ? 'Novo' : lang === 'EN' ? 'New' : 'Nuevo'}
                 </Button>
               </div>
             </div>
