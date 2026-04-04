@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
+import { MaterialFeedback } from '@/components/MaterialFeedback';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Language } from '@/lib/i18n';
 import { PastoralStudioModal } from '@/components/PastoralStudioModal';
