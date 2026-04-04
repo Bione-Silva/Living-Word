@@ -97,7 +97,7 @@ export default function BlogPublic() {
   }
 
   return (
-    <div className="min-h-screen bg-[hsl(40,30%,96%)]">
+    <div className="min-h-screen bg-background theme-app">
       {/* Top Navigation */}
       <header className="bg-[hsl(40,30%,96%)] border-b border-border/30 sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
