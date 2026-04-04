@@ -5,9 +5,10 @@ import { MindCard } from '@/components/MindCard';
 import { MindDetailSheet } from '@/components/MindDetailSheet';
 import { minds, type MindFullData } from '@/data/minds';
 import { Brain, Sparkles, Lock, Crown, Database, Cpu } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -30,6 +31,22 @@ export default function MentesBrilhantes() {
   const isFree = profile?.plan === 'free';
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedMind, setSelectedMind] = useState<MindFullData | null>(null);
+  const [activeMinds, setActiveMinds] = useState<string[]>([]);
+  const [loadingMinds, setLoadingMinds] = useState(true);
+
+  useEffect(() => {
+    const loadActiveMinds = async () => {
+      const { data } = await supabase
+        .from('mind_settings')
+        .select('mind_id')
+        .eq('active', true);
+      if (data) setActiveMinds(data.map((d: any) => d.mind_id));
+      setLoadingMinds(false);
+    };
+    loadActiveMinds();
+  }, []);
+
+  const visibleMinds = minds.filter(m => activeMinds.includes(m.id));
 
   const handleMindClick = (mind: MindFullData) => {
     if (mind.locked && isFree) {
@@ -85,7 +102,7 @@ export default function MentesBrilhantes() {
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4 text-emerald-500" />
               <div>
-                <p className="text-lg font-bold text-emerald-600 font-mono">{minds.length}</p>
+                <p className="text-lg font-bold text-emerald-600 font-mono">{visibleMinds.length}</p>
                 <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Active Agents' : 'Agentes Ativos'}</p>
               </div>
             </div>
@@ -95,7 +112,11 @@ export default function MentesBrilhantes() {
 
       {/* ── Minds Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {minds.map((mind, index) => (
+        {loadingMinds ? (
+          <p className="col-span-full text-center text-muted-foreground py-8">Carregando mentes...</p>
+        ) : visibleMinds.length === 0 ? (
+          <p className="col-span-full text-center text-muted-foreground py-8">Nenhuma mente disponível no momento.</p>
+        ) : visibleMinds.map((mind, index) => (
           <MindCard
             key={mind.id}
             mind={mind}
