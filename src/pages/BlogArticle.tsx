@@ -135,17 +135,7 @@ export default function BlogArticle() {
         </div>
 
         <div
-          className="prose prose-lg max-w-none prose-headings:font-serif"
-          style={{
-            '--tw-prose-body': '#4A3728',
-            '--tw-prose-headings': '#3D2B1F',
-            '--tw-prose-bold': '#3D2B1F',
-            '--tw-prose-links': '#6B4F3A',
-            '--tw-prose-quotes': '#5A4738',
-            '--tw-prose-quote-borders': '#C4956A',
-            '--tw-prose-counters': '#6B4F3A',
-            '--tw-prose-bullets': '#6B4F3A',
-          } as React.CSSProperties}
+          className="prose prose-lg max-w-none prose-headings:font-serif [&]:text-[#4A3728] [&_h1]:text-[#3D2B1F] [&_h2]:text-[#3D2B1F] [&_h3]:text-[#3D2B1F] [&_h4]:text-[#3D2B1F] [&_p]:text-[#4A3728] [&_li]:text-[#4A3728] [&_strong]:text-[#3D2B1F] [&_em]:text-[#4A3728] [&_a]:text-[#6B4F3A] [&_blockquote]:text-[#5A4738] [&_blockquote]:border-l-[#C4956A] [&_blockquote]:bg-white/50 [&_blockquote]:py-2 [&_blockquote]:px-4 [&_blockquote]:rounded-r-lg"
         >
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
         </div>
