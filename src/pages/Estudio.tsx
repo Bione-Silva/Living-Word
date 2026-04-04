@@ -157,6 +157,14 @@ export default function Estudio() {
           toolTitle={activeTool.title[lang]}
         />
       )}
+
+      {helpToolId && (
+        <HelpArticleModal
+          open={!!helpToolId}
+          onOpenChange={(open) => !open && setHelpToolId(null)}
+          toolId={helpToolId}
+        />
+      )}
     </div>
   );
 }
