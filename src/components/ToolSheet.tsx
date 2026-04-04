@@ -160,6 +160,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [saving, setSaving] = useState(false);
   const [convertingToBlog, setConvertingToBlog] = useState(false);
   const [showBlogPrompt, setShowBlogPrompt] = useState(false);
+  const [generationLang, setGenerationLang] = useState<Language>(lang);
 
   const config = toolConfigs[toolId] || {
     inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },
