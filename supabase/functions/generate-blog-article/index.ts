@@ -133,16 +133,16 @@ Style: ${voice} tone, ${doctrine} tradition.
 Output a complete devotional blog article in Markdown format with:
 - A compelling title (H1)
 - Opening reflection (2-3 paragraphs)
-- Bible passage reference and commentary
+- Bible passage reference and commentary with historical and cultural context
 - Practical application for daily life
-- Closing prayer
-Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
+- Closing prayer or reflection
+The article MUST have between 400 and 700 words. Structure it like a well-organized sermon with scannable sections (use H2/H3 headings). Be warm, theologically sound, and accessible.`;
 
     const userPrompt = inputTitle
       ? `Write a devotional article about "${passage}" with the title "${inputTitle}".`
       : `Write a devotional article based on the passage: ${passage}.`;
 
-    // Generate article content
+    // Generate article content using GPT-5 for superior writing quality
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -150,7 +150,7 @@ Keep it between 400-600 words. Be warm, theologically sound, and accessible.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "openai/gpt-5",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
