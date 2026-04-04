@@ -242,7 +242,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           title: `${toolTitle} — ${input.substring(0, 50)}`,
           type: 'blog_article',
           content: result,
-          language: lang,
+          language: generationLang,
         })
         .select('id')
         .single();
