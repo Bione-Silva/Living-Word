@@ -100,9 +100,11 @@ const plans: PlanData[] = [
 export default function Upgrade() {
   const { lang } = useLanguage();
   const { profile } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentPlan = profile?.plan || 'free';
   const [extraSeats, setExtraSeats] = useState(0);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const autoCheckoutFired = useRef(false);
 
   const churchTotal = useMemo(() => {
     const base = pricing.plans.church.amount;
