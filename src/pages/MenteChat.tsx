@@ -364,7 +364,7 @@ export default function MenteChat() {
                   <button
                     onClick={() => handleCopy(msg.content)}
                     className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-                    title={lang === 'PT' ? 'Copiar texto' : 'Copy text'}
+                    title={lang === 'PT' ? 'Copiar texto' : lang === 'EN' ? 'Copy text' : 'Copiar texto'}
                   >
                     <Copy className="h-3.5 w-3.5" />
                   </button>
@@ -375,7 +375,7 @@ export default function MenteChat() {
                         ? 'text-emerald-500 bg-emerald-500/10'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
                     }`}
-                    title={lang === 'PT' ? 'Gostei' : 'Like'}
+                    title={lang === 'PT' ? 'Gostei' : lang === 'EN' ? 'Like' : 'Me gustó'}
                   >
                     <ThumbsUp className="h-3.5 w-3.5" />
                   </button>
@@ -386,7 +386,7 @@ export default function MenteChat() {
                         ? 'text-red-400 bg-red-400/10'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
                     }`}
-                    title={lang === 'PT' ? 'Não gostei' : 'Dislike'}
+                    title={lang === 'PT' ? 'Não gostei' : lang === 'EN' ? 'Dislike' : 'No me gustó'}
                   >
                     <ThumbsDown className="h-3.5 w-3.5" />
                   </button>
@@ -395,33 +395,7 @@ export default function MenteChat() {
             </div>
           </div>
         ))}
-        {isLoading && messages[messages.length - 1]?.role === 'user' && (
-          <div className="flex justify-start">
-            <div className="bg-muted/40 border border-border/40 rounded-2xl rounded-bl-md px-5 py-4">
-              <Loader2 className="h-4 w-4 animate-spin text-[hsl(43,55%,58%)]" />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Text selection "Improve with AI" popup */}
-      {selectionPopup && (
-        <div
-          ref={popupRef}
-          className="fixed z-50 animate-in fade-in zoom-in-95 duration-150"
-          style={{
-            left: `${selectionPopup.x}px`,
-            top: `${selectionPopup.y}px`,
-            transform: 'translate(-50%, -100%)',
-          }}
-        >
-          <div className="flex items-center gap-1 bg-foreground text-background rounded-lg shadow-xl px-2 py-1.5">
-            <button
-              onClick={handleImproveSelection}
-              disabled={improving}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium hover:bg-background/10 transition-colors disabled:opacity-50"
-            >
-              {improving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+...
               {lang === 'PT' ? 'Melhorar com IA' : lang === 'EN' ? 'Improve with AI' : 'Mejorar con IA'}
             </button>
             <button
