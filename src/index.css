@@ -58,8 +58,9 @@
     --sidebar-ring: 28 42% 42%;
   }
 
-  /* Warm parchment theme for authenticated app */
-  .theme-app {
+  /* Warm parchment theme for authenticated app + public blog */
+  .theme-app,
+  .theme-blog {
     --background: 36 30% 95%;
     --foreground: 24 30% 15%;
 
@@ -87,6 +88,11 @@
     --border: 30 15% 85%;
     --input: 30 15% 85%;
     --ring: 28 42% 42%;
+
+    --blog-heading: 24 30% 15%;
+    --blog-body: 24 22% 24%;
+    --blog-meta: 24 18% 40%;
+    --blog-quote: 24 18% 32%;
 
     /* Sidebar: warm beige, slightly distinct from main bg */
     --sidebar-background: 33 25% 92%;
