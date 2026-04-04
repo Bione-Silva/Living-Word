@@ -69,7 +69,7 @@ export default function Configuracoes() {
                 <Label>{t('auth.email')}</Label>
                 <Input disabled value="email@example.com" />
               </div>
-              <Button className="bg-primary text-primary-foreground">Salvar</Button>
+              <Button className="bg-primary text-primary-foreground">{t('settings.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -91,7 +91,7 @@ export default function Configuracoes() {
                   <Input placeholder="https://seu-site.com" />
                 </div>
               )}
-              <Button className="bg-primary text-primary-foreground">Salvar</Button>
+              <Button className="bg-primary text-primary-foreground">{t('settings.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -103,7 +103,7 @@ export default function Configuracoes() {
               <div className="flex items-center gap-3">
                 <Badge variant="secondary" className="capitalize text-sm px-3 py-1">{profile?.plan || 'free'}</Badge>
                 <span className="text-sm text-muted-foreground">
-                  {profile?.generations_used || 0}/{profile?.generations_limit || 5} gerações usadas
+                  {profile?.generations_used || 0}/{profile?.generations_limit || 5} {t('settings.generations_used')}
                 </span>
               </div>
               {isFree && (
@@ -124,7 +124,7 @@ export default function Configuracoes() {
             <CardHeader><CardTitle className="font-display">{t('settings.doctrine')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Doutrina / Tradição</Label>
+                <Label>{t('settings.doctrine_label')}</Label>
                 <Select defaultValue="Interdenominacional">
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -134,7 +134,7 @@ export default function Configuracoes() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button className="bg-primary text-primary-foreground">Salvar</Button>
+              <Button className="bg-primary text-primary-foreground">{t('settings.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -162,7 +162,7 @@ export default function Configuracoes() {
           <Card>
             <CardHeader><CardTitle className="font-display">{t('settings.account')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <Button variant="destructive">Excluir conta</Button>
+              <Button variant="destructive">{t('settings.delete_account')}</Button>
             </CardContent>
           </Card>
         </TabsContent>

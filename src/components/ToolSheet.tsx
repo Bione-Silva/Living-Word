@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -14,9 +14,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library } from 'lucide-react';
+import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { Language } from '@/lib/i18n';
 
 interface ToolSheetProps {
   open: boolean;
@@ -158,6 +160,12 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [saving, setSaving] = useState(false);
   const [convertingToBlog, setConvertingToBlog] = useState(false);
   const [showBlogPrompt, setShowBlogPrompt] = useState(false);
+  const [generationLang, setGenerationLang] = useState<Language>(lang);
+
+  // Sync generation language when platform language changes
+  useEffect(() => {
+    setGenerationLang(lang);
+  }, [lang]);
 
   const config = toolConfigs[toolId] || {
     inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },
@@ -165,7 +173,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     systemPrompt: (lang: string) => `You are a helpful pastoral assistant. Given the user's input, generate useful, well-structured content for a Christian leader. Be creative, theologically sound, and practical. Write in ${lang}. Format with Markdown.`,
   };
 
-  const langLabel = lang === 'PT' ? 'Portuguese (Brazilian)' : lang === 'EN' ? 'English' : 'Spanish';
+  const genLangLabel = generationLang === 'PT' ? 'Portuguese (Brazilian)' : generationLang === 'EN' ? 'English' : 'Spanish';
 
   const isArticleTool = toolId === 'free-article' || toolId === 'youtube-blog';
 
@@ -174,6 +182,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setInput('');
     setShowBlogPrompt(false);
     setHistoricalSources(null);
+    setGenerationLang(lang);
   };
 
   const handleGenerate = async () => {
@@ -185,7 +194,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
-          systemPrompt: config.systemPrompt(langLabel),
+          systemPrompt: config.systemPrompt(genLangLabel),
           userPrompt: input,
         },
       });
@@ -204,7 +213,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   const handleCopy = () => {
     navigator.clipboard.writeText(result);
-    toast.success(lang === 'PT' ? 'Copiado!' : 'Copied!');
+    toast.success(lang === 'PT' ? 'Copiado!' : lang === 'EN' ? 'Copied!' : '¡Copiado!');
   };
 
   const handleSave = async () => {
@@ -216,10 +225,10 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         title: `${toolTitle} — ${input.substring(0, 50)}`,
         type: toolId,
         content: result,
-        language: lang,
+        language: generationLang,
       });
       if (error) throw error;
-      toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : 'Saved to Library!');
+      toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : lang === 'EN' ? 'Saved to Library!' : '¡Guardado en Biblioteca!');
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -238,7 +247,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           title: `${toolTitle} — ${input.substring(0, 50)}`,
           type: 'blog_article',
           content: result,
-          language: lang,
+          language: generationLang,
         })
         .select('id')
         .single();
@@ -250,7 +259,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         status: 'published',
         published_at: new Date().toISOString(),
       });
-      toast.success(lang === 'PT' ? 'Publicado no blog!' : 'Published to blog!');
+      toast.success(lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!');
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -266,7 +275,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       const { data, error } = await supabase.functions.invoke('generate-blog-article', {
         body: {
           passage: input,
-          language: lang,
+          language: generationLang,
           title: `${toolTitle} — ${input.substring(0, 50)}`,
         },
       });
@@ -325,6 +334,24 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
             )}
           </div>
 
+          {/* Generation language selector */}
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Label className="text-sm text-muted-foreground shrink-0">
+              {lang === 'PT' ? 'Gerar em:' : lang === 'EN' ? 'Generate in:' : 'Generar en:'}
+            </Label>
+            <Select value={generationLang} onValueChange={(v) => setGenerationLang(v as Language)}>
+              <SelectTrigger className="w-[160px] h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PT">Português</SelectItem>
+                <SelectItem value="EN">English</SelectItem>
+                <SelectItem value="ES">Español</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button
             onClick={handleGenerate}
             disabled={loading || !input.trim()}
@@ -381,8 +408,8 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                     >
                       {convertingToBlog ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
                       {convertingToBlog
-                        ? (lang === 'PT' ? 'Gerando...' : 'Generating...')
-                        : (lang === 'PT' ? 'Sim, gerar artigo com ilustrações!' : 'Yes, generate with illustrations!')}
+                        ? (lang === 'PT' ? 'Gerando...' : lang === 'EN' ? 'Generating...' : 'Generando...')
+                        : (lang === 'PT' ? 'Sim, gerar artigo com ilustrações!' : lang === 'EN' ? 'Yes, generate with illustrations!' : '¡Sí, generar con ilustraciones!')}
                     </Button>
                     <Button
                       size="sm"
@@ -392,7 +419,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                       disabled={loading}
                     >
                       <RefreshCw className="h-3 w-3" />
-                      {lang === 'PT' ? 'Melhorar' : 'Improve'}
+                      {lang === 'PT' ? 'Melhorar' : lang === 'EN' ? 'Improve' : 'Mejorar'}
                     </Button>
                     <Button
                       size="sm"
@@ -400,7 +427,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                       className="gap-1"
                       onClick={() => setShowBlogPrompt(false)}
                     >
-                      {lang === 'PT' ? 'Não, obrigado' : 'No, thanks'}
+                      {lang === 'PT' ? 'Não, obrigado' : lang === 'EN' ? 'No, thanks' : 'No, gracias'}
                     </Button>
                   </div>
                 </div>
@@ -408,16 +435,16 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
-                  <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : 'Copy'}
+                  <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleSave} disabled={saving}>
-                  <Save className="h-3 w-3" /> {lang === 'PT' ? 'Salvar' : 'Save'}
+                  <Save className="h-3 w-3" /> {lang === 'PT' ? 'Salvar' : lang === 'EN' ? 'Save' : 'Guardar'}
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handlePublish} disabled={saving}>
-                  <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : 'Publish'}
+                  <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : lang === 'EN' ? 'Publish' : 'Publicar'}
                 </Button>
                 <Button size="sm" variant="ghost" className="gap-1 ml-auto" onClick={resetForm}>
-                  <RefreshCw className="h-3 w-3" /> {lang === 'PT' ? 'Novo' : 'New'}
+                  <RefreshCw className="h-3 w-3" /> {lang === 'PT' ? 'Novo' : lang === 'EN' ? 'New' : 'Nuevo'}
                 </Button>
               </div>
             </div>
