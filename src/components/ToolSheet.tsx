@@ -329,6 +329,24 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
             )}
           </div>
 
+          {/* Generation language selector */}
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Label className="text-sm text-muted-foreground shrink-0">
+              {lang === 'PT' ? 'Gerar em:' : lang === 'EN' ? 'Generate in:' : 'Generar en:'}
+            </Label>
+            <Select value={generationLang} onValueChange={(v) => setGenerationLang(v as Language)}>
+              <SelectTrigger className="w-[160px] h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PT">Português</SelectItem>
+                <SelectItem value="EN">English</SelectItem>
+                <SelectItem value="ES">Español</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button
             onClick={handleGenerate}
             disabled={loading || !input.trim()}
