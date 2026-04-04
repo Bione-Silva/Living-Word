@@ -75,6 +75,7 @@ const App = () => (
                 <Route path="/configuracoes" element={<Configuracoes />} />
                 <Route path="/upgrade" element={<Upgrade />} />
                 <Route path="/dashboard/mentes" element={<MentesBrilhantes />} />
+                <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
                 <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
               </Route>
 
