@@ -74,10 +74,8 @@ export function MindProfileSheet({ open, onOpenChange, mind, lang, isFree }: Min
       <SheetContent className="w-full sm:max-w-lg bg-[hsl(210,40%,6%)] border-[hsl(43,55%,58%)]/20 text-white overflow-y-auto">
         <SheetHeader className="text-center pt-6 pb-4">
           {/* Avatar */}
-          <div className="mx-auto w-28 h-28 rounded-full bg-gradient-to-br from-[hsl(43,55%,58%)]/30 to-[hsl(43,55%,58%)]/10 border-2 border-[hsl(43,55%,58%)]/50 flex items-center justify-center mb-3 shadow-[0_0_40px_hsl(43,55%,58%,0.15)]">
-            <span className="text-3xl font-display font-bold text-[hsl(43,55%,58%)]">
-              {initials}
-            </span>
+          <div className="mx-auto w-28 h-28 rounded-full border-2 border-[hsl(43,55%,58%)]/50 overflow-hidden mb-3 shadow-[0_0_40px_hsl(43,55%,58%,0.15)]">
+            <img src={mind.image} alt={mind.name} className="w-full h-full object-cover" width={112} height={112} />
           </div>
           <SheetTitle className="font-display text-2xl font-bold text-white">
             {mind.name}
