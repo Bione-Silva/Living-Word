@@ -281,15 +281,16 @@ export default function BlogArticle() {
 
         {/* Prose — images are intercalated within the markdown */}
         <section
-          className="prose prose-lg max-w-none
-            prose-headings:font-serif prose-headings:text-[#3c2f21]
-            prose-p:text-[#4a3f35] prose-p:leading-[1.8] prose-p:text-[18px]
-            prose-strong:text-[#3c2f21]
-            prose-blockquote:border-l-[#C4956A] prose-blockquote:bg-[#3c2f21]/[0.03] prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:text-[#4a3f35] prose-blockquote:not-italic
-            prose-img:w-full prose-img:rounded-xl prose-img:shadow-sm prose-img:my-8
-            prose-a:text-[#6B4F3A] prose-a:underline-offset-2
-            prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-            prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3"
+          className="prose prose-lg prose-stone max-w-3xl mx-auto
+            prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#1a1208]
+            prose-headings:font-serif
+            prose-p:leading-relaxed prose-p:text-[#2e2318]
+            prose-strong:text-[#1a1208]
+            prose-blockquote:border-l-[#C4956A] prose-blockquote:bg-[#3c2f21]/[0.03] prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:text-[#2e2318] prose-blockquote:not-italic
+            prose-img:rounded-2xl prose-img:shadow-2xl prose-img:mx-auto prose-img:w-full prose-img:object-cover prose-img:my-10
+            prose-a:text-[#5a3e28] prose-a:underline-offset-2
+            prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-5
+            prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{enrichedContent}</ReactMarkdown>

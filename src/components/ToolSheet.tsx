@@ -340,8 +340,24 @@ ${result}`;
             className="w-full gap-2 bg-primary text-primary-foreground"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-            {lang === 'PT' ? 'Gerar' : lang === 'EN' ? 'Generate' : 'Generar'}
+            {loading
+              ? (lang === 'PT' ? 'Expandindo narrativa e pintando ilustrações (~20s)...' :
+                 lang === 'EN' ? 'Expanding narrative and painting illustrations (~20s)...' :
+                 'Expandiendo narrativa y pintando ilustraciones (~20s)...')
+              : (lang === 'PT' ? 'Gerar' : lang === 'EN' ? 'Generate' : 'Generar')}
           </Button>
+
+          {loading && (
+            <div className="space-y-3 animate-pulse">
+              <div className="h-6 bg-muted/50 rounded-md w-3/4" />
+              <div className="h-4 bg-muted/40 rounded-md w-full" />
+              <div className="h-4 bg-muted/40 rounded-md w-full" />
+              <div className="h-4 bg-muted/30 rounded-md w-5/6" />
+              <div className="h-40 bg-muted/20 rounded-2xl w-full" />
+              <div className="h-4 bg-muted/40 rounded-md w-full" />
+              <div className="h-4 bg-muted/30 rounded-md w-4/5" />
+            </div>
+          )}
 
           {result && (
             <div className="space-y-3">
