@@ -183,6 +183,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setLoading(true);
     setResult('');
     setShowBlogPrompt(false);
+    setHistoricalSources(null);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
