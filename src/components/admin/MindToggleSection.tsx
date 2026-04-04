@@ -26,6 +26,7 @@ export function MindToggleSection() {
 
   useEffect(() => {
     loadSettings();
+    loadAlert();
   }, []);
 
   const loadSettings = async () => {
