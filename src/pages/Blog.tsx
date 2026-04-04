@@ -55,6 +55,8 @@ export default function Blog() {
   const [editContent, setEditContent] = useState('');
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ArticleRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['my-blog-articles', user?.id],
