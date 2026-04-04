@@ -486,7 +486,14 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                   <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div>
                       <p className="font-medium text-foreground">{text.results}</p>
-                      <p className="text-sm text-muted-foreground">{formData.bible_passage}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-muted-foreground">{formData.bible_passage}</p>
+                        {profile?.plan !== 'free' && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                            ⚡ Alta Exegese
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" className="gap-2" onClick={handleCopy}>
