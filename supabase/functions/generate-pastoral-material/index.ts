@@ -138,28 +138,36 @@ function parseOutputSections(raw: string): Record<string, string> {
 // ============================================================
 async function fetchCommentaryContext(
   adminClient: ReturnType<typeof createAdminClient>,
-  passage: string
+  passage: string,
+  pain_point: string,
+  language: string
 ): Promise<string> {
   try {
-    // Extrair livro e capítulo da passagem
-    const parsed = passage.match(/^(.+?)\s+(\d+)/i)
-    if (!parsed) return ""
+    const apiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!apiKey) return "";
 
-    // Para o MVP, buscar por texto direto (sem embedding) até termos dados vetoriais
-    const { data } = await adminClient
-      .from("bible_commentary_embeddings")
-      .select("source, commentary_text")
-      .ilike("book", `%${parsed[1]}%`)
-      .eq("chapter", parseInt(parsed[2]))
-      .limit(3)
+    const embeddingRes = await fetch("https://api.openai.com/v1/embeddings", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "text-embedding-3-small", input: `${pain_point} ${passage}` })
+    }).then(r => r.json());
 
-    if (!data || data.length === 0) return ""
+    const embeddingBytes = embeddingRes?.data?.[0]?.embedding;
+    if (!embeddingBytes) return "";
 
-    return data
-      .map((c: { source: string; commentary_text: string }) => `[${c.source}]: ${c.commentary_text}`)
-      .join("\n\n")
-  } catch {
-    return "" // Nunca bloqueia a geração
+    const { data: ragDocs } = await adminClient.rpc('match_commentaries', {
+      query_embedding: embeddingBytes,
+      match_threshold: 0.70,
+      match_count: 2,
+      target_language: language
+    });
+
+    if (!ragDocs || ragDocs.length === 0) return "";
+
+    return ragDocs.map((d: any) => `[Teólogo Histórico: ${d.author} (${d.year})] ${d.content}`).join("\n\n");
+  } catch (err) {
+    console.error("Erro RAG pastoral:", err);
+    return "";
   }
 }
 
@@ -253,7 +261,7 @@ serve(async (req) => {
   const verseText = verseResult?.text ?? ""
 
   // 9. Buscar contexto exegético (RAG)
-  const commentaryContext = await fetchCommentaryContext(adminClient, bible_passage)
+  const commentaryContext = await fetchCommentaryContext(adminClient, bible_passage, pain_point, resolvedLanguage)
 
   // 10. Montar e enviar prompt
   const prompt = buildPromptMaster({
@@ -369,6 +377,7 @@ serve(async (req) => {
   return jsonResponse({
     material_id: material?.id,
     outputs,
+    historical_sources_used: commentaryContext.length > 0 ? commentaryContext : null,
     blocked_formats: isFree ? blockedFormats : [],
     theology_layers_marked: layersMarked,
     citation_audit: { direct_quotes: directQuotes, paraphrases, allusions, bible_version_used: resolvedVersion },

@@ -43,35 +43,45 @@ function buildBlogPrompt(params: {
   bible_version: string; audience: string; pain_point: string
   bible_passage: string; verse_text: string; category: string
   target_length: string; article_goal: string
-  sensitive_topics: string[]; author_name: string
+  sensitive_topics: string[]; author_name: string; historical_context: string
 }): string {
-  const lengths = TARGET_LENGTH[params.target_length] ?? TARGET_LENGTH.medium
   const sensitiveBlock = params.sensitive_topics.length > 0
     ? `\nSENSITIVE CONTEXT: ${params.sensitive_topics.join(", ")} — use welcoming, non-prescriptive tone only.\n`
     : ""
 
-  return `You are a pastoral blog writer for Living Word platform. Write a ${params.category} article in ${params.language}.
+  return `You are an expert pastoral blog writer and editor for the Living Word platform. Your task is to TRANSFORM and EXPAND the input into a deeply engaging, narrative-driven ${params.category} article in ${params.language}.
 
-RULES:
-1. Write ${lengths.min}–${lengths.max} words
-2. Use ${params.bible_version} for all Bible quotes. Mark: [DIRECT QUOTE] | [PARAPHRASE] | [ALLUSION]
-3. Never invent Bible verses
-4. Doctrinal line: ${params.doctrine_line}
-5. Pastoral voice: ${params.pastoral_voice}
-6. Article goal: ${params.article_goal}
-7. Author: ${params.author_name} (use first person)
+RULES FOR CONTENT (CRITICAL):
+1. **EXPANSION MANDATE:** The input may be just a theme, a short note, or raw text. DO NOT just copy or summarize it. You must EXPAND it into a comprehensive, rich narrative.
+2. **MINIMUM LENGTH MANDATE:** The generated article MUST contain at least 400 words (approx. 2500+ characters). It is severely strictly forbidden to return short articles. Expand on historical, theological, and practical applications to ensure depth and length. Target Length setting: ${params.target_length}.
+3. Use ${params.bible_version} for all Bible quotes. Mark: [DIRECT QUOTE] | [PARAPHRASE] | [ALLUSION]
+4. Doctrinal line: ${params.doctrine_line} | Pastoral voice: ${params.pastoral_voice}
+5. Article goal: ${params.article_goal} | Author: ${params.author_name}
 ${sensitiveBlock}
 PASSAGE: ${params.bible_passage}
 VERSE TEXT: ${params.verse_text || "(use training knowledge, mark as PARAPHRASE)"}
+HISTORICAL CONTEXT (RAG): ${params.historical_context}
 AUDIENCE: ${params.audience}
-CONTEXT/PAIN: ${params.pain_point}
+CONTEXT/PAIN/INPUT: ${params.pain_point}
 
-Return ONLY valid JSON (no markdown, no backticks):
+RULES FOR STRUCTURING & IMAGES (MANDATORY):
+1. The 'body' must be fully structured using professional Markdown.
+2. Use H2 (##) and H3 (###) to separate logical sections. DO NOT include H1 (the front-end will render the title as H1).
+3. Use bullet points and well-developed paragraphs for readability.
+4. **EXACTLY 4 IMAGES REQUIRED:** You MUST strategically insert EXACTLY 4 image placeholders within the text to split dense blocks of text organically (e.g. after major sections). 
+Format for the placeholder: [IMAGE_PROMPT: <Provide a highly detailed, descriptive, and historically accurate English prompt to generate an image for this specific section, ensuring high-quality, realistic, and cinematic aesthetic. Do NOT contain text or words in the image>].
+Example usage inside body: 
+...text paragraph...
+## Finding hope
+[IMAGE_PROMPT: A cinematic, warm-lit photograph of a shepherd holding a staff looking over a green valley at sunrise]
+...text paragraph...
+
+Return ONLY valid JSON (no markdown block wrappers around the JSON itself):
 {
   "title": "...",
   "meta_description": "... (max 160 chars)",
   "seo_slug": "...",
-  "body": "... (full article in ${params.language})",
+  "body": "... (full expanded article with EXACTLY 4 IMAGE_PROMPT markers and deep narrative)",
   "tags": ["...", "..."],
   "word_count": 0,
   "watermark": "..."
@@ -146,6 +156,36 @@ serve(async (req) => {
   const verseResult = await fetchBibleVerse(bible_passage, resolvedVersion as any, resolvedLanguage)
   const verseText = verseResult?.text ?? ""
 
+  // 7.5 Buscar Comentários Históricos (Vector RAG)
+  let historicalContext = ""
+  try {
+    const embeddingResponse = await fetch("https://api.openai.com/v1/embeddings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}` },
+      body: JSON.stringify({ input: `${bible_passage} ${verseText}`, model: "text-embedding-3-small" }),
+    })
+    
+    if (embeddingResponse.ok) {
+      const embeddingJson = await embeddingResponse.json()
+      const queryEmbedding = embeddingJson.data[0].embedding
+      
+      const { data: commentaries } = await adminClient.rpc("match_commentaries", {
+        query_embedding: queryEmbedding,
+        match_threshold: 0.70,
+        match_count: 3
+      })
+      
+      if (commentaries && commentaries.length > 0) {
+        historicalContext = "\nObrigatoriamente mencione e referencie estas visões clássicas no corpo do texto ('Conforme o historiador X...'):\n"
+        commentaries.forEach((c: any) => {
+          historicalContext += `- Segundo ${c.author_name} (Sobre ${c.book_name}): "${c.commentary_text}"\n`
+        })
+      }
+    }
+  } catch (e) {
+    console.error("RAG Error:", e)
+  }
+
   // 8. Gerar artigo
   const prompt = buildBlogPrompt({
     language: resolvedLanguage,
@@ -157,13 +197,17 @@ serve(async (req) => {
     category, target_length, article_goal,
     sensitive_topics: sensitiveTopics,
     author_name: authorName,
+    historical_context: historicalContext,
   })
 
   const start = Date.now()
+  const useProModel = userData.plan !== "free"
+  const modelToUse = Deno.env.get("LLM_MODEL") ?? (useProModel ? "gpt-4o" : "gpt-4o-mini")
+
   const llmResponse = await openai.chat.completions.create({
-    model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+    model: modelToUse,
     messages: [{ role: "user", content: prompt }],
-    max_tokens: 2000,
+    max_tokens: 3000, // increased tokens to ensure it can output 800 words + 4 image prompts
     temperature: 0.75,
   })
 
@@ -171,14 +215,56 @@ serve(async (req) => {
   const rawOutput = llmResponse.choices[0].message.content ?? "{}"
   const inputTokens = llmResponse.usage?.prompt_tokens ?? 0
   const outputTokens = llmResponse.usage?.completion_tokens ?? 0
-  const costUsd = (inputTokens * 0.00000015) + (outputTokens * 0.0000006)
+  const costUsd = useProModel 
+    ? (inputTokens * 0.0000025) + (outputTokens * 0.00001) // GPT-4o pricing approx
+    : (inputTokens * 0.00000015) + (outputTokens * 0.0000006) // mini pricing
 
-  let article
+  let article: any
   try {
     article = JSON.parse(rawOutput.replace(/```json|```/g, "").trim())
   } catch {
     article = { title: "Artigo gerado", body: rawOutput, meta_description: "", seo_slug: "", tags: [], word_count: 0 }
   }
+
+  // NOVA LÓGICA: Extrair [IMAGE_PROMPT: ...] e gerar DALL-E 3
+  const imagePromptRegex = /\[IMAGE_PROMPT:\s*(.+?)\]/g;
+  let match;
+  const imagePromises: Promise<{ placeholder: string, url: string }>[] = [];
+
+  while ((match = imagePromptRegex.exec(article.body)) !== null) {
+    const fullTag = match[0];
+    const imageDesc = match[1];
+
+    // Limitar a max 4 para evitar estourar budget/timeout se a IA alucinar mais
+    if (imagePromises.length < 4) {
+      const p = openai.images.generate({
+        model: "dall-e-3",
+        prompt: `An editorial blog illustration: ${imageDesc}`,
+        n: 1,
+        size: "1024x1024",
+      })
+      .then(imgRes => ({
+        placeholder: fullTag,
+        url: imgRes.data[0].url ?? "https://via.placeholder.com/1024x576?text=Image+Generation+Failed",
+      }))
+      .catch((err) => {
+        console.error("DALL-E 3 Error:", err);
+        return { placeholder: fullTag, url: "https://via.placeholder.com/1024x576?text=Image+Generation+Failed" };
+      });
+      imagePromises.push(p);
+    }
+  }
+
+  const generatedImages = await Promise.all(imagePromises);
+
+  // Substituir na string do corpo final
+  generatedImages.forEach(({ placeholder, url }) => {
+    // Usamos um alt generico ou apagamos, o importante é substituir o placeholder
+    article.body = article.body.replace(placeholder, `\n\n![Ilustração editorial](${url})\n\n`);
+  });
+
+  // Limpar qualquer sobressalente se gerou mais de 4
+  article.body = article.body.replace(/\[IMAGE_PROMPT:.*?\]/g, "");
 
   // 9. Salvar material (scoped client)
   const { data: material } = await scopedClient.from("materials").insert({
