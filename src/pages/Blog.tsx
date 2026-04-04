@@ -337,15 +337,15 @@ export default function Blog() {
 
       {/* Editor Dialog */}
       <Dialog open={!!editArticle} onOpenChange={(open) => { if (!open) setEditArticle(null); }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
+        <DialogContent className="theme-app max-w-3xl max-h-[90vh] flex flex-col bg-background text-foreground">
           <DialogHeader>
-            <DialogTitle className="font-display text-xl">Editar Artigo</DialogTitle>
+            <DialogTitle className="font-display text-xl text-foreground">Editar Artigo</DialogTitle>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto space-y-4 py-2">
             <div>
               <label className="text-sm font-medium text-foreground mb-1 block">Título</label>
-              <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="font-display text-base" />
+              <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="font-display text-base bg-background text-foreground border-input" />
             </div>
 
             <div className="flex items-center gap-2">
@@ -358,20 +358,20 @@ export default function Blog() {
             </div>
 
             {previewMode ? (
-              <div className="prose prose-sm max-w-none border rounded-lg p-4 bg-muted/30 min-h-[300px]">
+              <div className="blog-prose prose prose-sm max-w-none border border-border rounded-lg p-4 bg-muted/30 min-h-[300px]">
                 <ReactMarkdown>{editContent}</ReactMarkdown>
               </div>
             ) : (
               <Textarea
                 value={editContent}
                 onChange={e => setEditContent(e.target.value)}
-                className="min-h-[350px] font-mono text-sm leading-relaxed"
+                className="min-h-[350px] font-mono text-sm leading-relaxed bg-background text-foreground border-input"
                 placeholder="Conteúdo em Markdown..."
               />
             )}
           </div>
 
-          <DialogFooter className="gap-2 pt-4 border-t">
+          <DialogFooter className="gap-2 pt-4 border-t border-border">
             <Button variant="outline" onClick={() => setEditArticle(null)} className="gap-1.5">
               <X className="w-4 h-4" /> Cancelar
             </Button>
