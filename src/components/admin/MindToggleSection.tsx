@@ -32,9 +32,36 @@ export function MindToggleSection() {
   const loadSettings = async () => {
     const { data } = await supabase
       .from('mind_settings')
-      .select('mind_id, active');
+      .select('mind_id, active, updated_at');
     if (data) setSettings(data as MindSetting[]);
     setLoading(false);
+  };
+
+  const loadAlert = async () => {
+    const { data } = await supabase
+      .from('global_settings')
+      .select('value')
+      .eq('key', 'inactive_minds_alert')
+      .maybeSingle();
+    if (data?.value) {
+      try {
+        const parsed = JSON.parse(data.value as string) as InactiveAlert;
+        if (parsed.count > 0) setInactiveAlert(parsed);
+      } catch { /* ignore */ }
+    }
+  };
+
+  const checkInactiveMinds = async () => {
+    setCheckingInactive(true);
+    try {
+      const { error } = await supabase.functions.invoke('check-inactive-minds');
+      if (error) throw error;
+      await loadAlert();
+      toast.success('Verificação concluída');
+    } catch {
+      toast.error('Erro ao verificar mentes inativas');
+    }
+    setCheckingInactive(false);
   };
 
   const toggleMind = async (mindId: string, currentActive: boolean) => {
