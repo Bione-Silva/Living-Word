@@ -26,8 +26,8 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
 
       {isLocked && (
         <div className="absolute top-4 right-4 z-10">
-          <div className="w-9 h-9 rounded-full bg-[hsl(210,40%,5%)]/90 backdrop-blur-sm flex items-center justify-center border border-[hsl(43,55%,58%)]/25 shadow-lg">
-            <Lock className="h-4 w-4 text-[hsl(43,55%,58%)]" />
+          <div className="w-9 h-9 rounded-full bg-muted/90 backdrop-blur-sm flex items-center justify-center border border-border shadow-lg">
+            <Lock className="h-4 w-4 text-muted-foreground" />
           </div>
         </div>
       )}
