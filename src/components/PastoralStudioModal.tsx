@@ -180,6 +180,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     [outputs]
   );
 
+  // All minds available for selection
   const allMinds = minds;
 
   const resetState = () => {
