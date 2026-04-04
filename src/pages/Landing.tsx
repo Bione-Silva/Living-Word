@@ -473,6 +473,13 @@ export default function Landing() {
           </h1>
           <p className="text-[16px] sm:text-[17px] leading-[1.7] max-w-[600px] mx-auto mb-8 animate-[fadeSlideUp_0.7s_ease-out_0.45s_both]" style={{ color: 'rgba(245,240,232,0.75)' }}>{copy.hero.sub[lang]}</p>
 
+          {/* PWA install benefit badge */}
+          <div className="flex justify-center mb-4 animate-[fadeSlideUp_0.6s_ease-out_0.55s_both]">
+            <span className="text-[12px] font-semibold px-4 py-2 rounded-full flex items-center gap-1.5" style={{ background: 'rgba(196,149,106,0.2)', color: '#C4956A', border: '1px solid rgba(196,149,106,0.3)' }}>
+              {({ PT: '📲 Instale como app · Acesse offline, sem depender de navegador', EN: '📲 Install as app · Access offline, no browser needed', ES: '📲 Instala como app · Accede sin conexión, sin navegador' } as Record<L, string>)[lang]}
+            </span>
+          </div>
+
           {/* Audience badges */}
           <div className="flex flex-wrap gap-2.5 justify-center mb-8 animate-[fadeSlideUp_0.6s_ease-out_0.6s_both]">
             {copy.badges.map((b, i) => (

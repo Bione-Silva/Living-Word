@@ -233,6 +233,7 @@ const translations: Record<string, Record<Language, string>> = {
   'study.depth.intermediate': { PT: 'Intermediário (líderes, professores)', EN: 'Intermediate (leaders, teachers)', ES: 'Intermedio (líderes, profesores)' },
   'study.depth.advanced': { PT: 'Avançado (pastores, teólogos)', EN: 'Advanced (pastors, theologians)', ES: 'Avanzado (pastores, teólogos)' },
   // PWA
+  'landing.install_benefit': { PT: '📲 Instale como app · Acesse offline, sem depender de navegador', EN: '📲 Install as app · Access offline, no browser needed', ES: '📲 Instala como app · Accede sin conexión, sin navegador' },
   'pwa.install_title': { PT: '📲 Instale o Living Word', EN: '📲 Install Living Word', ES: '📲 Instala Living Word' },
   'pwa.install_desc': { PT: 'Acesse offline, direto da tela inicial do celular.', EN: 'Access offline, right from your home screen.', ES: 'Accede sin conexión, directo desde tu pantalla de inicio.' },
   'pwa.install_cta': { PT: 'Instalar agora', EN: 'Install now', ES: 'Instalar ahora' },
