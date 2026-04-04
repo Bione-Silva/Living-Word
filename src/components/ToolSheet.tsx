@@ -19,6 +19,7 @@ import ReactMarkdown from 'react-markdown';
 import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Language } from '@/lib/i18n';
+import { PastoralStudioModal } from '@/components/PastoralStudioModal';
 
 interface ToolSheetProps {
   open: boolean;
@@ -166,6 +167,10 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   useEffect(() => {
     setGenerationLang(lang);
   }, [lang]);
+
+  if (toolId === 'studio') {
+    return <PastoralStudioModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
+  }
 
   const config = toolConfigs[toolId] || {
     inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },

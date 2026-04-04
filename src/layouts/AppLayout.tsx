@@ -56,6 +56,7 @@ const toolGroups: SidebarToolGroup[] = [
     label: { PT: 'Criar', EN: 'Create', ES: 'Crear' },
     icon: PenTool,
     tools: [
+      { id: 'studio', icon: Wand2, label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' } },
       { id: 'title-gen', icon: Sparkles, label: { PT: 'Títulos', EN: 'Titles', ES: 'Títulos' } },
       { id: 'metaphor-creator', icon: Palette, label: { PT: 'Metáforas', EN: 'Metaphors', ES: 'Metáforas' } },
       { id: 'bible-modernizer', icon: Repeat, label: { PT: 'Modernizador', EN: 'Modernizer', ES: 'Modernizador' } },
