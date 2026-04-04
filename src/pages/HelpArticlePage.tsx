@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getFullArticle, getCategoryForTool, helpCategories } from '@/data/help-center-data';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChevronRight, ExternalLink, Lightbulb, AlertTriangle, Zap } from 'lucide-react';
+import { ArrowLeft, ChevronRight, ExternalLink, Lightbulb, AlertTriangle, Zap, Target, Star, Users } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -13,6 +13,8 @@ const labels = {
   backCta: { PT: 'Voltar para a Central', EN: 'Back to Help Center', ES: 'Volver al Centro' },
   notFound: { PT: 'Artigo não encontrado.', EN: 'Article not found.', ES: 'Artículo no encontrado.' },
 };
+
+const summaryIcons = [Target, Star, Users];
 
 export default function HelpArticlePage() {
   const { toolId } = useParams<{ toolId: string }>();
@@ -36,7 +38,6 @@ export default function HelpArticlePage() {
 
   const Icon = article.icon;
 
-  // Find related tool names
   const allTools = helpCategories.flatMap(c => c.tools);
   const relatedTools = article.relatedTools
     .map(id => allTools.find(t => t.id === id))
@@ -96,16 +97,38 @@ export default function HelpArticlePage() {
 
         <div className="mt-6 pt-6 border-t border-[hsl(30,15%,92%)]">
           <p className="text-[15px] leading-[1.8] text-[hsl(220,10%,35%)]">{article.heroSummary[lang]}</p>
-          <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {article.heroBullets.map((bullet, i) => (
-              <div key={i} className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)]">
-                <Zap className="h-3.5 w-3.5 text-[hsl(35,50%,50%)] shrink-0" />
-                <span className="text-xs font-medium text-[hsl(220,10%,30%)]">{bullet[lang]}</span>
-              </div>
-            ))}
-          </div>
+          {article.heroBullets.length > 0 && (
+            <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {article.heroBullets.map((bullet, i) => (
+                <div key={i} className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)]">
+                  <Zap className="h-3.5 w-3.5 text-[hsl(35,50%,50%)] shrink-0" />
+                  <span className="text-xs font-medium text-[hsl(220,10%,30%)]">{bullet[lang]}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
+
+      {/* ── Quick Summary 3-Card Block ── */}
+      {article.quickSummary && article.quickSummary.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {article.quickSummary.map((card, i) => {
+            const SummaryIcon = summaryIcons[i] || Target;
+            return (
+              <div key={i} className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
+                    <SummaryIcon className="h-4 w-4 text-[hsl(35,45%,45%)]" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[hsl(220,15%,20%)]">{card.label[lang]}</h3>
+                </div>
+                <p className="text-xs leading-relaxed text-[hsl(220,10%,40%)]">{card.content[lang]}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── Article Sections ── */}
       {article.sections.map((section) => (
