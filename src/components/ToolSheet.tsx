@@ -242,7 +242,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+      <SheetContent side="right" className="theme-app w-full sm:max-w-lg overflow-y-auto bg-background text-foreground border-l border-border">
         <SheetHeader>
           <SheetTitle className="font-display text-xl">{toolTitle}</SheetTitle>
           <SheetDescription className="sr-only">
