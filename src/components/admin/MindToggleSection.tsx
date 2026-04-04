@@ -21,6 +21,8 @@ export function MindToggleSection() {
   const [settings, setSettings] = useState<MindSetting[]>([]);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState<string | null>(null);
+  const [inactiveAlert, setInactiveAlert] = useState<InactiveAlert | null>(null);
+  const [checkingInactive, setCheckingInactive] = useState(false);
 
   useEffect(() => {
     loadSettings();
