@@ -64,8 +64,9 @@ export default function Cadastro() {
 
   const generateInitialContent = async () => {
     const passages = [
-      { passage: 'Salmo 23', title: lang === 'PT' ? 'O Senhor é meu pastor' : 'The Lord is my shepherd' },
-      { passage: 'Filipenses 4:13', title: lang === 'PT' ? 'Tudo posso naquele que me fortalece' : 'I can do all things through Christ' },
+      { passage: 'Salmo 23', title: lang === 'PT' ? 'O Senhor é meu pastor: encontrando paz em tempos difíceis' : lang === 'ES' ? 'El Señor es mi pastor: encontrando paz en tiempos difíciles' : 'The Lord is my shepherd: finding peace in difficult times' },
+      { passage: 'Filipenses 4:13', title: lang === 'PT' ? 'Tudo posso naquele que me fortalece: a força que vem de Deus' : lang === 'ES' ? 'Todo lo puedo en Cristo que me fortalece' : 'I can do all things through Christ who strengthens me' },
+      { passage: 'Provérbios 3:5-6', title: lang === 'PT' ? 'Confia no Senhor de todo o teu coração: um caminho de fé' : lang === 'ES' ? 'Confía en el Señor con todo tu corazón' : 'Trust in the Lord with all your heart: a path of faith' },
     ];
 
     for (const p of passages) {
