@@ -98,7 +98,7 @@ const mobileNavItems = [
 ];
 
 export default function AppLayout() {
-  const { profile, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { t, lang } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
