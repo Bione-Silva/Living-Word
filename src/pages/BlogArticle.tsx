@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,9 +7,6 @@ import { ArrowLeft, BookOpen, Calendar, Share2, Copy, MessageCircle, Clock } fro
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-
-export default function BlogArticle() {
-  const { handle, articleId } = useParams<{ handle: string; articleId: string }>();
 
   const { data: profile } = useQuery({
     queryKey: ['blog-profile', handle],
