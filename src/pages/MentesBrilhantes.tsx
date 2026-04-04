@@ -26,7 +26,7 @@ const pageSubtitle: Record<L, string> = {
 
 export default function MentesBrilhantes() {
   const { profile } = useAuth();
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const navigate = useNavigate();
   const isFree = profile?.plan === 'free';
   const [showPaywall, setShowPaywall] = useState(false);
