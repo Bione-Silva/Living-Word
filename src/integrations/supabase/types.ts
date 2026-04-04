@@ -94,6 +94,39 @@ export type Database = {
         }
         Relationships: []
       }
+      material_feedback: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          material_title: string | null
+          material_type: string
+          rating: string
+          tool_id: string | null
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          material_title?: string | null
+          material_type: string
+          rating: string
+          tool_id?: string | null
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          material_title?: string | null
+          material_type?: string
+          rating?: string
+          tool_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       materials: {
         Row: {
           article_images: Json | null
