@@ -115,6 +115,11 @@ const translations: Record<string, Record<Language, string>> = {
   'landing.already_have_account': { PT: 'Já tem conta?', EN: 'Already have an account?', ES: '¿Ya tienes cuenta?' },
   'landing.forgot_password': { PT: 'Esqueceu sua senha?', EN: 'Forgot your password?', ES: '¿Olvidaste tu contraseña?' },
   'landing.recover_here': { PT: 'Recupere aqui', EN: 'Recover here', ES: 'Recupérala aquí' },
+  // Settings extras
+  'settings.save': { PT: 'Salvar', EN: 'Save', ES: 'Guardar' },
+  'settings.delete_account': { PT: 'Excluir conta', EN: 'Delete account', ES: 'Eliminar cuenta' },
+  'settings.generations_used': { PT: 'gerações usadas', EN: 'generations used', ES: 'generaciones usadas' },
+  'settings.doctrine_label': { PT: 'Doutrina / Tradição', EN: 'Doctrine / Tradition', ES: 'Doctrina / Tradición' },
 };
 
 export function t(key: string, lang: Language): string {
