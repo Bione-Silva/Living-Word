@@ -9,7 +9,7 @@ import {
   Wand2, PenLine, Type, Video, BookOpen, Languages, X,
   Search, Globe, Quote, Clapperboard, ScrollText, Lightbulb, Sparkles,
   Crown, Film, Megaphone, MessageSquare, Mail, Newspaper,
-  Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy
+  Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy, GraduationCap
 } from 'lucide-react';
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
