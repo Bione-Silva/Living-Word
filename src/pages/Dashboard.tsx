@@ -150,7 +150,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 max-w-5xl">
       <div>
-        <h1 className="font-display text-2xl md:text-3xl font-bold">
+        <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
           {t('dashboard.greeting')}, {userName}! 👋
         </h1>
         <p className="text-muted-foreground text-sm mt-1.5 leading-relaxed max-w-xl">
