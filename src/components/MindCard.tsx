@@ -72,7 +72,7 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
           {/* Data weight mini-badges */}
           <div className="flex flex-wrap justify-center gap-1.5 pt-2">
             {mind.badges.slice(0, 2).map((b, i) => (
-              <span key={i} className="inline-flex items-center gap-1 text-[10px] text-white/30 font-medium">
+              <span key={i} className="inline-flex items-center gap-1 text-[10px] text-muted-foreground font-medium">
                 <Database className="h-2.5 w-2.5" />
                 {b[lang]}
               </span>
