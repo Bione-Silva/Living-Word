@@ -114,9 +114,9 @@ export default function Upgrade() {
   const autoCheckoutPlan = searchParams.get('autoCheckout');
   const isAutoCheckout = !!autoCheckoutPlan && !autoCheckoutFired.current;
 
-  // Auto-checkout from landing page flow
+  // Auto-checkout from landing page flow (wait for pricing to load)
   useEffect(() => {
-    if (!autoCheckoutPlan || autoCheckoutFired.current) return;
+    if (!autoCheckoutPlan || autoCheckoutFired.current || !pricing) return;
     autoCheckoutFired.current = true;
 
     const targetPlan = plans.find(p => p.planKey === autoCheckoutPlan);
@@ -124,10 +124,10 @@ export default function Upgrade() {
       setSearchParams({}, { replace: true });
       setTimeout(() => handleSubscribe(targetPlan), 300);
     }
-  }, [searchParams]);
+  }, [searchParams, pricing]);
 
   const handleSubscribe = async (plan: PlanData) => {
-    if (!plan.planKey || plan.isFree) return;
+    if (!plan.planKey || plan.isFree || !pricing) return;
 
     setLoadingPlan(plan.id);
     try {
@@ -156,7 +156,7 @@ export default function Upgrade() {
     }
   };
 
-  if (isAutoCheckout || loadingPlan) {
+  if (regionLoading || isAutoCheckout || loadingPlan) {
     const loadingLabels = {
       PT: 'Preparando seu checkout…',
       EN: 'Preparing your checkout…',
