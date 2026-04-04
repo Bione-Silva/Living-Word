@@ -203,22 +203,22 @@ export default function MindProfile() {
       {/* ═══════════════════════════════════════════════════════════════
           THEOLOGICAL MATRIX — Dark cinematic section
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="mt-5 rounded-2xl border border-[hsl(43,55%,58%)]/15 bg-gradient-to-br from-[hsl(215,50%,8%)] to-[hsl(210,40%,5%)] p-7 sm:p-10 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[hsl(43,55%,58%)]/[0.03] rounded-full blur-[80px] pointer-events-none" />
+      <section className="mt-5 rounded-2xl border border-border/40 bg-gradient-to-br from-[hsl(30,22%,86%)] to-[hsl(33,20%,82%)] p-7 sm:p-10 overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[hsl(28,42%,55%)]/[0.06] rounded-full blur-[80px] pointer-events-none" />
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 rounded-lg bg-[hsl(43,55%,58%)]/10 flex items-center justify-center">
-              <Shield className="h-5 w-5 text-[hsl(43,55%,58%)]" />
+            <div className="w-9 h-9 rounded-lg bg-[hsl(28,42%,42%)]/10 flex items-center justify-center">
+              <Shield className="h-5 w-5 text-[hsl(28,42%,42%)]" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">{sectionLabels.theology[lang]}</h2>
-              <p className="text-xs text-white/40 mt-0.5">
+              <h2 className="text-lg font-bold text-foreground">{sectionLabels.theology[lang]}</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {lang === 'EN' ? 'The doctrinal framework governing every AI response' : lang === 'ES' ? 'El marco doctrinal que gobierna cada respuesta de la IA' : 'O framework doutrinário que governa cada resposta da IA'}
               </p>
             </div>
           </div>
           <div className="pl-0 sm:pl-12">
-            <p className="text-[15px] leading-[1.85] text-white/65">
+            <p className="text-[15px] leading-[1.85] text-muted-foreground">
               {mind.theologyMatrix[lang]}
             </p>
           </div>
