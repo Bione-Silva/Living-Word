@@ -14,6 +14,8 @@ interface UserProfile {
   doctrine?: string;
   pastoral_voice?: string;
   bible_version?: string;
+  trial_started_at?: string;
+  trial_ends_at?: string;
 }
 
 interface AuthContextType {
