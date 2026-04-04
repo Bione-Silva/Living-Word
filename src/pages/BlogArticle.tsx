@@ -167,15 +167,13 @@ export default function BlogArticle() {
           </div>
         </div>
 
-        {/* Watermark */}
-        {isFree && (
-          <div className="mt-8 text-center">
-            <p className="text-xs text-accent">
-              ✝️ Gerado com{' '}
-              <Link to="/" className="underline hover:text-primary">Living Word</Link>
-            </p>
-          </div>
-        )}
+        {/* Powered by Living Word — always visible */}
+        <footer className="mt-10 pt-6 border-t border-border/20 text-center">
+          <p className="text-xs text-muted-foreground">
+            Feito com ❤️ por{' '}
+            <Link to="/" className="font-semibold text-primary hover:underline">Living Word</Link>
+          </p>
+        </footer>
       </article>
     </div>
   );
