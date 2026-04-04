@@ -525,6 +525,13 @@ export default function AppLayout() {
           toolTitle={activeTool.title}
         />
       )}
+      {helpToolId && (
+        <HelpArticleModal
+          open={!!helpToolId}
+          onOpenChange={(open) => !open && setHelpToolId(null)}
+          toolId={helpToolId}
+        />
+      )}
       <SupportChatBubble />
     </div>
   );
