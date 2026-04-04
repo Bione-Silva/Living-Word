@@ -155,6 +155,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const { lang } = useLanguage();
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
+  const [historicalSources, setHistoricalSources] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [convertingToBlog, setConvertingToBlog] = useState(false);
