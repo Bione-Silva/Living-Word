@@ -117,6 +117,7 @@ export default function Configuracoes() {
                     <a href="/upgrade"><Crown className="h-4 w-4" /> {t('upgrade.cta')}</a>
                   </Button>
                 </div>
+                </>
               )}
             </CardContent>
           </Card>
