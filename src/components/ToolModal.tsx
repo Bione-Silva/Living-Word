@@ -107,6 +107,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
       });
       if (error) throw error;
       setResult(data?.content || 'No response');
+      setHistoricalSources(data?.historical_sources_used || null);
     } catch (err: any) {
       toast.error(err.message || 'Error generating content');
     } finally {
