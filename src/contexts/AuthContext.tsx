@@ -97,8 +97,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, metadata?: Record<string, unknown>) => {
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email: string, password: string, metadata?: Record<string, unknown>): Promise<{ needsConfirmation: boolean }> => {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -107,6 +107,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
     });
     if (error) throw error;
+    // If no session returned, email confirmation is required
+    const needsConfirmation = !data.session;
+    return { needsConfirmation };
   };
 
   const signIn = async (email: string, password: string) => {
