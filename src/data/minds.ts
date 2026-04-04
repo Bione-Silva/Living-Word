@@ -4,7 +4,7 @@ import lloydJonesImg from '@/assets/minds/martyn-lloyd-jones.jpg';
 import johnWesleyImg from '@/assets/minds/john-wesley.jpg';
 import joaoCalvinoImg from '@/assets/minds/joao-calvino.jpg';
 import marcoFelicianoImg from '@/assets/minds/marco-feliciano.jpg';
-import tiagoBrunetImg from '@/assets/minds/tiago-brunet.jpg';
+import tiagoBrunetImg from '@/assets/minds/tiago-brunet.png';
 
 type L = 'PT' | 'EN' | 'ES';
 
