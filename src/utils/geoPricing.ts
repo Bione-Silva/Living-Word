@@ -59,46 +59,51 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
   },
 };
 
-const LATAM_TIMEZONES = [
-  'America/Argentina', 'America/Bogota', 'America/Lima', 'America/Santiago',
-  'America/Mexico_City', 'America/Caracas', 'America/Guayaquil', 'America/Montevideo',
-  'America/Asuncion', 'America/La_Paz', 'America/Panama', 'America/Guatemala',
-  'America/Tegucigalpa', 'America/Managua', 'America/San_Jose', 'America/Havana',
-  'America/Santo_Domingo', 'America/Port-au-Prince',
+const LATAM_COUNTRIES = [
+  'AR', 'BO', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'SV',
+  'GT', 'HN', 'MX', 'NI', 'PA', 'PY', 'PE', 'PR', 'UY', 'VE',
 ];
 
-const BRAZIL_TIMEZONES = [
-  'America/Sao_Paulo', 'America/Fortaleza', 'America/Recife', 'America/Bahia',
-  'America/Belem', 'America/Manaus', 'America/Cuiaba', 'America/Porto_Velho',
-  'America/Boa_Vista', 'America/Campo_Grande', 'America/Rio_Branco',
-  'America/Araguaina', 'America/Maceio', 'America/Noronha',
-];
-
-export function detectGeoRegion(): GeoRegion {
+/** Timezone-based fallback (sync, no network) */
+function detectByTimezone(): GeoRegion {
   try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    if (
+      tz.includes('Sao_Paulo') || tz.includes('Fortaleza') || tz.includes('Recife') ||
+      tz.includes('Bahia') || tz.includes('Belem') || tz.includes('Manaus') ||
+      tz.includes('Cuiaba') || tz.includes('Campo_Grande') || tz.includes('Maceio')
+    ) return 'BRL';
+    if (
+      tz.includes('Buenos_Aires') || tz.includes('Santiago') || tz.includes('Bogota') ||
+      tz.includes('Lima') || tz.includes('Mexico_City') || tz.includes('Caracas') ||
+      tz.includes('Montevideo') || tz.includes('Asuncion') || tz.includes('Guayaquil')
+    ) return 'LATAM';
+  } catch { /* ignore */ }
+  return 'USD';
+}
 
-    if (BRAZIL_TIMEZONES.some((btz) => tz.startsWith(btz))) {
-      return 'BRL';
-    }
+/** Primary: IP-based detection via ipapi.co, fallback: timezone */
+export async function detectUserRegion(): Promise<GeoRegion> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
 
-    if (LATAM_TIMEZONES.some((ltz) => tz.startsWith(ltz))) {
-      return 'LATAM';
-    }
+    const response = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+    clearTimeout(timeout);
 
-    // Check language as secondary signal
-    const lang = navigator.language?.toLowerCase() || '';
-    if (lang.startsWith('pt-br') || lang === 'pt') {
-      return 'BRL';
-    }
-    if (lang.startsWith('es-') && !lang.startsWith('es-es')) {
-      return 'LATAM';
-    }
+    const data = await response.json();
 
+    if (data.country === 'BR') return 'BRL';
+    if (LATAM_COUNTRIES.includes(data.country)) return 'LATAM';
     return 'USD';
   } catch {
-    return 'USD';
+    return detectByTimezone();
   }
+}
+
+/** @deprecated Use detectUserRegion() instead */
+export function detectGeoRegion(): GeoRegion {
+  return detectByTimezone();
 }
 
 export function formatPrice(amount: number, symbol: string, currency: string): string {
