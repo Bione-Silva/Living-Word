@@ -1,10 +1,10 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, ThumbsUp, ThumbsDown, Copy, Sparkles, X } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { minds } from '@/data/minds';
+import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -132,14 +132,68 @@ export default function MenteChat() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [feedback, setFeedback] = useState<Record<number, 'up' | 'down'>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Text selection "improve" popup state
+  const [selectionPopup, setSelectionPopup] = useState<{
+    text: string;
+    msgIndex: number;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [improving, setImproving] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Listen for text selection on assistant messages
+  const handleMouseUp = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+      return;
+    }
+
+    const selectedText = selection.toString().trim();
+    if (selectedText.length < 10) return; // Ignore very short selections
+
+    // Find which message index the selection is in
+    const anchorNode = selection.anchorNode;
+    const msgEl = anchorNode?.parentElement?.closest('[data-msg-index]');
+    if (!msgEl) return;
+
+    const msgIndex = parseInt(msgEl.getAttribute('data-msg-index') || '-1', 10);
+    if (msgIndex < 0) return;
+    if (messages[msgIndex]?.role !== 'assistant') return;
+
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+
+    setSelectionPopup({
+      text: selectedText,
+      msgIndex,
+      x: rect.left + rect.width / 2,
+      y: rect.top - 8,
+    });
+  }, [messages]);
+
+  // Close popup on click outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
+        setSelectionPopup(null);
+      }
+    };
+    if (selectionPopup) {
+      document.addEventListener('mousedown', handler);
+    }
+    return () => document.removeEventListener('mousedown', handler);
+  }, [selectionPopup]);
 
   const send = async () => {
     const text = input.trim();
@@ -163,7 +217,7 @@ export default function MenteChat() {
     };
 
     try {
-      const history = [...messages.slice(1), userMsg]; // skip welcome for API
+      const history = [...messages.slice(1), userMsg];
       await streamMindChat({
         messages: history,
         mindId: menteId,
@@ -186,6 +240,75 @@ export default function MenteChat() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       send();
+    }
+  };
+
+  const handleCopy = (content: string) => {
+    navigator.clipboard.writeText(content);
+    toast.success(lang === 'PT' ? 'Texto copiado!' : lang === 'EN' ? 'Text copied!' : '¡Texto copiado!');
+  };
+
+  const handleFeedback = (index: number, type: 'up' | 'down') => {
+    setFeedback(prev => ({
+      ...prev,
+      [index]: prev[index] === type ? undefined! : type,
+    }));
+    if (type === 'up') {
+      toast.success(lang === 'PT' ? 'Obrigado pelo feedback! 👍' : lang === 'EN' ? 'Thanks for the feedback! 👍' : '¡Gracias por el feedback! 👍');
+    } else {
+      toast(lang === 'PT' ? 'Feedback registrado. Vamos melhorar! 🙏' : lang === 'EN' ? 'Feedback noted. We\'ll improve! 🙏' : 'Feedback registrado. ¡Mejoraremos! 🙏');
+    }
+  };
+
+  const handleImproveSelection = async () => {
+    if (!selectionPopup || improving) return;
+    setImproving(true);
+
+    const selectedText = selectionPopup.text;
+    const msgIndex = selectionPopup.msgIndex;
+    setSelectionPopup(null);
+
+    // Send a request to improve the selected text
+    const improvePrompt = lang === 'PT'
+      ? `Por favor, melhore e expanda o seguinte trecho, mantendo o mesmo tom e estilo pastoral. Retorne apenas o texto melhorado:\n\n"${selectedText}"`
+      : lang === 'EN'
+      ? `Please improve and expand the following excerpt, keeping the same pastoral tone and style. Return only the improved text:\n\n"${selectedText}"`
+      : `Por favor, mejora y expande el siguiente fragmento, manteniendo el mismo tono y estilo pastoral. Devuelve solo el texto mejorado:\n\n"${selectedText}"`;
+
+    const userMsg: Msg = { role: 'user', content: improvePrompt };
+    setMessages(prev => [...prev, userMsg]);
+    setIsLoading(true);
+
+    let assistantSoFar = "";
+    const upsert = (chunk: string) => {
+      assistantSoFar += chunk;
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.role === 'assistant' && prev.length > 1 && prev[prev.length - 2].role === 'user') {
+          return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
+        }
+        return [...prev, { role: 'assistant', content: assistantSoFar }];
+      });
+    };
+
+    try {
+      await streamMindChat({
+        messages: [...messages.slice(1), userMsg],
+        mindId: menteId,
+        modality: modalidade,
+        language: lang,
+        onDelta: upsert,
+        onDone: () => { setIsLoading(false); setImproving(false); },
+        onError: (msg) => {
+          setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${msg}` }]);
+          setIsLoading(false);
+          setImproving(false);
+        },
+      });
+    } catch {
+      setMessages(prev => [...prev, { role: 'assistant', content: '⚠️ Erro ao melhorar texto.' }]);
+      setIsLoading(false);
+      setImproving(false);
     }
   };
 
@@ -224,20 +347,60 @@ export default function MenteChat() {
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto py-6 space-y-5 px-1">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto py-6 space-y-5 px-1" onMouseUp={handleMouseUp}>
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-5 py-4 text-sm leading-relaxed ${
-              msg.role === 'user'
-                ? 'bg-[hsl(43,55%,58%)] text-[hsl(210,40%,6%)] rounded-br-md'
-                : 'bg-muted/40 border border-border/40 text-foreground rounded-bl-md'
-            }`}>
-              {msg.role === 'assistant' ? (
-                <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-li:my-0.5">
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+            <div className="max-w-[85%] sm:max-w-[75%]">
+              <div
+                data-msg-index={i}
+                className={`rounded-2xl px-5 py-4 text-sm leading-relaxed ${
+                  msg.role === 'user'
+                    ? 'bg-[hsl(43,55%,58%)] text-[hsl(210,40%,6%)] rounded-br-md'
+                    : 'bg-muted/40 border border-border/40 text-foreground rounded-bl-md'
+                }`}
+              >
+                {msg.role === 'assistant' ? (
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-li:my-0.5">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <p>{msg.content}</p>
+                )}
+              </div>
+
+              {/* Action bar for assistant messages (skip welcome) */}
+              {msg.role === 'assistant' && i > 0 && !isLoading && (
+                <div className="flex items-center gap-1 mt-1.5 ml-1">
+                  <button
+                    onClick={() => handleCopy(msg.content)}
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                    title={lang === 'PT' ? 'Copiar texto' : 'Copy text'}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleFeedback(i, 'up')}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      feedback[i] === 'up'
+                        ? 'text-emerald-500 bg-emerald-500/10'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                    }`}
+                    title={lang === 'PT' ? 'Gostei' : 'Like'}
+                  >
+                    <ThumbsUp className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleFeedback(i, 'down')}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      feedback[i] === 'down'
+                        ? 'text-red-400 bg-red-400/10'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                    }`}
+                    title={lang === 'PT' ? 'Não gostei' : 'Dislike'}
+                  >
+                    <ThumbsDown className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-              ) : (
-                <p>{msg.content}</p>
               )}
             </div>
           </div>
@@ -250,6 +413,47 @@ export default function MenteChat() {
           </div>
         )}
       </div>
+
+      {/* Text selection "Improve with AI" popup */}
+      {selectionPopup && (
+        <div
+          ref={popupRef}
+          className="fixed z-50 animate-in fade-in zoom-in-95 duration-150"
+          style={{
+            left: `${selectionPopup.x}px`,
+            top: `${selectionPopup.y}px`,
+            transform: 'translate(-50%, -100%)',
+          }}
+        >
+          <div className="flex items-center gap-1 bg-foreground text-background rounded-lg shadow-xl px-2 py-1.5">
+            <button
+              onClick={handleImproveSelection}
+              disabled={improving}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium hover:bg-background/10 transition-colors disabled:opacity-50"
+            >
+              {improving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+              {lang === 'PT' ? 'Melhorar com IA' : lang === 'EN' ? 'Improve with AI' : 'Mejorar con IA'}
+            </button>
+            <button
+              onClick={() => {
+                if (selectionPopup) handleCopy(selectionPopup.text);
+                setSelectionPopup(null);
+              }}
+              className="p-1 rounded-md hover:bg-background/10 transition-colors"
+            >
+              <Copy className="h-3 w-3" />
+            </button>
+            <button
+              onClick={() => setSelectionPopup(null)}
+              className="p-1 rounded-md hover:bg-background/10 transition-colors"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+          {/* Arrow */}
+          <div className="w-0 h-0 mx-auto border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-foreground" />
+        </div>
+      )}
 
       {/* Input */}
       <div className="pt-4 pb-2 border-t border-border shrink-0">
