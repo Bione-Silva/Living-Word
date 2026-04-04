@@ -370,10 +370,17 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               {showBlogPrompt && !isArticleTool && (
                 <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
                   <p className="text-sm font-medium text-foreground">
-                    {lang === 'PT' ? '✨ Gostou? Quer transformar isso num artigo de blog?' :
-                     lang === 'EN' ? '✨ Liked it? Want to turn this into a blog article?' :
-                     '✨ ¿Te gustó? ¿Quieres convertirlo en un artículo de blog?'}
+                    {lang === 'PT' ? '✨ Gostou? Quer transformar isso num artigo de blog com ilustrações?' :
+                     lang === 'EN' ? '✨ Liked it? Want to turn this into a blog article with illustrations?' :
+                     '✨ ¿Te gustó? ¿Quieres convertirlo en un artículo de blog con ilustraciones?'}
                   </p>
+                  {convertingToBlog && (
+                    <p className="text-xs text-muted-foreground animate-pulse">
+                      {lang === 'PT' ? '🎨 Gerando artigo e pintando 4 ilustrações contextuais (~20s)...' :
+                       lang === 'EN' ? '🎨 Generating article and painting 4 contextual illustrations (~20s)...' :
+                       '🎨 Generando artículo y pintando 4 ilustraciones contextuales (~20s)...'}
+                    </p>
+                  )}
                   <div className="flex flex-wrap gap-2">
                     <Button
                       size="sm"
@@ -382,7 +389,9 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                       disabled={convertingToBlog}
                     >
                       {convertingToBlog ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
-                      {lang === 'PT' ? 'Sim, gerar artigo!' : 'Yes, generate article!'}
+                      {convertingToBlog
+                        ? (lang === 'PT' ? 'Gerando...' : 'Generating...')
+                        : (lang === 'PT' ? 'Sim, gerar artigo com ilustrações!' : 'Yes, generate with illustrations!')}
                     </Button>
                     <Button
                       size="sm"
