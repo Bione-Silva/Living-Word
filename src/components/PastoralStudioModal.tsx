@@ -180,7 +180,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     [outputs]
   );
 
-  const unlockedMinds = useMemo(() => minds.filter((m) => !m.locked), []);
+  const allMinds = minds;
 
   const resetState = () => {
     setFormData(createInitialFormData(lang, profile?.bible_version));
@@ -319,7 +319,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
               <div className="space-y-2">
                 <Label>{text.mindLabel}</Label>
                 <div className="flex flex-wrap gap-2">
-                  {unlockedMinds.map((mind) => {
+                  {allMinds.map((mind) => {
                     const isSelected = formData.mind_id === mind.id;
                     return (
                       <button
