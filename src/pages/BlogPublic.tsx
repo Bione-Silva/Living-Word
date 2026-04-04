@@ -76,7 +76,7 @@ export default function BlogPublic() {
 
   if (profileLoading) {
     return (
-      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center theme-app">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
@@ -84,7 +84,7 @@ export default function BlogPublic() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center theme-app">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-foreground">Blog não encontrado</h1>
           <p className="text-muted-foreground">O handle "{handle}" não existe.</p>
@@ -97,9 +97,9 @@ export default function BlogPublic() {
   }
 
   return (
-    <div className="min-h-screen bg-[hsl(40,30%,96%)]">
+    <div className="min-h-screen bg-background theme-app">
       {/* Top Navigation */}
-      <header className="bg-[hsl(40,30%,96%)] border-b border-border/30 sticky top-0 z-20">
+      <header className="bg-background border-b border-border/30 sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h2 className="font-serif text-xl font-bold text-primary">
             {profile.full_name}
@@ -111,7 +111,7 @@ export default function BlogPublic() {
       </header>
 
       {/* Hero Banner — warm tones */}
-      <div className="bg-gradient-to-b from-primary/10 to-[hsl(40,30%,96%)] py-14 text-center">
+      <div className="bg-gradient-to-b from-primary/10 to-background py-14 text-center">
         <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-6">Blog</h1>
 
         {/* Search */}

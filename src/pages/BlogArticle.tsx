@@ -63,7 +63,7 @@ export default function BlogArticle() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center theme-app">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
@@ -71,7 +71,7 @@ export default function BlogArticle() {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-[hsl(40,30%,96%)] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center theme-app">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-foreground">Artigo não encontrado</h1>
           <Link to={`/blog/${handle}`}>
@@ -83,9 +83,9 @@ export default function BlogArticle() {
   }
 
   return (
-    <div className="min-h-screen bg-[hsl(40,30%,96%)]">
+    <div className="min-h-screen bg-background theme-app">
       {/* Header */}
-      <header className="bg-[hsl(40,30%,96%)] border-b border-border/30 sticky top-0 z-10">
+      <header className="bg-background border-b border-border/30 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to={`/blog/${handle}`} className="flex items-center gap-2 text-sm text-primary hover:text-foreground">
             <ArrowLeft className="w-4 h-4" />
@@ -134,14 +134,9 @@ export default function BlogArticle() {
           )}
         </div>
 
-        <div className="prose prose-lg max-w-none
-          prose-headings:font-serif prose-headings:text-[hsl(20,30%,15%)]
-          prose-p:text-[hsl(20,20%,25%)] prose-p:leading-relaxed
-          prose-li:text-[hsl(20,20%,25%)]
-          prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-          prose-blockquote:border-l-accent prose-blockquote:bg-card/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:text-[hsl(20,20%,30%)] prose-blockquote:italic
-          prose-strong:text-[hsl(20,30%,15%)] prose-em:text-[hsl(20,20%,28%)]
-        ">
+        <div
+          className="prose prose-lg max-w-none prose-headings:font-serif [&]:text-[#4A3728] [&_h1]:text-[#3D2B1F] [&_h2]:text-[#3D2B1F] [&_h3]:text-[#3D2B1F] [&_h4]:text-[#3D2B1F] [&_p]:text-[#4A3728] [&_li]:text-[#4A3728] [&_strong]:text-[#3D2B1F] [&_em]:text-[#4A3728] [&_a]:text-[#6B4F3A] [&_blockquote]:text-[#5A4738] [&_blockquote]:border-l-[#C4956A] [&_blockquote]:bg-white/50 [&_blockquote]:py-2 [&_blockquote]:px-4 [&_blockquote]:rounded-r-lg"
+        >
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
         </div>
 
