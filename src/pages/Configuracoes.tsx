@@ -108,6 +108,8 @@ export default function Configuracoes() {
                 </span>
               </div>
               {isFree && (
+                <>
+                <TrialCountdown />
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                   <p className="text-sm font-medium mb-2">{t('upgrade.title')}</p>
                   <p className="text-xs text-muted-foreground mb-3">{t('upgrade.trial')}</p>
