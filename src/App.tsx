@@ -28,6 +28,8 @@ import NotFound from "./pages/NotFound";
 import EstudoBiblicoPage from "./pages/EstudoBiblicoPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AcceptInvite from "./pages/AcceptInvite";
+import HelpCenter from "./pages/HelpCenter";
+import HelpArticlePage from "./pages/HelpArticlePage";
 
 const queryClient = new QueryClient();
 
