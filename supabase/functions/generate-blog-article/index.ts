@@ -183,10 +183,12 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
 
     // Generate up to 3 images in parallel
+    // Generate historically accurate, epoch-representative images (max 4)
     const imagePrompts = [
-      `A beautiful, warm, serene Christian devotional cover image about "${passage}". Pastoral landscape with soft golden light, peaceful atmosphere. No text, no words, no letters. Photographic style, high quality, warm earth tones.`,
-      `A contemplative Christian scene inspired by "${passage}". Soft morning light, open Bible on a wooden table, warm colors, peaceful setting. No text or letters. Artistic, editorial style photo.`,
-      `A spiritual, uplifting image representing the message of "${passage}". Nature scene with divine light rays, warm golden hour atmosphere. No text or words. Cinematic photography style.`,
+      `A historically accurate, epoch-representative scene from the Bible passage "${passage}". Ancient Middle Eastern setting with period-appropriate architecture, clothing, and landscape. If this is about Genesis, show ancient Mesopotamian aesthetics; if about Psalms, show ancient Israel with shepherds and rolling hills; if about the Gospels, show 1st century Judea. Warm earth tones, golden light, painterly oil painting style. No text, no words, no letters.`,
+      `A contemplative biblical scene inspired by "${passage}" with historical accuracy. Ancient setting with period-correct details: clay vessels, olive trees, stone buildings, desert landscape. Warm golden hour light. No text or letters. Renaissance painting style.`,
+      `A spiritual illustration of "${passage}" showing the cultural context of the biblical era. Include period-accurate clothing, tools, and environment. If Old Testament: ancient Near East aesthetics. If New Testament: Roman-era Judea. Artistic, warm tones, dramatic lighting. No text or words.`,
+      `A serene, devotional image representing the theological message of "${passage}". Biblical landscape with divine light rays, ancient architecture in the background, warm earth and gold tones. Historical accuracy in any human figures shown. Cinematic photography style. No text.`,
     ];
 
     const imageResults = await Promise.allSettled(
