@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Crown } from 'lucide-react';
+import { Crown, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export interface ToolCardData {
@@ -18,10 +18,11 @@ interface ToolCardProps {
   lang: 'PT' | 'EN' | 'ES';
   isFree: boolean;
   onClick: (tool: ToolCardData) => void;
+  onHelp?: (toolId: string) => void;
   index?: number;
 }
 
-export function ToolCard({ tool, lang, isFree, onClick, index = 0 }: ToolCardProps) {
+export function ToolCard({ tool, lang, isFree, onClick, onHelp, index = 0 }: ToolCardProps) {
   const isLocked = tool.locked && isFree;
   const Icon = tool.icon;
   const animDelay = `${index * 60}ms`;
@@ -42,6 +43,18 @@ export function ToolCard({ tool, lang, isFree, onClick, index = 0 }: ToolCardPro
           </div>
         </div>
       )}
+
+      {/* Help button */}
+      {onHelp && !isLocked && (
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHelp(tool.id); }}
+          className="absolute top-2.5 right-2.5 z-10 w-5 h-5 rounded-full bg-muted/60 hover:bg-primary/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          title={lang === 'PT' ? 'Ajuda' : lang === 'EN' ? 'Help' : 'Ayuda'}
+        >
+          <HelpCircle className="h-3 w-3 text-muted-foreground" />
+        </button>
+      )}
+
       <CardContent className="p-4">
         <div className="flex items-center text-left gap-3.5">
           <div
