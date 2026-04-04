@@ -234,7 +234,14 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     setBlockedFormats([]);
 
     try {
-      const body: Record<string, unknown> = { ...formData };
+      const isFree = profile?.plan === 'free';
+      const body: Record<string, unknown> = {
+        ...formData,
+        isFree,
+        pastoral_voice: formData.mind_id
+          ? minds.find(m => m.id === formData.mind_id)?.name || ''
+          : profile?.pastoral_voice || '',
+      };
       if (formData.mind_id) {
         body.mind_id = formData.mind_id;
       }
