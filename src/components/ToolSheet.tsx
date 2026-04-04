@@ -223,7 +223,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         language: generationLang,
       });
       if (error) throw error;
-      toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : 'Saved to Library!');
+      toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : lang === 'EN' ? 'Saved to Library!' : '¡Guardado en Biblioteca!');
     } catch (err: any) {
       toast.error(err.message);
     } finally {
