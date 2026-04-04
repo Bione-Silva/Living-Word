@@ -62,16 +62,16 @@ export function TrialCountdown() {
 
   if (isExpired) {
     return (
-      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
-          <Clock className="h-6 w-6 text-destructive" />
+      <div className="rounded-xl border-2 border-destructive/50 bg-destructive/10 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shadow-sm">
+        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-destructive/15 flex items-center justify-center shrink-0">
+          <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-destructive" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-destructive text-sm">{t.expired}</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">{t.expiredMsg}</p>
+          <h3 className="font-bold text-destructive text-sm sm:text-base">{t.expired}</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-relaxed">{t.expiredMsg}</p>
         </div>
-        <Link to="/upgrade">
-          <Button size="sm" className="gap-1.5 shrink-0">
+        <Link to="/upgrade" className="w-full sm:w-auto">
+          <Button size="sm" className="gap-1.5 w-full sm:w-auto bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold shadow-md">
             <Crown className="h-3.5 w-3.5" />
             {t.upgrade}
           </Button>
@@ -83,24 +83,28 @@ export function TrialCountdown() {
   const urgency = daysLeft <= 2;
 
   return (
-    <div className={`rounded-xl border p-4 flex items-center gap-4 ${
+    <div className={`rounded-xl border-2 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shadow-sm ${
       urgency 
-        ? 'border-orange-400/30 bg-orange-500/5' 
-        : 'border-primary/20 bg-primary/5'
+        ? 'border-orange-400/50 bg-gradient-to-r from-orange-500/10 to-amber-500/10' 
+        : 'border-primary/30 bg-gradient-to-r from-primary/8 to-primary/4'
     }`}>
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-        urgency ? 'bg-orange-500/10' : 'bg-primary/10'
+      <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 ${
+        urgency ? 'bg-orange-500/15' : 'bg-primary/15'
       }`}>
-        <Sparkles className={`h-6 w-6 ${urgency ? 'text-orange-500' : 'text-primary'}`} />
+        <Sparkles className={`h-5 w-5 sm:h-6 sm:w-6 ${urgency ? 'text-orange-500 animate-pulse' : 'text-primary'}`} />
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className={`font-semibold text-sm ${urgency ? 'text-orange-600' : 'text-foreground'}`}>
+        <h3 className={`font-bold text-sm sm:text-base ${urgency ? 'text-orange-600 dark:text-orange-400' : 'text-foreground'}`}>
           {t.trial} — {t.daysLeft} {daysLeft <= 1 ? t.hoursLeft : ''}
         </h3>
-        <p className="text-xs text-muted-foreground mt-0.5">{t.activeMsg}</p>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-relaxed">{t.activeMsg}</p>
       </div>
-      <Link to="/upgrade">
-        <Button size="sm" className="gap-1.5 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
+      <Link to="/upgrade" className="w-full sm:w-auto">
+        <Button size="sm" className={`gap-1.5 w-full sm:w-auto font-bold shadow-md ${
+          urgency 
+            ? 'bg-orange-500 text-white hover:bg-orange-600' 
+            : 'bg-primary text-primary-foreground hover:bg-primary/90'
+        }`}>
           <Crown className="h-3.5 w-3.5" />
           {t.upgrade}
         </Button>
