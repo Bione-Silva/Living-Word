@@ -63,7 +63,7 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
 
           {/* Role badge */}
           <div className="pt-2">
-            <Badge variant="outline" className="text-[11px] border-[hsl(43,55%,58%)]/20 text-[hsl(43,55%,58%)]/60 bg-[hsl(43,55%,58%)]/[0.05] gap-1.5 px-3 py-1">
+            <Badge variant="outline" className="text-[11px] border-primary/20 text-primary/70 bg-primary/[0.06] gap-1.5 px-3 py-1">
               <Zap className="h-3 w-3" />
               {mind.role[lang]}
             </Badge>
