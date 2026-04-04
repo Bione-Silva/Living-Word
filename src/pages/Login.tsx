@@ -5,10 +5,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import loginBg from '@/assets/login-bg.jpg';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -25,8 +25,6 @@ export default function Login() {
 
     try {
       if (forgotMode) {
-        
-
         await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`,
         });
@@ -44,53 +42,99 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link to="/" className="font-display text-3xl font-bold text-gradient-gold">Living Word</Link>
-        </div>
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="font-display text-2xl text-center">
-              {forgotMode ? t('auth.forgot') : t('auth.login')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {false && (
-                <Alert>
-                  <AlertDescription>
-                    O formulário está visível, mas a autenticação real será ativada quando o backend estiver configurado.
-                  </AlertDescription>
-                </Alert>
-              )}
+    <div className="min-h-screen relative flex items-center justify-center p-4" style={{ backgroundColor: 'hsl(37, 33%, 94%)' }}>
+      {/* Background image with low opacity */}
+      <img
+        src={loginBg}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover opacity-[0.35] pointer-events-none"
+        width={1920}
+        height={1080}
+      />
 
+      {/* Subtle overlay to soften */}
+      <div className="absolute inset-0 bg-[hsl(37,33%,94%)]/50 pointer-events-none" />
+
+      <div className="relative z-10 w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <Link to="/" className="font-display text-4xl font-bold" style={{ color: 'hsl(28, 42%, 38%)' }}>
+            Living Word
+          </Link>
+          <p className="text-sm mt-2" style={{ color: 'hsl(24, 15%, 45%)' }}>
+            {forgotMode
+              ? (t('auth.forgot') || 'Recuperar senha')
+              : 'Sua plataforma pastoral inteligente'}
+          </p>
+        </div>
+
+        {/* Card */}
+        <div className="rounded-2xl border border-[hsl(30,15%,82%)]/60 bg-white/80 backdrop-blur-sm shadow-[0_8px_40px_hsl(28,20%,50%,0.08)] p-8 sm:p-10">
+          <h2 className="font-display text-2xl font-bold text-center mb-7" style={{ color: 'hsl(24, 30%, 18%)' }}>
+            {forgotMode ? (t('auth.forgot') || 'Recuperar senha') : (t('auth.login') || 'Entrar')}
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-[hsl(24,20%,30%)] font-medium">{t('auth.email') || 'Email'}</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="border-[hsl(30,15%,82%)] bg-[hsl(37,30%,97%)] focus:border-[hsl(28,42%,50%)] focus:ring-[hsl(28,42%,50%)]/20 text-[hsl(24,30%,15%)] placeholder:text-[hsl(24,15%,60%)]"
+                placeholder="seu@email.com"
+              />
+            </div>
+            {!forgotMode && (
               <div className="space-y-2">
-                <Label htmlFor="email">{t('auth.email')}</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Label htmlFor="password" className="text-[hsl(24,20%,30%)] font-medium">{t('auth.password') || 'Senha'}</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="border-[hsl(30,15%,82%)] bg-[hsl(37,30%,97%)] focus:border-[hsl(28,42%,50%)] focus:ring-[hsl(28,42%,50%)]/20 text-[hsl(24,30%,15%)]"
+                  placeholder="••••••••"
+                />
               </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full py-6 text-base font-bold rounded-xl bg-[hsl(28,42%,42%)] hover:bg-[hsl(28,42%,36%)] text-white shadow-md"
+              disabled={loading}
+            >
+              {loading ? '...' : forgotMode ? 'Enviar link' : (t('auth.login') || 'Entrar')}
+            </Button>
+
+            <div className="text-center space-y-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setForgotMode(!forgotMode)}
+                className="text-sm font-medium hover:underline"
+                style={{ color: 'hsl(28, 42%, 42%)' }}
+              >
+                {forgotMode ? (t('auth.login') || 'Voltar ao login') : (t('auth.forgot') || 'Esqueci minha senha')}
+              </button>
               {!forgotMode && (
-                <div className="space-y-2">
-                  <Label htmlFor="password">{t('auth.password')}</Label>
-                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                </div>
+                <p className="text-sm" style={{ color: 'hsl(24, 15%, 50%)' }}>
+                  <Link to="/cadastro" className="font-medium hover:underline" style={{ color: 'hsl(28, 42%, 42%)' }}>
+                    {t('auth.create') || 'Criar conta'}
+                  </Link>
+                </p>
               )}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? '...' : forgotMode ? 'Enviar link' : t('auth.login')}
-              </Button>
-              <div className="text-center space-y-2">
-                <button type="button" onClick={() => setForgotMode(!forgotMode)} className="text-sm text-primary hover:underline">
-                  {forgotMode ? t('auth.login') : t('auth.forgot')}
-                </button>
-                {!forgotMode && (
-                  <p className="text-sm text-muted-foreground">
-                    <Link to="/cadastro" className="text-primary hover:underline">{t('auth.create')}</Link>
-                  </p>
-                )}
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+            </div>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-xs mt-8" style={{ color: 'hsl(24, 15%, 55%)' }}>
+          Feito com ❤️ por Living Word
+        </p>
       </div>
     </div>
   );
