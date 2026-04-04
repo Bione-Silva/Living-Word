@@ -231,32 +231,22 @@ export default function MenteChat() {
         },
       });
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: '⚠️ Erro de conexão. Tente novamente.' }]);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: lang === 'PT'
+          ? '⚠️ Erro de conexão. Tente novamente.'
+          : lang === 'EN'
+            ? '⚠️ Connection error. Please try again.'
+            : '⚠️ Error de conexión. Inténtalo de nuevo.',
+      }]);
       setIsLoading(false);
     }
   };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      send();
-    }
-  };
-
-  const handleCopy = (content: string) => {
-    navigator.clipboard.writeText(content);
-    toast.success(lang === 'PT' ? 'Texto copiado!' : lang === 'EN' ? 'Text copied!' : '¡Texto copiado!');
-  };
-
-  const handleFeedback = (index: number, type: 'up' | 'down') => {
-    setFeedback(prev => ({
-      ...prev,
-      [index]: prev[index] === type ? undefined! : type,
-    }));
+...
     if (type === 'up') {
-      toast.success(lang === 'PT' ? 'Obrigado pelo feedback! 👍' : lang === 'EN' ? 'Thanks for the feedback! 👍' : '¡Gracias por el feedback! 👍');
+      toast.success(lang === 'PT' ? 'Obrigado pelo feedback! 👍' : lang === 'EN' ? 'Thanks for the feedback! 👍' : '¡Gracias por tu feedback! 👍');
     } else {
-      toast(lang === 'PT' ? 'Feedback registrado. Vamos melhorar! 🙏' : lang === 'EN' ? 'Feedback noted. We\'ll improve! 🙏' : 'Feedback registrado. ¡Mejoraremos! 🙏');
+      toast(lang === 'PT' ? 'Feedback registrado. Vamos melhorar! 🙏' : lang === 'EN' ? 'Feedback noted. We\'ll improve! 🙏' : 'Feedback registrado. ¡Vamos a mejorar! 🙏');
     }
   };
 
