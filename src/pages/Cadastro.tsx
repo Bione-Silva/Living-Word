@@ -51,10 +51,11 @@ export default function Cadastro() {
       });
       toast.success(lang === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' : 'Account created! Generating your first devotionals...');
 
-      // Auto-generate 2 devotionals in background
+      // Auto-generate articles in background
       generateInitialContent().catch(console.error);
 
-      navigate('/dashboard');
+      // Redirect to blog onboarding
+      navigate('/blog-onboarding');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao criar conta');
     } finally {
