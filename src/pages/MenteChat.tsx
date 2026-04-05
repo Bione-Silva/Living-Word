@@ -1,11 +1,13 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, ThumbsUp, ThumbsDown, Copy, Sparkles, X } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, ThumbsUp, ThumbsDown, Copy, Sparkles, X, Save } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { minds } from '@/data/minds';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import { supabase } from '@/integrations/supabase/client';
 
 type L = 'PT' | 'EN' | 'ES';
 type Msg = { role: 'user' | 'assistant'; content: string };
