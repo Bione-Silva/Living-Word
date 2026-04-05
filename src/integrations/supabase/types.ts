@@ -498,6 +498,54 @@ export type Database = {
         }
         Relationships: []
       }
+      public_blog_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          blog_handle: string | null
+          blog_name: string | null
+          church_name: string | null
+          city: string | null
+          country: string | null
+          font_family: string | null
+          full_name: string | null
+          id: string | null
+          language: string | null
+          layout_style: string | null
+          theme_color: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          blog_handle?: string | null
+          blog_name?: string | null
+          church_name?: string | null
+          city?: string | null
+          country?: string | null
+          font_family?: string | null
+          full_name?: string | null
+          id?: string | null
+          language?: string | null
+          layout_style?: string | null
+          theme_color?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          blog_handle?: string | null
+          blog_name?: string | null
+          church_name?: string | null
+          city?: string | null
+          country?: string | null
+          font_family?: string | null
+          full_name?: string | null
+          id?: string | null
+          language?: string | null
+          layout_style?: string | null
+          theme_color?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_admin_ai_metrics: { Args: never; Returns: Json }
@@ -513,6 +561,7 @@ export type Database = {
           users_trialing: number
         }[]
       }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
