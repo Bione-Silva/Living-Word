@@ -191,6 +191,21 @@ Write everything in ${targetLang}. Depth: ${depthDesc}.${cautionInstruction}`;
     const aiData = await aiResponse.json();
     let rawContent = aiData.choices?.[0]?.message?.content || "";
 
+    // Log generation for AI billing
+    const usageData = aiData.usage;
+    if (usageData) {
+      const adminClient = createClient(supabaseUrl, serviceRoleKey);
+      await adminClient.from("generation_logs").insert({
+        user_id: userId,
+        feature: "Estudo Bíblico",
+        model: "google/gemini-2.5-flash",
+        input_tokens: usageData.prompt_tokens || 0,
+        output_tokens: usageData.completion_tokens || 0,
+        total_tokens: usageData.total_tokens || 0,
+        cost_usd: ((usageData.prompt_tokens || 0) * 0.0000001 + (usageData.completion_tokens || 0) * 0.0000004),
+      });
+    }
+
     // Strip markdown code fences if present
     rawContent = rawContent.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
 
