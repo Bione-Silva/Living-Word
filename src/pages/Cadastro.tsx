@@ -80,12 +80,11 @@ export default function Cadastro() {
       }
 
       toast.success(
-        language === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' :
-        language === 'EN' ? 'Account created! Generating your first devotionals...' :
-        '¡Cuenta creada! Generando tus primeros devocionales...'
+        language === 'PT' ? 'Conta criada! Vamos personalizar seu blog.' :
+        language === 'EN' ? 'Account created! Let\'s personalize your blog.' :
+        '¡Cuenta creada! Personalicemos tu blog.'
       );
 
-      generateInitialContent().catch(console.error);
       navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/blog-onboarding');
     } catch (err: any) {
       console.error('Signup error:', err);
