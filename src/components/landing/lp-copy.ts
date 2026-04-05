@@ -252,7 +252,7 @@ export const pricing = {
     PT: [
       {
         name: 'Free', price: '0', features: [
-          '5 gerações por mês', '3 formatos de saída', '1 artigo de blog', 'Marca d'água no conteúdo',
+          '5 gerações por mês', '3 formatos de saída', '1 artigo de blog', 'Marca d\u2019água no conteúdo',
           'Idioma principal apenas', 'Sem calendário editorial', 'Sem exportação Word/PDF',
         ],
       },
