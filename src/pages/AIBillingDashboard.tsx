@@ -33,8 +33,12 @@ export default function AIBillingDashboard() {
     try {
       const { data: rpcData, error } = await supabase.rpc('get_admin_ai_metrics' as any);
       if (!error && rpcData) {
-        setData(rpcData as unknown as AIMetrics);
-        setIsRealData(true);
+        const metrics = rpcData as unknown as AIMetrics;
+        // Only use real data if there are actual generations
+        if (metrics.total_generations > 0) {
+          setData(metrics);
+          setIsRealData(true);
+        }
       }
     } catch {
       // RPC not available yet, keep mock data

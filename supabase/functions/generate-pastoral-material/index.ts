@@ -32,6 +32,7 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
 
     if (!lovableApiKey) {
@@ -205,6 +206,21 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
 
       const aiData = await aiResponse.json();
       outputs[mode] = aiData.choices?.[0]?.message?.content || "";
+
+      // Log generation for AI billing
+      const usage = aiData.usage;
+      if (usage) {
+        const adminClient = createClient(supabaseUrl, serviceRoleKey);
+        await adminClient.from("generation_logs").insert({
+          user_id: userId,
+          feature: mode,
+          model: "google/gemini-3-flash-preview",
+          input_tokens: usage.prompt_tokens || 0,
+          output_tokens: usage.completion_tokens || 0,
+          total_tokens: usage.total_tokens || 0,
+          cost_usd: ((usage.prompt_tokens || 0) * 0.0000001 + (usage.completion_tokens || 0) * 0.0000004),
+        });
+      }
     }
 
     // Increment generations_used
