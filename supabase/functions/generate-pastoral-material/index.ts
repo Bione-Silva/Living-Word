@@ -180,6 +180,10 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
 
     // Generate content for each allowed mode
     const outputs: Record<string, string> = {};
+    const meta: Record<string, { tokens: number; words: number; cost_usd: number; attempts: number }> = {};
+    const startTime = Date.now();
+    let totalTokensAll = 0;
+    let totalCostAll = 0;
 
     for (const mode of allowedModes) {
       const userPrompt = formatPrompts[mode];
@@ -190,8 +194,10 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
       let bestWordCount = 0;
       let lastUsage: Record<string, number> | null = null;
       let errorOccurred = false;
+      let attemptsTaken = 0;
 
       for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        attemptsTaken = attempt + 1;
         const retryHint = attempt > 0
           ? `\n\nCRITICAL: Your previous response had only ${bestWordCount} words. The ABSOLUTE MINIMUM is ${requiredMin} words. You MUST write significantly more. Expand every section with detailed explanations, examples, illustrations, and applications. Do NOT summarize.`
           : "";
@@ -255,6 +261,11 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
       }
 
       if (lastUsage) {
+        const tokens = lastUsage.total_tokens || 0;
+        const cost = (lastUsage.prompt_tokens || 0) * 0.0000001 + (lastUsage.completion_tokens || 0) * 0.0000004;
+        totalTokensAll += tokens;
+        totalCostAll += cost;
+        meta[mode] = { tokens, words: bestWordCount, cost_usd: cost, attempts: attemptsTaken };
         const adminClient = createClient(supabaseUrl, serviceRoleKey);
         await adminClient.from("generation_logs").insert({
           user_id: userId,
@@ -267,6 +278,8 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
         });
       }
     }
+
+    const elapsedMs = Date.now() - startTime;
 
     // Increment generations_used
     await supabase
@@ -292,6 +305,13 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
         blocked_formats: blockedFormats,
         generations_remaining: generationsRemaining,
         upgrade_hint: upgradeHint,
+        generation_meta: {
+          model: "google/gemini-3-flash-preview",
+          total_tokens: totalTokensAll,
+          total_cost_usd: totalCostAll,
+          elapsed_ms: elapsedMs,
+          per_format: meta,
+        },
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
