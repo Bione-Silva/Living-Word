@@ -75,7 +75,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto p-0 border-none rounded-2xl shadow-2xl [color-scheme:light]"
+        className="max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col min-h-0 p-0 border-none rounded-2xl shadow-2xl [color-scheme:light]"
         style={{ backgroundColor: '#f7f5f0', color: '#1e1710' }}
       >
         {/* Action buttons */}
@@ -101,70 +101,72 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
 
         <DialogTitle className="sr-only">{item.title}</DialogTitle>
 
-        <div ref={contentRef} style={{ backgroundColor: '#f7f5f0' }}>
-          {/* Cover image */}
-          {item.cover_image_url && (
-            <div className="w-full h-56 md:h-72 overflow-hidden rounded-t-2xl">
-              <img
-                src={item.cover_image_url}
-                alt={item.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-
-          {/* Article content */}
-          <div className="px-6 md:px-12 py-8 md:py-10 max-w-3xl mx-auto">
-            <h1
-              className="font-display text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4"
-              style={{ color: '#3c2f21' }}
-            >
-              {item.title}
-            </h1>
-
-            {item.passage && (
-              <p className="text-sm flex items-center gap-1.5 mb-6" style={{ color: '#8B7355' }}>
-                <BookOpen className="w-4 h-4" /> {item.passage}
-              </p>
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <div ref={contentRef} style={{ backgroundColor: '#f7f5f0' }}>
+            {/* Cover image */}
+            {item.cover_image_url && (
+              <div className="w-full h-56 md:h-72 overflow-hidden rounded-t-2xl">
+                <img
+                  src={item.cover_image_url}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             )}
 
-            <div className="w-16 h-0.5 mb-8" style={{ backgroundColor: '#C4956A' }} />
+            {/* Article content */}
+            <div className="px-6 md:px-12 py-8 md:py-10 max-w-3xl mx-auto">
+              <h1
+                className="font-display text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4"
+                style={{ color: '#3c2f21' }}
+              >
+                {item.title}
+              </h1>
 
-            <div
-              className="prose prose-lg max-w-none
-                prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight
-                prose-p:leading-relaxed
-                prose-blockquote:border-l-4 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-                prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-8
-                prose-a:underline
-                prose-li:leading-relaxed
-                prose-strong:font-bold
-              "
-              style={{
-                '--tw-prose-headings': '#1a1208',
-                '--tw-prose-body': '#1e1710',
-                '--tw-prose-bold': '#1a1208',
-                '--tw-prose-quotes': '#2a1f14',
-                '--tw-prose-quote-borders': '#C4956A',
-                '--tw-prose-links': '#4a3218',
-                '--tw-prose-bullets': '#6B4F3A',
-                '--tw-prose-counters': '#6B4F3A',
-                '--tw-prose-hr': '#d4c8b8',
-                '--tw-prose-th-borders': '#d4c8b8',
-                '--tw-prose-td-borders': '#e7dfd5',
-                '--tw-prose-code': '#1a1208',
-                '--tw-prose-pre-bg': '#eae4d9',
-                '--tw-prose-pre-code': '#1e1710',
-                color: '#1e1710',
-              } as React.CSSProperties}
-            >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {finalContent}
-              </ReactMarkdown>
-            </div>
+              {item.passage && (
+                <p className="text-sm flex items-center gap-1.5 mb-6" style={{ color: '#8B7355' }}>
+                  <BookOpen className="w-4 h-4" /> {item.passage}
+                </p>
+              )}
 
-            <div className="mt-10 pt-6 border-t text-center text-xs" style={{ borderColor: '#d4c8b8', color: '#a0906e' }}>
-              Feito com ❤️ pela Living Word
+              <div className="w-16 h-0.5 mb-8" style={{ backgroundColor: '#C4956A' }} />
+
+              <div
+                className="prose prose-lg max-w-none
+                  prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight
+                  prose-p:leading-relaxed
+                  prose-blockquote:border-l-4 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+                  prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-8
+                  prose-a:underline
+                  prose-li:leading-relaxed
+                  prose-strong:font-bold
+                "
+                style={{
+                  '--tw-prose-headings': '#1a1208',
+                  '--tw-prose-body': '#1e1710',
+                  '--tw-prose-bold': '#1a1208',
+                  '--tw-prose-quotes': '#2a1f14',
+                  '--tw-prose-quote-borders': '#C4956A',
+                  '--tw-prose-links': '#4a3218',
+                  '--tw-prose-bullets': '#6B4F3A',
+                  '--tw-prose-counters': '#6B4F3A',
+                  '--tw-prose-hr': '#d4c8b8',
+                  '--tw-prose-th-borders': '#d4c8b8',
+                  '--tw-prose-td-borders': '#e7dfd5',
+                  '--tw-prose-code': '#1a1208',
+                  '--tw-prose-pre-bg': '#eae4d9',
+                  '--tw-prose-pre-code': '#1e1710',
+                  color: '#1e1710',
+                } as React.CSSProperties}
+              >
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {finalContent}
+                </ReactMarkdown>
+              </div>
+
+              <div className="mt-10 pt-6 border-t text-center text-xs" style={{ borderColor: '#d4c8b8', color: '#a0906e' }}>
+                Feito com ❤️ pela Living Word
+              </div>
             </div>
           </div>
         </div>
