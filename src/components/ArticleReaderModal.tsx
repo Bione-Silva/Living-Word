@@ -75,8 +75,8 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto p-0 border-none rounded-2xl shadow-2xl"
-        style={{ backgroundColor: '#f7f5f0' }}
+        className="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto p-0 border-none rounded-2xl shadow-2xl [color-scheme:light]"
+        style={{ backgroundColor: '#f7f5f0', color: '#1e1710' }}
       >
         {/* Action buttons */}
         <div className="absolute right-4 top-4 z-20 flex items-center gap-1">
@@ -131,12 +131,14 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
             <div className="w-16 h-0.5 mb-8" style={{ backgroundColor: '#C4956A' }} />
 
             <div
-              className="prose prose-stone prose-lg max-w-none
+              className="prose prose-lg max-w-none
                 prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight
                 prose-p:leading-relaxed
                 prose-blockquote:border-l-4 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
                 prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-8
                 prose-a:underline
+                prose-li:leading-relaxed
+                prose-strong:font-bold
               "
               style={{
                 '--tw-prose-headings': '#1a1208',
@@ -145,6 +147,15 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
                 '--tw-prose-quotes': '#2a1f14',
                 '--tw-prose-quote-borders': '#C4956A',
                 '--tw-prose-links': '#4a3218',
+                '--tw-prose-bullets': '#6B4F3A',
+                '--tw-prose-counters': '#6B4F3A',
+                '--tw-prose-hr': '#d4c8b8',
+                '--tw-prose-th-borders': '#d4c8b8',
+                '--tw-prose-td-borders': '#e7dfd5',
+                '--tw-prose-code': '#1a1208',
+                '--tw-prose-pre-bg': '#eae4d9',
+                '--tw-prose-pre-code': '#1e1710',
+                color: '#1e1710',
               } as React.CSSProperties}
             >
               <ReactMarkdown remarkPlugins={[remarkGfm]}>

@@ -193,27 +193,28 @@
   /* ── Premium pastoral prose for rich AI-generated markdown ── */
   .pastoral-prose {
     @apply leading-relaxed;
+    color: hsl(var(--foreground));
   }
   .pastoral-prose :where(h1) {
-    @apply text-2xl font-bold mt-6 mb-3 pb-2 border-b border-border/40;
+    @apply text-2xl font-bold mt-6 mb-3 pb-2 border-b border-border/40 text-foreground;
   }
   .pastoral-prose :where(h2) {
-    @apply text-xl font-semibold mt-6 mb-2;
+    @apply text-xl font-semibold mt-6 mb-2 text-foreground;
   }
   .pastoral-prose :where(h3) {
-    @apply text-lg font-semibold mt-4 mb-2;
+    @apply text-lg font-semibold mt-4 mb-2 text-foreground;
   }
   .pastoral-prose :where(h4) {
-    @apply text-base font-semibold mt-3 mb-1;
+    @apply text-base font-semibold mt-3 mb-1 text-foreground;
   }
   .pastoral-prose :where(p) {
-    @apply mb-3 leading-relaxed;
+    @apply mb-3 leading-relaxed text-foreground;
   }
   .pastoral-prose :where(ul, ol) {
     @apply mb-3 pl-5 space-y-1.5;
   }
   .pastoral-prose :where(li) {
-    @apply leading-relaxed;
+    @apply leading-relaxed text-foreground;
   }
   .pastoral-prose :where(blockquote) {
     @apply my-4 pl-4 border-l-4 border-primary/30 italic text-foreground/80;
@@ -222,7 +223,7 @@
     @apply my-6 border-border/50;
   }
   .pastoral-prose :where(strong) {
-    @apply font-bold;
+    @apply font-bold text-foreground;
   }
   .pastoral-prose :where(em) {
     @apply italic;
