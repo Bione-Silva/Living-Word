@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { minds } from '@/data/minds';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
-
+import { helpFullArticles, helpCategories } from '@/data/help-center-data';
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
 interface PastoralStudioModalProps {
