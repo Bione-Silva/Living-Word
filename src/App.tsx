@@ -92,6 +92,7 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
                 <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
+                <Route path="/expos" element={<ExposStudioPage />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/biblioteca" element={<Biblioteca />} />
                 <Route path="/calendario" element={<Calendario />} />
