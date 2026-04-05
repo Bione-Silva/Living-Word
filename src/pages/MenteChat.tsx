@@ -31,9 +31,9 @@ const welcomeMessages: Record<string, Record<L, (name: string) => string>> = {
     ES: (n) => `¡Buenos días! Soy ${n}. Estoy aquí para guiar tu devocional. ¿Qué pasaje o tema te gustaría meditar hoy?`,
   },
   sermao: {
-    PT: (n) => `Olá, pastor. Sou ${n}. Vamos preparar um sermão juntos. Me diga: qual é o texto bíblico, quem é o público e qual o contexto do culto?`,
-    EN: (n) => `Hello, pastor. I'm ${n}. Let's prepare a sermon together. Tell me: what's the biblical text, who's the audience, and what's the service context?`,
-    ES: (n) => `Hola, pastor. Soy ${n}. Preparemos un sermón juntos. Dime: ¿cuál es el texto bíblico, quién es el público y cuál es el contexto del culto?`,
+    PT: (n) => `Paz, meu querido(a)! Que privilégio poder caminhar contigo nessa construção. Sou ${n}, e estou aqui para te ajudar a preparar um **sermão completo e profissional**.\n\nPara que eu possa estruturar esse sermão com a precisão de um mentor e a unção de um pastor, preciso de três informações estratégicas:\n\n**📖 O Texto Base:** Você já tem uma passagem em mente que está queimando no seu coração? Se não tiver, posso sugerir uma.\n\n**👥 O Público-Alvo:** É uma igreja de famílias, jovens, empresários, ou uma congregação mais madura e tradicional? Isso muda o tom da entrega.\n\n**💔 O "Ponto de Dor":** Qual a maior dificuldade que você percebe na sua igreja hoje? (Ex: falta de propósito, conflitos, luto, crise financeira...)\n\n*Me dê esses detalhes e eu vou montar o sermão completo para você!*`,
+    EN: (n) => `Peace, dear one! What a privilege to walk with you in this process. I'm ${n}, and I'm here to help you prepare a **complete, professional sermon**.\n\nTo structure this sermon with both precision and anointing, I need three key pieces of information:\n\n**📖 The Base Text:** Do you already have a passage burning in your heart? If not, I can suggest one.\n\n**👥 The Audience:** Is it a family church, youth group, leaders, or a more mature congregation? This changes the delivery tone.\n\n**💔 The "Pain Point":** What's the biggest struggle you see in your church today? (e.g.: lack of purpose, conflict, grief, financial crisis...)\n\n*Give me these details and I'll build the complete sermon for you!*`,
+    ES: (n) => `¡Paz, querido(a)! Qué privilegio caminar contigo en esta construcción. Soy ${n}, y estoy aquí para ayudarte a preparar un **sermón completo y profesional**.\n\nPara estructurar este sermón con precisión y unción, necesito tres informaciones clave:\n\n**📖 El Texto Base:** ¿Ya tienes un pasaje en mente? Si no, puedo sugerir uno.\n\n**👥 El Público:** ¿Es una iglesia de familias, jóvenes, líderes, o una congregación más madura? Esto cambia el tono.\n\n**💔 El "Punto de Dolor":** ¿Cuál es la mayor dificultad que percibes en tu iglesia hoy?\n\n*¡Dame esos detalles y te preparo el sermón completo!*`,
   },
   aconselhamento: {
     PT: (n) => `Paz do Senhor. Sou ${n}. Estou aqui para ouvi-lo com o coração aberto. O que está pesando em sua alma hoje?`,
@@ -41,9 +41,9 @@ const welcomeMessages: Record<string, Record<L, (name: string) => string>> = {
     ES: (n) => `Paz del Señor. Soy ${n}. Estoy aquí para escucharte con el corazón abierto. ¿Qué pesa en tu alma hoy?`,
   },
   estudo: {
-    PT: (n) => `Saudações! Sou ${n}. Vamos mergulhar profundamente nas Escrituras. Qual doutrina, passagem ou questão teológica deseja explorar?`,
-    EN: (n) => `Greetings! I'm ${n}. Let's dive deep into the Scriptures. Which doctrine, passage, or theological question would you like to explore?`,
-    ES: (n) => `¡Saludos! Soy ${n}. Sumerjámonos en las Escrituras. ¿Qué doctrina, pasaje o cuestión teológica deseas explorar?`,
+    PT: (n) => `Saudações, irmão(ã)! Sou ${n}. Que alegria poder mergulhar nas Escrituras contigo.\n\nPara preparar um **estudo bíblico completo e profundo**, me diga:\n\n**📖 Passagem ou Tema:** Qual texto ou doutrina deseja explorar?\n\n**🎯 Propósito:** É para estudo pessoal, escola bíblica, célula ou discipulado?\n\n**📊 Profundidade:** Quer algo panorâmico ou um deep dive exegético?\n\n*Com essas informações, vou gerar o estudo completo para você!*`,
+    EN: (n) => `Greetings! I'm ${n}. What a joy to dive into the Scriptures with you.\n\nTo prepare a **complete, in-depth Bible study**, tell me:\n\n**📖 Passage or Topic:** Which text or doctrine would you like to explore?\n\n**🎯 Purpose:** Is it for personal study, Sunday school, small group, or discipleship?\n\n**📊 Depth:** Do you want an overview or a deep exegetical dive?\n\n*With these details, I'll generate the complete study for you!*`,
+    ES: (n) => `¡Saludos! Soy ${n}. Qué gozo poder sumergirnos en las Escrituras juntos.\n\nPara preparar un **estudio bíblico completo y profundo**, dime:\n\n**📖 Pasaje o Tema:** ¿Qué texto o doctrina deseas explorar?\n\n**🎯 Propósito:** ¿Es para estudio personal, escuela bíblica, célula o discipulado?\n\n**📊 Profundidad:** ¿Quieres algo panorámico o un deep dive exegético?\n\n*¡Con esos detalles, te genero el estudio completo!*`,
   },
 };
 
