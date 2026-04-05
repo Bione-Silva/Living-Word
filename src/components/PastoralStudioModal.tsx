@@ -614,9 +614,11 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                 {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
               </DialogDescription>
             </DialogHeader>
-            <div className="flex-1 overflow-y-auto prose prose-base max-w-none bg-muted/20 rounded-lg p-6">
-              <ReactMarkdown>{outputs[expandedTab] || ''}</ReactMarkdown>
-            </div>
+            <ScrollArea className="flex-1 bg-muted/20 rounded-lg">
+              <div className="prose prose-base pastoral-prose max-w-none p-6 lg:p-8">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{outputs[expandedTab] || ''}</ReactMarkdown>
+              </div>
+            </ScrollArea>
             <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
               <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
                 <Copy className="h-3 w-3" /> {text.copyCurrent}

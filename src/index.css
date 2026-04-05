@@ -190,6 +190,53 @@
     --tw-prose-td-borders: hsl(30 15% 85%);
   }
 
+  /* ── Premium pastoral prose for rich AI-generated markdown ── */
+  .pastoral-prose {
+    @apply leading-relaxed;
+  }
+  .pastoral-prose :where(h1) {
+    @apply text-2xl font-bold mt-6 mb-3 pb-2 border-b border-border/40;
+  }
+  .pastoral-prose :where(h2) {
+    @apply text-xl font-semibold mt-6 mb-2;
+  }
+  .pastoral-prose :where(h3) {
+    @apply text-lg font-semibold mt-4 mb-2;
+  }
+  .pastoral-prose :where(h4) {
+    @apply text-base font-semibold mt-3 mb-1;
+  }
+  .pastoral-prose :where(p) {
+    @apply mb-3 leading-relaxed;
+  }
+  .pastoral-prose :where(ul, ol) {
+    @apply mb-3 pl-5 space-y-1.5;
+  }
+  .pastoral-prose :where(li) {
+    @apply leading-relaxed;
+  }
+  .pastoral-prose :where(blockquote) {
+    @apply my-4 pl-4 border-l-4 border-primary/30 italic text-foreground/80;
+  }
+  .pastoral-prose :where(hr) {
+    @apply my-6 border-border/50;
+  }
+  .pastoral-prose :where(strong) {
+    @apply font-bold;
+  }
+  .pastoral-prose :where(em) {
+    @apply italic;
+  }
+  .pastoral-prose :where(table) {
+    @apply w-full text-sm my-4 border-collapse;
+  }
+  .pastoral-prose :where(th) {
+    @apply text-left font-semibold p-2 border-b-2 border-border;
+  }
+  .pastoral-prose :where(td) {
+    @apply p-2 border-b border-border/50;
+  }
+
   .watermark-free {
     @apply relative;
   }
