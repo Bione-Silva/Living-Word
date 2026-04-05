@@ -328,7 +328,7 @@ export default function ExposStudioPage() {
                   ref={editorRef}
                   className="rounded-b-xl border border-t-0 border-border bg-background p-8 md:p-12"
                 >
-                  <article className="prose prose-stone dark:prose-invert max-w-none prose-headings:font-display prose-h1:text-2xl prose-h1:mb-6 prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-p:leading-relaxed prose-p:text-foreground/85 prose-li:text-foreground/85 prose-strong:text-foreground prose-blockquote:border-primary/40 prose-blockquote:text-muted-foreground">
+                  <article className="prose prose-stone dark:prose-invert max-w-none prose-headings:font-display prose-h1:text-2xl prose-h1:mb-6 prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-p:leading-relaxed prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground prose-blockquote:border-primary/40 prose-blockquote:text-foreground/80">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {markdown}
                     </ReactMarkdown>
