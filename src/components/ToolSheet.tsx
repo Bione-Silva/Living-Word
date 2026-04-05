@@ -362,7 +362,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           );
         })()}
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-1">
           <div className="space-y-2">
             <Label className="font-medium">{config.inputLabel[lang]}</Label>
             {config.useTextarea ? (
