@@ -325,7 +325,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           const bullets = article?.heroBullets || [];
 
           return (
-            <div className="space-y-3 pb-4 border-b border-border">
+            <div className="space-y-3 pb-2 border-b border-border">
               <div className="flex items-start gap-3">
                 {IconComp && (
                   <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
@@ -362,7 +362,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           );
         })()}
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-1">
           <div className="space-y-2">
             <Label className="font-medium">{config.inputLabel[lang]}</Label>
             {config.useTextarea ? (
