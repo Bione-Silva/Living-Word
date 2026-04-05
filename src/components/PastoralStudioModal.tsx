@@ -15,6 +15,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { minds } from '@/data/minds';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
 import { helpFullArticles, helpCategories } from '@/data/help-center-data';
