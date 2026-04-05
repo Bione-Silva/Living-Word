@@ -315,14 +315,54 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
-        <DialogHeader>
-          <DialogTitle className="font-display text-2xl">{toolTitle}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {lang === 'PT' ? 'Ferramenta pastoral' : 'Pastoral tool'}
-          </DialogDescription>
-        </DialogHeader>
+        {/* ── Help hero header ── */}
+        {(() => {
+          const article = helpFullArticles.find(a => a.toolId === toolId);
+          const toolCard = helpCategories.flatMap(c => c.tools).find(t => t.id === toolId);
+          const IconComp = article?.icon || toolCard?.icon;
+          const subtitle = article?.subtitle?.[lang] || toolCard?.description?.[lang] || '';
+          const summary = article?.heroSummary?.[lang] || '';
+          const bullets = article?.heroBullets || [];
 
-        <div className="space-y-4 mt-2">
+          return (
+            <div className="space-y-3 pb-3 border-b border-border/60">
+              <div className="flex items-start gap-3">
+                {IconComp && (
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <IconComp className="h-6 w-6 text-primary" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <DialogHeader className="p-0 space-y-0.5">
+                    <DialogTitle className="font-display text-xl leading-tight">{toolTitle}</DialogTitle>
+                    {subtitle && (
+                      <DialogDescription className="text-sm text-primary/80 italic">
+                        {subtitle}
+                      </DialogDescription>
+                    )}
+                  </DialogHeader>
+                </div>
+              </div>
+
+              {summary && (
+                <p className="text-sm text-muted-foreground leading-relaxed">{summary}</p>
+              )}
+
+              {bullets.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {bullets.map((b, i) => (
+                    <div key={i} className="flex items-start gap-2 rounded-lg border border-border/50 bg-muted/30 px-3 py-2 text-xs text-foreground">
+                      <Zap className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                      <span>{b[lang]}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label className="font-medium">{config.inputLabel[lang]}</Label>
             {config.useTextarea ? (
