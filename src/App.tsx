@@ -31,6 +31,7 @@ import AIBillingDashboard from "./pages/AIBillingDashboard";
 import AcceptInvite from "./pages/AcceptInvite";
 import HelpCenter from "./pages/HelpCenter";
 import HelpArticlePage from "./pages/HelpArticlePage";
+import ExposStudioPage from "./pages/ExposStudioPage";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,7 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
                 <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
+                <Route path="/expos" element={<ExposStudioPage />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/biblioteca" element={<Biblioteca />} />
                 <Route path="/calendario" element={<Calendario />} />
