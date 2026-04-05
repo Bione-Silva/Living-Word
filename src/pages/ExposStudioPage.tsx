@@ -50,7 +50,7 @@ const formats = [
 
 export default function ExposStudioPage() {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const [passagem, setPassagem] = useState('');
   const [formato, setFormato] = useState('individual');
   const [isLoading, setIsLoading] = useState(false);

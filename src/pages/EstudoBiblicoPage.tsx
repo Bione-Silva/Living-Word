@@ -122,7 +122,7 @@ export default function EstudoBiblicoPage() {
         {/* Right main area */}
         <div className="flex-1 min-w-0">
           {result?.caution_mode && (
-            <Alert className="mb-4 border-yellow-300 bg-yellow-50 text-yellow-900">
+            <Alert className="mb-4 border-primary/30 bg-primary/5 text-foreground">
               <ShieldAlert className="h-4 w-4" />
               <AlertTitle>{t('study.sensitive_title')}</AlertTitle>
               <AlertDescription>
