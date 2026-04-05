@@ -150,12 +150,6 @@ export default function EstudoBiblicoPage() {
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <h2 className="font-display text-lg font-semibold">{t('study.result_title')}</h2>
-                  {!isFree && (
-                    <Badge variant="secondary" className="text-[10px] gap-1">
-                      <Zap className="h-3 w-3" />
-                      GPT-4o
-                    </Badge>
-                  )}
                 </div>
                 <StudyActions study={study} />
               </div>
