@@ -633,7 +633,7 @@ export default function Landing() {
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.how.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.how.h2[lang]}</h2>
-          <div className="space-y-0">
+          <div className="space-y-0 mb-10">
             {copy.how.steps.map((step, i) => (
               <RevealOnScroll key={i} delay={i * 0.18}>
                 <div className="flex gap-5 py-5" style={{ borderBottom: i < 2 ? '1px solid rgba(107,79,58,0.1)' : 'none' }}>
@@ -647,6 +647,72 @@ export default function Landing() {
               </RevealOnScroll>
             ))}
           </div>
+
+          {/* MacBook Mockup */}
+          <RevealOnScroll delay={0.3}>
+            <div className="max-w-2xl mx-auto">
+              <div className="rounded-t-xl overflow-hidden" style={{ background: '#E8E0D4', border: '2px solid rgba(107,79,58,0.15)' }}>
+                <div className="flex items-center gap-1.5 px-3 py-2" style={{ background: '#E8E0D4' }}>
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#EF6B5F' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#F5BD4F' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#61C554' }} />
+                  <div className="flex-1 text-center">
+                    <span className="text-[10px] font-medium px-4 py-0.5 rounded" style={{ background: 'rgba(107,79,58,0.08)', color: '#8B7355' }}>app.livingword.com</span>
+                  </div>
+                </div>
+                <div className="px-4 py-4" style={{ background: '#F5F0E8', minHeight: '260px' }}>
+                  <div className="flex gap-4">
+                    <div className="flex-1 space-y-2.5">
+                      <p className="text-[11px] font-bold" style={{ color: '#3D2B1F' }}>
+                        📖 {lang === 'PT' ? 'Estúdio Pastoral' : lang === 'EN' ? 'Pastoral Studio' : 'Estudio Pastoral'}
+                      </p>
+                      {[
+                        { l: lang === 'PT' ? 'Passagem bíblica' : lang === 'EN' ? 'Bible passage' : 'Pasaje bíblico', v: lang === 'PT' ? 'João 15:1-8' : lang === 'EN' ? 'John 15:1-8' : 'Juan 15:1-8' },
+                        { l: lang === 'PT' ? 'Público' : lang === 'EN' ? 'Audience' : 'Público', v: lang === 'PT' ? 'Jovens adultos' : lang === 'EN' ? 'Young adults' : 'Jóvenes adultos' },
+                        { l: lang === 'PT' ? 'Tema / Dor' : lang === 'EN' ? 'Topic / Pain' : 'Tema / Dolor', v: lang === 'PT' ? 'Propósito de vida' : lang === 'EN' ? 'Life purpose' : 'Propósito de vida' },
+                      ].map((f, i) => (
+                        <div key={i}>
+                          <p className="text-[7px] font-semibold mb-0.5" style={{ color: '#8B7355' }}>{f.l}</p>
+                          <div className="rounded px-2 py-1 text-[8px]" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.12)', color: '#3D2B1F' }}>{f.v}</div>
+                        </div>
+                      ))}
+                      <div className="flex gap-1.5 pt-1">
+                        {['PT', 'EN', 'ES'].map((l) => (
+                          <span key={l} className="text-[7px] font-semibold px-2 py-0.5 rounded" style={{ background: l === 'PT' ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === 'PT' ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
+                        ))}
+                      </div>
+                      <div className="rounded px-3 py-1.5 text-center text-[9px] font-semibold" style={{ background: '#C4956A', color: '#3D2B1F' }}>
+                        {lang === 'PT' ? 'Gerar conteúdo →' : lang === 'EN' ? 'Generate content →' : 'Generar contenido →'}
+                      </div>
+                    </div>
+                    <div className="flex-1 hidden sm:block">
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {[
+                          lang === 'PT' ? 'Sermão' : lang === 'EN' ? 'Sermon' : 'Sermón',
+                          lang === 'PT' ? 'Devocional' : 'Devotional',
+                          lang === 'PT' ? 'Estudo' : lang === 'EN' ? 'Study' : 'Estudio',
+                          lang === 'PT' ? 'Artigo' : lang === 'EN' ? 'Article' : 'Artículo',
+                          'Blog', lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula',
+                          'EN', 'ES',
+                        ].map((tab, i) => (
+                          <span key={i} className="text-[7px] font-semibold px-1.5 py-0.5 rounded" style={{ background: i === 0 ? '#6B4F3A' : 'rgba(107,79,58,0.08)', color: i === 0 ? '#F5F0E8' : '#8B7355' }}>{tab}</span>
+                        ))}
+                      </div>
+                      <div className="rounded-lg p-2.5 space-y-1.5" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.08)' }}>
+                        <div className="h-2 rounded w-3/4" style={{ background: '#EDD9C8' }} />
+                        <div className="h-1.5 rounded w-full" style={{ background: '#F5F0E8' }} />
+                        <div className="h-1.5 rounded w-full" style={{ background: '#F5F0E8' }} />
+                        <div className="h-1.5 rounded w-5/6" style={{ background: '#F5F0E8' }} />
+                        <div className="h-1.5 rounded w-full" style={{ background: '#F5F0E8' }} />
+                        <div className="h-1.5 rounded w-2/3" style={{ background: '#F5F0E8' }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="h-3 rounded-b-lg mx-8" style={{ background: '#D5CCBE', borderTop: '1px solid rgba(107,79,58,0.1)' }} />
+            </div>
+          </RevealOnScroll>
         </div>
       </section>
 
