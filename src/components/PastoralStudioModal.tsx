@@ -575,9 +575,11 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                     {availableTabs.map((mode) => (
                       <TabsContent key={mode} value={mode} className="mt-4">
                         <div className="relative">
-                          <div className="prose prose-sm max-w-none rounded-lg border border-border/60 bg-muted/20 p-4 max-h-[56vh] overflow-y-auto">
-                            <ReactMarkdown>{outputs[mode] || ''}</ReactMarkdown>
-                          </div>
+                          <ScrollArea className="max-h-[56vh] rounded-lg border border-border/60 bg-muted/20">
+                            <div className="prose prose-sm pastoral-prose max-w-none p-5">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{outputs[mode] || ''}</ReactMarkdown>
+                            </div>
+                          </ScrollArea>
                           <Button
                             size="sm"
                             variant="outline"
