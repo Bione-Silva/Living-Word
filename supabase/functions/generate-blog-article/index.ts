@@ -103,7 +103,7 @@ serve(async (req) => {
     }
     const userId = claimsData.claims.sub as string;
 
-    const { passage, language: requestedLanguage, title: inputTitle } = await req.json();
+    const { passage, language: requestedLanguage, title: inputTitle, image_style } = await req.json();
 
     if (!passage) {
       return new Response(JSON.stringify({ error: "passage is required" }), {
