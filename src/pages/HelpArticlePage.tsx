@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getFullArticle, getCategoryForTool, helpCategories } from '@/data/help-center-data';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ChevronRight, ExternalLink, Lightbulb, AlertTriangle, Zap, Target, Star, Users } from 'lucide-react';
+import { ToolSheet } from '@/components/ToolSheet';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -20,6 +22,7 @@ export default function HelpArticlePage() {
   const { toolId } = useParams<{ toolId: string }>();
   const navigate = useNavigate();
   const { lang } = useLanguage();
+  const [toolSheetOpen, setToolSheetOpen] = useState(false);
 
   const article = toolId ? getFullArticle(toolId) : undefined;
   const category = toolId ? getCategoryForTool(toolId) : undefined;
@@ -37,11 +40,16 @@ export default function HelpArticlePage() {
   }
 
   const Icon = article.icon;
+  const toolTitle = article.title[lang];
 
   const allTools = helpCategories.flatMap(c => c.tools);
   const relatedTools = article.relatedTools
     .map(id => allTools.find(t => t.id === id))
     .filter(Boolean);
+
+  const handleOpenTool = () => {
+    setToolSheetOpen(true);
+  };
 
   return (
     <div className="max-w-4xl mx-auto pb-16 space-y-6">
@@ -66,16 +74,14 @@ export default function HelpArticlePage() {
           <ArrowLeft className="h-4 w-4" />
           {labels.back[lang]}
         </Button>
-        {article.ctaRoute && (
-          <Button
-            onClick={() => navigate(article.ctaRoute!)}
-            size="sm"
-            className="bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-            {labels.useTool[lang]}
-          </Button>
-        )}
+        <Button
+          onClick={handleOpenTool}
+          size="sm"
+          className="bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+          {labels.useTool[lang]}
+        </Button>
       </div>
 
       {/* ── Hero Header ── */}
@@ -239,21 +245,29 @@ export default function HelpArticlePage() {
           {lang === 'EN' ? 'Open this tool and start generating high-quality content in seconds.' : lang === 'ES' ? 'Abre esta herramienta y empieza a generar contenido de alta calidad en segundos.' : 'Abra esta ferramenta e comece a gerar conteúdo de alta qualidade em segundos.'}
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
-          {article.ctaRoute && (
-            <Button
-              onClick={() => navigate(article.ctaRoute!)}
-              className="px-8 py-5 text-sm font-bold bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
-            >
-              <Icon className="h-4 w-4" />
-              {article.ctaLabel[lang]}
-            </Button>
-          )}
+          <Button
+            onClick={handleOpenTool}
+            className="px-8 py-5 text-sm font-bold bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
+          >
+            <Icon className="h-4 w-4" />
+            {article.ctaLabel[lang]}
+          </Button>
           <Button variant="outline" onClick={() => navigate('/ajuda')} className="rounded-xl gap-2 text-[hsl(24,30%,20%)] border-[hsl(30,15%,78%)]">
             <ArrowLeft className="h-4 w-4" />
             {labels.backCta[lang]}
           </Button>
         </div>
       </section>
+
+      {/* ── Tool Sheet (opens in-place with full improved layout) ── */}
+      {toolId && (
+        <ToolSheet
+          open={toolSheetOpen}
+          onOpenChange={setToolSheetOpen}
+          toolId={toolId}
+          toolTitle={toolTitle}
+        />
+      )}
     </div>
   );
 }

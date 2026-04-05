@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,9 +8,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { Loader2, Copy, Save, BookOpen, Wand2 } from 'lucide-react';
+import { Loader2, Copy, Save, BookOpen, Wand2, Globe, Maximize2, Minimize2, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
+import { MaterialFeedback } from '@/components/MaterialFeedback';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { helpCategories, helpFullArticles } from '@/data/help-center-data';
+import type { Language } from '@/lib/i18n';
 
 interface ToolModalProps {
   open: boolean;
@@ -87,20 +91,32 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
   const [historicalSources, setHistoricalSources] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [generationLang, setGenerationLang] = useState<Language>(lang);
 
-  const config = toolConfigs[toolId];
-  if (!config) return null;
+  useEffect(() => {
+    setGenerationLang(lang);
+  }, [lang]);
 
-  const langLabel = lang === 'PT' ? 'Portuguese (Brazilian)' : lang === 'EN' ? 'English' : 'Spanish';
+  const config = toolConfigs[toolId] || {
+    inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },
+    placeholder: { PT: 'Ex: tema, passagem ou ideia...', EN: 'E.g.: topic, passage or idea...', ES: 'Ej: tema, pasaje o idea...' },
+    systemPrompt: (l: string) => `You are a helpful pastoral assistant. Given the user's input, generate useful, well-structured content for a Christian leader. Be creative, theologically sound, and practical. Write in ${l}. Format with Markdown.`,
+  };
 
-  const copyLabel = lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar';
-  const saveLabel = lang === 'PT' ? 'Salvar' : lang === 'EN' ? 'Save' : 'Guardar';
-  const publishLabel = lang === 'PT' ? 'Publicar' : lang === 'EN' ? 'Publish' : 'Publicar';
-  const generateLabel = lang === 'PT' ? 'Gerar' : lang === 'EN' ? 'Generate' : 'Generar';
-  const copiedToast = lang === 'PT' ? 'Copiado!' : lang === 'EN' ? 'Copied!' : '¡Copiado!';
-  const savedToast = lang === 'PT' ? 'Salvo na Biblioteca!' : lang === 'EN' ? 'Saved to Library!' : '¡Guardado en la Biblioteca!';
-  const publishedToast = lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!';
-  const generateError = lang === 'PT' ? 'Erro ao gerar conteúdo' : lang === 'EN' ? 'Error generating content' : 'Error al generar contenido';
+  const genLangLabel = generationLang === 'PT' ? 'Portuguese (Brazilian)' : generationLang === 'EN' ? 'English' : 'Spanish';
+
+  const resetForm = () => {
+    setResult('');
+    setInput('');
+    setHistoricalSources(null);
+    setGenerationLang(lang);
+  };
+
+  const handleDialogClose = (isOpen: boolean) => {
+    if (!isOpen) resetForm();
+    onOpenChange(isOpen);
+  };
 
   const handleGenerate = async () => {
     if (!input.trim()) return;
@@ -110,7 +126,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
-          systemPrompt: config.systemPrompt(langLabel),
+          systemPrompt: config.systemPrompt(genLangLabel),
           userPrompt: input,
         },
       });
@@ -118,7 +134,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
       setResult(data?.content || 'No response');
       setHistoricalSources(data?.historical_sources_used || null);
     } catch (err: any) {
-      toast.error(err.message || generateError);
+      toast.error(err.message || 'Error generating content');
     } finally {
       setLoading(false);
     }
@@ -126,7 +142,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
   const handleCopy = () => {
     navigator.clipboard.writeText(result);
-    toast.success(copiedToast);
+    toast.success(lang === 'PT' ? 'Copiado!' : lang === 'EN' ? 'Copied!' : '¡Copiado!');
   };
 
   const handleSave = async () => {
@@ -138,10 +154,10 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
         title: `${toolTitle} — ${input.substring(0, 50)}`,
         type: toolId,
         content: result,
-        language: lang,
+        language: generationLang,
       });
       if (error) throw error;
-      toast.success(savedToast);
+      toast.success(lang === 'PT' ? 'Salvo na Biblioteca!' : lang === 'EN' ? 'Saved to Library!' : '¡Guardado en Biblioteca!');
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -160,7 +176,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
           title: `${toolTitle} — ${input.substring(0, 50)}`,
           type: 'blog_article',
           content: result,
-          language: lang,
+          language: generationLang,
         })
         .select('id')
         .single();
@@ -172,7 +188,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
         status: 'published',
         published_at: new Date().toISOString(),
       });
-      toast.success(publishedToast);
+      toast.success(lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!');
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -181,15 +197,58 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="theme-app max-w-2xl max-h-[85vh] overflow-y-auto bg-background text-foreground border-border">
-        <DialogHeader>
-          <DialogTitle className="font-display">{toolTitle}</DialogTitle>
-        </DialogHeader>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
+        {/* ── Help hero header ── */}
+        {(() => {
+          const article = helpFullArticles.find(a => a.toolId === toolId);
+          const toolCard = helpCategories.flatMap(c => c.tools).find(t => t.id === toolId);
+          const IconComp = article?.icon || toolCard?.icon;
+          const subtitle = article?.subtitle?.[lang] || toolCard?.description?.[lang] || '';
+          const summary = article?.heroSummary?.[lang] || '';
+          const bullets = article?.heroBullets || [];
 
-        <div className="space-y-4">
+          return (
+            <div className="space-y-2 pb-1 border-b border-border">
+              <div className="flex items-start gap-3">
+                {IconComp && (
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
+                    <IconComp className="h-6 w-6 text-primary" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <DialogHeader className="p-0 space-y-0.5">
+                    <DialogTitle className="font-display text-xl leading-tight text-foreground">{toolTitle}</DialogTitle>
+                    {subtitle && (
+                      <DialogDescription className="text-sm text-primary font-medium italic">
+                        {subtitle}
+                      </DialogDescription>
+                    )}
+                  </DialogHeader>
+                </div>
+              </div>
+
+              {summary && (
+                <p className="text-sm text-foreground/70 leading-relaxed">{summary}</p>
+              )}
+
+              {bullets.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {bullets.map((b, i) => (
+                    <div key={i} className="flex items-start gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs text-foreground/80">
+                      <Zap className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                      <span>{b[lang]}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        <div className="space-y-4 mt-1">
           <div className="space-y-2">
-            <Label>{config.inputLabel[lang]}</Label>
+            <Label className="font-medium">{config.inputLabel[lang]}</Label>
             {config.useTextarea ? (
               <Textarea
                 value={input}
@@ -207,34 +266,121 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
             )}
           </div>
 
+          {/* Generation language selector */}
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Label className="text-sm text-muted-foreground shrink-0">
+              {lang === 'PT' ? 'Gerar em:' : lang === 'EN' ? 'Generate in:' : 'Generar en:'}
+            </Label>
+            <Select value={generationLang} onValueChange={(v) => setGenerationLang(v as Language)}>
+              <SelectTrigger className="w-[160px] h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PT">Português</SelectItem>
+                <SelectItem value="EN">English</SelectItem>
+                <SelectItem value="ES">Español</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button
             onClick={handleGenerate}
             disabled={loading || !input.trim()}
             className="w-full gap-2 bg-primary text-primary-foreground"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-            {generateLabel}
+            {loading
+              ? (lang === 'PT' ? 'Expandindo narrativa e pintando ilustrações (~20s)...' :
+                 lang === 'EN' ? 'Expanding narrative and painting illustrations (~20s)...' :
+                 'Expandiendo narrativa y pintando ilustraciones (~20s)...')
+              : (lang === 'PT' ? 'Gerar' : lang === 'EN' ? 'Generate' : 'Generar')}
           </Button>
+
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4 rounded-xl border border-border bg-card">
+              <p className="text-sm text-primary font-medium animate-pulse">
+                {lang === 'PT' ? 'Trabalhando nisso...' : lang === 'EN' ? 'Working on it...' : 'Trabajando en eso...'}
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-3 h-3 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '450ms' }} />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {lang === 'PT' ? 'Geralmente completa em 1 minuto ou menos' : lang === 'EN' ? 'Requests typically complete in 1 minute or less' : 'Normalmente completa en 1 minuto o menos'}
+              </p>
+            </div>
+          )}
 
           {result && (
             <div className="space-y-3">
               <HistoricalSourcesCard sources={historicalSources} lang={lang} />
-              <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[40vh] overflow-y-auto">
-                <ReactMarkdown>{result}</ReactMarkdown>
+
+              <div className="relative">
+                <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
+                  <ReactMarkdown>{result}</ReactMarkdown>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="absolute top-2 right-2 gap-1 bg-background/80 backdrop-blur-sm"
+                  onClick={() => setExpanded(true)}
+                >
+                  <Maximize2 className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Expandir' : lang === 'EN' ? 'Expand' : 'Expandir'}
+                </Button>
               </div>
-              <div className="flex gap-2">
+
+              <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
-                  <Copy className="h-3 w-3" /> {copyLabel}
+                  <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleSave} disabled={saving}>
-                  <Save className="h-3 w-3" /> {saveLabel}
+                  <Save className="h-3 w-3" /> {lang === 'PT' ? 'Salvar' : lang === 'EN' ? 'Save' : 'Guardar'}
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1" onClick={handlePublish} disabled={saving}>
-                  <BookOpen className="h-3 w-3" /> {publishLabel}
+                  <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : lang === 'EN' ? 'Publish' : 'Publicar'}
                 </Button>
               </div>
+
+              <MaterialFeedback
+                materialType={toolId}
+                materialTitle={toolTitle}
+                toolId={toolId}
+              />
             </div>
           )}
+
+          {/* Expanded reader dialog */}
+          <Dialog open={expanded} onOpenChange={setExpanded}>
+            <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground">
+              <DialogHeader>
+                <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
+                <DialogDescription className="sr-only">
+                  {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex-1 overflow-y-auto prose prose-base max-w-none bg-muted/20 rounded-lg p-6">
+                <ReactMarkdown>{result}</ReactMarkdown>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
+                <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
+                  <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}
+                </Button>
+                <Button size="sm" variant="outline" className="gap-1" onClick={handleSave} disabled={saving}>
+                  <Save className="h-3 w-3" /> {lang === 'PT' ? 'Salvar' : lang === 'EN' ? 'Save' : 'Guardar'}
+                </Button>
+                <Button size="sm" variant="outline" className="gap-1" onClick={handlePublish} disabled={saving}>
+                  <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : lang === 'EN' ? 'Publish' : 'Publicar'}
+                </Button>
+                <Button size="sm" variant="ghost" className="gap-1 ml-auto" onClick={() => setExpanded(false)}>
+                  <Minimize2 className="h-3 w-3" /> {lang === 'PT' ? 'Fechar' : lang === 'EN' ? 'Close' : 'Cerrar'}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </DialogContent>
     </Dialog>
