@@ -282,20 +282,27 @@ export type Database = {
           denomination: string | null
           doctrine: string | null
           favorite_preacher: string | null
+          font_family: string | null
           full_name: string
           generations_limit: number
           generations_used: number
           id: string
           language: string
+          layout_style: string | null
+          neighborhood: string | null
           pastoral_voice: string | null
           phone: string | null
           plan: string
           preaching_style: string | null
           profile_completed: boolean | null
+          state: string | null
+          street: string | null
+          theme_color: string | null
           trial_ends_at: string | null
           trial_started_at: string | null
           updated_at: string
           wordpress_url: string | null
+          zip_code: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -310,20 +317,27 @@ export type Database = {
           denomination?: string | null
           doctrine?: string | null
           favorite_preacher?: string | null
+          font_family?: string | null
           full_name?: string
           generations_limit?: number
           generations_used?: number
           id: string
           language?: string
+          layout_style?: string | null
+          neighborhood?: string | null
           pastoral_voice?: string | null
           phone?: string | null
           plan?: string
           preaching_style?: string | null
           profile_completed?: boolean | null
+          state?: string | null
+          street?: string | null
+          theme_color?: string | null
           trial_ends_at?: string | null
           trial_started_at?: string | null
           updated_at?: string
           wordpress_url?: string | null
+          zip_code?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -338,20 +352,27 @@ export type Database = {
           denomination?: string | null
           doctrine?: string | null
           favorite_preacher?: string | null
+          font_family?: string | null
           full_name?: string
           generations_limit?: number
           generations_used?: number
           id?: string
           language?: string
+          layout_style?: string | null
+          neighborhood?: string | null
           pastoral_voice?: string | null
           phone?: string | null
           plan?: string
           preaching_style?: string | null
           profile_completed?: boolean | null
+          state?: string | null
+          street?: string | null
+          theme_color?: string | null
           trial_ends_at?: string | null
           trial_started_at?: string | null
           updated_at?: string
           wordpress_url?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
