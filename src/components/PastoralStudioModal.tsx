@@ -603,7 +603,8 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                 </CardContent>
               </Card>
             )}
-          </div>
+        </div>
+        </div>
         </div>
 
         {/* Expanded reader dialog */}
