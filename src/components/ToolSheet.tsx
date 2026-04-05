@@ -317,7 +317,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
         {/* ── Help hero header ── */}
         {(() => {
           const article = helpFullArticles.find(a => a.toolId === toolId);
@@ -328,7 +328,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           const bullets = article?.heroBullets || [];
 
           return (
-            <div className="space-y-2 pb-1 border-b border-border">
+            <div className="space-y-2 pb-1 border-b border-border shrink-0">
               <div className="flex items-start gap-3">
                 {IconComp && (
                   <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
@@ -365,7 +365,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           );
         })()}
 
-        <div className="space-y-4 mt-1">
+        <div className="space-y-4 mt-1 min-h-0">
           <div className="space-y-2">
             <Label className="font-medium">{config.inputLabel[lang]}</Label>
             {config.useTextarea ? (
@@ -438,7 +438,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               <HistoricalSourcesCard sources={historicalSources} lang={lang} />
 
               <div className="relative">
-                <ScrollArea className="max-h-[50vh] rounded-lg bg-muted/30">
+                <ScrollArea className="max-h-[50vh] min-h-0 rounded-lg bg-muted/30">
                   <div className="prose prose-sm pastoral-prose max-w-none p-5">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
                   </div>
@@ -527,14 +527,14 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
           {/* Expanded reader dialog */}
           <Dialog open={expanded} onOpenChange={setExpanded}>
-            <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground">
+            <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0">
               <DialogHeader>
                 <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
                 <DialogDescription className="sr-only">
                   {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
                 </DialogDescription>
               </DialogHeader>
-              <ScrollArea className="flex-1 bg-muted/20 rounded-lg">
+              <ScrollArea className="flex-1 min-h-0 bg-muted/20 rounded-lg">
                 <div className="prose prose-base pastoral-prose max-w-none p-6 lg:p-8">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
                 </div>
