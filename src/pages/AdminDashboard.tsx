@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, BrainCircuit } from 'lucide-react';
 
 import { AdminThemeToggle } from '@/components/admin/AdminThemeToggle';
 import { KpiCards } from '@/components/admin/KpiCards';
@@ -185,10 +185,19 @@ export default function AdminDashboard() {
             <p className="text-sm admin-muted">Painel de controle completo — Living Word</p>
           </div>
         </div>
-        <AdminThemeToggle />
+        <div className="flex items-center gap-2">
+          <Link
+            to="/admin/ai-billing"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-sm font-medium transition-colors"
+          >
+            <BrainCircuit className="h-4 w-4" />
+            AI Billing
+          </Link>
+          <AdminThemeToggle />
+        </div>
       </div>
 
-      <KpiCards data={kpiData} />
+
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2">
