@@ -70,6 +70,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           bible_version: data.bible_version,
           trial_started_at: data.trial_started_at,
           trial_ends_at: data.trial_ends_at,
+          phone: (data as any).phone,
+          street: (data as any).street,
+          neighborhood: (data as any).neighborhood,
+          city: (data as any).city,
+          state: (data as any).state,
+          zip_code: (data as any).zip_code,
+          country: (data as any).country,
+          theme_color: (data as any).theme_color,
+          font_family: (data as any).font_family,
+          layout_style: (data as any).layout_style,
         });
       }
     } catch (err) {
