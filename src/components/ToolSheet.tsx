@@ -16,6 +16,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe, Maximize2, Minimize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -436,9 +438,11 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               <HistoricalSourcesCard sources={historicalSources} lang={lang} />
 
               <div className="relative">
-                <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
-                  <ReactMarkdown>{result}</ReactMarkdown>
-                </div>
+                <ScrollArea className="max-h-[50vh] rounded-lg bg-muted/30">
+                  <div className="prose prose-sm pastoral-prose max-w-none p-5">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
+                  </div>
+                </ScrollArea>
                 <Button
                   size="sm"
                   variant="outline"
@@ -530,9 +534,11 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                   {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
                 </DialogDescription>
               </DialogHeader>
-              <div className="flex-1 overflow-y-auto prose prose-base max-w-none bg-muted/20 rounded-lg p-6">
-                <ReactMarkdown>{result}</ReactMarkdown>
-              </div>
+              <ScrollArea className="flex-1 bg-muted/20 rounded-lg">
+                <div className="prose prose-base pastoral-prose max-w-none p-6 lg:p-8">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
+                </div>
+              </ScrollArea>
               <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
                   <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}

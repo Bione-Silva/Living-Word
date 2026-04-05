@@ -15,6 +15,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { minds } from '@/data/minds';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
 import { helpFullArticles, helpCategories } from '@/data/help-center-data';
@@ -573,9 +575,11 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                     {availableTabs.map((mode) => (
                       <TabsContent key={mode} value={mode} className="mt-4">
                         <div className="relative">
-                          <div className="prose prose-sm max-w-none rounded-lg border border-border/60 bg-muted/20 p-4 max-h-[56vh] overflow-y-auto">
-                            <ReactMarkdown>{outputs[mode] || ''}</ReactMarkdown>
-                          </div>
+                          <ScrollArea className="max-h-[56vh] rounded-lg border border-border/60 bg-muted/20">
+                            <div className="prose prose-sm pastoral-prose max-w-none p-5">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{outputs[mode] || ''}</ReactMarkdown>
+                            </div>
+                          </ScrollArea>
                           <Button
                             size="sm"
                             variant="outline"
@@ -610,9 +614,11 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                 {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
               </DialogDescription>
             </DialogHeader>
-            <div className="flex-1 overflow-y-auto prose prose-base max-w-none bg-muted/20 rounded-lg p-6">
-              <ReactMarkdown>{outputs[expandedTab] || ''}</ReactMarkdown>
-            </div>
+            <ScrollArea className="flex-1 bg-muted/20 rounded-lg">
+              <div className="prose prose-base pastoral-prose max-w-none p-6 lg:p-8">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{outputs[expandedTab] || ''}</ReactMarkdown>
+              </div>
+            </ScrollArea>
             <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
               <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
                 <Copy className="h-3 w-3" /> {text.copyCurrent}
