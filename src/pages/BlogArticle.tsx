@@ -403,16 +403,16 @@ export default function BlogArticle() {
         {/* Prose — images are intercalated within the markdown */}
         <section
           className="prose prose-lg prose-stone max-w-3xl mx-auto
-            prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#1a1208]
+            prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-primary
             prose-headings:font-serif
             prose-p:leading-relaxed prose-p:text-[#2e2318]
             prose-strong:text-[#1a1208]
-            prose-blockquote:border-l-[#C4956A] prose-blockquote:bg-[#3c2f21]/[0.03] prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:text-[#2e2318] prose-blockquote:not-italic
-            prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-8
-            prose-a:text-[#5a3e28] prose-a:underline-offset-2
+            prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:text-[#2e2318] prose-blockquote:not-italic
+            prose-img:rounded-2xl prose-img:shadow-lg prose-img:mx-auto prose-img:max-h-[28rem] prose-img:w-full prose-img:object-cover prose-img:my-8
+            prose-a:text-primary prose-a:underline-offset-2
             prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-5
             prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          style={{ fontFamily: "var(--font-display, 'Inter'), sans-serif" }}
         >
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{enrichedContent}</ReactMarkdown>
         </section>

@@ -24,6 +24,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
+import { ThemeInjector } from '@/components/ThemeInjector';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -142,6 +143,7 @@ export default function AppLayout() {
   if (isMobile) {
     return (
       <div className="theme-app min-h-screen bg-background flex flex-col">
+        <ThemeInjector />
         <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
           <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
           <div className="flex items-center gap-2 shrink-0">
@@ -290,6 +292,7 @@ export default function AppLayout() {
 
   return (
     <div className="theme-app min-h-screen bg-background flex">
+      <ThemeInjector />
       {/* Desktop Sidebar */}
       <aside className="w-[260px] min-h-screen flex flex-col fixed left-0 top-0 bottom-0 z-40 bg-sidebar text-sidebar-foreground">
         {/* Logo */}
