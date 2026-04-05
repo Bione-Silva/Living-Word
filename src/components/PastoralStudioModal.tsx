@@ -577,8 +577,19 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
 
                     {availableTabs.map((mode) => (
                       <TabsContent key={mode} value={mode} className="mt-4">
-                        <div className="prose prose-sm max-w-none rounded-lg border border-border/60 bg-muted/20 p-4 max-h-[56vh] overflow-y-auto">
-                          <ReactMarkdown>{outputs[mode] || ''}</ReactMarkdown>
+                        <div className="relative">
+                          <div className="prose prose-sm max-w-none rounded-lg border border-border/60 bg-muted/20 p-4 max-h-[56vh] overflow-y-auto">
+                            <ReactMarkdown>{outputs[mode] || ''}</ReactMarkdown>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="absolute top-2 right-2 gap-1 bg-background/80 backdrop-blur-sm"
+                            onClick={() => { setExpandedTab(mode); setExpanded(true); }}
+                          >
+                            <Maximize2 className="h-3.5 w-3.5" />
+                            {lang === 'PT' ? 'Expandir' : lang === 'EN' ? 'Expand' : 'Expandir'}
+                          </Button>
                         </div>
                       </TabsContent>
                     ))}
@@ -594,6 +605,33 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
             )}
           </div>
         </div>
+
+        {/* Expanded reader dialog */}
+        <Dialog open={expanded} onOpenChange={setExpanded}>
+          <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground">
+            <DialogHeader>
+              <DialogTitle className="font-display text-xl">{toolTitle} — {outputLabels[expandedTab][lang]}</DialogTitle>
+              <DialogDescription className="sr-only">
+                {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 overflow-y-auto prose prose-base max-w-none bg-muted/20 rounded-lg p-6">
+              <ReactMarkdown>{outputs[expandedTab] || ''}</ReactMarkdown>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
+              <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
+                <Copy className="h-3 w-3" /> {text.copyCurrent}
+              </Button>
+              <Button size="sm" variant="outline" className="gap-1" onClick={handleSave} disabled={saving}>
+                {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                {text.saveCurrent}
+              </Button>
+              <Button size="sm" variant="ghost" className="gap-1 ml-auto" onClick={() => setExpanded(false)}>
+                <Minimize2 className="h-3 w-3" /> {lang === 'PT' ? 'Fechar' : lang === 'EN' ? 'Close' : 'Cerrar'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
