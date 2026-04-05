@@ -21,6 +21,8 @@ import { MaterialFeedback } from '@/components/MaterialFeedback';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Language } from '@/lib/i18n';
 import { PastoralStudioModal } from '@/components/PastoralStudioModal';
+import { helpCategories, helpFullArticles } from '@/data/help-center-data';
+import { Zap } from 'lucide-react';
 
 interface ToolSheetProps {
   open: boolean;
