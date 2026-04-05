@@ -199,15 +199,27 @@ export default function AppLayout() {
               <span className="truncate">{t('nav.blog')}</span>
             </Link>
 
-            <Link
-              to="/configuracoes"
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                location.pathname === '/configuracoes' ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <Settings className="h-5 w-5" />
-              <span className="truncate">{t('nav.settings')}</span>
-            </Link>
+            {isAdmin ? (
+              <Link
+                to="/admin/dashboard"
+                className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                  location.pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <ShieldAlert className="h-5 w-5" />
+                <span className="truncate">Admin</span>
+              </Link>
+            ) : (
+              <Link
+                to="/configuracoes"
+                className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                  location.pathname === '/configuracoes' ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Settings className="h-5 w-5" />
+                <span className="truncate">{t('nav.settings')}</span>
+              </Link>
+            )}
           </div>
         </nav>
 
