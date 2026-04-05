@@ -165,6 +165,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [convertingToBlog, setConvertingToBlog] = useState(false);
   const [showBlogPrompt, setShowBlogPrompt] = useState(false);
   const [generationLang, setGenerationLang] = useState<Language>(lang);
+  const [expanded, setExpanded] = useState(false);
 
   // Sync generation language when platform language changes
   useEffect(() => {
