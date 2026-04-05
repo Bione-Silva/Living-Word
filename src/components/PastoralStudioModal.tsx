@@ -175,6 +175,8 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [blockedFormats, setBlockedFormats] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [expandedTab, setExpandedTab] = useState<OutputMode>('sermon');
 
   const availableTabs = useMemo(
     () => (['sermon', 'outline', 'devotional'] as OutputMode[]).filter((mode) => Boolean(outputs[mode])),
