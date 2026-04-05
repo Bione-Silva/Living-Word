@@ -289,6 +289,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           passage: input,
           language: generationLang,
           title: `${toolTitle} — ${input.substring(0, 50)}`,
+          image_style: imageStyle,
         },
       });
       if (error) throw error;
