@@ -414,14 +414,19 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           </Button>
 
           {loading && (
-            <div className="space-y-3 animate-pulse">
-              <div className="h-6 bg-muted/50 rounded-md w-3/4" />
-              <div className="h-4 bg-muted/40 rounded-md w-full" />
-              <div className="h-4 bg-muted/40 rounded-md w-full" />
-              <div className="h-4 bg-muted/30 rounded-md w-5/6" />
-              <div className="h-40 bg-muted/20 rounded-2xl w-full" />
-              <div className="h-4 bg-muted/40 rounded-md w-full" />
-              <div className="h-4 bg-muted/30 rounded-md w-4/5" />
+            <div className="flex flex-col items-center justify-center py-12 space-y-4 rounded-xl border border-border bg-card">
+              <p className="text-sm text-primary font-medium animate-pulse">
+                {lang === 'PT' ? 'Trabalhando nisso...' : lang === 'EN' ? 'Working on it...' : 'Trabajando en eso...'}
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-3 h-3 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '450ms' }} />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {lang === 'PT' ? 'Geralmente completa em 1 minuto ou menos' : lang === 'EN' ? 'Requests typically complete in 1 minute or less' : 'Normalmente completa en 1 minuto o menos'}
+              </p>
             </div>
           )}
 
