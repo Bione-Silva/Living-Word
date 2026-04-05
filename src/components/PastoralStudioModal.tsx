@@ -319,7 +319,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
+      <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] flex flex-col overflow-hidden bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
         {/* ── Help hero header ── */}
         {(() => {
           const article = helpFullArticles.find(a => a.toolId === 'studio');
