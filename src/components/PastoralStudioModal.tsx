@@ -319,7 +319,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
+      <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] flex flex-col overflow-hidden bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
         {/* ── Help hero header ── */}
         {(() => {
           const article = helpFullArticles.find(a => a.toolId === 'studio');
@@ -365,6 +365,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
           );
         })()}
 
+        <div className="flex-1 overflow-y-auto min-h-0">
         <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
           <Card className="border-border/60 bg-card h-fit">
             <CardContent className="p-4 space-y-4">
@@ -575,7 +576,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                     {availableTabs.map((mode) => (
                       <TabsContent key={mode} value={mode} className="mt-4">
                         <div className="relative">
-                          <ScrollArea className="max-h-[56vh] rounded-lg border border-border/60 bg-muted/20">
+                          <ScrollArea className="max-h-[60vh] rounded-lg border border-border/60 bg-muted/20">
                             <div className="prose prose-sm pastoral-prose max-w-none p-5">
                               <ReactMarkdown remarkPlugins={[remarkGfm]}>{outputs[mode] || ''}</ReactMarkdown>
                             </div>
@@ -602,7 +603,8 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                 </CardContent>
               </Card>
             )}
-          </div>
+        </div>
+        </div>
         </div>
 
         {/* Expanded reader dialog */}
