@@ -258,7 +258,7 @@ export const pricing = {
       },
       {
         name: 'Pastoral', price: null, featured: true, features: [
-          '50 gerações por mês', 'Todos os 7+ formatos', 'Blog cristão completo', 'Sem marca d'água',
+          '50 gerações por mês', 'Todos os 7+ formatos', 'Blog cristão completo', 'Sem marca d\u2019água',
           'PT, EN e ES', 'Calendário editorial', 'Exportação Word e PDF', 'Voz pastoral personalizada',
         ],
       },
