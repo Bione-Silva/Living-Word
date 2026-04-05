@@ -230,48 +230,74 @@ const copy = {
       EN: 'Pastors and leaders already saving hours every week.',
       ES: 'Pastores y líderes que ya ahorran horas cada semana.',
     },
-    items: [
-      {
-        quote: {
-          PT: '"Eu passava horas pesquisando comentários e versões bíblicas. Agora tenho exegese profunda, sermão e devocional prontos em segundos. Minha preparação mudou completamente."',
-          EN: '"I used to spend hours researching commentaries and Bible versions. Now I have deep exegesis, sermon and devotional ready in seconds. My preparation changed completely."',
-          ES: '"Pasaba horas investigando comentarios y versiones bíblicas. Ahora tengo exégesis profunda, sermón y devocional listos en segundos. Mi preparación cambió completamente."',
+    itemsByLang: {
+      PT: [
+        {
+          quote: '"Eu passava horas pesquisando comentários e versões bíblicas. Agora tenho exegese profunda, sermão e devocional prontos em segundos. Minha preparação mudou completamente."',
+          name: 'Pr. João Silva', flag: '🇧🇷', initials: 'JS',
+          role: 'Igreja Evangélica Brasileira · Atlanta, GA',
         },
-        name: 'Pr. João Silva', flag: '🇧🇷',
-        role: { PT: 'Igreja Evangélica Brasileira · Atlanta, GA', EN: 'Brazilian Evangelical Church · Atlanta, GA', ES: 'Iglesia Evangélica Brasileña · Atlanta, GA' },
-        initials: 'JS',
-      },
-      {
-        quote: {
-          PT: '"Mi congregación habla español e inglés. Antes tardaba días en adaptar el contenido. Ahora creo sermón, devocional y estudio bíblico en los dos idiomas en un minuto."',
-          EN: '"My congregation speaks Spanish and English. Before it took me days to adapt content. Now I create sermon, devotional and Bible study in both languages in one minute."',
-          ES: '"Mi congregación habla español e inglés. Antes tardaba días en adaptar el contenido. Ahora creo sermón, devocional y estudio bíblico en los dos idiomas en un minuto."',
+        {
+          quote: '"Sou líder de célula. Antes eu improvisava o estudo. Agora chego com devocional, perguntas de discussão e contexto histórico — tudo com um clique."',
+          name: 'Ana Cruz', flag: '🇧🇷', initials: 'AC',
+          role: 'Líder de célula · Miami, FL',
         },
-        name: 'Pastor Miguel Cruz', flag: '🇲🇽',
-        role: { PT: 'Iglesia Evangélica Hispana · Los Angeles, CA', EN: 'Hispanic Evangelical Church · Los Angeles, CA', ES: 'Iglesia Evangélica Hispana · Los Angeles, CA' },
-        initials: 'MC',
-      },
-      {
-        quote: {
-          PT: '"I was skeptical about AI for ministry. Living Word is different — it actually does exegesis, understands doctrine, and helps me create content I\'m proud to publish."',
-          EN: '"I was skeptical about AI for ministry. Living Word is different — it actually does exegesis, understands doctrine, and helps me create content I\'m proud to publish."',
-          ES: '"Era escéptico sobre la IA para el ministerio. Living Word es diferente — realmente hace exégesis, entiende la doctrina y me ayuda a crear contenido que me enorgullece publicar."',
+        {
+          quote: '"Pastoreio uma igreja pequena no interior e faço tudo sozinho. O Living Word me dá sermão, estudo bíblico e devocional com profundidade que eu levaria dias para preparar."',
+          name: 'Pr. Marcos Oliveira', flag: '🇧🇷', initials: 'MO',
+          role: 'Igreja Batista Renovada · Goiânia, GO',
         },
-        name: 'Rev. Robert Johnson', flag: '🇺🇸',
-        role: { PT: 'Baptist Church · Nashville, TN', EN: 'Baptist Church · Nashville, TN', ES: 'Iglesia Bautista · Nashville, TN' },
-        initials: 'RJ',
-      },
-      {
-        quote: {
-          PT: '"Sou líder de célula. Antes eu improvisava o estudo. Agora chego com devocional, perguntas de discussão e contexto histórico — tudo com um clique."',
-          EN: '"I\'m a cell leader. Before I improvised the study. Now I arrive with devotional, discussion questions and historical context — all with one click."',
-          ES: '"Soy líder de célula. Antes improvisaba el estudio. Ahora llego con devocional, preguntas de discusión y contexto histórico — todo con un clic."',
+        {
+          quote: '"Uso o Living Word para preparar os estudos da nossa célula de jovens. A exegese é fiel, o conteúdo é relevante e economizo horas toda semana."',
+          name: 'Débora Santos', flag: '🇧🇷', initials: 'DS',
+          role: 'Líder de jovens · São Paulo, SP',
         },
-        name: 'Ana Cruz', flag: '🇧🇷',
-        role: { PT: 'Líder de célula · Miami, FL', EN: 'Cell leader · Miami, FL', ES: 'Líder de célula · Miami, FL' },
-        initials: 'AC',
-      },
-    ],
+      ],
+      EN: [
+        {
+          quote: '"I used to spend hours cross-referencing commentaries and Bible versions. Now I get deep exegesis, a full sermon and a devotional in seconds. It changed how I prepare."',
+          name: 'Rev. Robert Johnson', flag: '🇺🇸', initials: 'RJ',
+          role: 'Baptist Church · Nashville, TN',
+        },
+        {
+          quote: '"I was skeptical about AI for ministry. Living Word is different — it actually does exegesis, understands doctrine, and helps me create content I\'m proud to publish."',
+          name: 'Pastor David Miller', flag: '🇺🇸', initials: 'DM',
+          role: 'Community Church · Dallas, TX',
+        },
+        {
+          quote: '"As a church planter, I wear every hat. Living Word gives me sermon outlines, Bible studies and devotionals with real depth — saving me 6+ hours a week."',
+          name: 'Pastor James Carter', flag: '🇺🇸', initials: 'JC',
+          role: 'New Life Fellowship · Phoenix, AZ',
+        },
+        {
+          quote: '"I lead a small group and needed solid material fast. Living Word delivers discussion questions, historical context and application points — all biblically grounded."',
+          name: 'Sarah Thompson', flag: '🇺🇸', initials: 'ST',
+          role: 'Small Group Leader · Charlotte, NC',
+        },
+      ],
+      ES: [
+        {
+          quote: '"Mi congregación habla español e inglés. Antes tardaba días en adaptar el contenido. Ahora creo sermón, devocional y estudio bíblico en los dos idiomas en un minuto."',
+          name: 'Pastor Miguel Cruz', flag: '🇲🇽', initials: 'MC',
+          role: 'Iglesia Evangélica Hispana · Los Angeles, CA',
+        },
+        {
+          quote: '"Soy líder de célula y antes improvisaba cada estudio. Ahora llego preparada con devocional, preguntas de discusión y contexto histórico — todo con un clic."',
+          name: 'María González', flag: '🇨🇴', initials: 'MG',
+          role: 'Líder de célula · Bogotá, Colombia',
+        },
+        {
+          quote: '"Pastoreo una iglesia pequeña y hago todo solo. Living Word me da sermón, estudio bíblico y devocional con una profundidad que me tomaría días preparar."',
+          name: 'Pr. Carlos Herrera', flag: '🇦🇷', initials: 'CH',
+          role: 'Iglesia Bautista · Buenos Aires, Argentina',
+        },
+        {
+          quote: '"Era escéptico sobre la IA para el ministerio. Living Word es diferente — realmente hace exégesis, entiende la doctrina y me ayuda a crear contenido que me enorgullece publicar."',
+          name: 'Pastor Luis Ramírez', flag: '🇲🇽', initials: 'LR',
+          role: 'Iglesia del Camino · Houston, TX',
+        },
+      ],
+    },
   },
   pricing: {
     tag: { PT: 'Planos', EN: 'Plans', ES: 'Planes' },
@@ -805,15 +831,15 @@ export default function Landing() {
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.testimonials.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.testimonials.h2[lang]}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {copy.testimonials.items.map((t, i) => (
-              <div key={i} className="rounded-xl p-5" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)' }}>
-                <p className="font-display text-[16px] italic leading-[1.55] mb-4" style={{ color: '#3D2B1F' }}>{t.quote[lang]}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {copy.testimonials.itemsByLang[lang].map((t, i) => (
+              <div key={i} className="rounded-2xl p-6" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.08)', boxShadow: '0 1px 4px rgba(107,79,58,0.04)' }}>
+                <p className="text-[15px] italic leading-[1.7] mb-5 font-light" style={{ color: '#3D2B1F', fontFamily: "'Cormorant Garamond', serif", fontSize: '17px' }}>{t.quote}</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-[12px] font-semibold shrink-0" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{t.initials}</div>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0 tracking-wide" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{t.initials}</div>
                   <div>
-                    <p className="text-[14px] font-semibold" style={{ color: '#3D2B1F' }}>{t.name} {t.flag}</p>
-                    <p className="text-[12px] font-medium" style={{ color: '#6B4F3A' }}>{t.role[lang]}</p>
+                    <p className="text-[13.5px] font-semibold" style={{ color: '#3D2B1F' }}>{t.name} {t.flag}</p>
+                    <p className="text-[11.5px] font-medium tracking-wide" style={{ color: '#8B7355' }}>{t.role}</p>
                   </div>
                 </div>
               </div>
