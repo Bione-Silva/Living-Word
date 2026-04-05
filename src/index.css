@@ -173,6 +173,23 @@
     border-left-color: hsl(var(--accent));
   }
 
+  /* ── High-contrast prose for all generated content in theme-app ── */
+  .theme-app .prose,
+  .theme-blog .prose {
+    --tw-prose-body: hsl(24 30% 15%);
+    --tw-prose-headings: hsl(24 30% 10%);
+    --tw-prose-bold: hsl(24 30% 10%);
+    --tw-prose-links: hsl(28 42% 32%);
+    --tw-prose-counters: hsl(24 20% 35%);
+    --tw-prose-bullets: hsl(24 20% 35%);
+    --tw-prose-hr: hsl(30 15% 78%);
+    --tw-prose-quotes: hsl(24 25% 20%);
+    --tw-prose-quote-borders: hsl(28 42% 55%);
+    --tw-prose-code: hsl(24 30% 15%);
+    --tw-prose-th-borders: hsl(30 15% 78%);
+    --tw-prose-td-borders: hsl(30 15% 85%);
+  }
+
   .watermark-free {
     @apply relative;
   }
