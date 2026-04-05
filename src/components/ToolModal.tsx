@@ -321,9 +321,11 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
               <HistoricalSourcesCard sources={historicalSources} lang={lang} />
 
               <div className="relative">
-                <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
-                  <ReactMarkdown>{result}</ReactMarkdown>
-                </div>
+                <ScrollArea className="max-h-[50vh] rounded-lg bg-muted/30">
+                  <div className="prose prose-sm pastoral-prose max-w-none p-5">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
+                  </div>
+                </ScrollArea>
                 <Button
                   size="sm"
                   variant="outline"
