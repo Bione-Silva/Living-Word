@@ -185,8 +185,16 @@ export default function AdminDashboard() {
             <p className="text-sm admin-muted">Painel de controle completo — Living Word</p>
           </div>
         </div>
-        <AdminThemeToggle />
-      </div>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/admin/ai-billing"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-sm font-medium transition-colors"
+          >
+            <BrainCircuit className="h-4 w-4" />
+            AI Billing
+          </Link>
+          <AdminThemeToggle />
+        </div>
 
       <KpiCards data={kpiData} />
 
