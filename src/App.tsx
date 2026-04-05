@@ -27,6 +27,7 @@ import BlogOnboarding from "./pages/BlogOnboarding";
 import NotFound from "./pages/NotFound";
 import EstudoBiblicoPage from "./pages/EstudoBiblicoPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AIBillingDashboard from "./pages/AIBillingDashboard";
 import AcceptInvite from "./pages/AcceptInvite";
 import HelpCenter from "./pages/HelpCenter";
 import HelpArticlePage from "./pages/HelpArticlePage";
@@ -99,6 +100,7 @@ const App = () => (
                 <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
               <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/ai-billing" element={<AIBillingDashboard />} />
               <Route path="/ajuda" element={<HelpCenter />} />
               <Route path="/ajuda/:toolId" element={<HelpArticlePage />} />
               </Route>
