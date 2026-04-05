@@ -52,6 +52,39 @@ export type Database = {
           },
         ]
       }
+      expos_studies: {
+        Row: {
+          conteudo_markdown: string
+          created_at: string
+          formato: string
+          id: string
+          passagem: string
+          titulo: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conteudo_markdown?: string
+          created_at?: string
+          formato?: string
+          id?: string
+          passagem: string
+          titulo?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conteudo_markdown?: string
+          created_at?: string
+          formato?: string
+          id?: string
+          passagem?: string
+          titulo?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       generation_logs: {
         Row: {
           cost_usd: number
