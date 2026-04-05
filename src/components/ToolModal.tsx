@@ -233,11 +233,11 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
               )}
 
               {bullets.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   {bullets.map((b, i) => (
-                    <div key={i} className="flex items-start gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs text-foreground/80">
-                      <Zap className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
-                      <span>{b[lang]}</span>
+                    <div key={i} className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-foreground/80">
+                      <Zap className="h-3 w-3 text-primary shrink-0" />
+                      <span className="leading-snug">{b[lang]}</span>
                     </div>
                   ))}
                 </div>
