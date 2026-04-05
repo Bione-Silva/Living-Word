@@ -14,7 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe } from 'lucide-react';
+import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe, Maximize2, Minimize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
@@ -165,6 +165,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [convertingToBlog, setConvertingToBlog] = useState(false);
   const [showBlogPrompt, setShowBlogPrompt] = useState(false);
   const [generationLang, setGenerationLang] = useState<Language>(lang);
+  const [expanded, setExpanded] = useState(false);
 
   // Sync generation language when platform language changes
   useEffect(() => {
@@ -434,8 +435,19 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
             <div className="space-y-3">
               <HistoricalSourcesCard sources={historicalSources} lang={lang} />
 
-              <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
-                <ReactMarkdown>{result}</ReactMarkdown>
+              <div className="relative">
+                <div className="prose prose-sm max-w-none bg-muted/30 rounded-lg p-4 max-h-[50vh] overflow-y-auto">
+                  <ReactMarkdown>{result}</ReactMarkdown>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="absolute top-2 right-2 gap-1 bg-background/80 backdrop-blur-sm"
+                  onClick={() => setExpanded(true)}
+                >
+                  <Maximize2 className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Expandir' : lang === 'EN' ? 'Expand' : 'Expandir'}
+                </Button>
               </div>
 
               {showBlogPrompt && !isArticleTool && (
@@ -508,6 +520,35 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               />
             </div>
           )}
+
+          {/* Expanded reader dialog */}
+          <Dialog open={expanded} onOpenChange={setExpanded}>
+            <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground">
+              <DialogHeader>
+                <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
+                <DialogDescription className="sr-only">
+                  {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex-1 overflow-y-auto prose prose-base max-w-none bg-muted/20 rounded-lg p-6">
+                <ReactMarkdown>{result}</ReactMarkdown>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
+                <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
+                  <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}
+                </Button>
+                <Button size="sm" variant="outline" className="gap-1" onClick={handleSave} disabled={saving}>
+                  <Save className="h-3 w-3" /> {lang === 'PT' ? 'Salvar' : lang === 'EN' ? 'Save' : 'Guardar'}
+                </Button>
+                <Button size="sm" variant="outline" className="gap-1" onClick={handlePublish} disabled={saving}>
+                  <BookOpen className="h-3 w-3" /> {lang === 'PT' ? 'Publicar' : lang === 'EN' ? 'Publish' : 'Publicar'}
+                </Button>
+                <Button size="sm" variant="ghost" className="gap-1 ml-auto" onClick={() => setExpanded(false)}>
+                  <Minimize2 className="h-3 w-3" /> {lang === 'PT' ? 'Fechar' : lang === 'EN' ? 'Close' : 'Cerrar'}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </DialogContent>
     </Dialog>
