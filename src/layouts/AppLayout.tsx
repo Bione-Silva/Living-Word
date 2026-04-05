@@ -143,6 +143,7 @@ export default function AppLayout() {
   if (isMobile) {
     return (
       <div className="theme-app min-h-screen bg-background flex flex-col">
+        <ThemeInjector />
         <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
           <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
           <div className="flex items-center gap-2 shrink-0">
