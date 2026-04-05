@@ -498,54 +498,6 @@ export type Database = {
         }
         Relationships: []
       }
-      public_blog_profiles: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          blog_handle: string | null
-          blog_name: string | null
-          church_name: string | null
-          city: string | null
-          country: string | null
-          font_family: string | null
-          full_name: string | null
-          id: string | null
-          language: string | null
-          layout_style: string | null
-          theme_color: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          blog_handle?: string | null
-          blog_name?: string | null
-          church_name?: string | null
-          city?: string | null
-          country?: string | null
-          font_family?: string | null
-          full_name?: string | null
-          id?: string | null
-          language?: string | null
-          layout_style?: string | null
-          theme_color?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          blog_handle?: string | null
-          blog_name?: string | null
-          church_name?: string | null
-          city?: string | null
-          country?: string | null
-          font_family?: string | null
-          full_name?: string | null
-          id?: string | null
-          language?: string | null
-          layout_style?: string | null
-          theme_color?: string | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
       get_admin_ai_metrics: { Args: never; Returns: Json }
@@ -559,6 +511,24 @@ export type Database = {
           users_ministry: number
           users_pastoral: number
           users_trialing: number
+        }[]
+      }
+      get_public_blog_profile: {
+        Args: { p_handle: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          blog_handle: string
+          blog_name: string
+          church_name: string
+          city: string
+          country: string
+          font_family: string
+          full_name: string
+          id: string
+          language: string
+          layout_style: string
+          theme_color: string
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
