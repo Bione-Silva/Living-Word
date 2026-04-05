@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, Copy, Loader2, Save, Sparkles } from 'lucide-react';
+import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { minds } from '@/data/minds';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
-
+import { helpFullArticles, helpCategories } from '@/data/help-center-data';
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
 interface PastoralStudioModalProps {
@@ -175,6 +175,8 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [blockedFormats, setBlockedFormats] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [expandedTab, setExpandedTab] = useState<OutputMode>('sermon');
 
   const availableTabs = useMemo(
     () => (['sermon', 'outline', 'devotional'] as OutputMode[]).filter((mode) => Boolean(outputs[mode])),
@@ -316,10 +318,50 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
-        <DialogHeader>
-          <DialogTitle className="font-display text-2xl">{toolTitle}</DialogTitle>
-          <DialogDescription>{text.subtitle}</DialogDescription>
-        </DialogHeader>
+        {/* ── Help hero header ── */}
+        {(() => {
+          const article = helpFullArticles.find(a => a.toolId === 'studio');
+          const toolCard = helpCategories.flatMap(c => c.tools).find(t => t.id === 'studio');
+          const IconComp = article?.icon || toolCard?.icon;
+          const subtitle = article?.subtitle?.[lang] || text.subtitle;
+          const summary = article?.heroSummary?.[lang] || '';
+          const bullets = article?.heroBullets || [];
+
+          return (
+            <div className="space-y-2 pb-1 border-b border-border">
+              <div className="flex items-start gap-3">
+                {IconComp && (
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
+                    <IconComp className="h-6 w-6 text-primary" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <DialogHeader className="p-0 space-y-0.5">
+                    <DialogTitle className="font-display text-xl leading-tight text-foreground">{toolTitle}</DialogTitle>
+                    <DialogDescription className="text-sm text-primary font-medium italic">
+                      {subtitle}
+                    </DialogDescription>
+                  </DialogHeader>
+                </div>
+              </div>
+
+              {summary && (
+                <p className="text-sm text-foreground/70 leading-relaxed">{summary}</p>
+              )}
+
+              {bullets.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  {bullets.map((b, i) => (
+                    <div key={i} className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-foreground/80">
+                      <Zap className="h-3 w-3 text-primary shrink-0" />
+                      <span className="leading-snug">{b[lang]}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
           <Card className="border-border/60 bg-card h-fit">
@@ -472,12 +514,29 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
               </Card>
             )}
 
-            {!availableTabs.length ? (
+            {!availableTabs.length && !loading ? (
               <Card className="border-border/60 bg-card min-h-[420px]">
                 <CardContent className="h-full min-h-[420px] flex flex-col items-center justify-center text-center px-6">
                   <BookOpen className="h-14 w-14 text-muted-foreground/40 mb-4" />
                   <p className="font-medium text-foreground">{text.empty}</p>
                   <p className="text-sm text-muted-foreground mt-2 max-w-md">{text.emptyHint}</p>
+                </CardContent>
+              </Card>
+            ) : loading ? (
+              <Card className="border-border/60 bg-card min-h-[420px]">
+                <CardContent className="h-full min-h-[420px] flex flex-col items-center justify-center text-center px-6">
+                  <p className="text-sm text-primary font-medium animate-pulse mb-4">
+                    {lang === 'PT' ? 'Trabalhando nisso...' : lang === 'EN' ? 'Working on it...' : 'Trabajando en eso...'}
+                  </p>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-3 h-3 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-3 h-3 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '450ms' }} />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {lang === 'PT' ? 'Geralmente completa em 1 minuto ou menos' : lang === 'EN' ? 'Requests typically complete in 1 minute or less' : 'Normalmente completa en 1 minuto o menos'}
+                  </p>
                 </CardContent>
               </Card>
             ) : (
@@ -518,8 +577,19 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
 
                     {availableTabs.map((mode) => (
                       <TabsContent key={mode} value={mode} className="mt-4">
-                        <div className="prose prose-sm max-w-none rounded-lg border border-border/60 bg-muted/20 p-4 max-h-[56vh] overflow-y-auto">
-                          <ReactMarkdown>{outputs[mode] || ''}</ReactMarkdown>
+                        <div className="relative">
+                          <div className="prose prose-sm max-w-none rounded-lg border border-border/60 bg-muted/20 p-4 max-h-[56vh] overflow-y-auto">
+                            <ReactMarkdown>{outputs[mode] || ''}</ReactMarkdown>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="absolute top-2 right-2 gap-1 bg-background/80 backdrop-blur-sm"
+                            onClick={() => { setExpandedTab(mode); setExpanded(true); }}
+                          >
+                            <Maximize2 className="h-3.5 w-3.5" />
+                            {lang === 'PT' ? 'Expandir' : lang === 'EN' ? 'Expand' : 'Expandir'}
+                          </Button>
                         </div>
                       </TabsContent>
                     ))}
@@ -535,6 +605,33 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
             )}
           </div>
         </div>
+
+        {/* Expanded reader dialog */}
+        <Dialog open={expanded} onOpenChange={setExpanded}>
+          <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground">
+            <DialogHeader>
+              <DialogTitle className="font-display text-xl">{toolTitle} — {outputLabels[expandedTab][lang]}</DialogTitle>
+              <DialogDescription className="sr-only">
+                {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 overflow-y-auto prose prose-base max-w-none bg-muted/20 rounded-lg p-6">
+              <ReactMarkdown>{outputs[expandedTab] || ''}</ReactMarkdown>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
+              <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
+                <Copy className="h-3 w-3" /> {text.copyCurrent}
+              </Button>
+              <Button size="sm" variant="outline" className="gap-1" onClick={handleSave} disabled={saving}>
+                {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                {text.saveCurrent}
+              </Button>
+              <Button size="sm" variant="ghost" className="gap-1 ml-auto" onClick={() => setExpanded(false)}>
+                <Minimize2 className="h-3 w-3" /> {lang === 'PT' ? 'Fechar' : lang === 'EN' ? 'Close' : 'Cerrar'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
