@@ -318,10 +318,50 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] overflow-y-auto bg-background text-foreground max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
-        <DialogHeader>
-          <DialogTitle className="font-display text-2xl">{toolTitle}</DialogTitle>
-          <DialogDescription>{text.subtitle}</DialogDescription>
-        </DialogHeader>
+        {/* ── Help hero header ── */}
+        {(() => {
+          const article = helpFullArticles.find(a => a.toolId === 'studio');
+          const toolCard = helpCategories.flatMap(c => c.tools).find(t => t.id === 'studio');
+          const IconComp = article?.icon || toolCard?.icon;
+          const subtitle = article?.subtitle?.[lang] || text.subtitle;
+          const summary = article?.heroSummary?.[lang] || '';
+          const bullets = article?.heroBullets || [];
+
+          return (
+            <div className="space-y-2 pb-1 border-b border-border">
+              <div className="flex items-start gap-3">
+                {IconComp && (
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
+                    <IconComp className="h-6 w-6 text-primary" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <DialogHeader className="p-0 space-y-0.5">
+                    <DialogTitle className="font-display text-xl leading-tight text-foreground">{toolTitle}</DialogTitle>
+                    <DialogDescription className="text-sm text-primary font-medium italic">
+                      {subtitle}
+                    </DialogDescription>
+                  </DialogHeader>
+                </div>
+              </div>
+
+              {summary && (
+                <p className="text-sm text-foreground/70 leading-relaxed">{summary}</p>
+              )}
+
+              {bullets.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  {bullets.map((b, i) => (
+                    <div key={i} className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-foreground/80">
+                      <Zap className="h-3 w-3 text-primary shrink-0" />
+                      <span className="leading-snug">{b[lang]}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
           <Card className="border-border/60 bg-card h-fit">
