@@ -457,12 +457,29 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               </div>
 
               {showBlogPrompt && !isArticleTool && (
-                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
                   <p className="text-sm font-medium text-foreground">
                     {lang === 'PT' ? '✨ Gostou? Quer transformar isso num artigo de blog com ilustrações?' :
                      lang === 'EN' ? '✨ Liked it? Want to turn this into a blog article with illustrations?' :
                      '✨ ¿Te gustó? ¿Quieres convertirlo en un artículo de blog con ilustraciones?'}
                   </p>
+                  {/* Image style selector */}
+                  <div className="flex items-center gap-2">
+                    <Paintbrush className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <Label className="text-xs text-muted-foreground shrink-0">
+                      {lang === 'PT' ? 'Estilo das imagens:' : lang === 'EN' ? 'Image style:' : 'Estilo de imágenes:'}
+                    </Label>
+                    <Select value={imageStyle} onValueChange={(v) => setImageStyle(v as 'oil' | 'watercolor' | 'minimalist')}>
+                      <SelectTrigger className="w-[150px] h-7 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oil">{lang === 'PT' ? '🎨 Óleo clássico' : lang === 'EN' ? '🎨 Classic oil' : '🎨 Óleo clásico'}</SelectItem>
+                        <SelectItem value="watercolor">{lang === 'PT' ? '💧 Aquarela' : lang === 'EN' ? '💧 Watercolor' : '💧 Acuarela'}</SelectItem>
+                        <SelectItem value="minimalist">{lang === 'PT' ? '✦ Minimalista' : lang === 'EN' ? '✦ Minimalist' : '✦ Minimalista'}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   {convertingToBlog && (
                     <p className="text-xs text-muted-foreground animate-pulse">
                       {lang === 'PT' ? '🎨 Gerando artigo e pintando 4 ilustrações contextuais (~20s)...' :
