@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap } from 'lucide-react';
+import { useMemo, useState, useEffect, useRef } from 'react';
+import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap, Clock, Cpu, Coins, Hash } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,49 @@ import { minds } from '@/data/minds';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
 import { helpFullArticles, helpCategories } from '@/data/help-center-data';
 type OutputMode = 'sermon' | 'outline' | 'devotional';
+
+interface GenerationMeta {
+  model: string;
+  total_tokens: number;
+  total_cost_usd: number;
+  elapsed_ms: number;
+  per_format: Record<string, { tokens: number; words: number; cost_usd: number; attempts: number }>;
+}
+
+const loadingStepsPT = [
+  '📖 Acessando biblioteca teológica...',
+  '🔍 Analisando contexto bíblico...',
+  '✍️ Estruturando conteúdo pastoral...',
+  '🎯 Aplicando voz pastoral selecionada...',
+  '📝 Redigindo sermão completo...',
+  '🔬 Validando exegese e referências...',
+  '✅ Auditando densidade do conteúdo...',
+  '🧠 Refinando aplicações práticas...',
+  '📋 Finalizando material...',
+];
+const loadingStepsEN = [
+  '📖 Accessing theological library...',
+  '🔍 Analyzing biblical context...',
+  '✍️ Structuring pastoral content...',
+  '🎯 Applying selected pastoral voice...',
+  '📝 Writing full sermon...',
+  '🔬 Validating exegesis and references...',
+  '✅ Auditing content density...',
+  '🧠 Refining practical applications...',
+  '📋 Finalizing material...',
+];
+const loadingStepsES = [
+  '📖 Accediendo a biblioteca teológica...',
+  '🔍 Analizando contexto bíblico...',
+  '✍️ Estructurando contenido pastoral...',
+  '🎯 Aplicando voz pastoral seleccionada...',
+  '📝 Redactando sermón completo...',
+  '🔬 Validando exégesis y referencias...',
+  '✅ Auditando densidad del contenido...',
+  '🧠 Refinando aplicaciones prácticas...',
+  '📋 Finalizando material...',
+];
+const loadingStepsMap = { PT: loadingStepsPT, EN: loadingStepsEN, ES: loadingStepsES };
 
 interface PastoralStudioModalProps {
   open: boolean;
@@ -179,6 +222,25 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [expandedTab, setExpandedTab] = useState<OutputMode>('sermon');
+  const [genMeta, setGenMeta] = useState<GenerationMeta | null>(null);
+  const [loadingStep, setLoadingStep] = useState(0);
+  const loadingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Rotate loading messages
+  useEffect(() => {
+    if (loading) {
+      setLoadingStep(0);
+      loadingIntervalRef.current = setInterval(() => {
+        setLoadingStep((prev) => {
+          const steps = loadingStepsMap[lang];
+          return prev < steps.length - 1 ? prev + 1 : prev;
+        });
+      }, 4000);
+    } else {
+      if (loadingIntervalRef.current) clearInterval(loadingIntervalRef.current);
+    }
+    return () => { if (loadingIntervalRef.current) clearInterval(loadingIntervalRef.current); };
+  }, [loading, lang]);
 
   const availableTabs = useMemo(
     () => (['sermon', 'outline', 'devotional'] as OutputMode[]).filter((mode) => Boolean(outputs[mode])),
@@ -195,6 +257,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     setUpgradeHint(null);
     setBlockedFormats([]);
     setLoading(false);
+    setGenMeta(null);
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -275,6 +338,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
       setActiveTab(firstTab);
       setUpgradeHint(data?.upgrade_hint || null);
       setBlockedFormats(Array.isArray(data?.blocked_formats) ? data.blocked_formats : []);
+      setGenMeta(data?.generation_meta || null);
     } catch {
       toast.error(text.genericError);
     } finally {
@@ -528,17 +592,21 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
             ) : loading ? (
               <Card className="border-border/60 bg-card min-h-[420px]">
                 <CardContent className="h-full min-h-[420px] flex flex-col items-center justify-center text-center px-6">
-                  <p className="text-sm text-primary font-medium animate-pulse mb-4">
-                    {lang === 'PT' ? 'Trabalhando nisso...' : lang === 'EN' ? 'Working on it...' : 'Trabajando en eso...'}
-                  </p>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="w-3 h-3 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-3 h-3 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
-                    <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '450ms' }} />
+                  <div className="relative mb-6">
+                    <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                    <Sparkles className="absolute inset-0 m-auto h-6 w-6 text-primary" />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {lang === 'PT' ? 'Geralmente completa em 1 minuto ou menos' : lang === 'EN' ? 'Requests typically complete in 1 minute or less' : 'Normalmente completa en 1 minuto o menos'}
+                  <p className="text-sm text-primary font-semibold mb-2 transition-all duration-500">
+                    {loadingStepsMap[lang][loadingStep]}
+                  </p>
+                  <div className="w-48 h-1.5 rounded-full bg-muted overflow-hidden mb-4">
+                    <div
+                      className="h-full bg-primary/70 rounded-full transition-all duration-700 ease-out"
+                      style={{ width: `${Math.min(((loadingStep + 1) / loadingStepsMap[lang].length) * 100, 95)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-xs">
+                    {lang === 'PT' ? 'A IA está gerando e validando cada formato. Pode levar até 40 segundos.' : lang === 'EN' ? 'AI is generating and validating each format. May take up to 40 seconds.' : 'La IA está generando y validando cada formato. Puede tardar hasta 40 segundos.'}
                   </p>
                 </CardContent>
               </Card>
@@ -600,6 +668,36 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                     materialTitle={`${outputLabels[activeTab][lang]} — ${formData.bible_passage}`}
                     toolId="pastoral-studio"
                   />
+
+                  {/* Generation metadata footer */}
+                  {genMeta && (
+                    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <Cpu className="h-3.5 w-3.5" />
+                        <span className="font-medium">{genMeta.model.split('/').pop()}</span>
+                      </div>
+                      <span className="text-border">|</span>
+                      <div className="flex items-center gap-1.5">
+                        <Hash className="h-3.5 w-3.5" />
+                        <span>{genMeta.total_tokens.toLocaleString()} tokens</span>
+                      </div>
+                      <span className="text-border">|</span>
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />
+                        <span>{(genMeta.elapsed_ms / 1000).toFixed(1)}s</span>
+                      </div>
+                      <span className="text-border">|</span>
+                      <div className="flex items-center gap-1.5">
+                        <Coins className="h-3.5 w-3.5" />
+                        <span>${genMeta.total_cost_usd.toFixed(4)}</span>
+                      </div>
+                      {Object.entries(genMeta.per_format).map(([fmt, m]) => (
+                        <Badge key={fmt} variant="outline" className="text-[10px] px-1.5 py-0.5">
+                          {fmt}: {m.words}w · {m.attempts > 1 ? `${m.attempts} tentativas` : '1ª tentativa'}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
