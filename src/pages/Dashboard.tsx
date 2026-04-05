@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Wand2, PenLine, Type, Video, BookOpen, Languages, X,
   Search, Globe, Quote, Clapperboard, ScrollText, Lightbulb, Sparkles,
   Crown, Film, Megaphone, MessageSquare, Mail, Newspaper,
-  Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy, GraduationCap
+  Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy, GraduationCap,
+  FileText, Brain, Mic, ChevronRight
 } from 'lucide-react';
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
@@ -79,15 +80,46 @@ const sectionDescriptions = {
 };
 
 export default function Dashboard() {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const { lang, t } = useLanguage();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFree = profile?.plan === 'free';
   const [showBanner, setShowBanner] = useState(true);
   const [activeSheet, setActiveSheet] = useState<{ id: string; title: string } | null>(null);
   const requestedToolId = searchParams.get('tool');
 
+  // Stats
+  const [stats, setStats] = useState({ sermons: 0, studies: 0, articles: 0, devotionals: 0, blogs: 0, total: 0 });
+  const [recentMaterials, setRecentMaterials] = useState<Array<{ id: string; title: string; type: string; passage: string | null; language: string | null; created_at: string }>>([]);
+
   const userName = profile?.full_name?.split(' ')[0] || (lang === 'PT' ? 'Amigo' : lang === 'EN' ? 'Friend' : 'Amigo');
+
+  // Fetch stats + recent materials
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = async () => {
+      const { data: materials } = await supabase
+        .from('materials')
+        .select('id, title, type, passage, language, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (materials) {
+        setStats({
+          sermons: materials.filter(m => m.type === 'sermon' || m.type === 'pastoral').length,
+          studies: materials.filter(m => m.type === 'biblical_study' || m.type === 'study').length,
+          articles: materials.filter(m => m.type === 'article' || m.type === 'blog').length,
+          devotionals: materials.filter(m => m.type === 'devotional').length,
+          blogs: materials.filter(m => m.type === 'blog').length,
+          total: materials.length,
+        });
+        setRecentMaterials(materials.slice(0, 5));
+      }
+    };
+    fetchData();
+  }, [user]);
 
   useEffect(() => {
     if (!requestedToolId) return;
@@ -147,16 +179,130 @@ export default function Dashboard() {
     </section>
   );
 
+  const statCards = [
+    { n: stats.sermons, label: { PT: 'Sermões', EN: 'Sermons', ES: 'Sermones' }, color: '#C4956A', icon: Mic },
+    { n: stats.studies, label: { PT: 'Estudos', EN: 'Studies', ES: 'Estudios' }, color: '#7B9E6B', icon: BookOpen },
+    { n: stats.articles, label: { PT: 'Artigos', EN: 'Articles', ES: 'Artículos' }, color: '#6B8BBE', icon: FileText },
+    { n: stats.devotionals, label: { PT: 'Devocionais', EN: 'Devotionals', ES: 'Devocionales' }, color: '#9B7EC8', icon: Sparkles },
+    { n: stats.total, label: { PT: 'Total Criados', EN: 'Total Created', ES: 'Total Creados' }, color: '#D4A853', icon: Wand2 },
+    { n: profile?.generations_used || 0, label: { PT: 'Gerações Usadas', EN: 'Generations Used', ES: 'Generaciones Usadas' }, color: '#E07A5F', icon: Sparkles },
+  ];
+
+  const quickTools = [
+    { icon: '📖', label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, action: () => handleToolClick(createTools[0]) },
+    { icon: '📚', label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' }, action: () => navigate('/estudos/novo') },
+    { icon: '✍️', label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' }, action: () => navigate('/blog') },
+    { icon: '🧠', label: { PT: 'Mentes Brilhantes', EN: 'Brilliant Minds', ES: 'Mentes Brillantes' }, action: () => navigate('/dashboard/mentes') },
+  ];
+
+  const typeIcons: Record<string, string> = {
+    sermon: '🎤', pastoral: '🎤', study: '📖', biblical_study: '📖',
+    article: '✍️', blog: '✍️', devotional: '✨', default: '📄',
+  };
+  const typeLabels: Record<string, Record<string, string>> = {
+    sermon: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón' },
+    pastoral: { PT: 'Pastoral', EN: 'Pastoral', ES: 'Pastoral' },
+    study: { PT: 'Estudo', EN: 'Study', ES: 'Estudio' },
+    biblical_study: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' },
+    article: { PT: 'Artigo', EN: 'Article', ES: 'Artículo' },
+    blog: { PT: 'Blog', EN: 'Blog', ES: 'Blog' },
+    devotional: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' },
+  };
+
   return (
     <div className="space-y-8 max-w-5xl">
+      {/* ─── Welcome + Overview (Mockup Style) ─── */}
       <div>
-        <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
-          {t('dashboard.greeting')}, {userName}! 👋
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1.5 leading-relaxed max-w-xl">
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
+            {t('dashboard.greeting')}, {userName}! 👋
+          </h1>
+          {profile && (
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+              style={{ background: 'linear-gradient(135deg, #C4956A, #D4A853)', color: '#fff' }}>
+              {(profile.full_name || '').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?'}
+            </div>
+          )}
+        </div>
+        <p className="text-muted-foreground text-sm mt-1 leading-relaxed max-w-xl">
           {t('dashboard.subtitle')}
         </p>
       </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
+        {statCards.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <div key={i} className="rounded-xl p-3 text-center transition-transform hover:scale-[1.03]"
+              style={{ background: 'var(--card)', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid var(--border)' }}>
+              <div className="flex justify-center mb-1">
+                <Icon className="h-4 w-4" style={{ color: s.color }} />
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold font-display" style={{ color: s.color }}>{s.n}</p>
+              <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5">{s.label[lang]}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Quick Tools */}
+      <div>
+        <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-3">
+          {lang === 'PT' ? '⚡ ACESSO RÁPIDO' : lang === 'EN' ? '⚡ QUICK ACCESS' : '⚡ ACCESO RÁPIDO'}
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          {quickTools.map((t, i) => (
+            <button key={i} onClick={t.action}
+              className="rounded-xl p-3 sm:p-4 flex items-center gap-3 text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background: 'var(--card)', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid var(--border)' }}>
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xl shrink-0"
+                style={{ background: 'rgba(196,149,106,0.1)' }}>{t.icon}</div>
+              <span className="text-xs sm:text-sm font-semibold text-foreground leading-tight">{t.label[lang]}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Generations */}
+      {recentMaterials.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+              {lang === 'PT' ? '📝 GERAÇÃO RECENTE' : lang === 'EN' ? '📝 RECENT GENERATION' : '📝 GENERACIÓN RECIENTE'}
+            </p>
+            <Link to="/biblioteca" className="text-xs font-medium text-primary flex items-center gap-0.5 hover:underline">
+              {lang === 'PT' ? 'Ver tudo' : lang === 'EN' ? 'View all' : 'Ver todo'}
+              <ChevronRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="space-y-2">
+            {recentMaterials.map((m) => (
+              <div key={m.id} className="rounded-xl p-3 sm:p-4 flex items-center gap-3 transition-all hover:shadow-md"
+                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base shrink-0"
+                  style={{ background: 'rgba(196,149,106,0.1)' }}>
+                  {typeIcons[m.type] || typeIcons.default}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{m.title}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {typeLabels[m.type]?.[lang] || m.type}
+                    {m.passage && ` · ${m.passage}`}
+                    {m.language && ` · ${m.language}`}
+                  </p>
+                </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full"
+                    style={{ background: 'rgba(196,149,106,0.12)', color: '#C4956A' }}>
+                    {typeLabels[m.type]?.[lang] || m.type}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <TrialCountdown />
       <PWAInstallBanner />
