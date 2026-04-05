@@ -31,6 +31,7 @@ import AIBillingDashboard from "./pages/AIBillingDashboard";
 import AcceptInvite from "./pages/AcceptInvite";
 import HelpCenter from "./pages/HelpCenter";
 import HelpArticlePage from "./pages/HelpArticlePage";
+import ExposStudioPage from "./pages/ExposStudioPage";
 
 const queryClient = new QueryClient();
 
