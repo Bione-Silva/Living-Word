@@ -28,7 +28,7 @@ const depthRequirements = {
     summaryWords: 220,
     historicalWords: 220,
     literaryWords: 100,
-    conclusionWords: 180,
+    conclusionWords: 140,
     textStructureCount: 4,
     exegesisCount: 5,
     theologyCount: 3,
@@ -334,10 +334,10 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
     let lastIssues: string[] = [];
     let lastRawContent = "";
 
-    for (let attempt = 1; attempt <= 2; attempt++) {
+    for (let attempt = 1; attempt <= 3; attempt++) {
       const repairPrompt = attempt === 1
         ? baseUserPrompt
-        : `${baseUserPrompt}\n\nREVISION REQUIRED: your previous JSON was rejected for the following reasons:\n- ${lastIssues.join("\n- ")}\nRewrite the entire study from scratch and satisfy every requirement in full.`;
+        : `${baseUserPrompt}\n\nCRITICAL REVISION REQUIRED (attempt ${attempt}): your previous JSON was REJECTED for these reasons:\n- ${lastIssues.join("\n- ")}\n\nYou MUST fix ALL of the above. For any field that was "too short", write AT LEAST double the minimum word count. The conclusion MUST be a substantial, multi-paragraph reflection of at least ${requirements.conclusionWords} words. Rewrite the ENTIRE study from scratch.`;
 
       const generation = await requestStudyGeneration({
         lovableApiKey,
