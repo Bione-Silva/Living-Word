@@ -196,24 +196,32 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     const h1Match = content.match(/^#\s+(.+)$/m);
     const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
 
+    // Image style mapping
+    const styleMap: Record<string, string> = {
+      oil: "Warm earth tones, golden light, painterly oil painting style. Rich brushstrokes and classical composition.",
+      watercolor: "Soft watercolor style with gentle washes, transparent layers, warm pastel tones, and flowing organic edges.",
+      minimalist: "Clean minimalist illustration with simple geometric shapes, muted earth tones, flat design with subtle gradients.",
+    };
+    const artStyle = styleMap[image_style] || styleMap["oil"];
+
     // Extract H2/H3 headings from content to create contextual body image prompts
     const headings = [...content.matchAll(/^#{2,3}\s+(.+)$/gm)].map(m => m[1]);
 
     // Generate cover image + 2 body images in parallel
-    const coverPrompt = `A historically accurate, epoch-representative scene from the Bible passage "${passage}". Ancient Middle Eastern setting with period-appropriate architecture, clothing, and landscape. Warm earth tones, golden light, painterly oil painting style. No text, no words, no letters.`;
+    const coverPrompt = `A historically accurate, epoch-representative scene from the Bible passage "${passage}". Ancient Middle Eastern setting with period-appropriate architecture, clothing, and landscape. ${artStyle} No text, no words, no letters.`;
 
     const bodyPrompts = headings.slice(0, 2).map((heading) =>
-      `A serene, contemplative biblical illustration representing the concept "${heading}" related to "${passage}". Warm earth tones, golden light, painterly oil painting style. Ancient Middle Eastern setting. No text, no words, no letters.`
+      `A serene, contemplative biblical illustration representing the concept "${heading}" related to "${passage}". ${artStyle} Ancient Middle Eastern setting. No text, no words, no letters.`
     );
     // Fallback body prompts if no headings found
     if (bodyPrompts.length === 0) {
       bodyPrompts.push(
-        `A peaceful biblical landscape representing spiritual reflection on "${passage}". Warm earth tones, golden light, painterly style. No text.`,
-        `A contemplative scene of ancient worship and prayer inspired by "${passage}". Warm earth tones, oil painting style. No text.`
+        `A peaceful biblical landscape representing spiritual reflection on "${passage}". ${artStyle} No text.`,
+        `A contemplative scene of ancient worship and prayer inspired by "${passage}". ${artStyle} No text.`
       );
     } else if (bodyPrompts.length === 1) {
       bodyPrompts.push(
-        `A contemplative scene of ancient worship and prayer inspired by "${passage}". Warm earth tones, oil painting style. No text.`
+        `A contemplative scene of ancient worship and prayer inspired by "${passage}". ${artStyle} No text.`
       );
     }
 
