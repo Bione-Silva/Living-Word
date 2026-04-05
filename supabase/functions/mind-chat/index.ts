@@ -274,6 +274,37 @@ O estudo gerado deve ter no mínimo 2000 palavras e seguir esta estrutura:
 ## 11. Conclusão | ## 12. Frase-Chave`,
 };
 
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    if (!lovableApiKey) {
+      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { messages, mindId, modality, language } = await req.json();
+
+    if (!mindId || !modality || !messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: "mindId, modality, messages[] required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const mind = mindProfiles[mindId];
+    if (!mind) {
+      return new Response(JSON.stringify({ error: `Unknown mind: ${mindId}` }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Build the final system prompt: SYSTEM_INSTRUCTIONS → Mind DNA → Modality → Language → Identity guard
     const modalityPrompt = modalityPrompts[modality] || "";
     const langInstruction = language === "EN"
