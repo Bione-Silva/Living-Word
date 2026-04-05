@@ -849,7 +849,134 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ===== PRICING ===== */}
+      {/* ===== MENTES BRILHANTES ===== */}
+      <section className="py-16 sm:py-24 px-5 sm:px-8" style={{ background: '#FFFFFF' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(196,149,106,0.15)' }}>
+                <Brain className="w-5 h-5" style={{ color: '#C4956A' }} />
+              </div>
+              <Sparkles className="w-4 h-4" style={{ color: '#C4956A' }} />
+            </div>
+            <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>
+              {lang === 'PT' ? 'Mentes Brilhantes' : lang === 'EN' ? 'Brilliant Minds' : 'Mentes Brillantes'}
+            </p>
+            <h2 className="font-display text-[30px] sm:text-[40px] font-semibold leading-tight mb-4" style={{ color: '#3D2B1F' }}>
+              {lang === 'PT' ? 'Converse com as maiores mentes da pregação cristã.' : lang === 'EN' ? 'Chat with the greatest minds in Christian preaching.' : 'Conversa con las mayores mentes de la predicación cristiana.'}
+            </h2>
+            <p className="text-[16px] sm:text-[17px] leading-relaxed max-w-2xl mx-auto" style={{ color: '#6B4F3A' }}>
+              {lang === 'PT'
+                ? 'Cada mentor foi treinado com centenas de horas de material original — sermões, livros, cartas e teologia. Pergunte, aprenda e crie conteúdo inspirado pela voz dos gigantes da fé.'
+                : lang === 'EN'
+                  ? 'Each mentor was trained on hundreds of hours of original material — sermons, books, letters, and theology. Ask, learn, and create content inspired by the voice of the giants of faith.'
+                  : 'Cada mentor fue entrenado con cientos de horas de material original — sermones, libros, cartas y teología. Pregunta, aprende y crea contenido inspirado por la voz de los gigantes de la fe.'}
+            </p>
+          </div>
+
+          {/* Stats bar */}
+          <div className="rounded-2xl p-5 sm:p-6 mb-10 flex flex-wrap items-center justify-center gap-6 sm:gap-10" style={{ background: '#F5F0E8', border: '1px solid rgba(107,79,58,0.08)' }}>
+            {[
+              { value: '168M+', label: { PT: 'Tokens de Contexto', EN: 'Context Tokens', ES: 'Tokens de Contexto' } },
+              { value: '30,000+', label: { PT: 'Páginas Processadas', EN: 'Pages Processed', ES: 'Páginas Procesadas' } },
+              { value: '5', label: { PT: 'Agentes Ativos', EN: 'Active Agents', ES: 'Agentes Activos' } },
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <p className="text-[22px] sm:text-[26px] font-bold" style={{ color: '#3D2B1F' }}>{stat.value}</p>
+                <p className="text-[11px] font-semibold tracking-[0.08em] uppercase" style={{ color: '#8B7355' }}>{stat.label[lang]}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Mind Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {minds.filter(m => m.id !== 'marco-feliciano' && m.id !== 'tiago-brunet').map((mind) => (
+              <div
+                key={mind.id}
+                className="rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group"
+                style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)' }}
+              >
+                {/* Card Header */}
+                <div className="pt-6 pb-4 px-6 text-center" style={{ background: 'linear-gradient(to bottom, rgba(237,217,200,0.3), transparent)' }}>
+                  <div className="relative w-20 h-20 mx-auto mb-3">
+                    <img
+                      src={mind.image}
+                      alt={mind.name}
+                      className="w-20 h-20 rounded-full object-cover border-2"
+                      style={{ borderColor: 'rgba(196,149,106,0.3)' }}
+                      loading="lazy"
+                    />
+                    <span className="absolute -bottom-1 -right-1 text-base">{mind.flag}</span>
+                  </div>
+                  <h3 className="text-[18px] font-bold" style={{ color: '#3D2B1F' }}>{mind.name}</h3>
+                  <p className="font-display text-[14px] italic mt-0.5" style={{ color: '#C4956A' }}>{mind.subtitle[lang]}</p>
+                  <div className="flex items-center justify-center gap-1.5 mt-2">
+                    <span className="w-2 h-2 rounded-full" style={{ background: '#4CAF50' }} />
+                    <span className="text-[12px] font-medium" style={{ color: '#4CAF50' }}>Online</span>
+                  </div>
+                </div>
+
+                {/* Badge */}
+                <div className="px-6 pb-3 text-center">
+                  <span className="inline-block text-[12px] font-medium px-3 py-1 rounded-full" style={{ background: 'rgba(196,149,106,0.1)', color: '#6B4F3A', border: '1px solid rgba(196,149,106,0.2)' }}>
+                    {mind.role[lang]}
+                  </span>
+                </div>
+
+                {/* Bio excerpt */}
+                <div className="px-6 pb-4">
+                  <p className="text-[13.5px] leading-[1.65] line-clamp-3" style={{ color: '#6B4F3A' }}>
+                    {mind.bio[lang]}
+                  </p>
+                </div>
+
+                {/* Specialties */}
+                <div className="px-6 pb-4">
+                  <div className="flex flex-wrap gap-1.5">
+                    {mind.specialties.slice(0, 3).map((s, si) => (
+                      <span key={si} className="text-[11px] font-medium px-2 py-0.5 rounded-md" style={{ background: 'rgba(245,240,232,0.8)', color: '#8B7355' }}>
+                        {s[lang]}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Stats footer */}
+                <div className="px-6 pb-5 flex items-center gap-4 text-[11px]" style={{ color: '#8B7355' }}>
+                  {mind.badges.slice(0, 2).map((b, bi) => (
+                    <span key={bi} className="flex items-center gap-1">
+                      {bi === 0 ? <BookOpen className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
+                      {b[lang]}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-10">
+            <p className="text-[14px] mb-4" style={{ color: '#6B4F3A' }}>
+              {lang === 'PT'
+                ? 'Converse com os gigantes da fé e crie conteúdo inspirado na tradição cristã.'
+                : lang === 'EN'
+                  ? 'Chat with the giants of faith and create content inspired by Christian tradition.'
+                  : 'Conversa con los gigantes de la fe y crea contenido inspirado en la tradición cristiana.'}
+            </p>
+            <Link to="/cadastro">
+              <button
+                className="inline-flex items-center gap-2 px-7 py-3 rounded-lg text-[15px] font-semibold text-white transition-all duration-200 hover:scale-[1.03]"
+                style={{ background: 'linear-gradient(135deg, #6B4F3A, #3D2B1F)' }}
+              >
+                <MessageCircle className="w-4 h-4" />
+                {lang === 'PT' ? 'Experimentar Mentes Brilhantes' : lang === 'EN' ? 'Try Brilliant Minds' : 'Probar Mentes Brillantes'}
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
       <section id="pricing" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#FFFFFF' }}>
         <div className="max-w-4xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.pricing.tag[lang]}</p>
