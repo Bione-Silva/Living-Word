@@ -721,6 +721,32 @@ export default function Landing() {
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.features.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.features.h2[lang]}</h2>
+
+          {/* Floating UI Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-10">
+            {[
+              { icon: '📖', title: lang === 'PT' ? 'Sermão Completo' : lang === 'EN' ? 'Full Sermon' : 'Sermón Completo', sub: lang === 'PT' ? 'João 15:1-8 · A Videira Verdadeira' : lang === 'EN' ? 'John 15:1-8 · The True Vine' : 'Juan 15:1-8 · La Vid Verdadera', badge: 'PT' },
+              { icon: '🕊️', title: lang === 'PT' ? 'Devocional' : 'Devotional', sub: lang === 'PT' ? 'Permanecer em Cristo no caos' : lang === 'EN' ? 'Abiding in Christ amid chaos' : 'Permanecer en Cristo en el caos', badge: 'PT' },
+              { icon: '📚', title: lang === 'PT' ? 'Estudo Bíblico' : lang === 'EN' ? 'Bible Study' : 'Estudio Bíblico', sub: lang === 'PT' ? 'Exegese · Contexto · Aplicação' : lang === 'EN' ? 'Exegesis · Context · Application' : 'Exégesis · Contexto · Aplicación', badge: 'PT' },
+              { icon: '📰', title: lang === 'PT' ? 'Artigo de Blog' : lang === 'EN' ? 'Blog Article' : 'Artículo de Blog', sub: lang === 'PT' ? 'O que significa dar fruto hoje?' : lang === 'EN' ? 'What does it mean to bear fruit?' : '¿Qué significa dar fruto hoy?', badge: 'Blog' },
+              { icon: '👥', title: lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula', sub: lang === 'PT' ? 'Roteiro + perguntas + dinâmica' : lang === 'EN' ? 'Script + questions + dynamics' : 'Guión + preguntas + dinámica', badge: 'PT' },
+              { icon: '🇬🇧', title: 'English Version', sub: 'Abide in Me · John 15:1-8', badge: 'EN' },
+              { icon: '🇪🇸', title: 'Versión Español', sub: 'Permaneced en Mí · Juan 15:1-8', badge: 'ES' },
+              { icon: '📝', title: lang === 'PT' ? 'Esboço' : lang === 'EN' ? 'Outline' : 'Bosquejo', sub: lang === 'PT' ? '3 pontos + aplicação + fechamento' : lang === 'EN' ? '3 points + application + closing' : '3 puntos + aplicación + cierre', badge: 'PT' },
+            ].map((card, i) => (
+              <RevealOnScroll key={i} delay={i * 0.08}>
+                <div className="rounded-xl p-4 h-full transition-transform hover:scale-[1.03] hover:shadow-md" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 8px rgba(61,43,31,0.06)' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[18px]">{card.icon}</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{card.badge}</span>
+                  </div>
+                  <h3 className="text-[13px] font-semibold mb-0.5" style={{ color: '#3D2B1F' }}>{card.title}</h3>
+                  <p className="text-[11px] leading-[1.4]" style={{ color: '#8B7355' }}>{card.sub}</p>
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {copy.features.items.map((f, i) => {
               const Icon = f.icon;
@@ -731,7 +757,7 @@ export default function Landing() {
                   </div>
                   <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>
                     {f.title[lang]}
-                    {f.unique && <span className="ml-2 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>único</span>}
+                    {f.unique && <span className="ml-2 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{lang === 'PT' ? 'único' : lang === 'EN' ? 'unique' : 'único'}</span>}
                   </h3>
                   <p className="text-[14px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{f.desc[lang]}</p>
                 </div>
