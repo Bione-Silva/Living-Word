@@ -831,15 +831,15 @@ export default function Landing() {
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.testimonials.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.testimonials.h2[lang]}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {copy.testimonials.items.map((t, i) => (
-              <div key={i} className="rounded-xl p-5" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)' }}>
-                <p className="font-display text-[16px] italic leading-[1.55] mb-4" style={{ color: '#3D2B1F' }}>{t.quote[lang]}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {copy.testimonials.itemsByLang[lang].map((t, i) => (
+              <div key={i} className="rounded-2xl p-6" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.08)', boxShadow: '0 1px 4px rgba(107,79,58,0.04)' }}>
+                <p className="text-[15px] italic leading-[1.7] mb-5 font-light" style={{ color: '#3D2B1F', fontFamily: "'Cormorant Garamond', serif", fontSize: '17px' }}>{t.quote}</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-[12px] font-semibold shrink-0" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{t.initials}</div>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0 tracking-wide" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{t.initials}</div>
                   <div>
-                    <p className="text-[14px] font-semibold" style={{ color: '#3D2B1F' }}>{t.name} {t.flag}</p>
-                    <p className="text-[12px] font-medium" style={{ color: '#6B4F3A' }}>{t.role[lang]}</p>
+                    <p className="text-[13.5px] font-semibold" style={{ color: '#3D2B1F' }}>{t.name} {t.flag}</p>
+                    <p className="text-[11.5px] font-medium tracking-wide" style={{ color: '#8B7355' }}>{t.role}</p>
                   </div>
                 </div>
               </div>
