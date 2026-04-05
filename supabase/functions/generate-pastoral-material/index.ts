@@ -131,7 +131,6 @@ serve(async (req) => {
 
     // Build prompts for each allowed format
     const formatPrompts: Record<string, string> = {
-      sermon: `Write a complete sermon (800-1200 words) based on ${bible_passage} (${bible_version}) for ${audienceDesc}.
       sermon: `Write a complete sermon of 1800-2600 words based on ${bible_passage} (${bible_version}) for ${audienceDesc}.
 Include: Title (H1), central proposition, a strong introduction with a hook, contextual framing of the passage, 3 to 5 major movements with sub-points, exegetical explanation, illustrations, cross references, pastoral application after each movement, and a conclusion with a clear call to action.
 The sermon must feel publication-ready and long enough to read like at least 3 pages. Do not compress it into a short devotional or a few paragraphs.
