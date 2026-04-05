@@ -16,6 +16,16 @@ interface UserProfile {
   bible_version?: string;
   trial_started_at?: string;
   trial_ends_at?: string;
+  phone?: string;
+  street?: string;
+  neighborhood?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  country?: string;
+  theme_color?: string;
+  font_family?: string;
+  layout_style?: string;
 }
 
 interface AuthContextType {
