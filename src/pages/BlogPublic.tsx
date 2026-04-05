@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,26 +8,35 @@ import { Input } from '@/components/ui/input';
 import { BookOpen, Search, Clock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const THEME_COLORS: Record<string, string> = {
+  amber: '45 93% 31%',
+  blue: '221 83% 53%',
+  green: '142 71% 45%',
+  rose: '347 77% 50%',
+  purple: '263 70% 58%',
+  teal: '173 80% 32%',
+  indigo: '239 84% 67%',
+  orange: '21 90% 48%',
+};
+
+const FONT_FAMILIES: Record<string, string> = {
+  cormorant: "'Cormorant Garamond', serif",
+  montserrat: "'Montserrat', sans-serif",
+  playfair: "'Playfair Display', serif",
+  inter: "'Inter', sans-serif",
+  merriweather: "'Merriweather', serif",
+};
+
 export default function BlogPublic() {
   const { handle } = useParams<{ handle: string }>();
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    document.documentElement.classList.add('theme-blog');
-    document.body.classList.add('theme-blog');
-
-    return () => {
-      document.documentElement.classList.remove('theme-blog');
-      document.body.classList.remove('theme-blog');
-    };
-  }, []);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['blog-profile', handle],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, bio, avatar_url, blog_handle, plan')
+        .select('id, full_name, bio, avatar_url, blog_handle, plan, theme_color, font_family, layout_style')
         .eq('blog_handle', handle!)
         .maybeSingle();
       if (error) throw error;
@@ -35,6 +44,26 @@ export default function BlogPublic() {
     },
     enabled: !!handle,
   });
+
+  // Apply custom theme via CSS variables
+  const themeColor = (profile as any)?.theme_color || 'amber';
+  const fontFamily = (profile as any)?.font_family || 'cormorant';
+
+  useEffect(() => {
+    document.documentElement.classList.add('theme-blog');
+    document.body.classList.add('theme-blog');
+
+    const hsl = THEME_COLORS[themeColor] || THEME_COLORS.amber;
+    document.documentElement.style.setProperty('--blog-primary', hsl);
+    document.documentElement.style.setProperty('--blog-font', FONT_FAMILIES[fontFamily] || FONT_FAMILIES.cormorant);
+
+    return () => {
+      document.documentElement.classList.remove('theme-blog');
+      document.body.classList.remove('theme-blog');
+      document.documentElement.style.removeProperty('--blog-primary');
+      document.documentElement.style.removeProperty('--blog-font');
+    };
+  }, [themeColor, fontFamily]);
 
   const { data: articles, isLoading: articlesLoading } = useQuery({
     queryKey: ['blog-articles', profile?.id],
@@ -63,8 +92,6 @@ export default function BlogPublic() {
     enabled: !!profile?.id,
   });
 
-  const isFree = profile?.plan === 'free';
-
   const filteredArticles = articles?.filter(a =>
     !searchQuery || a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     a.content.toLowerCase().includes(searchQuery.toLowerCase())
@@ -83,6 +110,9 @@ export default function BlogPublic() {
       .substring(0, 160)
       .trim() + '...';
   };
+
+  const blogFont = FONT_FAMILIES[fontFamily] || FONT_FAMILIES.cormorant;
+  const primaryHsl = THEME_COLORS[themeColor] || THEME_COLORS.amber;
 
   if (profileLoading) {
     return (
@@ -107,18 +137,18 @@ export default function BlogPublic() {
   }
 
   return (
-    <div className="min-h-screen bg-background theme-blog">
+    <div className="min-h-screen bg-background theme-blog" style={{ fontFamily: blogFont }}>
       <header className="bg-background border-b border-border/30 sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h2 className="font-serif text-xl font-bold text-primary">{profile.full_name}</h2>
+          <h2 className="text-xl font-bold" style={{ color: `hsl(${primaryHsl})`, fontFamily: blogFont }}>{profile.full_name}</h2>
           <nav className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="hover:text-primary cursor-pointer">Início</span>
           </nav>
         </div>
       </header>
 
-      <div className="bg-gradient-to-b from-primary/10 to-background py-14 text-center">
-        <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-6">Blog</h1>
+      <div className="py-14 text-center" style={{ background: `linear-gradient(to bottom, hsl(${primaryHsl} / 0.1), transparent)` }}>
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6" style={{ fontFamily: blogFont }}>Blog</h1>
 
         <div className="max-w-md mx-auto flex items-center gap-2 px-4">
           <div className="relative flex-1">
@@ -129,14 +159,14 @@ export default function BlogPublic() {
               className="pl-4 pr-10 h-11 bg-card border-border/50 text-foreground placeholder:text-muted-foreground rounded-lg"
             />
           </div>
-          <Button size="icon" variant="outline" className="h-11 w-11 border-border/50">
+          <Button size="icon" variant="outline" className="h-11 w-11 border-border/50" style={{ borderColor: `hsl(${primaryHsl} / 0.3)` }}>
             <Search className="w-5 h-5" />
           </Button>
         </div>
       </div>
 
       <main className="max-w-6xl mx-auto px-4 py-10">
-        <h2 className="font-serif text-2xl font-bold text-foreground text-center mb-10">
+        <h2 className="text-2xl font-bold text-foreground text-center mb-10" style={{ fontFamily: blogFont }}>
           Últimos Artigos Publicados
         </h2>
 
@@ -156,7 +186,7 @@ export default function BlogPublic() {
         ) : !filteredArticles?.length ? (
           <div className="text-center py-16">
             <BookOpen className="w-12 h-12 mx-auto text-accent mb-4" />
-            <h3 className="text-xl font-serif text-foreground">
+            <h3 className="text-xl text-foreground" style={{ fontFamily: blogFont }}>
               {searchQuery ? 'Nenhum artigo encontrado' : 'Nenhum artigo publicado ainda'}
             </h3>
             <p className="text-muted-foreground mt-2">
@@ -179,27 +209,27 @@ export default function BlogPublic() {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-primary/5">
-                          <BookOpen className="w-12 h-12 text-primary/30" />
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: `hsl(${primaryHsl} / 0.05)` }}>
+                          <BookOpen className="w-12 h-12" style={{ color: `hsl(${primaryHsl} / 0.3)` }} />
                         </div>
                       )}
                     </div>
 
                     <CardContent className="p-5 flex flex-col flex-1">
-                      <h3 className="font-serif text-lg font-bold text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                      <h3 className="text-lg font-bold text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors" style={{ fontFamily: blogFont }}>
                         {article.title}
                       </h3>
-                      <p className="text-xs text-[hsl(var(--blog-meta))] mb-3">
+                      <p className="text-xs text-muted-foreground mb-3">
                         {new Date(article.published_at || article.created_at).toLocaleDateString('pt-BR', {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric',
                         })}
                       </p>
-                      <p className="text-sm text-[hsl(var(--blog-body))] mb-3 line-clamp-3 flex-1">
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-3 flex-1">
                         {getExcerpt(article.content)}
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-[hsl(var(--blog-meta))] mt-auto pt-3 border-t border-border/20">
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mt-auto pt-3 border-t border-border/20">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {estimateReadTime(article.content)} min de leitura
@@ -213,11 +243,10 @@ export default function BlogPublic() {
           </div>
         )}
 
-        {/* Powered by Living Word — always visible */}
         <footer className="text-center py-10 mt-8 border-t border-border/20">
           <p className="text-xs text-muted-foreground">
             Feito com ❤️ por{' '}
-            <Link to="/" className="font-semibold text-primary hover:underline">Living Word</Link>
+            <Link to="/" className="font-semibold hover:underline" style={{ color: `hsl(${primaryHsl})` }}>Living Word</Link>
           </p>
         </footer>
       </main>

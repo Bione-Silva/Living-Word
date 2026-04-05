@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
       blog_name,
     } = body;
 
-    // 1. Update profile with personalization
+    // 1. Update profile with personalization + theme preferences
     await supabaseAdmin
       .from("profiles")
       .update({
@@ -64,6 +64,9 @@ Deno.serve(async (req) => {
         pastoral_voice: tone,
         blog_handle: blog_handle || undefined,
         blog_name: blog_name || undefined,
+        theme_color,
+        font_family,
+        layout_style,
         profile_completed: true,
       })
       .eq("id", user.id);
