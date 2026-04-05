@@ -324,6 +324,7 @@ Write everything in ${targetLang}. Depth: ${depthDesc}.${cautionInstruction}`;
     const baseUserPrompt = `Generate a complete biblical study for: ${bible_passage} (${bible_version}).${theme ? ` Focus theme: ${theme}.` : ""}
 Build every section fully. Do not summarize the whole study into 3 short paragraphs. Return ONLY the JSON object.`;
 
+    const startTime = Date.now();
     const usageTotals = {
       prompt_tokens: 0,
       completion_tokens: 0,
@@ -333,8 +334,10 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
     let study: Record<string, unknown> | null = null;
     let lastIssues: string[] = [];
     let lastRawContent = "";
+    let attemptsUsed = 0;
 
     for (let attempt = 1; attempt <= 3; attempt++) {
+      attemptsUsed = attempt;
       const repairPrompt = attempt === 1
         ? baseUserPrompt
         : `${baseUserPrompt}\n\nCRITICAL REVISION REQUIRED (attempt ${attempt}): your previous JSON was REJECTED for these reasons:\n- ${lastIssues.join("\n- ")}\n\nYou MUST fix ALL of the above. For any field that was "too short", write AT LEAST double the minimum word count. The conclusion MUST be a substantial, multi-paragraph reflection of at least ${requirements.conclusionWords} words. Rewrite the ENTIRE study from scratch.`;
@@ -420,6 +423,13 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
       caution_mode: cautionMode,
       sensitive_topic_detected: detectedTopic,
       study,
+      generation_meta: {
+        model: MODEL,
+        total_tokens: usageTotals.total_tokens,
+        total_cost_usd: (usageTotals.prompt_tokens * 0.0000001 + usageTotals.completion_tokens * 0.0000004),
+        elapsed_ms: Date.now() - startTime,
+        attempts_used: attemptsUsed,
+      },
     });
   } catch (e) {
     console.error("generate-biblical-study error:", e);

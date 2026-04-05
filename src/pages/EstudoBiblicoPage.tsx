@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { BookOpen, ShieldAlert, Zap } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { StudyForm } from '@/components/biblical-study/StudyForm';
 import { StudyActions } from '@/components/biblical-study/StudyActions';
 import { TabResumo } from '@/components/biblical-study/tabs/TabResumo';
@@ -19,10 +18,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { helpFullArticles, helpCategories } from '@/data/help-center-data';
 import type { BiblicalStudyFormData, BiblicalStudyResponse } from '@/types/biblical-study';
+import type { GenerationMeta } from '@/types/generation-meta';
+import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFooter';
+import { RichLoadingState } from '@/components/generation/RichLoadingState';
+import { loadingHints, studyLoadingMessages } from '@/lib/generation-ui';
 
 export default function EstudoBiblicoPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<BiblicalStudyResponse | null>(null);
+  const [generationMeta, setGenerationMeta] = useState<GenerationMeta | null>(null);
   const { profile } = useAuth();
   const { lang, t } = useLanguage();
   const isFree = profile?.plan === 'free';
@@ -30,6 +34,7 @@ export default function EstudoBiblicoPage() {
   const handleGenerate = async (formData: BiblicalStudyFormData) => {
     setIsLoading(true);
     setResult(null);
+    setGenerationMeta(null);
     try {
       const { data, error } = await supabase.functions.invoke('generate-biblical-study', {
         body: {
@@ -54,6 +59,7 @@ export default function EstudoBiblicoPage() {
       }
 
       setResult(data as BiblicalStudyResponse);
+      setGenerationMeta((data?.generation_meta ?? null) as GenerationMeta | null);
     } catch {
       toast.error(t('study.error'));
     } finally {
@@ -126,20 +132,7 @@ export default function EstudoBiblicoPage() {
           )}
 
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-[400px] rounded-xl border border-border bg-card">
-              <p className="text-sm text-primary font-medium animate-pulse mb-4">
-                {lang === 'PT' ? 'Trabalhando nisso...' : lang === 'EN' ? 'Working on it...' : 'Trabajando en eso...'}
-              </p>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="w-3 h-3 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-3 h-3 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
-                <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '450ms' }} />
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {lang === 'PT' ? 'Geralmente completa em 1 minuto ou menos' : lang === 'EN' ? 'Requests typically complete in 1 minute or less' : 'Normalmente completa en 1 minuto o menos'}
-              </p>
-            </div>
+            <RichLoadingState lang={lang} messages={studyLoadingMessages} hint={loadingHints} minHeightClassName="h-[400px]" />
           ) : !study ? (
             <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
               <BookOpen className="h-16 w-16 mb-4 opacity-30" />
@@ -177,6 +170,12 @@ export default function EstudoBiblicoPage() {
                   <TabsContent value="avisos"><TabAvisos study={study} /></TabsContent>
                 </div>
               </Tabs>
+
+              {generationMeta && (
+                <div className="mt-4">
+                  <GenerationMetaFooter lang={lang} meta={generationMeta} />
+                </div>
+              )}
             </div>
           )}
         </div>

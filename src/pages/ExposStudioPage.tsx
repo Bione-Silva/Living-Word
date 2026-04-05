@@ -10,6 +10,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { RichLoadingState } from '@/components/generation/RichLoadingState';
+import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFooter';
+import { exposLoadingMessages, loadingHints } from '@/lib/generation-ui';
+import type { GenerationMeta } from '@/types/generation-meta';
 
 const formats = [
   {
@@ -53,6 +57,7 @@ export default function ExposStudioPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [markdown, setMarkdown] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [generationMeta, setGenerationMeta] = useState<GenerationMeta | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -61,6 +66,7 @@ export default function ExposStudioPage() {
     setIsLoading(true);
     setMarkdown('');
     setIsEditing(false);
+    setGenerationMeta(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('expos-generate', {
@@ -74,6 +80,7 @@ export default function ExposStudioPage() {
       }
 
       setMarkdown(data.markdown || '');
+      setGenerationMeta((data?.generation_meta ?? null) as GenerationMeta | null);
       toast.success('Estudo gerado com sucesso!');
     } catch {
       toast.error('Erro ao gerar estudo. Tente novamente.');
@@ -256,17 +263,7 @@ export default function ExposStudioPage() {
         {/* ─── Document Area ─── */}
         <div className="flex-1 min-w-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-[500px] rounded-xl border border-border bg-card">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-              </div>
-              <p className="mt-6 text-sm font-medium text-primary animate-pulse">
-                Gerando seu documento E.X.P.O.S...
-              </p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Geralmente completa em 1 minuto ou menos
-              </p>
-            </div>
+            <RichLoadingState lang={lang} messages={exposLoadingMessages} hint={loadingHints} minHeightClassName="h-[500px]" />
           ) : !markdown ? (
             <div className="flex flex-col items-center justify-center h-[500px] rounded-xl border border-dashed border-border bg-card/50 text-muted-foreground">
               <BookOpen className="h-20 w-20 mb-6 opacity-20" />
@@ -276,7 +273,7 @@ export default function ExposStudioPage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-0">
+            <div className="space-y-4">
               {/* Toolbar */}
               <div className="sticky top-0 z-10 flex items-center gap-2 flex-wrap rounded-t-xl border border-border bg-card px-4 py-3">
                 <Button
@@ -335,6 +332,8 @@ export default function ExposStudioPage() {
                   </article>
                 </div>
               )}
+
+              {generationMeta && <GenerationMetaFooter lang={lang} meta={generationMeta} />}
             </div>
           )}
         </div>
