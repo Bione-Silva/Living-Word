@@ -518,95 +518,132 @@ export default function Landing() {
       </nav>
 
       {/* ===== HERO ===== */}
-      <section className="pt-16 text-center" style={{ background: '#3D2B1F' }}>
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 py-14 sm:py-20">
-          <p className="text-[12px] font-semibold tracking-[0.14em] uppercase mb-5 animate-[fadeSlideUp_0.6s_ease-out_0.1s_both]" style={{ color: '#C4956A' }}>{copy.hero.eyebrow[lang]}</p>
-          <h1 className="font-display text-[34px] sm:text-[48px] font-semibold leading-[1.12] mb-5 animate-[fadeSlideUp_0.7s_ease-out_0.25s_both]" style={{ color: '#F5F0E8' }}>
-            {copy.hero.h1_line1[lang]}
-            <br /><em style={{ color: '#C4956A' }}>{copy.hero.h1_em[lang]}</em>
-          </h1>
-          <p className="text-[16px] sm:text-[17px] leading-[1.7] max-w-[600px] mx-auto mb-8 animate-[fadeSlideUp_0.7s_ease-out_0.45s_both]" style={{ color: 'rgba(245,240,232,0.75)' }}>{copy.hero.sub[lang]}</p>
+      <section className="pt-16" style={{ background: '#3D2B1F' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-14 sm:py-20">
+          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+            {/* Left — Text */}
+            <div className="flex-1 text-center lg:text-left">
+              <p className="text-[12px] font-semibold tracking-[0.14em] uppercase mb-5 animate-[fadeSlideUp_0.6s_ease-out_0.1s_both]" style={{ color: '#C4956A' }}>{copy.hero.eyebrow[lang]}</p>
+              <h1 className="font-display text-[34px] sm:text-[48px] font-semibold leading-[1.12] mb-5 animate-[fadeSlideUp_0.7s_ease-out_0.25s_both]" style={{ color: '#F5F0E8' }}>
+                {copy.hero.h1_line1[lang]}
+                <br /><em style={{ color: '#C4956A' }}>{copy.hero.h1_em[lang]}</em>
+              </h1>
+              <p className="text-[16px] sm:text-[17px] leading-[1.7] max-w-[540px] mx-auto lg:mx-0 mb-8 animate-[fadeSlideUp_0.7s_ease-out_0.45s_both]" style={{ color: 'rgba(245,240,232,0.75)' }}>{copy.hero.sub[lang]}</p>
 
-          {/* PWA install benefit badge */}
-          <div className="flex justify-center mb-4 animate-[fadeSlideUp_0.6s_ease-out_0.55s_both]">
-            <span className="text-[12px] font-semibold px-4 py-2 rounded-full flex items-center gap-1.5" style={{ background: 'rgba(196,149,106,0.2)', color: '#C4956A', border: '1px solid rgba(196,149,106,0.3)' }}>
-              {({ PT: '📲 Instale como app · Acesse offline, sem depender de navegador', EN: '📲 Install as app · Access offline, no browser needed', ES: '📲 Instala como app · Accede sin conexión, sin navegador' } as Record<L, string>)[lang]}
-            </span>
-          </div>
+              {/* Audience badges */}
+              <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start mb-8 animate-[fadeSlideUp_0.6s_ease-out_0.6s_both]">
+                {copy.badges.map((b, i) => (
+                  <span key={i} className="text-[12px] font-medium px-3.5 py-1.5 rounded-full" style={{ background: 'rgba(196,149,106,0.15)', color: '#C4956A', border: '1px solid rgba(196,149,106,0.25)' }}>{b[lang]}</span>
+                ))}
+              </div>
 
-          {/* Audience badges */}
-          <div className="flex flex-wrap gap-2.5 justify-center mb-8 animate-[fadeSlideUp_0.6s_ease-out_0.6s_both]">
-            {copy.badges.map((b, i) => (
-              <span key={i} className="text-[12px] font-medium px-3.5 py-1.5 rounded-full" style={{ background: 'rgba(196,149,106,0.15)', color: '#C4956A', border: '1px solid rgba(196,149,106,0.25)' }}>{b[lang]}</span>
-            ))}
-          </div>
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-6 animate-[fadeSlideUp_0.6s_ease-out_0.75s_both]">
+                <Link to="/cadastro" className="inline-block text-[16px] font-semibold px-8 py-4 rounded-xl transition-transform hover:scale-[1.02]" style={{ background: '#C4956A', color: '#3D2B1F' }}>{copy.hero.cta1[lang]}</Link>
+                <button onClick={() => scrollTo('how')} className="inline-block text-[15px] font-medium px-7 py-3.5 rounded-xl transition-colors" style={{ border: '1px solid rgba(196,149,106,0.4)', color: 'rgba(245,240,232,0.8)' }}>{copy.hero.cta2[lang]}</button>
+              </div>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10 animate-[fadeSlideUp_0.6s_ease-out_0.75s_both]">
-            <Link to="/cadastro" className="inline-block text-[16px] font-semibold px-8 py-4 rounded-xl transition-transform hover:scale-[1.02]" style={{ background: '#C4956A', color: '#3D2B1F' }}>{copy.hero.cta1[lang]}</Link>
-            <button onClick={() => scrollTo('how')} className="inline-block text-[15px] font-medium px-7 py-3.5 rounded-xl transition-colors" style={{ border: '1px solid rgba(196,149,106,0.4)', color: 'rgba(245,240,232,0.8)' }}>{copy.hero.cta2[lang]}</button>
-          </div>
+              <p className="font-display text-[14px] italic animate-[fadeSlideUp_0.6s_ease-out_0.9s_both]" style={{ color: 'rgba(245,240,232,0.35)' }}>{copy.hero.verse[lang]}</p>
+            </div>
 
-          <p className="font-display text-[14px] italic animate-[fadeSlideUp_0.6s_ease-out_0.9s_both] mb-10" style={{ color: 'rgba(245,240,232,0.4)' }}>{copy.hero.verse[lang]}</p>
-
-          {/* iPhone Mockup */}
-          <div className="animate-[fadeSlideUp_0.8s_ease-out_1s_both] flex justify-center">
-            <div className="relative" style={{ animation: 'heroFloat 4s ease-in-out infinite' }}>
-              <style>{`@keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }`}</style>
-              <div className="relative mx-auto" style={{ width: '280px', maxWidth: '80vw' }}>
-                <div className="rounded-[36px] p-[3px]" style={{ background: 'linear-gradient(135deg, #555, #333)' }}>
-                  <div className="rounded-[34px] overflow-hidden" style={{ background: '#1a1a1a' }}>
-                    <div className="flex justify-center pt-2 pb-1" style={{ background: '#1a1a1a' }}>
-                      <div className="w-20 h-5 rounded-full" style={{ background: '#000' }} />
-                    </div>
-                    <div className="px-3 pb-4 pt-1" style={{ background: '#F5F0E8', minHeight: '380px' }}>
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <p className="text-[9px] font-semibold" style={{ color: '#6B4F3A' }}>Living Word</p>
-                          <p className="text-[7px]" style={{ color: '#8B7355' }}>{lang === 'PT' ? 'Olá, Pastor' : lang === 'EN' ? 'Hello, Pastor' : 'Hola, Pastor'}</p>
-                        </div>
-                        <div className="w-6 h-6 rounded-full" style={{ background: '#EDD9C8' }} />
+            {/* Right — iPhone Mockup */}
+            <div className="shrink-0 animate-[fadeSlideUp_0.8s_ease-out_0.6s_both]">
+              <div className="relative" style={{ animation: 'heroFloat 5s ease-in-out infinite' }}>
+                <style>{`@keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }`}</style>
+                <div className="relative" style={{ width: '300px' }}>
+                  {/* Phone frame */}
+                  <div className="rounded-[44px] p-[2.5px]" style={{ background: 'linear-gradient(145deg, #6B6B6B 0%, #3A3A3A 30%, #1A1A1A 70%, #3A3A3A 100%)' }}>
+                    <div className="rounded-[42px] overflow-hidden" style={{ background: '#111' }}>
+                      {/* Dynamic Island */}
+                      <div className="flex justify-center pt-2.5 pb-1.5" style={{ background: '#111' }}>
+                        <div className="w-[90px] h-[24px] rounded-full" style={{ background: '#000' }} />
                       </div>
-                      <div className="grid grid-cols-3 gap-1.5 mb-3">
-                        {[
-                          { n: '12', l: lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones' },
-                          { n: '8', l: lang === 'PT' ? 'Estudos' : lang === 'EN' ? 'Studies' : 'Estudios' },
-                          { n: '24', l: lang === 'PT' ? 'Artigos' : lang === 'EN' ? 'Articles' : 'Artículos' },
-                        ].map((s, i) => (
-                          <div key={i} className="rounded-lg p-1.5 text-center" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.1)' }}>
-                            <p className="text-[11px] font-bold" style={{ color: '#3D2B1F' }}>{s.n}</p>
-                            <p className="text-[6px]" style={{ color: '#8B7355' }}>{s.l}</p>
+
+                      {/* Screen content */}
+                      <div className="mx-[6px] mb-[6px] rounded-b-[36px] overflow-hidden" style={{ background: '#F5F0E8' }}>
+                        <div className="px-4 pt-3 pb-5" style={{ minHeight: '520px' }}>
+                          {/* Status header */}
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <p className="text-[13px] font-bold" style={{ color: '#3D2B1F' }}>Living Word</p>
+                              <p className="text-[9px] mt-0.5" style={{ color: '#8B7355' }}>{lang === 'PT' ? 'Olá, Pastor Rafael' : lang === 'EN' ? 'Hello, Pastor Rafael' : 'Hola, Pastor Rafael'}</p>
+                            </div>
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: 'linear-gradient(135deg, #C4956A, #D4A853)', color: '#fff' }}>PR</div>
                           </div>
-                        ))}
-                      </div>
-                      <p className="text-[8px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}</p>
-                      <div className="grid grid-cols-2 gap-1.5 mb-3">
-                        {[
-                          { icon: '📖', l: lang === 'PT' ? 'Estúdio Pastoral' : lang === 'EN' ? 'Pastoral Studio' : 'Estudio Pastoral' },
-                          { icon: '📚', l: lang === 'PT' ? 'Estudo Bíblico' : lang === 'EN' ? 'Bible Study' : 'Estudio Bíblico' },
-                          { icon: '✍️', l: lang === 'PT' ? 'Blog & Artigos' : lang === 'EN' ? 'Blog & Articles' : 'Blog y Artículos' },
-                          { icon: '🧠', l: lang === 'PT' ? 'Mentes Brilhantes' : lang === 'EN' ? 'Brilliant Minds' : 'Mentes Brillantes' },
-                        ].map((t, i) => (
-                          <div key={i} className="rounded-lg p-2 flex items-center gap-1.5" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.08)' }}>
-                            <span className="text-[12px]">{t.icon}</span>
-                            <span className="text-[7px] font-medium" style={{ color: '#3D2B1F' }}>{t.l}</span>
+
+                          {/* Stats row */}
+                          <div className="grid grid-cols-3 gap-2 mb-4">
+                            {[
+                              { n: '12', l: lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones', color: '#C4956A' },
+                              { n: '8', l: lang === 'PT' ? 'Estudos' : lang === 'EN' ? 'Studies' : 'Estudios', color: '#7B9E6B' },
+                              { n: '24', l: lang === 'PT' ? 'Artigos' : lang === 'EN' ? 'Articles' : 'Artículos', color: '#6B8BBE' },
+                            ].map((s, i) => (
+                              <div key={i} className="rounded-xl p-2.5 text-center" style={{ background: '#fff', boxShadow: '0 1px 3px rgba(107,79,58,0.08)' }}>
+                                <p className="text-[16px] font-bold" style={{ color: s.color }}>{s.n}</p>
+                                <p className="text-[8px] font-medium mt-0.5" style={{ color: '#8B7355' }}>{s.l}</p>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                      <p className="text-[8px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{lang === 'PT' ? 'Recentes' : lang === 'EN' ? 'Recent' : 'Recientes'}</p>
-                      {[
-                        { t: lang === 'PT' ? 'Sermão: João 15:1-8' : lang === 'EN' ? 'Sermon: John 15:1-8' : 'Sermón: Juan 15:1-8', s: lang === 'PT' ? 'Sermão · PT' : lang === 'EN' ? 'Sermon · EN' : 'Sermón · ES' },
-                        { t: lang === 'PT' ? 'Estudo: Romanos 8' : lang === 'EN' ? 'Study: Romans 8' : 'Estudio: Romanos 8', s: lang === 'PT' ? 'Estudo · PT/EN' : lang === 'EN' ? 'Study · PT/EN' : 'Estudio · PT/EN' },
-                      ].map((r, i) => (
-                        <div key={i} className="rounded-lg p-2 mb-1" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.06)' }}>
-                          <p className="text-[7px] font-semibold" style={{ color: '#3D2B1F' }}>{r.t}</p>
-                          <p className="text-[6px]" style={{ color: '#8B7355' }}>{r.s}</p>
+
+                          {/* Tools section */}
+                          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#6B4F3A' }}>{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}</p>
+                          <div className="grid grid-cols-2 gap-2 mb-4">
+                            {[
+                              { icon: '📖', l: lang === 'PT' ? 'Estúdio Pastoral' : lang === 'EN' ? 'Pastoral Studio' : 'Estudio Pastoral', accent: '#C4956A' },
+                              { icon: '📚', l: lang === 'PT' ? 'Estudo Bíblico' : lang === 'EN' ? 'Bible Study' : 'Estudio Bíblico', accent: '#7B9E6B' },
+                              { icon: '✍️', l: lang === 'PT' ? 'Blog & Artigos' : lang === 'EN' ? 'Blog & Articles' : 'Blog y Artículos', accent: '#6B8BBE' },
+                              { icon: '🧠', l: lang === 'PT' ? 'Mentes Brilhantes' : lang === 'EN' ? 'Brilliant Minds' : 'Mentes Brillantes', accent: '#9B7EC8' },
+                            ].map((t, i) => (
+                              <div key={i} className="rounded-xl p-2.5 flex items-center gap-2" style={{ background: '#fff', boxShadow: '0 1px 3px rgba(107,79,58,0.08)' }}>
+                                <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[14px]" style={{ background: `${t.accent}15` }}>{t.icon}</div>
+                                <span className="text-[8px] font-semibold leading-tight" style={{ color: '#3D2B1F' }}>{t.l}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* AI Generation preview */}
+                          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#6B4F3A' }}>{lang === 'PT' ? 'Geração recente' : lang === 'EN' ? 'Recent generation' : 'Generación reciente'}</p>
+                          <div className="rounded-xl p-3" style={{ background: '#fff', boxShadow: '0 1px 3px rgba(107,79,58,0.08)' }}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: '#C4956A20' }}>
+                                <span className="text-[10px]">✨</span>
+                              </div>
+                              <p className="text-[9px] font-bold" style={{ color: '#3D2B1F' }}>{lang === 'PT' ? 'Sermão: João 15:1-8' : lang === 'EN' ? 'Sermon: John 15:1-8' : 'Sermón: Juan 15:1-8'}</p>
+                            </div>
+                            <div className="space-y-1.5">
+                              <div className="h-[6px] rounded-full" style={{ background: '#E8E0D4', width: '100%' }} />
+                              <div className="h-[6px] rounded-full" style={{ background: '#E8E0D4', width: '85%' }} />
+                              <div className="h-[6px] rounded-full" style={{ background: '#E8E0D4', width: '70%' }} />
+                            </div>
+                            <div className="flex gap-1.5 mt-2.5">
+                              <span className="text-[7px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#C4956A20', color: '#C4956A' }}>{lang === 'PT' ? 'Sermão' : lang === 'EN' ? 'Sermon' : 'Sermón'}</span>
+                              <span className="text-[7px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#7B9E6B20', color: '#7B9E6B' }}>PT</span>
+                              <span className="text-[7px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#6B8BBE20', color: '#6B8BBE' }}>{lang === 'PT' ? 'Concluído' : lang === 'EN' ? 'Completed' : 'Completado'}</span>
+                            </div>
+                          </div>
+
+                          {/* Second recent item */}
+                          <div className="rounded-xl p-3 mt-2" style={{ background: '#fff', boxShadow: '0 1px 3px rgba(107,79,58,0.08)' }}>
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: '#7B9E6B20' }}>
+                                <span className="text-[10px]">📖</span>
+                              </div>
+                              <div>
+                                <p className="text-[9px] font-bold" style={{ color: '#3D2B1F' }}>{lang === 'PT' ? 'Estudo: Romanos 8' : lang === 'EN' ? 'Study: Romans 8' : 'Estudio: Romanos 8'}</p>
+                                <p className="text-[7px]" style={{ color: '#8B7355' }}>{lang === 'PT' ? 'Estudo bíblico · PT/EN' : lang === 'EN' ? 'Bible study · PT/EN' : 'Estudio bíblico · PT/EN'}</p>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </div>
+
+                  {/* Glow effect */}
+                  <div className="absolute -inset-8 -z-10 rounded-[60px] blur-3xl opacity-15" style={{ background: 'radial-gradient(circle, #C4956A 0%, transparent 70%)' }} />
+                  {/* Reflection */}
+                  <div className="absolute -inset-2 -z-10 rounded-[50px] blur-xl opacity-10" style={{ background: '#C4956A' }} />
                 </div>
-                <div className="absolute -inset-4 -z-10 rounded-[44px] blur-2xl opacity-20" style={{ background: '#C4956A' }} />
               </div>
             </div>
           </div>
