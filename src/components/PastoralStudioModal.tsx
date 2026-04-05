@@ -365,6 +365,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
           );
         })()}
 
+        <div className="flex-1 overflow-y-auto min-h-0">
         <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
           <Card className="border-border/60 bg-card h-fit">
             <CardContent className="p-4 space-y-4">
