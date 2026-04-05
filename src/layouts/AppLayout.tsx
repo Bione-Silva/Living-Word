@@ -24,6 +24,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
+import { ThemeInjector } from '@/components/ThemeInjector';
 
 type L = 'PT' | 'EN' | 'ES';
 

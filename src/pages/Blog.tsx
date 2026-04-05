@@ -281,13 +281,16 @@ export default function Blog() {
             return (
               <Card key={article.id} className="overflow-hidden bg-card border hover:shadow-md transition-shadow flex flex-col">
                 <div className="relative h-44 overflow-hidden bg-muted">
-                  {article.cover_image_url ? (
-                    <img src={article.cover_image_url} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <BookOpen className="w-10 h-10 text-muted-foreground/30" />
-                    </div>
-                  )}
+                  {(() => {
+                    const thumb = article.cover_image_url || article.content?.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/)?.[1];
+                    return thumb ? (
+                      <img src={thumb} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <BookOpen className="w-10 h-10 text-muted-foreground/30" />
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <CardContent className="p-4 flex flex-col flex-1">
