@@ -52,6 +52,42 @@ export type Database = {
           },
         ]
       }
+      generation_logs: {
+        Row: {
+          cost_usd: number
+          created_at: string
+          feature: string
+          id: string
+          input_tokens: number
+          model: string
+          output_tokens: number
+          total_tokens: number
+          user_id: string
+        }
+        Insert: {
+          cost_usd?: number
+          created_at?: string
+          feature: string
+          id?: string
+          input_tokens?: number
+          model: string
+          output_tokens?: number
+          total_tokens?: number
+          user_id: string
+        }
+        Update: {
+          cost_usd?: number
+          created_at?: string
+          feature?: string
+          id?: string
+          input_tokens?: number
+          model?: string
+          output_tokens?: number
+          total_tokens?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       global_settings: {
         Row: {
           id: string
@@ -431,6 +467,7 @@ export type Database = {
       }
     }
     Functions: {
+      get_admin_ai_metrics: { Args: never; Returns: Json }
       get_admin_saas_metrics: {
         Args: never
         Returns: {
