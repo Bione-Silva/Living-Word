@@ -879,7 +879,7 @@ export default function Landing() {
             {[
               { value: '168M+', label: { PT: 'Tokens de Contexto', EN: 'Context Tokens', ES: 'Tokens de Contexto' } },
               { value: '30,000+', label: { PT: 'Páginas Processadas', EN: 'Pages Processed', ES: 'Páginas Procesadas' } },
-              { value: '5', label: { PT: 'Agentes Ativos', EN: 'Active Agents', ES: 'Agentes Activos' } },
+              { value: '4', label: { PT: 'Agentes Ativos', EN: 'Active Agents', ES: 'Agentes Activos' } },
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <p className="text-[22px] sm:text-[26px] font-bold" style={{ color: '#3D2B1F' }}>{stat.value}</p>
