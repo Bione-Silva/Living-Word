@@ -6,10 +6,11 @@ import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
+import { minds } from '@/data/minds';
 import {
   Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
   ChevronDown, Check, X as XIcon, Menu, X, BookOpen, PenTool,
-  Share2, Layers, Shield, Sparkles
+  Share2, Layers, Shield, Sparkles, Brain, MessageCircle
 } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
