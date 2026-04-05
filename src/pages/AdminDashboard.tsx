@@ -195,8 +195,9 @@ export default function AdminDashboard() {
           </Link>
           <AdminThemeToggle />
         </div>
+      </div>
 
-      <KpiCards data={kpiData} />
+
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2">
