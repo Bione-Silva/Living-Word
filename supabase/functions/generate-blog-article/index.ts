@@ -196,13 +196,34 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     const h1Match = content.match(/^#\s+(.+)$/m);
     const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
 
-    // Generate exactly 1 cover image per article
+    // Extract H2/H3 headings from content to create contextual body image prompts
+    const headings = [...content.matchAll(/^#{2,3}\s+(.+)$/gm)].map(m => m[1]);
+
+    // Generate cover image + 2 body images in parallel
     const coverPrompt = `A historically accurate, epoch-representative scene from the Bible passage "${passage}". Ancient Middle Eastern setting with period-appropriate architecture, clothing, and landscape. Warm earth tones, golden light, painterly oil painting style. No text, no words, no letters.`;
 
-    const coverImage = await generateImage(lovableApiKey, coverPrompt, supabaseAdmin, userId);
-    const articleImages: string[] = coverImage ? [coverImage] : [];
+    const bodyPrompts = headings.slice(0, 2).map((heading) =>
+      `A serene, contemplative biblical illustration representing the concept "${heading}" related to "${passage}". Warm earth tones, golden light, painterly oil painting style. Ancient Middle Eastern setting. No text, no words, no letters.`
+    );
+    // Fallback body prompts if no headings found
+    if (bodyPrompts.length === 0) {
+      bodyPrompts.push(
+        `A peaceful biblical landscape representing spiritual reflection on "${passage}". Warm earth tones, golden light, painterly style. No text.`,
+        `A contemplative scene of ancient worship and prayer inspired by "${passage}". Warm earth tones, oil painting style. No text.`
+      );
+    } else if (bodyPrompts.length === 1) {
+      bodyPrompts.push(
+        `A contemplative scene of ancient worship and prayer inspired by "${passage}". Warm earth tones, oil painting style. No text.`
+      );
+    }
 
-    const coverImageUrl = articleImages[0] || null;
+    const [coverImage, ...bodyImagesResult] = await Promise.all([
+      generateImage(lovableApiKey, coverPrompt, supabaseAdmin, userId),
+      ...bodyPrompts.map(p => generateImage(lovableApiKey, p, supabaseAdmin, userId)),
+    ]);
+
+    const articleImages: string[] = [coverImage, ...bodyImagesResult].filter(Boolean) as string[];
+    const coverImageUrl = coverImage || null;
 
     // Save to materials table
     const { data: material, error: matErr } = await supabase
