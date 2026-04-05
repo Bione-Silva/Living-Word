@@ -1,11 +1,13 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, ThumbsUp, ThumbsDown, Copy, Sparkles, X } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, ThumbsUp, ThumbsDown, Copy, Sparkles, X, Save } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { minds } from '@/data/minds';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import { supabase } from '@/integrations/supabase/client';
 
 type L = 'PT' | 'EN' | 'ES';
 type Msg = { role: 'user' | 'assistant'; content: string };
@@ -136,6 +138,7 @@ export default function MenteChat() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [feedback, setFeedback] = useState<Record<number, 'up' | 'down'>>({});
+  const [savedIndexes, setSavedIndexes] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectionPopup, setSelectionPopup] = useState<{
@@ -146,6 +149,41 @@ export default function MenteChat() {
   } | null>(null);
   const [improving, setImproving] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+
+  const isArtifact = (content: string) => {
+    if (content.length < 800) return false;
+    const hasHeaders = (content.match(/^#{1,3}\s/gm) || []).length >= 2;
+    return hasHeaders;
+  };
+
+  const handleSaveToLibrary = async (content: string, msgIndex: number) => {
+    if (!user) {
+      toast.error(lang === 'PT' ? 'Faça login para salvar' : lang === 'EN' ? 'Login to save' : 'Inicia sesión para guardar');
+      return;
+    }
+
+    const typeMap: Record<string, string> = { sermao: 'sermon', estudo: 'study', devocional: 'devotional', aconselhamento: 'counseling' };
+    const materialType = typeMap[modalidade] || 'sermon';
+
+    const titleMatch = content.match(/^#\s+(.+)/m) || content.match(/^##\s+(.+)/m);
+    const title = titleMatch?.[1]?.replace(/[*_]/g, '').trim() || `${modLabel} — ${name}`;
+
+    const { error } = await supabase.from('materials').insert({
+      user_id: user.id,
+      type: materialType,
+      title,
+      content,
+      language: lang,
+    });
+
+    if (error) {
+      toast.error(lang === 'PT' ? 'Erro ao salvar' : lang === 'EN' ? 'Error saving' : 'Error al guardar');
+    } else {
+      setSavedIndexes((prev) => new Set(prev).add(msgIndex));
+      toast.success(lang === 'PT' ? 'Salvo na Biblioteca! 📚' : lang === 'EN' ? 'Saved to Library! 📚' : '¡Guardado en la Biblioteca! 📚');
+    }
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -409,6 +447,24 @@ export default function MenteChat() {
                   >
                     <ThumbsDown className="h-3.5 w-3.5" />
                   </button>
+
+                  {isArtifact(msg.content) && (
+                    <button
+                      onClick={() => handleSaveToLibrary(msg.content, i)}
+                      disabled={savedIndexes.has(i)}
+                      className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ml-1 ${
+                        savedIndexes.has(i)
+                          ? 'text-emerald-500 bg-emerald-500/10 cursor-default'
+                          : 'text-[hsl(43,55%,58%)] hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,65%)]'
+                      }`}
+                      title={lang === 'PT' ? 'Salvar na Biblioteca' : lang === 'EN' ? 'Save to Library' : 'Guardar en Biblioteca'}
+                    >
+                      <Save className="h-3.5 w-3.5" />
+                      {savedIndexes.has(i)
+                        ? (lang === 'PT' ? 'Salvo' : lang === 'EN' ? 'Saved' : 'Guardado')
+                        : (lang === 'PT' ? 'Salvar na Biblioteca' : lang === 'EN' ? 'Save to Library' : 'Guardar en Biblioteca')}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
