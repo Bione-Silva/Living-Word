@@ -144,7 +144,12 @@ export default function Upgrade() {
 
       const { data, error } = await supabase.functions.invoke('create-checkout', { body });
 
-      if (error) throw error;
+      if (error) {
+        // Stripe bypass: if checkout fails (e.g. no Stripe key), stay on free plan
+        console.warn('[Stripe Bypass] Checkout failed, keeping user on free plan:', error);
+        toast({ title: 'Checkout indisponível', description: 'Continuando no plano gratuito. Pagamento será habilitado em breve.', variant: 'default' });
+        return;
+      }
       if (data?.url) {
         window.location.href = data.url;
       }

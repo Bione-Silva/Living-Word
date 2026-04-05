@@ -80,12 +80,11 @@ export default function Cadastro() {
       }
 
       toast.success(
-        language === 'PT' ? 'Conta criada! Gerando seus primeiros devocionais...' :
-        language === 'EN' ? 'Account created! Generating your first devotionals...' :
-        '¡Cuenta creada! Generando tus primeros devocionales...'
+        language === 'PT' ? 'Conta criada! Vamos personalizar seu blog.' :
+        language === 'EN' ? 'Account created! Let\'s personalize your blog.' :
+        '¡Cuenta creada! Personalicemos tu blog.'
       );
 
-      generateInitialContent().catch(console.error);
       navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/blog-onboarding');
     } catch (err: any) {
       console.error('Signup error:', err);
@@ -95,38 +94,7 @@ export default function Cadastro() {
     }
   };
 
-  const generateInitialContent = async () => {
-    const localizedTitles: Record<Language, { passage: string; title: string }[]> = {
-      PT: [
-        { passage: 'Salmo 23', title: 'O Senhor é meu pastor: encontrando paz em tempos difíceis' },
-        { passage: 'Filipenses 4:13', title: 'Tudo posso naquele que me fortalece: a força que vem de Deus' },
-        { passage: 'Provérbios 3:5-6', title: 'Confia no Senhor de todo o teu coração: um caminho de fé' },
-      ],
-      EN: [
-        { passage: 'Psalm 23', title: 'The Lord is my shepherd: finding peace in difficult times' },
-        { passage: 'Philippians 4:13', title: 'I can do all things through Christ who strengthens me' },
-        { passage: 'Proverbs 3:5-6', title: 'Trust in the Lord with all your heart: a path of faith' },
-      ],
-      ES: [
-        { passage: 'Salmo 23', title: 'El Señor es mi pastor: encontrando paz en tiempos difíciles' },
-        { passage: 'Filipenses 4:13', title: 'Todo lo puedo en Cristo que me fortalece' },
-        { passage: 'Proverbios 3:5-6', title: 'Confía en el Señor con todo tu corazón: un camino de fe' },
-      ],
-    };
-
-    // Generate exactly 3 articles in the user's selected language only
-    const userTitles = localizedTitles[language] || localizedTitles['PT'];
-    const allCalls = userTitles.map(p =>
-      supabase.functions.invoke('generate-blog-article', {
-        body: { passage: p.passage, language, title: p.title },
-      }).catch(e => console.error('Auto-gen failed:', e))
-    );
-
-    Promise.allSettled(allCalls).then(results => {
-      const failed = results.filter(r => r.status === 'rejected').length;
-      if (failed > 0) console.warn(`${failed} article(s) failed to generate`);
-    });
-  };
+  // Article generation moved to provision-user-blog edge function (called from OnboardingWizard)
 
   const steps = [
     { num: 1, label: t('auth.step1') },
