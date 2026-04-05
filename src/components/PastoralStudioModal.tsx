@@ -514,12 +514,29 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
               </Card>
             )}
 
-            {!availableTabs.length ? (
+            {!availableTabs.length && !loading ? (
               <Card className="border-border/60 bg-card min-h-[420px]">
                 <CardContent className="h-full min-h-[420px] flex flex-col items-center justify-center text-center px-6">
                   <BookOpen className="h-14 w-14 text-muted-foreground/40 mb-4" />
                   <p className="font-medium text-foreground">{text.empty}</p>
                   <p className="text-sm text-muted-foreground mt-2 max-w-md">{text.emptyHint}</p>
+                </CardContent>
+              </Card>
+            ) : loading ? (
+              <Card className="border-border/60 bg-card min-h-[420px]">
+                <CardContent className="h-full min-h-[420px] flex flex-col items-center justify-center text-center px-6">
+                  <p className="text-sm text-primary font-medium animate-pulse mb-4">
+                    {lang === 'PT' ? 'Trabalhando nisso...' : lang === 'EN' ? 'Working on it...' : 'Trabajando en eso...'}
+                  </p>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-3 h-3 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-3 h-3 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '450ms' }} />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {lang === 'PT' ? 'Geralmente completa em 1 minuto ou menos' : lang === 'EN' ? 'Requests typically complete in 1 minute or less' : 'Normalmente completa en 1 minuto o menos'}
+                  </p>
                 </CardContent>
               </Card>
             ) : (
