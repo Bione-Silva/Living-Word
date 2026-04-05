@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, Copy, Loader2, Save, Sparkles } from 'lucide-react';
+import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
