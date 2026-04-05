@@ -12,14 +12,14 @@ export const nav = {
 
 export const hero = {
   headline: {
-    PT: 'Transforme sermões, estudos e mensagens em conteúdo cristão pronto para ensinar, publicar e distribuir',
-    EN: 'Turn sermons, studies and messages into Christian content ready to teach, publish and distribute',
-    ES: 'Transforma sermones, estudios y mensajes en contenido cristiano listo para enseñar, publicar y distribuir',
+    PT: 'Crie sermões, estudos e conteúdo cristão com IA treinada nas Escrituras',
+    EN: 'Create sermons, studies & Christian content with AI trained on Scripture',
+    ES: 'Crea sermones, estudios y contenido cristiano con IA entrenada en las Escrituras',
   },
   sub: {
-    PT: 'Fidelidade bíblica. Múltiplos formatos. Três idiomas. Sua voz pastoral preservada. Publicação como consequência natural do que você já ensina.',
-    EN: 'Biblical fidelity. Multiple formats. Three languages. Your pastoral voice preserved. Publishing as a natural consequence of what you already teach.',
-    ES: 'Fidelidad bíblica. Múltiples formatos. Tres idiomas. Tu voz pastoral preservada. Publicación como consecuencia natural de lo que ya enseñas.',
+    PT: 'Uma plataforma de inteligência artificial treinada em Bíblias originais e modernas que apoia pastores, líderes e ministérios a criar sermões, devocionais, estudos bíblicos, artigos e mais — com fidelidade teológica, em PT, EN e ES.',
+    EN: 'An AI platform trained on original and modern Bibles that supports pastors, leaders and ministries in creating sermons, devotionals, Bible studies, articles and more — with theological fidelity, in PT, EN and ES.',
+    ES: 'Una plataforma de IA entrenada en Biblias originales y modernas que apoya a pastores, líderes y ministerios a crear sermones, devocionales, estudios bíblicos, artículos y más — con fidelidad teológica, en PT, EN y ES.',
   },
   cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Empezar gratis' },
   cta2: { PT: 'Ver como funciona', EN: 'See how it works', ES: 'Ver cómo funciona' },
