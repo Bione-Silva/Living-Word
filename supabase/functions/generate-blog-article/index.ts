@@ -179,6 +179,20 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     const content = aiData.choices?.[0]?.message?.content || "";
     if (!content) throw new Error("Empty AI response");
 
+    // Log generation for AI billing
+    const usage = aiData.usage;
+    if (usage) {
+      await supabaseAdmin.from("generation_logs").insert({
+        user_id: userId,
+        feature: "Blog Creator",
+        model: "openai/gpt-5",
+        input_tokens: usage.prompt_tokens || 0,
+        output_tokens: usage.completion_tokens || 0,
+        total_tokens: usage.total_tokens || 0,
+        cost_usd: ((usage.prompt_tokens || 0) * 0.000003 + (usage.completion_tokens || 0) * 0.000015),
+      });
+    }
+
     const h1Match = content.match(/^#\s+(.+)$/m);
     const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
 
