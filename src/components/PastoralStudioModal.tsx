@@ -1,5 +1,5 @@
-import { useMemo, useState, useEffect, useRef } from 'react';
-import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap, Clock, Cpu, Coins, Hash } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,50 +20,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { minds } from '@/data/minds';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
 import { helpFullArticles, helpCategories } from '@/data/help-center-data';
+import { RichLoadingState } from '@/components/generation/RichLoadingState';
+import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFooter';
+import { GenerationMeta } from '@/types/generation-meta';
+import { loadingHints, pastoralLoadingMessages } from '@/lib/generation-ui';
 type OutputMode = 'sermon' | 'outline' | 'devotional';
-
-interface GenerationMeta {
-  model: string;
-  total_tokens: number;
-  total_cost_usd: number;
-  elapsed_ms: number;
-  per_format: Record<string, { tokens: number; words: number; cost_usd: number; attempts: number }>;
-}
-
-const loadingStepsPT = [
-  '📖 Acessando biblioteca teológica...',
-  '🔍 Analisando contexto bíblico...',
-  '✍️ Estruturando conteúdo pastoral...',
-  '🎯 Aplicando voz pastoral selecionada...',
-  '📝 Redigindo sermão completo...',
-  '🔬 Validando exegese e referências...',
-  '✅ Auditando densidade do conteúdo...',
-  '🧠 Refinando aplicações práticas...',
-  '📋 Finalizando material...',
-];
-const loadingStepsEN = [
-  '📖 Accessing theological library...',
-  '🔍 Analyzing biblical context...',
-  '✍️ Structuring pastoral content...',
-  '🎯 Applying selected pastoral voice...',
-  '📝 Writing full sermon...',
-  '🔬 Validating exegesis and references...',
-  '✅ Auditing content density...',
-  '🧠 Refining practical applications...',
-  '📋 Finalizing material...',
-];
-const loadingStepsES = [
-  '📖 Accediendo a biblioteca teológica...',
-  '🔍 Analizando contexto bíblico...',
-  '✍️ Estructurando contenido pastoral...',
-  '🎯 Aplicando voz pastoral seleccionada...',
-  '📝 Redactando sermón completo...',
-  '🔬 Validando exégesis y referencias...',
-  '✅ Auditando densidad del contenido...',
-  '🧠 Refinando aplicaciones prácticas...',
-  '📋 Finalizando material...',
-];
-const loadingStepsMap = { PT: loadingStepsPT, EN: loadingStepsEN, ES: loadingStepsES };
 
 interface PastoralStudioModalProps {
   open: boolean;
@@ -223,24 +184,6 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [expanded, setExpanded] = useState(false);
   const [expandedTab, setExpandedTab] = useState<OutputMode>('sermon');
   const [genMeta, setGenMeta] = useState<GenerationMeta | null>(null);
-  const [loadingStep, setLoadingStep] = useState(0);
-  const loadingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Rotate loading messages
-  useEffect(() => {
-    if (loading) {
-      setLoadingStep(0);
-      loadingIntervalRef.current = setInterval(() => {
-        setLoadingStep((prev) => {
-          const steps = loadingStepsMap[lang];
-          return prev < steps.length - 1 ? prev + 1 : prev;
-        });
-      }, 4000);
-    } else {
-      if (loadingIntervalRef.current) clearInterval(loadingIntervalRef.current);
-    }
-    return () => { if (loadingIntervalRef.current) clearInterval(loadingIntervalRef.current); };
-  }, [loading, lang]);
 
   const availableTabs = useMemo(
     () => (['sermon', 'outline', 'devotional'] as OutputMode[]).filter((mode) => Boolean(outputs[mode])),
@@ -590,26 +533,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                 </CardContent>
               </Card>
             ) : loading ? (
-              <Card className="border-border/60 bg-card min-h-[420px]">
-                <CardContent className="h-full min-h-[420px] flex flex-col items-center justify-center text-center px-6">
-                  <div className="relative mb-6">
-                    <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                    <Sparkles className="absolute inset-0 m-auto h-6 w-6 text-primary" />
-                  </div>
-                  <p className="text-sm text-primary font-semibold mb-2 transition-all duration-500">
-                    {loadingStepsMap[lang][loadingStep]}
-                  </p>
-                  <div className="w-48 h-1.5 rounded-full bg-muted overflow-hidden mb-4">
-                    <div
-                      className="h-full bg-primary/70 rounded-full transition-all duration-700 ease-out"
-                      style={{ width: `${Math.min(((loadingStep + 1) / loadingStepsMap[lang].length) * 100, 95)}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground max-w-xs">
-                    {lang === 'PT' ? 'A IA está gerando e validando cada formato. Pode levar até 40 segundos.' : lang === 'EN' ? 'AI is generating and validating each format. May take up to 40 seconds.' : 'La IA está generando y validando cada formato. Puede tardar hasta 40 segundos.'}
-                  </p>
-                </CardContent>
-              </Card>
+              <RichLoadingState lang={lang} messages={pastoralLoadingMessages} hint={loadingHints} />
             ) : (
               <Card className="border-border/60 bg-card">
                 <CardContent className="p-4 space-y-4">
@@ -670,34 +594,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                   />
 
                   {/* Generation metadata footer */}
-                  {genMeta && (
-                    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <Cpu className="h-3.5 w-3.5" />
-                        <span className="font-medium">{genMeta.model.split('/').pop()}</span>
-                      </div>
-                      <span className="text-border">|</span>
-                      <div className="flex items-center gap-1.5">
-                        <Hash className="h-3.5 w-3.5" />
-                        <span>{genMeta.total_tokens.toLocaleString()} tokens</span>
-                      </div>
-                      <span className="text-border">|</span>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>{(genMeta.elapsed_ms / 1000).toFixed(1)}s</span>
-                      </div>
-                      <span className="text-border">|</span>
-                      <div className="flex items-center gap-1.5">
-                        <Coins className="h-3.5 w-3.5" />
-                        <span>${genMeta.total_cost_usd.toFixed(4)}</span>
-                      </div>
-                      {Object.entries(genMeta.per_format).map(([fmt, m]) => (
-                        <Badge key={fmt} variant="outline" className="text-[10px] px-1.5 py-0.5">
-                          {fmt}: {m.words}w · {m.attempts > 1 ? `${m.attempts} tentativas` : '1ª tentativa'}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
+                  {genMeta && <GenerationMetaFooter lang={lang} meta={genMeta} />}
                 </CardContent>
               </Card>
             )}
@@ -707,18 +604,18 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
 
         {/* Expanded reader dialog */}
         <Dialog open={expanded} onOpenChange={setExpanded}>
-          <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground">
+          <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0">
             <DialogHeader>
               <DialogTitle className="font-display text-xl">{toolTitle} — {outputLabels[expandedTab][lang]}</DialogTitle>
               <DialogDescription className="sr-only">
                 {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
               </DialogDescription>
             </DialogHeader>
-            <ScrollArea className="flex-1 bg-muted/20 rounded-lg">
+            <div className="flex-1 min-h-0 overflow-y-auto rounded-lg bg-muted/20">
               <div className="prose prose-base pastoral-prose max-w-none p-6 lg:p-8">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{outputs[expandedTab] || ''}</ReactMarkdown>
               </div>
-            </ScrollArea>
+            </div>
             <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
               <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
                 <Copy className="h-3 w-3" /> {text.copyCurrent}

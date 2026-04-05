@@ -6,6 +6,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const MODEL = "google/gemini-2.5-flash";
+
 const formatPrompts: Record<string, string> = {
   individual: `Você é um teólogo pastoral especialista no método E.X.P.O.S. Gere um estudo devocional individual e pessoal baseado na passagem fornecida.
 
@@ -139,6 +141,7 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const startTime = Date.now();
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -188,7 +191,7 @@ Deno.serve(async (req) => {
         Authorization: `Bearer ${lovableApiKey}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: MODEL,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Passagem bíblica: ${passagem.trim()}` },
@@ -216,7 +219,7 @@ Deno.serve(async (req) => {
     await supabaseAdmin.from("generation_logs").insert({
       user_id: user.id,
       feature: `expos_${formato}`,
-      model: "google/gemini-2.5-flash",
+      model: MODEL,
       input_tokens: usage.prompt_tokens || 0,
       output_tokens: usage.completion_tokens || 0,
       total_tokens: usage.total_tokens || 0,
@@ -238,7 +241,17 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ markdown, type: formato }),
+      JSON.stringify({
+        markdown,
+        type: formato,
+        generation_meta: {
+          model: MODEL,
+          total_tokens: usage.total_tokens || 0,
+          total_cost_usd: ((usage.total_tokens || 0) / 1_000_000) * 0.15,
+          elapsed_ms: Date.now() - startTime,
+          attempts_used: 1,
+        },
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
