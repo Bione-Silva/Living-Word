@@ -889,8 +889,8 @@ export default function Landing() {
           </div>
 
           {/* Mind Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {minds.filter(m => m.id !== 'marco-feliciano' && m.id !== 'tiago-brunet').map((mind) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {minds.filter(m => m.id !== 'marco-feliciano' && m.id !== 'tiago-brunet' && m.id !== 'martyn-lloyd-jones').map((mind) => (
               <div
                 key={mind.id}
                 className="rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group"
