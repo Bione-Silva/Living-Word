@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Wand2, PenLine, Type, Video, BookOpen, Languages, X,
   Search, Globe, Quote, Clapperboard, ScrollText, Lightbulb, Sparkles,
   Crown, Film, Megaphone, MessageSquare, Mail, Newspaper,
-  Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy, GraduationCap
+  Gamepad2, Feather, Baby, ArrowRightLeft, ExternalLink, Copy, GraduationCap,
+  FileText, Brain, Mic, ChevronRight
 } from 'lucide-react';
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
