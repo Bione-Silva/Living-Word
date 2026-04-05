@@ -168,6 +168,16 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
 
     const systemPrompt = `You are an expert pastoral content generator for Christian leaders. You create theologically sound, engaging content that respects the ${doctrine} tradition. Your tone is ${voice}. Always write in ${targetLang}.`;
 
+    // Minimum word counts per format
+    const minWords: Record<string, number> = {
+      sermon: 400, outline: 400, devotional: 400,
+      reels: 100, bilingual: 400, cell: 400,
+    };
+    const MAX_RETRIES = 2;
+    function countWords(text: string): number {
+      return text.trim().split(/\s+/).filter(Boolean).length;
+    }
+
     // Generate content for each allowed mode
     const outputs: Record<string, string> = {};
 
@@ -175,57 +185,85 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
       const userPrompt = formatPrompts[mode];
       if (!userPrompt) continue;
 
-      const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          max_tokens: 7000,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt },
-          ],
-        }),
-      });
+      const requiredMin = minWords[mode] || 400;
+      let bestContent = "";
+      let bestWordCount = 0;
+      let lastUsage: Record<string, number> | null = null;
+      let errorOccurred = false;
 
-      if (!aiResponse.ok) {
-        const status = aiResponse.status;
-        if (status === 429) {
-          return new Response(JSON.stringify({ error: "Rate limited. Try again later." }), {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        const retryHint = attempt > 0
+          ? `\n\nCRITICAL: Your previous response had only ${bestWordCount} words. The ABSOLUTE MINIMUM is ${requiredMin} words. You MUST write significantly more. Expand every section with detailed explanations, examples, illustrations, and applications. Do NOT summarize.`
+          : "";
+
+        const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${lovableApiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-3-flash-preview",
+            max_tokens: 7000,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt + retryHint },
+            ],
+          }),
+        });
+
+        if (!aiResponse.ok) {
+          const status = aiResponse.status;
+          if (status === 429) {
+            return new Response(JSON.stringify({ error: "Rate limited. Try again later." }), {
+              status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          if (status === 402) {
+            return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
+              status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          const errText = await aiResponse.text();
+          console.error(`AI error for ${mode} (attempt ${attempt + 1}):`, status, errText);
+          outputs[mode] = `Error generating ${mode}. Please try again.`;
+          errorOccurred = true;
+          break;
         }
-        if (status === 402) {
-          return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+
+        const aiData = await aiResponse.json();
+        const content = aiData.choices?.[0]?.message?.content || "";
+        const wc = countWords(content);
+        lastUsage = aiData.usage || null;
+
+        console.log(`[${mode}] attempt ${attempt + 1}: ${wc} words (min: ${requiredMin})`);
+
+        if (wc > bestWordCount) {
+          bestContent = content;
+          bestWordCount = wc;
         }
-        const errText = await aiResponse.text();
-        console.error(`AI error for ${mode}:`, status, errText);
-        outputs[mode] = `Error generating ${mode}. Please try again.`;
-        continue;
+
+        if (wc >= requiredMin) break;
+
+        if (attempt === MAX_RETRIES) {
+          console.warn(`[${mode}] best: ${bestWordCount} words after ${MAX_RETRIES + 1} attempts`);
+        }
       }
 
-      const aiData = await aiResponse.json();
-      outputs[mode] = aiData.choices?.[0]?.message?.content || "";
+      if (!errorOccurred) {
+        outputs[mode] = bestContent;
+      }
 
-      // Log generation for AI billing
-      const usage = aiData.usage;
-      if (usage) {
+      if (lastUsage) {
         const adminClient = createClient(supabaseUrl, serviceRoleKey);
         await adminClient.from("generation_logs").insert({
           user_id: userId,
           feature: mode,
           model: "google/gemini-3-flash-preview",
-          input_tokens: usage.prompt_tokens || 0,
-          output_tokens: usage.completion_tokens || 0,
-          total_tokens: usage.total_tokens || 0,
-          cost_usd: ((usage.prompt_tokens || 0) * 0.0000001 + (usage.completion_tokens || 0) * 0.0000004),
+          input_tokens: lastUsage.prompt_tokens || 0,
+          output_tokens: lastUsage.completion_tokens || 0,
+          total_tokens: lastUsage.total_tokens || 0,
+          cost_usd: ((lastUsage.prompt_tokens || 0) * 0.0000001 + (lastUsage.completion_tokens || 0) * 0.0000004),
         });
       }
     }
