@@ -520,7 +520,69 @@ export default function Landing() {
             <button onClick={() => scrollTo('how')} className="inline-block text-[15px] font-medium px-7 py-3.5 rounded-xl transition-colors" style={{ border: '1px solid rgba(196,149,106,0.4)', color: 'rgba(245,240,232,0.8)' }}>{copy.hero.cta2[lang]}</button>
           </div>
 
-          <p className="font-display text-[14px] italic animate-[fadeSlideUp_0.6s_ease-out_0.9s_both]" style={{ color: 'rgba(245,240,232,0.4)' }}>{copy.hero.verse[lang]}</p>
+          <p className="font-display text-[14px] italic animate-[fadeSlideUp_0.6s_ease-out_0.9s_both] mb-10" style={{ color: 'rgba(245,240,232,0.4)' }}>{copy.hero.verse[lang]}</p>
+
+          {/* iPhone Mockup */}
+          <div className="animate-[fadeSlideUp_0.8s_ease-out_1s_both] flex justify-center">
+            <div className="relative" style={{ animation: 'heroFloat 4s ease-in-out infinite' }}>
+              <style>{`@keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }`}</style>
+              <div className="relative mx-auto" style={{ width: '280px', maxWidth: '80vw' }}>
+                <div className="rounded-[36px] p-[3px]" style={{ background: 'linear-gradient(135deg, #555, #333)' }}>
+                  <div className="rounded-[34px] overflow-hidden" style={{ background: '#1a1a1a' }}>
+                    <div className="flex justify-center pt-2 pb-1" style={{ background: '#1a1a1a' }}>
+                      <div className="w-20 h-5 rounded-full" style={{ background: '#000' }} />
+                    </div>
+                    <div className="px-3 pb-4 pt-1" style={{ background: '#F5F0E8', minHeight: '380px' }}>
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <p className="text-[9px] font-semibold" style={{ color: '#6B4F3A' }}>Living Word</p>
+                          <p className="text-[7px]" style={{ color: '#8B7355' }}>{lang === 'PT' ? 'Olá, Pastor' : lang === 'EN' ? 'Hello, Pastor' : 'Hola, Pastor'}</p>
+                        </div>
+                        <div className="w-6 h-6 rounded-full" style={{ background: '#EDD9C8' }} />
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 mb-3">
+                        {[
+                          { n: '12', l: lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones' },
+                          { n: '8', l: lang === 'PT' ? 'Estudos' : lang === 'EN' ? 'Studies' : 'Estudios' },
+                          { n: '24', l: lang === 'PT' ? 'Artigos' : lang === 'EN' ? 'Articles' : 'Artículos' },
+                        ].map((s, i) => (
+                          <div key={i} className="rounded-lg p-1.5 text-center" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.1)' }}>
+                            <p className="text-[11px] font-bold" style={{ color: '#3D2B1F' }}>{s.n}</p>
+                            <p className="text-[6px]" style={{ color: '#8B7355' }}>{s.l}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[8px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}</p>
+                      <div className="grid grid-cols-2 gap-1.5 mb-3">
+                        {[
+                          { icon: '📖', l: lang === 'PT' ? 'Estúdio Pastoral' : lang === 'EN' ? 'Pastoral Studio' : 'Estudio Pastoral' },
+                          { icon: '📚', l: lang === 'PT' ? 'Estudo Bíblico' : lang === 'EN' ? 'Bible Study' : 'Estudio Bíblico' },
+                          { icon: '✍️', l: lang === 'PT' ? 'Blog & Artigos' : lang === 'EN' ? 'Blog & Articles' : 'Blog y Artículos' },
+                          { icon: '🧠', l: lang === 'PT' ? 'Mentes Brilhantes' : lang === 'EN' ? 'Brilliant Minds' : 'Mentes Brillantes' },
+                        ].map((t, i) => (
+                          <div key={i} className="rounded-lg p-2 flex items-center gap-1.5" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.08)' }}>
+                            <span className="text-[12px]">{t.icon}</span>
+                            <span className="text-[7px] font-medium" style={{ color: '#3D2B1F' }}>{t.l}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[8px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{lang === 'PT' ? 'Recentes' : lang === 'EN' ? 'Recent' : 'Recientes'}</p>
+                      {[
+                        { t: lang === 'PT' ? 'Sermão: João 15:1-8' : lang === 'EN' ? 'Sermon: John 15:1-8' : 'Sermón: Juan 15:1-8', s: lang === 'PT' ? 'Sermão · PT' : lang === 'EN' ? 'Sermon · EN' : 'Sermón · ES' },
+                        { t: lang === 'PT' ? 'Estudo: Romanos 8' : lang === 'EN' ? 'Study: Romans 8' : 'Estudio: Romanos 8', s: lang === 'PT' ? 'Estudo · PT/EN' : lang === 'EN' ? 'Study · PT/EN' : 'Estudio · PT/EN' },
+                      ].map((r, i) => (
+                        <div key={i} className="rounded-lg p-2 mb-1" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.06)' }}>
+                          <p className="text-[7px] font-semibold" style={{ color: '#3D2B1F' }}>{r.t}</p>
+                          <p className="text-[6px]" style={{ color: '#8B7355' }}>{r.s}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute -inset-4 -z-10 rounded-[44px] blur-2xl opacity-20" style={{ background: '#C4956A' }} />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
