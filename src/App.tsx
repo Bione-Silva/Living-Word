@@ -27,6 +27,7 @@ import BlogOnboarding from "./pages/BlogOnboarding";
 import NotFound from "./pages/NotFound";
 import EstudoBiblicoPage from "./pages/EstudoBiblicoPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AIBillingDashboard from "./pages/AIBillingDashboard";
 import AcceptInvite from "./pages/AcceptInvite";
 import HelpCenter from "./pages/HelpCenter";
 import HelpArticlePage from "./pages/HelpArticlePage";
