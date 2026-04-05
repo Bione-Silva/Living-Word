@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, BrainCircuit } from 'lucide-react';
 
 import { AdminThemeToggle } from '@/components/admin/AdminThemeToggle';
 import { KpiCards } from '@/components/admin/KpiCards';
