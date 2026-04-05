@@ -138,6 +138,7 @@ export default function MenteChat() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [feedback, setFeedback] = useState<Record<number, 'up' | 'down'>>({});
+  const [savedIndexes, setSavedIndexes] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectionPopup, setSelectionPopup] = useState<{
@@ -148,6 +149,41 @@ export default function MenteChat() {
   } | null>(null);
   const [improving, setImproving] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+
+  const isArtifact = (content: string) => {
+    if (content.length < 800) return false;
+    const hasHeaders = (content.match(/^#{1,3}\s/gm) || []).length >= 2;
+    return hasHeaders;
+  };
+
+  const handleSaveToLibrary = async (content: string, msgIndex: number) => {
+    if (!user) {
+      toast.error(lang === 'PT' ? 'Faça login para salvar' : lang === 'EN' ? 'Login to save' : 'Inicia sesión para guardar');
+      return;
+    }
+
+    const typeMap: Record<string, string> = { sermao: 'sermon', estudo: 'study', devocional: 'devotional', aconselhamento: 'counseling' };
+    const materialType = typeMap[modalidade] || 'sermon';
+
+    const titleMatch = content.match(/^#\s+(.+)/m) || content.match(/^##\s+(.+)/m);
+    const title = titleMatch?.[1]?.replace(/[*_]/g, '').trim() || `${modLabel} — ${name}`;
+
+    const { error } = await supabase.from('materials').insert({
+      user_id: user.id,
+      type: materialType,
+      title,
+      content,
+      language: lang,
+    });
+
+    if (error) {
+      toast.error(lang === 'PT' ? 'Erro ao salvar' : lang === 'EN' ? 'Error saving' : 'Error al guardar');
+    } else {
+      setSavedIndexes((prev) => new Set(prev).add(msgIndex));
+      toast.success(lang === 'PT' ? 'Salvo na Biblioteca! 📚' : lang === 'EN' ? 'Saved to Library! 📚' : '¡Guardado en la Biblioteca! 📚');
+    }
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
