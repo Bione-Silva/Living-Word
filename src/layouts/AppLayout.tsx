@@ -292,6 +292,7 @@ export default function AppLayout() {
 
   return (
     <div className="theme-app min-h-screen bg-background flex">
+      <ThemeInjector />
       {/* Desktop Sidebar */}
       <aside className="w-[260px] min-h-screen flex flex-col fixed left-0 top-0 bottom-0 z-40 bg-sidebar text-sidebar-foreground">
         {/* Logo */}

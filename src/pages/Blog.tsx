@@ -274,7 +274,7 @@ export default function Blog() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map(article => {
             const isPublished = article.queue_status === 'published';
             const isArchived = article.queue_status === 'archived';
