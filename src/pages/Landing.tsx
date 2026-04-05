@@ -547,9 +547,16 @@ export default function Landing() {
             </div>
 
             {/* Right — iPhone Mockup */}
-            <div className="shrink-0 animate-[fadeSlideUp_0.8s_ease-out_0.6s_both]">
-              <div className="relative" style={{ animation: 'heroFloat 5s ease-in-out infinite' }}>
-                <style>{`@keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }`}</style>
+            <div className="shrink-0" style={{ animation: 'mockupEntrance 1.2s cubic-bezier(0.16,1,0.3,1) 0.5s both' }}>
+              <div className="relative" style={{ animation: 'heroFloat 5s ease-in-out 1.7s infinite' }}>
+                <style>{`
+                  @keyframes mockupEntrance {
+                    0% { opacity: 0; transform: translateY(40px) scale(0.92); }
+                    60% { opacity: 1; transform: translateY(-6px) scale(1.01); }
+                    100% { opacity: 1; transform: translateY(0) scale(1); }
+                  }
+                  @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+                `}</style>
                 <div className="relative" style={{ width: '300px' }}>
                   {/* Phone frame */}
                   <div className="rounded-[44px] p-[2.5px]" style={{ background: 'linear-gradient(145deg, #6B6B6B 0%, #3A3A3A 30%, #1A1A1A 70%, #3A3A3A 100%)' }}>
