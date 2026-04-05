@@ -77,12 +77,11 @@ export default function BlogArticle() {
     queryKey: ['blog-profile', handle],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, bio, avatar_url, blog_handle, plan')
-        .eq('blog_handle', handle!)
-        .single();
+        .rpc('get_public_blog_profile', { p_handle: handle! });
       if (error) throw error;
-      return data;
+      const row = Array.isArray(data) ? data[0] : data;
+      if (!row) throw new Error('Profile not found');
+      return row;
     },
     enabled: !!handle,
   });

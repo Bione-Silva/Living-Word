@@ -513,6 +513,25 @@ export type Database = {
           users_trialing: number
         }[]
       }
+      get_public_blog_profile: {
+        Args: { p_handle: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          blog_handle: string
+          blog_name: string
+          church_name: string
+          city: string
+          country: string
+          font_family: string
+          full_name: string
+          id: string
+          language: string
+          layout_style: string
+          theme_color: string
+        }[]
+      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

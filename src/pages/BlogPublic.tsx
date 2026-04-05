@@ -35,12 +35,10 @@ export default function BlogPublic() {
     queryKey: ['blog-profile', handle],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, bio, avatar_url, blog_handle, plan, theme_color, font_family, layout_style')
-        .eq('blog_handle', handle!)
-        .maybeSingle();
+        .rpc('get_public_blog_profile', { p_handle: handle! });
       if (error) throw error;
-      return data;
+      const row = Array.isArray(data) ? data[0] : data;
+      return row || null;
     },
     enabled: !!handle,
   });
