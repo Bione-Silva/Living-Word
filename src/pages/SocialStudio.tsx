@@ -1,33 +1,20 @@
 import { useState, useRef, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
 import { SlideCanvas, type SlideData } from '@/components/social-studio/SlideCanvas';
 import { VerseOfDayBanner, type VerseData } from '@/components/social-studio/VerseOfDayBanner';
 import { CarouselNavigator } from '@/components/social-studio/CarouselNavigator';
 import { DownloadButton } from '@/components/social-studio/DownloadButton';
+import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, ImagePlus, Layers } from 'lucide-react';
+import { Sparkles, ImagePlus, Layers, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
-
-const UNSPLASH_IMAGES = [
-  'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80',
-  'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80',
-  'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80',
-  'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80',
-  'https://images.unsplash.com/photo-1533000759938-aa0ba70beceb?w=800&q=80',
-];
-
-const MOCK_VERSES: VerseData[] = [
-  { text: 'Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.', book: 'João 3:16', topic_image: UNSPLASH_IMAGES[0] },
-  { text: 'O Senhor é o meu pastor; nada me faltará.', book: 'Salmos 23:1', topic_image: UNSPLASH_IMAGES[1] },
-  { text: 'Tudo posso naquele que me fortalece.', book: 'Filipenses 4:13', topic_image: UNSPLASH_IMAGES[2] },
-  { text: 'Confie no Senhor de todo o seu coração e não se apoie em seu próprio entendimento.', book: 'Provérbios 3:5', topic_image: UNSPLASH_IMAGES[3] },
-  { text: 'Porque eu bem sei os pensamentos que penso de vós, diz o Senhor; pensamentos de paz e não de mal, para vos dar o fim que esperais.', book: 'Jeremias 29:11', topic_image: UNSPLASH_IMAGES[4] },
-];
 
 const MOCK_CAROUSEL: SlideData[] = [
   { text: '5 Verdades que vão transformar sua semana', subtitle: 'Deslize para ver →', slideNumber: 1, totalSlides: 5 },
@@ -35,14 +22,6 @@ const MOCK_CAROUSEL: SlideData[] = [
   { text: 'Deus não te trouxe até aqui para te abandonar. Confie no processo.', subtitle: 'Deuteronômio 31:6', slideNumber: 3, totalSlides: 5 },
   { text: 'Sua identidade não está no que você faz, mas em quem Deus diz que você é.', subtitle: 'Efésios 2:10', slideNumber: 4, totalSlides: 5 },
   { text: 'Compartilhe com alguém que precisa ouvir isso hoje. ❤️', subtitle: '@seuministério', slideNumber: 5, totalSlides: 5 },
-];
-
-const gradients = [
-  'from-[#1a1a2e] via-[#16213e] to-[#0f3460]',
-  'from-[#2d1b69] via-[#11001c] to-[#1a0a2e]',
-  'from-[#1b4332] via-[#081c15] to-[#2d6a4f]',
-  'from-[#3c1518] via-[#1a0000] to-[#69140e]',
-  'from-[#1a1a2e] via-[#0a1628] to-[#16213e]',
 ];
 
 const headings: Record<L, { title: string; subtitle: string; verse: string; carousel: string; generate: string }> = {
@@ -60,25 +39,62 @@ export default function SocialStudio() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [verse, setVerse] = useState<VerseData | null>(null);
   const [carousel] = useState<SlideData[]>(MOCK_CAROUSEL);
+  const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState<ThemeConfig>({
+    gradient: colorPresets[0].gradient,
+    fontFamily: "'Cormorant Garamond', 'Georgia', serif",
+  });
 
   const slideRef = useRef<HTMLDivElement>(null);
   const verseRef = useRef<HTMLDivElement>(null);
 
-  const generateVerse = useCallback(() => {
-    const random = MOCK_VERSES[Math.floor(Math.random() * MOCK_VERSES.length)];
-    setVerse(random);
-  }, []);
+  const generateVerse = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-verse', {
+        body: { language: lang },
+      });
+
+      if (error) throw error;
+
+      if (data?.text && data?.book) {
+        setVerse({
+          text: data.text,
+          book: data.book,
+          topic_image: data.topic_image || 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80',
+        });
+      }
+    } catch (err) {
+      console.error('Error generating verse:', err);
+      toast.error(lang === 'PT' ? 'Erro ao gerar versículo' : lang === 'EN' ? 'Error generating verse' : 'Error al generar versículo');
+      // Fallback local
+      setVerse({
+        text: lang === 'EN'
+          ? 'The Lord is my shepherd; I shall not want.'
+          : lang === 'ES'
+          ? 'El Señor es mi pastor; nada me faltará.'
+          : 'O Senhor é o meu pastor; nada me faltará.',
+        book: lang === 'EN' ? 'Psalm 23:1' : lang === 'ES' ? 'Salmo 23:1' : 'Salmos 23:1',
+        topic_image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [lang]);
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div className="space-y-6 max-w-3xl">
       {/* Header */}
       <div>
         <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{h.title}</h1>
         <p className="text-muted-foreground text-sm mt-1 max-w-xl">{h.subtitle}</p>
       </div>
 
-      {/* Aspect Ratio Selector */}
-      <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
+      {/* Controls row */}
+      <div className="space-y-3">
+        <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
+        <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} />
+      </div>
 
       <Tabs defaultValue="verse" className="space-y-6">
         <TabsList className="bg-secondary/50">
@@ -103,24 +119,31 @@ export default function SocialStudio() {
                 <h3 className="font-display text-lg font-bold text-foreground mb-2">{h.verse}</h3>
                 <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
                   {lang === 'PT'
-                    ? 'Clique para gerar um banner visual incrível com versículo, imagem de fundo e tipografia elegante.'
+                    ? 'A IA vai escolher um versículo inspirador e criar um banner visual com imagem de fundo e tipografia elegante.'
                     : lang === 'EN'
-                    ? 'Click to generate an amazing visual banner with verse, background image and elegant typography.'
-                    : 'Haz clic para generar un banner visual increíble con versículo, imagen de fondo y tipografía elegante.'}
+                    ? 'AI will pick an inspiring verse and create a visual banner with background image and elegant typography.'
+                    : 'La IA elegirá un versículo inspirador y creará un banner visual con imagen de fondo y tipografía elegante.'}
                 </p>
-                <Button onClick={generateVerse} size="lg" className="gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  {h.generate}
+                <Button onClick={generateVerse} size="lg" className="gap-2" disabled={loading}>
+                  {loading ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> {lang === 'PT' ? 'Gerando...' : lang === 'EN' ? 'Generating...' : 'Generando...'}</>
+                  ) : (
+                    <><Sparkles className="h-4 w-4" /> {h.generate}</>
+                  )}
                 </Button>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-4">
-              <VerseOfDayBanner ref={verseRef} verse={verse} aspectRatio={aspectRatio} />
+              <VerseOfDayBanner ref={verseRef} verse={verse} aspectRatio={aspectRatio} fontFamily={theme.fontFamily} />
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <DownloadButton targetRef={verseRef} fileName="versiculo-do-dia" lang={lang} />
-                <Button variant="outline" onClick={generateVerse} className="gap-2 border-border text-foreground">
-                  <Sparkles className="h-4 w-4" />
+                <Button variant="outline" onClick={generateVerse} className="gap-2 border-border text-foreground" disabled={loading}>
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
                   {lang === 'PT' ? 'Gerar Outro' : lang === 'EN' ? 'Generate Another' : 'Generar Otro'}
                 </Button>
               </div>
@@ -134,7 +157,8 @@ export default function SocialStudio() {
             ref={slideRef}
             slide={carousel[currentSlide]}
             aspectRatio={aspectRatio}
-            themeColor={gradients[currentSlide % gradients.length]}
+            themeColor={theme.gradient}
+            fontFamily={theme.fontFamily}
           />
           <CarouselNavigator
             current={currentSlide}
