@@ -28,6 +28,7 @@ import { helpCategories, helpFullArticles } from '@/data/help-center-data';
 import { Zap } from 'lucide-react';
 import { BlogArticleEditorDialog } from '@/components/BlogArticleEditorDialog';
 import { EditableBlogArticle } from '@/lib/blog-article';
+import { YouTubeMultiplierModal } from '@/components/YouTubeMultiplierModal';
 
 interface ToolSheetProps {
   open: boolean;
@@ -186,6 +187,10 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   if (toolId === 'studio') {
     return <PastoralStudioModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
+  }
+
+  if (toolId === 'youtube-blog') {
+    return <YouTubeMultiplierModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
   }
 
   const config = toolConfigs[toolId] || {
