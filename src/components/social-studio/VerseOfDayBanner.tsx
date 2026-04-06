@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import type { AspectRatio } from './AspectRatioSelector';
+import type { CanvasTemplate } from './TemplatePicker';
 
 export interface VerseData {
   text: string;
@@ -10,6 +11,7 @@ export interface VerseData {
 interface Props {
   verse: VerseData;
   aspectRatio: AspectRatio;
+  template: CanvasTemplate;
   fontFamily?: string;
   textColor?: string;
   backgroundImageUrl?: string;
@@ -27,30 +29,126 @@ const captureSizes: Record<AspectRatio, { width: number; height: number }> = {
   '1:1': { width: 1080, height: 1080 },
 };
 
-function getContrastSettings(textColor?: string) {
-  const txtColor = textColor || '#FFFFFF';
-  const darkText = txtColor.toLowerCase() !== '#ffffff' && txtColor.toLowerCase() !== '#fff8e7' && txtColor.toLowerCase() !== '#f5d78e' && txtColor.toLowerCase() !== '#fbbf24';
-
-  return {
-    txtColor,
-    darkText,
-    overlayClass: darkText ? 'bg-white/80' : 'bg-black/62',
-    shadow: darkText
-      ? 'drop-shadow-[0_1px_2px_rgba(255,255,255,0.35)]'
-      : 'drop-shadow-[0_4px_18px_rgba(0,0,0,0.72)]',
-    accentColor: darkText ? '#6B4F3A' : '#F5D78E',
-    mutedColor: darkText ? '#3D2B1F' : '#F8E9C2',
-    faintColor: darkText ? '#8A6A52' : '#E7C978',
-    watermark: darkText ? '#6B4F3A99' : '#FFFFFF40',
-  };
+function isDarkText(textColor?: string) {
+  const c = (textColor || '#FFFFFF').toLowerCase();
+  return c !== '#ffffff' && c !== '#fff8e7' && c !== '#f5d78e' && c !== '#fbbf24';
 }
 
+function baseColor(gradient?: string) {
+  const match = gradient?.match(/#([0-9a-fA-F]{6})/);
+  return match ? `#${match[1]}` : '#1a1a2e';
+}
+
+/* ── EDITORIAL ── */
+function EditorialVerse({ verse, fontFamily, textColor, backgroundImageUrl, themeColor }: { verse: VerseData; fontFamily?: string; textColor?: string; backgroundImageUrl?: string; themeColor?: string }) {
+  const dark = isDarkText(textColor);
+  const solidBg = dark ? '#FDFAF5' : baseColor(themeColor);
+  const txtColor = textColor || '#FFFFFF';
+  const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+  const imgUrl = backgroundImageUrl || verse.topic_image;
+
+  return (
+    <div className="relative h-full w-full flex flex-col overflow-hidden" style={{ fontFamily: font }}>
+      <div className="relative" style={{ height: '60%' }}>
+        <img src={imgUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+      </div>
+      <div className="relative flex flex-col items-center justify-center px-8 text-center" style={{ height: '40%', backgroundColor: solidBg }}>
+        <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-medium mb-3" style={{ color: dark ? '#BBA58A' : `${txtColor}66` }}>
+          Versículo do Dia
+        </p>
+        <p className="text-base font-medium leading-relaxed tracking-wide sm:text-lg" style={{ color: dark ? '#2D1F14' : txtColor }}>
+          "{verse.text}"
+        </p>
+        <div className="mt-4 flex items-center gap-3">
+          <div className="h-px w-6" style={{ backgroundColor: dark ? '#C4AE93' : `${txtColor}44` }} />
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] font-sans" style={{ color: dark ? '#6B4F3A' : `${txtColor}99` }}>
+            {verse.book}
+          </p>
+          <div className="h-px w-6" style={{ backgroundColor: dark ? '#C4AE93' : `${txtColor}44` }} />
+        </div>
+        <span className="absolute bottom-2 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#D4C5B3' : `${txtColor}33` }}>
+          Palavra Viva
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ── SWISS ── */
+function SwissVerse({ verse, fontFamily, textColor, themeColor }: { verse: VerseData; fontFamily?: string; textColor?: string; themeColor?: string }) {
+  const dark = isDarkText(textColor);
+  const bg = dark ? '#F8F5F0' : baseColor(themeColor);
+  const txtColor = textColor || '#FFFFFF';
+  const lineColor = dark ? '#D4C5B3' : `${txtColor}22`;
+  const font = fontFamily || "'Montserrat', 'Helvetica Neue', sans-serif";
+
+  return (
+    <div className="relative h-full w-full overflow-hidden" style={{ backgroundColor: bg, fontFamily: font }}>
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 bottom-0" style={{ left: '12%', width: '1px', backgroundColor: lineColor }} />
+        <div className="absolute left-0 right-0" style={{ top: '75%', height: '1px', backgroundColor: lineColor }} />
+        <div className="absolute top-[75%] bottom-[8%]" style={{ left: '88%', width: '2px', backgroundColor: dark ? '#6B4F3A' : txtColor }} />
+      </div>
+
+      <span className="absolute top-4 left-[12%] ml-4 text-[9px] uppercase tracking-[0.3em] font-sans font-medium" style={{ color: dark ? '#BBA58A' : `${txtColor}55` }}>
+        Versículo do Dia
+      </span>
+
+      <div className="absolute flex flex-col justify-center" style={{ top: '10%', bottom: '30%', left: '12%', right: '10%', paddingLeft: '1rem' }}>
+        <p className="text-2xl sm:text-3xl md:text-4xl font-black leading-[1.1] tracking-tight text-left" style={{ color: dark ? '#1A1008' : txtColor }}>
+          {verse.text}
+        </p>
+      </div>
+
+      <div className="absolute flex flex-col items-end" style={{ bottom: '8%', right: '10%' }}>
+        <div className="h-px w-12 mb-2" style={{ backgroundColor: dark ? '#6B4F3A' : txtColor }} />
+        <p className="text-xs font-bold uppercase tracking-[0.3em] font-sans text-right" style={{ color: dark ? '#6B4F3A' : `${txtColor}CC` }}>
+          {verse.book}
+        </p>
+      </div>
+
+      <span className="absolute bottom-3 left-[12%] ml-4 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#C4AE93' : `${txtColor}33` }}>
+        Palavra Viva
+      </span>
+    </div>
+  );
+}
+
+/* ── CINEMATIC ── */
+function CinematicVerse({ verse, fontFamily, backgroundImageUrl }: { verse: VerseData; fontFamily?: string; backgroundImageUrl?: string }) {
+  const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+  const imgUrl = backgroundImageUrl || verse.topic_image;
+
+  return (
+    <div className="relative h-full w-full overflow-hidden" style={{ fontFamily: font }}>
+      <img src={imgUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.15) 55%, transparent 70%)' }} />
+
+      <div className="absolute inset-0 flex flex-col justify-end px-8 pb-10 sm:px-10 sm:pb-12">
+        <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-medium mb-4" style={{ color: 'rgba(245,215,142,0.55)' }}>
+          Versículo do Dia
+        </p>
+        <p className="text-lg sm:text-xl md:text-2xl font-semibold leading-relaxed tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]" style={{ color: '#FFF8E7' }}>
+          "{verse.text}"
+        </p>
+        <div className="mt-5 flex items-center gap-3">
+          <div className="h-px w-8" style={{ backgroundColor: 'rgba(245,215,142,0.5)' }} />
+          <p className="text-xs font-sans font-semibold uppercase tracking-[0.25em]" style={{ color: 'rgba(245,215,142,0.75)' }}>
+            {verse.book}
+          </p>
+        </div>
+        <span className="mt-6 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(255,255,255,0.2)' }}>
+          Palavra Viva
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ── EXPORTED ── */
 export const VerseOfDayBanner = forwardRef<HTMLDivElement, Props>(
-  ({ verse, aspectRatio, fontFamily, textColor, backgroundImageUrl }, ref) => {
-    const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+  ({ verse, aspectRatio, template, fontFamily, textColor, backgroundImageUrl }, ref) => {
     const captureSize = captureSizes[aspectRatio];
-    const contrast = getContrastSettings(textColor);
-    const imageUrl = backgroundImageUrl || verse.topic_image;
 
     return (
       <div className={`w-full ${aspectClasses[aspectRatio]} mx-auto transition-all duration-500 ease-in-out`}>
@@ -59,48 +157,10 @@ export const VerseOfDayBanner = forwardRef<HTMLDivElement, Props>(
           data-capture-width={captureSize.width}
           data-capture-height={captureSize.height}
           className="relative h-full w-full overflow-hidden rounded-2xl select-none isolate shadow-xl"
-          style={{ fontFamily: font }}
         >
-          <img
-            src={imageUrl}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-            crossOrigin="anonymous"
-          />
-
-          <div className={`absolute inset-0 ${contrast.overlayClass}`} />
-          <div className="absolute inset-0" style={{ boxShadow: contrast.darkText ? 'inset 0 0 120px 30px rgba(255,255,255,0.18)' : 'inset 0 0 120px 30px rgba(0,0,0,0.45)' }} />
-
-          <div className="absolute left-1/2 top-6 flex -translate-x-1/2 flex-col items-center gap-2">
-            <div className="text-2xl" style={{ color: contrast.accentColor }}>✦</div>
-            <div className="h-0.5 w-8" style={{ background: `linear-gradient(to right, transparent, ${contrast.accentColor}, transparent)` }} />
-          </div>
-
-          <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-10 py-16 text-center sm:px-12">
-            <p className="mb-6 text-[10px] uppercase tracking-[0.4em] font-sans font-semibold sm:text-xs" style={{ color: contrast.faintColor }}>
-              Versículo do Dia
-            </p>
-
-            <p className={`text-lg font-semibold leading-[1.6] tracking-wide sm:text-xl md:text-2xl ${contrast.shadow}`} style={{ color: contrast.txtColor }}>
-              "{verse.text}"
-            </p>
-
-            <div className="mt-8 flex items-center gap-3">
-              <div className="h-px w-8" style={{ backgroundColor: contrast.accentColor }} />
-              <div className="text-xs" style={{ color: contrast.accentColor }}>✝</div>
-              <div className="h-px w-8" style={{ backgroundColor: contrast.accentColor }} />
-            </div>
-
-            <p className="mt-4 font-sans text-sm font-semibold uppercase tracking-[0.2em] sm:text-base" style={{ color: contrast.mutedColor }}>
-              {verse.book}
-            </p>
-          </div>
-
-          <div className="absolute bottom-4 left-0 right-0 text-center">
-            <span className="text-[8px] uppercase tracking-[0.4em] font-sans font-semibold" style={{ color: contrast.watermark }}>
-              Palavra Viva
-            </span>
-          </div>
+          {template === 'editorial' && <EditorialVerse verse={verse} fontFamily={fontFamily} textColor={textColor} backgroundImageUrl={backgroundImageUrl} />}
+          {template === 'swiss' && <SwissVerse verse={verse} fontFamily={fontFamily} textColor={textColor} />}
+          {template === 'cinematic' && <CinematicVerse verse={verse} fontFamily={fontFamily} backgroundImageUrl={backgroundImageUrl} />}
         </div>
       </div>
     );
