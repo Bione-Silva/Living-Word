@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe, Maximize2, Minimize2, Paintbrush } from 'lucide-react';
+import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe, Maximize2, Minimize2, Paintbrush, ImageIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ScrollArea } from '@/components/ui/scroll-area';
