@@ -27,6 +27,11 @@ const colorPresets = [
   { id: 'rose', label: 'Rose', gradient: 'linear-gradient(135deg, #4a1942 0%, #2a0e2e 52%, #6b2d5b 100%)', preview: '#4a1942' },
   { id: 'terracotta', label: 'Terracotta', gradient: 'linear-gradient(135deg, #B85042 0%, #6b2f26 52%, #3d1a15 100%)', preview: '#B85042' },
   { id: 'sage', label: 'Sage', gradient: 'linear-gradient(135deg, #3a5a40 0%, #2d4a33 52%, #1a3a20 100%)', preview: '#3a5a40' },
+  { id: 'sunset-pink', label: 'Sunset Rosa', gradient: 'linear-gradient(135deg, #e65c00 0%, #c2185b 52%, #880e4f 100%)', preview: '#e65c00' },
+  { id: 'ocean-green', label: 'Ocean Verde', gradient: 'linear-gradient(135deg, #0077b6 0%, #00838f 52%, #2e7d32 100%)', preview: '#0077b6' },
+  { id: 'royal-gold', label: 'Royal Dourado', gradient: 'linear-gradient(135deg, #4a148c 0%, #6a1b9a 52%, #c5a028 100%)', preview: '#4a148c' },
+  { id: 'aurora', label: 'Aurora', gradient: 'linear-gradient(135deg, #1a237e 0%, #00695c 52%, #1b5e20 100%)', preview: '#1a237e' },
+  { id: 'ember', label: 'Ember', gradient: 'linear-gradient(135deg, #bf360c 0%, #d84315 52%, #ff8f00 100%)', preview: '#bf360c' },
 ];
 
 const fontPresets = [
