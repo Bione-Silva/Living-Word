@@ -61,7 +61,7 @@ export function StudyActions({ study }: StudyActionsProps) {
 
       // Title & passage
       children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: studyTitle, bold: true })] }));
-      children.push(new Paragraph({ children: [new TextRun({ text: studyPassage, bold: true, color: '6B4F3A' })] }));
+      children.push(new Paragraph({ children: [new TextRun({ text: studyPassage, bold: true, color: '3D2E1F' })] }));
       children.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
 
       // Verdade Central
