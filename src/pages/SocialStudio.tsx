@@ -373,6 +373,7 @@ export default function SocialStudio() {
                 aspectRatio={aspectRatio}
                 themeColor={theme.gradient}
                 fontFamily={theme.fontFamily}
+                textColor={theme.textColor}
               />
               <CarouselNavigator
                 current={currentSlide}
