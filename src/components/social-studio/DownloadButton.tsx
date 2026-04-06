@@ -8,6 +8,7 @@ interface Props {
   targetRef: React.RefObject<HTMLDivElement>;
   fileName?: string;
   lang: 'PT' | 'EN' | 'ES';
+  onDownloaded?: () => void;
 }
 
 const labels = {
