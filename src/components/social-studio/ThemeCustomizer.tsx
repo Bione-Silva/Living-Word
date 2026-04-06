@@ -142,7 +142,7 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-xs text-foreground font-medium">{l.font}:</span>
+        <span className="text-xs text-foreground font-semibold">{l.font}:</span>
         <Select
           value={fontPresets.find((f) => f.family === value.fontFamily)?.id || 'serif'}
           onValueChange={(id) => {
@@ -150,13 +150,13 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
             if (preset) onChange({ ...value, fontFamily: preset.family });
           }}
         >
-          <SelectTrigger className="h-8 w-[190px] text-xs bg-background text-foreground border-border">
+          <SelectTrigger className="h-9 w-[200px] text-sm font-medium bg-card text-foreground border-border">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-card text-foreground border-border">
             {fontPresets.map((f) => (
-              <SelectItem key={f.id} value={f.id}>
-                <span style={{ fontFamily: f.family }}>{f.label}</span>
+              <SelectItem key={f.id} value={f.id} className="text-foreground">
+                <span className="text-foreground font-medium" style={{ fontFamily: f.family }}>{f.label}</span>
               </SelectItem>
             ))}
           </SelectContent>
