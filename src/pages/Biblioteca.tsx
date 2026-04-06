@@ -167,7 +167,7 @@ export default function Biblioteca() {
         <h1 className="font-display text-3xl font-bold text-foreground">{t('library.title')}</h1>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -177,18 +177,6 @@ export default function Biblioteca() {
             className="pl-10"
           />
         </div>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[200px] border-lw-amber/40 bg-background text-foreground shadow-sm">
-            <Filter className="h-3 w-3 mr-1 text-lw-cafe" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="max-h-60">
-            <SelectItem value="all">{allLabel}</SelectItem>
-            {Object.entries(typeLabels).map(([key, val]) => (
-              <SelectItem key={key} value={key}>{val[lang]}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Button
           variant={favFilter ? 'default' : 'outline'}
           size="icon"
@@ -197,6 +185,22 @@ export default function Biblioteca() {
         >
           <Star className={`h-4 w-4 ${favFilter ? 'fill-current' : ''}`} />
         </Button>
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+        {chipFilters.map((chip) => (
+          <button
+            key={chip.key}
+            onClick={() => setChipFilter(chip.key)}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
+              chipFilter === chip.key
+                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                : 'bg-secondary/60 text-foreground/70 border-border hover:bg-secondary hover:text-foreground'
+            }`}
+          >
+            {chip.label[lang]}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
