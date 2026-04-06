@@ -141,10 +141,10 @@ export function StudyViewer({ study }: StudyViewerProps) {
                   {study.interpretacao.estudo_palavras.map((w, i) => (
                     <div key={i} className="rounded-lg border border-border bg-background p-3">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-sm">{w.palavra}</span>
+                        <span className="font-semibold text-sm text-stone-900">{w.palavra}</span>
                         {w.original && <Badge variant="outline" className="text-[10px]">{w.original}</Badge>}
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">{w.significado}</p>
+                      <p className="text-sm text-stone-700 mt-1">{w.significado}</p>
                     </div>
                   ))}
                 </div>
