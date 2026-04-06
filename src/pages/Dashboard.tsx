@@ -351,6 +351,7 @@ export default function Dashboard() {
         open={extrasOpen}
         onOpenChange={setExtrasOpen}
         lang={lang}
+        isFree={isFree}
         onToolClick={handleExtrasToolClick}
       />
 
