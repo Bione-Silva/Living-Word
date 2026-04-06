@@ -95,8 +95,8 @@ export function StudyViewer({ study }: StudyViewerProps) {
                 <div className="space-y-2">
                   {study.observacao.perguntas_5wh.map((q, i) => (
                     <div key={i} className="rounded-lg border border-border bg-background p-3">
-                      <p className="text-sm font-semibold">{q.pergunta}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{q.resposta}</p>
+                      <p className="text-sm font-semibold text-stone-900">{q.pergunta}</p>
+                      <p className="text-sm text-stone-700 mt-1">{q.resposta}</p>
                     </div>
                   ))}
                 </div>
