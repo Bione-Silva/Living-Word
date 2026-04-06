@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GenerationCounter } from '@/components/GenerationCounter';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import {
   Sheet,
   SheetContent,
@@ -17,7 +18,8 @@ import {
   Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain,
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon,
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
-  HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert
+  HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
+  ExternalLink, User, Package, GraduationCap
 } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -50,7 +52,6 @@ const toolGroups: SidebarToolGroup[] = [
       { id: 'verse-finder', icon: Search, label: { PT: 'Versículos', EN: 'Verse Finder', ES: 'Versículos' } },
       { id: 'historical-context', icon: BookOpen, label: { PT: 'Contexto Histórico', EN: 'Historical Context', ES: 'Contexto Histórico' } },
       { id: 'quote-finder', icon: Quote, label: { PT: 'Citações', EN: 'Quotes', ES: 'Citas' } },
-      { id: 'movie-scenes', icon: Film, label: { PT: 'Cenas de Filmes', EN: 'Movie Scenes', ES: 'Escenas' } },
       { id: 'original-text', icon: FileText, label: { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original' }, locked: true },
       { id: 'lexical', icon: LanguagesIcon, label: { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico' }, locked: true },
     ],
@@ -60,43 +61,30 @@ const toolGroups: SidebarToolGroup[] = [
     icon: PenTool,
     tools: [
       { id: 'studio', icon: Wand2, label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' } },
+      { id: 'biblical-study', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' } },
+      { id: 'free-article', icon: PenTool, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' } },
       { id: 'title-gen', icon: Sparkles, label: { PT: 'Títulos', EN: 'Titles', ES: 'Títulos' } },
       { id: 'metaphor-creator', icon: Palette, label: { PT: 'Metáforas', EN: 'Metaphors', ES: 'Metáforas' } },
+      { id: 'illustrations', icon: Film, label: { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones' }, locked: true },
       { id: 'bible-modernizer', icon: Repeat, label: { PT: 'Modernizador', EN: 'Modernizer', ES: 'Modernizador' } },
-      { id: 'illustrations', icon: PenTool, label: { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones' } },
-      { id: 'free-article', icon: Wand2, label: { PT: 'Artigo de Blog', EN: 'Blog Article', ES: 'Artículo' } },
       { id: 'youtube-blog', icon: Video, label: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' }, locked: true },
     ],
   },
   {
-    label: { PT: 'Alcance', EN: 'Outreach', ES: 'Alcance' },
-    icon: Send,
+    label: { PT: 'Extras', EN: 'Extras', ES: 'Extras' },
+    icon: Package,
     tools: [
       { id: 'reels-script', icon: Video, label: { PT: 'Roteiro Reels', EN: 'Reels Script', ES: 'Guión Reels' } },
       { id: 'cell-group', icon: Users, label: { PT: 'Célula', EN: 'Cell Group', ES: 'Célula' } },
       { id: 'social-caption', icon: MessageSquare, label: { PT: 'Legendas', EN: 'Captions', ES: 'Leyendas' } },
       { id: 'newsletter', icon: Mail, label: { PT: 'Newsletter', EN: 'Newsletter', ES: 'Newsletter' } },
       { id: 'announcements', icon: Megaphone, label: { PT: 'Avisos', EN: 'Announcements', ES: 'Avisos' } },
-    ],
-  },
-  {
-    label: { PT: 'Divertidas', EN: 'Fun', ES: 'Divertidas' },
-    icon: Gamepad2,
-    tools: [
-      { id: 'trivia', icon: HelpCircle, label: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' } },
+      { id: 'trivia', icon: Gamepad2, label: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' } },
       { id: 'poetry', icon: Feather, label: { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía' } },
       { id: 'kids-story', icon: Baby, label: { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil' } },
       { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução', EN: 'Translation', ES: 'Traducción' }, locked: true },
     ],
   },
-];
-
-const mobileNavItems = [
-  { key: 'nav.dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { key: 'nav.studio', path: '/estudio', icon: Wand2 },
-  { key: 'nav.minds', path: '/dashboard/mentes', icon: Brain },
-  { key: 'nav.blog', path: '/blog', icon: BookOpen },
-  { key: 'nav.settings', path: '/configuracoes', icon: Settings },
 ];
 
 export default function AppLayout() {
@@ -105,15 +93,12 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    Pesquisa: true, Criar: true, Alcance: false, Divertidas: false,
-  });
+  // ALL groups closed by default
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [activeTool, setActiveTool] = useState<{ id: string; title: string } | null>(null);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [helpToolId, setHelpToolId] = useState<string | null>(null);
-  const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({
-    Pesquisa: true, Criar: true, Alcance: true, Divertidas: true,
-  });
+  const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({});
 
   const handleSignOut = async () => {
     await signOut();
@@ -136,9 +121,20 @@ export default function AppLayout() {
       navigate('/upgrade');
       return;
     }
+    // Special navigation for biblical-study
+    if (tool.id === 'biblical-study') {
+      navigate('/estudos/novo');
+      setMobileToolsOpen(false);
+      return;
+    }
     setMobileToolsOpen(false);
     setActiveTool({ id: tool.id, title: tool.label[lang] });
   };
+
+  // Generation usage
+  const used = profile?.generations_used || 0;
+  const limit = profile?.generations_limit || 5;
+  const pct = Math.min(Math.round((used / limit) * 100), 100);
 
   if (isMobile) {
     return (
@@ -147,7 +143,11 @@ export default function AppLayout() {
         <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
           <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
           <div className="flex items-center gap-2 shrink-0">
-            <GenerationCounter compact />
+            {profile?.blog_handle && (
+              <Link to={`/blog/${profile.blog_handle}`} target="_blank" className="text-primary">
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+            )}
             <LanguageToggle />
           </div>
         </header>
@@ -168,7 +168,6 @@ export default function AppLayout() {
               <span className="truncate">{t('nav.dashboard')}</span>
             </Link>
 
-            {/* Tools bottom sheet trigger */}
             <button
               onClick={() => setMobileToolsOpen(true)}
               className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
@@ -237,7 +236,7 @@ export default function AppLayout() {
             <div className="space-y-3 mt-2">
               {toolGroups.map((group) => {
                 const groupKey = group.label.PT;
-                const isOpen = mobileOpenGroups[groupKey] ?? true;
+                const isOpen = mobileOpenGroups[groupKey] ?? false;
                 const GroupIcon = group.icon;
 
                 return (
@@ -324,9 +323,9 @@ export default function AppLayout() {
           </span>
         </div>
 
-        {/* Grouped Navigation — scrollable */}
+        {/* Navigation — all groups closed by default */}
         <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto min-h-0">
-          {/* Dashboard link */}
+          {/* Dashboard */}
           <Link
             to="/dashboard"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -339,7 +338,7 @@ export default function AppLayout() {
             {t('nav.dashboard')}
           </Link>
 
-          {/* Tool groups */}
+          {/* Tool groups — all closed by default */}
           {toolGroups.map((group) => {
             const groupKey = group.label.PT;
             const isOpen = openGroups[groupKey] ?? false;
@@ -385,56 +384,7 @@ export default function AppLayout() {
             );
           })}
 
-          {/* Publicar group — pages */}
-          <div>
-            <button
-              onClick={() => toggleGroup('Publicar')}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
-            >
-              <Send className="h-4 w-4" />
-              <span className="flex-1 text-left">{lang === 'EN' ? 'Publish' : lang === 'ES' ? 'Publicar' : 'Publicar'}</span>
-              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openGroups['Publicar'] ? '' : '-rotate-90'}`} />
-            </button>
-            {openGroups['Publicar'] && (
-              <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5">
-                <Link
-                  to="/biblioteca"
-                  className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                    location.pathname === '/biblioteca'
-                      ? 'bg-sidebar-accent text-sidebar-primary font-medium'
-                      : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground'
-                  }`}
-                >
-                  <Library className="h-3.5 w-3.5" />
-                  {t('nav.library')}
-                </Link>
-                <Link
-                  to="/blog"
-                  className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                    location.pathname === '/blog'
-                      ? 'bg-sidebar-accent text-sidebar-primary font-medium'
-                      : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground'
-                  }`}
-                >
-                  <BookOpen className="h-3.5 w-3.5" />
-                  {t('nav.blog')}
-                </Link>
-                <Link
-                  to="/calendario"
-                  className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                    location.pathname === '/calendario'
-                      ? 'bg-sidebar-accent text-sidebar-primary font-medium'
-                      : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground'
-                  }`}
-                >
-                  <CalendarDays className="h-3.5 w-3.5" />
-                  {t('nav.calendar')}
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mentes Brilhantes — Premium */}
+          {/* Mentes Brilhantes */}
           <Link
             to="/dashboard/mentes"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -450,20 +400,76 @@ export default function AppLayout() {
             </Badge>
           </Link>
 
-          {/* Admin - Master only */}
-          {isAdmin && (
+          {/* Separator for Conta */}
+          <div className="pt-3 pb-1">
+            <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50 px-3">
+              {lang === 'PT' ? 'CONTA' : lang === 'EN' ? 'ACCOUNT' : 'CUENTA'}
+            </span>
+          </div>
+
+          {/* Profile — clickable to /configuracoes */}
+          <Link
+            to="/configuracoes"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname === '/configuracoes'
+                ? 'bg-sidebar-accent text-sidebar-primary'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+            }`}
+          >
+            <User className="h-4 w-4" />
+            {lang === 'PT' ? 'Meu Perfil' : lang === 'EN' ? 'My Profile' : 'Mi Perfil'}
+          </Link>
+
+          {/* Plan & Usage */}
+          <Link
+            to="/upgrade"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname === '/upgrade'
+                ? 'bg-sidebar-accent text-sidebar-primary'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+            }`}
+          >
+            <Crown className="h-4 w-4" />
+            {lang === 'PT' ? 'Plano e Uso' : lang === 'EN' ? 'Plan & Usage' : 'Plan y Uso'}
+          </Link>
+
+          {/* Portal */}
+          {profile?.blog_handle && (
             <Link
-              to="/admin/dashboard"
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/admin/dashboard'
-                  ? 'bg-destructive/10 text-destructive'
-                  : 'text-destructive/70 hover:bg-destructive/10 hover:text-destructive'
-              }`}
+              to={`/blog/${profile.blog_handle}`}
+              target="_blank"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
             >
-              <ShieldAlert className="h-4 w-4" />
-              Back-office (Master)
+              <ExternalLink className="h-4 w-4" />
+              Portal
             </Link>
           )}
+
+          {/* Blog management */}
+          <Link
+            to="/blog"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname === '/blog'
+                ? 'bg-sidebar-accent text-sidebar-primary'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+            }`}
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            {t('nav.blog')}
+          </Link>
+
+          {/* Library */}
+          <Link
+            to="/biblioteca"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname === '/biblioteca'
+                ? 'bg-sidebar-accent text-sidebar-primary'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+            }`}
+          >
+            <Library className="h-3.5 w-3.5" />
+            {t('nav.library')}
+          </Link>
 
           {/* Help Center */}
           <Link
@@ -490,15 +496,37 @@ export default function AppLayout() {
             <Settings className="h-4 w-4" />
             {t('nav.settings')}
           </Link>
+
+          {/* Admin - Master only */}
+          {isAdmin && (
+            <Link
+              to="/admin/dashboard"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/admin/dashboard'
+                  ? 'bg-destructive/10 text-destructive'
+                  : 'text-destructive/70 hover:bg-destructive/10 hover:text-destructive'
+              }`}
+            >
+              <ShieldAlert className="h-4 w-4" />
+              Back-office (Master)
+            </Link>
+          )}
         </nav>
 
-        {/* Bottom section */}
+        {/* Bottom section — usage + profile */}
         <div className="shrink-0 border-t border-sidebar-border">
-          <div className="px-3 py-2">
-            <GenerationCounter />
+          {/* Usage bar — corrected */}
+          <div className="px-4 py-3">
+            <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50 mb-1.5">
+              {lang === 'PT' ? 'Uso do mês' : lang === 'EN' ? 'Monthly usage' : 'Uso del mes'}
+            </p>
+            <Progress value={pct} className="h-1.5 mb-1" />
+            <p className="text-[11px] text-sidebar-foreground/60">
+              {used} {lang === 'PT' ? 'de' : lang === 'EN' ? 'of' : 'de'} {limit} · {pct}%
+            </p>
           </div>
 
-          {profile?.plan === 'free' && (
+          {isFree && (
             <div className="px-3 pb-2">
               <Link to="/upgrade">
                 <Button className="w-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 gap-2" size="sm">
@@ -509,15 +537,18 @@ export default function AppLayout() {
             </div>
           )}
 
+          {/* Profile — clickable */}
           <div className="px-3 py-2 border-t border-sidebar-border">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-bold text-sidebar-primary shrink-0">
-                {profile?.full_name?.charAt(0) || 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
-                <p className="text-[11px] text-sidebar-foreground/50 capitalize">{profile?.plan || 'free'}</p>
-              </div>
+              <Link to="/configuracoes" className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-bold text-sidebar-primary shrink-0">
+                  {profile?.full_name?.charAt(0) || 'U'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
+                  <p className="text-[11px] text-sidebar-foreground/50 capitalize">{profile?.plan || 'free'}</p>
+                </div>
+              </Link>
               <button onClick={handleSignOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground shrink-0" title="Sair">
                 <LogOut className="h-4 w-4" />
               </button>
@@ -528,7 +559,17 @@ export default function AppLayout() {
 
       {/* Main content */}
       <div className="flex-1 ml-[260px]">
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border px-6 py-3 flex items-center justify-end">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border px-6 py-3 flex items-center justify-end gap-3">
+          {profile?.blog_handle && (
+            <Link
+              to={`/blog/${profile.blog_handle}`}
+              target="_blank"
+              className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              {lang === 'PT' ? 'Acessar Portal' : lang === 'EN' ? 'Open Portal' : 'Abrir Portal'}
+            </Link>
+          )}
           <LanguageToggle />
         </header>
         <main className="p-6">
