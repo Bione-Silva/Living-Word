@@ -57,7 +57,8 @@ export default function Biblioteca() {
   const { t, lang } = useLanguage();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [chipFilter, setChipFilter] = useState('all');
+  const activeChip = chipFilters.find((c) => c.key === chipFilter) || chipFilters[0];
   const [favFilter, setFavFilter] = useState(false);
   const [viewItem, setViewItem] = useState<any>(null);
   const isFree = profile?.plan === 'free';
