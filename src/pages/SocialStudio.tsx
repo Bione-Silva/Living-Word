@@ -320,7 +320,7 @@ export default function SocialStudio() {
           {/* Verse banner */}
           {verse && (
             <div className="space-y-4">
-              <VerseOfDayBanner ref={verseRef} verse={verse} aspectRatio={aspectRatio} fontFamily={theme.fontFamily} />
+              <VerseOfDayBanner ref={verseRef} verse={verse} aspectRatio={aspectRatio} fontFamily={theme.fontFamily} textColor={theme.textColor} />
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <DownloadButton targetRef={verseRef} fileName="versiculo" lang={lang} />
                 <Button variant="outline" onClick={generateVerse} className="gap-2 border-border text-foreground" disabled={loading}>
