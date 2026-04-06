@@ -72,7 +72,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             </div>
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('literary')}</h4>
-              <p className="text-sm leading-relaxed">{study.contexto.literario}</p>
+              <p className="text-sm leading-relaxed text-stone-800">{study.contexto.literario}</p>
             </div>
             {study.contexto.canonico && (
               <div>
