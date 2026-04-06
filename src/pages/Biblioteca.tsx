@@ -282,6 +282,14 @@ export default function Biblioteca() {
         onOpenChange={(open) => !open && setViewItem(null)}
         item={viewItem}
       />
+
+      {saveToWsItem && (
+        <SaveToWorkspaceDialog
+          open={!!saveToWsItem}
+          onOpenChange={(open) => !open && setSaveToWsItem(null)}
+          materialId={saveToWsItem}
+        />
+      )}
     </div>
   );
 }
