@@ -77,7 +77,7 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
               <div className={`absolute inset-0 ${contrast.overlayClass}`} />
             </>
           ) : (
-            <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+            <div className="absolute inset-0" style={{ backgroundImage: gradient }} />
           )}
 
           <div className="absolute left-0 top-0 h-full w-full">

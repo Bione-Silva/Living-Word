@@ -69,7 +69,7 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
       const b = Math.max(0, parseInt(hex.slice(4, 6), 16) - 40);
       const darker = `${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
       const darkest = `${Math.max(0, r - 30).toString(16).padStart(2, '0')}${Math.max(0, g - 30).toString(16).padStart(2, '0')}${Math.max(0, b - 30).toString(16).padStart(2, '0')}`;
-      onChange({ ...value, gradient: `from-[#${hex}] via-[#${darker}] to-[#${darkest}]`, backgroundImageUrl: undefined });
+      onChange({ ...value, gradient: `linear-gradient(135deg, #${hex} 0%, #${darker} 52%, #${darkest} 100%)`, backgroundImageUrl: undefined });
     }
   };
 
