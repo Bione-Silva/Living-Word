@@ -112,6 +112,21 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
+          <Button
+            size="sm"
+            onClick={() => {
+              const fw = fullWorkspace as any;
+              navigate('/social-studio', {
+                state: {
+                  workspaceBrandColor: fw?.brand_color || undefined,
+                  workspaceTemplate: fw?.default_template || undefined,
+                },
+              });
+            }}
+            className="gap-2"
+          >
+            <Palette className="h-4 w-4" /> {l === 'PT' ? 'Estúdio Social' : l === 'ES' ? 'Estudio Social' : 'Social Studio'}
+          </Button>
           <Button variant="outline" size="sm" onClick={handleShare} className="gap-2 font-semibold border-border text-foreground hover:bg-secondary">
             <Share2 className="h-4 w-4" /> {t('workspaces.share')}
           </Button>
