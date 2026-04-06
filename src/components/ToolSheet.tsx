@@ -268,26 +268,51 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     if (!user || !result) return;
     setSaving(true);
     try {
-      const { data: material, error: matErr } = await supabase
-        .from('materials')
-        .insert({
-          user_id: user.id,
-          title: `${toolTitle} — ${input.substring(0, 50)}`,
-          type: 'blog_article',
-          content: result,
-          language: generationLang,
-        })
-        .select('id')
-        .single();
-      if (matErr) throw matErr;
+      if (isArticleTool) {
+        // Route through edge function to generate images
+        const { data, error } = await supabase.functions.invoke('generate-blog-article', {
+          body: {
+            passage: input,
+            language: generationLang,
+            title: `${toolTitle} — ${input.substring(0, 50)}`,
+            image_style: imageStyle,
+            source_content: result,
+            source_type: toolId,
+          },
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Unknown error');
 
-      await supabase.from('editorial_queue').insert({
-        user_id: user.id,
-        material_id: material.id,
-        status: 'published',
-        published_at: new Date().toISOString(),
-      });
-      toast.success(lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!');
+        // Publish immediately
+        await supabase.from('editorial_queue').insert({
+          user_id: user.id,
+          material_id: data.material_id,
+          status: 'published',
+          published_at: new Date().toISOString(),
+        });
+        toast.success(lang === 'PT' ? 'Publicado no blog com imagens!' : lang === 'EN' ? 'Published to blog with images!' : '¡Publicado en el blog con imágenes!');
+      } else {
+        const { data: material, error: matErr } = await supabase
+          .from('materials')
+          .insert({
+            user_id: user.id,
+            title: `${toolTitle} — ${input.substring(0, 50)}`,
+            type: 'blog_article',
+            content: result,
+            language: generationLang,
+          })
+          .select('id')
+          .single();
+        if (matErr) throw matErr;
+
+        await supabase.from('editorial_queue').insert({
+          user_id: user.id,
+          material_id: material.id,
+          status: 'published',
+          published_at: new Date().toISOString(),
+        });
+        toast.success(lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!');
+      }
     } catch (err: any) {
       toast.error(err.message);
     } finally {
