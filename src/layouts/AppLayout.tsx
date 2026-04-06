@@ -284,6 +284,44 @@ export default function AppLayout() {
                   </div>
                 );
               })}
+
+              {/* Quick navigation links for mobile */}
+              <div className="pt-3 border-t border-border mt-2">
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground px-2 mb-2">
+                  {lang === 'PT' ? 'NAVEGAÇÃO' : lang === 'EN' ? 'NAVIGATION' : 'NAVEGACIÓN'}
+                </p>
+                <div className="grid grid-cols-3 gap-2 px-1">
+                  {[
+                    { to: '/biblioteca', icon: Library, label: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' } },
+                    { to: '/workspaces', icon: FolderOpen, label: { PT: 'Workspaces', EN: 'Workspaces', ES: 'Workspaces' } },
+                    { to: '/social-studio', icon: ImageIcon, label: { PT: 'Estúdio Social', EN: 'Social Studio', ES: 'Estudio Social' } },
+                    { to: '/ajuda', icon: HelpCircle, label: { PT: 'Central de Ajuda', EN: 'Help Center', ES: 'Centro de Ayuda' } },
+                    { to: '/upgrade', icon: Crown, label: { PT: 'Plano e Uso', EN: 'Plan & Usage', ES: 'Plan y Uso' } },
+                    { to: '/configuracoes', icon: Settings, label: { PT: 'Configurações', EN: 'Settings', ES: 'Configuración' } },
+                  ].map((nav) => {
+                    const NavIcon = nav.icon;
+                    return (
+                      <Link
+                        key={nav.to}
+                        to={nav.to}
+                        onClick={() => setMobileToolsOpen(false)}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-colors text-center ${
+                          location.pathname === nav.to
+                            ? 'border-primary/30 bg-primary/5'
+                            : 'border-border/60 hover:border-primary/30 hover:bg-primary/5'
+                        }`}
+                      >
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10">
+                          <NavIcon className="h-4 w-4 text-primary" />
+                        </div>
+                        <span className="text-[11px] leading-tight font-medium line-clamp-2">
+                          {nav.label[lang]}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </SheetContent>
         </Sheet>
