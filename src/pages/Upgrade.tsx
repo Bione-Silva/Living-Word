@@ -11,6 +11,8 @@ import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useForceLightTheme } from '@/hooks/useForceLightTheme';
+import { AlertCircle } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
 type PlanKey = 'starter' | 'pro' | 'church';
