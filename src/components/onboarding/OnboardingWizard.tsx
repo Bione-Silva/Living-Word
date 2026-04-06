@@ -12,6 +12,7 @@ import {
   ArrowRight, ArrowLeft, Globe, Check, Sparkles,
   BookOpen, Palette, Type, Layout, Mic, Church
 } from 'lucide-react';
+import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 
 type L = 'PT' | 'EN' | 'ES';
 
