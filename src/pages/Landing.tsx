@@ -1117,7 +1117,7 @@ export default function Landing() {
       <footer className="py-8 px-5 sm:px-8" style={{ background: '#1E1510' }}>
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="font-display text-lg" style={{ color: 'rgba(245,240,232,0.7)' }}>
-            Living <span style={{ color: '#C4956A' }}>Word</span> · Palavra Viva · Palabra Viva
+            Living <span style={{ color: '#C4956A' }}>Word</span>
           </span>
           <div className="flex items-center gap-5">
             <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Privacidade' : lang === 'EN' ? 'Privacy' : 'Privacidad'}</span>

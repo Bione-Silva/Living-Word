@@ -67,7 +67,7 @@ function EditorialVerse({ verse, fontFamily, textColor, backgroundImageUrl, them
           <div className="h-px w-6" style={{ backgroundColor: dark ? '#C4AE93' : `${txtColor}44` }} />
         </div>
         <span className="absolute bottom-2 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#D4C5B3' : `${txtColor}33` }}>
-          Palavra Viva
+          Living Word
         </span>
       </div>
     </div>
@@ -108,7 +108,7 @@ function SwissVerse({ verse, fontFamily, textColor, themeColor }: { verse: Verse
       </div>
 
       <span className="absolute bottom-3 left-[12%] ml-4 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#C4AE93' : `${txtColor}33` }}>
-        Palavra Viva
+        Living Word
       </span>
     </div>
   );
@@ -138,7 +138,7 @@ function CinematicVerse({ verse, fontFamily, backgroundImageUrl }: { verse: Vers
           </p>
         </div>
         <span className="mt-6 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(255,255,255,0.2)' }}>
-          Palavra Viva
+          Living Word
         </span>
       </div>
     </div>
