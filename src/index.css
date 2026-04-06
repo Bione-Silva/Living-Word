@@ -104,6 +104,47 @@
     --sidebar-border: 30 12% 82%;
     --sidebar-ring: 28 42% 38%;
   }
+
+  /* Dark mode for authenticated app */
+  .theme-app.dark,
+  .dark .theme-app {
+    --background: 24 20% 10%;
+    --foreground: 36 25% 90%;
+
+    --card: 24 18% 14%;
+    --card-foreground: 36 25% 90%;
+
+    --popover: 24 18% 14%;
+    --popover-foreground: 36 25% 90%;
+
+    --primary: 28 42% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 24 15% 18%;
+    --secondary-foreground: 36 25% 88%;
+
+    --muted: 24 12% 18%;
+    --muted-foreground: 24 18% 55%;
+
+    --accent: 28 42% 55%;
+    --accent-foreground: 36 25% 95%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 24 15% 22%;
+    --input: 24 15% 22%;
+    --ring: 28 42% 55%;
+
+    --sidebar-background: 24 20% 12%;
+    --sidebar-foreground: 36 25% 88%;
+    --sidebar-primary: 28 42% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 24 15% 20%;
+    --sidebar-accent-foreground: 36 25% 88%;
+    --sidebar-border: 24 15% 20%;
+    --sidebar-ring: 28 42% 55%;
+  }
 }
 
 @layer base {

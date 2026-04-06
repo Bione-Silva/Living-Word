@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, ShieldAlert, Zap } from 'lucide-react';
+import { BookOpen, ShieldAlert, Zap, Moon, Sun } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { StudyForm } from '@/components/biblical-study/StudyForm';
 import { StudyActions } from '@/components/biblical-study/StudyActions';
@@ -14,6 +14,7 @@ import type { GenerationMeta } from '@/types/generation-meta';
 import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFooter';
 import { RichLoadingState } from '@/components/generation/RichLoadingState';
 import { loadingHints, studyLoadingMessages } from '@/lib/generation-ui';
+import { Button } from '@/components/ui/button';
 
 export default function EstudoBiblicoPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +23,7 @@ export default function EstudoBiblicoPage() {
   const { profile } = useAuth();
   const { lang, t } = useLanguage();
   const isFree = profile?.plan === 'free';
+  const [darkStudy, setDarkStudy] = useState(false);
 
   const handleGenerate = async (formData: BiblicalStudyFormData) => {
     setIsLoading(true);
@@ -113,10 +115,22 @@ export default function EstudoBiblicoPage() {
               <p className="text-sm">{t('study.empty')}</p>
             </div>
           ) : (
-            <div>
+            <div className={darkStudy ? 'dark rounded-xl' : ''}>
+              <div className={darkStudy ? 'bg-background text-foreground rounded-xl p-4' : ''}>
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <h2 className="font-display text-lg font-semibold">{t('study.result_title')}</h2>
-                <StudyActions study={study} />
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs"
+                    onClick={() => setDarkStudy(!darkStudy)}
+                  >
+                    {darkStudy ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                    {darkStudy ? (lang === 'EN' ? 'Light' : 'Claro') : (lang === 'EN' ? 'Dark' : 'Escuro')}
+                  </Button>
+                  <StudyActions study={study} />
+                </div>
               </div>
 
               <StudyViewer study={study} />
@@ -126,6 +140,7 @@ export default function EstudoBiblicoPage() {
                   <GenerationMetaFooter lang={lang} meta={generationMeta} />
                 </div>
               )}
+              </div>
             </div>
           )}
         </div>
