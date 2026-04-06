@@ -243,7 +243,7 @@ export default function SocialStudio() {
         <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} />
       </div>
 
-      <Tabs defaultValue="verse" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-secondary/50">
           <TabsTrigger value="verse" className="gap-1.5">
             <Sparkles className="h-3.5 w-3.5" />
