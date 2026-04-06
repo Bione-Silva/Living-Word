@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import {
   FileText, Plus, Search, Globe, Pencil, BookOpen, MoreHorizontal,
-  Archive, ArchiveRestore, Save, X, Eye, Trash2,
+  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
@@ -150,6 +150,30 @@ export default function Blog() {
       toast.error(t('blog.save_error'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePublish = async (article: ArticleRow) => {
+    try {
+      if (article.queue_id) {
+        const { error } = await supabase
+          .from('editorial_queue')
+          .update({ status: 'published', published_at: new Date().toISOString() })
+          .eq('id', article.queue_id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('editorial_queue').insert({
+          user_id: user!.id,
+          material_id: article.id,
+          status: 'published',
+          published_at: new Date().toISOString(),
+        });
+        if (error) throw error;
+      }
+      toast.success(t('blog.published_ok') || 'Artigo publicado!');
+      queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
+    } catch {
+      toast.error(t('blog.status_error'));
     }
   };
 
@@ -410,13 +434,57 @@ export default function Blog() {
             )}
           </div>
 
-          <DialogFooter className="gap-2 pt-4 border-t border-border">
-            <Button variant="outline" onClick={() => setEditArticle(null)} className="gap-1.5">
-              <X className="w-4 h-4" /> {t('blog.cancel')}
-            </Button>
-            <Button onClick={handleSave} disabled={saving} className="gap-1.5">
-              <Save className="w-4 h-4" /> {saving ? t('blog.saving') : t('blog.save')}
-            </Button>
+          <DialogFooter className="flex flex-wrap gap-2 pt-4 border-t border-border sm:justify-between">
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setEditArticle(null)} className="gap-1.5">
+                <X className="w-4 h-4" /> {t('blog.cancel')}
+              </Button>
+              <Button onClick={handleSave} disabled={saving} className="gap-1.5">
+                <Save className="w-4 h-4" /> {saving ? t('blog.saving') : t('blog.save')}
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              {editArticle && editArticle.queue_status !== 'published' && (
+                <Button
+                  variant="outline"
+                  className="gap-1.5"
+                  onClick={async () => {
+                    await handleSave();
+                    if (editArticle) {
+                      await handlePublish(editArticle);
+                      setEditArticle(null);
+                    }
+                  }}
+                  disabled={saving}
+                >
+                  <Upload className="w-4 h-4" /> {t('blog.publish') || 'Publicar'}
+                </Button>
+              )}
+              {editArticle && (
+                <Button
+                  variant="outline"
+                  className="gap-1.5"
+                  onClick={async () => {
+                    await handleToggleArchive(editArticle);
+                    setEditArticle(null);
+                  }}
+                >
+                  <Archive className="w-4 h-4" /> {editArticle.queue_status === 'archived' ? (t('blog.restore') || 'Desarquivar') : (t('blog.archive') || 'Arquivar')}
+                </Button>
+              )}
+              {editArticle && (
+                <Button
+                  variant="outline"
+                  className="gap-1.5 text-destructive hover:text-destructive"
+                  onClick={() => {
+                    setDeleteTarget(editArticle);
+                    setEditArticle(null);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" /> {t('blog.delete')}
+                </Button>
+              )}
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
