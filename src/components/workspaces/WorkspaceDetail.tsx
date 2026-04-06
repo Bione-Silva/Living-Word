@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Share2, Trash2, BookOpen, FileText, Eye, Dna } from 'lucide-react';
+import { ArrowLeft, Share2, Trash2, BookOpen, FileText, Eye, Dna, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
