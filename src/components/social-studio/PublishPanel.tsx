@@ -220,7 +220,7 @@ export function PublishPanel({ targetRef, lang }: Props) {
         body: {
           platform: captionModal.network,
           imageUrl,
-          message: caption || 'Criado com Palavra Viva ✨',
+          message: caption || 'Criado com Living Word ✨',
         },
       });
 

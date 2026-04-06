@@ -138,7 +138,7 @@ function CinematicVerse({ verse, fontFamily, backgroundImageUrl }: { verse: Vers
           </p>
         </div>
         <span className="mt-6 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(255,255,255,0.2)' }}>
-          Palavra Viva
+          Living Word
         </span>
       </div>
     </div>
