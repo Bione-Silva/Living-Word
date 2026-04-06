@@ -203,7 +203,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             {study.aplicacao.reflexao_pessoal && (
               <div className="rounded-lg bg-muted/50 p-3 mt-2">
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('personalReflection')}</p>
-                <p className="text-sm italic leading-relaxed">{study.aplicacao.reflexao_pessoal}</p>
+                <p className="text-sm italic leading-relaxed text-stone-800">{study.aplicacao.reflexao_pessoal}</p>
               </div>
             )}
           </AccordionContent>
