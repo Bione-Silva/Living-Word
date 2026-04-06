@@ -434,6 +434,7 @@ export default function SocialStudio() {
                 fontFamily={theme.fontFamily}
                 textColor={theme.textColor}
                 backgroundImageUrl={theme.backgroundImageUrl}
+                themeColor={theme.gradient}
               />
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <DownloadButton targetRef={verseRef} fileName="versiculo" lang={lang} onDownloaded={() => handleDownloadAndSave(verseRef, verse.book)} />
