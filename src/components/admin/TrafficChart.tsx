@@ -29,14 +29,12 @@ export function TrafficChart() {
       .select('created_at, device')
       .gte('created_at', sevenDaysAgo.toISOString());
 
-    if (!rows || rows.length === 0) {
-      // Fallback empty
+    if (error || !rows || rows.length === 0) {
       setWeeklyData(dayNames.map((d) => ({ day: d, visitas: 0 })));
       setDeviceData([]);
       return;
     }
 
-    // Weekly breakdown
     const dayCounts: Record<number, number> = {};
     const devCounts: Record<string, number> = {};
 
@@ -58,6 +56,9 @@ export function TrafficChart() {
           color: deviceColors[name] || '#94a3b8',
         }))
     );
+    } catch {
+      // silently fail for admin chart
+    }
   };
 
   return (
