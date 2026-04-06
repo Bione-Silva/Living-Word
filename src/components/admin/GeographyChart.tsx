@@ -56,7 +56,9 @@ export function GeographyChart() {
       }));
 
     setData(sorted);
-  };
+    } catch {
+      // silently fail for admin chart
+    }
 
   if (data.length === 0) {
     return (
