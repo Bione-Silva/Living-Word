@@ -20,12 +20,13 @@ const aspectClasses: Record<AspectRatio, string> = {
 };
 
 export const VerseOfDayBanner = forwardRef<HTMLDivElement, Props>(
-  ({ verse, aspectRatio }, ref) => {
+  ({ verse, aspectRatio, fontFamily }, ref) => {
+    const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
     return (
       <div
         ref={ref}
         className={`relative w-full ${aspectClasses[aspectRatio]} mx-auto overflow-hidden rounded-2xl select-none`}
-        style={{ fontFamily: "'Cormorant Garamond', 'Georgia', serif" }}
+        style={{ fontFamily: font }}
       >
         {/* Background image */}
         <img
