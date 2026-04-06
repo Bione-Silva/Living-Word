@@ -793,7 +793,7 @@ export default function Landing() {
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.features.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.features.h2[lang]}</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
               { icon: FileText, title: { PT: 'Sermão Completo', EN: 'Full Sermon', ES: 'Sermón Completo' }, desc: { PT: 'Estrutura completa com introdução, desenvolvimento, aplicação e fechamento — a partir de qualquer passagem bíblica.', EN: 'Complete structure with introduction, development, application and closing — from any Bible passage.', ES: 'Estructura completa con introducción, desarrollo, aplicación y cierre — a partir de cualquier pasaje bíblico.' } },
               { icon: BookOpen, title: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' }, desc: { PT: 'Reflexão pastoral profunda com aplicação prática para a vida diária. Ideal para blogs, boletins e redes.', EN: 'Deep pastoral reflection with practical daily application. Ideal for blogs, bulletins and social media.', ES: 'Reflexión pastoral profunda con aplicación práctica para la vida diaria. Ideal para blogs, boletines y redes.' } },
@@ -804,34 +804,30 @@ export default function Landing() {
               { icon: Globe, title: { PT: 'Versión Español', EN: 'Spanish Version', ES: 'Versión en Español' }, desc: { PT: 'Conteúdo gerado nativamente em espanhol — com voz pastoral autêntica e contexto cultural hispânico.', EN: 'Content natively generated in Spanish — with authentic pastoral voice and Hispanic cultural context.', ES: 'Contenido generado nativamente en español — con voz pastoral auténtica y contexto cultural hispánico.' } },
               { icon: Layers, title: { PT: 'Esboço de Sermão', EN: 'Sermon Outline', ES: 'Bosquejo de Sermón' }, desc: { PT: '3 pontos estruturados com aplicação, ilustrações e fechamento — prontos para personalizar.', EN: '3 structured points with application, illustrations and closing — ready to customize.', ES: '3 puntos estructurados con aplicación, ilustraciones y cierre — listos para personalizar.' } },
               { icon: Share2, title: { PT: 'Conteúdo para Redes', EN: 'Social Media Content', ES: 'Contenido para Redes' }, desc: { PT: 'Legendas, roteiros de Reels e posts com hashtags e CTAs — prontos para Instagram e Facebook.', EN: 'Captions, Reels scripts and posts with hashtags and CTAs — ready for Instagram and Facebook.', ES: 'Leyendas, guiones de Reels y posts con hashtags y CTAs — listos para Instagram y Facebook.' } },
+              ...copy.features.items.map(f => ({ icon: f.icon, title: f.title, desc: f.desc, unique: f.unique })),
             ].map((card, i) => {
               const Icon = card.icon;
+              const isUnique = 'unique' in card && (card as any).unique;
               return (
-                <RevealOnScroll key={i} delay={i * 0.06}>
-                  <div className="rounded-xl p-5 h-full transition-transform hover:scale-[1.02] hover:shadow-md" style={{ border: '1px solid rgba(107,79,58,0.1)', background: '#FFFFFF', boxShadow: '0 2px 8px rgba(61,43,31,0.06)' }}>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ background: '#F5F0E8' }}>
-                      <Icon className="h-[18px] w-[18px]" style={{ color: '#6B4F3A' }} />
+                <RevealOnScroll key={i} delay={i * 0.04}>
+                  <div
+                    className="flex items-start gap-4 rounded-xl px-4 py-3.5 h-full transition-all hover:scale-[1.01]"
+                    style={{
+                      background: '#FFFFFF',
+                      border: '1px solid rgba(107,79,58,0.08)',
+                      boxShadow: '0 4px 16px rgba(61,43,31,0.08), 0 1px 3px rgba(61,43,31,0.06)',
+                    }}
+                  >
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: '#F5F0E8' }}>
+                      <Icon className="h-[16px] w-[16px]" style={{ color: '#6B4F3A' }} />
                     </div>
-                    <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>{card.title[lang]}</h3>
-                    <p className="text-[14px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{card.desc[lang]}</p>
-                  </div>
-                </RevealOnScroll>
-              );
-            })}
-
-            {copy.features.items.map((f, i) => {
-              const Icon = f.icon;
-              return (
-                <RevealOnScroll key={`feat-${i}`} delay={(8 + i) * 0.06}>
-                  <div className="rounded-xl p-5 h-full" style={{ border: '1px solid rgba(107,79,58,0.1)', background: '#FFFFFF' }}>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ background: '#F5F0E8' }}>
-                      <Icon className="h-[18px] w-[18px]" style={{ color: '#6B4F3A' }} />
+                    <div className="min-w-0">
+                      <h3 className="text-[14px] font-semibold leading-snug" style={{ color: '#3D2B1F' }}>
+                        {card.title[lang]}
+                        {isUnique && <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{lang === 'PT' ? 'único' : lang === 'EN' ? 'unique' : 'único'}</span>}
+                      </h3>
+                      <p className="text-[12px] leading-[1.5] mt-0.5" style={{ color: '#8B7355' }}>{card.desc[lang]}</p>
                     </div>
-                    <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>
-                      {f.title[lang]}
-                      {f.unique && <span className="ml-2 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{lang === 'PT' ? 'único' : lang === 'EN' ? 'unique' : 'único'}</span>}
-                    </h3>
-                    <p className="text-[14px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{f.desc[lang]}</p>
                   </div>
                 </RevealOnScroll>
               );
