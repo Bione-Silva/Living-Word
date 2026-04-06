@@ -404,17 +404,24 @@ export default function SocialStudio() {
         <TabsContent value="carousel" className="space-y-4">
           {carousel.length === 0 ? (
             <Card className="border-dashed border-2 border-muted-foreground/30 bg-muted/10">
-              <CardContent className="p-8 sm:p-12 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <CardContent className="p-8 sm:p-12 text-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
                   <Layers className="h-8 w-8 text-primary" />
                 </div>
                 <p className="text-sm text-foreground font-medium max-w-sm mx-auto">
                   {lang === 'PT'
-                    ? 'Busque um versículo na aba anterior e ative "Gerar Devocional" para criar slides de carrossel automaticamente.'
+                    ? 'Busque um versículo na aba "Versículo" e ative "Gerar Devocional" para criar slides de carrossel automaticamente.'
                     : lang === 'EN'
-                    ? 'Search for a verse in the previous tab and enable "Generate Devotional" to auto-create carousel slides.'
-                    : 'Busca un versículo en la pestaña anterior y activa "Generar Devocional" para crear slides de carrusel automáticamente.'}
+                    ? 'Search for a verse in the "Verse" tab and enable "Generate Devotional" to auto-create carousel slides.'
+                    : 'Busca un versículo en la pestaña "Versículo" y activa "Generar Devocional" para crear slides de carrusel automáticamente.'}
                 </p>
+                <Button
+                  onClick={() => { setWantDevotional(true); setActiveTab('verse'); }}
+                  className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  {lang === 'PT' ? 'Ir para Versículo e Gerar' : lang === 'EN' ? 'Go to Verse & Generate' : 'Ir a Versículo y Generar'}
+                </Button>
               </CardContent>
             </Card>
           ) : (
