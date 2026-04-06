@@ -70,7 +70,7 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 flex-wrap">
-        <Button variant="ghost" size="sm" onClick={onBack} className="gap-1">
+        <Button variant="ghost" size="sm" onClick={onBack} className="gap-1 text-foreground hover:bg-secondary">
           <ArrowLeft className="h-4 w-4" /> {t('workspaces.back')}
         </Button>
       </div>
@@ -86,10 +86,10 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="default" size="sm" onClick={handleShare} className="gap-2 font-semibold">
+          <Button variant="outline" size="sm" onClick={handleShare} className="gap-2 font-semibold border-border text-foreground hover:bg-secondary">
             <Share2 className="h-4 w-4" /> {t('workspaces.share')}
           </Button>
-          <Button variant="ghost" size="sm" className="text-destructive" onClick={() => deleteMutation.mutate()}>
+          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => deleteMutation.mutate()}>
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -103,8 +103,8 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
         </div>
       ) : items.length === 0 ? (
         <div className="text-center py-16">
-          <BookOpen className="h-10 w-10 mx-auto mb-3 text-foreground/50" />
-          <p className="text-sm text-foreground/60 font-medium">{t('workspaces.no_items')}</p>
+          <BookOpen className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground font-medium">{t('workspaces.no_items')}</p>
         </div>
       ) : (
         <div className="grid gap-3">
@@ -121,10 +121,10 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
                     {new Date(item.created_at).toLocaleDateString()}
                   </p>
                 </div>
-                <Badge variant="secondary" className="text-[10px] shrink-0">
+                <Badge variant="secondary" className="text-[10px] shrink-0 text-secondary-foreground">
                   {typeLabels[item.type]?.[lang] || item.type}
                 </Badge>
-                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setViewItem(item)}>
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-foreground" onClick={() => setViewItem(item)}>
                   <Eye className="h-3 w-3" />
                 </Button>
               </CardContent>
