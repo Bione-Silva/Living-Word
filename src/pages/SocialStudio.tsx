@@ -450,6 +450,7 @@ export default function SocialStudio() {
                   {zipLoading ? h.zipLoading : h.zipDownload}
                 </Button>
               </div>
+              <PublishPanel targetRef={slideRef} lang={lang} />
             </>
           )}
         </TabsContent>
