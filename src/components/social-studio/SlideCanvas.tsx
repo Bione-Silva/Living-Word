@@ -14,6 +14,7 @@ interface Props {
   bgImageUrl?: string;
   showWatermark?: boolean;
   themeColor?: string;
+  fontFamily?: string;
 }
 
 const aspectClasses: Record<AspectRatio, string> = {
