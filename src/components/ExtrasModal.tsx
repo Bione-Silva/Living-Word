@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Video, MessageSquare, Mail, Megaphone, Newspaper, Gamepad2, Feather, Baby, Globe, Users } from 'lucide-react';
+import { ToolCard, type ToolCardData } from '@/components/ToolCard';
+import { Video, MessageSquare, Mail, Megaphone, Gamepad2, Feather, Baby, Globe, Users } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -8,28 +8,154 @@ interface ExtrasModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   lang: L;
+  isFree: boolean;
   onToolClick: (toolId: string, title: string) => void;
 }
 
-const outreachTools = [
-  { id: 'reels-script', icon: Video, label: { PT: 'Roteiro para Reels', EN: 'Reels Script', ES: 'Guion para Reels' } },
-  { id: 'cell-group', icon: Users, label: { PT: 'Estudo de Célula', EN: 'Cell Group Study', ES: 'Estudio de Célula' } },
-  { id: 'social-caption', icon: Megaphone, label: { PT: 'Legendas para Redes', EN: 'Social Captions', ES: 'Subtítulos para Redes' } },
-  { id: 'newsletter', icon: Mail, label: { PT: 'Newsletter Semanal', EN: 'Weekly Newsletter', ES: 'Newsletter Semanal' } },
-  { id: 'announcements', icon: Newspaper, label: { PT: 'Avisos do Culto', EN: 'Service Announcements', ES: 'Avisos del Culto' } },
+const outreachTools: ToolCardData[] = [
+  {
+    id: 'reels-script',
+    icon: Video,
+    title: { PT: 'Roteiro para Reels', EN: 'Reels Script', ES: 'Guion para Reels' },
+    description: {
+      PT: 'Roteiros profissionais para vídeos curtos nas redes.',
+      EN: 'Professional scripts for short social media videos.',
+      ES: 'Guiones profesionales para videos cortos en redes.',
+    },
+    hasModal: true,
+  },
+  {
+    id: 'cell-group',
+    icon: Users,
+    title: { PT: 'Estudo de Célula', EN: 'Cell Group Study', ES: 'Estudio de Célula' },
+    description: {
+      PT: 'Material completo para reuniões de célula ou pequenos grupos.',
+      EN: 'Complete material for cell meetings or small groups.',
+      ES: 'Material completo para reuniones de célula o grupos pequeños.',
+    },
+    hasModal: true,
+  },
+  {
+    id: 'social-caption',
+    icon: MessageSquare,
+    title: { PT: 'Legendas para Redes', EN: 'Social Captions', ES: 'Subtítulos para Redes' },
+    description: {
+      PT: 'Textos com hashtags e CTAs para Instagram e Facebook.',
+      EN: 'Texts with hashtags and CTAs for Instagram and Facebook.',
+      ES: 'Textos con hashtags y CTAs para Instagram y Facebook.',
+    },
+    hasModal: true,
+  },
+  {
+    id: 'newsletter',
+    icon: Mail,
+    title: { PT: 'Newsletter Semanal', EN: 'Weekly Newsletter', ES: 'Newsletter Semanal' },
+    description: {
+      PT: 'Newsletter pronta com devocional, avisos e palavra pastoral.',
+      EN: 'Ready newsletter with devotional, announcements and pastoral word.',
+      ES: 'Newsletter lista con devocional, avisos y palabra pastoral.',
+    },
+    hasModal: true,
+  },
+  {
+    id: 'announcements',
+    icon: Megaphone,
+    title: { PT: 'Avisos do Culto', EN: 'Service Announcements', ES: 'Avisos del Culto' },
+    description: {
+      PT: 'Comunicação clara e acolhedora para boletim e projeção.',
+      EN: 'Clear and welcoming communication for bulletin and projection.',
+      ES: 'Comunicación clara y acogedora para boletín y proyección.',
+    },
+    hasModal: true,
+  },
 ];
 
-const funTools = [
-  { id: 'trivia', icon: Gamepad2, label: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' } },
-  { id: 'poetry', icon: Feather, label: { PT: 'Poesia Cristã', EN: 'Christian Poetry', ES: 'Poesía Cristiana' } },
-  { id: 'kids-story', icon: Baby, label: { PT: 'Histórias Infantis', EN: 'Kids Stories', ES: 'Historias Infantiles' } },
-  { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução Teológica', EN: 'Theological Translation', ES: 'Traducción Teológica' } },
+const funTools: ToolCardData[] = [
+  {
+    id: 'trivia',
+    icon: Gamepad2,
+    title: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' },
+    description: {
+      PT: 'Quizzes divertidos para célula, EBD e eventos.',
+      EN: 'Fun quizzes for cell groups, Sunday school and events.',
+      ES: 'Quizzes divertidos para célula, escuela dominical y eventos.',
+    },
+    hasModal: true,
+  },
+  {
+    id: 'poetry',
+    icon: Feather,
+    title: { PT: 'Poesia Cristã', EN: 'Christian Poetry', ES: 'Poesía Cristiana' },
+    description: {
+      PT: 'Poemas inspirados em passagens e temas de fé.',
+      EN: 'Poems inspired by passages and themes of faith.',
+      ES: 'Poemas inspirados en pasajes y temas de fe.',
+    },
+    hasModal: true,
+  },
+  {
+    id: 'kids-story',
+    icon: Baby,
+    title: { PT: 'Histórias Infantis', EN: 'Kids Stories', ES: 'Historias Infantiles' },
+    description: {
+      PT: 'Histórias bíblicas adaptadas para crianças de 5-10 anos.',
+      EN: 'Biblical stories adapted for children ages 5-10.',
+      ES: 'Historias bíblicas adaptadas para niños de 5-10 años.',
+    },
+    hasModal: true,
+  },
+  {
+    id: 'deep-translation',
+    icon: Globe,
+    title: { PT: 'Tradução Teológica', EN: 'Theological Translation', ES: 'Traducción Teológica' },
+    description: {
+      PT: 'Traduções que preservam nuances teológicas entre PT, EN e ES.',
+      EN: 'Translations that preserve theological nuances between PT, EN and ES.',
+      ES: 'Traducciones que preservan matices teológicos entre PT, EN y ES.',
+    },
+    locked: true,
+    hasModal: true,
+  },
 ];
 
-export function ExtrasModal({ open, onOpenChange, lang, onToolClick }: ExtrasModalProps) {
+export function ExtrasModal({ open, onOpenChange, lang, isFree, onToolClick }: ExtrasModalProps) {
+  const handleCardClick = (tool: ToolCardData) => {
+    onToolClick(tool.id, tool.title[lang]);
+    onOpenChange(false);
+  };
+
+  const renderSection = (
+    emoji: string,
+    title: Record<L, string>,
+    tools: ToolCardData[],
+    startIndex = 0,
+  ) => (
+    <section className="space-y-4">
+      <div className="flex items-center gap-2">
+        <h2 className="text-xs font-bold tracking-widest uppercase text-muted-foreground whitespace-nowrap font-body">
+          {emoji} {title[lang]}
+        </h2>
+        <div className="h-px flex-1 bg-border/50" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {tools.map((tool, index) => (
+          <ToolCard
+            key={tool.id}
+            tool={tool}
+            lang={lang}
+            isFree={isFree}
+            onClick={handleCardClick}
+            index={startIndex + index}
+          />
+        ))}
+      </div>
+    </section>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="font-display">
             {lang === 'PT' ? '📦 Recursos Extras' : lang === 'EN' ? '📦 Extra Resources' : '📦 Recursos Extra'}
@@ -39,56 +165,20 @@ export function ExtrasModal({ open, onOpenChange, lang, onToolClick }: ExtrasMod
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="outreach" className="mt-2">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="outreach">
-              {lang === 'PT' ? '📢 Alcance' : lang === 'EN' ? '📢 Outreach' : '📢 Alcance'}
-            </TabsTrigger>
-            <TabsTrigger value="fun">
-              {lang === 'PT' ? '🎮 Divertidas' : lang === 'EN' ? '🎮 Fun' : '🎮 Divertidas'}
-            </TabsTrigger>
-          </TabsList>
+        <div className="mt-2 max-h-[70vh] space-y-8 overflow-y-auto pr-1">
+          {renderSection(
+            '📢',
+            { PT: 'Ferramentas de Alcance', EN: 'Outreach Tools', ES: 'Herramientas de Alcance' },
+            outreachTools,
+          )}
 
-          <TabsContent value="outreach" className="mt-3">
-            <div className="grid grid-cols-1 gap-2">
-              {outreachTools.map((tool) => {
-                const Icon = tool.icon;
-                return (
-                  <button
-                    key={tool.id}
-                    onClick={() => { onToolClick(tool.id, tool.label[lang]); onOpenChange(false); }}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-border/60 hover:border-primary/30 hover:bg-primary/5 transition-colors text-left"
-                  >
-                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Icon className="h-4 w-4 text-primary" />
-                    </div>
-                    <span className="text-sm font-medium">{tool.label[lang]}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="fun" className="mt-3">
-            <div className="grid grid-cols-1 gap-2">
-              {funTools.map((tool) => {
-                const Icon = tool.icon;
-                return (
-                  <button
-                    key={tool.id}
-                    onClick={() => { onToolClick(tool.id, tool.label[lang]); onOpenChange(false); }}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-border/60 hover:border-primary/30 hover:bg-primary/5 transition-colors text-left"
-                  >
-                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Icon className="h-4 w-4 text-primary" />
-                    </div>
-                    <span className="text-sm font-medium">{tool.label[lang]}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </TabsContent>
-        </Tabs>
+          {renderSection(
+            '🎮',
+            { PT: 'Divertidas e Dinâmicas', EN: 'Fun & Interactive', ES: 'Divertidas y Dinámicas' },
+            funTools,
+            outreachTools.length,
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
