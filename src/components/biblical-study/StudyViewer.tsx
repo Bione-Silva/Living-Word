@@ -235,7 +235,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             {study.perguntas_discussao.bonus && (
               <div className="rounded-lg bg-muted/50 p-3">
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('bonus')}</p>
-                <p className="text-sm leading-relaxed">{study.perguntas_discussao.bonus}</p>
+                <p className="text-sm leading-relaxed text-stone-800">{study.perguntas_discussao.bonus}</p>
               </div>
             )}
           </AccordionContent>
