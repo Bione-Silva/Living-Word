@@ -98,6 +98,7 @@ const plans: PlanData[] = [
 ];
 
 export default function Upgrade() {
+  useForceLightTheme();
   const { lang } = useLanguage();
   const { profile } = useAuth();
   const { pricing, loading: regionLoading } = useGeoRegion();
