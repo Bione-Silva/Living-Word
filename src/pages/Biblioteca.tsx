@@ -62,6 +62,7 @@ export default function Biblioteca() {
   const activeChip = chipFilters.find((c) => c.key === chipFilter) || chipFilters[0];
   const [favFilter, setFavFilter] = useState(false);
   const [viewItem, setViewItem] = useState<any>(null);
+  const [saveToWsItem, setSaveToWsItem] = useState<string | null>(null);
   const isFree = profile?.plan === 'free';
   const sentinelRef = useRef<HTMLDivElement>(null);
 
