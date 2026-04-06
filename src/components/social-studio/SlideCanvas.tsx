@@ -15,6 +15,7 @@ interface Props {
   showWatermark?: boolean;
   themeColor?: string;
   fontFamily?: string;
+  textColor?: string;
 }
 
 const aspectClasses: Record<AspectRatio, string> = {
@@ -30,9 +31,10 @@ const captureSizes: Record<AspectRatio, { width: number; height: number }> = {
 };
 
 export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
-  ({ slide, aspectRatio, bgImageUrl, showWatermark = true, themeColor, fontFamily }, ref) => {
+  ({ slide, aspectRatio, bgImageUrl, showWatermark = true, themeColor, fontFamily, textColor }, ref) => {
     const gradient = themeColor || 'from-[#1a1a2e] via-[#16213e] to-[#0f3460]';
     const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+    const txtColor = textColor || '#FFFFFF';
     const captureSize = captureSizes[aspectRatio];
 
     return (
@@ -61,37 +63,37 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
 
           {/* Decorative elements */}
           <div className="absolute left-0 top-0 h-full w-full">
-            <div className="absolute left-8 top-8 h-16 w-16 rounded-full border border-white/10" />
-            <div className="absolute bottom-12 right-8 h-24 w-24 rounded-full border border-white/5" />
-            <div className="absolute right-12 top-1/4 h-16 w-1 bg-gradient-to-b from-amber-400/30 to-transparent" />
+            <div className="absolute left-8 top-8 h-16 w-16 rounded-full border" style={{ borderColor: `${txtColor}15` }} />
+            <div className="absolute bottom-12 right-8 h-24 w-24 rounded-full border" style={{ borderColor: `${txtColor}0A` }} />
+            <div className="absolute right-12 top-1/4 h-16 w-1 bg-gradient-to-b" style={{ background: `linear-gradient(to bottom, ${txtColor}4D, transparent)` }} />
           </div>
 
           {/* Content */}
           <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-8 py-12 text-center sm:px-10">
             {slide.slideNumber && slide.totalSlides && (
-              <div className="absolute right-6 top-6 text-xs font-sans tracking-wider text-white/40">
+              <div className="absolute right-6 top-6 text-xs font-sans tracking-wider" style={{ color: `${txtColor}66` }}>
                 {slide.slideNumber}/{slide.totalSlides}
               </div>
             )}
 
-            <div className="mb-6 h-0.5 w-10 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+            <div className="mb-6 h-0.5 w-10" style={{ background: `linear-gradient(to right, transparent, ${txtColor}99, transparent)` }} />
 
-            <p className="text-white text-xl font-semibold leading-relaxed tracking-wide drop-shadow-lg sm:text-2xl md:text-3xl">
+            <p className="text-xl font-semibold leading-relaxed tracking-wide drop-shadow-lg sm:text-2xl md:text-3xl" style={{ color: txtColor }}>
               "{slide.text}"
             </p>
 
             {slide.subtitle && (
-              <p className="mt-6 font-sans text-sm font-medium uppercase tracking-widest text-amber-200/80 sm:text-base">
+              <p className="mt-6 font-sans text-sm font-medium uppercase tracking-widest sm:text-base" style={{ color: `${txtColor}CC` }}>
                 — {slide.subtitle}
               </p>
             )}
 
-            <div className="mt-6 h-0.5 w-10 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+            <div className="mt-6 h-0.5 w-10" style={{ background: `linear-gradient(to right, transparent, ${txtColor}99, transparent)` }} />
           </div>
 
           {showWatermark && (
             <div className="absolute bottom-3 left-0 right-0 text-center">
-              <span className="text-[9px] uppercase tracking-[0.3em] text-white/25 font-sans">
+              <span className="text-[9px] uppercase tracking-[0.3em] font-sans" style={{ color: `${txtColor}40` }}>
                 Palavra Viva
               </span>
             </div>
