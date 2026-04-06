@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
+import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { SlideCanvas, type SlideData } from '@/components/social-studio/SlideCanvas';
 import { VerseOfDayBanner, type VerseData } from '@/components/social-studio/VerseOfDayBanner';
 import { CarouselNavigator } from '@/components/social-studio/CarouselNavigator';
