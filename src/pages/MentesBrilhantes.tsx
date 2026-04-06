@@ -151,7 +151,7 @@ export default function MentesBrilhantes() {
           </DialogHeader>
           <Button
             onClick={() => { setShowPaywall(false); navigate('/upgrade'); }}
-            className="w-full py-5 text-base font-bold bg-gradient-to-r from-[hsl(35,50%,45%)] to-[hsl(30,40%,38%)] hover:from-[hsl(35,50%,52%)] hover:to-[hsl(30,40%,45%)] text-white gap-2 rounded-xl"
+            className="w-full py-5 text-base font-bold bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
           >
             <Crown className="h-5 w-5" />
             {lang === 'EN' ? 'Upgrade Now' : lang === 'ES' ? 'Mejorar Ahora' : 'Fazer Upgrade'}
