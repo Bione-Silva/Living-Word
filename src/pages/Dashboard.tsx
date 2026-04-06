@@ -67,9 +67,34 @@ export default function Dashboard() {
 
   const userName = profile?.full_name?.split(' ')[0] || (lang === 'PT' ? 'Amigo' : lang === 'EN' ? 'Friend' : 'Amigo');
 
+  // Adaptive quick access: map material types → quick tool entries
+  const typeToQuickTool: Record<string, { icon: string; label: Record<'PT' | 'EN' | 'ES', string>; action: () => void }> = {
+    sermon: { icon: '📖', label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, action: () => handleToolClick(createTools[0]) },
+    pastoral: { icon: '📖', label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, action: () => handleToolClick(createTools[0]) },
+    biblical_study: { icon: '📚', label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' }, action: () => navigate('/estudos/novo') },
+    study: { icon: '📚', label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' }, action: () => navigate('/estudos/novo') },
+    article: { icon: '✍️', label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' }, action: () => navigate('/blog') },
+    blog: { icon: '✍️', label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' }, action: () => navigate('/blog') },
+    blog_article: { icon: '✍️', label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' }, action: () => navigate('/blog') },
+    devotional: { icon: '📖', label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, action: () => handleToolClick(createTools[0]) },
+  };
+
+  const defaultQuickTools = [
+    { icon: '📖', label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, action: () => handleToolClick(createTools[0]) },
+    { icon: '📚', label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' }, action: () => navigate('/estudos/novo') },
+    { icon: '✍️', label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' }, action: () => navigate('/blog') },
+    { icon: '🔎', label: { PT: 'Pesquisa', EN: 'Research', ES: 'Investigación' }, action: () => handleToolClick(researchTools[0]) },
+  ];
+
+  const [adaptiveQuickTools, setAdaptiveQuickTools] = useState<typeof defaultQuickTools | null>(null);
+
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
+      // Fetch last 30 days of materials for adaptive quick access
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
       const { data: materials } = await supabase
         .from('materials')
         .select('id, title, type, passage, language, created_at')
@@ -86,6 +111,41 @@ export default function Dashboard() {
           total: materials.length,
         });
         setRecentMaterials(materials.slice(0, 5));
+
+        // Build adaptive quick access from recent usage
+        const recentMats = materials.filter(m => new Date(m.created_at) >= thirtyDaysAgo);
+        if (recentMats.length >= 3) {
+          // Count frequency by canonical tool key
+          const freq: Record<string, number> = {};
+          for (const m of recentMats) {
+            const tool = typeToQuickTool[m.type];
+            if (tool) {
+              const key = tool.label.PT; // use PT label as unique key
+              freq[key] = (freq[key] || 0) + 1;
+            }
+          }
+          // Sort by frequency, take top 4, deduplicate
+          const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+          const topTools: typeof defaultQuickTools = [];
+          const seen = new Set<string>();
+          for (const [key] of sorted) {
+            if (seen.has(key) || topTools.length >= 4) break;
+            seen.add(key);
+            const match = Object.values(typeToQuickTool).find(t => t.label.PT === key);
+            if (match) topTools.push(match);
+          }
+          // Fill remaining slots with defaults
+          for (const dt of defaultQuickTools) {
+            if (topTools.length >= 4) break;
+            if (!seen.has(dt.label.PT)) {
+              seen.add(dt.label.PT);
+              topTools.push(dt);
+            }
+          }
+          if (topTools.length >= 4) {
+            setAdaptiveQuickTools(topTools.slice(0, 4));
+          }
+        }
       }
     };
     fetchData();
