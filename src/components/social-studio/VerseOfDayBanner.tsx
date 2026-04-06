@@ -15,6 +15,7 @@ interface Props {
   fontFamily?: string;
   textColor?: string;
   backgroundImageUrl?: string;
+  themeColor?: string;
 }
 
 const aspectClasses: Record<AspectRatio, string> = {
@@ -145,9 +146,52 @@ function CinematicVerse({ verse, fontFamily, backgroundImageUrl }: { verse: Vers
   );
 }
 
+/* ── GRADIENT POSTER ── */
+function GradientVerse({ verse, fontFamily, themeColor }: { verse: VerseData; fontFamily?: string; themeColor?: string }) {
+  const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+  const gradient = themeColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)';
+
+  return (
+    <div className="relative h-full w-full overflow-hidden flex items-center justify-center" style={{ backgroundImage: gradient }}>
+      {/* Geometric decorative elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute rounded-full" style={{ top: '-8%', left: '-6%', width: '35%', height: '35%', border: '1px solid rgba(255,255,255,0.12)' }} />
+        <div className="absolute rounded-full" style={{ bottom: '-12%', right: '-8%', width: '45%', height: '45%', border: '1px solid rgba(255,255,255,0.08)' }} />
+        <div className="absolute" style={{ top: '50%', left: '50%', width: '60%', height: '60%', border: '1px solid rgba(255,255,255,0.06)', transform: 'translate(-50%, -50%) rotate(45deg)' }} />
+        <div className="absolute left-[10%] right-[10%]" style={{ top: '18%', height: '1px', backgroundColor: 'rgba(255,255,255,0.08)' }} />
+        <div className="absolute left-[10%] right-[10%]" style={{ bottom: '18%', height: '1px', backgroundColor: 'rgba(255,255,255,0.08)' }} />
+        <div className="absolute" style={{ top: '15%', bottom: '15%', left: '8%', width: '1px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+        <div className="absolute" style={{ top: '15%', bottom: '15%', right: '8%', width: '1px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+        <div className="absolute rounded-full" style={{ top: '18%', left: '8%', width: '6px', height: '6px', backgroundColor: 'rgba(255,255,255,0.15)', transform: 'translate(-50%, -50%)' }} />
+        <div className="absolute rounded-full" style={{ bottom: '18%', right: '8%', width: '6px', height: '6px', backgroundColor: 'rgba(255,255,255,0.15)', transform: 'translate(50%, 50%)' }} />
+      </div>
+
+      {/* Content — centered */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-10 sm:px-14 max-w-full">
+        <p className="text-[10px] uppercase tracking-[0.3em] font-sans font-medium mb-5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          Versículo do Dia
+        </p>
+        <p className="text-xl sm:text-2xl md:text-3xl font-bold leading-snug tracking-wide" style={{ color: '#FFFFFF', fontFamily: font, textShadow: '0 2px 20px rgba(0,0,0,0.25)' }}>
+          "{verse.text}"
+        </p>
+        <div className="mt-6 flex items-center gap-3">
+          <div className="h-px w-10" style={{ backgroundColor: 'rgba(255,255,255,0.3)' }} />
+          <p className="text-xs font-sans font-semibold uppercase tracking-[0.3em]" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            {verse.book}
+          </p>
+          <div className="h-px w-10" style={{ backgroundColor: 'rgba(255,255,255,0.3)' }} />
+        </div>
+        <span className="mt-8 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(255,255,255,0.2)' }}>
+          Living Word
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /* ── EXPORTED ── */
 export const VerseOfDayBanner = forwardRef<HTMLDivElement, Props>(
-  ({ verse, aspectRatio, template, fontFamily, textColor, backgroundImageUrl }, ref) => {
+  ({ verse, aspectRatio, template, fontFamily, textColor, backgroundImageUrl, themeColor }, ref) => {
     const captureSize = captureSizes[aspectRatio];
 
     return (
@@ -158,9 +202,10 @@ export const VerseOfDayBanner = forwardRef<HTMLDivElement, Props>(
           data-capture-height={captureSize.height}
           className="relative h-full w-full overflow-hidden rounded-2xl select-none isolate shadow-xl"
         >
-          {template === 'editorial' && <EditorialVerse verse={verse} fontFamily={fontFamily} textColor={textColor} backgroundImageUrl={backgroundImageUrl} />}
-          {template === 'swiss' && <SwissVerse verse={verse} fontFamily={fontFamily} textColor={textColor} />}
+          {template === 'editorial' && <EditorialVerse verse={verse} fontFamily={fontFamily} textColor={textColor} backgroundImageUrl={backgroundImageUrl} themeColor={themeColor} />}
+          {template === 'swiss' && <SwissVerse verse={verse} fontFamily={fontFamily} textColor={textColor} themeColor={themeColor} />}
           {template === 'cinematic' && <CinematicVerse verse={verse} fontFamily={fontFamily} backgroundImageUrl={backgroundImageUrl} />}
+          {template === 'gradient' && <GradientVerse verse={verse} fontFamily={fontFamily} themeColor={themeColor} />}
         </div>
       </div>
     );
