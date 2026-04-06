@@ -25,6 +25,8 @@ import type { Language } from '@/lib/i18n';
 import { PastoralStudioModal } from '@/components/PastoralStudioModal';
 import { helpCategories, helpFullArticles } from '@/data/help-center-data';
 import { Zap } from 'lucide-react';
+import { BlogArticleEditorDialog } from '@/components/BlogArticleEditorDialog';
+import { EditableBlogArticle } from '@/lib/blog-article';
 
 interface ToolSheetProps {
   open: boolean;
@@ -169,6 +171,11 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [imageStyle, setImageStyle] = useState<'oil' | 'watercolor' | 'minimalist'>('oil');
   const [generationLang, setGenerationLang] = useState<Language>(lang);
   const [expanded, setExpanded] = useState(false);
+  const [blogArticle, setBlogArticle] = useState<EditableBlogArticle | null>(null);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [publishingArticle, setPublishingArticle] = useState(false);
+  const [archivingArticle, setArchivingArticle] = useState(false);
+  const [deletingArticle, setDeletingArticle] = useState(false);
 
   // Sync generation language when platform language changes
   useEffect(() => {
@@ -195,6 +202,8 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setShowBlogPrompt(false);
     setHistoricalSources(null);
     setGenerationLang(lang);
+    setBlogArticle(null);
+    setEditorOpen(false);
   };
 
   const handleGenerate = async () => {
@@ -290,16 +299,25 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           language: generationLang,
           title: `${toolTitle} — ${input.substring(0, 50)}`,
           image_style: imageStyle,
+          source_content: result,
+          source_type: toolId,
         },
       });
       if (error) throw error;
       if (data?.success) {
-        toast.success(
-          lang === 'PT' ? '🎨 Artigo com ilustrações publicado no blog!' :
-          lang === 'EN' ? '🎨 Article with illustrations published to blog!' :
-          '🎨 ¡Artículo con ilustraciones publicado en el blog!'
-        );
-        resetForm();
+        setBlogArticle({
+          id: data.material_id,
+          title: data.title,
+          content: data.content,
+          passage: data.passage,
+          cover_image_url: data.cover_image_url,
+          article_images: data.article_images,
+          queue_status: 'draft',
+          queue_id: null,
+          language: data.language,
+        });
+        setEditorOpen(true);
+        toast.success(lang === 'PT' ? 'Artigo completo gerado e pronto para edição.' : lang === 'EN' ? 'Full article generated and ready to edit.' : 'Artículo completo generado y listo para editar.');
       } else {
         throw new Error(data?.error || 'Unknown error');
       }
@@ -307,6 +325,109 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       toast.error(err.message || 'Error converting to blog');
     } finally {
       setConvertingToBlog(false);
+    }
+  };
+
+  const handleSaveBlogArticle = async () => {
+    if (!blogArticle) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('materials')
+        .update({ title: blogArticle.title, content: blogArticle.content, updated_at: new Date().toISOString() })
+        .eq('id', blogArticle.id);
+      if (error) throw error;
+      toast.success(lang === 'PT' ? 'Artigo salvo.' : lang === 'EN' ? 'Article saved.' : 'Artículo guardado.');
+    } catch (err: any) {
+      toast.error(err.message || 'Error saving article');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePublishBlogArticle = async () => {
+    if (!blogArticle || !user) return;
+    setPublishingArticle(true);
+    try {
+      if (blogArticle.queue_id) {
+        const { error } = await supabase
+          .from('editorial_queue')
+          .update({ status: 'published', published_at: new Date().toISOString() })
+          .eq('id', blogArticle.queue_id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from('editorial_queue')
+          .insert({
+            user_id: user.id,
+            material_id: blogArticle.id,
+            status: 'published',
+            published_at: new Date().toISOString(),
+          })
+          .select('id')
+          .single();
+        if (error) throw error;
+        setBlogArticle({ ...blogArticle, queue_id: data.id });
+      }
+      setBlogArticle((current) => current ? { ...current, queue_status: 'published' } : current);
+      toast.success(lang === 'PT' ? 'Artigo publicado no blog.' : lang === 'EN' ? 'Article published to blog.' : 'Artículo publicado en el blog.');
+    } catch (err: any) {
+      toast.error(err.message || 'Error publishing article');
+    } finally {
+      setPublishingArticle(false);
+    }
+  };
+
+  const handleArchiveBlogArticle = async () => {
+    if (!blogArticle || !user) return;
+    setArchivingArticle(true);
+    try {
+      const nextStatus = blogArticle.queue_status === 'archived' ? 'published' : 'archived';
+      if (blogArticle.queue_id) {
+        const { error } = await supabase
+          .from('editorial_queue')
+          .update({ status: nextStatus, published_at: nextStatus === 'published' ? new Date().toISOString() : null })
+          .eq('id', blogArticle.queue_id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from('editorial_queue')
+          .insert({
+            user_id: user.id,
+            material_id: blogArticle.id,
+            status: nextStatus,
+            published_at: nextStatus === 'published' ? new Date().toISOString() : null,
+          })
+          .select('id')
+          .single();
+        if (error) throw error;
+        setBlogArticle({ ...blogArticle, queue_id: data.id });
+      }
+      setBlogArticle((current) => current ? { ...current, queue_status: nextStatus } : current);
+      toast.success(lang === 'PT' ? 'Status do artigo atualizado.' : lang === 'EN' ? 'Article status updated.' : 'Estado del artículo actualizado.');
+    } catch (err: any) {
+      toast.error(err.message || 'Error updating article');
+    } finally {
+      setArchivingArticle(false);
+    }
+  };
+
+  const handleDeleteBlogArticle = async () => {
+    if (!blogArticle) return;
+    setDeletingArticle(true);
+    try {
+      if (blogArticle.queue_id) {
+        await supabase.from('editorial_queue').delete().eq('id', blogArticle.queue_id);
+      }
+      const { error } = await supabase.from('materials').delete().eq('id', blogArticle.id);
+      if (error) throw error;
+      setEditorOpen(false);
+      setBlogArticle(null);
+      toast.success(lang === 'PT' ? 'Artigo excluído.' : lang === 'EN' ? 'Article deleted.' : 'Artículo eliminado.');
+    } catch (err: any) {
+      toast.error(err.message || 'Error deleting article');
+    } finally {
+      setDeletingArticle(false);
     }
   };
 
@@ -319,7 +440,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
         {/* ── Help hero header ── */}
         {(() => {
           const article = helpFullArticles.find(a => a.toolId === toolId);
@@ -367,7 +488,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           );
         })()}
 
-        <div className="space-y-4 mt-1 min-h-0">
+        <div className="space-y-4 mt-1 min-h-0 flex-1 overflow-y-auto pr-1">
           <div className="space-y-2">
             <Label className="font-medium">{config.inputLabel[lang]}</Label>
             {config.useTextarea ? (
@@ -440,7 +561,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               <HistoricalSourcesCard sources={historicalSources} lang={lang} />
 
               <div className="relative">
-                <ScrollArea className="max-h-[50vh] min-h-0 rounded-lg bg-muted/30">
+                <ScrollArea className="h-[50vh] min-h-0 rounded-lg bg-muted/30">
                   <div className="prose prose-sm pastoral-prose max-w-none p-5">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
                   </div>
@@ -482,9 +603,9 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                   </div>
                   {convertingToBlog && (
                     <p className="text-xs text-muted-foreground animate-pulse">
-                      {lang === 'PT' ? '🎨 Gerando artigo e pintando 4 ilustrações contextuais (~20s)...' :
-                       lang === 'EN' ? '🎨 Generating article and painting 4 contextual illustrations (~20s)...' :
-                       '🎨 Generando artículo y pintando 4 ilustraciones contextuales (~20s)...'}
+                       {lang === 'PT' ? '🎨 Gerando artigo e ilustrando o corpo do texto...' :
+                        lang === 'EN' ? '🎨 Generating article and illustrating the body content...' :
+                        '🎨 Generando artículo e ilustrando el cuerpo del texto...'}
                     </p>
                   )}
                   <div className="flex flex-wrap gap-2">
@@ -574,6 +695,22 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               </div>
             </DialogContent>
           </Dialog>
+
+          <BlogArticleEditorDialog
+            open={editorOpen}
+            onOpenChange={setEditorOpen}
+            article={blogArticle}
+            onArticleChange={setBlogArticle}
+            onSave={handleSaveBlogArticle}
+            onPublish={handlePublishBlogArticle}
+            onArchive={handleArchiveBlogArticle}
+            onDelete={handleDeleteBlogArticle}
+            lang={lang}
+            saving={saving}
+            publishing={publishingArticle}
+            archiving={archivingArticle}
+            deleting={deletingArticle}
+          />
         </div>
       </DialogContent>
     </Dialog>
