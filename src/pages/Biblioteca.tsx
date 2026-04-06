@@ -51,6 +51,10 @@ const chipFilters: ChipFilter[] = [
   { key: 'studies', label: { PT: 'Estudos Bíblicos', EN: 'Biblical Studies', ES: 'Estudios Bíblicos' }, types: ['biblical_study'] },
   { key: 'articles', label: { PT: 'Artigos', EN: 'Articles', ES: 'Artículos' }, types: ['blog_article', 'free-article'] },
   { key: 'devotionals', label: { PT: 'Devocionais', EN: 'Devotionals', ES: 'Devocionales' }, types: ['devotional'] },
+  { key: 'cells', label: { PT: 'Células', EN: 'Cell Groups', ES: 'Células' }, types: ['cell-group'] },
+  { key: 'reels', label: { PT: 'Reels', EN: 'Reels', ES: 'Reels' }, types: ['reels-script'] },
+  { key: 'social', label: { PT: 'Social', EN: 'Social', ES: 'Social' }, types: ['social-caption', 'newsletter', 'announcements'] },
+  { key: 'extras', label: { PT: 'Extras', EN: 'Extras', ES: 'Extras' }, types: ['trivia', 'poetry', 'kids-story', 'deep-translation'] },
 ];
 
 export default function Biblioteca() {
