@@ -280,7 +280,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
                     {study.notas_lider.pontos_atencao.map((p, i) => (
                       <li key={i} className="text-sm flex items-start gap-2">
                         <span className="text-amber-500 mt-0.5">•</span>
-                        <span>{p}</span>
+                        <span className="text-stone-800">{p}</span>
                       </li>
                     ))}
                   </ul>
