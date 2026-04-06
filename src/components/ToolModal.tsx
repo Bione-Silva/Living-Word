@@ -87,6 +87,10 @@ const toolConfigs: Record<string, {
 };
 
 export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalProps) {
+  if (toolId === 'youtube-blog') {
+    return <YouTubeMultiplierModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
+  }
+
   const { user } = useAuth();
   const { lang } = useLanguage();
   const [input, setInput] = useState('');
