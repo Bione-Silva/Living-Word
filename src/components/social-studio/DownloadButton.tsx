@@ -23,7 +23,7 @@ const waitForNextPaint = () =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
   });
 
-async function waitForImages(node: HTMLElement) {
+async function inlineExternalImages(node: HTMLElement) {
   const images = Array.from(node.querySelectorAll('img'));
 
   await Promise.all(
@@ -35,11 +35,32 @@ async function waitForImages(node: HTMLElement) {
         });
       }
 
-      if (img.decode) {
+      // Convert external images to data URLs to avoid CORS canvas tainting
+      if (img.src && !img.src.startsWith('data:')) {
         try {
-          await img.decode();
+          const resp = await fetch(img.src, { mode: 'cors' });
+          const blob = await resp.blob();
+          const dataUrl = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          });
+          img.src = dataUrl;
         } catch {
-          // ignore decode failures and still try export
+          // If fetch fails, try proxy or just leave it
+          try {
+            const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(img.src)}&w=1200&output=jpg`;
+            const resp = await fetch(proxyUrl);
+            const blob = await resp.blob();
+            const dataUrl = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+            img.src = dataUrl;
+          } catch {
+            // last resort: hide the image to avoid tainting
+          }
         }
       }
     })
@@ -98,7 +119,7 @@ export function DownloadButton({ targetRef, fileName = 'social-post', lang }: Pr
           await document.fonts.ready;
         }
 
-        await waitForImages(clone);
+        await inlineExternalImages(clone);
         await waitForNextPaint();
 
         let fontEmbedCSS: string | undefined;
