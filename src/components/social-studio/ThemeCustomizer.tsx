@@ -1,8 +1,5 @@
-import { useState } from 'react';
 import { Paintbrush, Type, Palette, Upload } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 
 export interface ThemeConfig {
   gradient: string;
@@ -58,19 +55,15 @@ const labels = {
 
 export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: Props) {
   const l = labels[lang];
-  const [showCustomColor, setShowCustomColor] = useState(false);
-  const [customHex, setCustomHex] = useState('');
 
-  const applyCustomHex = () => {
-    const hex = customHex.replace('#', '');
-    if (/^[0-9a-fA-F]{6}$/.test(hex)) {
-      const r = Math.max(0, parseInt(hex.slice(0, 2), 16) - 40);
-      const g = Math.max(0, parseInt(hex.slice(2, 4), 16) - 40);
-      const b = Math.max(0, parseInt(hex.slice(4, 6), 16) - 40);
-      const darker = `${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-      const darkest = `${Math.max(0, r - 30).toString(16).padStart(2, '0')}${Math.max(0, g - 30).toString(16).padStart(2, '0')}${Math.max(0, b - 30).toString(16).padStart(2, '0')}`;
-      onChange({ ...value, gradient: `linear-gradient(135deg, #${hex} 0%, #${darker} 52%, #${darkest} 100%)`, backgroundImageUrl: undefined });
-    }
+  const applyPickedColor = (hex: string) => {
+    const clean = hex.replace('#', '');
+    const r = Math.max(0, parseInt(clean.slice(0, 2), 16) - 40);
+    const g = Math.max(0, parseInt(clean.slice(2, 4), 16) - 40);
+    const b = Math.max(0, parseInt(clean.slice(4, 6), 16) - 40);
+    const darker = `${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    const darkest = `${Math.max(0, r - 30).toString(16).padStart(2, '0')}${Math.max(0, g - 30).toString(16).padStart(2, '0')}${Math.max(0, b - 30).toString(16).padStart(2, '0')}`;
+    onChange({ ...value, gradient: `linear-gradient(135deg, #${clean} 0%, #${darker} 52%, #${darkest} 100%)`, backgroundImageUrl: undefined });
   };
 
   return (
@@ -97,17 +90,19 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
               title={c.label}
             />
           ))}
-          <button
-            type="button"
-            onClick={() => setShowCustomColor(!showCustomColor)}
-            className={`w-8 h-8 rounded-full border-2 border-dashed flex items-center justify-center transition-all hover:scale-110 ${
-              showCustomColor ? 'border-primary text-primary' : 'border-border text-foreground'
-            }`}
+          {/* Native color picker — no hex codes needed */}
+          <label
+            className="w-8 h-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer transition-all hover:scale-110 hover:border-primary overflow-hidden"
             title={l.custom}
             style={{ background: 'conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)' }}
           >
-            <span className="bg-card rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold">+</span>
-          </button>
+            <input
+              type="color"
+              className="absolute opacity-0 w-0 h-0"
+              onChange={(e) => applyPickedColor(e.target.value)}
+            />
+            <span className="bg-card rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold text-foreground pointer-events-none">+</span>
+          </label>
           {onUploadBackground && (
             <label className="inline-flex items-center gap-2 h-8 px-3 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer text-xs font-medium">
               <Upload className="h-3.5 w-3.5" />
@@ -124,20 +119,6 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
             </label>
           )}
         </div>
-        {showCustomColor && (
-          <div className="flex items-center gap-2 mt-1">
-            <Input
-              value={customHex}
-              onChange={(e) => setCustomHex(e.target.value)}
-              placeholder="#3B82F6"
-              className="h-8 text-xs w-28 font-mono bg-background text-foreground"
-              onKeyDown={(e) => e.key === 'Enter' && applyCustomHex()}
-            />
-            <Button type="button" onClick={applyCustomHex} size="sm" className="h-8 px-3 text-xs">
-              OK
-            </Button>
-          </div>
-        )}
       </div>
 
       <div className="space-y-1.5">
@@ -161,7 +142,7 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-xs text-foreground font-medium">{l.font}:</span>
+        <span className="text-xs text-foreground font-semibold">{l.font}:</span>
         <Select
           value={fontPresets.find((f) => f.family === value.fontFamily)?.id || 'serif'}
           onValueChange={(id) => {
@@ -169,13 +150,13 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
             if (preset) onChange({ ...value, fontFamily: preset.family });
           }}
         >
-          <SelectTrigger className="h-8 w-[190px] text-xs bg-background text-foreground border-border">
+          <SelectTrigger className="h-9 w-[200px] text-sm font-medium bg-card text-foreground border-border">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-card text-foreground border-border">
             {fontPresets.map((f) => (
-              <SelectItem key={f.id} value={f.id}>
-                <span style={{ fontFamily: f.family }}>{f.label}</span>
+              <SelectItem key={f.id} value={f.id} className="text-foreground">
+                <span className="text-foreground font-medium" style={{ fontFamily: f.family }}>{f.label}</span>
               </SelectItem>
             ))}
           </SelectContent>
