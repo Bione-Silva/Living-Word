@@ -244,7 +244,7 @@ const translations: Record<string, Record<Language, string>> = {
   'minds.empty': { PT: 'Nenhuma mente disponível no momento.', EN: 'No minds available at the moment.', ES: 'No hay mentes disponibles por el momento.' },
   // Workspaces
   'workspaces.title': { PT: 'Meus Workspaces', EN: 'My Workspaces', ES: 'Mis Workspaces' },
-  'workspaces.new': { PT: '+ Novo Workspace', EN: '+ New Workspace', ES: '+ Nuevo Workspace' },
+  'workspaces.new': { PT: 'Novo Workspace', EN: 'New Workspace', ES: 'Nuevo Workspace' },
   'workspaces.empty': { PT: 'Nenhum workspace criado ainda', EN: 'No workspaces created yet', ES: 'Aún no hay workspaces' },
   'workspaces.empty.sub': { PT: 'Crie um workspace para organizar seus estudos e materiais', EN: 'Create a workspace to organize your studies and materials', ES: 'Crea un workspace para organizar tus estudios y materiales' },
   'workspaces.items': { PT: 'documentos', EN: 'documents', ES: 'documentos' },
