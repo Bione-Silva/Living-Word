@@ -10,6 +10,7 @@ export interface VerseData {
 interface Props {
   verse: VerseData;
   aspectRatio: AspectRatio;
+  fontFamily?: string;
 }
 
 const aspectClasses: Record<AspectRatio, string> = {
