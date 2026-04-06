@@ -68,7 +68,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange }: Props) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('workspaces.name.placeholder')}
-              className="mt-1"
+              className="mt-1 border-border bg-secondary/50"
             />
           </div>
           <div>
