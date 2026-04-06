@@ -148,9 +148,13 @@ export default function Upgrade() {
       const { data, error } = await supabase.functions.invoke('create-checkout', { body });
 
       if (error) {
-        // Stripe bypass: if checkout fails (e.g. no Stripe key), stay on free plan
-        console.warn('[Stripe Bypass] Checkout failed, keeping user on free plan:', error);
-        toast({ title: 'Checkout indisponível', description: 'Continuando no plano gratuito. Pagamento será habilitado em breve.', variant: 'default' });
+        console.warn('[Stripe Bypass] Checkout failed:', error);
+        const errMsg: Record<L, { title: string; desc: string }> = {
+          PT: { title: 'Ops, contratempo na tesouraria', desc: 'Nosso sistema de pagamento encontrou um problema. Você pode tentar novamente ou assinar depois em Configurações > Assinatura.' },
+          EN: { title: 'Oops, payment hiccup', desc: 'Our payment system encountered an issue. You can try again or subscribe later in Settings > Subscription.' },
+          ES: { title: 'Ups, contratiempo en el pago', desc: 'Nuestro sistema de pago encontró un problema. Puedes intentar de nuevo o suscribirte después en Configuraciones > Suscripción.' },
+        };
+        toast({ title: errMsg[lang].title, description: errMsg[lang].desc, variant: 'destructive' });
         return;
       }
       if (data?.url) {
