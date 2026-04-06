@@ -77,7 +77,7 @@ export default function EstudoBiblicoPage() {
           </div>
         </div>
 
-        {summary && <p className="text-sm text-foreground/70 leading-relaxed">{summary}</p>}
+        {summary && <p className="text-sm text-muted-foreground leading-relaxed">{summary}</p>}
 
         {bullets.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">

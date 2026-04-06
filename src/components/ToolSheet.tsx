@@ -471,7 +471,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
               </div>
 
               {summary && (
-                <p className="text-sm text-foreground/70 leading-relaxed">{summary}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{summary}</p>
               )}
 
               {bullets.length > 0 && (

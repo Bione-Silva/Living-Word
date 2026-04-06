@@ -241,7 +241,7 @@ export default function HelpArticlePage() {
         <p className="text-lg font-display font-bold text-[hsl(220,15%,20%)]">
           {lang === 'EN' ? 'Ready to create?' : lang === 'ES' ? '¿Listo para crear?' : 'Pronto para criar?'}
         </p>
-        <p className="text-sm text-foreground/70 max-w-md mx-auto">
+        <p className="text-sm text-muted-foreground max-w-md mx-auto">
           {lang === 'EN' ? 'Open this tool and start generating high-quality content in seconds.' : lang === 'ES' ? 'Abre esta herramienta y empieza a generar contenido de alta calidad en segundos.' : 'Abra esta ferramenta e comece a gerar conteúdo de alta qualidade em segundos.'}
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">

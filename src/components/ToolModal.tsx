@@ -231,7 +231,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
               </div>
 
               {summary && (
-                <p className="text-sm text-foreground/70 leading-relaxed">{summary}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{summary}</p>
               )}
 
               {bullets.length > 0 && (
