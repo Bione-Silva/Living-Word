@@ -24,8 +24,9 @@ const aspectClasses: Record<AspectRatio, string> = {
 };
 
 export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
-  ({ slide, aspectRatio, bgImageUrl, showWatermark = true, themeColor }, ref) => {
+  ({ slide, aspectRatio, bgImageUrl, showWatermark = true, themeColor, fontFamily }, ref) => {
     const gradient = themeColor || 'from-[#1a1a2e] via-[#16213e] to-[#0f3460]';
+    const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
 
     return (
       <div
