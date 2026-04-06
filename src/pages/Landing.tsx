@@ -793,45 +793,46 @@ export default function Landing() {
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.features.tag[lang]}</p>
           <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.features.h2[lang]}</h2>
 
-          {/* Floating UI Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-10">
-            {[
-              { icon: '📖', title: lang === 'PT' ? 'Sermão Completo' : lang === 'EN' ? 'Full Sermon' : 'Sermón Completo', sub: lang === 'PT' ? 'João 15:1-8 · A Videira Verdadeira' : lang === 'EN' ? 'John 15:1-8 · The True Vine' : 'Juan 15:1-8 · La Vid Verdadera', badge: 'PT' },
-              { icon: '🕊️', title: lang === 'PT' ? 'Devocional' : 'Devotional', sub: lang === 'PT' ? 'Permanecer em Cristo no caos' : lang === 'EN' ? 'Abiding in Christ amid chaos' : 'Permanecer en Cristo en el caos', badge: 'PT' },
-              { icon: '📚', title: lang === 'PT' ? 'Estudo Bíblico' : lang === 'EN' ? 'Bible Study' : 'Estudio Bíblico', sub: lang === 'PT' ? 'Exegese · Contexto · Aplicação' : lang === 'EN' ? 'Exegesis · Context · Application' : 'Exégesis · Contexto · Aplicación', badge: 'PT' },
-              { icon: '📰', title: lang === 'PT' ? 'Artigo de Blog' : lang === 'EN' ? 'Blog Article' : 'Artículo de Blog', sub: lang === 'PT' ? 'O que significa dar fruto hoje?' : lang === 'EN' ? 'What does it mean to bear fruit?' : '¿Qué significa dar fruto hoy?', badge: 'Blog' },
-              { icon: '👥', title: lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula', sub: lang === 'PT' ? 'Roteiro + perguntas + dinâmica' : lang === 'EN' ? 'Script + questions + dynamics' : 'Guión + preguntas + dinámica', badge: 'PT' },
-              { icon: '🇬🇧', title: 'English Version', sub: 'Abide in Me · John 15:1-8', badge: 'EN' },
-              { icon: '🇪🇸', title: 'Versión Español', sub: 'Permaneced en Mí · Juan 15:1-8', badge: 'ES' },
-              { icon: '📝', title: lang === 'PT' ? 'Esboço' : lang === 'EN' ? 'Outline' : 'Bosquejo', sub: lang === 'PT' ? '3 pontos + aplicação + fechamento' : lang === 'EN' ? '3 points + application + closing' : '3 puntos + aplicación + cierre', badge: 'PT' },
-            ].map((card, i) => (
-              <RevealOnScroll key={i} delay={i * 0.08}>
-                <div className="rounded-xl p-4 h-full transition-transform hover:scale-[1.03] hover:shadow-md" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 8px rgba(61,43,31,0.06)' }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[18px]">{card.icon}</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{card.badge}</span>
-                  </div>
-                  <h3 className="text-[13px] font-semibold mb-0.5" style={{ color: '#3D2B1F' }}>{card.title}</h3>
-                  <p className="text-[11px] leading-[1.4]" style={{ color: '#8B7355' }}>{card.sub}</p>
-                </div>
-              </RevealOnScroll>
-            ))}
-          </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: FileText, title: { PT: 'Sermão Completo', EN: 'Full Sermon', ES: 'Sermón Completo' }, desc: { PT: 'Estrutura completa com introdução, desenvolvimento, aplicação e fechamento — a partir de qualquer passagem bíblica.', EN: 'Complete structure with introduction, development, application and closing — from any Bible passage.', ES: 'Estructura completa con introducción, desarrollo, aplicación y cierre — a partir de cualquier pasaje bíblico.' } },
+              { icon: BookOpen, title: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' }, desc: { PT: 'Reflexão pastoral profunda com aplicação prática para a vida diária. Ideal para blogs, boletins e redes.', EN: 'Deep pastoral reflection with practical daily application. Ideal for blogs, bulletins and social media.', ES: 'Reflexión pastoral profunda con aplicación práctica para la vida diaria. Ideal para blogs, boletines y redes.' } },
+              { icon: BookOpen, title: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' }, desc: { PT: 'Análise exegética completa: contexto histórico, significado original, paralelos e aplicação pastoral.', EN: 'Complete exegetical analysis: historical context, original meaning, parallels and pastoral application.', ES: 'Análisis exegético completo: contexto histórico, significado original, paralelos y aplicación pastoral.' } },
+              { icon: PenTool, title: { PT: 'Artigo de Blog', EN: 'Blog Article', ES: 'Artículo de Blog' }, desc: { PT: 'Artigo devocional completo pronto para publicar no blog integrado ou exportar para WordPress.', EN: 'Complete devotional article ready to publish on the integrated blog or export to WordPress.', ES: 'Artículo devocional completo listo para publicar en el blog integrado o exportar a WordPress.' } },
+              { icon: Users, title: { PT: 'Material de Célula', EN: 'Small Group Material', ES: 'Material de Célula' }, desc: { PT: 'Roteiro completo com perguntas de discussão, dinâmica de grupo e aplicação prática.', EN: 'Complete script with discussion questions, group dynamics and practical application.', ES: 'Guión completo con preguntas de discusión, dinámica de grupo y aplicación práctica.' } },
+              { icon: Globe, title: { PT: 'Versão em Inglês', EN: 'English Version', ES: 'Versión en Inglés' }, desc: { PT: 'Conteúdo gerado nativamente em inglês — não tradução automática. Ideal para ministérios bilíngues.', EN: 'Content natively generated in English — not automatic translation. Ideal for bilingual ministries.', ES: 'Contenido generado nativamente en inglés — no traducción automática. Ideal para ministerios bilingües.' } },
+              { icon: Globe, title: { PT: 'Versión Español', EN: 'Spanish Version', ES: 'Versión en Español' }, desc: { PT: 'Conteúdo gerado nativamente em espanhol — com voz pastoral autêntica e contexto cultural hispânico.', EN: 'Content natively generated in Spanish — with authentic pastoral voice and Hispanic cultural context.', ES: 'Contenido generado nativamente en español — con voz pastoral auténtica y contexto cultural hispánico.' } },
+              { icon: Layers, title: { PT: 'Esboço de Sermão', EN: 'Sermon Outline', ES: 'Bosquejo de Sermón' }, desc: { PT: '3 pontos estruturados com aplicação, ilustrações e fechamento — prontos para personalizar.', EN: '3 structured points with application, illustrations and closing — ready to customize.', ES: '3 puntos estructurados con aplicación, ilustraciones y cierre — listos para personalizar.' } },
+            ].map((card, i) => {
+              const Icon = card.icon;
+              return (
+                <RevealOnScroll key={i} delay={i * 0.06}>
+                  <div className="rounded-xl p-5 h-full transition-transform hover:scale-[1.02] hover:shadow-md" style={{ border: '1px solid rgba(107,79,58,0.1)', background: '#FFFFFF', boxShadow: '0 2px 8px rgba(61,43,31,0.06)' }}>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ background: '#F5F0E8' }}>
+                      <Icon className="h-[18px] w-[18px]" style={{ color: '#6B4F3A' }} />
+                    </div>
+                    <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>{card.title[lang]}</h3>
+                    <p className="text-[14px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{card.desc[lang]}</p>
+                  </div>
+                </RevealOnScroll>
+              );
+            })}
+
             {copy.features.items.map((f, i) => {
               const Icon = f.icon;
               return (
-                <div key={i} className="rounded-xl p-5" style={{ border: '1px solid rgba(107,79,58,0.1)', background: '#FFFFFF' }}>
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ background: '#F5F0E8' }}>
-                    <Icon className="h-[18px] w-[18px]" style={{ color: '#6B4F3A' }} />
+                <RevealOnScroll key={`feat-${i}`} delay={(8 + i) * 0.06}>
+                  <div className="rounded-xl p-5 h-full" style={{ border: '1px solid rgba(107,79,58,0.1)', background: '#FFFFFF' }}>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ background: '#F5F0E8' }}>
+                      <Icon className="h-[18px] w-[18px]" style={{ color: '#6B4F3A' }} />
+                    </div>
+                    <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>
+                      {f.title[lang]}
+                      {f.unique && <span className="ml-2 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{lang === 'PT' ? 'único' : lang === 'EN' ? 'unique' : 'único'}</span>}
+                    </h3>
+                    <p className="text-[14px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{f.desc[lang]}</p>
                   </div>
-                  <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>
-                    {f.title[lang]}
-                    {f.unique && <span className="ml-2 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>{lang === 'PT' ? 'único' : lang === 'EN' ? 'unique' : 'único'}</span>}
-                  </h3>
-                  <p className="text-[14px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{f.desc[lang]}</p>
-                </div>
+                </RevealOnScroll>
               );
             })}
           </div>
