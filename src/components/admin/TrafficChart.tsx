@@ -20,10 +20,11 @@ export function TrafficChart() {
   }, []);
 
   const loadTraffic = async () => {
+    try {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const { data: rows } = await supabase
+    const { data: rows, error } = await supabase
       .from('page_views')
       .select('created_at, device')
       .gte('created_at', sevenDaysAgo.toISOString());
