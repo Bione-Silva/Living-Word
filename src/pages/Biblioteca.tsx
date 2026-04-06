@@ -53,8 +53,10 @@ const chipFilters: ChipFilter[] = [
   { key: 'devotionals', label: { PT: 'Devocionais', EN: 'Devotionals', ES: 'Devocionales' }, types: ['devotional'] },
   { key: 'cells', label: { PT: 'Células', EN: 'Cell Groups', ES: 'Células' }, types: ['cell-group'] },
   { key: 'reels', label: { PT: 'Reels', EN: 'Reels', ES: 'Reels' }, types: ['reels-script'] },
-  { key: 'social', label: { PT: 'Social', EN: 'Social', ES: 'Social' }, types: ['social-caption', 'newsletter', 'announcements'] },
-  { key: 'extras', label: { PT: 'Extras', EN: 'Extras', ES: 'Extras' }, types: ['trivia', 'poetry', 'kids-story', 'deep-translation'] },
+  { key: 'newsletter', label: { PT: 'Newsletter', EN: 'Newsletter', ES: 'Newsletter' }, types: ['newsletter'] },
+  { key: 'social', label: { PT: 'Social', EN: 'Social', ES: 'Social' }, types: ['social-caption', 'announcements'] },
+  { key: 'research', label: { PT: 'Pesquisa', EN: 'Research', ES: 'Investigación' }, types: ['topic-explorer', 'verse-finder', 'historical-context', 'quote-finder', 'movie-scenes', 'original-text', 'lexical', 'illustrations'] },
+  { key: 'extras', label: { PT: 'Extras', EN: 'Extras', ES: 'Extras' }, types: ['trivia', 'poetry', 'kids-story', 'deep-translation', 'title-gen', 'metaphor-creator', 'bible-modernizer'] },
 ];
 
 export default function Biblioteca() {
