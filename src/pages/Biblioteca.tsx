@@ -151,7 +151,7 @@ export default function Biblioteca() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl font-bold">{t('library.title')}</h1>
+        <h1 className="font-display text-3xl font-bold text-foreground">{t('library.title')}</h1>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">

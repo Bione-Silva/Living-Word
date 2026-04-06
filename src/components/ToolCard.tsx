@@ -71,10 +71,10 @@ export function ToolCard({ tool, lang, isFree, onClick, onHelp, index = 0 }: Too
             />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-sm leading-tight">
+            <h3 className="font-semibold text-sm leading-tight text-foreground">
               {tool.title[lang]}
             </h3>
-            <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
+            <p className="text-[11px] text-foreground/60 mt-0.5 line-clamp-2 leading-relaxed">
               {tool.description[lang]}
             </p>
           </div>
