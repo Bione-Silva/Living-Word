@@ -178,7 +178,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             <AccordionContent className="space-y-3 pb-4">
               <div>
                 <Badge variant="outline" className="mb-2">{study.conexao_cristologica.tipo_conexao}</Badge>
-                <p className="text-sm leading-relaxed">{study.conexao_cristologica.como_aponta_para_cristo}</p>
+                <p className="text-sm leading-relaxed text-stone-800">{study.conexao_cristologica.como_aponta_para_cristo}</p>
               </div>
             </AccordionContent>
           </AccordionItem>
