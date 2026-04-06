@@ -91,17 +91,19 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
               title={c.label}
             />
           ))}
-          <button
-            type="button"
-            onClick={() => setShowCustomColor(!showCustomColor)}
-            className={`w-8 h-8 rounded-full border-2 border-dashed flex items-center justify-center transition-all hover:scale-110 ${
-              showCustomColor ? 'border-primary text-primary' : 'border-border text-foreground'
-            }`}
+          {/* Native color picker — no hex codes needed */}
+          <label
+            className="w-8 h-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer transition-all hover:scale-110 hover:border-primary overflow-hidden"
             title={l.custom}
             style={{ background: 'conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)' }}
           >
-            <span className="bg-card rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold">+</span>
-          </button>
+            <input
+              type="color"
+              className="absolute opacity-0 w-0 h-0"
+              onChange={(e) => applyPickedColor(e.target.value)}
+            />
+            <span className="bg-card rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold text-foreground pointer-events-none">+</span>
+          </label>
           {onUploadBackground && (
             <label className="inline-flex items-center gap-2 h-8 px-3 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer text-xs font-medium">
               <Upload className="h-3.5 w-3.5" />
@@ -118,20 +120,6 @@ export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: P
             </label>
           )}
         </div>
-        {showCustomColor && (
-          <div className="flex items-center gap-2 mt-1">
-            <Input
-              value={customHex}
-              onChange={(e) => setCustomHex(e.target.value)}
-              placeholder="#3B82F6"
-              className="h-8 text-xs w-28 font-mono bg-background text-foreground"
-              onKeyDown={(e) => e.key === 'Enter' && applyCustomHex()}
-            />
-            <Button type="button" onClick={applyCustomHex} size="sm" className="h-8 px-3 text-xs">
-              OK
-            </Button>
-          </div>
-        )}
       </div>
 
       <div className="space-y-1.5">
