@@ -489,6 +489,19 @@ export default function AppLayout() {
             {lang === 'PT' ? 'Workspaces' : lang === 'EN' ? 'Workspaces' : 'Workspaces'}
           </Link>
 
+          {/* Social Studio */}
+          <Link
+            to="/social-studio"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname === '/social-studio'
+                ? 'bg-sidebar-accent text-sidebar-primary'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+            }`}
+          >
+            <ImageIcon className="h-3.5 w-3.5" />
+            {lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}
+          </Link>
+
           {/* Help Center */}
           <Link
             to="/ajuda"
