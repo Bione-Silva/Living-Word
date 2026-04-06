@@ -164,7 +164,7 @@ export function PublishPanel({ targetRef, lang }: Props) {
       const file = new File([blob], 'post.png', { type: 'image/png' });
 
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Palavra Viva' });
+        await navigator.share({ files: [file], title: 'Living Word' });
         toast.success(l.shareSuccess);
       } else {
         const url = URL.createObjectURL(file);
