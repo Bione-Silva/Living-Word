@@ -33,6 +33,7 @@ import HelpCenter from "./pages/HelpCenter";
 import HelpArticlePage from "./pages/HelpArticlePage";
 import ExposStudioPage from "./pages/ExposStudioPage";
 import Workspaces from "./pages/Workspaces";
+import SocialStudio from "./pages/SocialStudio";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ const App = () => (
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/biblioteca" element={<Biblioteca />} />
                 <Route path="/workspaces" element={<Workspaces />} />
+                <Route path="/social-studio" element={<SocialStudio />} />
                 <Route path="/calendario" element={<Calendario />} />
                 <Route path="/configuracoes" element={<Configuracoes />} />
                 <Route path="/upgrade" element={<Upgrade />} />
