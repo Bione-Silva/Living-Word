@@ -12,27 +12,30 @@ import { DownloadButton } from '@/components/social-studio/DownloadButton';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
 import { captureNodeAsPng } from '@/components/social-studio/export-utils';
 import { PublishPanel } from '@/components/social-studio/PublishPanel';
+import { ArtGallery } from '@/components/social-studio/ArtGallery';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sparkles, ImagePlus, Layers, Loader2, Search, BookOpen, Upload, Archive } from 'lucide-react';
+import { Sparkles, ImagePlus, Layers, Loader2, Search, BookOpen, Archive, Image } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
 
 const headings: Record<L, {
-  title: string; subtitle: string; verse: string; carousel: string;
+  title: string; subtitle: string; verse: string; carousel: string; gallery: string;
   generate: string; customVerse: string; searchVerse: string;
   devotionalCheck: string; searching: string; generating: string;
   verseInput: string; orGenerate: string; uploadReady: string; zipDownload: string; zipLoading: string;
+  savedToCloud: string;
 }> = {
   PT: {
     title: '🎨 Estúdio Social',
     subtitle: 'Crie artes profissionais para suas redes em segundos.',
     verse: '✨ Versículo',
     carousel: '📱 Carrossel',
+    gallery: '🖼️ Minhas Artes',
     generate: 'Gerar Versículo do Dia',
     customVerse: 'Buscar Versículo',
     searchVerse: 'Qual versículo você quer desenhar hoje?',
@@ -44,12 +47,14 @@ const headings: Record<L, {
     uploadReady: 'Imagem de fundo aplicada',
     zipDownload: 'Baixar carrossel em ZIP',
     zipLoading: 'Gerando ZIP...',
+    savedToCloud: 'Arte salva na nuvem! ☁️',
   },
   EN: {
     title: '🎨 Social Studio',
     subtitle: 'Create professional social media art in seconds.',
     verse: '✨ Verse',
     carousel: '📱 Carousel',
+    gallery: '🖼️ My Arts',
     generate: 'Generate Verse of the Day',
     customVerse: 'Search Verse',
     searchVerse: 'Which verse would you like to design today?',
@@ -61,12 +66,14 @@ const headings: Record<L, {
     uploadReady: 'Background image applied',
     zipDownload: 'Download carousel as ZIP',
     zipLoading: 'Generating ZIP...',
+    savedToCloud: 'Art saved to cloud! ☁️',
   },
   ES: {
     title: '🎨 Estudio Social',
     subtitle: 'Crea artes profesionales para tus redes en segundos.',
     verse: '✨ Versículo',
     carousel: '📱 Carrusel',
+    gallery: '🖼️ Mis Artes',
     generate: 'Generar Versículo del Día',
     customVerse: 'Buscar Versículo',
     searchVerse: '¿Qué versículo quieres diseñar hoy?',
@@ -78,6 +85,7 @@ const headings: Record<L, {
     uploadReady: 'Imagen de fondo aplicada',
     zipDownload: 'Descargar carrusel en ZIP',
     zipLoading: 'Generando ZIP...',
+    savedToCloud: '¡Arte guardado en la nube! ☁️',
   },
 };
 
@@ -92,7 +100,7 @@ function dataUrlToBlob(dataUrl: string) {
 
 export default function SocialStudio() {
   const { lang } = useLanguage();
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const location = useLocation();
   const h = headings[lang];
 
@@ -106,6 +114,7 @@ export default function SocialStudio() {
   const [customPassage, setCustomPassage] = useState('');
   const [wantDevotional, setWantDevotional] = useState(false);
   const [zipLoading, setZipLoading] = useState(false);
+  const [galleryRefresh, setGalleryRefresh] = useState(0);
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
     fontFamily: "'Cormorant Garamond', 'Georgia', serif",
@@ -132,6 +141,36 @@ export default function SocialStudio() {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  // Save art to cloud storage
+  const saveToCloud = useCallback(async (ref: React.RefObject<HTMLDivElement>, title?: string) => {
+    if (!ref.current || !user) return;
+    try {
+      const dataUrl = await captureNodeAsPng(ref.current);
+      const blob = dataUrlToBlob(dataUrl);
+      const fileName = `${user.id}/${Date.now()}.png`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('social_arts')
+        .upload(fileName, blob, { contentType: 'image/png' });
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from('social_arts').getPublicUrl(fileName);
+
+      await supabase.from('social_arts').insert({
+        user_id: user.id,
+        file_path: fileName,
+        file_url: urlData.publicUrl,
+        title: title || null,
+        aspect_ratio: aspectRatio,
+      });
+
+      setGalleryRefresh(p => p + 1);
+      toast.success(h.savedToCloud);
+    } catch (err) {
+      console.error('Save to cloud error:', err);
+    }
+  }, [user, aspectRatio, h.savedToCloud]);
 
   const handleBackgroundUpload = useCallback((file: File) => {
     const reader = new FileReader();
@@ -256,6 +295,11 @@ export default function SocialStudio() {
     setCurrentSlide(0);
   };
 
+  const handleDownloadAndSave = useCallback(async (ref: React.RefObject<HTMLDivElement>, fileName: string) => {
+    // Save to cloud in background when user downloads
+    saveToCloud(ref, fileName);
+  }, [saveToCloud]);
+
   const handleDownloadZip = async () => {
     if (carousel.length === 0 || !slideRef.current) return;
     setZipLoading(true);
@@ -279,6 +323,11 @@ export default function SocialStudio() {
       link.href = URL.createObjectURL(blob);
       link.click();
       URL.revokeObjectURL(link.href);
+
+      // Save first slide to cloud as thumbnail
+      setCurrentSlide(0);
+      await new Promise(r => setTimeout(r, 100));
+      saveToCloud(slideRef, 'carrossel');
     } catch (error) {
       console.error(error);
       toast.error(lang === 'PT' ? 'Erro ao gerar ZIP' : lang === 'EN' ? 'Error generating ZIP' : 'Error al generar ZIP');
@@ -294,10 +343,7 @@ export default function SocialStudio() {
         <p className="text-muted-foreground text-sm mt-1 max-w-xl font-medium">{h.subtitle}</p>
       </div>
 
-      <div className="space-y-3">
-        <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
-        <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} onUploadBackground={handleBackgroundUpload} />
-      </div>
+      <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} onUploadBackground={handleBackgroundUpload} />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-secondary border border-border shadow-sm">
@@ -308,6 +354,10 @@ export default function SocialStudio() {
           <TabsTrigger value="carousel" className="gap-1.5 text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground">
             <Layers className="h-3.5 w-3.5" />
             {h.carousel}
+          </TabsTrigger>
+          <TabsTrigger value="gallery" className="gap-1.5 text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground">
+            <Image className="h-3.5 w-3.5" />
+            {h.gallery}
           </TabsTrigger>
         </TabsList>
 
@@ -368,6 +418,9 @@ export default function SocialStudio() {
 
           {verse && (
             <div className="space-y-4">
+              {/* Magic Resize: aspect ratio selector above the preview */}
+              <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
+
               <VerseOfDayBanner
                 ref={verseRef}
                 verse={verse}
@@ -377,7 +430,7 @@ export default function SocialStudio() {
                 backgroundImageUrl={theme.backgroundImageUrl}
               />
               <div className="flex flex-col sm:flex-row items-center gap-3">
-                <DownloadButton targetRef={verseRef} fileName="versiculo" lang={lang} />
+                <DownloadButton targetRef={verseRef} fileName="versiculo" lang={lang} onDownloaded={() => handleDownloadAndSave(verseRef, verse.book)} />
                 <Button variant="outline" onClick={generateVerse} className="gap-2 border-border text-foreground bg-card hover:bg-secondary font-semibold" disabled={loading}>
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                   {lang === 'PT' ? 'Gerar Outro' : lang === 'EN' ? 'Generate Another' : 'Generar Otro'}
@@ -428,6 +481,9 @@ export default function SocialStudio() {
             </Card>
           ) : (
             <>
+              {/* Magic Resize: aspect ratio selector above the preview */}
+              <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
+
               <SlideCanvas
                 ref={slideRef}
                 slide={carousel[currentSlide]}
@@ -444,7 +500,7 @@ export default function SocialStudio() {
                 onNext={() => setCurrentSlide((p) => Math.min(carousel.length - 1, p + 1))}
               />
               <div className="flex flex-col sm:flex-row justify-center gap-3">
-                <DownloadButton targetRef={slideRef} fileName={`carrossel-slide-${currentSlide + 1}`} lang={lang} />
+                <DownloadButton targetRef={slideRef} fileName={`carrossel-slide-${currentSlide + 1}`} lang={lang} onDownloaded={() => handleDownloadAndSave(slideRef, `slide-${currentSlide + 1}`)} />
                 <Button onClick={handleDownloadZip} disabled={zipLoading} size="lg" variant="outline" className="gap-2 bg-card text-foreground border-border hover:bg-secondary font-semibold">
                   {zipLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Archive className="h-4 w-4" />}
                   {zipLoading ? h.zipLoading : h.zipDownload}
@@ -453,6 +509,10 @@ export default function SocialStudio() {
               <PublishPanel targetRef={slideRef} lang={lang} />
             </>
           )}
+        </TabsContent>
+
+        <TabsContent value="gallery">
+          <ArtGallery lang={lang} refreshTrigger={galleryRefresh} />
         </TabsContent>
       </Tabs>
     </div>

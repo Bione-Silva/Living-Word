@@ -8,6 +8,7 @@ interface Props {
   targetRef: React.RefObject<HTMLDivElement>;
   fileName?: string;
   lang: 'PT' | 'EN' | 'ES';
+  onDownloaded?: () => void;
 }
 
 const labels = {
@@ -16,7 +17,7 @@ const labels = {
   ES: { download: 'Descargar Imagen (Lista para Publicar)', downloading: 'Generando...', done: '¡Guardado!', error: 'Error generating image' },
 };
 
-export function DownloadButton({ targetRef, fileName = 'social-post', lang }: Props) {
+export function DownloadButton({ targetRef, fileName = 'social-post', lang, onDownloaded }: Props) {
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle');
   const l = labels[lang];
 
@@ -34,6 +35,7 @@ export function DownloadButton({ targetRef, fileName = 'social-post', lang }: Pr
 
       setState('done');
       toast.success(l.done);
+      onDownloaded?.();
       setTimeout(() => setState('idle'), 2000);
     } catch (err) {
       console.error(err);

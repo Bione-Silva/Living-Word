@@ -53,7 +53,7 @@ export const VerseOfDayBanner = forwardRef<HTMLDivElement, Props>(
     const imageUrl = backgroundImageUrl || verse.topic_image;
 
     return (
-      <div className={`w-full ${aspectClasses[aspectRatio]} mx-auto`}>
+      <div className={`w-full ${aspectClasses[aspectRatio]} mx-auto transition-all duration-500 ease-in-out`}>
         <div
           ref={ref}
           data-capture-width={captureSize.width}
