@@ -118,7 +118,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             {study.observacao.elementos_notaveis && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('notableElements')}</h4>
-                <p className="text-sm leading-relaxed">{study.observacao.elementos_notaveis}</p>
+                <p className="text-sm leading-relaxed text-stone-800">{study.observacao.elementos_notaveis}</p>
               </div>
             )}
           </AccordionContent>
