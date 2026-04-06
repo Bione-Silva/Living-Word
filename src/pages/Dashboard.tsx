@@ -13,6 +13,7 @@ import {
 import { ToolCard, type ToolCardData } from '@/components/ToolCard';
 import { ToolSheet } from '@/components/ToolSheet';
 import { ExtrasModal } from '@/components/ExtrasModal';
+import { extraOutreachTools, extraFunTools } from '@/components/ExtraToolsSections';
 
 /* ─── Tool definitions ─── */
 const researchTools: ToolCardData[] = [
@@ -36,21 +37,7 @@ const createTools: ToolCardData[] = [
 ];
 
 // Keep outreach/fun tools for allTools lookup (used by ?tool= param)
-const outreachTools: ToolCardData[] = [
-  { id: 'reels-script', icon: Wand2, title: { PT: 'Roteiro para Reels', EN: 'Reels Script', ES: 'Guion para Reels' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
-  { id: 'cell-group', icon: Wand2, title: { PT: 'Estudo de Célula', EN: 'Cell Group Study', ES: 'Estudio de Célula' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
-  { id: 'social-caption', icon: Wand2, title: { PT: 'Legendas para Redes', EN: 'Social Captions', ES: 'Subtítulos para Redes' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
-  { id: 'newsletter', icon: Wand2, title: { PT: 'Newsletter Semanal', EN: 'Weekly Newsletter', ES: 'Newsletter Semanal' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
-  { id: 'announcements', icon: Wand2, title: { PT: 'Avisos do Culto', EN: 'Service Announcements', ES: 'Avisos del Culto' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
-];
-const funTools: ToolCardData[] = [
-  { id: 'trivia', icon: Gamepad2, title: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
-  { id: 'poetry', icon: Feather, title: { PT: 'Poesia Cristã', EN: 'Christian Poetry', ES: 'Poesía Cristiana' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
-  { id: 'kids-story', icon: Baby, title: { PT: 'Histórias Infantis', EN: 'Kids Stories', ES: 'Historias Infantiles' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
-  { id: 'deep-translation', icon: ArrowRightLeft, title: { PT: 'Tradução Teológica', EN: 'Theological Translation', ES: 'Traducción Teológica' }, description: { PT: '', EN: '', ES: '' }, locked: true, hasModal: true },
-];
-
-const allTools: ToolCardData[] = [...researchTools, ...createTools, ...outreachTools, ...funTools];
+const allTools: ToolCardData[] = [...researchTools, ...createTools, ...extraOutreachTools, ...extraFunTools];
 
 export default function Dashboard() {
   const { profile, user } = useAuth();
