@@ -189,12 +189,7 @@ export default function Dashboard() {
     { n: profile?.generations_used || 0, label: { PT: 'Uso do Mês', EN: 'Monthly Usage', ES: 'Uso del Mes' }, color: '#E07A5F', icon: Sparkles },
   ];
 
-  const quickTools = [
-    { icon: '📖', label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' }, action: () => handleToolClick(createTools[0]) },
-    { icon: '📚', label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' }, action: () => navigate('/estudos/novo') },
-    { icon: '✍️', label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' }, action: () => navigate('/blog') },
-    { icon: '🔎', label: { PT: 'Pesquisa', EN: 'Research', ES: 'Investigación' }, action: () => handleToolClick(researchTools[0]) },
-  ];
+  const quickTools = adaptiveQuickTools || defaultQuickTools;
 
   const typeIcons: Record<string, string> = {
     sermon: '🎤', pastoral: '🎤', study: '📖', biblical_study: '📖',
