@@ -132,7 +132,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
           <AccordionContent className="space-y-4 pb-4">
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('originalMeaning')}</h4>
-              <p className="text-sm leading-relaxed">{study.interpretacao.significado_original}</p>
+              <p className="text-sm leading-relaxed text-stone-800">{study.interpretacao.significado_original}</p>
             </div>
             {study.interpretacao.estudo_palavras && study.interpretacao.estudo_palavras.length > 0 && (
               <div>
