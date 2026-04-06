@@ -427,6 +427,7 @@ export default function SocialStudio() {
                 ref={verseRef}
                 verse={verse}
                 aspectRatio={aspectRatio}
+                template={template}
                 fontFamily={theme.fontFamily}
                 textColor={theme.textColor}
                 backgroundImageUrl={theme.backgroundImageUrl}
