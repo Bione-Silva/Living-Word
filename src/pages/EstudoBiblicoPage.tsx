@@ -140,6 +140,7 @@ export default function EstudoBiblicoPage() {
                   <GenerationMetaFooter lang={lang} meta={generationMeta} />
                 </div>
               )}
+              </div>
             </div>
           )}
         </div>
