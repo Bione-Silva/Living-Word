@@ -17,6 +17,7 @@ const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: Rea
   sermon: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón', icon: BookOpen },
   outline: { PT: 'Esboço', EN: 'Outline', ES: 'Esquema', icon: FileText },
   devotional: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional', icon: Heart },
+  biblical_study: { PT: 'Estudo Bíblico', EN: 'Biblical Study', ES: 'Estudio Bíblico', icon: BookOpen },
   blog_article: { PT: 'Artigo', EN: 'Article', ES: 'Artículo', icon: FileText },
   'topic-explorer': { PT: 'Explorador de Temas', EN: 'Topic Explorer', ES: 'Explorador de Temas', icon: FileText },
   'verse-finder': { PT: 'Versículos', EN: 'Verses', ES: 'Versículos', icon: BookOpen },
@@ -40,6 +41,16 @@ const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: Rea
   'kids-story': { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil', icon: FileText },
   'deep-translation': { PT: 'Tradução', EN: 'Translation', ES: 'Traducción', icon: FileText },
 };
+
+type ChipFilter = { key: string; label: { PT: string; EN: string; ES: string }; types: string[] };
+
+const chipFilters: ChipFilter[] = [
+  { key: 'all', label: { PT: 'Todos', EN: 'All', ES: 'Todos' }, types: [] },
+  { key: 'sermons', label: { PT: 'Sermões', EN: 'Sermons', ES: 'Sermones' }, types: ['sermon', 'outline'] },
+  { key: 'studies', label: { PT: 'Estudos Bíblicos', EN: 'Biblical Studies', ES: 'Estudios Bíblicos' }, types: ['biblical_study'] },
+  { key: 'articles', label: { PT: 'Artigos', EN: 'Articles', ES: 'Artículos' }, types: ['blog_article', 'free-article'] },
+  { key: 'devotionals', label: { PT: 'Devocionais', EN: 'Devotionals', ES: 'Devocionales' }, types: ['devotional'] },
+];
 
 export default function Biblioteca() {
   const { user, profile } = useAuth();
