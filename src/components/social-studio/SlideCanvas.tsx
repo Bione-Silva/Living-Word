@@ -58,7 +58,7 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
     const contrast = getContrastSettings(bgImageUrl, textColor);
 
     return (
-      <div className={`w-full ${aspectClasses[aspectRatio]} mx-auto`}>
+      <div className={`w-full ${aspectClasses[aspectRatio]} mx-auto transition-all duration-500 ease-in-out`}>
         <div
           ref={ref}
           data-capture-width={captureSize.width}
