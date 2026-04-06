@@ -12,6 +12,7 @@ import {
   ArrowRight, ArrowLeft, Globe, Check, Sparkles,
   BookOpen, Palette, Type, Layout, Mic, Church
 } from 'lucide-react';
+import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -89,6 +90,7 @@ const LOADING_MESSAGES: Record<L, string[]> = {
 };
 
 export default function OnboardingWizard() {
+  useForceLightTheme();
   const { profile, user, refreshProfile } = useAuth();
   const { lang, setLang } = useLanguage();
   const navigate = useNavigate();
@@ -179,7 +181,7 @@ export default function OnboardingWizard() {
   // Provisioning loading screen
   if (provisioning) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
         <div className="text-center space-y-6 max-w-md">
           <div className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
             <Sparkles className="w-10 h-10 text-primary" />
@@ -241,7 +243,7 @@ export default function OnboardingWizard() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
       <div className="max-w-xl mx-auto px-4 py-8">
         {/* Skip */}
         <div className="text-center mb-4">

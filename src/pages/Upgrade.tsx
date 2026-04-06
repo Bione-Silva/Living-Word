@@ -6,11 +6,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2 } from 'lucide-react';
+import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2, AlertCircle } from 'lucide-react';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 
 type L = 'PT' | 'EN' | 'ES';
 type PlanKey = 'starter' | 'pro' | 'church';
@@ -96,6 +97,7 @@ const plans: PlanData[] = [
 ];
 
 export default function Upgrade() {
+  useForceLightTheme();
   const { lang } = useLanguage();
   const { profile } = useAuth();
   const { pricing, loading: regionLoading } = useGeoRegion();
@@ -145,9 +147,13 @@ export default function Upgrade() {
       const { data, error } = await supabase.functions.invoke('create-checkout', { body });
 
       if (error) {
-        // Stripe bypass: if checkout fails (e.g. no Stripe key), stay on free plan
-        console.warn('[Stripe Bypass] Checkout failed, keeping user on free plan:', error);
-        toast({ title: 'Checkout indisponível', description: 'Continuando no plano gratuito. Pagamento será habilitado em breve.', variant: 'default' });
+        console.warn('[Stripe Bypass] Checkout failed:', error);
+        const errMsg: Record<L, { title: string; desc: string }> = {
+          PT: { title: 'Ops, contratempo na tesouraria', desc: 'Nosso sistema de pagamento encontrou um problema. Você pode tentar novamente ou assinar depois em Configurações > Assinatura.' },
+          EN: { title: 'Oops, payment hiccup', desc: 'Our payment system encountered an issue. You can try again or subscribe later in Settings > Subscription.' },
+          ES: { title: 'Ups, contratiempo en el pago', desc: 'Nuestro sistema de pago encontró un problema. Puedes intentar de nuevo o suscribirte después en Configuraciones > Suscripción.' },
+        };
+        toast({ title: errMsg[lang].title, description: errMsg[lang].desc, variant: 'destructive' });
         return;
       }
       if (data?.url) {
@@ -163,14 +169,16 @@ export default function Upgrade() {
 
   if (regionLoading || isAutoCheckout || loadingPlan) {
     const loadingLabels = {
-      PT: 'Preparando seu checkout…',
-      EN: 'Preparing your checkout…',
-      ES: 'Preparando tu checkout…',
+      PT: 'Preparando sua assinatura Living Word…',
+      EN: 'Preparing your Living Word subscription…',
+      ES: 'Preparando tu suscripción Living Word…',
     };
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <Loader2 className="h-10 w-10 text-primary animate-spin" />
-        <p className="text-lg font-medium text-muted-foreground animate-pulse">{loadingLabels[lang]}</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(28, 42%, 42%, 0.1)' }}>
+          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(28, 42%, 42%)' }} />
+        </div>
+        <p className="text-lg font-medium animate-pulse" style={{ color: 'hsl(24, 30%, 30%)' }}>{loadingLabels[lang]}</p>
       </div>
     );
   }
