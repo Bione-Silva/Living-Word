@@ -37,6 +37,7 @@ interface Props {
 export function WorkspaceDetail({ workspace, onBack }: Props) {
   const { user } = useAuth();
   const { t, lang } = useLanguage();
+  const navigate = useNavigate();
   const l = lang as L;
   const queryClient = useQueryClient();
   const [viewItem, setViewItem] = useState<any>(null);
