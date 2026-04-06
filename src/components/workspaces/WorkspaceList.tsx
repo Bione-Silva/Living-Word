@@ -16,9 +16,9 @@ export function WorkspaceList({ workspaces, isLoading, onSelect, onCreateNew }: 
 
   return (
     <div className="space-y-4">
-      <Button onClick={onCreateNew} className="gap-2" size="lg">
+      <Button onClick={onCreateNew} className="gap-2" size="lg" variant="default">
         <Plus className="h-4 w-4" />
-        {t('workspaces.new').replace(/^\+\s*/, '')}
+        {t('workspaces.new')}
       </Button>
 
       {isLoading ? (
