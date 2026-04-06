@@ -20,16 +20,16 @@ interface Props {
 }
 
 const colorPresets = [
-  { id: 'midnight', label: 'Midnight Blue', gradient: 'from-[#1a1a2e] via-[#16213e] to-[#0f3460]', preview: '#16213e' },
-  { id: 'royal', label: 'Royal Purple', gradient: 'from-[#2d1b69] via-[#11001c] to-[#1a0a2e]', preview: '#2d1b69' },
-  { id: 'forest', label: 'Forest Green', gradient: 'from-[#1b4332] via-[#081c15] to-[#2d6a4f]', preview: '#1b4332' },
-  { id: 'wine', label: 'Wine Red', gradient: 'from-[#3c1518] via-[#1a0000] to-[#69140e]', preview: '#3c1518' },
-  { id: 'charcoal', label: 'Charcoal', gradient: 'from-[#1c1c1c] via-[#2d2d2d] to-[#0a0a0a]', preview: '#1c1c1c' },
-  { id: 'ocean', label: 'Ocean Teal', gradient: 'from-[#0d3b66] via-[#14283c] to-[#1a535c]', preview: '#0d3b66' },
-  { id: 'sunset', label: 'Sunset Gold', gradient: 'from-[#4a3728] via-[#2c1810] to-[#6b4423]', preview: '#4a3728' },
-  { id: 'rose', label: 'Rose', gradient: 'from-[#4a1942] via-[#2a0e2e] to-[#6b2d5b]', preview: '#4a1942' },
-  { id: 'terracotta', label: 'Terracotta', gradient: 'from-[#B85042] via-[#6b2f26] to-[#3d1a15]', preview: '#B85042' },
-  { id: 'sage', label: 'Sage', gradient: 'from-[#3a5a40] via-[#2d4a33] to-[#1a3a20]', preview: '#3a5a40' },
+  { id: 'midnight', label: 'Midnight Blue', gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 52%, #0f3460 100%)', preview: '#16213e' },
+  { id: 'royal', label: 'Royal Purple', gradient: 'linear-gradient(135deg, #2d1b69 0%, #11001c 52%, #1a0a2e 100%)', preview: '#2d1b69' },
+  { id: 'forest', label: 'Forest Green', gradient: 'linear-gradient(135deg, #1b4332 0%, #081c15 52%, #2d6a4f 100%)', preview: '#1b4332' },
+  { id: 'wine', label: 'Wine Red', gradient: 'linear-gradient(135deg, #3c1518 0%, #1a0000 52%, #69140e 100%)', preview: '#3c1518' },
+  { id: 'charcoal', label: 'Charcoal', gradient: 'linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 52%, #0a0a0a 100%)', preview: '#1c1c1c' },
+  { id: 'ocean', label: 'Ocean Teal', gradient: 'linear-gradient(135deg, #0d3b66 0%, #14283c 52%, #1a535c 100%)', preview: '#0d3b66' },
+  { id: 'sunset', label: 'Sunset Gold', gradient: 'linear-gradient(135deg, #4a3728 0%, #2c1810 52%, #6b4423 100%)', preview: '#4a3728' },
+  { id: 'rose', label: 'Rose', gradient: 'linear-gradient(135deg, #4a1942 0%, #2a0e2e 52%, #6b2d5b 100%)', preview: '#4a1942' },
+  { id: 'terracotta', label: 'Terracotta', gradient: 'linear-gradient(135deg, #B85042 0%, #6b2f26 52%, #3d1a15 100%)', preview: '#B85042' },
+  { id: 'sage', label: 'Sage', gradient: 'linear-gradient(135deg, #3a5a40 0%, #2d4a33 52%, #1a3a20 100%)', preview: '#3a5a40' },
 ];
 
 const fontPresets = [
