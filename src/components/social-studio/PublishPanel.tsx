@@ -5,29 +5,20 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { captureNodeAsPng } from './export-utils';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Loader2, Share2, Linkedin, ExternalLink } from 'lucide-react';
+import { Loader2, Share2, Linkedin, ExternalLink, CheckCircle2 } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
 
 const labels: Record<L, {
-  publishTitle: string;
-  shareNative: string;
-  postLinkedIn: string;
-  savePin: string;
-  postX: string;
-  instagram: string;
-  facebook: string;
-  tiktok: string;
-  comingSoon: string;
-  auditTooltip: string;
-  captionLabel: string;
-  publish: string;
-  cancel: string;
-  shareSuccess: string;
-  shareError: string;
-  openApis: string;
-  bigTech: string;
+  publishTitle: string; shareNative: string; postLinkedIn: string; savePin: string;
+  postX: string; instagram: string; facebook: string; tiktok: string; comingSoon: string;
+  auditTooltip: string; captionLabel: string; publish: string; cancel: string;
+  shareSuccess: string; shareError: string; openApis: string; bigTech: string;
+  uploading: string; publishing: string; published: string; uploadError: string;
+  captionPlaceholder: string;
 }> = {
   PT: {
     publishTitle: '📡 Publicar Agora',
@@ -40,13 +31,18 @@ const labels: Record<L, {
     tiktok: 'TikTok Direto',
     comingSoon: 'Em Breve',
     auditTooltip: 'Estamos passando pela auditoria de segurança corporativa da Meta/ByteDance para seu conforto. Liberado nas próximas semanas!',
-    captionLabel: 'Legenda da publicação',
+    captionLabel: 'Escreva a legenda que acompanhará sua publicação',
     publish: 'Publicar',
     cancel: 'Cancelar',
     shareSuccess: 'Compartilhado com sucesso!',
     shareError: 'Erro ao compartilhar',
     openApis: 'Redes Disponíveis',
     bigTech: 'Em Avaliação',
+    uploading: 'Enviando imagem...',
+    publishing: 'Publicando...',
+    published: 'Publicado com sucesso! 🎉',
+    uploadError: 'Erro ao enviar imagem',
+    captionPlaceholder: 'Escreva sua legenda aqui...',
   },
   EN: {
     publishTitle: '📡 Publish Now',
@@ -59,13 +55,18 @@ const labels: Record<L, {
     tiktok: 'TikTok Direct',
     comingSoon: 'Coming Soon',
     auditTooltip: "We're undergoing Meta/ByteDance corporate security audit for your comfort. Available in the coming weeks!",
-    captionLabel: 'Post caption',
+    captionLabel: 'Write the caption for your post',
     publish: 'Publish',
     cancel: 'Cancel',
     shareSuccess: 'Shared successfully!',
     shareError: 'Error sharing',
     openApis: 'Available Networks',
     bigTech: 'Under Review',
+    uploading: 'Uploading image...',
+    publishing: 'Publishing...',
+    published: 'Published successfully! 🎉',
+    uploadError: 'Error uploading image',
+    captionPlaceholder: 'Write your caption here...',
   },
   ES: {
     publishTitle: '📡 Publicar Ahora',
@@ -78,17 +79,21 @@ const labels: Record<L, {
     tiktok: 'TikTok Directo',
     comingSoon: 'Próximamente',
     auditTooltip: 'Estamos pasando por la auditoría de seguridad corporativa de Meta/ByteDance para su comodidad. ¡Disponible en las próximas semanas!',
-    captionLabel: 'Leyenda de la publicación',
+    captionLabel: 'Escribe la leyenda para tu publicación',
     publish: 'Publicar',
     cancel: 'Cancelar',
     shareSuccess: '¡Compartido con éxito!',
     shareError: 'Error al compartir',
     openApis: 'Redes Disponibles',
     bigTech: 'En Evaluación',
+    uploading: 'Subiendo imagen...',
+    publishing: 'Publicando...',
+    published: '¡Publicado con éxito! 🎉',
+    uploadError: 'Error al subir imagen',
+    captionPlaceholder: 'Escribe tu leyenda aquí...',
   },
 };
 
-// Simple SVG icons for social platforms
 function PinterestIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -138,32 +143,30 @@ interface Props {
 
 export function PublishPanel({ targetRef, lang }: Props) {
   const l = labels[lang];
+  const { user } = useAuth();
   const [sharing, setSharing] = useState(false);
-  const [captionModal, setCaptionModal] = useState<{ network: Network; loading: boolean } | null>(null);
+  const [captionModal, setCaptionModal] = useState<{ network: Network } | null>(null);
   const [caption, setCaption] = useState('');
+  const [publishState, setPublishState] = useState<'idle' | 'uploading' | 'publishing' | 'done'>('idle');
 
-  const getImageFile = useCallback(async (): Promise<File | null> => {
+  const getImageBlob = useCallback(async (): Promise<Blob | null> => {
     if (!targetRef.current) return null;
     const dataUrl = await captureNodeAsPng(targetRef.current);
     const res = await fetch(dataUrl);
-    const blob = await res.blob();
-    return new File([blob], 'post.png', { type: 'image/png' });
+    return res.blob();
   }, [targetRef]);
 
   const handleNativeShare = useCallback(async () => {
     setSharing(true);
     try {
-      const file = await getImageFile();
-      if (!file) return;
+      const blob = await getImageBlob();
+      if (!blob) return;
+      const file = new File([blob], 'post.png', { type: 'image/png' });
 
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'Palavra Viva',
-        });
+        await navigator.share({ files: [file], title: 'Palavra Viva' });
         toast.success(l.shareSuccess);
       } else {
-        // Fallback: download
         const url = URL.createObjectURL(file);
         const a = document.createElement('a');
         a.href = url;
@@ -173,58 +176,86 @@ export function PublishPanel({ targetRef, lang }: Props) {
         toast.success(lang === 'PT' ? 'Imagem salva! Compartilhe manualmente.' : lang === 'EN' ? 'Image saved! Share manually.' : '¡Imagen guardada! Comparte manualmente.');
       }
     } catch {
-      // user cancelled share
+      // user cancelled
     } finally {
       setSharing(false);
     }
-  }, [getImageFile, l, lang]);
+  }, [getImageBlob, l, lang]);
 
   const openCaptionModal = (network: Network) => {
     setCaption('');
-    setCaptionModal({ network, loading: false });
+    setPublishState('idle');
+    setCaptionModal({ network });
   };
 
   const handlePublish = useCallback(async () => {
-    if (!captionModal) return;
-    setCaptionModal(prev => prev ? { ...prev, loading: true } : null);
+    if (!captionModal || !user) return;
+
+    setPublishState('uploading');
 
     try {
-      const file = await getImageFile();
-      if (!file) return;
-      const imageUrl = URL.createObjectURL(file);
+      // 1. Capture image blob
+      const blob = await getImageBlob();
+      if (!blob) throw new Error('No image');
 
-      const { network } = captionModal;
+      // 2. Upload to Supabase Storage
+      const fileName = `${user.id}/${Date.now()}-${captionModal.network}.png`;
+      const { error: uploadError } = await supabase.storage
+        .from('social_arts')
+        .upload(fileName, blob, { contentType: 'image/png' });
 
-      if (network === 'linkedin') {
-        const text = encodeURIComponent(caption || 'Criado com Palavra Viva ✨');
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${text}`, '_blank');
-      } else if (network === 'pinterest') {
-        const desc = encodeURIComponent(caption || 'Versículo do Dia — Palavra Viva');
-        // Download image first, then open Pinterest
-        const a = document.createElement('a');
-        a.href = imageUrl;
-        a.download = 'pin.png';
-        a.click();
-        window.open(`https://pinterest.com/pin/create/button/?description=${desc}`, '_blank');
-      } else if (network === 'x') {
-        const text = encodeURIComponent(caption || 'Criado com Palavra Viva ✨');
-        window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
-      }
+      if (uploadError) throw uploadError;
 
-      URL.revokeObjectURL(imageUrl);
-      toast.success(l.shareSuccess);
-      setCaptionModal(null);
-    } catch {
-      toast.error(l.shareError);
-      setCaptionModal(prev => prev ? { ...prev, loading: false } : null);
+      // 3. Get public URL
+      const { data: urlData } = supabase.storage
+        .from('social_arts')
+        .getPublicUrl(fileName);
+
+      const imageUrl = urlData.publicUrl;
+
+      // 4. Invoke edge function
+      setPublishState('publishing');
+
+      const { data, error } = await supabase.functions.invoke('publish-social', {
+        body: {
+          platform: captionModal.network,
+          imageUrl,
+          message: caption || 'Criado com Palavra Viva ✨',
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      // 5. Success
+      setPublishState('done');
+      toast.success(l.published);
+
+      setTimeout(() => {
+        setCaptionModal(null);
+        setPublishState('idle');
+      }, 2000);
+
+    } catch (err: any) {
+      console.error('Publish error:', err);
+      toast.error(err?.message || l.shareError);
+      setPublishState('idle');
     }
-  }, [captionModal, caption, getImageFile, l]);
+  }, [captionModal, caption, getImageBlob, user, l]);
 
   const networkLabels: Record<Network, string> = {
     linkedin: l.postLinkedIn,
     pinterest: l.savePin,
     x: l.postX,
   };
+
+  const networkIcons: Record<Network, React.ReactNode> = {
+    linkedin: <Linkedin className="h-5 w-5 text-primary" />,
+    pinterest: <PinterestIcon className="h-5 w-5 text-primary" />,
+    x: <XIcon className="h-5 w-5 text-primary" />,
+  };
+
+  const isPublishing = publishState === 'uploading' || publishState === 'publishing';
 
   return (
     <TooltipProvider>
@@ -240,11 +271,7 @@ export function PublishPanel({ targetRef, lang }: Props) {
           className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
           size="lg"
         >
-          {sharing ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Share2 className="h-4 w-4" />
-          )}
+          {sharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
           {l.shareNative}
         </Button>
 
@@ -252,29 +279,14 @@ export function PublishPanel({ targetRef, lang }: Props) {
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{l.openApis}</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <Button
-              variant="outline"
-              className="gap-2 bg-background text-foreground border-border hover:bg-secondary hover:border-primary/40 font-medium"
-              onClick={() => openCaptionModal('linkedin')}
-            >
-              <Linkedin className="h-4 w-4" />
-              LinkedIn
+            <Button variant="outline" className="gap-2 border-border text-foreground hover:bg-accent hover:text-accent-foreground font-medium" onClick={() => openCaptionModal('linkedin')}>
+              <Linkedin className="h-4 w-4" /> LinkedIn
             </Button>
-            <Button
-              variant="outline"
-              className="gap-2 bg-background text-foreground border-border hover:bg-secondary hover:border-primary/40 font-medium"
-              onClick={() => openCaptionModal('pinterest')}
-            >
-              <PinterestIcon className="h-4 w-4" />
-              Pinterest
+            <Button variant="outline" className="gap-2 border-border text-foreground hover:bg-accent hover:text-accent-foreground font-medium" onClick={() => openCaptionModal('pinterest')}>
+              <PinterestIcon className="h-4 w-4" /> Pinterest
             </Button>
-            <Button
-              variant="outline"
-              className="gap-2 bg-background text-foreground border-border hover:bg-secondary hover:border-primary/40 font-medium"
-              onClick={() => openCaptionModal('x')}
-            >
-              <XIcon className="h-4 w-4" />
-              X (Twitter)
+            <Button variant="outline" className="gap-2 border-border text-foreground hover:bg-accent hover:text-accent-foreground font-medium" onClick={() => openCaptionModal('x')}>
+              <XIcon className="h-4 w-4" /> X (Twitter)
             </Button>
           </div>
         </div>
@@ -291,53 +303,64 @@ export function PublishPanel({ targetRef, lang }: Props) {
               <Tooltip key={label}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Button
-                      variant="outline"
-                      className="w-full gap-2 border-border text-muted-foreground font-medium opacity-60 cursor-not-allowed"
-                      disabled
-                    >
+                    <Button variant="outline" className="w-full gap-2 border-border text-muted-foreground font-medium opacity-50 cursor-not-allowed" disabled>
                       <Icon className="h-4 w-4" />
                       <span className="truncate">{label}</span>
-                      <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 shrink-0">
-                        {l.comingSoon}
-                      </Badge>
+                      <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 shrink-0">{l.comingSoon}</Badge>
                     </Button>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-[260px] text-center text-xs">
-                  {l.auditTooltip}
-                </TooltipContent>
+                <TooltipContent side="top" className="max-w-[260px] text-center text-xs">{l.auditTooltip}</TooltipContent>
               </Tooltip>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Caption Modal */}
-      <Dialog open={!!captionModal} onOpenChange={(open) => !open && setCaptionModal(null)}>
-        <DialogContent className="sm:max-w-md">
+      {/* Caption + Publish Modal — clean design */}
+      <Dialog open={!!captionModal} onOpenChange={(open) => { if (!open && !isPublishing) setCaptionModal(null); }}>
+        <DialogContent className="sm:max-w-md bg-background border-border">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ExternalLink className="h-4 w-4 text-primary" />
-              {captionModal ? networkLabels[captionModal.network] : ''}
+            <DialogTitle className="flex items-center gap-3 text-foreground">
+              {captionModal && networkIcons[captionModal.network]}
+              <span>{captionModal ? networkLabels[captionModal.network] : ''}</span>
             </DialogTitle>
-            <DialogDescription>{l.captionLabel}</DialogDescription>
+            <DialogDescription className="text-muted-foreground">
+              {l.captionLabel}
+            </DialogDescription>
           </DialogHeader>
+
           <Textarea
             value={caption}
             onChange={e => setCaption(e.target.value)}
-            placeholder={lang === 'PT' ? 'Escreva sua legenda aqui...' : lang === 'EN' ? 'Write your caption here...' : 'Escribe tu leyenda aquí...'}
-            className="min-h-[100px] bg-background text-foreground placeholder:text-muted-foreground"
+            placeholder={l.captionPlaceholder}
+            className="min-h-[120px] bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground focus:border-primary resize-none"
+            disabled={isPublishing}
           />
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setCaptionModal(null)}>{l.cancel}</Button>
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setCaptionModal(null)}
+              disabled={isPublishing}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              {l.cancel}
+            </Button>
             <Button
               onClick={handlePublish}
-              disabled={captionModal?.loading}
-              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              disabled={isPublishing || publishState === 'done'}
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold min-w-[140px]"
             >
-              {captionModal?.loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {l.publish}
+              {publishState === 'uploading' ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> {l.uploading}</>
+              ) : publishState === 'publishing' ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> {l.publishing}</>
+              ) : publishState === 'done' ? (
+                <><CheckCircle2 className="h-4 w-4" /> {l.published}</>
+              ) : (
+                <><ExternalLink className="h-4 w-4" /> {l.publish}</>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
