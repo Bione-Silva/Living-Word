@@ -107,6 +107,7 @@ export default function SocialStudio() {
 
   const [activeTab, setActiveTab] = useState<string>('verse');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
+  const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [verse, setVerse] = useState<VerseData | null>(null);
   const [carousel, setCarousel] = useState<SlideData[]>([]);
