@@ -87,6 +87,8 @@ export default function SocialStudio() {
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
     fontFamily: "'Cormorant Garamond', 'Georgia', serif",
+    textColor: '#FFFFFF',
+    overlayOpacity: 55,
   });
 
   const slideRef = useRef<HTMLDivElement>(null);
