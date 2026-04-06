@@ -163,7 +163,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             {study.interpretacao.logica_interna && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('internalLogic')}</h4>
-                <p className="text-sm leading-relaxed">{study.interpretacao.logica_interna}</p>
+                <p className="text-sm leading-relaxed text-stone-800">{study.interpretacao.logica_interna}</p>
               </div>
             )}
           </AccordionContent>
