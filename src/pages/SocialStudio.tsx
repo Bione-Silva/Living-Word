@@ -345,7 +345,10 @@ export default function SocialStudio() {
         <p className="text-muted-foreground text-sm mt-1 max-w-xl font-medium">{h.subtitle}</p>
       </div>
 
-      <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} onUploadBackground={handleBackgroundUpload} />
+      <div className="space-y-3">
+        <TemplatePicker value={template} onChange={setTemplate} lang={lang} />
+        <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} onUploadBackground={handleBackgroundUpload} />
+      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-secondary border border-border shadow-sm">
