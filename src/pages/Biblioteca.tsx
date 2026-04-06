@@ -87,7 +87,7 @@ export default function Biblioteca() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['materials', user?.id, typeFilter, favFilter, search],
+    queryKey: ['materials', user?.id, chipFilter, favFilter, search],
     queryFn: async ({ pageParam = 0 }) => {
       if (!user) return { items: [], nextPage: null };
       let query = supabase
@@ -97,8 +97,10 @@ export default function Biblioteca() {
         .order('created_at', { ascending: false })
         .range(pageParam, pageParam + PAGE_SIZE - 1);
 
-      if (typeFilter !== 'all') {
-        query = query.eq('type', typeFilter);
+      if (activeChip.types.length === 1) {
+        query = query.eq('type', activeChip.types[0]);
+      } else if (activeChip.types.length > 1) {
+        query = query.in('type', activeChip.types);
       }
       if (favFilter) {
         query = query.eq('favorite', true);
