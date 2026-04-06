@@ -557,7 +557,7 @@ export default function Landing() {
                   }
                   @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
                 `}</style>
-                <div className="relative" style={{ width: '300px' }}>
+                <div className="relative" style={{ width: 'min(300px, 75vw)' }}>
                   {/* Phone frame */}
                   <div className="rounded-[44px] p-[2.5px]" style={{ background: 'linear-gradient(145deg, #6B6B6B 0%, #3A3A3A 30%, #1A1A1A 70%, #3A3A3A 100%)' }}>
                     <div className="rounded-[42px] overflow-hidden" style={{ background: '#111' }}>
