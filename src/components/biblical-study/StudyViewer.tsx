@@ -293,7 +293,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
                     {study.notas_lider.erros_comuns.map((e, i) => (
                       <li key={i} className="text-sm flex items-start gap-2">
                         <span className="text-red-500 mt-0.5">•</span>
-                        <span>{e}</span>
+                        <span className="text-stone-800">{e}</span>
                       </li>
                     ))}
                   </ul>
