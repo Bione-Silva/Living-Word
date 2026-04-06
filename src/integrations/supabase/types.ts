@@ -533,29 +533,44 @@ export type Database = {
       }
       workspaces: {
         Row: {
+          brand_color: string | null
+          communication_tone: string | null
+          content_preferences: string | null
           created_at: string
+          default_template: string | null
           description: string | null
           emoji: string | null
           id: string
           name: string
+          target_audience: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          brand_color?: string | null
+          communication_tone?: string | null
+          content_preferences?: string | null
           created_at?: string
+          default_template?: string | null
           description?: string | null
           emoji?: string | null
           id?: string
           name: string
+          target_audience?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          brand_color?: string | null
+          communication_tone?: string | null
+          content_preferences?: string | null
           created_at?: string
+          default_template?: string | null
           description?: string | null
           emoji?: string | null
           id?: string
           name?: string
+          target_audience?: string | null
           updated_at?: string
           user_id?: string
         }

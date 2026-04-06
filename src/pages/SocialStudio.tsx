@@ -133,6 +133,8 @@ export default function SocialStudio() {
       prefilledSlides?: SlideData[];
       defaultTab?: string;
       defaultAspectRatio?: AspectRatio;
+      workspaceBrandColor?: string;
+      workspaceTemplate?: CanvasTemplate;
     } | null;
 
     if (state?.prefilledSlides && state.prefilledSlides.length > 0) {
@@ -140,6 +142,21 @@ export default function SocialStudio() {
       setCurrentSlide(0);
       if (state.defaultTab) setActiveTab(state.defaultTab);
       if (state.defaultAspectRatio) setAspectRatio(state.defaultAspectRatio);
+    }
+
+    // Apply workspace brand defaults
+    if (state?.workspaceBrandColor) {
+      const preset = colorPresets.find(p => p.gradient.includes(state.workspaceBrandColor!));
+      setTheme(prev => ({
+        ...prev,
+        gradient: preset?.gradient || `linear-gradient(135deg, ${state.workspaceBrandColor}, ${state.workspaceBrandColor}88)`,
+      }));
+    }
+    if (state?.workspaceTemplate) {
+      setTemplate(state.workspaceTemplate);
+    }
+
+    if (state) {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
