@@ -35,6 +35,7 @@ export function DownloadButton({ targetRef, fileName = 'social-post', lang, onDo
 
       setState('done');
       toast.success(l.done);
+      onDownloaded?.();
       setTimeout(() => setState('idle'), 2000);
     } catch (err) {
       console.error(err);
