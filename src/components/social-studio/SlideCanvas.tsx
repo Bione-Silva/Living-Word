@@ -23,75 +23,80 @@ const aspectClasses: Record<AspectRatio, string> = {
   '1:1': 'aspect-square max-w-[480px]',
 };
 
+const captureSizes: Record<AspectRatio, { width: number; height: number }> = {
+  '9:16': { width: 1080, height: 1920 },
+  '4:5': { width: 1080, height: 1350 },
+  '1:1': { width: 1080, height: 1080 },
+};
+
 export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
   ({ slide, aspectRatio, bgImageUrl, showWatermark = true, themeColor, fontFamily }, ref) => {
     const gradient = themeColor || 'from-[#1a1a2e] via-[#16213e] to-[#0f3460]';
     const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+    const captureSize = captureSizes[aspectRatio];
 
     return (
-      <div
-        ref={ref}
-        className={`relative w-full ${aspectClasses[aspectRatio]} mx-auto overflow-hidden rounded-2xl select-none`}
-        style={{ fontFamily: font }}
-      >
-        {/* Background */}
-        {bgImageUrl ? (
-          <>
-            <img
-              src={bgImageUrl}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-              crossOrigin="anonymous"
-            />
-            <div className="absolute inset-0 bg-black/55" />
-          </>
-        ) : (
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-        )}
+      <div className={`w-full ${aspectClasses[aspectRatio]} mx-auto`}>
+        <div
+          ref={ref}
+          data-capture-width={captureSize.width}
+          data-capture-height={captureSize.height}
+          className="relative h-full w-full overflow-hidden rounded-2xl select-none isolate"
+          style={{ fontFamily: font }}
+        >
+          {/* Background */}
+          {bgImageUrl ? (
+            <>
+              <img
+                src={bgImageUrl}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+                crossOrigin="anonymous"
+              />
+              <div className="absolute inset-0 bg-black/55" />
+            </>
+          ) : (
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+          )}
 
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-8 left-8 w-16 h-16 border border-white/10 rounded-full" />
-          <div className="absolute bottom-12 right-8 w-24 h-24 border border-white/5 rounded-full" />
-          <div className="absolute top-1/4 right-12 w-1 h-16 bg-gradient-to-b from-amber-400/30 to-transparent" />
-        </div>
+          {/* Decorative elements */}
+          <div className="absolute left-0 top-0 h-full w-full">
+            <div className="absolute left-8 top-8 h-16 w-16 rounded-full border border-white/10" />
+            <div className="absolute bottom-12 right-8 h-24 w-24 rounded-full border border-white/5" />
+            <div className="absolute right-12 top-1/4 h-16 w-1 bg-gradient-to-b from-amber-400/30 to-transparent" />
+          </div>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center items-center h-full px-8 sm:px-10 py-12 text-center">
-          {/* Slide counter */}
-          {slide.slideNumber && slide.totalSlides && (
-            <div className="absolute top-6 right-6 text-white/40 text-xs font-sans tracking-wider">
-              {slide.slideNumber}/{slide.totalSlides}
+          {/* Content */}
+          <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-8 py-12 text-center sm:px-10">
+            {slide.slideNumber && slide.totalSlides && (
+              <div className="absolute right-6 top-6 text-xs font-sans tracking-wider text-white/40">
+                {slide.slideNumber}/{slide.totalSlides}
+              </div>
+            )}
+
+            <div className="mb-6 h-0.5 w-10 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+
+            <p className="text-white text-xl font-semibold leading-relaxed tracking-wide drop-shadow-lg sm:text-2xl md:text-3xl">
+              "{slide.text}"
+            </p>
+
+            {slide.subtitle && (
+              <p className="mt-6 font-sans text-sm font-medium uppercase tracking-widest text-amber-200/80 sm:text-base">
+                — {slide.subtitle}
+              </p>
+            )}
+
+            <div className="mt-6 h-0.5 w-10 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+          </div>
+
+          {showWatermark && (
+            <div className="absolute bottom-3 left-0 right-0 text-center">
+              <span className="text-[9px] uppercase tracking-[0.3em] text-white/25 font-sans">
+                Palavra Viva
+              </span>
             </div>
           )}
-
-          {/* Decorative line */}
-          <div className="w-10 h-0.5 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent mb-6" />
-
-          {/* Main text */}
-          <p className="text-white text-xl sm:text-2xl md:text-3xl font-semibold leading-relaxed tracking-wide drop-shadow-lg">
-            "{slide.text}"
-          </p>
-
-          {/* Subtitle / Reference */}
-          {slide.subtitle && (
-            <p className="mt-6 text-amber-200/80 text-sm sm:text-base font-medium tracking-widest uppercase font-sans">
-              — {slide.subtitle}
-            </p>
-          )}
-
-          {/* Decorative line */}
-          <div className="w-10 h-0.5 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent mt-6" />
         </div>
-
-        {/* Watermark */}
-        {showWatermark && (
-          <div className="absolute bottom-3 left-0 right-0 text-center">
-            <span className="text-[9px] text-white/25 tracking-[0.3em] uppercase font-sans">
-              Palavra Viva
-            </span>
-          </div>
-        )}
       </div>
     );
   }
