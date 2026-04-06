@@ -52,7 +52,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
         <Card className="border-border/50 bg-muted/30">
           <CardContent className="pt-4 pb-4">
             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('openingPrayer')}</p>
-            <p className="text-sm italic leading-relaxed text-foreground/80">{study.ancora_espiritual.oracao_abertura}</p>
+            <p className="text-sm italic leading-relaxed text-stone-800">{study.ancora_espiritual.oracao_abertura}</p>
           </CardContent>
         </Card>
       )}
