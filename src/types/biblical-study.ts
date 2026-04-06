@@ -1,71 +1,66 @@
 export interface BiblicalStudyOutput {
-  schema_version: string;
-  title: string;
-  bible_passage: string;
-  central_idea: string;
-  summary: string;
-  depth_level: string;
-  doctrine_line: string;
-  language: string;
-  
-  historical_context: {
-    text: string;
-    source_confidence: 'high' | 'medium' | 'low';
+  metadata: {
+    versao_template: '1.0';
+    tipo_uso: string;
+    duracao_estimada_min?: number;
+    criado_em: string;
   };
-  
-  literary_context: {
-    genre: string;
-    position_in_book: string;
-    source_confidence: 'high' | 'medium' | 'low';
+  ancora_espiritual: { oracao_abertura?: string };
+  passagem: {
+    referencia: string;
+    texto: string;
+    versao: string;
+    genero: string;
   };
-  
-  text_structure: Array<{
-    section: string;
-    verses: string;
-    description: string;
-  }>;
-  
-  bible_text: Array<{
-    reference: string;
-    text: string;
-    version: string;
-  }>;
-  
-  exegesis: Array<{
-    focus: string;
-    linguistic_note: string;
-    theological_insight: string;
-    source_confidence: 'high' | 'medium' | 'low';
-  }>;
-  
-  theological_interpretation: Array<{
-    perspective: string;
-    interpretation: string;
-    is_debated: boolean;
-    sources?: string[];
-    source_confidence: 'high' | 'medium' | 'low';
-  }>;
-  
-  biblical_connections: Array<{
-    passage: string;
-    relationship: 'typology' | 'fulfillment' | 'parallel' | 'contrast' | 'echo';
-    note: string;
-  }>;
-  
-  application: Array<{
-    context: string;
-    application: string;
-    practical_action: string;
-  }>;
-  
-  reflection_questions: Array<{
-    question: string;
-    target_audience?: string;
-  }>;
-  
-  conclusion: string;
-  pastoral_warning: string;
-  rag_sources_used: string[];
+  contexto: {
+    historico: string;
+    literario: string;
+    canonico?: string;
+  };
+  observacao: {
+    perguntas_5wh: Array<{ pergunta: string; resposta: string }>;
+    palavras_chave: Array<{ palavra: string; explicacao: string }>;
+    elementos_notaveis?: string;
+  };
+  interpretacao: {
+    estudo_palavras?: Array<{ palavra: string; original?: string; significado: string }>;
+    cruzamento_escrituras?: string[];
+    logica_interna?: string;
+    significado_original: string;
+  };
+  verdade_central: {
+    frase_central: string;
+    proposicao_expandida?: string;
+  };
+  conexao_cristologica?: {
+    como_aponta_para_cristo: string;
+    tipo_conexao: string;
+  };
+  aplicacao: {
+    crer: string;
+    mudar: string;
+    agir: string;
+    reflexao_pessoal?: string;
+  };
+  perguntas_discussao: {
+    observacao: string[];
+    interpretacao: string[];
+    aplicacao: string[];
+    bonus?: string;
+  };
+  encerramento: {
+    oracao_sugerida: string;
+    instrucao_lider?: string;
+  };
+  notas_lider?: {
+    como_introduzir?: string;
+    pontos_atencao?: string[];
+    erros_comuns?: string[];
+    recursos_adicionais?: string[];
+  };
+  caution_mode?: boolean;
+  sensitive_topic_detected?: string | null;
+  rag_sources_used?: string[];
 }
 
 export interface BiblicalStudyResponse {
