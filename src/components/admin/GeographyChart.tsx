@@ -32,11 +32,12 @@ export function GeographyChart() {
   }, []);
 
   const loadGeo = async () => {
-    const { data: rows } = await supabase
-      .from('page_views')
-      .select('country');
+    try {
+      const { data: rows, error } = await supabase
+        .from('page_views')
+        .select('country');
 
-    if (!rows || rows.length === 0) return;
+      if (error || !rows || rows.length === 0) return;
 
     const counts: Record<string, number> = {};
     rows.forEach((r: any) => {
@@ -55,6 +56,9 @@ export function GeographyChart() {
       }));
 
     setData(sorted);
+    } catch {
+      // silently fail for admin chart
+    }
   };
 
   if (data.length === 0) {
