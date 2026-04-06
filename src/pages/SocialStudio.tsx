@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
+import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { SlideCanvas, type SlideData } from '@/components/social-studio/SlideCanvas';
 import { VerseOfDayBanner, type VerseData } from '@/components/social-studio/VerseOfDayBanner';
 import { CarouselNavigator } from '@/components/social-studio/CarouselNavigator';
@@ -106,6 +107,7 @@ export default function SocialStudio() {
 
   const [activeTab, setActiveTab] = useState<string>('verse');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
+  const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [verse, setVerse] = useState<VerseData | null>(null);
   const [carousel, setCarousel] = useState<SlideData[]>([]);
@@ -343,7 +345,10 @@ export default function SocialStudio() {
         <p className="text-muted-foreground text-sm mt-1 max-w-xl font-medium">{h.subtitle}</p>
       </div>
 
-      <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} onUploadBackground={handleBackgroundUpload} />
+      <div className="space-y-3">
+        <TemplatePicker value={template} onChange={setTemplate} lang={lang} />
+        <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} onUploadBackground={handleBackgroundUpload} />
+      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-secondary border border-border shadow-sm">
@@ -425,6 +430,7 @@ export default function SocialStudio() {
                 ref={verseRef}
                 verse={verse}
                 aspectRatio={aspectRatio}
+                template={template}
                 fontFamily={theme.fontFamily}
                 textColor={theme.textColor}
                 backgroundImageUrl={theme.backgroundImageUrl}
@@ -488,6 +494,7 @@ export default function SocialStudio() {
                 ref={slideRef}
                 slide={carousel[currentSlide]}
                 aspectRatio={aspectRatio}
+                template={template}
                 bgImageUrl={theme.backgroundImageUrl}
                 themeColor={theme.gradient}
                 fontFamily={theme.fontFamily}

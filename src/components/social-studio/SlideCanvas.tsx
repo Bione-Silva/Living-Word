@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import type { AspectRatio } from './AspectRatioSelector';
+import type { CanvasTemplate } from './TemplatePicker';
 
 export interface SlideData {
   text: string;
@@ -11,6 +12,7 @@ export interface SlideData {
 interface Props {
   slide: SlideData;
   aspectRatio: AspectRatio;
+  template: CanvasTemplate;
   bgImageUrl?: string;
   showWatermark?: boolean;
   themeColor?: string;
@@ -30,32 +32,198 @@ const captureSizes: Record<AspectRatio, { width: number; height: number }> = {
   '1:1': { width: 1080, height: 1080 },
 };
 
-function getContrastSettings(bgImageUrl?: string, textColor?: string) {
-  const txtColor = textColor || '#FFFFFF';
-  const darkText = txtColor.toLowerCase() !== '#ffffff' && txtColor.toLowerCase() !== '#fff8e7' && txtColor.toLowerCase() !== '#f5d78e' && txtColor.toLowerCase() !== '#fbbf24';
+/* ── Helpers ── */
 
-  return {
-    txtColor,
-    overlayClass: bgImageUrl
-      ? darkText
-        ? 'bg-white/78'
-        : 'bg-black/58'
-      : undefined,
-    shadow: darkText
-      ? 'drop-shadow-[0_1px_2px_rgba(255,255,255,0.35)]'
-      : 'drop-shadow-[0_4px_18px_rgba(0,0,0,0.72)]',
-    mutedColor: darkText ? '#3D2B1F' : `${txtColor}D9`,
-    subtleColor: darkText ? '#6B4F3A' : `${txtColor}80`,
-    faintColor: darkText ? '#8A6A52' : `${txtColor}4D`,
-  };
+function isDarkText(textColor?: string) {
+  const c = (textColor || '#FFFFFF').toLowerCase();
+  return c !== '#ffffff' && c !== '#fff8e7' && c !== '#f5d78e' && c !== '#fbbf24';
 }
 
+function baseColor(gradient?: string) {
+  // Extract first hex from gradient
+  const match = gradient?.match(/#([0-9a-fA-F]{6})/);
+  return match ? `#${match[1]}` : '#1a1a2e';
+}
+
+/* ────────────────────────────────────────────
+   TEMPLATE 1 — EDITORIAL MINIMALISTA
+   Image top 60% / Solid base 40% with text
+   ──────────────────────────────────────────── */
+function EditorialTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
+  const dark = isDarkText(textColor);
+  const solidBg = dark ? '#FDFAF5' : baseColor(themeColor);
+  const txtColor = textColor || '#FFFFFF';
+  const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+
+  return (
+    <div className="relative h-full w-full flex flex-col overflow-hidden" style={{ fontFamily: font }}>
+      {/* Top 60%: image or gradient */}
+      <div className="relative" style={{ height: '60%' }}>
+        {bgImageUrl ? (
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundImage: themeColor || 'linear-gradient(135deg, #1a1a2e, #0f3460)' }} />
+        )}
+      </div>
+
+      {/* Bottom 40%: solid base with text */}
+      <div
+        className="relative flex flex-col items-center justify-center px-8 text-center"
+        style={{ height: '40%', backgroundColor: solidBg }}
+      >
+        <p
+          className="text-base font-medium leading-relaxed tracking-wide sm:text-lg"
+          style={{ color: dark ? '#2D1F14' : txtColor, fontFamily: font }}
+        >
+          {slide.text}
+        </p>
+
+        {slide.subtitle && (
+          <p
+            className="mt-3 text-xs font-semibold uppercase tracking-[0.25em] font-sans"
+            style={{ color: dark ? '#8A6A52' : `${txtColor}99` }}
+          >
+            — {slide.subtitle}
+          </p>
+        )}
+
+        {slide.slideNumber && slide.totalSlides && (
+          <span className="absolute top-3 right-4 text-[10px] font-sans font-medium" style={{ color: dark ? '#BBA58A' : `${txtColor}66` }}>
+            {slide.slideNumber}/{slide.totalSlides}
+          </span>
+        )}
+
+        {showWatermark && (
+          <span className="absolute bottom-2 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#C4AE93' : `${txtColor}33` }}>
+            Palavra Viva
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
+   TEMPLATE 2 — SWISS TYPOGRAPHY
+   Massive bold text, grid lines, no photos
+   ──────────────────────────────────────────── */
+function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl'>) {
+  const dark = isDarkText(textColor);
+  const bg = dark ? '#F8F5F0' : baseColor(themeColor);
+  const txtColor = textColor || '#FFFFFF';
+  const lineColor = dark ? '#D4C5B3' : `${txtColor}22`;
+  const font = fontFamily || "'Montserrat', 'Helvetica Neue', sans-serif";
+
+  return (
+    <div className="relative h-full w-full overflow-hidden" style={{ backgroundColor: bg, fontFamily: font }}>
+      {/* Grid lines */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Vertical line at 12% */}
+        <div className="absolute top-0 bottom-0" style={{ left: '12%', width: '1px', backgroundColor: lineColor }} />
+        {/* Horizontal line at 75% */}
+        <div className="absolute left-0 right-0" style={{ top: '75%', height: '1px', backgroundColor: lineColor }} />
+        {/* Vertical accent at 88% */}
+        <div className="absolute top-[75%] bottom-[8%]" style={{ left: '88%', width: '2px', backgroundColor: dark ? '#6B4F3A' : txtColor }} />
+      </div>
+
+      {/* Main text — massive, left-aligned */}
+      <div className="absolute flex flex-col justify-center" style={{ top: '8%', bottom: '30%', left: '12%', right: '10%', paddingLeft: '1rem' }}>
+        <p
+          className="text-2xl sm:text-3xl md:text-4xl font-black leading-[1.1] tracking-tight text-left"
+          style={{ color: dark ? '#1A1008' : txtColor }}
+        >
+          {slide.text.replace(/^"|"$/g, '')}
+        </p>
+      </div>
+
+      {/* Slide number — top right */}
+      {slide.slideNumber && slide.totalSlides && (
+        <span className="absolute top-4 right-5 text-xs font-mono font-bold" style={{ color: dark ? '#6B4F3A' : `${txtColor}88` }}>
+          {String(slide.slideNumber).padStart(2, '0')}/{String(slide.totalSlides).padStart(2, '0')}
+        </span>
+      )}
+
+      {/* Reference — bottom right, async float */}
+      {slide.subtitle && (
+        <div className="absolute flex flex-col items-end" style={{ bottom: '8%', right: '10%' }}>
+          <div className="h-px w-12 mb-2" style={{ backgroundColor: dark ? '#6B4F3A' : txtColor }} />
+          <p className="text-xs font-bold uppercase tracking-[0.3em] font-sans text-right" style={{ color: dark ? '#6B4F3A' : `${txtColor}CC` }}>
+            {slide.subtitle}
+          </p>
+        </div>
+      )}
+
+      {showWatermark && (
+        <span className="absolute bottom-3 left-[12%] ml-4 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#C4AE93' : `${txtColor}33` }}>
+          Palavra Viva
+        </span>
+      )}
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
+   TEMPLATE 3 — CINEMATIC OVERLAY
+   Full bleed image + deep bottom gradient
+   ──────────────────────────────────────────── */
+function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'textColor'>) {
+  const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+  const fallbackGradient = themeColor || 'linear-gradient(135deg, #1a1a2e, #0f3460)';
+
+  return (
+    <div className="relative h-full w-full overflow-hidden" style={{ fontFamily: font }}>
+      {/* Full bleed image */}
+      {bgImageUrl ? (
+        <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+      ) : (
+        <div className="absolute inset-0" style={{ backgroundImage: fallbackGradient }} />
+      )}
+
+      {/* Deep gradient overlay — bottom half protection */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.15) 55%, transparent 70%)',
+        }}
+      />
+
+      {/* Content — exclusively in the bottom half */}
+      <div className="absolute inset-0 flex flex-col justify-end px-8 pb-10 sm:px-10 sm:pb-12">
+        {slide.slideNumber && slide.totalSlides && (
+          <span className="text-[10px] font-sans font-medium tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            {slide.slideNumber}/{slide.totalSlides}
+          </span>
+        )}
+
+        <p className="text-lg sm:text-xl md:text-2xl font-semibold leading-relaxed tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]" style={{ color: '#FFF8E7' }}>
+          {slide.text}
+        </p>
+
+        {slide.subtitle && (
+          <div className="mt-5 flex items-center gap-3">
+            <div className="h-px w-8" style={{ backgroundColor: 'rgba(245,215,142,0.5)' }} />
+            <p className="text-xs font-sans font-semibold uppercase tracking-[0.25em]" style={{ color: 'rgba(245,215,142,0.75)' }}>
+              {slide.subtitle}
+            </p>
+          </div>
+        )}
+
+        {showWatermark && (
+          <span className="mt-6 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            Palavra Viva
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
+   EXPORTED COMPONENT
+   ──────────────────────────────────────────── */
 export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
-  ({ slide, aspectRatio, bgImageUrl, showWatermark = true, themeColor, fontFamily, textColor }, ref) => {
-    const gradient = themeColor || 'from-[#1a1a2e] via-[#16213e] to-[#0f3460]';
-    const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+  ({ slide, aspectRatio, template, bgImageUrl, showWatermark = true, themeColor, fontFamily, textColor }, ref) => {
     const captureSize = captureSizes[aspectRatio];
-    const contrast = getContrastSettings(bgImageUrl, textColor);
 
     return (
       <div className={`w-full ${aspectClasses[aspectRatio]} mx-auto transition-all duration-500 ease-in-out`}>
@@ -64,56 +232,15 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
           data-capture-width={captureSize.width}
           data-capture-height={captureSize.height}
           className="relative h-full w-full overflow-hidden rounded-2xl select-none isolate shadow-xl"
-          style={{ fontFamily: font }}
         >
-          {bgImageUrl ? (
-            <>
-              <img
-                src={bgImageUrl}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-                crossOrigin="anonymous"
-              />
-              <div className={`absolute inset-0 ${contrast.overlayClass}`} />
-            </>
-          ) : (
-            <div className="absolute inset-0" style={{ backgroundImage: gradient }} />
+          {template === 'editorial' && (
+            <EditorialTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
-
-          <div className="absolute left-0 top-0 h-full w-full">
-            <div className="absolute left-8 top-8 h-16 w-16 rounded-full border" style={{ borderColor: contrast.faintColor }} />
-            <div className="absolute bottom-12 right-8 h-24 w-24 rounded-full border" style={{ borderColor: `${contrast.faintColor}88` }} />
-            <div className="absolute right-12 top-1/4 h-16 w-1" style={{ background: `linear-gradient(to bottom, ${contrast.subtleColor}, transparent)` }} />
-          </div>
-
-          <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-8 py-12 text-center sm:px-10">
-            {slide.slideNumber && slide.totalSlides && (
-              <div className="absolute right-6 top-6 text-xs font-sans tracking-wider font-semibold" style={{ color: contrast.mutedColor }}>
-                {slide.slideNumber}/{slide.totalSlides}
-              </div>
-            )}
-
-            <div className="mb-6 h-0.5 w-10" style={{ background: `linear-gradient(to right, transparent, ${contrast.subtleColor}, transparent)` }} />
-
-            <p className={`text-xl font-semibold leading-relaxed tracking-wide sm:text-2xl md:text-3xl ${contrast.shadow}`} style={{ color: contrast.txtColor }}>
-              "{slide.text}"
-            </p>
-
-            {slide.subtitle && (
-              <p className="mt-6 font-sans text-sm font-semibold uppercase tracking-widest sm:text-base" style={{ color: contrast.mutedColor }}>
-                — {slide.subtitle}
-              </p>
-            )}
-
-            <div className="mt-6 h-0.5 w-10" style={{ background: `linear-gradient(to right, transparent, ${contrast.subtleColor}, transparent)` }} />
-          </div>
-
-          {showWatermark && (
-            <div className="absolute bottom-3 left-0 right-0 text-center">
-              <span className="text-[9px] uppercase tracking-[0.3em] font-sans font-semibold" style={{ color: contrast.faintColor }}>
-                Palavra Viva
-              </span>
-            </div>
+          {template === 'swiss' && (
+            <SwissTemplate slide={slide} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+          )}
+          {template === 'cinematic' && (
+            <CinematicTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
         </div>
       </div>
