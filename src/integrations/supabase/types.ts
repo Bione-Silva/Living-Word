@@ -545,6 +545,42 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members_safe: {
+        Row: {
+          accepted_at: string | null
+          created_at: string | null
+          email: string | null
+          id: string | null
+          invited_by: string | null
+          role: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          invited_by?: string | null
+          role?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          invited_by?: string | null
+          role?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_admin_ai_metrics: { Args: never; Returns: Json }
