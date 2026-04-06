@@ -383,6 +383,7 @@ export default function SocialStudio() {
                   {lang === 'PT' ? 'Gerar Outro' : lang === 'EN' ? 'Generate Another' : 'Generar Otro'}
                 </Button>
               </div>
+              <PublishPanel targetRef={verseRef} lang={lang} />
             </div>
           )}
 
