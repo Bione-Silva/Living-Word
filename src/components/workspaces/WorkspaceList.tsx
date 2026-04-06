@@ -16,9 +16,9 @@ export function WorkspaceList({ workspaces, isLoading, onSelect, onCreateNew }: 
 
   return (
     <div className="space-y-4">
-      <Button onClick={onCreateNew} className="gap-2" size="lg">
+      <Button onClick={onCreateNew} className="gap-2" size="lg" variant="default">
         <Plus className="h-4 w-4" />
-        {t('workspaces.new').replace(/^\+\s*/, '')}
+        {t('workspaces.new')}
       </Button>
 
       {isLoading ? (
@@ -29,9 +29,9 @@ export function WorkspaceList({ workspaces, isLoading, onSelect, onCreateNew }: 
         </div>
       ) : workspaces.length === 0 ? (
         <div className="text-center py-20">
-          <FolderOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <FolderOpen className="h-12 w-12 mx-auto mb-4 text-foreground/50" />
           <p className="text-foreground font-medium">{t('workspaces.empty')}</p>
-          <p className="text-sm text-muted-foreground mt-1">{t('workspaces.empty.sub')}</p>
+          <p className="text-sm text-foreground/60 mt-1">{t('workspaces.empty.sub')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -51,7 +51,7 @@ export function WorkspaceList({ workspaces, isLoading, onSelect, onCreateNew }: 
                     {ws.description && (
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{ws.description}</p>
                     )}
-                    <p className="text-xs text-muted-foreground font-medium mt-2">
+                    <p className="text-xs text-foreground/70 font-medium mt-2">
                       {ws.item_count || 0} {t('workspaces.items')}
                     </p>
                   </div>

@@ -86,7 +86,7 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="default" size="sm" onClick={handleShare} className="gap-2">
+          <Button variant="default" size="sm" onClick={handleShare} className="gap-2 font-semibold">
             <Share2 className="h-4 w-4" /> {t('workspaces.share')}
           </Button>
           <Button variant="ghost" size="sm" className="text-destructive" onClick={() => deleteMutation.mutate()}>
@@ -103,8 +103,8 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
         </div>
       ) : items.length === 0 ? (
         <div className="text-center py-16">
-          <BookOpen className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground font-medium">{t('workspaces.no_items')}</p>
+          <BookOpen className="h-10 w-10 mx-auto mb-3 text-foreground/50" />
+          <p className="text-sm text-foreground/60 font-medium">{t('workspaces.no_items')}</p>
         </div>
       ) : (
         <div className="grid gap-3">
