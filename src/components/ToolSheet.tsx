@@ -659,6 +659,75 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                 </Button>
               </div>
 
+              {/* CTA: Reels → Social Studio */}
+              {toolId === 'reels-script' && result && (
+                <Button
+                  size="lg"
+                  className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
+                  onClick={() => {
+                    // Extract text overlay / scene phrases from the reels script
+                    const lines = result.split('\n').filter(l => l.trim().length > 0);
+                    const scenes: string[] = [];
+
+                    // Try to extract "Texto Overlay" or bold phrases from the table/script
+                    for (const line of lines) {
+                      // Match bold text like **"phrase"** or **phrase**
+                      const boldMatches = line.match(/\*\*"?([^*"]+)"?\*\*/g);
+                      if (boldMatches) {
+                        for (const m of boldMatches) {
+                          const clean = m.replace(/\*\*/g, '').replace(/^"|"$/g, '').trim();
+                          if (clean.length > 10 && clean.length < 200) {
+                            scenes.push(clean);
+                          }
+                        }
+                      }
+                      // Match quoted text
+                      const quoteMatches = line.match(/"([^"]{10,150})"/g);
+                      if (quoteMatches) {
+                        for (const m of quoteMatches) {
+                          const clean = m.replace(/^"|"$/g, '').trim();
+                          if (!scenes.includes(clean) && clean.length > 10) {
+                            scenes.push(clean);
+                          }
+                        }
+                      }
+                    }
+
+                    // Fallback: use first meaningful paragraphs
+                    if (scenes.length === 0) {
+                      const paragraphs = result
+                        .split(/\n{2,}/)
+                        .map(p => p.replace(/^#+\s*/gm, '').replace(/\*\*/g, '').trim())
+                        .filter(p => p.length > 20 && p.length < 200);
+                      scenes.push(...paragraphs.slice(0, 5));
+                    }
+
+                    const uniqueScenes = [...new Set(scenes)].slice(0, 6);
+
+                    onOpenChange(false);
+                    navigate('/social-studio', {
+                      state: {
+                        prefilledSlides: uniqueScenes.map((text, i) => ({
+                          text,
+                          subtitle: i === 0 ? input : undefined,
+                          slideNumber: i + 1,
+                          totalSlides: uniqueScenes.length,
+                        })),
+                        defaultTab: 'carousel',
+                        defaultAspectRatio: '9:16' as const,
+                      },
+                    });
+                  }}
+                >
+                  <ImageIcon className="h-5 w-5" />
+                  {lang === 'PT'
+                    ? '🎨 Transformar Cenas em Imagens (Estúdio Social)'
+                    : lang === 'EN'
+                    ? '🎨 Transform Scenes into Images (Social Studio)'
+                    : '🎨 Transformar Escenas en Imágenes (Estudio Social)'}
+                </Button>
+              )}
+
               <MaterialFeedback
                 materialType={toolId}
                 materialTitle={toolTitle}
