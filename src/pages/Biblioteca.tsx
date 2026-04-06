@@ -247,7 +247,7 @@ export default function Biblioteca() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate text-foreground">{item.title}</p>
-                    <p className="text-xs text-foreground/60">
+                    <p className="text-xs text-muted-foreground">
                       {item.passage && `${item.passage} · `}
                       {new Date(item.created_at).toLocaleDateString()}
                     </p>
