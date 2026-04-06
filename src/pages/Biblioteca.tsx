@@ -70,7 +70,6 @@ export default function Biblioteca() {
       ? 'Search by title, passage...'
       : 'Buscar por título, pasaje...';
 
-  const allLabel = lang === 'PT' ? 'Todos' : lang === 'EN' ? 'All' : 'Todos';
   const deletedToast = lang === 'PT' ? 'Material excluído' : lang === 'EN' ? 'Material deleted' : 'Material eliminado';
   const copiedToast = lang === 'PT' ? 'Copiado!' : lang === 'EN' ? 'Copied!' : '¡Copiado!';
   const emptyLabel = lang === 'PT' ? 'Nenhum material encontrado' : lang === 'EN' ? 'No materials found' : 'No se encontraron materiales';
