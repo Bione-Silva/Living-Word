@@ -95,7 +95,7 @@ function EditorialTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColo
 
         {showWatermark && (
           <span className="absolute bottom-2 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#C4AE93' : `${txtColor}33` }}>
-            Palavra Viva
+            Living Word
           </span>
         )}
       </div>
@@ -155,7 +155,7 @@ function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark
 
       {showWatermark && (
         <span className="absolute bottom-3 left-[12%] ml-4 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#C4AE93' : `${txtColor}33` }}>
-          Palavra Viva
+          Living Word
         </span>
       )}
     </div>
@@ -210,7 +210,7 @@ function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWate
 
         {showWatermark && (
           <span className="mt-6 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(255,255,255,0.2)' }}>
-            Palavra Viva
+            Living Word
           </span>
         )}
       </div>
