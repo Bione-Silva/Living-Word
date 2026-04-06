@@ -476,6 +476,19 @@ export default function AppLayout() {
             {t('nav.library')}
           </Link>
 
+          {/* Workspaces */}
+          <Link
+            to="/workspaces"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname === '/workspaces'
+                ? 'bg-sidebar-accent text-sidebar-primary'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+            }`}
+          >
+            <FolderOpen className="h-3.5 w-3.5" />
+            {lang === 'PT' ? 'Workspaces' : lang === 'EN' ? 'Workspaces' : 'Workspaces'}
+          </Link>
+
           {/* Help Center */}
           <Link
             to="/ajuda"
