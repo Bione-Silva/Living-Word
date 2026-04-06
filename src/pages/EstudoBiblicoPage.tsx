@@ -115,10 +115,22 @@ export default function EstudoBiblicoPage() {
               <p className="text-sm">{t('study.empty')}</p>
             </div>
           ) : (
-            <div>
+            <div className={darkStudy ? 'dark rounded-xl' : ''}>
+              <div className={darkStudy ? 'bg-background text-foreground rounded-xl p-4' : ''}>
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <h2 className="font-display text-lg font-semibold">{t('study.result_title')}</h2>
-                <StudyActions study={study} />
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs"
+                    onClick={() => setDarkStudy(!darkStudy)}
+                  >
+                    {darkStudy ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                    {darkStudy ? (lang === 'EN' ? 'Light' : 'Claro') : (lang === 'EN' ? 'Dark' : 'Escuro')}
+                  </Button>
+                  <StudyActions study={study} />
+                </div>
               </div>
 
               <StudyViewer study={study} />
