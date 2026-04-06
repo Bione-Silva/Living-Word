@@ -29,7 +29,7 @@ export function WorkspaceList({ workspaces, isLoading, onSelect, onCreateNew }: 
         </div>
       ) : workspaces.length === 0 ? (
         <div className="text-center py-20">
-          <FolderOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground/40" />
+          <FolderOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <p className="text-foreground font-medium">{t('workspaces.empty')}</p>
           <p className="text-sm text-muted-foreground mt-1">{t('workspaces.empty.sub')}</p>
         </div>
