@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Paintbrush, Type, Palette, Upload } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
