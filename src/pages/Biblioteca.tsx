@@ -202,7 +202,7 @@ export default function Biblioteca() {
             className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
               chipFilter === chip.key
                 ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                : 'bg-secondary/60 text-foreground/70 border-border hover:bg-secondary hover:text-foreground'
+                : 'bg-secondary/60 text-muted-foreground border-border hover:bg-secondary hover:text-foreground'
             }`}
           >
             {chip.label[lang]}
@@ -247,12 +247,12 @@ export default function Biblioteca() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate text-foreground">{item.title}</p>
-                    <p className="text-xs text-foreground/60">
+                    <p className="text-xs text-muted-foreground">
                       {item.passage && `${item.passage} · `}
                       {new Date(item.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] shrink-0 text-foreground/80">{typeLabels[item.type]?.[lang] || item.type}</Badge>
+                  <Badge variant="secondary" className="text-[10px] shrink-0 text-secondary-foreground">{typeLabels[item.type]?.[lang] || item.type}</Badge>
                   <div className="flex gap-1 shrink-0">
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => toggleFavMutation.mutate({ id: item.id, favorite: item.favorite })}>
                       <Star className={`h-3 w-3 ${item.favorite ? 'fill-primary text-primary' : ''}`} />
