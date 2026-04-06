@@ -170,14 +170,16 @@ export default function Upgrade() {
 
   if (regionLoading || isAutoCheckout || loadingPlan) {
     const loadingLabels = {
-      PT: 'Preparando seu checkout…',
-      EN: 'Preparing your checkout…',
-      ES: 'Preparando tu checkout…',
+      PT: 'Preparando sua assinatura Living Word…',
+      EN: 'Preparing your Living Word subscription…',
+      ES: 'Preparando tu suscripción Living Word…',
     };
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <Loader2 className="h-10 w-10 text-primary animate-spin" />
-        <p className="text-lg font-medium text-muted-foreground animate-pulse">{loadingLabels[lang]}</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(28, 42%, 42%, 0.1)' }}>
+          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(28, 42%, 42%)' }} />
+        </div>
+        <p className="text-lg font-medium animate-pulse" style={{ color: 'hsl(24, 30%, 30%)' }}>{loadingLabels[lang]}</p>
       </div>
     );
   }

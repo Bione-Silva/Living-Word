@@ -243,7 +243,7 @@ export default function OnboardingWizard() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
       <div className="max-w-xl mx-auto px-4 py-8">
         {/* Skip */}
         <div className="text-center mb-4">
