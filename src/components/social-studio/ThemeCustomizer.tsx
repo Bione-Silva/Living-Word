@@ -56,19 +56,15 @@ const labels = {
 
 export function ThemeCustomizer({ value, onChange, lang, onUploadBackground }: Props) {
   const l = labels[lang];
-  const [showCustomColor, setShowCustomColor] = useState(false);
-  const [customHex, setCustomHex] = useState('');
 
-  const applyCustomHex = () => {
-    const hex = customHex.replace('#', '');
-    if (/^[0-9a-fA-F]{6}$/.test(hex)) {
-      const r = Math.max(0, parseInt(hex.slice(0, 2), 16) - 40);
-      const g = Math.max(0, parseInt(hex.slice(2, 4), 16) - 40);
-      const b = Math.max(0, parseInt(hex.slice(4, 6), 16) - 40);
-      const darker = `${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-      const darkest = `${Math.max(0, r - 30).toString(16).padStart(2, '0')}${Math.max(0, g - 30).toString(16).padStart(2, '0')}${Math.max(0, b - 30).toString(16).padStart(2, '0')}`;
-      onChange({ ...value, gradient: `linear-gradient(135deg, #${hex} 0%, #${darker} 52%, #${darkest} 100%)`, backgroundImageUrl: undefined });
-    }
+  const applyPickedColor = (hex: string) => {
+    const clean = hex.replace('#', '');
+    const r = Math.max(0, parseInt(clean.slice(0, 2), 16) - 40);
+    const g = Math.max(0, parseInt(clean.slice(2, 4), 16) - 40);
+    const b = Math.max(0, parseInt(clean.slice(4, 6), 16) - 40);
+    const darker = `${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    const darkest = `${Math.max(0, r - 30).toString(16).padStart(2, '0')}${Math.max(0, g - 30).toString(16).padStart(2, '0')}${Math.max(0, b - 30).toString(16).padStart(2, '0')}`;
+    onChange({ ...value, gradient: `linear-gradient(135deg, #${clean} 0%, #${darker} 52%, #${darkest} 100%)`, backgroundImageUrl: undefined });
   };
 
   return (
