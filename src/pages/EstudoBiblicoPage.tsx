@@ -14,6 +14,7 @@ import type { GenerationMeta } from '@/types/generation-meta';
 import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFooter';
 import { RichLoadingState } from '@/components/generation/RichLoadingState';
 import { loadingHints, studyLoadingMessages } from '@/lib/generation-ui';
+import { Button } from '@/components/ui/button';
 
 export default function EstudoBiblicoPage() {
   const [isLoading, setIsLoading] = useState(false);
