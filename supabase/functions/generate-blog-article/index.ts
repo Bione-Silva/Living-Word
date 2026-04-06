@@ -103,7 +103,7 @@ serve(async (req) => {
     }
     const userId = claimsData.claims.sub as string;
 
-    const { passage, language: requestedLanguage, title: inputTitle, image_style } = await req.json();
+    const { passage, language: requestedLanguage, title: inputTitle, image_style, source_content, source_type } = await req.json();
 
     if (!passage) {
       return new Response(JSON.stringify({ error: "passage is required" }), {
@@ -138,9 +138,11 @@ Output a complete devotional blog article in Markdown format with:
 - Closing prayer or reflection
 The article MUST have between 400 and 700 words. Structure it like a well-organized sermon with scannable sections (use H2/H3 headings). Be warm, theologically sound, and accessible.`;
 
-    const userPrompt = inputTitle
-      ? `Write a devotional article about "${passage}" with the title "${inputTitle}".`
-      : `Write a devotional article based on the passage: ${passage}.`;
+    const userPrompt = source_content
+      ? `Transform the following ${source_type || "source material"} into a devotional blog article about "${passage}"${inputTitle ? ` with the title "${inputTitle}"` : ""}. Preserve the strongest ideas, restructure it with a polished H1/H2/H3 blog flow, and return only Markdown.\n\nSOURCE MATERIAL:\n${source_content}`
+      : inputTitle
+        ? `Write a devotional article about "${passage}" with the title "${inputTitle}".`
+        : `Write a devotional article based on the passage: ${passage}.`;
 
     // Generate article content using GPT-5 for superior writing quality
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -255,21 +257,14 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
       throw new Error("Failed to save article");
     }
 
-    // Publish to editorial queue
-    const { error: qErr } = await supabase.from("editorial_queue").insert({
-      user_id: userId,
-      material_id: material.id,
-      status: "published",
-      published_at: new Date().toISOString(),
-    });
-
-    if (qErr) console.error("Queue insert error:", qErr);
-
     return new Response(
       JSON.stringify({
         success: true,
         material_id: material.id,
         title: articleTitle,
+        content,
+        passage,
+        language: resolvedLanguage,
         cover_image_url: coverImageUrl,
         article_images: articleImages,
       }),
