@@ -189,6 +189,10 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     return <PastoralStudioModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
   }
 
+  if (toolId === 'youtube-blog') {
+    return <YouTubeMultiplierModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
+  }
+
   const config = toolConfigs[toolId] || {
     inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },
     placeholder: { PT: 'Ex: tema, passagem ou ideia...', EN: 'E.g.: topic, passage or idea...', ES: 'Ej: tema, pasaje o idea...' },
