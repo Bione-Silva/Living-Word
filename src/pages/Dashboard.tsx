@@ -286,10 +286,10 @@ export default function Dashboard() {
               <Package className="h-6 w-6 text-accent" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-sm">
+              <h3 className="font-semibold text-sm text-foreground">
                 {lang === 'PT' ? 'Recursos Extras' : lang === 'EN' ? 'Extra Resources' : 'Recursos Extra'}
               </h3>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <p className="text-[11px] text-foreground/60 mt-0.5">
                 {lang === 'PT' ? 'Ferramentas de alcance, comunidade e conteúdos especiais' : lang === 'EN' ? 'Outreach, community and special content tools' : 'Herramientas de alcance, comunidad y contenidos especiales'}
               </p>
             </div>

@@ -151,7 +151,7 @@ export default function Biblioteca() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl font-bold">{t('library.title')}</h1>
+        <h1 className="font-display text-3xl font-bold text-foreground">{t('library.title')}</h1>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -222,13 +222,13 @@ export default function Biblioteca() {
                     <Icon className="h-5 w-5 text-muted-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm font-medium truncate text-foreground">{item.title}</p>
+                    <p className="text-xs text-foreground/60">
                       {item.passage && `${item.passage} · `}
                       {new Date(item.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] shrink-0">{typeLabels[item.type]?.[lang] || item.type}</Badge>
+                  <Badge variant="secondary" className="text-[10px] shrink-0 text-foreground/80">{typeLabels[item.type]?.[lang] || item.type}</Badge>
                   <div className="flex gap-1 shrink-0">
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => toggleFavMutation.mutate({ id: item.id, favorite: item.favorite })}>
                       <Star className={`h-3 w-3 ${item.favorite ? 'fill-primary text-primary' : ''}`} />
