@@ -20,7 +20,7 @@ export function ExtrasModal({ open, onOpenChange, lang, isFree, onToolClick }: E
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="font-display">
             {lang === 'PT' ? '📦 Recursos Extras' : lang === 'EN' ? '📦 Extra Resources' : '📦 Recursos Extra'}
