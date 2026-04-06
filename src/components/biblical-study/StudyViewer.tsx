@@ -270,7 +270,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
               {study.notas_lider.como_introduzir && (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('howToIntroduce')}</h4>
-                  <p className="text-sm leading-relaxed">{study.notas_lider.como_introduzir}</p>
+                  <p className="text-sm leading-relaxed text-stone-800">{study.notas_lider.como_introduzir}</p>
                 </div>
               )}
               {study.notas_lider.pontos_atencao && study.notas_lider.pontos_atencao.length > 0 && (
