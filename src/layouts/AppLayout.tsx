@@ -19,7 +19,7 @@ import {
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon,
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
-  ExternalLink, User, Package, GraduationCap
+  ExternalLink, User, Package, GraduationCap, FolderOpen
 } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -474,6 +474,19 @@ export default function AppLayout() {
           >
             <Library className="h-3.5 w-3.5" />
             {t('nav.library')}
+          </Link>
+
+          {/* Workspaces */}
+          <Link
+            to="/workspaces"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              location.pathname === '/workspaces'
+                ? 'bg-sidebar-accent text-sidebar-primary'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+            }`}
+          >
+            <FolderOpen className="h-3.5 w-3.5" />
+            {lang === 'PT' ? 'Workspaces' : lang === 'EN' ? 'Workspaces' : 'Workspaces'}
           </Link>
 
           {/* Help Center */}

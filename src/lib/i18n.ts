@@ -242,6 +242,25 @@ const translations: Record<string, Record<Language, string>> = {
   // Minds
   'minds.loading': { PT: 'Carregando mentes...', EN: 'Loading minds...', ES: 'Cargando mentes...' },
   'minds.empty': { PT: 'Nenhuma mente disponível no momento.', EN: 'No minds available at the moment.', ES: 'No hay mentes disponibles por el momento.' },
+  // Workspaces
+  'workspaces.title': { PT: 'Meus Workspaces', EN: 'My Workspaces', ES: 'Mis Workspaces' },
+  'workspaces.new': { PT: '+ Novo Workspace', EN: '+ New Workspace', ES: '+ Nuevo Workspace' },
+  'workspaces.empty': { PT: 'Nenhum workspace criado ainda', EN: 'No workspaces created yet', ES: 'Aún no hay workspaces' },
+  'workspaces.empty.sub': { PT: 'Crie um workspace para organizar seus estudos e materiais', EN: 'Create a workspace to organize your studies and materials', ES: 'Crea un workspace para organizar tus estudios y materiales' },
+  'workspaces.items': { PT: 'documentos', EN: 'documents', ES: 'documentos' },
+  'workspaces.share': { PT: 'Compartilhar Workspace', EN: 'Share Workspace', ES: 'Compartir Workspace' },
+  'workspaces.share.copied': { PT: 'Link copiado!', EN: 'Link copied!', ES: '¡Enlace copiado!' },
+  'workspaces.delete': { PT: 'Excluir Workspace', EN: 'Delete Workspace', ES: 'Eliminar Workspace' },
+  'workspaces.deleted': { PT: 'Workspace excluído', EN: 'Workspace deleted', ES: 'Workspace eliminado' },
+  'workspaces.created': { PT: 'Workspace criado!', EN: 'Workspace created!', ES: '¡Workspace creado!' },
+  'workspaces.name': { PT: 'Nome do Workspace', EN: 'Workspace Name', ES: 'Nombre del Workspace' },
+  'workspaces.name.placeholder': { PT: 'Ex: Série sobre Ansiedade', EN: 'E.g. Anxiety Series', ES: 'Ej: Serie sobre Ansiedad' },
+  'workspaces.description': { PT: 'Descrição (opcional)', EN: 'Description (optional)', ES: 'Descripción (opcional)' },
+  'workspaces.save_to': { PT: 'Salvar em Workspace', EN: 'Save to Workspace', ES: 'Guardar en Workspace' },
+  'workspaces.save_to.title': { PT: 'Salvar em qual Workspace?', EN: 'Save to which Workspace?', ES: '¿Guardar en cuál Workspace?' },
+  'workspaces.saved': { PT: 'Salvo no workspace!', EN: 'Saved to workspace!', ES: '¡Guardado en workspace!' },
+  'workspaces.back': { PT: 'Voltar', EN: 'Back', ES: 'Volver' },
+  'workspaces.no_items': { PT: 'Nenhum material neste workspace', EN: 'No materials in this workspace', ES: 'Sin materiales en este workspace' },
 };
 
 /**

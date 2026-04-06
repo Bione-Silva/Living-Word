@@ -7,9 +7,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2 } from 'lucide-react';
+import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
+import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
 
 const PAGE_SIZE = 20;
 
@@ -61,6 +62,7 @@ export default function Biblioteca() {
   const activeChip = chipFilters.find((c) => c.key === chipFilter) || chipFilters[0];
   const [favFilter, setFavFilter] = useState(false);
   const [viewItem, setViewItem] = useState<any>(null);
+  const [saveToWsItem, setSaveToWsItem] = useState<string | null>(null);
   const isFree = profile?.plan === 'free';
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -255,6 +257,9 @@ export default function Biblioteca() {
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleCopy(item.content)}>
                       <Copy className="h-3 w-3" />
                     </Button>
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSaveToWsItem(item.id)} title={t('workspaces.save_to')}>
+                      <FolderOpen className="h-3 w-3" />
+                    </Button>
                     <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => deleteMutation.mutate(item.id)}>
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -277,6 +282,14 @@ export default function Biblioteca() {
         onOpenChange={(open) => !open && setViewItem(null)}
         item={viewItem}
       />
+
+      {saveToWsItem && (
+        <SaveToWorkspaceDialog
+          open={!!saveToWsItem}
+          onOpenChange={(open) => !open && setSaveToWsItem(null)}
+          materialId={saveToWsItem}
+        />
+      )}
     </div>
   );
 }
