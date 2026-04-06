@@ -187,12 +187,12 @@ const copy = {
       ES: 'Todo lo que un pastor necesita para crear, investigar y publicar.',
     },
     items: [
-      { icon: Sparkles, title: { PT: 'IA treinada nas Escrituras', EN: 'AI trained on Scripture', ES: 'IA entrenada en las Escrituras' }, desc: { PT: 'Treinada em Bíblias originais e modernas. Pesquisa profunda, contexto histórico, exegese e aplicação — o que levaria horas, feito em segundos.', EN: 'Trained on original and modern Bibles. Deep research, historical context, exegesis and application — what would take hours, done in seconds.', ES: 'Entrenada en Biblias originales y modernas. Investigación profunda, contexto histórico, exégesis y aplicación — lo que tomaría horas, hecho en segundos.' }, unique: true },
-      { icon: Layers, title: { PT: '7+ formatos em 1 geração', EN: '7+ formats in 1 generation', ES: '7+ formatos en 1 generación' }, desc: { PT: 'Sermão, esboço, devocional, estudo bíblico, artigo, célula e conteúdo para redes. Tudo gerado de uma vez.', EN: 'Sermon, outline, devotional, Bible study, article, small group and social content. All generated at once.', ES: 'Sermón, bosquejo, devocional, estudio bíblico, artículo, célula y contenido para redes. Todo generado de una vez.' } },
-      { icon: Globe, title: { PT: 'Trilíngue nativo PT · EN · ES', EN: 'Native trilingual PT · EN · ES', ES: 'Trilingüe nativo PT · EN · ES' }, desc: { PT: 'Conteúdo gerado nativamente em cada idioma — não tradução automática. Ideal para ministérios multilíngues.', EN: 'Content generated natively in each language — not automatic translation. Ideal for multilingual ministries.', ES: 'Contenido generado nativamente en cada idioma — no traducción automática. Ideal para ministerios multilingües.' }, unique: true },
-      { icon: BookOpen, title: { PT: 'Estudo bíblico profundo', EN: 'Deep Bible study', ES: 'Estudio bíblico profundo' }, desc: { PT: 'Análise exegética completa: contexto, significado original, paralelos, aplicação. Pesquisa que levaria horas, com um clique.', EN: 'Complete exegetical analysis: context, original meaning, parallels, application. Research that would take hours, with one click.', ES: 'Análisis exegético completo: contexto, significado original, paralelos, aplicación. Investigación que tomaría horas, con un clic.' } },
-      { icon: Shield, title: { PT: 'Guardrails teológicos reais', EN: 'Real theological guardrails', ES: 'Guardrails teológicos reales' }, desc: { PT: 'Exegese antes de aplicação. Distinção entre texto, interpretação e aplicação. Alerta de eisegese integrado.', EN: 'Exegesis before application. Text, interpretation and application distinction. Built-in eisegesis alert.', ES: 'Exégesis antes de aplicación. Distinción entre texto, interpretación y aplicación. Alerta de eiségesis integrado.' } },
-      { icon: Mic, title: { PT: 'Sua voz pastoral preservada', EN: 'Your pastoral voice preserved', ES: 'Tu voz pastoral preservada' }, desc: { PT: 'Expositivo, narrativo, apologético, profético — o conteúdo soa como você ensina, não como template genérico.', EN: 'Expository, narrative, apologetic, prophetic — the content sounds like you teach, not like a generic template.', ES: 'Expositivo, narrativo, apologético, profético — el contenido suena como tú enseñas, no como plantilla genérica.' } },
+      { icon: Sparkles, title: { PT: 'IA treinada nas Escrituras', EN: 'AI trained on Scripture', ES: 'IA entrenada en las Escrituras' }, desc: { PT: 'Pesquisa profunda em Bíblias originais e modernas — exegese e contexto em segundos.', EN: 'Deep research on original and modern Bibles — exegesis and context in seconds.', ES: 'Investigación profunda en Biblias originales y modernas — exégesis y contexto en segundos.' }, unique: true },
+      { icon: Layers, title: { PT: '7+ formatos em 1 geração', EN: '7+ formats in 1 generation', ES: '7+ formatos en 1 generación' }, desc: { PT: 'Sermão, esboço, devocional, estudo, artigo, célula e redes — tudo de uma vez.', EN: 'Sermon, outline, devotional, study, article, small group and social — all at once.', ES: 'Sermón, bosquejo, devocional, estudio, artículo, célula y redes — todo de una vez.' } },
+      { icon: Globe, title: { PT: 'Trilíngue nativo PT · EN · ES', EN: 'Native trilingual PT · EN · ES', ES: 'Trilingüe nativo PT · EN · ES' }, desc: { PT: 'Conteúdo nativo em cada idioma — não tradução automática. Ideal para ministérios multilíngues.', EN: 'Native content in each language — not auto-translation. Ideal for multilingual ministries.', ES: 'Contenido nativo en cada idioma — no traducción automática. Ideal para ministerios multilingües.' }, unique: true },
+      { icon: BookOpen, title: { PT: 'Estudo bíblico profundo', EN: 'Deep Bible study', ES: 'Estudio bíblico profundo' }, desc: { PT: 'Análise exegética completa: contexto, significado original, paralelos e aplicação pastoral.', EN: 'Complete exegetical analysis: context, original meaning, parallels and application.', ES: 'Análisis exegético completo: contexto, significado original, paralelos y aplicación.' } },
+      { icon: Shield, title: { PT: 'Guardrails teológicos', EN: 'Theological guardrails', ES: 'Guardrails teológicos' }, desc: { PT: 'Exegese antes de aplicação. Distinção entre texto, interpretação e aplicação prática.', EN: 'Exegesis before application. Text, interpretation and application distinction.', ES: 'Exégesis antes de aplicación. Distinción entre texto, interpretación y aplicación.' } },
+      { icon: Mic, title: { PT: 'Sua voz pastoral', EN: 'Your pastoral voice', ES: 'Tu voz pastoral' }, desc: { PT: 'Expositivo, narrativo, apologético — o conteúdo soa como você ensina.', EN: 'Expository, narrative, apologetic — content sounds like you teach.', ES: 'Expositivo, narrativo, apologético — el contenido suena como tú enseñas.' } },
     ],
   },
   vs: {
@@ -557,7 +557,7 @@ export default function Landing() {
                   }
                   @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
                 `}</style>
-                <div className="relative" style={{ width: '300px' }}>
+                <div className="relative" style={{ width: 'min(300px, 75vw)' }}>
                   {/* Phone frame */}
                   <div className="rounded-[44px] p-[2.5px]" style={{ background: 'linear-gradient(145deg, #6B6B6B 0%, #3A3A3A 30%, #1A1A1A 70%, #3A3A3A 100%)' }}>
                     <div className="rounded-[42px] overflow-hidden" style={{ background: '#111' }}>
@@ -660,13 +660,13 @@ export default function Landing() {
       {/* ===== SOCIAL PROOF BAR ===== */}
       <section className="py-8 px-5" style={{ background: '#F5F0E8' }}>
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center gap-0 flex-wrap">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 sm:gap-0 items-center">
             {copy.stats.map((s, i) => (
-              <div key={i} className="flex items-center">
-                {i > 0 && <div className="hidden sm:block w-px h-12 mx-6 sm:mx-8" style={{ background: 'rgba(107,79,58,0.18)' }} />}
-                <div className="text-center px-3 py-2">
-                  <div className="font-display text-[34px] sm:text-[38px] font-bold tracking-tight" style={{ color: '#3D2B1F' }}>{s.num}</div>
-                  <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] mt-0.5" style={{ color: '#8B7355' }}>{s.label[lang]}</div>
+              <div key={i} className="flex items-center justify-center">
+                {i > 0 && <div className="hidden sm:block w-px h-12 mr-6 sm:mr-8" style={{ background: 'rgba(107,79,58,0.18)' }} />}
+                <div className="text-center px-1 sm:px-3 py-2">
+                  <div className="font-display text-[26px] sm:text-[38px] font-bold tracking-tight" style={{ color: '#3D2B1F' }}>{s.num}</div>
+                  <div className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.14em] mt-0.5" style={{ color: '#8B7355' }}>{s.label[lang]}</div>
                 </div>
               </div>
             ))}
