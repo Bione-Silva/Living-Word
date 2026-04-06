@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2 } from 'lucide-react';
+import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2, AlertCircle } from 'lucide-react';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
