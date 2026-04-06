@@ -108,8 +108,8 @@ export function StudyViewer({ study }: StudyViewerProps) {
                 <div className="flex flex-wrap gap-2">
                   {study.observacao.palavras_chave.map((kw, i) => (
                     <div key={i} className="rounded-lg border border-border bg-background px-3 py-2">
-                      <span className="text-sm font-semibold text-primary">{kw.palavra}</span>
-                      <span className="text-xs text-muted-foreground ml-1.5">— {kw.explicacao}</span>
+                      <span className="text-sm font-semibold text-stone-900">{kw.palavra}</span>
+                      <span className="text-xs text-stone-700 ml-1.5">— {kw.explicacao}</span>
                     </div>
                   ))}
                 </div>
