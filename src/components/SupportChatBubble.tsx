@@ -113,7 +113,7 @@ export function SupportChatBubble() {
               onKeyDown={handleKeyDown}
               placeholder="Digite sua dúvida..."
               disabled={loading}
-              className="text-sm"
+              className="text-sm text-foreground bg-background placeholder:text-muted-foreground"
             />
             <Button size="icon" onClick={sendMessage} disabled={loading || !input.trim()}>
               <Send className="h-4 w-4" />
