@@ -1,17 +1,9 @@
 import { useState } from 'react';
 import { BookOpen, ShieldAlert, Zap } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StudyForm } from '@/components/biblical-study/StudyForm';
 import { StudyActions } from '@/components/biblical-study/StudyActions';
-import { TabResumo } from '@/components/biblical-study/tabs/TabResumo';
-import { TabContexto } from '@/components/biblical-study/tabs/TabContexto';
-import { TabExegese } from '@/components/biblical-study/tabs/TabExegese';
-import { TabTeologia } from '@/components/biblical-study/tabs/TabTeologia';
-import { TabAplicacao } from '@/components/biblical-study/tabs/TabAplicacao';
-import { TabPerguntas } from '@/components/biblical-study/tabs/TabPerguntas';
-import { TabConclusao } from '@/components/biblical-study/tabs/TabConclusao';
-import { TabAvisos } from '@/components/biblical-study/tabs/TabAvisos';
+import { StudyViewer } from '@/components/biblical-study/StudyViewer';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,26 +29,14 @@ export default function EstudoBiblicoPage() {
     setGenerationMeta(null);
     try {
       const { data, error } = await supabase.functions.invoke('generate-biblical-study', {
-        body: {
-          ...formData,
-          isFree,
-        },
+        body: { ...formData, isFree },
       });
 
       if (error) throw error;
 
-      if (data?.error === 'generation_limit_reached') {
-        toast.warning(t('study.limit_reached'));
-        return;
-      }
-      if (data?.error === 'schema_validation_failed') {
-        toast.error(t('study.schema_error'));
-        return;
-      }
-      if (!data?.success) {
-        toast.error(t('study.error'));
-        return;
-      }
+      if (data?.error === 'generation_limit_reached') { toast.warning(t('study.limit_reached')); return; }
+      if (data?.error === 'schema_validation_failed') { toast.error(t('study.schema_error')); return; }
+      if (!data?.success) { toast.error(t('study.error')); return; }
 
       setResult(data as BiblicalStudyResponse);
       setGenerationMeta((data?.generation_meta ?? null) as GenerationMeta | null);
@@ -89,17 +69,13 @@ export default function EstudoBiblicoPage() {
           )}
           <div className="min-w-0">
             <h1 className="font-display text-xl font-bold leading-tight text-foreground">
-              {article?.title?.[lang] || (lang === 'PT' ? 'Estudo Bíblico Completo' : lang === 'EN' ? 'Complete Bible Study' : 'Estudio Bíblico Completo')}
+              {article?.title?.[lang] || (lang === 'PT' ? 'Estudo Bíblico E.X.P.O.S.' : lang === 'EN' ? 'E.X.P.O.S. Bible Study' : 'Estudio Bíblico E.X.P.O.S.')}
             </h1>
-            {subtitle && (
-              <p className="text-sm text-primary font-medium italic mt-0.5">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-sm text-primary font-medium italic mt-0.5">{subtitle}</p>}
           </div>
         </div>
 
-        {summary && (
-          <p className="text-sm text-foreground/70 leading-relaxed">{summary}</p>
-        )}
+        {summary && <p className="text-sm text-foreground/70 leading-relaxed">{summary}</p>}
 
         {bullets.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -121,13 +97,11 @@ export default function EstudoBiblicoPage() {
 
         {/* Right main area */}
         <div className="flex-1 min-w-0">
-          {result?.caution_mode && (
+          {(result?.caution_mode || result?.study?.caution_mode) && (
             <Alert className="mb-4 border-primary/30 bg-primary/5 text-foreground">
               <ShieldAlert className="h-4 w-4" />
               <AlertTitle>{t('study.sensitive_title')}</AlertTitle>
-              <AlertDescription>
-                {t('study.sensitive_desc')}
-              </AlertDescription>
+              <AlertDescription>{t('study.sensitive_desc')}</AlertDescription>
             </Alert>
           )}
 
@@ -141,35 +115,11 @@ export default function EstudoBiblicoPage() {
           ) : (
             <div>
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-display text-lg font-semibold">{t('study.result_title')}</h2>
-                </div>
+                <h2 className="font-display text-lg font-semibold">{t('study.result_title')}</h2>
                 <StudyActions study={study} />
               </div>
 
-              <Tabs defaultValue="resumo">
-                <TabsList className="flex flex-wrap h-auto gap-1">
-                  <TabsTrigger value="resumo">{t('study.tab.resumo')}</TabsTrigger>
-                  <TabsTrigger value="contexto">{t('study.tab.contexto')}</TabsTrigger>
-                  <TabsTrigger value="exegese">{t('study.tab.exegese')}</TabsTrigger>
-                  <TabsTrigger value="teologia">{t('study.tab.teologia')}</TabsTrigger>
-                  <TabsTrigger value="aplicacao">{t('study.tab.aplicacao')}</TabsTrigger>
-                  <TabsTrigger value="perguntas">{t('study.tab.perguntas')}</TabsTrigger>
-                  <TabsTrigger value="conclusao">{t('study.tab.conclusao')}</TabsTrigger>
-                  <TabsTrigger value="avisos">{t('study.tab.avisos')}</TabsTrigger>
-                </TabsList>
-
-                <div className="mt-4">
-                  <TabsContent value="resumo"><TabResumo study={study} /></TabsContent>
-                  <TabsContent value="contexto"><TabContexto study={study} /></TabsContent>
-                  <TabsContent value="exegese"><TabExegese study={study} /></TabsContent>
-                  <TabsContent value="teologia"><TabTeologia study={study} /></TabsContent>
-                  <TabsContent value="aplicacao"><TabAplicacao study={study} /></TabsContent>
-                  <TabsContent value="perguntas"><TabPerguntas study={study} /></TabsContent>
-                  <TabsContent value="conclusao"><TabConclusao study={study} /></TabsContent>
-                  <TabsContent value="avisos"><TabAvisos study={study} /></TabsContent>
-                </div>
-              </Tabs>
+              <StudyViewer study={study} />
 
               {generationMeta && (
                 <div className="mt-4">

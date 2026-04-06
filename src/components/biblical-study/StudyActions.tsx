@@ -17,6 +17,10 @@ export function StudyActions({ study }: StudyActionsProps) {
   const { lang } = useLanguage();
   const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null);
 
+  const studyTitle = study.verdade_central.frase_central || study.passagem.referencia;
+  const studyPassage = study.passagem.referencia;
+  const studyLanguage = study.metadata.tipo_uso || 'PT';
+
   const handleExportPDF = async () => {
     if (exporting) return;
     setExporting('pdf');
@@ -30,7 +34,7 @@ export function StudyActions({ study }: StudyActionsProps) {
 
       await html2pdf().set({
         margin: [10, 10, 10, 10],
-        filename: `${study.title}.pdf`,
+        filename: `${studyTitle}.pdf`,
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       }).from(container).save();
@@ -48,171 +52,80 @@ export function StudyActions({ study }: StudyActionsProps) {
     if (exporting) return;
     setExporting('docx');
     try {
-      const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, HeadingLevel, AlignmentType, BorderStyle, WidthType, ShadingType } = await import('docx');
+      const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle } = await import('docx');
       const { saveAs } = await import('file-saver');
-
-      const cellBorder = { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' };
-      const cellBorders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
 
       const children: any[] = [];
 
-      // Title
-      children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: study.title, bold: true })] }));
-      children.push(new Paragraph({ children: [new TextRun({ text: study.bible_passage, bold: true, color: '6B4F3A' })] }));
+      // Title & passage
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: studyTitle, bold: true })] }));
+      children.push(new Paragraph({ children: [new TextRun({ text: studyPassage, bold: true, color: '6B4F3A' })] }));
       children.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
 
-      // Central idea
+      // Verdade Central
       children.push(new Paragraph({
         border: { left: { style: BorderStyle.SINGLE, size: 6, color: 'C4956A', space: 8 } },
-        children: [new TextRun({ text: study.central_idea, italics: true })],
+        children: [new TextRun({ text: study.verdade_central.frase_central, italics: true, bold: true })],
       }));
+      if (study.verdade_central.proposicao_expandida) {
+        children.push(new Paragraph({ children: [new TextRun(study.verdade_central.proposicao_expandida)] }));
+      }
       children.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
 
-      // Summary
-      children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Resumo')] }));
-      children.push(new Paragraph({ children: [new TextRun(study.summary)] }));
+      // Passagem text
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Texto Bíblico')] }));
+      children.push(new Paragraph({
+        border: { left: { style: BorderStyle.SINGLE, size: 4, color: 'C4956A', space: 8 } },
+        children: [
+          new TextRun({ text: study.passagem.referencia, bold: true }),
+          new TextRun({ text: ' — ' }),
+          new TextRun({ text: study.passagem.texto, italics: true }),
+          new TextRun({ text: ` (${study.passagem.versao})`, color: '999999', size: 18 }),
+        ],
+      }));
 
-      // Historical context
+      // Contexto
       children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Contexto Histórico')] }));
-      children.push(new Paragraph({ children: [new TextRun(study.historical_context.text)] }));
-
-      // Literary context
+      children.push(new Paragraph({ children: [new TextRun(study.contexto.historico)] }));
       children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Contexto Literário')] }));
-      children.push(new Paragraph({ children: [new TextRun({ text: 'Gênero: ', bold: true }), new TextRun(study.literary_context.genre)] }));
-      children.push(new Paragraph({ children: [new TextRun(study.literary_context.position_in_book)] }));
+      children.push(new Paragraph({ children: [new TextRun(study.contexto.literario)] }));
 
-      // Text structure table
-      if (study.text_structure?.length) {
-        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Estrutura do Texto')] }));
-        children.push(new Table({
-          width: { size: 9360, type: WidthType.DXA },
-          columnWidths: [2500, 2000, 4860],
-          rows: [
-            new TableRow({
-              children: ['Seção', 'Versículos', 'Descrição'].map(h =>
-                new TableCell({
-                  borders: cellBorders,
-                  width: { size: h === 'Descrição' ? 4860 : h === 'Seção' ? 2500 : 2000, type: WidthType.DXA },
-                  shading: { fill: 'F5F0E8', type: ShadingType.CLEAR },
-                  children: [new Paragraph({ children: [new TextRun({ text: h, bold: true })] })],
-                })
-              ),
-            }),
-            ...study.text_structure.map(s =>
-              new TableRow({
-                children: [
-                  new TableCell({ borders: cellBorders, width: { size: 2500, type: WidthType.DXA }, children: [new Paragraph({ children: [new TextRun({ text: s.section, bold: true })] })] }),
-                  new TableCell({ borders: cellBorders, width: { size: 2000, type: WidthType.DXA }, children: [new Paragraph({ children: [new TextRun(s.verses)] })] }),
-                  new TableCell({ borders: cellBorders, width: { size: 4860, type: WidthType.DXA }, children: [new Paragraph({ children: [new TextRun(s.description)] })] }),
-                ],
-              })
-            ),
-          ],
-        }));
-      }
-
-      // Bible text
-      if (study.bible_text?.length) {
-        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Texto Bíblico Base')] }));
-        study.bible_text.forEach(bt => {
-          children.push(new Paragraph({
-            border: { left: { style: BorderStyle.SINGLE, size: 4, color: 'C4956A', space: 8 } },
-            children: [
-              new TextRun({ text: bt.reference, bold: true }),
-              new TextRun({ text: ' ' }),
-              new TextRun({ text: bt.text, italics: true }),
-              new TextRun({ text: ` (${bt.version})`, color: '999999', size: 18 }),
-            ],
-          }));
+      // Observação
+      if (study.observacao.perguntas_5wh?.length) {
+        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Observação — Perguntas 5W+H')] }));
+        study.observacao.perguntas_5wh.forEach(q => {
+          children.push(new Paragraph({ children: [new TextRun({ text: q.pergunta, bold: true })] }));
+          children.push(new Paragraph({ children: [new TextRun(q.resposta)] }));
+          children.push(new Paragraph({ spacing: { after: 100 }, children: [] }));
         });
       }
 
-      // Exegesis
-      if (study.exegesis?.length) {
-        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Exegese')] }));
-        study.exegesis.forEach(e => {
-          children.push(new Paragraph({ heading: HeadingLevel.HEADING_3, children: [new TextRun(e.focus)] }));
-          if (e.linguistic_note) {
-            children.push(new Paragraph({ children: [new TextRun({ text: 'Nota Linguística: ', bold: true }), new TextRun(e.linguistic_note)] }));
-          }
-          children.push(new Paragraph({ children: [new TextRun({ text: 'Contribuição Teológica: ', bold: true }), new TextRun(e.theological_insight)] }));
-        });
-      }
+      // Interpretação
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Interpretação')] }));
+      children.push(new Paragraph({ children: [new TextRun(study.interpretacao.significado_original)] }));
 
-      // Theological interpretation
-      if (study.theological_interpretation?.length) {
-        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Interpretações Teológicas')] }));
-        study.theological_interpretation.forEach(t => {
-          const runs: any[] = [new TextRun({ text: t.perspective, bold: true })];
-          if (t.is_debated) runs.push(new TextRun({ text: ' [Interpretação Debatida]', color: 'B45309', italics: true }));
-          children.push(new Paragraph({ children: runs }));
-          children.push(new Paragraph({ children: [new TextRun(t.interpretation)] }));
-          if (t.sources?.length) {
-            children.push(new Paragraph({ children: [new TextRun({ text: 'Fontes: ', bold: true }), new TextRun(t.sources.join(', '))] }));
-          }
-        });
-      }
+      // Aplicação
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Aplicação')] }));
+      children.push(new Paragraph({ children: [new TextRun({ text: 'Crer: ', bold: true }), new TextRun(study.aplicacao.crer)] }));
+      children.push(new Paragraph({ children: [new TextRun({ text: 'Mudar: ', bold: true }), new TextRun(study.aplicacao.mudar)] }));
+      children.push(new Paragraph({ children: [new TextRun({ text: 'Agir: ', bold: true }), new TextRun(study.aplicacao.agir)] }));
 
-      // Biblical connections table
-      if (study.biblical_connections?.length) {
-        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Conexões Bíblicas')] }));
-        const relLabels: Record<string, string> = { typology: 'Tipologia', fulfillment: 'Cumprimento', parallel: 'Paralelo', contrast: 'Contraste', echo: 'Eco' };
-        children.push(new Table({
-          width: { size: 9360, type: WidthType.DXA },
-          columnWidths: [2500, 2500, 4360],
-          rows: [
-            new TableRow({
-              children: ['Passagem', 'Relação', 'Nota'].map((h, idx) =>
-                new TableCell({
-                  borders: cellBorders,
-                  width: { size: [2500, 2500, 4360][idx], type: WidthType.DXA },
-                  shading: { fill: 'F5F0E8', type: ShadingType.CLEAR },
-                  children: [new Paragraph({ children: [new TextRun({ text: h, bold: true })] })],
-                })
-              ),
-            }),
-            ...study.biblical_connections.map(c =>
-              new TableRow({
-                children: [
-                  new TableCell({ borders: cellBorders, width: { size: 2500, type: WidthType.DXA }, children: [new Paragraph({ children: [new TextRun({ text: c.passage, bold: true })] })] }),
-                  new TableCell({ borders: cellBorders, width: { size: 2500, type: WidthType.DXA }, children: [new Paragraph({ children: [new TextRun(relLabels[c.relationship] || c.relationship)] })] }),
-                  new TableCell({ borders: cellBorders, width: { size: 4360, type: WidthType.DXA }, children: [new Paragraph({ children: [new TextRun(c.note)] })] }),
-                ],
-              })
-            ),
-          ],
-        }));
-      }
+      // Perguntas
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Perguntas para Discussão')] }));
+      ['observacao', 'interpretacao', 'aplicacao'].forEach(cat => {
+        const label = cat === 'observacao' ? 'Observação' : cat === 'interpretacao' ? 'Interpretação' : 'Aplicação';
+        const items = study.perguntas_discussao[cat as keyof typeof study.perguntas_discussao] as string[];
+        if (items?.length) {
+          children.push(new Paragraph({ children: [new TextRun({ text: label, bold: true })] }));
+          items.forEach((q, i) => {
+            children.push(new Paragraph({ children: [new TextRun(`${i + 1}. ${q}`)] }));
+          });
+        }
+      });
 
-      // Application
-      if (study.application?.length) {
-        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Aplicação')] }));
-        study.application.forEach(a => {
-          children.push(new Paragraph({ children: [new TextRun({ text: `${a.context}: `, bold: true }), new TextRun(a.application)] }));
-          children.push(new Paragraph({ children: [new TextRun({ text: '✅ Ação Prática: ', bold: true }), new TextRun(a.practical_action)] }));
-          children.push(new Paragraph({ spacing: { after: 120 }, children: [] }));
-        });
-      }
-
-      // Reflection questions
-      if (study.reflection_questions?.length) {
-        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Perguntas para Reflexão')] }));
-        study.reflection_questions.forEach((q, i) => {
-          const runs: any[] = [new TextRun({ text: `${i + 1}. `, bold: true }), new TextRun({ text: q.question, bold: true })];
-          if (q.target_audience) runs.push(new TextRun({ text: ` (${q.target_audience})`, color: '999999', size: 18 }));
-          children.push(new Paragraph({ children: runs }));
-        });
-      }
-
-      // Conclusion
-      children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Conclusão')] }));
-      children.push(new Paragraph({ children: [new TextRun(study.conclusion)] }));
-
-      // Pastoral warning
-      if (study.pastoral_warning) {
-        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Aviso Pastoral')] }));
-        children.push(new Paragraph({ children: [new TextRun(study.pastoral_warning)] }));
-      }
+      // Encerramento
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Encerramento')] }));
+      children.push(new Paragraph({ children: [new TextRun({ text: 'Oração: ', bold: true }), new TextRun({ text: study.encerramento.oracao_sugerida, italics: true })] }));
 
       // RAG sources
       if (study.rag_sources_used?.length) {
@@ -221,22 +134,15 @@ export function StudyActions({ study }: StudyActionsProps) {
       }
 
       const doc = new Document({
-        styles: {
-          default: { document: { run: { font: 'Arial', size: 24 } } },
-        },
+        styles: { default: { document: { run: { font: 'Arial', size: 24 } } } },
         sections: [{
-          properties: {
-            page: {
-              size: { width: 12240, height: 15840 },
-              margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
-            },
-          },
+          properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } },
           children,
         }],
       });
 
       const blob = await Packer.toBlob(doc);
-      saveAs(blob, `${study.title}.docx`);
+      saveAs(blob, `${studyTitle}.docx`);
       toast.success(lang === 'PT' ? 'DOCX exportado com sucesso!' : lang === 'EN' ? 'DOCX exported successfully!' : '¡DOCX exportado con éxito!');
     } catch (err) {
       console.error('DOCX export error:', err);
@@ -252,9 +158,9 @@ export function StudyActions({ study }: StudyActionsProps) {
       if (mode === 'blog') {
         const { error } = await supabase.functions.invoke('generate-blog-article', {
           body: {
-            passage: study.bible_passage,
-            language: study.language,
-            title: study.title,
+            passage: studyPassage,
+            language: studyLanguage,
+            title: studyTitle,
           },
         });
         if (error) throw error;
@@ -262,10 +168,10 @@ export function StudyActions({ study }: StudyActionsProps) {
         const outputMode = mode === 'lesson' ? 'outline' : mode;
         const { data, error } = await supabase.functions.invoke('generate-pastoral-material', {
           body: {
-            bible_passage: study.bible_passage,
-            pain_point: study.central_idea,
-            language: study.language,
-            bible_version: study.bible_text?.[0]?.version || 'ARA',
+            bible_passage: studyPassage,
+            pain_point: study.verdade_central.frase_central,
+            language: studyLanguage,
+            bible_version: study.passagem.versao || 'ARA',
             output_modes: [outputMode],
             pastoral_voice: profile?.pastoral_voice || '',
           },
@@ -274,40 +180,26 @@ export function StudyActions({ study }: StudyActionsProps) {
         if (error) throw error;
 
         const content = data?.outputs?.[outputMode];
-        if (!content || !user) {
-          throw new Error('missing_generated_content');
-        }
+        if (!content || !user) throw new Error('missing_generated_content');
 
         const materialType = mode === 'lesson' ? 'outline' : outputMode;
         const label = mode === 'sermon' ? 'Sermão' : mode === 'devotional' ? 'Devocional' : 'Aula';
 
         const { error: saveError } = await supabase.from('materials').insert({
           user_id: user.id,
-          title: `${label} — ${study.title}`,
+          title: `${label} — ${studyTitle}`,
           type: materialType,
           content,
-          language: study.language,
-          passage: study.bible_passage,
-          bible_version: study.bible_text?.[0]?.version || 'ARA',
+          language: studyLanguage,
+          passage: studyPassage,
+          bible_version: study.passagem.versao || 'ARA',
         });
 
         if (saveError) throw saveError;
       }
-      toast.success(
-        lang === 'PT'
-          ? 'Conteúdo transformado com sucesso!'
-          : lang === 'EN'
-            ? 'Content transformed successfully!'
-            : '¡Contenido transformado con éxito!'
-      );
+      toast.success(lang === 'PT' ? 'Conteúdo transformado com sucesso!' : lang === 'EN' ? 'Content transformed successfully!' : '¡Contenido transformado con éxito!');
     } catch {
-      toast.error(
-        lang === 'PT'
-          ? 'Erro ao transformar conteúdo.'
-          : lang === 'EN'
-            ? 'Error transforming content.'
-            : 'Error al transformar el contenido.'
-      );
+      toast.error(lang === 'PT' ? 'Erro ao transformar conteúdo.' : lang === 'EN' ? 'Error transforming content.' : 'Error al transformar el contenido.');
     }
   };
 
@@ -330,18 +222,10 @@ export function StudyActions({ study }: StudyActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleTransform('sermon')}>
-            Transformar em Sermão
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleTransform('devotional')}>
-            Transformar em Devocional
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleTransform('lesson')}>
-            Transformar em Aula
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleTransform('blog')}>
-            Transformar em Post
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleTransform('sermon')}>Transformar em Sermão</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleTransform('devotional')}>Transformar em Devocional</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleTransform('lesson')}>Transformar em Aula</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleTransform('blog')}>Transformar em Post</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -349,30 +233,20 @@ export function StudyActions({ study }: StudyActionsProps) {
 }
 
 function buildHTMLContent(study: BiblicalStudyOutput): string {
-  let html = `<h1 style="font-size:24px;margin-bottom:8px;">${study.title}</h1>`;
-  html += `<p style="color:#6B4F3A;font-weight:bold;">${study.bible_passage}</p>`;
-  html += `<blockquote style="border-left:3px solid #C4956A;padding-left:12px;font-style:italic;margin:16px 0;">${study.central_idea}</blockquote>`;
-  html += `<p>${study.summary}</p>`;
-  html += `<h2 style="margin-top:20px;">Contexto Histórico</h2><p>${study.historical_context.text}</p>`;
-  html += `<h2>Contexto Literário</h2><p>Gênero: ${study.literary_context.genre}</p><p>${study.literary_context.position_in_book}</p>`;
+  let html = `<h1 style="font-size:24px;margin-bottom:8px;">${study.verdade_central.frase_central}</h1>`;
+  html += `<p style="color:#6B4F3A;font-weight:bold;">${study.passagem.referencia}</p>`;
+  html += `<blockquote style="border-left:3px solid #C4956A;padding-left:12px;font-style:italic;margin:16px 0;">${study.passagem.texto}</blockquote>`;
 
-  if (study.exegesis?.length) {
-    html += `<h2>Exegese</h2>`;
-    study.exegesis.forEach(e => {
-      html += `<h3>${e.focus}</h3>`;
-      if (e.linguistic_note) html += `<p><strong>Nota Linguística:</strong> ${e.linguistic_note}</p>`;
-      html += `<p><strong>Contribuição Teológica:</strong> ${e.theological_insight}</p>`;
-    });
-  }
+  html += `<h2 style="margin-top:20px;">Contexto Histórico</h2><p>${study.contexto.historico}</p>`;
+  html += `<h2>Contexto Literário</h2><p>${study.contexto.literario}</p>`;
 
-  if (study.application?.length) {
-    html += `<h2>Aplicação</h2>`;
-    study.application.forEach(a => {
-      html += `<p><strong>${a.context}:</strong> ${a.application}</p>`;
-      html += `<p>✅ ${a.practical_action}</p>`;
-    });
-  }
+  html += `<h2>Interpretação</h2><p>${study.interpretacao.significado_original}</p>`;
 
-  html += `<h2>Conclusão</h2><p>${study.conclusion}</p>`;
+  html += `<h2>Aplicação</h2>`;
+  html += `<p><strong>Crer:</strong> ${study.aplicacao.crer}</p>`;
+  html += `<p><strong>Mudar:</strong> ${study.aplicacao.mudar}</p>`;
+  html += `<p><strong>Agir:</strong> ${study.aplicacao.agir}</p>`;
+
+  html += `<h2>Encerramento</h2><p>${study.encerramento.oracao_sugerida}</p>`;
   return html;
 }
