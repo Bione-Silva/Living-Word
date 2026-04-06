@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import {
   FileText, Plus, Search, Globe, Pencil, BookOpen, MoreHorizontal,
-  Archive, ArchiveRestore, Save, X, Eye, Trash2,
+  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
