@@ -339,12 +339,14 @@ export type Database = {
       }
       profiles: {
         Row: {
+          audience: string | null
           avatar_url: string | null
           bible_version: string | null
           bio: string | null
           blog_handle: string | null
           blog_name: string | null
           church_name: string | null
+          church_role: string | null
           city: string | null
           country: string | null
           created_at: string
@@ -374,12 +376,14 @@ export type Database = {
           zip_code: string | null
         }
         Insert: {
+          audience?: string | null
           avatar_url?: string | null
           bible_version?: string | null
           bio?: string | null
           blog_handle?: string | null
           blog_name?: string | null
           church_name?: string | null
+          church_role?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
@@ -409,12 +413,14 @@ export type Database = {
           zip_code?: string | null
         }
         Update: {
+          audience?: string | null
           avatar_url?: string | null
           bible_version?: string | null
           bio?: string | null
           blog_handle?: string | null
           blog_name?: string | null
           church_name?: string | null
+          church_role?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
