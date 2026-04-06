@@ -197,7 +197,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             ].map((item) => (
               <div key={item.label} className="flex items-start gap-3">
                 <Badge className={`${item.color} text-white shrink-0 mt-0.5`}>{item.label}</Badge>
-                <p className="text-sm leading-relaxed">{item.value}</p>
+                <p className="text-sm leading-relaxed text-stone-800">{item.value}</p>
               </div>
             ))}
             {study.aplicacao.reflexao_pessoal && (
