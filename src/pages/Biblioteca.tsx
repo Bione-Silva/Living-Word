@@ -202,7 +202,7 @@ export default function Biblioteca() {
             className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
               chipFilter === chip.key
                 ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                : 'bg-secondary/60 text-foreground/70 border-border hover:bg-secondary hover:text-foreground'
+                : 'bg-secondary/60 text-muted-foreground border-border hover:bg-secondary hover:text-foreground'
             }`}
           >
             {chip.label[lang]}
