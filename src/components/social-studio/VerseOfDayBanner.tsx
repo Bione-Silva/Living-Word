@@ -108,7 +108,7 @@ function SwissVerse({ verse, fontFamily, textColor, themeColor }: { verse: Verse
       </div>
 
       <span className="absolute bottom-3 left-[12%] ml-4 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#C4AE93' : `${txtColor}33` }}>
-        Palavra Viva
+        Living Word
       </span>
     </div>
   );
