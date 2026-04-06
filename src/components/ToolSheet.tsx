@@ -162,6 +162,7 @@ const toolConfigs: Record<string, {
 export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetProps) {
   const { user } = useAuth();
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
   const [historicalSources, setHistoricalSources] = useState<string | null>(null);
