@@ -257,6 +257,9 @@ export default function Biblioteca() {
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleCopy(item.content)}>
                       <Copy className="h-3 w-3" />
                     </Button>
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSaveToWsItem(item.id)} title={t('workspaces.save_to')}>
+                      <FolderOpen className="h-3 w-3" />
+                    </Button>
                     <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => deleteMutation.mutate(item.id)}>
                       <Trash2 className="h-3 w-3" />
                     </Button>
