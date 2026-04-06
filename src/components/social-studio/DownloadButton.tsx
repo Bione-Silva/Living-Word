@@ -119,7 +119,7 @@ export function DownloadButton({ targetRef, fileName = 'social-post', lang }: Pr
           await document.fonts.ready;
         }
 
-        await waitForImages(clone);
+        await inlineExternalImages(clone);
         await waitForNextPaint();
 
         let fontEmbedCSS: string | undefined;
