@@ -23,6 +23,7 @@ export default function EstudoBiblicoPage() {
   const { profile } = useAuth();
   const { lang, t } = useLanguage();
   const isFree = profile?.plan === 'free';
+  const [darkStudy, setDarkStudy] = useState(false);
 
   const handleGenerate = async (formData: BiblicalStudyFormData) => {
     setIsLoading(true);
