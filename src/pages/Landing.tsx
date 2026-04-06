@@ -660,13 +660,13 @@ export default function Landing() {
       {/* ===== SOCIAL PROOF BAR ===== */}
       <section className="py-8 px-5" style={{ background: '#F5F0E8' }}>
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center gap-0 flex-wrap">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 sm:gap-0 items-center">
             {copy.stats.map((s, i) => (
-              <div key={i} className="flex items-center">
-                {i > 0 && <div className="hidden sm:block w-px h-12 mx-6 sm:mx-8" style={{ background: 'rgba(107,79,58,0.18)' }} />}
-                <div className="text-center px-3 py-2">
-                  <div className="font-display text-[34px] sm:text-[38px] font-bold tracking-tight" style={{ color: '#3D2B1F' }}>{s.num}</div>
-                  <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] mt-0.5" style={{ color: '#8B7355' }}>{s.label[lang]}</div>
+              <div key={i} className="flex items-center justify-center">
+                {i > 0 && <div className="hidden sm:block w-px h-12 mr-6 sm:mr-8" style={{ background: 'rgba(107,79,58,0.18)' }} />}
+                <div className="text-center px-1 sm:px-3 py-2">
+                  <div className="font-display text-[26px] sm:text-[38px] font-bold tracking-tight" style={{ color: '#3D2B1F' }}>{s.num}</div>
+                  <div className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.14em] mt-0.5" style={{ color: '#8B7355' }}>{s.label[lang]}</div>
                 </div>
               </div>
             ))}
