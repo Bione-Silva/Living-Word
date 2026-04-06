@@ -16,6 +16,7 @@ import { HistoricalSourcesCard } from '@/components/HistoricalSourcesCard';
 import { MaterialFeedback } from '@/components/MaterialFeedback';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { helpCategories, helpFullArticles } from '@/data/help-center-data';
+import { YouTubeMultiplierModal } from '@/components/YouTubeMultiplierModal';
 import type { Language } from '@/lib/i18n';
 
 interface ToolModalProps {
