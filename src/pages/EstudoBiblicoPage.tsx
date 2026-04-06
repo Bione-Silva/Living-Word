@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, ShieldAlert, Zap } from 'lucide-react';
+import { BookOpen, ShieldAlert, Zap, Moon, Sun } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { StudyForm } from '@/components/biblical-study/StudyForm';
 import { StudyActions } from '@/components/biblical-study/StudyActions';
