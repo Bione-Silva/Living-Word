@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import JSZip from 'jszip';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,12 +10,13 @@ import { VerseOfDayBanner, type VerseData } from '@/components/social-studio/Ver
 import { CarouselNavigator } from '@/components/social-studio/CarouselNavigator';
 import { DownloadButton } from '@/components/social-studio/DownloadButton';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
+import { captureNodeAsPng } from '@/components/social-studio/export-utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sparkles, ImagePlus, Layers, Loader2, Search, BookOpen } from 'lucide-react';
+import { Sparkles, ImagePlus, Layers, Loader2, Search, BookOpen, Upload, Archive } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -23,7 +25,7 @@ const headings: Record<L, {
   title: string; subtitle: string; verse: string; carousel: string;
   generate: string; customVerse: string; searchVerse: string;
   devotionalCheck: string; searching: string; generating: string;
-  verseInput: string; orGenerate: string;
+  verseInput: string; orGenerate: string; uploadReady: string; zipDownload: string; zipLoading: string;
 }> = {
   PT: {
     title: '🎨 Estúdio Social',
@@ -38,6 +40,9 @@ const headings: Record<L, {
     generating: 'Gerando devocional...',
     verseInput: 'Ex: João 3:16',
     orGenerate: 'ou gere um versículo surpresa com IA',
+    uploadReady: 'Imagem de fundo aplicada',
+    zipDownload: 'Baixar carrossel em ZIP',
+    zipLoading: 'Gerando ZIP...',
   },
   EN: {
     title: '🎨 Social Studio',
@@ -52,6 +57,9 @@ const headings: Record<L, {
     generating: 'Generating devotional...',
     verseInput: 'E.g.: John 3:16',
     orGenerate: 'or generate a surprise verse with AI',
+    uploadReady: 'Background image applied',
+    zipDownload: 'Download carousel as ZIP',
+    zipLoading: 'Generating ZIP...',
   },
   ES: {
     title: '🎨 Estudio Social',
@@ -66,8 +74,20 @@ const headings: Record<L, {
     generating: 'Generando devocional...',
     verseInput: 'Ej: Juan 3:16',
     orGenerate: 'o genera un versículo sorpresa con IA',
+    uploadReady: 'Imagen de fondo aplicada',
+    zipDownload: 'Descargar carrusel en ZIP',
+    zipLoading: 'Generando ZIP...',
   },
 };
+
+function dataUrlToBlob(dataUrl: string) {
+  const parts = dataUrl.split(',');
+  const mime = parts[0].match(/:(.*?);/)?.[1] || 'image/png';
+  const binary = atob(parts[1]);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+  return new Blob([array], { type: mime });
+}
 
 export default function SocialStudio() {
   const { lang } = useLanguage();
@@ -84,17 +104,18 @@ export default function SocialStudio() {
   const [loadingDevotional, setLoadingDevotional] = useState(false);
   const [customPassage, setCustomPassage] = useState('');
   const [wantDevotional, setWantDevotional] = useState(false);
+  const [zipLoading, setZipLoading] = useState(false);
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
     fontFamily: "'Cormorant Garamond', 'Georgia', serif",
     textColor: '#FFFFFF',
     overlayOpacity: 55,
+    backgroundImageUrl: undefined,
   });
 
   const slideRef = useRef<HTMLDivElement>(null);
   const verseRef = useRef<HTMLDivElement>(null);
 
-  // Accept prefilled slides from Reels Script or other tools
   useEffect(() => {
     const state = location.state as {
       prefilledSlides?: SlideData[];
@@ -107,13 +128,19 @@ export default function SocialStudio() {
       setCurrentSlide(0);
       if (state.defaultTab) setActiveTab(state.defaultTab);
       if (state.defaultAspectRatio) setAspectRatio(state.defaultAspectRatio);
-
-      // Clear location state so refresh doesn't re-apply
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 
-  // Generate a random verse via AI
+  const handleBackgroundUpload = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setTheme((prev) => ({ ...prev, backgroundImageUrl: reader.result as string }));
+      toast.success(h.uploadReady);
+    };
+    reader.readAsDataURL(file);
+  }, [h.uploadReady]);
+
   const generateVerse = useCallback(async () => {
     setLoading(true);
     try {
@@ -148,7 +175,6 @@ export default function SocialStudio() {
     }
   }, [lang, wantDevotional]);
 
-  // Fetch a specific verse via fetch-bible-verse (anti-hallucination)
   const fetchCustomVerse = useCallback(async () => {
     if (!customPassage.trim()) return;
     setLoading(true);
@@ -178,7 +204,6 @@ export default function SocialStudio() {
     }
   }, [customPassage, lang, profile?.bible_version, wantDevotional]);
 
-  // Generate devotional slides from verse
   const generateDevotional = async (verseText: string, book: string) => {
     setLoadingDevotional(true);
     try {
@@ -195,13 +220,12 @@ export default function SocialStudio() {
 
       const devotionalText = data?.outputs?.devotional || data?.outputs?.devotional_content || '';
       if (devotionalText) {
-        // Split devotional into carousel slides
         const paragraphs = devotionalText
           .split(/\n{2,}/)
           .map((p: string) => p.replace(/^#+\s*/gm, '').trim())
           .filter((p: string) => p.length > 20);
 
-        const totalSlides = Math.min(paragraphs.length, 5) + 1; // +1 for verse slide
+        const totalSlides = Math.min(paragraphs.length, 5) + 1;
         const devotionalSlides: SlideData[] = paragraphs.slice(0, 5).map((p: string, i: number) => ({
           text: p.length > 200 ? p.slice(0, 197) + '…' : p,
           subtitle: i === paragraphs.slice(0, 5).length - 1 ? '@seuministério' : undefined,
@@ -231,38 +255,65 @@ export default function SocialStudio() {
     setCurrentSlide(0);
   };
 
+  const handleDownloadZip = async () => {
+    if (carousel.length === 0 || !slideRef.current) return;
+    setZipLoading(true);
+    try {
+      const zip = new JSZip();
+      const originalIndex = currentSlide;
+
+      for (let i = 0; i < carousel.length; i++) {
+        setCurrentSlide(i);
+        await new Promise((resolve) => setTimeout(resolve, 120));
+        const node = slideRef.current;
+        if (!node) continue;
+        const dataUrl = await captureNodeAsPng(node);
+        zip.file(`slide-${i + 1}.png`, dataUrlToBlob(dataUrl));
+      }
+
+      setCurrentSlide(originalIndex);
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.download = 'carrossel.zip';
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error(error);
+      toast.error(lang === 'PT' ? 'Erro ao gerar ZIP' : lang === 'EN' ? 'Error generating ZIP' : 'Error al generar ZIP');
+    } finally {
+      setZipLoading(false);
+    }
+  };
+
   return (
-    <div className="space-y-6 max-w-3xl">
-      {/* Header */}
+    <div className="space-y-6 max-w-3xl theme-app">
       <div>
         <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{h.title}</h1>
-        <p className="text-muted-foreground text-sm mt-1 max-w-xl">{h.subtitle}</p>
+        <p className="text-muted-foreground text-sm mt-1 max-w-xl font-medium">{h.subtitle}</p>
       </div>
 
-      {/* Controls row */}
       <div className="space-y-3">
         <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
-        <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} />
+        <ThemeCustomizer value={theme} onChange={setTheme} lang={lang} onUploadBackground={handleBackgroundUpload} />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-secondary/50">
-          <TabsTrigger value="verse" className="gap-1.5">
+        <TabsList className="bg-secondary border border-border shadow-sm">
+          <TabsTrigger value="verse" className="gap-1.5 text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground">
             <Sparkles className="h-3.5 w-3.5" />
             {h.verse}
           </TabsTrigger>
-          <TabsTrigger value="carousel" className="gap-1.5">
+          <TabsTrigger value="carousel" className="gap-1.5 text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground">
             <Layers className="h-3.5 w-3.5" />
             {h.carousel}
           </TabsTrigger>
         </TabsList>
 
-        {/* === VERSE TAB === */}
         <TabsContent value="verse" className="space-y-6">
-          {/* Custom verse input */}
-          <Card className="bg-card border-border">
+          <Card className="bg-card border-border shadow-sm">
             <CardContent className="p-4 sm:p-6 space-y-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <div className="flex items-center gap-2 text-base font-semibold text-foreground">
                 <BookOpen className="h-4 w-4 text-primary" />
                 {h.searchVerse}
               </div>
@@ -271,35 +322,33 @@ export default function SocialStudio() {
                   value={customPassage}
                   onChange={(e) => setCustomPassage(e.target.value)}
                   placeholder={h.verseInput}
-                  className="flex-1"
+                  className="flex-1 bg-background text-foreground placeholder:text-muted-foreground"
                   onKeyDown={(e) => e.key === 'Enter' && fetchCustomVerse()}
                 />
-                <Button onClick={fetchCustomVerse} disabled={loading || !customPassage.trim()} className="gap-2 shrink-0">
+                <Button onClick={fetchCustomVerse} disabled={loading || !customPassage.trim()} className="gap-2 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                   {loading ? h.searching : h.customVerse}
                 </Button>
               </div>
 
-              {/* Devotional checkbox */}
               <div className="flex items-center gap-2">
                 <Checkbox
                   id="devotional-check"
                   checked={wantDevotional}
                   onCheckedChange={(c) => setWantDevotional(c === true)}
                 />
-                <label htmlFor="devotional-check" className="text-sm text-muted-foreground cursor-pointer select-none">
+                <label htmlFor="devotional-check" className="text-sm text-foreground font-medium cursor-pointer select-none">
                   {h.devotionalCheck}
                 </label>
               </div>
 
-              {/* Separator with "or" */}
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-border" />
-                <span className="text-[11px] text-muted-foreground uppercase tracking-widest">{h.orGenerate}</span>
+                <span className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">{h.orGenerate}</span>
                 <div className="h-px flex-1 bg-border" />
               </div>
 
-              <Button onClick={generateVerse} variant="outline" className="gap-2 w-full border-primary/30 text-primary hover:bg-primary/10" disabled={loading}>
+              <Button onClick={generateVerse} variant="outline" className="gap-2 w-full border-primary/40 text-primary hover:bg-primary/10 hover:text-primary font-semibold bg-background" disabled={loading}>
                 {loading ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> {h.searching}</>
                 ) : (
@@ -309,21 +358,26 @@ export default function SocialStudio() {
             </CardContent>
           </Card>
 
-          {/* Loading devotional indicator */}
           {loadingDevotional && (
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-4">
-              <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="flex items-center justify-center gap-2 text-sm text-foreground font-medium py-4">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
               {h.generating}
             </div>
           )}
 
-          {/* Verse banner */}
           {verse && (
             <div className="space-y-4">
-              <VerseOfDayBanner ref={verseRef} verse={verse} aspectRatio={aspectRatio} fontFamily={theme.fontFamily} textColor={theme.textColor} />
+              <VerseOfDayBanner
+                ref={verseRef}
+                verse={verse}
+                aspectRatio={aspectRatio}
+                fontFamily={theme.fontFamily}
+                textColor={theme.textColor}
+                backgroundImageUrl={theme.backgroundImageUrl}
+              />
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <DownloadButton targetRef={verseRef} fileName="versiculo" lang={lang} />
-                <Button variant="outline" onClick={generateVerse} className="gap-2 border-border text-foreground" disabled={loading}>
+                <Button variant="outline" onClick={generateVerse} className="gap-2 border-border text-foreground bg-card hover:bg-secondary font-semibold" disabled={loading}>
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                   {lang === 'PT' ? 'Gerar Outro' : lang === 'EN' ? 'Generate Another' : 'Generar Otro'}
                 </Button>
@@ -331,13 +385,12 @@ export default function SocialStudio() {
             </div>
           )}
 
-          {/* Empty state when no verse yet */}
           {!verse && !loading && (
             <div className="text-center py-8">
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <ImagePlus className="h-8 w-8 text-primary" />
               </div>
-              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              <p className="text-sm text-foreground font-medium max-w-sm mx-auto">
                 {lang === 'PT'
                   ? 'Busque um versículo específico ou gere um versículo surpresa para criar sua arte.'
                   : lang === 'EN'
@@ -348,15 +401,14 @@ export default function SocialStudio() {
           )}
         </TabsContent>
 
-        {/* === CAROUSEL === */}
         <TabsContent value="carousel" className="space-y-4">
           {carousel.length === 0 ? (
-            <Card className="border-dashed border-2 border-muted-foreground/20 bg-muted/10">
+            <Card className="border-dashed border-2 border-muted-foreground/30 bg-muted/10">
               <CardContent className="p-8 sm:p-12 text-center">
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Layers className="h-8 w-8 text-primary" />
                 </div>
-                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                <p className="text-sm text-foreground font-medium max-w-sm mx-auto">
                   {lang === 'PT'
                     ? 'Busque um versículo na aba anterior e ative "Gerar Devocional" para criar slides de carrossel automaticamente.'
                     : lang === 'EN'
@@ -371,6 +423,7 @@ export default function SocialStudio() {
                 ref={slideRef}
                 slide={carousel[currentSlide]}
                 aspectRatio={aspectRatio}
+                bgImageUrl={theme.backgroundImageUrl}
                 themeColor={theme.gradient}
                 fontFamily={theme.fontFamily}
                 textColor={theme.textColor}
@@ -381,8 +434,12 @@ export default function SocialStudio() {
                 onPrev={() => setCurrentSlide((p) => Math.max(0, p - 1))}
                 onNext={() => setCurrentSlide((p) => Math.min(carousel.length - 1, p + 1))}
               />
-              <div className="flex justify-center">
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <DownloadButton targetRef={slideRef} fileName={`carrossel-slide-${currentSlide + 1}`} lang={lang} />
+                <Button onClick={handleDownloadZip} disabled={zipLoading} size="lg" variant="outline" className="gap-2 bg-card text-foreground border-border hover:bg-secondary font-semibold">
+                  {zipLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Archive className="h-4 w-4" />}
+                  {zipLoading ? h.zipLoading : h.zipDownload}
+                </Button>
               </div>
             </>
           )}
