@@ -83,7 +83,7 @@ export function StudyActions({ study }: StudyActionsProps) {
           new TextRun({ text: study.passagem.referencia, bold: true }),
           new TextRun({ text: ' — ' }),
           new TextRun({ text: study.passagem.texto, italics: true }),
-          new TextRun({ text: ` (${study.passagem.versao})`, color: '999999', size: 18 }),
+          new TextRun({ text: ` (${study.passagem.versao})`, color: '555555', size: 18 }),
         ],
       }));
 
