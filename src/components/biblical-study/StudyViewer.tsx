@@ -26,7 +26,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             <Badge variant="outline" className="text-xs">~{study.metadata.duracao_estimada_min} min</Badge>
           )}
         </div>
-        <blockquote className="border-l-4 border-primary/40 pl-4 italic text-stone-700 text-base leading-relaxed">
+        <blockquote className="border-l-4 border-primary/40 pl-4 italic text-foreground/80 text-base leading-relaxed">
           {study.passagem.texto}
         </blockquote>
       </div>
