@@ -11,6 +11,7 @@ import { CarouselNavigator } from '@/components/social-studio/CarouselNavigator'
 import { DownloadButton } from '@/components/social-studio/DownloadButton';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
 import { captureNodeAsPng } from '@/components/social-studio/export-utils';
+import { PublishPanel } from '@/components/social-studio/PublishPanel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -382,6 +383,7 @@ export default function SocialStudio() {
                   {lang === 'PT' ? 'Gerar Outro' : lang === 'EN' ? 'Generate Another' : 'Generar Otro'}
                 </Button>
               </div>
+              <PublishPanel targetRef={verseRef} lang={lang} />
             </div>
           )}
 
@@ -448,6 +450,7 @@ export default function SocialStudio() {
                   {zipLoading ? h.zipLoading : h.zipDownload}
                 </Button>
               </div>
+              <PublishPanel targetRef={slideRef} lang={lang} />
             </>
           )}
         </TabsContent>
