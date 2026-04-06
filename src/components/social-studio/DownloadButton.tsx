@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { toPng } from 'html-to-image';
+import { getFontEmbedCSS, toPng } from 'html-to-image';
 import { Button } from '@/components/ui/button';
 import { Download, Loader2, Check } from 'lucide-react';
 import { toast } from 'sonner';
@@ -13,8 +13,71 @@ interface Props {
 const labels = {
   PT: { download: 'Baixar Imagem (Pronto para Postar)', downloading: 'Gerando...', done: 'Salvo!', error: 'Erro ao gerar imagem' },
   EN: { download: 'Download Image (Ready to Post)', downloading: 'Generating...', done: 'Saved!', error: 'Error generating image' },
-  ES: { download: 'Descargar Imagen (Lista para Publicar)', downloading: 'Generando...', done: '¡Guardado!', error: 'Error al generar imagen' },
+  ES: { download: 'Descargar Imagen (Lista para Publicar)', downloading: 'Generando...', done: '¡Guardado!', error: 'Error generating image' },
 };
+
+const EXPORT_SCALE = 3;
+
+const waitForNextPaint = () =>
+  new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  });
+
+async function waitForImages(node: HTMLElement) {
+  const images = Array.from(node.querySelectorAll('img'));
+
+  await Promise.all(
+    images.map(async (img) => {
+      if (!img.complete) {
+        await new Promise<void>((resolve) => {
+          img.addEventListener('load', () => resolve(), { once: true });
+          img.addEventListener('error', () => resolve(), { once: true });
+        });
+      }
+
+      if (img.decode) {
+        try {
+          await img.decode();
+        } catch {
+          // ignore decode failures and still try export
+        }
+      }
+    })
+  );
+}
+
+function getCaptureDimensions(node: HTMLDivElement) {
+  const width = Number(node.dataset.captureWidth) || Math.round(node.scrollWidth || node.getBoundingClientRect().width);
+  const height = Number(node.dataset.captureHeight) || Math.round(node.scrollHeight || node.getBoundingClientRect().height);
+
+  return { width, height };
+}
+
+function createSandboxClone(node: HTMLDivElement, width: number, height: number) {
+  const sandbox = document.createElement('div');
+  sandbox.style.position = 'fixed';
+  sandbox.style.left = '-10000px';
+  sandbox.style.top = '0';
+  sandbox.style.width = `${width}px`;
+  sandbox.style.height = `${height}px`;
+  sandbox.style.overflow = 'hidden';
+  sandbox.style.pointerEvents = 'none';
+  sandbox.style.zIndex = '-1';
+
+  const clone = node.cloneNode(true) as HTMLDivElement;
+  clone.style.width = `${width}px`;
+  clone.style.height = `${height}px`;
+  clone.style.margin = '0';
+  clone.style.transform = 'none';
+  clone.style.transformOrigin = 'top left';
+  clone.style.maxWidth = 'none';
+  clone.style.maxHeight = 'none';
+
+  sandbox.appendChild(clone);
+  document.body.appendChild(sandbox);
+
+  return { sandbox, clone };
+}
 
 export function DownloadButton({ targetRef, fileName = 'social-post', lang }: Props) {
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle');
@@ -22,19 +85,57 @@ export function DownloadButton({ targetRef, fileName = 'social-post', lang }: Pr
 
   const handleDownload = async () => {
     if (!targetRef.current) return;
+
     setState('loading');
+
     try {
-      const dataUrl = await toPng(targetRef.current, {
-        pixelRatio: 3,
-        cacheBust: true,
-      });
-      const link = document.createElement('a');
-      link.download = `${fileName}.png`;
-      link.href = dataUrl;
-      link.click();
-      setState('done');
-      toast.success(l.done);
-      setTimeout(() => setState('idle'), 2000);
+      const node = targetRef.current;
+      const { width, height } = getCaptureDimensions(node);
+      const { sandbox, clone } = createSandboxClone(node, width, height);
+
+      try {
+        if ('fonts' in document) {
+          await document.fonts.ready;
+        }
+
+        await waitForImages(clone);
+        await waitForNextPaint();
+
+        let fontEmbedCSS: string | undefined;
+        try {
+          fontEmbedCSS = await getFontEmbedCSS(clone);
+        } catch {
+          fontEmbedCSS = undefined;
+        }
+
+        const dataUrl = await toPng(clone, {
+          cacheBust: true,
+          pixelRatio: 1,
+          backgroundColor: '#000000',
+          width,
+          height,
+          canvasWidth: width * EXPORT_SCALE,
+          canvasHeight: height * EXPORT_SCALE,
+          skipAutoScale: true,
+          fontEmbedCSS,
+          style: {
+            margin: '0',
+            transform: 'none',
+            transformOrigin: 'top left',
+          },
+        });
+
+        const link = document.createElement('a');
+        link.download = `${fileName}.png`;
+        link.href = dataUrl;
+        link.click();
+
+        setState('done');
+        toast.success(l.done);
+        setTimeout(() => setState('idle'), 2000);
+      } finally {
+        sandbox.remove();
+      }
     } catch (err) {
       console.error(err);
       toast.error(l.error);
