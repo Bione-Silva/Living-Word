@@ -226,7 +226,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
                   {group.items.map((q, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm">
                       <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary text-[10px] font-bold shrink-0 mt-0.5">{i + 1}</span>
-                      <span className="leading-relaxed">{q}</span>
+                      <span className="leading-relaxed text-stone-800">{q}</span>
                     </li>
                   ))}
                 </ul>
