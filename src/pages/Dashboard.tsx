@@ -198,14 +198,14 @@ export default function Dashboard() {
       {/* 1. Welcome */}
       <div>
         <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
-          {lang === 'PT' ? 'Olá' : lang === 'EN' ? 'Hello' : 'Hola'}, {userName}! 👋
+          {lang === 'PT' ? `Olá, ${userName}!` : lang === 'EN' ? `Hello, ${userName}!` : `Hola, ${userName}!`} 👋
         </h1>
         <p className="text-muted-foreground text-sm mt-1 leading-relaxed max-w-xl">
           {lang === 'PT'
-            ? 'Seu centro de trabalho para estudar, preparar e criar conteúdos com profundidade e agilidade.'
+            ? 'Seja bem-vindo ao seu centro de trabalho para estudar, preparar e criar conteúdo com profundidade e agilidade.'
             : lang === 'EN'
-            ? 'Your workspace to study, prepare and create content with depth and agility.'
-            : 'Tu centro de trabajo para estudiar, preparar y crear contenidos con profundidad y agilidad.'}
+            ? 'Welcome to your workspace to study, prepare and create content with depth and agility.'
+            : 'Bienvenido a tu centro de trabajo para estudiar, preparar y crear contenidos con profundidad y agilidad.'}
         </p>
       </div>
 
