@@ -462,6 +462,36 @@ export type Database = {
         }
         Relationships: []
       }
+      social_arts: {
+        Row: {
+          aspect_ratio: string
+          created_at: string
+          file_path: string
+          file_url: string
+          id: string
+          title: string | null
+          user_id: string
+        }
+        Insert: {
+          aspect_ratio?: string
+          created_at?: string
+          file_path: string
+          file_url: string
+          id?: string
+          title?: string | null
+          user_id: string
+        }
+        Update: {
+          aspect_ratio?: string
+          created_at?: string
+          file_path?: string
+          file_url?: string
+          id?: string
+          title?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       team_members: {
         Row: {
           accepted_at: string | null
