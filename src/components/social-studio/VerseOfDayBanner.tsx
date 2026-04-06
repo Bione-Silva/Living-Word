@@ -67,7 +67,7 @@ function EditorialVerse({ verse, fontFamily, textColor, backgroundImageUrl, them
           <div className="h-px w-6" style={{ backgroundColor: dark ? '#C4AE93' : `${txtColor}44` }} />
         </div>
         <span className="absolute bottom-2 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#D4C5B3' : `${txtColor}33` }}>
-          Palavra Viva
+          Living Word
         </span>
       </div>
     </div>
