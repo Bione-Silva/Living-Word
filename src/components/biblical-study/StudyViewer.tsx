@@ -216,9 +216,9 @@ export function StudyViewer({ study }: StudyViewerProps) {
           </AccordionTrigger>
           <AccordionContent className="space-y-4 pb-4">
             {[
-              { label: t('observation'), items: study.perguntas_discussao.observacao, color: 'bg-sky-100 text-sky-800 border-sky-200' },
-              { label: t('interpretation'), items: study.perguntas_discussao.interpretacao, color: 'bg-violet-100 text-violet-800 border-violet-200' },
-              { label: t('application'), items: study.perguntas_discussao.aplicacao, color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+              { label: t('observation'), items: study.perguntas_discussao.observacao, color: 'bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700' },
+              { label: t('interpretation'), items: study.perguntas_discussao.interpretacao, color: 'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-900/40 dark:text-violet-300 dark:border-violet-700' },
+              { label: t('application'), items: study.perguntas_discussao.aplicacao, color: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700' },
             ].map((group) => (
               <div key={group.label}>
                 <Badge variant="outline" className={`${group.color} mb-2`}>{group.label}</Badge>
