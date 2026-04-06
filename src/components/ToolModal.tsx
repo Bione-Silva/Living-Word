@@ -87,10 +87,6 @@ const toolConfigs: Record<string, {
 };
 
 export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalProps) {
-  if (toolId === 'youtube-blog') {
-    return <YouTubeMultiplierModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
-  }
-
   const { user } = useAuth();
   const { lang } = useLanguage();
   const [input, setInput] = useState('');
@@ -100,6 +96,10 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [generationLang, setGenerationLang] = useState<Language>(lang);
+
+  if (toolId === 'youtube-blog') {
+    return <YouTubeMultiplierModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
+  }
 
   useEffect(() => {
     setGenerationLang(lang);
