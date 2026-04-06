@@ -68,7 +68,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
           <AccordionContent className="space-y-4 pb-4">
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('historical')}</h4>
-              <p className="text-sm leading-relaxed">{study.contexto.historico}</p>
+              <p className="text-sm leading-relaxed text-stone-800">{study.contexto.historico}</p>
             </div>
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('literary')}</h4>
