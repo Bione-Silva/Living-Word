@@ -66,26 +66,10 @@ export default function BlogPublic() {
   const { data: articles, isLoading: articlesLoading } = useQuery({
     queryKey: ['blog-articles', profile?.id],
     queryFn: async () => {
-      const { data: queueItems, error: qErr } = await supabase
-        .from('editorial_queue')
-        .select('material_id, published_at')
-        .eq('user_id', profile!.id)
-        .eq('status', 'published')
-        .order('published_at', { ascending: false });
-      if (qErr) throw qErr;
-      if (!queueItems?.length) return [];
-
-      const materialIds = queueItems.map(q => q.material_id).filter(Boolean) as string[];
-      const { data: materials, error: mErr } = await supabase
-        .from('materials')
-        .select('*')
-        .in('id', materialIds);
-      if (mErr) throw mErr;
-
-      const pubMap = new Map(queueItems.map(q => [q.material_id, q.published_at]));
-      return (materials || [])
-        .map(m => ({ ...m, published_at: pubMap.get(m.id) }))
-        .sort((a, b) => new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime());
+      const { data, error } = await supabase
+        .rpc('get_public_blog_articles', { p_user_id: profile!.id });
+      if (error) throw error;
+      return data || [];
     },
     enabled: !!profile?.id,
   });

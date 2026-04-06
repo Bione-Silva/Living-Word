@@ -25,7 +25,15 @@ Deno.serve(async (req) => {
     )
 
     const { data: { user }, error: authError } = await supabaseUser.auth.getUser()
-    if (authError || !user || user.email !== 'bionicaosilva@gmail.com') {
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const { data: isAdmin, error: adminError } = await supabaseUser.rpc('is_admin')
+    if (adminError || !isAdmin) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

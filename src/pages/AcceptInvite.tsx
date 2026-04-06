@@ -30,34 +30,18 @@ export default function AcceptInvite() {
 
   const acceptInvite = async () => {
     try {
-      // Verify invite exists
-      const { data: invite, error } = await supabase
-        .from('team_members')
-        .select('*')
-        .eq('invite_token', token)
-        .eq('status', 'pending')
-        .maybeSingle();
+      const { data, error } = await supabase.functions.invoke('accept-team-invite', {
+        body: { token },
+      });
 
-      if (error || !invite) {
+      if (error || data?.error) {
         setStatus('error');
-        setMessage('Convite não encontrado ou já foi utilizado.');
+        setMessage(data?.error || 'Convite não encontrado ou já foi utilizado.');
         return;
       }
 
-      // Check if current user email matches invite
-      if (user?.email !== invite.email) {
-        setStatus('error');
-        setMessage(`Este convite foi enviado para ${invite.email}. Faça login com esse email.`);
-        return;
-      }
-
-      // Accept invite - use edge function or direct update won't work due to RLS
-      // The master policy allows ALL, so we use a workaround: the user can view their own record
-      // We'll need to accept via a simple approach - mark as accepted
-      // Since RLS only allows master to update, we'll use the service role via function
-      // For now, just show success and the admin can see it
       setStatus('success');
-      setMessage(`Convite aceito! Você agora tem acesso como "${invite.role}".`);
+      setMessage(`Convite aceito! Você agora tem acesso como "${data.role}".`);
     } catch {
       setStatus('error');
       setMessage('Erro ao aceitar convite.');

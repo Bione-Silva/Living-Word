@@ -91,30 +91,27 @@ export default function BlogArticle() {
     queryKey: ['blog-article', articleId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('materials')
-        .select('*')
-        .eq('id', articleId!)
-        .maybeSingle();
+        .rpc('get_public_blog_article', { p_article_id: articleId! });
       if (error) throw error;
-      return data;
+      const row = Array.isArray(data) ? data[0] : data;
+      return row || null;
     },
     enabled: !!articleId,
   });
 
-  // Try to find sibling articles in other languages (same user, same passage, type blog_article)
   const { data: siblings } = useQuery({
-    queryKey: ['blog-article-siblings', article?.user_id, article?.passage],
+    queryKey: ['blog-article-siblings', article?.user_id, article?.passage, article?.type],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('materials')
-        .select('id, language, title')
-        .eq('user_id', article!.user_id)
-        .eq('passage', article!.passage || '')
-        .eq('type', article!.type);
+        .rpc('get_public_blog_siblings', {
+          p_user_id: article!.user_id,
+          p_passage: article!.passage || '',
+          p_type: article!.type,
+        });
       if (error) throw error;
       return data || [];
     },
-    enabled: !!article?.user_id && !!article?.passage,
+    enabled: !!article?.user_id,
   });
   // Dynamic Open Graph & Twitter Card meta tags for rich social sharing
   useEffect(() => {
