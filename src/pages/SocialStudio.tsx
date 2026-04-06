@@ -491,6 +491,7 @@ export default function SocialStudio() {
                 ref={slideRef}
                 slide={carousel[currentSlide]}
                 aspectRatio={aspectRatio}
+                template={template}
                 bgImageUrl={theme.backgroundImageUrl}
                 themeColor={theme.gradient}
                 fontFamily={theme.fontFamily}
