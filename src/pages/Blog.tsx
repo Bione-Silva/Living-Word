@@ -451,8 +451,7 @@ export default function Blog() {
                   onClick={async () => {
                     await handleSave();
                     if (editArticle) {
-                      await handleToggleArchive({ ...editArticle, queue_status: 'draft' });
-                      // handleToggleArchive flips draft→published
+                      await handlePublish(editArticle);
                       setEditArticle(null);
                     }
                   }}
