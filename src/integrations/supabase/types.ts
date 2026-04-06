@@ -513,6 +513,38 @@ export type Database = {
           users_trialing: number
         }[]
       }
+      get_public_blog_article: {
+        Args: { p_article_id: string }
+        Returns: {
+          article_images: Json
+          bible_version: string
+          content: string
+          cover_image_url: string
+          created_at: string
+          favorite: boolean
+          id: string
+          language: string
+          passage: string
+          title: string
+          type: string
+          updated_at: string
+        }[]
+      }
+      get_public_blog_articles: {
+        Args: { p_handle: string }
+        Returns: {
+          article_images: Json
+          content: string
+          cover_image_url: string
+          created_at: string
+          id: string
+          language: string
+          passage: string
+          published_at: string
+          title: string
+          updated_at: string
+        }[]
+      }
       get_public_blog_profile: {
         Args: { p_handle: string }
         Returns: {
@@ -529,6 +561,14 @@ export type Database = {
           language: string
           layout_style: string
           theme_color: string
+        }[]
+      }
+      get_public_blog_siblings: {
+        Args: { p_article_id: string }
+        Returns: {
+          id: string
+          language: string
+          title: string
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
