@@ -76,7 +76,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange }: Props) {
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-1"
+              className="mt-1 border-border bg-secondary/50"
             />
           </div>
           <Button

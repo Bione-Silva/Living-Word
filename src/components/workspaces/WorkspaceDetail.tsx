@@ -102,9 +102,9 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
           ))}
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">{t('workspaces.no_items')}</p>
+        <div className="text-center py-16">
+          <BookOpen className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground font-medium">{t('workspaces.no_items')}</p>
         </div>
       ) : (
         <div className="grid gap-3">
