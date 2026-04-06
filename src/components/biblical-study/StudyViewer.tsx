@@ -249,7 +249,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
           <AccordionContent className="space-y-3 pb-4">
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('suggestedPrayer')}</h4>
-              <p className="text-sm italic leading-relaxed">{study.encerramento.oracao_sugerida}</p>
+              <p className="text-sm italic leading-relaxed text-stone-800">{study.encerramento.oracao_sugerida}</p>
             </div>
             {study.encerramento.instrucao_lider && (
               <div>
