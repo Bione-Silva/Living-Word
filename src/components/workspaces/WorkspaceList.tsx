@@ -51,7 +51,7 @@ export function WorkspaceList({ workspaces, isLoading, onSelect, onCreateNew }: 
                     {ws.description && (
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{ws.description}</p>
                     )}
-                    <p className="text-xs text-muted-foreground font-medium mt-2">
+                    <p className="text-xs text-foreground/70 font-medium mt-2">
                       {ws.item_count || 0} {t('workspaces.items')}
                     </p>
                   </div>
