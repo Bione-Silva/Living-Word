@@ -17,7 +17,7 @@ const labels = {
   ES: { download: 'Descargar Imagen (Lista para Publicar)', downloading: 'Generando...', done: '¡Guardado!', error: 'Error generating image' },
 };
 
-export function DownloadButton({ targetRef, fileName = 'social-post', lang }: Props) {
+export function DownloadButton({ targetRef, fileName = 'social-post', lang, onDownloaded }: Props) {
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle');
   const l = labels[lang];
 
