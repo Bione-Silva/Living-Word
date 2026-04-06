@@ -42,7 +42,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             {study.verdade_central.frase_central}
           </p>
           {study.verdade_central.proposicao_expandida && (
-            <p className="text-sm text-muted-foreground leading-relaxed">{study.verdade_central.proposicao_expandida}</p>
+            <p className="text-sm text-stone-700 leading-relaxed">{study.verdade_central.proposicao_expandida}</p>
           )}
         </CardContent>
       </Card>
