@@ -97,13 +97,13 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
   const [expanded, setExpanded] = useState(false);
   const [generationLang, setGenerationLang] = useState<Language>(lang);
 
-  if (toolId === 'youtube-blog') {
-    return <YouTubeMultiplierModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
-  }
-
   useEffect(() => {
     setGenerationLang(lang);
   }, [lang]);
+
+  if (toolId === 'youtube-blog') {
+    return <YouTubeMultiplierModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
+  }
 
   const config = toolConfigs[toolId] || {
     inputLabel: { PT: 'Descreva o que precisa', EN: 'Describe what you need', ES: 'Describe lo que necesitas' },
