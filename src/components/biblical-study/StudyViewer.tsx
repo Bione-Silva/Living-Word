@@ -254,7 +254,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             {study.encerramento.instrucao_lider && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('leaderInstruction')}</h4>
-                <p className="text-sm leading-relaxed">{study.encerramento.instrucao_lider}</p>
+                <p className="text-sm leading-relaxed text-stone-800">{study.encerramento.instrucao_lider}</p>
               </div>
             )}
           </AccordionContent>
