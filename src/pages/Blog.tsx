@@ -410,13 +410,58 @@ export default function Blog() {
             )}
           </div>
 
-          <DialogFooter className="gap-2 pt-4 border-t border-border">
-            <Button variant="outline" onClick={() => setEditArticle(null)} className="gap-1.5">
-              <X className="w-4 h-4" /> {t('blog.cancel')}
-            </Button>
-            <Button onClick={handleSave} disabled={saving} className="gap-1.5">
-              <Save className="w-4 h-4" /> {saving ? t('blog.saving') : t('blog.save')}
-            </Button>
+          <DialogFooter className="flex flex-wrap gap-2 pt-4 border-t border-border sm:justify-between">
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setEditArticle(null)} className="gap-1.5">
+                <X className="w-4 h-4" /> {t('blog.cancel')}
+              </Button>
+              <Button onClick={handleSave} disabled={saving} className="gap-1.5">
+                <Save className="w-4 h-4" /> {saving ? t('blog.saving') : t('blog.save')}
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              {editArticle && editArticle.queue_status !== 'published' && (
+                <Button
+                  variant="outline"
+                  className="gap-1.5"
+                  onClick={async () => {
+                    await handleSave();
+                    if (editArticle) {
+                      await handleToggleArchive({ ...editArticle, queue_status: 'draft' });
+                      // handleToggleArchive flips draft→published
+                      setEditArticle(null);
+                    }
+                  }}
+                  disabled={saving}
+                >
+                  <Upload className="w-4 h-4" /> {t('blog.publish') || 'Publicar'}
+                </Button>
+              )}
+              {editArticle && (
+                <Button
+                  variant="outline"
+                  className="gap-1.5"
+                  onClick={async () => {
+                    await handleToggleArchive(editArticle);
+                    setEditArticle(null);
+                  }}
+                >
+                  <Archive className="w-4 h-4" /> {editArticle.queue_status === 'archived' ? (t('blog.restore') || 'Desarquivar') : (t('blog.archive') || 'Arquivar')}
+                </Button>
+              )}
+              {editArticle && (
+                <Button
+                  variant="outline"
+                  className="gap-1.5 text-destructive hover:text-destructive"
+                  onClick={() => {
+                    setDeleteTarget(editArticle);
+                    setEditArticle(null);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" /> {t('blog.delete')}
+                </Button>
+              )}
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
