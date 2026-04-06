@@ -90,6 +90,7 @@ const LOADING_MESSAGES: Record<L, string[]> = {
 };
 
 export default function OnboardingWizard() {
+  useForceLightTheme();
   const { profile, user, refreshProfile } = useAuth();
   const { lang, setLang } = useLanguage();
   const navigate = useNavigate();
