@@ -28,6 +28,7 @@ import { helpCategories, helpFullArticles } from '@/data/help-center-data';
 import { Zap } from 'lucide-react';
 import { BlogArticleEditorDialog } from '@/components/BlogArticleEditorDialog';
 import { EditableBlogArticle } from '@/lib/blog-article';
+import { YouTubeMultiplierModal } from '@/components/YouTubeMultiplierModal';
 
 interface ToolSheetProps {
   open: boolean;
