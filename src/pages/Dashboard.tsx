@@ -275,7 +275,30 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* 6. Extras Card */}
+      {/* 6. Social Studio Quick Access */}
+      <section>
+        <Card
+          className="cursor-pointer border-primary/30 bg-gradient-to-r from-primary/5 to-accent/5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 hover:border-primary/50"
+          onClick={() => navigate('/social-studio')}
+        >
+          <CardContent className="p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Sparkles className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-sm text-foreground">
+                {lang === 'PT' ? '✨ Estúdio Social — Versículo do Dia' : lang === 'EN' ? '✨ Social Studio — Verse of the Day' : '✨ Estudio Social — Versículo del Día'}
+              </h3>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {lang === 'PT' ? 'Gere artes visuais incríveis prontas para Instagram, TikTok e Stories' : lang === 'EN' ? 'Generate amazing visual art ready for Instagram, TikTok and Stories' : 'Genera artes visuales increíbles listas para Instagram, TikTok y Stories'}
+              </p>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* 7. Extras Card */}
       <section>
         <Card
           className="cursor-pointer border-border/60 bg-card hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 hover:border-accent/50"
