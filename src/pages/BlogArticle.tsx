@@ -197,12 +197,9 @@ export default function BlogArticle() {
   const bodyImages = coverUrl && articleImages[0] === coverUrl ? articleImages.slice(1) : articleImages;
 
   const articleUrl = useMemo(() => {
-    if (typeof window === 'undefined') return '';
-    const { origin, pathname } = window.location;
-    const isPreview = origin.includes('localhost') || origin.includes('preview');
-    const publicOrigin = isPreview ? 'https://living-word.lovable.app' : origin;
-    return `${publicOrigin}${pathname}`;
-  }, []);
+    const edgeBase = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/og-blog-article`;
+    return `${edgeBase}?handle=${encodeURIComponent(handle || '')}&articleId=${encodeURIComponent(articleId || '')}`;
+  }, [handle, articleId]);
 
   const shareTitle = article?.title || 'Living Word';
 

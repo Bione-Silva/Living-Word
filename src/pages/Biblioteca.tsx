@@ -7,8 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Filter, Loader2 } from 'lucide-react';
+import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 
@@ -18,6 +17,7 @@ const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: Rea
   sermon: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón', icon: BookOpen },
   outline: { PT: 'Esboço', EN: 'Outline', ES: 'Esquema', icon: FileText },
   devotional: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional', icon: Heart },
+  biblical_study: { PT: 'Estudo Bíblico', EN: 'Biblical Study', ES: 'Estudio Bíblico', icon: BookOpen },
   blog_article: { PT: 'Artigo', EN: 'Article', ES: 'Artículo', icon: FileText },
   'topic-explorer': { PT: 'Explorador de Temas', EN: 'Topic Explorer', ES: 'Explorador de Temas', icon: FileText },
   'verse-finder': { PT: 'Versículos', EN: 'Verses', ES: 'Versículos', icon: BookOpen },
@@ -42,12 +42,23 @@ const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: Rea
   'deep-translation': { PT: 'Tradução', EN: 'Translation', ES: 'Traducción', icon: FileText },
 };
 
+type ChipFilter = { key: string; label: { PT: string; EN: string; ES: string }; types: string[] };
+
+const chipFilters: ChipFilter[] = [
+  { key: 'all', label: { PT: 'Todos', EN: 'All', ES: 'Todos' }, types: [] },
+  { key: 'sermons', label: { PT: 'Sermões', EN: 'Sermons', ES: 'Sermones' }, types: ['sermon', 'outline'] },
+  { key: 'studies', label: { PT: 'Estudos Bíblicos', EN: 'Biblical Studies', ES: 'Estudios Bíblicos' }, types: ['biblical_study'] },
+  { key: 'articles', label: { PT: 'Artigos', EN: 'Articles', ES: 'Artículos' }, types: ['blog_article', 'free-article'] },
+  { key: 'devotionals', label: { PT: 'Devocionais', EN: 'Devotionals', ES: 'Devocionales' }, types: ['devotional'] },
+];
+
 export default function Biblioteca() {
   const { user, profile } = useAuth();
   const { t, lang } = useLanguage();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [chipFilter, setChipFilter] = useState('all');
+  const activeChip = chipFilters.find((c) => c.key === chipFilter) || chipFilters[0];
   const [favFilter, setFavFilter] = useState(false);
   const [viewItem, setViewItem] = useState<any>(null);
   const isFree = profile?.plan === 'free';
@@ -59,7 +70,6 @@ export default function Biblioteca() {
       ? 'Search by title, passage...'
       : 'Buscar por título, pasaje...';
 
-  const allLabel = lang === 'PT' ? 'Todos' : lang === 'EN' ? 'All' : 'Todos';
   const deletedToast = lang === 'PT' ? 'Material excluído' : lang === 'EN' ? 'Material deleted' : 'Material eliminado';
   const copiedToast = lang === 'PT' ? 'Copiado!' : lang === 'EN' ? 'Copied!' : '¡Copiado!';
   const emptyLabel = lang === 'PT' ? 'Nenhum material encontrado' : lang === 'EN' ? 'No materials found' : 'No se encontraron materiales';
@@ -76,7 +86,7 @@ export default function Biblioteca() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['materials', user?.id, typeFilter, favFilter, search],
+    queryKey: ['materials', user?.id, chipFilter, favFilter, search],
     queryFn: async ({ pageParam = 0 }) => {
       if (!user) return { items: [], nextPage: null };
       let query = supabase
@@ -86,8 +96,10 @@ export default function Biblioteca() {
         .order('created_at', { ascending: false })
         .range(pageParam, pageParam + PAGE_SIZE - 1);
 
-      if (typeFilter !== 'all') {
-        query = query.eq('type', typeFilter);
+      if (activeChip.types.length === 1) {
+        query = query.eq('type', activeChip.types[0]);
+      } else if (activeChip.types.length > 1) {
+        query = query.in('type', activeChip.types);
       }
       if (favFilter) {
         query = query.eq('favorite', true);
@@ -154,7 +166,7 @@ export default function Biblioteca() {
         <h1 className="font-display text-3xl font-bold text-foreground">{t('library.title')}</h1>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -164,18 +176,6 @@ export default function Biblioteca() {
             className="pl-10"
           />
         </div>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[200px] border-lw-amber/40 bg-background text-foreground shadow-sm">
-            <Filter className="h-3 w-3 mr-1 text-lw-cafe" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="max-h-60">
-            <SelectItem value="all">{allLabel}</SelectItem>
-            {Object.entries(typeLabels).map(([key, val]) => (
-              <SelectItem key={key} value={key}>{val[lang]}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Button
           variant={favFilter ? 'default' : 'outline'}
           size="icon"
@@ -184,6 +184,22 @@ export default function Biblioteca() {
         >
           <Star className={`h-4 w-4 ${favFilter ? 'fill-current' : ''}`} />
         </Button>
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+        {chipFilters.map((chip) => (
+          <button
+            key={chip.key}
+            onClick={() => setChipFilter(chip.key)}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
+              chipFilter === chip.key
+                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                : 'bg-secondary/60 text-foreground/70 border-border hover:bg-secondary hover:text-foreground'
+            }`}
+          >
+            {chip.label[lang]}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
