@@ -72,8 +72,10 @@ const headings: Record<L, {
 export default function SocialStudio() {
   const { lang } = useLanguage();
   const { profile } = useAuth();
+  const location = useLocation();
   const h = headings[lang];
 
+  const [activeTab, setActiveTab] = useState<string>('verse');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [verse, setVerse] = useState<VerseData | null>(null);
@@ -89,6 +91,25 @@ export default function SocialStudio() {
 
   const slideRef = useRef<HTMLDivElement>(null);
   const verseRef = useRef<HTMLDivElement>(null);
+
+  // Accept prefilled slides from Reels Script or other tools
+  useEffect(() => {
+    const state = location.state as {
+      prefilledSlides?: SlideData[];
+      defaultTab?: string;
+      defaultAspectRatio?: AspectRatio;
+    } | null;
+
+    if (state?.prefilledSlides && state.prefilledSlides.length > 0) {
+      setCarousel(state.prefilledSlides);
+      setCurrentSlide(0);
+      if (state.defaultTab) setActiveTab(state.defaultTab);
+      if (state.defaultAspectRatio) setAspectRatio(state.defaultAspectRatio);
+
+      // Clear location state so refresh doesn't re-apply
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Generate a random verse via AI
   const generateVerse = useCallback(async () => {
