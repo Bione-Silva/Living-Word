@@ -244,20 +244,23 @@ export function StudyActions({ study }: StudyActionsProps) {
 
 function buildHTMLContent(study: BiblicalStudyOutput, lang: 'PT' | 'EN' | 'ES'): string {
   const t = (k: string) => sl(k, lang);
-  let html = `<h1 style="font-size:24px;margin-bottom:8px;">${study.verdade_central.frase_central}</h1>`;
-  html += `<p style="color:#6B4F3A;font-weight:bold;">${study.passagem.referencia}</p>`;
-  html += `<blockquote style="border-left:3px solid #C4956A;padding-left:12px;font-style:italic;margin:16px 0;">${study.passagem.texto}</blockquote>`;
+  const baseStyle = 'color:#1a1a1a;';
+  let html = `<div style="${baseStyle}font-family:Arial,sans-serif;">`;
+  html += `<h1 style="font-size:24px;margin-bottom:8px;color:#000;">${study.verdade_central.frase_central}</h1>`;
+  html += `<p style="color:#3D2E1F;font-weight:bold;">${study.passagem.referencia}</p>`;
+  html += `<blockquote style="border-left:3px solid #8B7355;padding-left:12px;font-style:italic;margin:16px 0;color:#1a1a1a;">${study.passagem.texto}</blockquote>`;
 
-  html += `<h2 style="margin-top:20px;">${t('historicalContext')}</h2><p>${study.contexto.historico}</p>`;
-  html += `<h2>${t('literaryContext')}</h2><p>${study.contexto.literario}</p>`;
+  html += `<h2 style="margin-top:20px;color:#000;">${t('historicalContext')}</h2><p style="${baseStyle}">${study.contexto.historico}</p>`;
+  html += `<h2 style="color:#000;">${t('literaryContext')}</h2><p style="${baseStyle}">${study.contexto.literario}</p>`;
 
-  html += `<h2>${t('interpretation')}</h2><p>${study.interpretacao.significado_original}</p>`;
+  html += `<h2 style="color:#000;">${t('interpretation')}</h2><p style="${baseStyle}">${study.interpretacao.significado_original}</p>`;
 
-  html += `<h2>${t('application')}</h2>`;
-  html += `<p><strong>${t('believe')}:</strong> ${study.aplicacao.crer}</p>`;
-  html += `<p><strong>${t('change')}:</strong> ${study.aplicacao.mudar}</p>`;
-  html += `<p><strong>${t('act')}:</strong> ${study.aplicacao.agir}</p>`;
+  html += `<h2 style="color:#000;">${t('application')}</h2>`;
+  html += `<p style="${baseStyle}"><strong>${t('believe')}:</strong> ${study.aplicacao.crer}</p>`;
+  html += `<p style="${baseStyle}"><strong>${t('change')}:</strong> ${study.aplicacao.mudar}</p>`;
+  html += `<p style="${baseStyle}"><strong>${t('act')}:</strong> ${study.aplicacao.agir}</p>`;
 
-  html += `<h2>${t('closing')}</h2><p>${study.encerramento.oracao_sugerida}</p>`;
+  html += `<h2 style="color:#000;">${t('closing')}</h2><p style="${baseStyle}">${study.encerramento.oracao_sugerida}</p>`;
+  html += `</div>`;
   return html;
 }

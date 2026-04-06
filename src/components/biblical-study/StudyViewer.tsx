@@ -306,7 +306,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
                     {study.notas_lider.recursos_adicionais.map((r, i) => (
                       <li key={i} className="text-sm flex items-start gap-2">
                         <span className="text-primary mt-0.5">•</span>
-                        <span>{r}</span>
+                        <span className="text-stone-800">{r}</span>
                       </li>
                     ))}
                   </ul>
