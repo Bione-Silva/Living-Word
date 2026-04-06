@@ -27,11 +27,39 @@ const FONT_FAMILIES: Record<string, string> = {
   merriweather: "'Merriweather', serif",
 };
 
+interface PublicBlogProfile {
+  full_name: string;
+  bio: string | null;
+  avatar_url: string | null;
+  blog_name: string | null;
+  blog_handle: string;
+  church_name: string | null;
+  city: string | null;
+  country: string | null;
+  font_family: string | null;
+  language: string;
+  layout_style: string | null;
+  theme_color: string | null;
+}
+
+interface PublicBlogArticleListItem {
+  id: string;
+  title: string;
+  content: string;
+  cover_image_url: string | null;
+  created_at: string;
+  updated_at: string;
+  language: string | null;
+  passage: string | null;
+  article_images: unknown;
+  published_at: string | null;
+}
+
 export default function BlogPublic() {
   const { handle } = useParams<{ handle: string }>();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: profile, isLoading: profileLoading } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery<PublicBlogProfile | null>({
     queryKey: ['blog-profile', handle],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -44,8 +72,8 @@ export default function BlogPublic() {
   });
 
   // Apply custom theme via CSS variables
-  const themeColor = (profile as any)?.theme_color || 'amber';
-  const fontFamily = (profile as any)?.font_family || 'cormorant';
+  const themeColor = profile?.theme_color || 'amber';
+  const fontFamily = profile?.font_family || 'cormorant';
 
   useEffect(() => {
     document.documentElement.classList.add('theme-blog');
@@ -63,15 +91,15 @@ export default function BlogPublic() {
     };
   }, [themeColor, fontFamily]);
 
-  const { data: articles, isLoading: articlesLoading } = useQuery({
-    queryKey: ['blog-articles', profile?.id],
+  const { data: articles, isLoading: articlesLoading } = useQuery<PublicBlogArticleListItem[]>({
+    queryKey: ['blog-articles', handle],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .rpc('get_public_blog_articles', { p_user_id: profile!.id });
+      const { data, error } = await (supabase as any)
+        .rpc('get_public_blog_articles', { p_handle: handle! });
       if (error) throw error;
       return data || [];
     },
-    enabled: !!profile?.id,
+    enabled: !!handle,
   });
 
   const filteredArticles = articles?.filter(a =>
