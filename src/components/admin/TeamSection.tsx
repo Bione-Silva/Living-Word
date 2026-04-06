@@ -13,7 +13,6 @@ interface TeamMember {
   email: string;
   role: string;
   status: string;
-  invite_token: string | null;
   user_id: string | null;
   created_at: string;
 }
@@ -40,7 +39,7 @@ export function TeamSection() {
     setLoading(true);
     const { data } = await supabase
       .from('team_members')
-      .select('*')
+      .select('id, email, role, status, user_id, created_at')
       .order('created_at', { ascending: false });
     if (data) setMembers(data as TeamMember[]);
     setLoading(false);
