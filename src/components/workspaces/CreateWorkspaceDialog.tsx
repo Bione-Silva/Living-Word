@@ -63,12 +63,12 @@ export function CreateWorkspaceDialog({ open, onOpenChange }: Props) {
             ))}
           </div>
           <div>
-            <label className="text-sm font-medium text-foreground">{t('workspaces.name')}</label>
+            <label className="text-sm font-semibold text-foreground">{t('workspaces.name')}</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('workspaces.name.placeholder')}
-              className="mt-1 border-border bg-secondary/50"
+              className="mt-1 border border-border bg-muted/50"
             />
           </div>
           <div>
