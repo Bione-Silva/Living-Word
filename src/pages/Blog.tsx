@@ -153,6 +153,30 @@ export default function Blog() {
     }
   };
 
+  const handlePublish = async (article: ArticleRow) => {
+    try {
+      if (article.queue_id) {
+        const { error } = await supabase
+          .from('editorial_queue')
+          .update({ status: 'published', published_at: new Date().toISOString() })
+          .eq('id', article.queue_id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('editorial_queue').insert({
+          user_id: user!.id,
+          material_id: article.id,
+          status: 'published',
+          published_at: new Date().toISOString(),
+        });
+        if (error) throw error;
+      }
+      toast.success(t('blog.published_ok') || 'Artigo publicado!');
+      queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
+    } catch {
+      toast.error(t('blog.status_error'));
+    }
+  };
+
   const handleToggleArchive = async (article: ArticleRow) => {
     const newStatus = article.queue_status === 'archived' ? 'published' : 'archived';
     try {
