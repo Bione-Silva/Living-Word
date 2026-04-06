@@ -211,6 +211,7 @@ export type Database = {
           type: string
           updated_at: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           article_images?: Json | null
@@ -226,6 +227,7 @@ export type Database = {
           type?: string
           updated_at?: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           article_images?: Json | null
@@ -241,8 +243,17 @@ export type Database = {
           type?: string
           updated_at?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "materials_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mind_settings: {
         Row: {
@@ -487,6 +498,36 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          description: string | null
+          emoji: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          emoji?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          emoji?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
