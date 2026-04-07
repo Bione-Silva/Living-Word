@@ -152,7 +152,6 @@ export default function MenteChat() {
   } | null>(null);
   const [improving, setImproving] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
 
   const isArtifact = (content: string) => {
     if (content.length < 800) return false;
