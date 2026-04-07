@@ -74,7 +74,7 @@ async function streamMindChat({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ messages, mindId, modality, language }),
+    body: JSON.stringify({ messages, mindId, modality, language, userName }),
   });
 
   if (!resp.ok) {
