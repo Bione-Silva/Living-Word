@@ -62,12 +62,12 @@ const copy = {
     },
     h1: {
       PT: 'Prepare sermões, estudos e conteúdos bíblicos com profundidade',
-      EN: 'Prepare sermons, studies & biblical content with depth',
+      EN: 'Prepare sermons, Bible studies, and biblical content with depth',
       ES: 'Prepara sermones, estudios y contenidos bíblicos con profundidad',
     },
     h1_em: {
       PT: '— sem perder horas em pesquisa.',
-      EN: '— without losing hours in research.',
+      EN: '— without losing hours to research.',
       ES: '— sin perder horas en investigación.',
     },
     sub: {
