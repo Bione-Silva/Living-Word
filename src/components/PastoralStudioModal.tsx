@@ -327,6 +327,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] flex flex-col overflow-hidden overflow-x-hidden bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 break-words">
         {/* ── Help hero header ── */}
