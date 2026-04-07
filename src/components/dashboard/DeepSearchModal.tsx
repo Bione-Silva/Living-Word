@@ -1,7 +1,12 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { X, BookOpen, MapPin, Lightbulb, ScrollText, Loader2 } from 'lucide-react';
+import { BookOpen, MapPin, Lightbulb, ScrollText, Loader2, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -11,48 +16,13 @@ interface DeepSearchModalProps {
   query: string;
 }
 
-/* ── Mock data keyed by language ── */
-const mockResult = (query: string, lang: L) => ({
-  reference: 'João 4:1-42',
-  passage: lang === 'EN'
-    ? '"If you knew the gift of God, and who it is who says to you, \'Give me a drink,\' you would have asked Him, and He would have given you living water." — John 4:10 (ESV)'
-    : lang === 'ES'
-    ? '"Si conocieras el don de Dios, y quién es el que te dice: \'Dame de beber\', tú le habrías pedido, y él te habría dado agua viva." — Juan 4:10 (RVR)'
-    : '"Se tu conhecesses o dom de Deus e quem é o que te diz: Dá-me de beber, tu lhe pedirias, e ele te daria água viva." — João 4:10 (ARA)',
-
-  summary: lang === 'EN'
-    ? 'Jesus, traveling through Samaria, stops at Jacob\'s well and initiates a conversation with a Samaritan woman — breaking social, ethnic, and gender barriers. The dialogue moves from physical water to spiritual thirst, revealing Jesus as the source of eternal life.'
-    : lang === 'ES'
-    ? 'Jesús, viajando por Samaria, se detiene en el pozo de Jacob e inicia una conversación con una mujer samaritana, rompiendo barreras sociales, étnicas y de género. El diálogo pasa del agua física a la sed espiritual, revelando a Jesús como la fuente de vida eterna.'
-    : 'Jesus, viajando pela Samaria, para no poço de Jacó e inicia uma conversa com uma mulher samaritana — quebrando barreiras sociais, étnicas e de gênero. O diálogo evolui da água física para a sede espiritual, revelando Jesus como a fonte de vida eterna.',
-
-  context: lang === 'EN'
-    ? 'Jews and Samaritans had deep animosity dating back centuries. Samaritans were considered half-breeds after the Assyrian conquest (722 BC). Jews avoided passing through Samaria. For a Jewish rabbi to speak with an unaccompanied Samaritan woman was doubly shocking — violating both ethnic and gender norms of the era.'
-    : lang === 'ES'
-    ? 'Judíos y samaritanos tenían una profunda animosidad que databa de siglos. Los samaritanos eran considerados mestizos tras la conquista asiria (722 a.C.). Los judíos evitaban pasar por Samaria. Que un rabino judío hablara con una mujer samaritana sola era doblemente impactante — violando normas étnicas y de género de la época.'
-    : 'Judeus e samaritanos tinham profunda animosidade que remontava séculos. Os samaritanos eram considerados mestiços após a conquista assíria (722 a.C.). Os judeus evitavam passar pela Samaria. Um rabino judeu conversar com uma mulher samaritana desacompanhada era duplamente chocante — violando normas étnicas e de gênero da época.',
-
-  insights: lang === 'EN'
-    ? [
-        'Jesus deliberately chose to pass through Samaria (v.4) — "He had to go through Samaria" implies divine necessity, not geography.',
-        'The "living water" metaphor operates on two levels: physical well water vs. the spiritual gift that quenches the deepest human thirst.',
-        'Jesus reveals intimate knowledge of her life (five husbands) not to condemn, but to awaken faith — showing that true worship transcends location (Jerusalem vs. Gerizim) and is "in spirit and truth."',
-        'The woman becomes the first evangelist in John\'s Gospel, bringing the whole village to encounter Jesus.',
-      ]
-    : lang === 'ES'
-    ? [
-        'Jesús deliberadamente eligió pasar por Samaria (v.4) — "Le era necesario pasar por Samaria" implica necesidad divina, no geográfica.',
-        'La metáfora del "agua viva" opera en dos niveles: agua física del pozo vs. el don espiritual que sacia la sed más profunda del ser humano.',
-        'Jesús revela conocimiento íntimo de su vida (cinco maridos) no para condenar, sino para despertar la fe — mostrando que la verdadera adoración trasciende el lugar (Jerusalén vs. Gerizim) y es "en espíritu y verdad."',
-        'La mujer se convierte en la primera evangelista del Evangelio de Juan, trayendo a toda la aldea a encontrar a Jesús.',
-      ]
-    : [
-        'Jesus deliberadamente escolheu passar pela Samaria (v.4) — "Era-lhe necessário atravessar a Samaria" implica necessidade divina, não geográfica.',
-        'A metáfora da "água viva" opera em dois níveis: água física do poço vs. o dom espiritual que sacia a sede mais profunda do ser humano.',
-        'Jesus revela conhecimento íntimo da vida dela (cinco maridos) não para condenar, mas para despertar a fé — mostrando que a verdadeira adoração transcende o lugar (Jerusalém vs. Gerizim) e é "em espírito e em verdade."',
-        'A mulher se torna a primeira evangelista do Evangelho de João, levando toda a aldeia ao encontro de Jesus.',
-      ],
-});
+interface SearchResult {
+  reference: string;
+  passage: string;
+  summary: string;
+  context: string;
+  insights: string[];
+}
 
 const labels: Record<string, Record<L, string>> = {
   searching: { PT: 'Analisando passagens bíblicas...', EN: 'Analyzing biblical passages...', ES: 'Analizando pasajes bíblicos...' },
@@ -61,38 +31,116 @@ const labels: Record<string, Record<L, string>> = {
   context: { PT: 'Ambiente e Contexto Histórico', EN: 'Setting & Historical Context', ES: 'Ambiente y Contexto Histórico' },
   insights: { PT: 'Insights Teológicos', EN: 'Theological Insights', ES: 'Perspectivas Teológicas' },
   results: { PT: 'Resultado para', EN: 'Results for', ES: 'Resultados para' },
+  error: { PT: 'Erro ao buscar resultados. Tente novamente.', EN: 'Error fetching results. Please try again.', ES: 'Error al buscar resultados. Inténtelo de nuevo.' },
+  bible: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' },
 };
 
 export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalProps) {
   const { lang } = useLanguage();
+  const { profile } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [data, setData] = useState<SearchResult | null>(null);
+
+  const bibleVersion = profile?.bible_version || 'ARA';
 
   useEffect(() => {
-    if (open) {
-      setLoading(true);
-      const t = setTimeout(() => setLoading(false), 1600);
-      return () => clearTimeout(t);
-    }
-  }, [open, query]);
+    if (!open || !query) return;
 
-  const data = mockResult(query, lang);
+    let cancelled = false;
+    setLoading(true);
+    setError(false);
+    setData(null);
+
+    const doSearch = async () => {
+      try {
+        const { data: result, error: fnError } = await supabase.functions.invoke('deep-search', {
+          body: { query, bibleVersion, language: lang },
+        });
+
+        if (cancelled) return;
+
+        if (fnError) throw fnError;
+        if (result?.error) {
+          if (result.error.includes('Rate limit')) {
+            toast.error(lang === 'PT' ? 'Limite de requisições atingido. Tente em alguns segundos.' : lang === 'ES' ? 'Límite de solicitudes alcanzado.' : 'Rate limit reached. Try again shortly.');
+          } else if (result.error.includes('Credits')) {
+            toast.error(lang === 'PT' ? 'Créditos esgotados.' : lang === 'ES' ? 'Créditos agotados.' : 'Credits exhausted.');
+          }
+          throw new Error(result.error);
+        }
+
+        setData(result as SearchResult);
+      } catch (err) {
+        console.error('Deep search error:', err);
+        if (!cancelled) setError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    doSearch();
+    return () => { cancelled = true; };
+  }, [open, query, bibleVersion, lang]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl w-[95vw] max-h-[85vh] overflow-y-auto p-0 gap-0">
         {/* Header */}
-        <div className="px-6 pt-6 pb-4 border-b border-border">
+        <div className="px-6 pt-6 pb-4 border-b border-border flex items-center justify-between">
           <DialogTitle className="text-lg font-semibold text-foreground">
             {labels.results[lang]} <span className="text-primary">"{query}"</span>
           </DialogTitle>
+          <Badge variant="outline" className="text-xs shrink-0 ml-3">
+            {labels.bible[lang]}: {bibleVersion}
+          </Badge>
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Loader2 className="h-7 w-7 text-primary animate-spin" />
-            <p className="text-sm text-muted-foreground">{labels.searching[lang]}</p>
+          <div className="px-6 py-6 space-y-6">
+            {/* Skeleton loading */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-4 rounded" />
+                <Skeleton className="h-3 w-28" />
+              </div>
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-20 w-full rounded-lg" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-4 rounded" />
+                <Skeleton className="h-3 w-36" />
+              </div>
+              <Skeleton className="h-14 w-full" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-4 rounded" />
+                <Skeleton className="h-3 w-44" />
+              </div>
+              <Skeleton className="h-14 w-full" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-4 rounded" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+            </div>
+            <p className="text-sm text-muted-foreground text-center flex items-center justify-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              {labels.searching[lang]}
+            </p>
           </div>
-        ) : (
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3 px-6">
+            <AlertCircle className="h-8 w-8 text-destructive" />
+            <p className="text-sm text-muted-foreground text-center">{labels.error[lang]}</p>
+          </div>
+        ) : data ? (
           <div className="px-6 py-5 space-y-5">
             {/* 1. Passagem */}
             <section className="rounded-lg border border-border bg-muted/30 p-4">
@@ -128,7 +176,7 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
               </ul>
             </section>
           </div>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   );

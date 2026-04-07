@@ -337,7 +337,51 @@ export default function Configuracoes() {
         <TabsContent value="doctrine">
           <Card>
             <CardHeader><CardTitle className="font-display">{t('settings.doctrine')}</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Bible Version */}
+              <div className="space-y-2">
+                <Label>{lang === 'PT' ? 'Versão Bíblica Padrão' : lang === 'EN' ? 'Default Bible Version' : 'Versión Bíblica Predeterminada'}</Label>
+                <Select
+                  value={profile?.bible_version || 'ARA'}
+                  onValueChange={async (value) => {
+                    if (!profile?.id) return;
+                    try {
+                      const { error } = await supabase
+                        .from('profiles')
+                        .update({ bible_version: value, updated_at: new Date().toISOString() })
+                        .eq('id', profile.id);
+                      if (error) throw error;
+                      await refreshProfile();
+                      toast.success(lang === 'PT' ? 'Versão bíblica atualizada!' : lang === 'EN' ? 'Bible version updated!' : '¡Versión bíblica actualizada!');
+                    } catch {
+                      toast.error(lb('save_error'));
+                    }
+                  }}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[
+                      { value: 'ARA', label: 'ARA — Almeida Revista e Atualizada' },
+                      { value: 'ACF', label: 'ACF — Almeida Corrigida Fiel' },
+                      { value: 'NVI', label: 'NVI — Nova Versão Internacional' },
+                      { value: 'NVT', label: 'NVT — Nova Versão Transformadora' },
+                      { value: 'KJV', label: 'KJV — King James Version' },
+                      { value: 'ESV', label: 'ESV — English Standard Version' },
+                      { value: 'NIV', label: 'NIV — New International Version' },
+                      { value: 'NASB', label: 'NASB — New American Standard Bible' },
+                      { value: 'RVR60', label: 'RVR60 — Reina-Valera 1960' },
+                      { value: 'NTV', label: 'NTV — Nueva Traducción Viviente' },
+                    ].map((v) => (
+                      <SelectItem key={v.value} value={v.value}>{v.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {lang === 'PT' ? 'A versão escolhida será usada nas buscas e gerações de conteúdo.' : lang === 'EN' ? 'This version will be used in searches and content generation.' : 'Esta versión se utilizará en búsquedas y generación de contenido.'}
+                </p>
+              </div>
+
+              {/* Doctrine */}
               <div className="space-y-2">
                 <Label>{t('settings.doctrine_label')}</Label>
                 <Select defaultValue="Interdenominacional">
