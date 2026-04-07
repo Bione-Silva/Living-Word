@@ -85,6 +85,30 @@ export type Database = {
         }
         Relationships: []
       }
+      free_tool_usage: {
+        Row: {
+          created_at: string
+          id: string
+          month_key: string
+          tool_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          month_key: string
+          tool_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          month_key?: string
+          tool_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       generation_logs: {
         Row: {
           cost_usd: number
