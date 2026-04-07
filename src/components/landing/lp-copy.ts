@@ -132,8 +132,8 @@ export const formats = {
       { icon: '📰', name: 'Blog devocional', desc: 'Post otimizado para leitura online' },
       { icon: '👥', name: 'Conteúdo para célula', desc: 'Roteiro com perguntas e dinâmicas' },
       { icon: '📱', name: 'Conteúdo para redes', desc: 'Cards curtos e impactantes' },
-      { icon: '🇬🇧', name: 'English version', desc: 'Mesmo conteúdo adaptado para inglês' },
-      { icon: '🇪🇸', name: 'Versión en español', desc: 'Mismo contenido adaptado al español' },
+      { icon: '🇬🇧', name: 'Versão em inglês', desc: 'Mesmo conteúdo adaptado para inglês' },
+      { icon: '🇪🇸', name: 'Versão em espanhol', desc: 'Mesmo conteúdo adaptado para espanhol' },
     ],
     EN: [
       { icon: '📖', name: 'Full sermon', desc: 'Structured with exegesis, application and closing' },
