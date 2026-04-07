@@ -1,11 +1,12 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { BookOpen, MapPin, Lightbulb, ScrollText, Loader2, AlertCircle } from 'lucide-react';
+import { BookOpen, MapPin, Lightbulb, ScrollText, Loader2, AlertCircle, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -33,14 +34,18 @@ const labels: Record<string, Record<L, string>> = {
   results: { PT: 'Resultado para', EN: 'Results for', ES: 'Resultados para' },
   error: { PT: 'Erro ao buscar resultados. Tente novamente.', EN: 'Error fetching results. Please try again.', ES: 'Error al buscar resultados. Inténtelo de nuevo.' },
   bible: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' },
+  save: { PT: 'Salvar na Biblioteca', EN: 'Save to Library', ES: 'Guardar en Biblioteca' },
+  saved: { PT: 'Salvo com sucesso!', EN: 'Saved successfully!', ES: '¡Guardado con éxito!' },
+  saveError: { PT: 'Erro ao salvar.', EN: 'Error saving.', ES: 'Error al guardar.' },
 };
 
 export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalProps) {
   const { lang } = useLanguage();
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [data, setData] = useState<SearchResult | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const bibleVersion = profile?.bible_version || 'ARA';
 
@@ -82,6 +87,38 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
     doSearch();
     return () => { cancelled = true; };
   }, [open, query, bibleVersion, lang]);
+  const handleSave = async () => {
+    if (!data || !user) return;
+    setSaving(true);
+    try {
+      const content = [
+        `## ${data.reference}\n`,
+        `> ${data.passage}\n`,
+        `### ${labels.summary[lang]}\n${data.summary}\n`,
+        `### ${labels.context[lang]}\n${data.context}\n`,
+        `### ${labels.insights[lang]}`,
+        ...data.insights.map((ins, i) => `${i + 1}. ${ins}`),
+      ].join('\n');
+
+      const { error: insertError } = await supabase.from('materials').insert({
+        user_id: user.id,
+        title: `${labels.results[lang]}: ${query}`,
+        content,
+        type: 'deep_search',
+        bible_version: bibleVersion,
+        language: lang,
+        passage: data.reference,
+      });
+
+      if (insertError) throw insertError;
+      toast.success(labels.saved[lang]);
+    } catch (err) {
+      console.error('Save error:', err);
+      toast.error(labels.saveError[lang]);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -175,6 +212,20 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
                 ))}
               </ul>
             </section>
+
+            {/* Save button */}
+            <div className="pt-2 flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSave}
+                disabled={saving}
+                className="gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {labels.save[lang]}
+              </Button>
+            </div>
           </div>
         ) : null}
       </DialogContent>
