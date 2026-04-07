@@ -391,9 +391,16 @@ export default function AppLayout() {
 
         {collapsed && (
           <div className="flex justify-center py-1 shrink-0">
-            <button onClick={toggleCollapsed} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors p-1.5 rounded-lg hover:bg-sidebar-accent/50" title="Expandir sidebar">
-              <PanelLeftOpen className="h-4 w-4" />
-            </button>
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <button onClick={toggleCollapsed} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors p-1.5 rounded-lg hover:bg-sidebar-accent/50">
+                  <PanelLeftOpen className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs font-medium">
+                {lang === 'PT' ? 'Expandir sidebar' : lang === 'EN' ? 'Expand sidebar' : 'Expandir sidebar'}
+              </TooltipContent>
+            </Tooltip>
           </div>
         )}
 
