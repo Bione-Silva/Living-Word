@@ -66,6 +66,8 @@ const FEATURE_ICONS: Record<string, string> = {
   'devotional': '🙏', 'outline': '📋', 'sermon': '🎤', 'Blog Creator': '✍️',
 };
 
+const filterAllLabel = { PT: 'Todas as ferramentas', EN: 'All tools', ES: 'Todas las herramientas' } as Record<L, string>;
+
 const labels = {
   title: { PT: 'Extrato de Créditos', EN: 'Credit Statement', ES: 'Extracto de Créditos' } as Record<L, string>,
   period: { PT: 'Período do plano atual', EN: 'Current plan period', ES: 'Período del plan actual' } as Record<L, string>,
