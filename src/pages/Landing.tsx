@@ -570,8 +570,8 @@ export default function Landing() {
               </div>
               {/* Floating language badge */}
               <div className="absolute left-0 bottom-12 z-20 flex gap-1.5 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm" style={{ background: 'rgba(245,240,232,0.92)', border: '1px solid rgba(196,149,106,0.2)' }}>
-                {['PT', 'EN', 'ES'].map((l) => (
-                  <span key={l} className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: l === 'PT' ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === 'PT' ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
+                {(['PT', 'EN', 'ES'] as L[]).map((l) => (
+                  <span key={l} className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: l === lang ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === lang ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
                 ))}
               </div>
               {/* Glow */}
