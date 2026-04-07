@@ -13,6 +13,7 @@ export const extraOutreachTools: ToolCardData[] = [
       EN: 'Professional scripts for short social media videos.',
       ES: 'Guiones profesionales para videos cortos en redes.',
     },
+    locked: true,
     hasModal: true,
   },
   {
@@ -24,6 +25,7 @@ export const extraOutreachTools: ToolCardData[] = [
       EN: 'Complete material for cell meetings or small groups.',
       ES: 'Material completo para reuniones de célula o grupos pequeños.',
     },
+    locked: true,
     hasModal: true,
   },
   {
@@ -35,6 +37,7 @@ export const extraOutreachTools: ToolCardData[] = [
       EN: 'Texts with hashtags and CTAs for Instagram and Facebook.',
       ES: 'Textos con hashtags y CTAs para Instagram y Facebook.',
     },
+    locked: true,
     hasModal: true,
   },
   {
@@ -46,6 +49,7 @@ export const extraOutreachTools: ToolCardData[] = [
       EN: 'Ready newsletter with devotional, announcements and pastoral word.',
       ES: 'Newsletter lista con devocional, avisos y palabra pastoral.',
     },
+    locked: true,
     hasModal: true,
   },
   {
@@ -57,6 +61,7 @@ export const extraOutreachTools: ToolCardData[] = [
       EN: 'Clear and welcoming communication for bulletin and projection.',
       ES: 'Comunicación clara y acogedora para boletín y proyección.',
     },
+    locked: true,
     hasModal: true,
   },
 ];
@@ -71,6 +76,7 @@ export const extraFunTools: ToolCardData[] = [
       EN: 'Fun quizzes for cell groups, Sunday school and events.',
       ES: 'Quizzes divertidos para célula, escuela dominical y eventos.',
     },
+    locked: true,
     hasModal: true,
   },
   {
@@ -82,6 +88,7 @@ export const extraFunTools: ToolCardData[] = [
       EN: 'Poems inspired by passages and themes of faith.',
       ES: 'Poemas inspirados en pasajes y temas de fe.',
     },
+    locked: true,
     hasModal: true,
   },
   {
@@ -93,6 +100,7 @@ export const extraFunTools: ToolCardData[] = [
       EN: 'Biblical stories adapted for children ages 5-10.',
       ES: 'Historias bíblicas adaptadas para niños de 5-10 años.',
     },
+    locked: true,
     hasModal: true,
   },
   {

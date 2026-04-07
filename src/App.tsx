@@ -35,6 +35,7 @@ import ExposStudioPage from "./pages/ExposStudioPage";
 import Workspaces from "./pages/Workspaces";
 import SocialStudio from "./pages/SocialStudio";
 import BibleReader from "./pages/BibleReader";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +90,7 @@ const App = () => (
               <Route path="/blog/:handle" element={<BlogPublic />} />
               <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
               <Route path="/invite/:token" element={<AcceptInvite />} />
+              <Route path="/pricing" element={<Pricing />} />
 
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/blog-onboarding" element={<BlogOnboarding />} />

@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import type { PlanSlug } from '@/lib/plans';
 
 interface UserProfile {
   id: string;
   full_name: string;
   blog_handle: string;
-  plan: 'free' | 'pastoral' | 'church' | 'ministry';
+  plan: PlanSlug;
   generations_used: number;
   generations_limit: number;
   language: string;
