@@ -79,10 +79,44 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
       setSavingNotes(false);
     }
   }, [item?.id, notes, lang]);
+  const handleEnrich = useCallback(async () => {
+    if (!item?.id) return;
+    setEnriching(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session');
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const resp = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/enrich-illustrations`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ material_id: item.id }),
+        }
+      );
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Failed');
+      setArticleImages(data.images);
+      toast.success(
+        lang === 'PT' ? `${data.images.length} ilustrações geradas!` :
+        lang === 'EN' ? `${data.images.length} illustrations generated!` :
+        `¡${data.images.length} ilustraciones generadas!`
+      );
+    } catch (err: any) {
+      console.error('Enrich error:', err);
+      toast.error(lang === 'PT' ? 'Erro ao gerar ilustrações' : 'Error generating illustrations');
+    } finally {
+      setEnriching(false);
+    }
+  }, [item?.id, lang]);
 
   if (!item) return null;
 
-  const finalContent = intercalateImages(item.content || '', getBodyImages(item));
+  const currentImages = articleImages.length > 0 ? articleImages : (getBodyImages(item));
+  const finalContent = intercalateImages(item.content || '', currentImages);
 
   const handleExportPDF = async () => {
     if (!contentRef.current) return;
