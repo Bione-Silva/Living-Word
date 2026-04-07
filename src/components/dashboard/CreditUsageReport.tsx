@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CreditUsageCharts } from './CreditUsageCharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -180,6 +181,13 @@ export function CreditUsageReport() {
               </p>
             </div>
           </div>
+
+          {/* Charts */}
+          {!loading && entries.length > 0 && (
+            <div className="px-5 py-4">
+              <CreditUsageCharts entries={entries} />
+            </div>
+          )}
         </div>
 
         {/* Table header */}
