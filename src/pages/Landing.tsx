@@ -548,7 +548,7 @@ export default function Landing() {
             <div className="hidden lg:flex relative justify-center items-center">
               <img
                 src={heroPhoneMockup}
-                alt="Living Word App — Estúdio Pastoral"
+                alt={lang === 'PT' ? 'Living Word App — Estúdio Pastoral' : lang === 'EN' ? 'Living Word App — Pastoral Studio' : 'Living Word App — Estudio Pastoral'}
                 width={400}
                 height={400}
                 className="relative z-10 drop-shadow-2xl"
