@@ -351,44 +351,59 @@ export default function AppLayout() {
     );
   }
 
+  const sidebarW = collapsed ? 'w-[68px]' : 'w-[260px]';
+  const mainMl = collapsed ? 'ml-[68px]' : 'ml-[260px]';
+
   return (
     <div className="theme-app min-h-screen bg-background flex">
       <ThemeInjector />
       {/* Desktop Sidebar */}
-      <aside className="w-[260px] min-h-screen flex flex-col fixed left-0 top-0 bottom-0 z-40 bg-sidebar text-sidebar-foreground">
+      <aside className={`${sidebarW} min-h-screen flex flex-col fixed left-0 top-0 bottom-0 z-40 bg-sidebar text-sidebar-foreground transition-all duration-200`}>
         {/* Logo */}
-        <div className="p-4 pb-2 shrink-0">
+        <div className={`p-4 pb-2 shrink-0 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
           <Link to="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-sidebar-primary/20 flex items-center justify-center shrink-0">
               <Wand2 className="h-4 w-4 text-sidebar-primary" />
             </div>
-            <span className="font-display text-xl font-bold text-sidebar-primary">Living Word</span>
+            {!collapsed && <span className="font-display text-xl font-bold text-sidebar-primary">Living Word</span>}
           </Link>
+          {!collapsed && (
+            <button onClick={toggleCollapsed} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors" title="Recolher sidebar">
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
-        {/* Tools label */}
-        <div className="px-5 pt-2 pb-1 shrink-0">
-          <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
-            {t('nav.tools') || 'FERRAMENTAS'}
-          </span>
-        </div>
+        {collapsed && (
+          <div className="flex justify-center py-1 shrink-0">
+            <button onClick={toggleCollapsed} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors p-1.5 rounded-lg hover:bg-sidebar-accent/50" title="Expandir sidebar">
+              <PanelLeftOpen className="h-4 w-4" />
+            </button>
+          </div>
+        )}
 
-        {/* Navigation — all groups closed by default */}
-        <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto min-h-0">
-          {/* Dashboard */}
+        {!collapsed && (
+          <div className="px-5 pt-2 pb-1 shrink-0">
+            <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
+              {t('nav.tools') || 'FERRAMENTAS'}
+            </span>
+          </div>
+        )}
+
+        <nav className={`flex-1 ${collapsed ? 'px-1.5' : 'px-3'} space-y-0.5 overflow-y-auto min-h-0`}>
           <Link
             to="/dashboard"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/dashboard'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? (t('nav.dashboard') || 'Dashboard') : undefined}
           >
-            <LayoutDashboard className="h-4 w-4" />
-            {t('nav.dashboard')}
+            <LayoutDashboard className="h-4 w-4 shrink-0" />
+            {!collapsed && t('nav.dashboard')}
           </Link>
 
-          {/* Tool groups — all closed by default */}
           {toolGroups.map((group) => {
             const groupKey = group.label.PT;
             const isOpen = openGroups[groupKey] ?? false;
@@ -397,15 +412,20 @@ export default function AppLayout() {
             return (
               <div key={groupKey}>
                 <button
-                  onClick={() => toggleGroup(groupKey)}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+                  onClick={() => !collapsed && toggleGroup(groupKey)}
+                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
+                  title={collapsed ? group.label[lang] : undefined}
                 >
-                  <GroupIcon className="h-4 w-4" />
-                  <span className="flex-1 text-left">{group.label[lang]}</span>
-                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'}`} />
+                  <GroupIcon className="h-4 w-4 shrink-0" />
+                  {!collapsed && (
+                    <>
+                      <span className="flex-1 text-left">{group.label[lang]}</span>
+                      <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'}`} />
+                    </>
+                  )}
                 </button>
 
-                {isOpen && (
+                {isOpen && !collapsed && (
                   <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5">
                     {group.tools.map((tool) => {
                       const Icon = tool.icon;
@@ -434,180 +454,191 @@ export default function AppLayout() {
             );
           })}
 
-          {/* Mentes Brilhantes */}
           <Link
             to="/dashboard/mentes"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname.startsWith('/dashboard/mentes')
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? (lang === 'EN' ? 'Brilliant Minds' : 'Mentes Brilhantes') : undefined}
           >
-            <Brain className="h-4 w-4" />
-            {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
-            <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
-              Premium
-            </Badge>
+            <Brain className="h-4 w-4 shrink-0" />
+            {!collapsed && (
+              <>
+                {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
+                <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
+                  Premium
+                </Badge>
+              </>
+            )}
           </Link>
 
-          {/* Library */}
           <Link
             to="/biblioteca"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/biblioteca'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? (t('nav.library') || 'Biblioteca') : undefined}
           >
-            <Library className="h-3.5 w-3.5" />
-            {t('nav.library')}
+            <Library className="h-3.5 w-3.5 shrink-0" />
+            {!collapsed && t('nav.library')}
           </Link>
 
-          {/* Workspaces */}
           <Link
             to="/workspaces"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/workspaces'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? 'Workspaces' : undefined}
           >
-            <FolderOpen className="h-3.5 w-3.5" />
-            {lang === 'PT' ? 'Workspaces' : lang === 'EN' ? 'Workspaces' : 'Workspaces'}
+            <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+            {!collapsed && 'Workspaces'}
           </Link>
 
-          {/* Social Studio */}
           <Link
             to="/social-studio"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/social-studio'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? (lang === 'PT' ? 'Estúdio Social' : 'Social Studio') : undefined}
           >
-            <ImageIcon className="h-3.5 w-3.5" />
-            {lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}
+            <ImageIcon className="h-3.5 w-3.5 shrink-0" />
+            {!collapsed && (lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social')}
           </Link>
 
-          {/* spacer to push Conta to bottom */}
           <div className="flex-1" />
 
-          {/* Separator for Conta */}
-          <div className="pt-3 pb-1 border-t border-sidebar-border mt-2">
-            <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50 px-3">
-              {lang === 'PT' ? 'CONTA' : lang === 'EN' ? 'ACCOUNT' : 'CUENTA'}
-            </span>
-          </div>
+          {!collapsed ? (
+            <div className="pt-3 pb-1 border-t border-sidebar-border mt-2">
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50 px-3">
+                {lang === 'PT' ? 'CONTA' : lang === 'EN' ? 'ACCOUNT' : 'CUENTA'}
+              </span>
+            </div>
+          ) : (
+            <div className="pt-3 mt-2 border-t border-sidebar-border" />
+          )}
 
-          {/* Profile */}
           <Link
             to="/configuracoes"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/configuracoes'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? (lang === 'PT' ? 'Meu Perfil' : 'My Profile') : undefined}
           >
-            <User className="h-4 w-4" />
-            {lang === 'PT' ? 'Meu Perfil' : lang === 'EN' ? 'My Profile' : 'Mi Perfil'}
+            <User className="h-4 w-4 shrink-0" />
+            {!collapsed && (lang === 'PT' ? 'Meu Perfil' : lang === 'EN' ? 'My Profile' : 'Mi Perfil')}
           </Link>
 
-          {/* Plan & Usage */}
           <Link
             to="/upgrade"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/upgrade'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? (lang === 'PT' ? 'Plano e Uso' : 'Plan & Usage') : undefined}
           >
-            <Crown className="h-4 w-4" />
-            {lang === 'PT' ? 'Plano e Uso' : lang === 'EN' ? 'Plan & Usage' : 'Plan y Uso'}
+            <Crown className="h-4 w-4 shrink-0" />
+            {!collapsed && (lang === 'PT' ? 'Plano e Uso' : lang === 'EN' ? 'Plan & Usage' : 'Plan y Uso')}
           </Link>
 
-          {/* Portal — external public blog */}
           {profile?.blog_handle && (
             <Link
               to={`/blog/${profile.blog_handle}`}
               target="_blank"
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
-              title={lang === 'PT' ? 'Abrir portal público' : lang === 'EN' ? 'Open public portal' : 'Abrir portal público'}
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
+              title={collapsed ? 'Portal' : (lang === 'PT' ? 'Abrir portal público' : 'Open public portal')}
             >
-              <ExternalLink className="h-4 w-4" />
-              Portal
+              <ExternalLink className="h-4 w-4 shrink-0" />
+              {!collapsed && 'Portal'}
             </Link>
           )}
 
-          {/* Blog management */}
           <Link
             to="/blog"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/blog'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
-            title={lang === 'PT' ? 'Gerenciar artigos internos' : lang === 'EN' ? 'Manage internal articles' : 'Gestionar artículos internos'}
+            title={collapsed ? (t('nav.blog') || 'Blog') : undefined}
           >
-            <BookOpen className="h-3.5 w-3.5" />
-            {t('nav.blog')}
+            <BookOpen className="h-3.5 w-3.5 shrink-0" />
+            {!collapsed && t('nav.blog')}
           </Link>
 
-          {/* Help Center */}
           <Link
             to="/ajuda"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname.startsWith('/ajuda')
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? (lang === 'PT' ? 'Central de Ajuda' : 'Help Center') : undefined}
           >
-            <HelpCircle className="h-4 w-4" />
-            {lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda'}
+            <HelpCircle className="h-4 w-4 shrink-0" />
+            {!collapsed && (lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda')}
           </Link>
 
-          {/* Settings */}
           <Link
             to="/configuracoes"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === '/configuracoes'
                 ? 'bg-sidebar-accent text-sidebar-primary'
                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             }`}
+            title={collapsed ? (t('nav.settings') || 'Configurações') : undefined}
           >
-            <Settings className="h-4 w-4" />
-            {t('nav.settings')}
+            <Settings className="h-4 w-4 shrink-0" />
+            {!collapsed && t('nav.settings')}
           </Link>
 
-          {/* Admin - Master only */}
           {isAdmin && (
             <Link
               to="/admin/dashboard"
-              className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors mt-1 ${
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors mt-1 ${
                 location.pathname === '/admin/dashboard'
                   ? 'bg-destructive/10 text-destructive'
                   : 'text-sidebar-foreground/40 hover:bg-destructive/10 hover:text-destructive/70'
               }`}
+              title={collapsed ? 'Back-office' : undefined}
             >
-              <ShieldAlert className="h-3.5 w-3.5" />
-              Back-office
+              <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+              {!collapsed && 'Back-office'}
             </Link>
           )}
         </nav>
 
-        {/* Bottom section — usage + profile */}
+        {/* Bottom section */}
         <div className="shrink-0 border-t border-sidebar-border">
-          {/* Usage bar — corrected */}
-          <div className="px-4 py-3">
-            <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50 mb-1.5">
-              {lang === 'PT' ? 'Uso do mês' : lang === 'EN' ? 'Monthly usage' : 'Uso del mes'}
-            </p>
-            <Progress value={pct} className="h-1.5 mb-1" />
-            <p className="text-[11px] text-sidebar-foreground/60">
-              {used} {lang === 'PT' ? 'de' : lang === 'EN' ? 'of' : 'de'} {limit} · {limit > 0 ? ((used / limit) * 100).toFixed(1) : '0'}%
-            </p>
-          </div>
+          {!collapsed ? (
+            <div className="px-4 py-3">
+              <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50 mb-1.5">
+                {lang === 'PT' ? 'Uso do mês' : lang === 'EN' ? 'Monthly usage' : 'Uso del mes'}
+              </p>
+              <Progress value={pct} className="h-1.5 mb-1" />
+              <p className="text-[11px] text-sidebar-foreground/60">
+                {used} {lang === 'PT' ? 'de' : lang === 'EN' ? 'of' : 'de'} {limit} · {limit > 0 ? ((used / limit) * 100).toFixed(1) : '0'}%
+              </p>
+            </div>
+          ) : (
+            <div className="px-2 py-3 flex justify-center">
+              <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center" title={`${used}/${limit}`}>
+                <span className="text-[9px] font-bold text-sidebar-primary">{pct}%</span>
+              </div>
+            </div>
+          )}
 
-          {isFree && (
+          {isFree && !collapsed && (
             <div className="px-3 pb-2">
               <Link to="/upgrade">
                 <Button className="w-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 gap-2" size="sm">
@@ -618,10 +649,9 @@ export default function AppLayout() {
             </div>
           )}
 
-          {/* Profile — clickable */}
-          <div className="px-3 py-2 border-t border-sidebar-border">
-            <div className="flex items-center gap-3">
-              <Link to="/configuracoes" className="flex items-center gap-3 flex-1 min-w-0">
+          <div className={`${collapsed ? 'px-1.5' : 'px-3'} py-2 border-t border-sidebar-border`}>
+            <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+              <Link to="/configuracoes" className={`flex items-center ${collapsed ? '' : 'gap-3 flex-1 min-w-0'}`}>
                 {profile?.avatar_url ? (
                   <img
                     src={profile.avatar_url}
@@ -633,21 +663,25 @@ export default function AppLayout() {
                     {profile?.full_name?.charAt(0) || 'U'}
                   </div>
                 )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
-                  <p className="text-[11px] text-sidebar-foreground/50 capitalize">{profile?.plan || 'free'}</p>
-                </div>
+                {!collapsed && (
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
+                    <p className="text-[11px] text-sidebar-foreground/50 capitalize">{profile?.plan || 'free'}</p>
+                  </div>
+                )}
               </Link>
-              <button onClick={handleSignOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground shrink-0" title="Sair">
-                <LogOut className="h-4 w-4" />
-              </button>
+              {!collapsed && (
+                <button onClick={handleSignOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground shrink-0" title="Sair">
+                  <LogOut className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 ml-[260px]">
+      <div className={`flex-1 ${mainMl} transition-all duration-200`}>
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border px-6 py-3 flex items-center justify-end gap-3">
           {profile?.blog_handle && (
             <Link
