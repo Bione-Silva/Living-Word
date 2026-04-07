@@ -134,20 +134,36 @@ export function CreditUsageReport() {
     return TOOL_CREDITS[feature] || 10;
   };
 
-  const visibleEntries = entries.slice(0, visibleCount);
-  const hasMore = entries.length > visibleCount;
+  // Unique features found in entries for filter dropdown
+  const uniqueFeatures = useMemo(() => {
+    const set = new Set(entries.map((e) => e.feature));
+    return Array.from(set).sort((a, b) => {
+      const la = FEATURE_LABELS[a]?.[l] || a;
+      const lb = FEATURE_LABELS[b]?.[l] || b;
+      return la.localeCompare(lb);
+    });
+  }, [entries, l]);
 
-  // Running balance calculation
+  // Apply feature filter
+  const filteredEntries = useMemo(() => {
+    if (featureFilter === 'all') return entries;
+    return entries.filter((e) => e.feature === featureFilter);
+  }, [entries, featureFilter]);
+
+  const visibleEntries = filteredEntries.slice(0, visibleCount);
+  const hasMore = filteredEntries.length > visibleCount;
+
+  // Running balance calculation (always on full entries, mark filtered)
   let runningBalance = totalCredits;
-  const entriesWithBalance = entries.map((entry) => {
+  const entriesWithBalance = filteredEntries.map((entry) => {
     const credits = getCreditsUsed(entry.feature);
     runningBalance -= credits;
     return { ...entry, balance: Math.max(runningBalance, 0), credits };
   });
   const visibleWithBalance = entriesWithBalance.slice(0, visibleCount);
 
-  // Total consumed in this period
-  const totalConsumed = entries.reduce((sum, e) => sum + getCreditsUsed(e.feature), 0);
+  // Total consumed (filtered)
+  const totalConsumed = filteredEntries.reduce((sum, e) => sum + getCreditsUsed(e.feature), 0);
 
   return (
     <div className="w-full space-y-4">
