@@ -15,7 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe, Maximize2, Minimize2, Paintbrush, ImageIcon } from 'lucide-react';
+import { Loader2, Copy, Save, BookOpen, Wand2, FileText, RefreshCw, ThumbsUp, ThumbsDown, Library, Globe, Maximize2, Minimize2, ImageIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -170,7 +170,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [convertingToBlog, setConvertingToBlog] = useState(false);
-  const [showBlogPrompt, setShowBlogPrompt] = useState(false);
   const [imageStyle, setImageStyle] = useState<'oil' | 'watercolor' | 'minimalist'>('oil');
   const [generationLang, setGenerationLang] = useState<Language>(lang);
   const [expanded, setExpanded] = useState(false);
@@ -206,7 +205,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const resetForm = () => {
     setResult('');
     setInput('');
-    setShowBlogPrompt(false);
     setHistoricalSources(null);
     setGenerationLang(lang);
     setBlogArticle(null);
@@ -217,7 +215,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     if (!input.trim()) return;
     setLoading(true);
     setResult('');
-    setShowBlogPrompt(false);
     setHistoricalSources(null);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
@@ -230,7 +227,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       setResult(data?.content || 'No response');
       setHistoricalSources(data?.historical_sources_used || null);
       if (!isArticleTool) {
-        setShowBlogPrompt(true);
       }
     } catch (err: any) {
       toast.error(err.message || 'Error generating content');
@@ -323,7 +319,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const handleConvertToBlog = async () => {
     if (!result || !user) return;
     setConvertingToBlog(true);
-    setShowBlogPrompt(false);
     try {
       const { data, error } = await supabase.functions.invoke('generate-blog-article', {
         body: {
@@ -609,70 +604,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
                 </Button>
               </div>
 
-              {showBlogPrompt && !isArticleTool && (
-              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
-                  <p className="text-sm font-medium text-foreground">
-                    {lang === 'PT' ? '✨ Gostou? Quer transformar isso num artigo de blog com ilustrações?' :
-                     lang === 'EN' ? '✨ Liked it? Want to turn this into a blog article with illustrations?' :
-                     '✨ ¿Te gustó? ¿Quieres convertirlo en un artículo de blog con ilustraciones?'}
-                  </p>
-                  {/* Image style selector */}
-                  <div className="flex items-center gap-2">
-                    <Paintbrush className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <Label className="text-xs text-muted-foreground shrink-0">
-                      {lang === 'PT' ? 'Estilo das imagens:' : lang === 'EN' ? 'Image style:' : 'Estilo de imágenes:'}
-                    </Label>
-                    <Select value={imageStyle} onValueChange={(v) => setImageStyle(v as 'oil' | 'watercolor' | 'minimalist')}>
-                      <SelectTrigger className="w-[150px] h-7 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="oil">{lang === 'PT' ? '🎨 Óleo clássico' : lang === 'EN' ? '🎨 Classic oil' : '🎨 Óleo clásico'}</SelectItem>
-                        <SelectItem value="watercolor">{lang === 'PT' ? '💧 Aquarela' : lang === 'EN' ? '💧 Watercolor' : '💧 Acuarela'}</SelectItem>
-                        <SelectItem value="minimalist">{lang === 'PT' ? '✦ Minimalista' : lang === 'EN' ? '✦ Minimalist' : '✦ Minimalista'}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {convertingToBlog && (
-                    <p className="text-xs text-muted-foreground animate-pulse">
-                       {lang === 'PT' ? '🎨 Gerando artigo e ilustrando o corpo do texto...' :
-                        lang === 'EN' ? '🎨 Generating article and illustrating the body content...' :
-                        '🎨 Generando artículo e ilustrando el cuerpo del texto...'}
-                    </p>
-                  )}
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      className="gap-1 bg-primary text-primary-foreground"
-                      onClick={handleConvertToBlog}
-                      disabled={convertingToBlog}
-                    >
-                      {convertingToBlog ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
-                      {convertingToBlog
-                        ? (lang === 'PT' ? 'Gerando...' : lang === 'EN' ? 'Generating...' : 'Generando...')
-                        : (lang === 'PT' ? 'Sim, gerar artigo com ilustrações!' : lang === 'EN' ? 'Yes, generate with illustrations!' : '¡Sí, generar con ilustraciones!')}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1"
-                      onClick={handleGenerate}
-                      disabled={loading}
-                    >
-                      <RefreshCw className="h-3 w-3" />
-                      {lang === 'PT' ? 'Melhorar' : lang === 'EN' ? 'Improve' : 'Mejorar'}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="gap-1"
-                      onClick={() => setShowBlogPrompt(false)}
-                    >
-                      {lang === 'PT' ? 'Não, obrigado' : lang === 'EN' ? 'No, thanks' : 'No, gracias'}
-                    </Button>
-                  </div>
-                </div>
-              )}
 
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
