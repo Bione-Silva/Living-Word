@@ -9,7 +9,7 @@ import { useGeoRegion } from '@/hooks/useGeoRegion';
 
 import { minds } from '@/data/minds';
 import {
-  Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
+  Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic, Calendar,
   ChevronDown, Check, X as XIcon, Menu, X, BookOpen, PenTool,
   Share2, Layers, Shield, Sparkles, Brain, MessageCircle, ArrowRight, Search
 } from 'lucide-react';
