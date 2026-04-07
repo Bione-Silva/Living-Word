@@ -288,26 +288,25 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         });
         toast.success(lang === 'PT' ? 'Publicado no blog com imagens!' : lang === 'EN' ? 'Published to blog with images!' : '¡Publicado en el blog con imágenes!');
       } else {
-        const { data: material, error: matErr } = await supabase
-          .from('materials')
-          .insert({
-            user_id: user.id,
-            title: `${toolTitle} — ${input.substring(0, 50)}`,
-            type: 'blog_article',
-            content: result,
+        const { data: edgeData, error: edgeErr } = await supabase.functions.invoke('generate-blog-article', {
+          body: {
+            passage: input,
             language: generationLang,
-          })
-          .select('id')
-          .single();
-        if (matErr) throw matErr;
+            title: `${toolTitle} — ${input.substring(0, 50)}`,
+            source_content: result,
+            source_type: toolId,
+          },
+        });
+        if (edgeErr) throw edgeErr;
+        if (!edgeData?.success) throw new Error(edgeData?.error || 'Unknown error');
 
         await supabase.from('editorial_queue').insert({
           user_id: user.id,
-          material_id: material.id,
+          material_id: edgeData.material_id,
           status: 'published',
           published_at: new Date().toISOString(),
         });
-        toast.success(lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!');
+        toast.success(lang === 'PT' ? 'Publicado no blog com imagens!' : lang === 'EN' ? 'Published to blog with images!' : '¡Publicado en el blog con imágenes!');
       }
     } catch (err: any) {
       toast.error(err.message);
