@@ -205,7 +205,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const resetForm = () => {
     setResult('');
     setInput('');
-    setShowBlogPrompt(false);
     setHistoricalSources(null);
     setGenerationLang(lang);
     setBlogArticle(null);
@@ -216,7 +215,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     if (!input.trim()) return;
     setLoading(true);
     setResult('');
-    setShowBlogPrompt(false);
     setHistoricalSources(null);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
@@ -229,7 +227,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       setResult(data?.content || 'No response');
       setHistoricalSources(data?.historical_sources_used || null);
       if (!isArticleTool) {
-        setShowBlogPrompt(true);
       }
     } catch (err: any) {
       toast.error(err.message || 'Error generating content');
@@ -322,7 +319,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const handleConvertToBlog = async () => {
     if (!result || !user) return;
     setConvertingToBlog(true);
-    setShowBlogPrompt(false);
     try {
       const { data, error } = await supabase.functions.invoke('generate-blog-article', {
         body: {
