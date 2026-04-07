@@ -9,7 +9,7 @@ import { useGeoRegion } from '@/hooks/useGeoRegion';
 
 import { minds } from '@/data/minds';
 import {
-  Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
+  Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic, Calendar,
   ChevronDown, Check, X as XIcon, Menu, X, BookOpen, PenTool,
   Share2, Layers, Shield, Sparkles, Brain, MessageCircle, ArrowRight, Search
 } from 'lucide-react';
@@ -260,6 +260,7 @@ const copy = {
       { icon: Sparkles, title: { PT: 'IA treinada nas Escrituras', EN: 'AI trained on Scripture', ES: 'IA entrenada en las Escrituras' }, desc: { PT: 'Pesquisa profunda em Bíblias originais e modernas — exegese e contexto em segundos.', EN: 'Deep research on original and modern Bibles — exegesis and context in seconds.', ES: 'Investigación profunda en Biblias originales y modernas — exégesis y contexto en segundos.' } },
       { icon: Shield, title: { PT: 'Guardrails teológicos', EN: 'Theological guardrails', ES: 'Guardrails teológicos' }, desc: { PT: 'Exegese antes de aplicação. Distinção entre texto, interpretação e aplicação prática.', EN: 'Exegesis before application. Text, interpretation and application distinction.', ES: 'Exégesis antes de aplicación. Distinción entre texto, interpretación y aplicación.' } },
       { icon: Mic, title: { PT: 'Sua voz pastoral', EN: 'Your pastoral voice', ES: 'Tu voz pastoral' }, desc: { PT: 'Expositivo, narrativo, apologético — o conteúdo soa como você ensina.', EN: 'Expository, narrative, apologetic — content sounds like you teach.', ES: 'Expositivo, narrativo, apologético — el contenido suena como tú enseñas.' } },
+      { icon: Calendar, title: { PT: 'Calendário Editorial', EN: 'Editorial Calendar', ES: 'Calendario Editorial' }, desc: { PT: 'Planeje e organize suas publicações semanais com agendamento integrado ao blog.', EN: 'Plan and organize your weekly publications with scheduling integrated to your blog.', ES: 'Planifica y organiza tus publicaciones semanales con programación integrada al blog.' } },
     ],
   },
 
@@ -846,16 +847,18 @@ export default function Landing() {
             })}
           </div>
 
-          {/* Secondary — compact row matching reference */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {/* Secondary — same size as primary */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {copy.features.secondary.map((card, i) => {
               const Icon = card.icon;
               return (
                 <RevealOnScroll key={i} delay={i * 0.06}>
-                  <div className="rounded-2xl px-4 py-5 h-full" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 12px rgba(61,43,31,0.05)' }}>
-                    <Icon className="h-4 w-4 mb-3" style={{ color: '#8B7355' }} />
-                    <p className="text-[13px] font-bold mb-1" style={{ color: '#3D2B1F' }}>{card.title[lang]}</p>
-                    <p className="text-[11px] leading-[1.5]" style={{ color: '#8B7355' }}>{card.desc[lang]}</p>
+                  <div className="rounded-2xl p-6 h-full flex flex-col" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 12px rgba(61,43,31,0.05)' }}>
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style={{ background: '#EDD9C8' }}>
+                      <Icon className="h-5 w-5" style={{ color: '#6B4F3A' }} />
+                    </div>
+                    <h3 className="text-[16px] font-bold mb-2" style={{ color: '#3D2B1F' }}>{card.title[lang]}</h3>
+                    <p className="text-[13px] leading-[1.65]" style={{ color: '#6B4F3A' }}>{card.desc[lang]}</p>
                   </div>
                 </RevealOnScroll>
               );
