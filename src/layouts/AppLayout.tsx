@@ -694,11 +694,11 @@ export default function AppLayout() {
           {!collapsed ? (
             <div className="px-4 py-3">
               <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50 mb-1.5">
-                {lang === 'PT' ? 'Uso do mês' : lang === 'EN' ? 'Monthly usage' : 'Uso del mes'}
+                {lang === 'PT' ? 'Créditos' : lang === 'EN' ? 'Credits' : 'Créditos'}
               </p>
               <Progress value={pct} className="h-1.5 mb-1" />
               <p className="text-[11px] text-sidebar-foreground/60">
-                {used} {lang === 'PT' ? 'de' : lang === 'EN' ? 'of' : 'de'} {limit} · {limit > 0 ? ((used / limit) * 100).toFixed(1) : '0'}%
+                {used} {lang === 'PT' ? 'de' : lang === 'EN' ? 'of' : 'de'} {limit} · {pct}%
               </p>
             </div>
           ) : (

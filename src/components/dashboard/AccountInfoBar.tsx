@@ -16,8 +16,8 @@ export function AccountInfoBar() {
 
   const labels = {
     PT: { title: 'Créditos', of: 'de', contents: 'créditos', upgrade: 'Fazer upgrade' },
-    EN: { title: 'Monthly usage', of: 'of', contents: 'contents', upgrade: 'Upgrade' },
-    ES: { title: 'Uso del mes', of: 'de', contents: 'contenidos', upgrade: 'Hacer upgrade' },
+    EN: { title: 'Credits', of: 'of', contents: 'credits', upgrade: 'Upgrade' },
+    ES: { title: 'Créditos', of: 'de', contents: 'créditos', upgrade: 'Hacer upgrade' },
   };
   const l = labels[lang];
 
