@@ -286,7 +286,7 @@ export function CreditUsageReport() {
               onClick={() => setVisibleCount((c) => c + 20)}
             >
               <ChevronDown className="h-4 w-4" />
-              {labels.seeMore[l]} ({entries.length - visibleCount} {lang === 'PT' ? 'restantes' : 'remaining'})
+              {labels.seeMore[l]} ({filteredEntries.length - visibleCount} {lang === 'PT' ? 'restantes' : 'remaining'})
             </Button>
           </div>
         )}
