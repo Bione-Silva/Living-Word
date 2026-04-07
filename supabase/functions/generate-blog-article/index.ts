@@ -196,7 +196,9 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     }
 
     const h1Match = content.match(/^#\s+(.+)$/m);
-    const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
+    let articleTitle = inputTitle || h1Match?.[1] || passage;
+    // Clean unwanted prefixes like "Blog & Artigos —", "Blog —", etc.
+    articleTitle = articleTitle.replace(/^(Blog\s*&?\s*Artigos?\s*[-—–:]\s*)/i, '').trim();
 
     // Image style mapping
     const styleMap: Record<string, string> = {
