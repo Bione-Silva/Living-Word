@@ -203,6 +203,16 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
           </button>
         </div>
 
+        {enriching && enrichStep && (
+          <div
+            className="mx-4 mt-14 mb-2 px-4 py-3 rounded-xl flex items-center gap-3"
+            style={{ backgroundColor: '#ede6d8', color: '#3c2f21' }}
+          >
+            <Loader2 className="h-4 w-4 animate-spin shrink-0" style={{ color: '#C4956A' }} />
+            <span className="text-sm font-medium">{enrichStep}</span>
+          </div>
+        )}
+
         <DialogTitle className="sr-only">{item.title}</DialogTitle>
 
         <div className="flex-1 min-h-0 flex overflow-hidden">
