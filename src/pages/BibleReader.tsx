@@ -75,7 +75,7 @@ export default function BibleReader() {
         {/* Book combobox */}
         <Popover open={bookOpen} onOpenChange={setBookOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[200px] justify-between font-normal">
+            <Button variant="outline" className="w-[200px] justify-between font-normal text-foreground border-border">
               {getBookName(book, lang)}
               <Search className="ml-2 h-3.5 w-3.5 opacity-50" />
             </Button>
