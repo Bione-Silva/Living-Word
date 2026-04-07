@@ -378,18 +378,18 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
           {/* Expanded reader dialog */}
           <Dialog open={expanded} onOpenChange={setExpanded}>
-            <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0">
-              <DialogHeader>
+            <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] flex flex-col bg-background text-foreground p-0">
+              <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
                 <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
                 <DialogDescription className="sr-only">
                   {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
                 </DialogDescription>
               </DialogHeader>
-              <ScrollArea className="flex-1 min-h-0 bg-muted/20 rounded-lg">
-                <div className="prose prose-base pastoral-prose max-w-none p-6 lg:p-8">
+              <div className="flex-1 min-h-0 overflow-y-auto px-6">
+                <div className="prose prose-base pastoral-prose max-w-none py-6">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
                 </div>
-              </ScrollArea>
+              </div>
               <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
                   <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}
