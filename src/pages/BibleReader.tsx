@@ -104,7 +104,7 @@ export default function BibleReader() {
 
         {/* Chapter selector */}
         <Select value={String(chapter)} onValueChange={(v) => setChapter(Number(v))}>
-          <SelectTrigger className="w-[100px]">
+          <SelectTrigger className="w-[100px] text-foreground border-border">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
