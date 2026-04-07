@@ -25,7 +25,7 @@ import {
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
-  PanelLeftClose, PanelLeftOpen
+  PanelLeftClose, PanelLeftOpen, Lock, Building2
 } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -34,6 +34,11 @@ import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
 import { ThemeInjector } from '@/components/ThemeInjector';
 import { PWAInstallBanner } from '@/components/PWAInstallBanner';
+import { UpgradeModal } from '@/components/UpgradeModal';
+import {
+  PLAN_CREDITS, isToolLockedForPlan, getMinPlanForTool, getUpgradeBadge,
+  type PlanSlug, PLAN_DISPLAY_NAMES
+} from '@/lib/plans';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -41,7 +46,6 @@ interface SidebarToolItem {
   id: string;
   icon: React.ElementType;
   label: Record<L, string>;
-  locked?: boolean;
 }
 
 interface SidebarToolGroup {
@@ -59,8 +63,8 @@ const toolGroups: SidebarToolGroup[] = [
       { id: 'verse-finder', icon: Search, label: { PT: 'Versículos', EN: 'Verse Finder', ES: 'Versículos' } },
       { id: 'historical-context', icon: BookOpen, label: { PT: 'Contexto Histórico', EN: 'Historical Context', ES: 'Contexto Histórico' } },
       { id: 'quote-finder', icon: Quote, label: { PT: 'Citações', EN: 'Quotes', ES: 'Citas' } },
-      { id: 'original-text', icon: FileText, label: { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original' }, locked: true },
-      { id: 'lexical', icon: LanguagesIcon, label: { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico' }, locked: true },
+      { id: 'original-text', icon: FileText, label: { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original' } },
+      { id: 'lexical', icon: LanguagesIcon, label: { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico' } },
     ],
   },
   {
@@ -72,9 +76,9 @@ const toolGroups: SidebarToolGroup[] = [
       { id: 'free-article', icon: PenTool, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' } },
       { id: 'title-gen', icon: Sparkles, label: { PT: 'Títulos', EN: 'Titles', ES: 'Títulos' } },
       { id: 'metaphor-creator', icon: Palette, label: { PT: 'Metáforas', EN: 'Metaphors', ES: 'Metáforas' } },
-      { id: 'illustrations', icon: Film, label: { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones' }, locked: true },
+      { id: 'illustrations', icon: Film, label: { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones' } },
       { id: 'bible-modernizer', icon: Repeat, label: { PT: 'Modernizador', EN: 'Modernizer', ES: 'Modernizador' } },
-      { id: 'youtube-blog', icon: Video, label: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' }, locked: true },
+      { id: 'youtube-blog', icon: Video, label: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' } },
     ],
   },
   {
@@ -89,7 +93,7 @@ const toolGroups: SidebarToolGroup[] = [
       { id: 'trivia', icon: Gamepad2, label: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' } },
       { id: 'poetry', icon: Feather, label: { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía' } },
       { id: 'kids-story', icon: Baby, label: { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil' } },
-      { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução', EN: 'Translation', ES: 'Traducción' }, locked: true },
+      { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução', EN: 'Translation', ES: 'Traducción' } },
     ],
   },
 ];
@@ -104,13 +108,21 @@ function SidebarTooltipWrap({ collapsed, label, children }: { collapsed: boolean
   );
 }
 
+function ToolLockBadge({ userPlan, toolId }: { userPlan: PlanSlug; toolId: string }) {
+  const requiredPlan = getMinPlanForTool(toolId);
+  const badgeType = getUpgradeBadge(userPlan, requiredPlan);
+
+  if (badgeType === 'church') return <Building2 className="h-3 w-3 ml-auto text-blue-400/60 shrink-0" />;
+  if (badgeType === 'crown') return <Crown className="h-3 w-3 ml-auto text-primary/50 shrink-0" />;
+  return <Lock className="h-3 w-3 ml-auto text-muted-foreground/50 shrink-0" />;
+}
+
 export default function AppLayout() {
   const { user, profile, signOut } = useAuth();
   const { t, lang } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  // ALL groups closed by default
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [activeTool, setActiveTool] = useState<{ id: string; title: string } | null>(null);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
@@ -119,6 +131,10 @@ export default function AppLayout() {
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem('lw-sidebar-collapsed') === 'true'; } catch { return false; }
   });
+  const [upgradeModal, setUpgradeModal] = useState<{ featureName: string; toolId: string; requiredPlan: PlanSlug } | null>(null);
+
+  const userPlan: PlanSlug = (profile?.plan as PlanSlug) || 'free';
+  const isFree = userPlan === 'free';
 
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
@@ -141,15 +157,17 @@ export default function AppLayout() {
     setMobileOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const isFree = profile?.plan === 'free';
   const isAdmin = user?.email === 'bionicaosilva@gmail.com';
 
   const handleToolClick = (tool: SidebarToolItem) => {
-    if (tool.locked && isFree) {
-      navigate('/upgrade');
+    if (isToolLockedForPlan(tool.id, userPlan)) {
+      setUpgradeModal({
+        featureName: tool.label[lang],
+        toolId: tool.id,
+        requiredPlan: getMinPlanForTool(tool.id),
+      });
       return;
     }
-    // Special navigation for biblical-study
     if (tool.id === 'biblical-study') {
       navigate('/estudos/novo');
       setMobileToolsOpen(false);
@@ -160,10 +178,11 @@ export default function AppLayout() {
   };
 
   // Credits usage
-  const planCredits: Record<string, number> = { free: 500, pastoral: 2000, church: 5000, ministry: 15000 };
   const used = profile?.generations_used || 0;
-  const limit = planCredits[(profile as any)?.plan] || profile?.generations_limit || 500;
+  const limit = PLAN_CREDITS[userPlan] || profile?.generations_limit || 150;
   const pct = limit > 0 ? Math.min(Math.round((used / limit) * 100), 100) : 0;
+  const remaining = Math.max(limit - used, 0);
+  const creditColor = remaining > 500 ? 'text-emerald-500' : remaining > 100 ? 'text-yellow-500' : 'text-destructive';
 
   if (isMobile) {
     return (
@@ -288,7 +307,7 @@ export default function AppLayout() {
                       <div className="grid grid-cols-3 gap-2 px-1 pb-2">
                         {group.tools.map((tool) => {
                           const Icon = tool.icon;
-                          const isLocked = tool.locked && isFree;
+                          const isLocked = isToolLockedForPlan(tool.id, userPlan);
                           return (
                             <button
                               key={tool.id}
@@ -299,9 +318,7 @@ export default function AppLayout() {
                                   : 'border-border/60 hover:border-primary/30 hover:bg-primary/5 active:bg-primary/10'
                               }`}
                             >
-                              {isLocked && (
-                                <Crown className="absolute top-1.5 right-1.5 h-3 w-3 text-primary/50" />
-                              )}
+                              {isLocked && <ToolLockBadge userPlan={userPlan} toolId={tool.id} />}
                               <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
                                 isLocked ? 'bg-muted/50' : 'bg-primary/10'
                               }`}>
@@ -319,7 +336,6 @@ export default function AppLayout() {
                 );
               })}
 
-              {/* Quick navigation links for mobile */}
               <div className="pt-3 border-t border-border mt-2">
                 <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground px-2 mb-2">
                   {lang === 'PT' ? 'NAVEGAÇÃO' : lang === 'EN' ? 'NAVIGATION' : 'NAVEGACIÓN'}
@@ -368,6 +384,17 @@ export default function AppLayout() {
             onOpenChange={(open) => !open && setActiveTool(null)}
             toolId={activeTool.id}
             toolTitle={activeTool.title}
+          />
+        )}
+
+        {upgradeModal && (
+          <UpgradeModal
+            open={!!upgradeModal}
+            onOpenChange={(open) => !open && setUpgradeModal(null)}
+            featureName={upgradeModal.featureName}
+            toolId={upgradeModal.toolId}
+            currentPlan={userPlan}
+            requiredPlan={upgradeModal.requiredPlan}
           />
         )}
       </div>
@@ -461,7 +488,7 @@ export default function AppLayout() {
                   <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5">
                     {group.tools.map((tool) => {
                       const Icon = tool.icon;
-                      const isLocked = tool.locked && isFree;
+                      const isLocked = isToolLockedForPlan(tool.id, userPlan);
                       return (
                         <button
                           key={tool.id}
@@ -474,9 +501,7 @@ export default function AppLayout() {
                         >
                           <Icon className="h-3.5 w-3.5" />
                           <span className="truncate">{tool.label[lang]}</span>
-                          {isLocked && (
-                            <Crown className="h-3 w-3 ml-auto text-sidebar-primary/50 shrink-0" />
-                          )}
+                          {isLocked && <ToolLockBadge userPlan={userPlan} toolId={tool.id} />}
                         </button>
                       );
                     })}
@@ -691,26 +716,28 @@ export default function AppLayout() {
 
         {/* Bottom section */}
         <div className="shrink-0 border-t border-sidebar-border">
-          {!collapsed ? (
-            <div className="px-4 py-3">
-              <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50 mb-1.5">
-                {lang === 'PT' ? 'Créditos' : lang === 'EN' ? 'Credits' : 'Créditos'}
-              </p>
-              <Progress value={pct} className="h-1.5 mb-1" />
-              <p className="text-[11px] text-sidebar-foreground/60">
-                {used} {lang === 'PT' ? 'de' : lang === 'EN' ? 'of' : 'de'} {limit} · {pct}%
-              </p>
-            </div>
-          ) : (
-            <div className="px-2 py-3 flex justify-center">
-              <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center" title={`${used}/${limit}`}>
-                <span className="text-[9px] font-bold text-sidebar-primary">{pct}%</span>
+          {!isFree ? (
+            !collapsed ? (
+              <div className="px-4 py-3">
+                <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50 mb-1.5">
+                  {lang === 'PT' ? 'Créditos' : lang === 'EN' ? 'Credits' : 'Créditos'}
+                </p>
+                <Progress value={pct} className="h-1.5 mb-1" />
+                <p className={`text-[11px] ${creditColor}`}>
+                  {remaining.toLocaleString()} {lang === 'PT' ? 'disponíveis' : lang === 'EN' ? 'available' : 'disponibles'}
+                </p>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="px-2 py-3 flex justify-center">
+                <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center" title={`${remaining}/${limit}`}>
+                  <span className="text-[9px] font-bold text-sidebar-primary">{pct}%</span>
+                </div>
+              </div>
+            )
+          ) : null}
 
           {isFree && !collapsed && (
-            <div className="px-3 pb-2">
+            <div className="px-3 py-2">
               <Link to="/upgrade">
                 <Button className="w-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 gap-2" size="sm">
                   <Crown className="h-4 w-4" />
@@ -737,7 +764,9 @@ export default function AppLayout() {
                 {!collapsed && (
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
-                    <p className="text-[11px] text-sidebar-foreground/50 capitalize">{profile?.plan || 'free'}</p>
+                    <p className="text-[11px] text-sidebar-foreground/50 capitalize">
+                      {PLAN_DISPLAY_NAMES[userPlan]?.[lang] || userPlan}
+                    </p>
                   </div>
                 )}
               </Link>
@@ -799,6 +828,17 @@ export default function AppLayout() {
           open={!!helpToolId}
           onOpenChange={(open) => !open && setHelpToolId(null)}
           toolId={helpToolId}
+        />
+      )}
+
+      {upgradeModal && (
+        <UpgradeModal
+          open={!!upgradeModal}
+          onOpenChange={(open) => !open && setUpgradeModal(null)}
+          featureName={upgradeModal.featureName}
+          toolId={upgradeModal.toolId}
+          currentPlan={userPlan}
+          requiredPlan={upgradeModal.requiredPlan}
         />
       )}
     </div>
