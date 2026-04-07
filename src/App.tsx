@@ -35,6 +35,7 @@ import ExposStudioPage from "./pages/ExposStudioPage";
 import Workspaces from "./pages/Workspaces";
 import SocialStudio from "./pages/SocialStudio";
 import BibleReader from "./pages/BibleReader";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
