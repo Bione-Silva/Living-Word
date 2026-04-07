@@ -212,6 +212,20 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
                 ))}
               </ul>
             </section>
+
+            {/* Save button */}
+            <div className="pt-2 flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSave}
+                disabled={saving}
+                className="gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {labels.save[lang]}
+              </Button>
+            </div>
           </div>
         ) : null}
       </DialogContent>
