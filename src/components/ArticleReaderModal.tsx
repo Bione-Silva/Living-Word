@@ -149,6 +149,17 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
         <div className="absolute right-4 top-4 z-20 flex items-center gap-1">
           {item.id && (
             <button
+              onClick={handleEnrich}
+              disabled={enriching}
+              className="rounded-full p-2 hover:bg-black/5 transition-colors"
+              style={{ color: '#6B4F3A' }}
+              title={lang === 'PT' ? 'Enriquecer com Ilustrações' : lang === 'EN' ? 'Enrich with Illustrations' : 'Enriquecer con Ilustraciones'}
+            >
+              {enriching ? <Loader2 className="h-5 w-5 animate-spin" /> : <Palette className="h-5 w-5" />}
+            </button>
+          )}
+          {item.id && (
+            <button
               onClick={() => setShowNotes(!showNotes)}
               className={`rounded-full p-2 hover:bg-black/5 transition-colors ${showNotes ? 'bg-black/5' : ''}`}
               style={{ color: '#6B4F3A' }}
