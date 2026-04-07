@@ -143,8 +143,8 @@ export const formats = {
       { icon: '📰', name: 'Blog devotional', desc: 'Post optimized for online reading' },
       { icon: '👥', name: 'Small group content', desc: 'Script with questions and dynamics' },
       { icon: '📱', name: 'Social media content', desc: 'Short and impactful cards' },
-      { icon: '🇧🇷', name: 'Versão em português', desc: 'Same content adapted to Portuguese' },
-      { icon: '🇪🇸', name: 'Versión en español', desc: 'Same content adapted to Spanish' },
+      { icon: '🇧🇷', name: 'Portuguese version', desc: 'Same content adapted to Portuguese' },
+      { icon: '🇪🇸', name: 'Spanish version', desc: 'Same content adapted to Spanish' },
     ],
     ES: [
       { icon: '📖', name: 'Sermón completo', desc: 'Estructurado con exégesis, aplicación y cierre' },
