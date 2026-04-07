@@ -690,10 +690,10 @@ export type Database = {
         Returns: {
           estimated_mrr_usd: number
           total_users_registered: number
-          users_church: number
           users_free: number
-          users_ministry: number
-          users_pastoral: number
+          users_igreja: number
+          users_pro: number
+          users_starter: number
           users_trialing: number
         }[]
       }
