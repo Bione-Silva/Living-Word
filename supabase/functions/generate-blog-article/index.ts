@@ -131,7 +131,7 @@ serve(async (req) => {
     const systemPrompt = `You are a pastoral content writer for Christian leaders. Write in ${targetLang}.
 Style: ${voice} tone, ${doctrine} tradition.
 Output a complete devotional blog article in Markdown format with:
-- A compelling title (H1)
+- A compelling title (H1) — ONLY the article topic, NEVER include prefixes like "Blog", "Artigos", "Blog & Artigos", "Devotional", category labels, or any similar prefix. Just the topic itself, e.g. "Ressurreição de Lázaro", not "Blog & Artigos — Ressurreição de Lázaro".
 - Opening reflection (2-3 paragraphs)
 - Bible passage reference and commentary with historical and cultural context
 - Practical application for daily life
