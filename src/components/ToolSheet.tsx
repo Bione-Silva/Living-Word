@@ -248,6 +248,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           body: {
             systemPrompt: config.systemPrompt(genLangLabel),
             userPrompt: input,
+            toolId,
           },
         });
         if (error) throw error;

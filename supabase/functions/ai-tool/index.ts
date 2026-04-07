@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,7 +21,7 @@ serve(async (req) => {
       });
     }
 
-    const { systemPrompt, userPrompt } = await req.json();
+    const { systemPrompt, userPrompt, toolId } = await req.json();
 
     if (!systemPrompt || !userPrompt) {
       return new Response(JSON.stringify({ error: "systemPrompt and userPrompt are required" }), {
@@ -29,6 +30,50 @@ serve(async (req) => {
       });
     }
 
+    // ── Free plan usage tracking ──
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+
+    let userId: string | undefined;
+    let isFreeUser = false;
+
+    const authHeader = req.headers.get("authorization") || "";
+    const token = authHeader.replace("Bearer ", "");
+    if (token) {
+      const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+      userId = user?.id;
+    }
+
+    if (userId && toolId) {
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("plan")
+        .eq("id", userId)
+        .single();
+
+      if (profile?.plan === "free") {
+        isFreeUser = true;
+        const monthKey = new Date().toISOString().slice(0, 7);
+        const { data: existing } = await supabaseAdmin
+          .from("free_tool_usage")
+          .select("id")
+          .eq("user_id", userId)
+          .eq("tool_id", toolId)
+          .eq("month_key", monthKey)
+          .maybeSingle();
+
+        if (existing) {
+          return new Response(
+            JSON.stringify({ error: "already_used_this_month" }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      }
+    }
+
+    // ── AI generation ──
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -65,6 +110,16 @@ serve(async (req) => {
 
     const data = await aiResponse.json();
     const content = data.choices?.[0]?.message?.content || "";
+
+    // ── Record usage for free users AFTER successful generation ──
+    if (userId && toolId && isFreeUser) {
+      const monthKey = new Date().toISOString().slice(0, 7);
+      await supabaseAdmin.from("free_tool_usage").insert({
+        user_id: userId,
+        tool_id: toolId,
+        month_key: monthKey,
+      });
+    }
 
     return new Response(JSON.stringify({ content }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

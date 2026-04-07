@@ -311,10 +311,14 @@ export default function Upgrade() {
                         </span>
                       )}
                     </div>
-                    {extraSeats > 0 && (
+                    {extraSeats > 0 && (() => {
+                      const addonAmount = pricing.currency === 'BRL' ? 19.00 : pricing.addon.amount;
+                      return (
                       <p className="text-[11px] text-muted-foreground">
-                        +{formatPrice(pricing.addon.amount, pricing.symbol, pricing.currency)} {labels.perSeat[lang]} × {extraSeats} = +{formatPrice(extraSeats * pricing.addon.amount, pricing.symbol, pricing.currency)}
+                        +{formatPrice(addonAmount, pricing.symbol, pricing.currency)} {labels.perSeat[lang]} × {extraSeats} = +{formatPrice(extraSeats * addonAmount, pricing.symbol, pricing.currency)}
                       </p>
+                      );
+                    })(}
                     )}
                   </div>
                 )}
