@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, ThumbsUp, ThumbsDown, Copy, Sparkles, X, Save } from 'lucide-react';
+import { ArtifactActions } from '@/components/mind-chat/ArtifactActions';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { minds } from '@/data/minds';
 import { toast } from 'sonner';
@@ -425,6 +426,7 @@ export default function MenteChat() {
               </div>
 
               {msg.role === 'assistant' && i > 0 && !isLoading && (
+                <>
                 <div className="flex items-center gap-1 mt-1.5 ml-1">
                   <button
                     onClick={() => handleCopy(msg.content)}
@@ -470,6 +472,17 @@ export default function MenteChat() {
                     </button>
                   )}
                 </div>
+                {isArtifact(msg.content) && user && (
+                  <ArtifactActions
+                    content={msg.content}
+                    lang={lang}
+                    userId={user.id}
+                    modalidade={modalidade}
+                    mindName={name}
+                    blogHandle={profile?.blog_handle}
+                  />
+                )}
+                </>
               )}
             </div>
           </div>
