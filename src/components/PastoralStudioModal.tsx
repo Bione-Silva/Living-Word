@@ -183,6 +183,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [bibleOpen, setBibleOpen] = useState(false);
   const [expandedTab, setExpandedTab] = useState<OutputMode>('sermon');
   const [genMeta, setGenMeta] = useState<GenerationMeta | null>(null);
 
