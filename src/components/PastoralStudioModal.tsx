@@ -642,10 +642,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
         </Dialog>
       </DialogContent>
     </Dialog>
-  return (
-    <>
-      {renderContent()}
-      <BibleDrawer open={bibleOpen} onOpenChange={setBibleOpen} />
+    <BibleDrawer open={bibleOpen} onOpenChange={setBibleOpen} />
     </>
   );
 }
