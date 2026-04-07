@@ -443,8 +443,8 @@ export default function Landing() {
       },
       {
         name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' } as Record<L, string>,
-        planKey: 'church' as string | null,
-        price: fmt(pricing.plans.church.amount),
+        planKey: 'igreja' as string | null,
+        price: fmt(pricing.plans.igreja.amount),
         period: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
         features: {
           PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', `+${fmt(pricing.addon.amount)} por usuário extra`, 'Capacidade escala com a equipe'],
