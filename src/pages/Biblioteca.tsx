@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2, FolderOpen } from 'lucide-react';
+import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2, FolderOpen, SearchCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
