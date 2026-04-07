@@ -1,152 +1,181 @@
 
 
-# Living Word — Full Plan Rules Implementation (Revised)
+# BRL Pricing Patch + free_tool_usage Tracking
 
-## Corrections Applied
+## 1. `src/utils/geoPricing.ts` — Fix BRL prices
 
-| Item | Old (wrong) | New (correct) |
-|------|-------------|---------------|
-| Free credits | 500 | 150 |
-| Starter credits | 1000 | 3,000 |
-| Pro credits | 3000 | 10,000 |
-| Igreja credits | 10000 | 30,000 |
-| Free per-tool tracking | deferred | included in this scope |
+Update BRL region block (lines 20-29):
+- starter: amount `19.00` → `37.00`, id → `'price_starter_brl_monthly'`
+- pro: amount `49.00` → `79.00`, id → `'price_pro_brl_monthly'`
+- igreja: amount `97.00` → `197.00`, id → `'price_igreja_brl_monthly'`
+- addon: amount `9.00` → `19.00`, id → `'price_addon_brl'`
 
----
+Note: Stripe price IDs are placeholders until real BRL products are created in Stripe Dashboard.
 
-## Implementation (10 steps)
+## 2. `src/lib/plans.ts` — Add `PLAN_PRICES_BRL`
 
-### Step 1 — DB Migration: rename plan slugs + fix credit limits + create `free_tool_usage` table
+After the existing `PLAN_PRICES` block (line 186), add:
 
-```sql
--- Rename old plan slugs
-UPDATE profiles SET plan = 'starter' WHERE plan = 'pastoral';
-UPDATE profiles SET plan = 'pro' WHERE plan = 'church';
-UPDATE profiles SET plan = 'igreja' WHERE plan = 'ministry';
-
--- Fix credit limits
-UPDATE profiles SET generations_limit = 150 WHERE plan = 'free';
-UPDATE profiles SET generations_limit = 3000 WHERE plan = 'starter';
-UPDATE profiles SET generations_limit = 10000 WHERE plan = 'pro';
-UPDATE profiles SET generations_limit = 30000 WHERE plan = 'igreja';
-ALTER TABLE profiles ALTER COLUMN generations_limit SET DEFAULT 150;
-
--- Free per-tool monthly tracking
-CREATE TABLE public.free_tool_usage (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  tool_id text NOT NULL,
-  used_at timestamptz NOT NULL DEFAULT now(),
-  month_key text NOT NULL DEFAULT to_char(now() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM'),
-  UNIQUE (user_id, tool_id, month_key)
-);
-ALTER TABLE public.free_tool_usage ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own usage" ON public.free_tool_usage FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own usage" ON public.free_tool_usage FOR INSERT WITH CHECK (auth.uid() = user_id);
+```typescript
+export const PLAN_PRICES_BRL = {
+  monthly: { starter: 37.00, pro: 79.00, igreja: 197.00 },
+  annual: { starter: 308.00, pro: 660.00, igreja: 1640.00 },
+  annualSavings: { starter: 136.00, pro: 158.00, igreja: 394.00 },
+} as const;
 ```
 
-### Step 2 — Create `src/lib/plans.ts` (~220 lines)
+## 3. `src/pages/Upgrade.tsx` — BRL-aware price display
 
-Single source of truth:
+Update `getDisplayPrice` (lines 195-207) to use `PLAN_PRICES_BRL` when `pricing.currency === 'BRL'`:
 
-- `PlanSlug = 'free' | 'starter' | 'pro' | 'igreja'`
-- `PLAN_CREDITS = { free: 150, starter: 3000, pro: 10000, igreja: 30000 }`
-- `TOOL_CREDITS` map — every tool ID → credit cost (from the spec: studio=20, biblical-study=30, blog=15, etc.)
-- `PlanFeature` type + `PLAN_FEATURES` map (which plan unlocks which feature set)
-- `hasAccess(userPlan, feature): boolean`
-- `getMinPlanFor(feature): PlanSlug`
-- `isToolLockedForPlan(toolId, userPlan): boolean`
-- `getUpgradeBadge(currentPlan, requiredPlan): 'lock' | 'crown' | 'church'`
-- `PLAN_PRICES` for USD monthly/annual
+```typescript
+const getDisplayPrice = (plan: PlanData) => {
+  if (plan.isFree) return `${pricing.symbol}0`;
+  if (!plan.planKey) return '';
+  const isBRL = pricing.currency === 'BRL';
 
-### Step 3 — Update `AuthContext.tsx`
+  if (plan.planKey === 'igreja') {
+    const addonAmt = isBRL ? 19.00 : pricing.addon.amount;
+    let base: number;
+    if (isBRL) {
+      base = isAnnual ? PLAN_PRICES_BRL.annual.igreja / 12 : PLAN_PRICES_BRL.monthly.igreja;
+      base += extraSeats * addonAmt;
+    } else {
+      base = isAnnual ? igrejaTotal * 10 / 12 : igrejaTotal;
+    }
+    return formatPrice(base, pricing.symbol, pricing.currency);
+  }
 
-- Change plan type: `'free' | 'pastoral' | 'church' | 'ministry'` → `'free' | 'starter' | 'pro' | 'igreja'`
+  const amount = isBRL
+    ? isAnnual ? PLAN_PRICES_BRL.annual[plan.planKey] / 12 : PLAN_PRICES_BRL.monthly[plan.planKey]
+    : isAnnual ? pricing.plans[plan.planKey].amount * 10 / 12 : pricing.plans[plan.planKey].amount;
+  return formatPrice(amount, pricing.symbol, pricing.currency);
+};
+```
 
-### Step 4 — Create `src/components/UpgradeModal.tsx` (~120 lines)
+Also update the Igreja slider addon display (line 307) — replace `pricing.addon.amount` with:
+```typescript
+const addonAmount = pricing.currency === 'BRL' ? 19.00 : pricing.addon.amount;
+```
+Use `addonAmount` in the slider text lines.
 
-Contextual modal when clicking locked tools:
-- Title: "Esta ferramenta está disponível no plano [NOME]"
-- Subtitle with price
-- Badge: 🔒 (→Starter), 👑 (→Pro), 🏛️ (→Igreja)
-- CTA → `/upgrade?feature=X&from_plan=Y`
-- Secondary → `/upgrade`
+Import `PLAN_PRICES_BRL` from `@/lib/plans`.
 
-### Step 5 — Update `src/layouts/AppLayout.tsx`
+## 4. `src/pages/Pricing.tsx` — BRL note
 
-Major changes:
-- Replace hardcoded `planCredits` map → import `PLAN_CREDITS` from `plans.ts`
-- Replace `isFree` binary lock → `isToolLockedForPlan(tool.id, profile.plan)`
-- All Extras tools get `locked: true` (blocked for Free)
-- `illustrations` locked for Free+Starter (requires Pro)
-- `youtube-blog` locked for Free+Starter (requires Pro)
-- Tool click: if locked → open `UpgradeModal` (not navigate to /upgrade)
-- Sidebar credits section: **hide credit numbers for Free users**, show upgrade CTA instead
-- Paid plans: credit color green/yellow/red based on remaining
-- Tool groups: update lock flags per spec
+Add a note below the billing toggle (after line 92):
 
-### Step 6 — Update `GenerationCounter.tsx` + `AccountInfoBar.tsx`
+```tsx
+<p className="text-xs text-muted-foreground text-center mt-2">
+  {lang === 'PT' && 'Preços em R$ disponíveis no checkout para usuários do Brasil.'}
+  {lang === 'EN' && 'BRL pricing available at checkout for Brazil users.'}
+  {lang === 'ES' && 'Precios en R$ disponibles en el pago para usuarios de Brasil.'}
+</p>
+```
 
-- Import `PLAN_CREDITS` from `plans.ts`
-- `GenerationCounter`: return `null` for Free plan (hide credits entirely)
-- `AccountInfoBar`: hide credit numbers for Free, show "Plano Free" with upgrade CTA only
+## 5. `supabase/functions/ai-tool/index.ts` — free_tool_usage tracking
 
-### Step 7 — Update `LockedTab.tsx`
+This is the main change. The edge function needs to:
+1. Accept an optional `toolId` parameter from the request body
+2. Extract user from JWT auth header
+3. If user's plan is `'free'` and `toolId` is provided: check `free_tool_usage` for existing entry this month. If found, return 403 `already_used_this_month`.
+4. After successful AI generation, INSERT into `free_tool_usage`.
 
-- Replace hardcoded "plano Pastoral" → use `getMinPlanFor()` to dynamically name the required plan
-- Show correct badge icon per plan gap
+```typescript
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-### Step 8 — Update `src/pages/Upgrade.tsx`
+// Inside the handler, after parsing body:
+const { systemPrompt, userPrompt, toolId } = await req.json();
 
-- Rename `PlanKey` type: `'starter' | 'pro' | 'church'` → `'starter' | 'pro' | 'igreja'`
-- Rename Church plan card to "Igreja" with slug `igreja`
-- Update `geoPricing.ts` interface: rename `church` key → `igreja` in `RegionPricing.plans`
-- Update Stripe price IDs accordingly in `PRICING_MAP`
-- Add monthly/annual toggle (annual = 2 months free discount)
-- Add BRL/USD currency toggle
-- Update features lists per spec
-- Update CTAs: Starter → "7 dias grátis", Pro → "Começar agora", Igreja → "Começar"
-- Add feature comparison table below cards
-- Highlight Pro as "Mais Popular"
+// Create supabase admin client
+const supabaseAdmin = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+);
 
-### Step 9 — Create `src/pages/Pricing.tsx` + add route
+// Get user from auth header
+const authHeader = req.headers.get("authorization") || "";
+const token = authHeader.replace("Bearer ", "");
+const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+const userId = user?.id;
 
-Public pricing page (no auth required):
-- Same plan cards as Upgrade but with public CTAs (Free → /cadastro, Starter → /upgrade?autoCheckout=starter, etc.)
-- Monthly/Annual toggle, BRL/USD toggle
-- Feature comparison table
-- Route: `/pricing` added in `App.tsx`
+// Check free plan usage if toolId provided
+if (userId && toolId) {
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("plan")
+    .eq("id", userId)
+    .single();
 
-### Step 10 — Update tool lock flags
+  if (profile?.plan === "free") {
+    const monthKey = new Date().toISOString().slice(0, 7);
+    const { data: existing } = await supabaseAdmin
+      .from("free_tool_usage")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("tool_id", toolId)
+      .eq("month_key", monthKey)
+      .maybeSingle();
 
-- `ExtraToolsSections.tsx`: add `locked: true` to ALL 9 extra tools
-- `Dashboard.tsx` `researchTools`/`createTools`: remove `locked: true` from `original-text` and `lexical` (spec says Free gets 1x/month for all research tools)
-- `CoreToolsGrid.tsx`: update lock logic to use `isToolLockedForPlan()`
+    if (existing) {
+      return new Response(
+        JSON.stringify({ error: "already_used_this_month" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+  }
+}
 
-### Step 11 — Update DB functions
+// ... existing AI generation code ...
 
-- `get_admin_saas_metrics`: rename `pastoral`→`starter`, `church`→`pro`, `ministry`→`igreja` in the SQL counts + MRR calc
+// AFTER successful generation, record usage for free users
+if (userId && toolId) {
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("plan")
+    .eq("id", userId)
+    .single();
 
----
+  if (profile?.plan === "free") {
+    const monthKey = new Date().toISOString().slice(0, 7);
+    await supabaseAdmin.from("free_tool_usage").insert({
+      user_id: userId,
+      tool_id: toolId,
+      month_key: monthKey,
+    });
+  }
+}
+```
+
+Key rule: INSERT happens **after** successful generation only. If AI fails, the user doesn't lose their monthly use.
+
+## 6. Frontend callers — pass `toolId`
+
+Update `ToolModal.tsx` (line 148-153) and `ToolSheet.tsx` (line 247-252) to include `toolId` in the `ai-tool` invocation body:
+
+```typescript
+const { data, error } = await supabase.functions.invoke('ai-tool', {
+  body: {
+    systemPrompt: config.systemPrompt(genLangLabel),
+    userPrompt: input,
+    toolId,  // ← add this
+  },
+});
+```
+
+## 7. Manual action required (Stripe)
+
+After implementation, you'll need to create BRL products in the Stripe Dashboard and replace the placeholder price IDs (`price_starter_brl_monthly`, etc.) in `geoPricing.ts` with the real Stripe-generated IDs.
 
 ## Files Summary
 
 | Action | File |
 |--------|------|
-| Create | `src/lib/plans.ts` |
-| Create | `src/components/UpgradeModal.tsx` |
-| Create | `src/pages/Pricing.tsx` |
-| Modify | `src/contexts/AuthContext.tsx` |
-| Modify | `src/layouts/AppLayout.tsx` |
-| Modify | `src/components/GenerationCounter.tsx` |
-| Modify | `src/components/dashboard/AccountInfoBar.tsx` |
-| Modify | `src/components/LockedTab.tsx` |
-| Modify | `src/pages/Upgrade.tsx` |
 | Modify | `src/utils/geoPricing.ts` |
-| Modify | `src/components/ExtraToolsSections.tsx` |
-| Modify | `src/pages/Dashboard.tsx` |
-| Modify | `src/components/dashboard/CoreToolsGrid.tsx` |
-| Modify | `src/App.tsx` |
-| Migration | Rename plan slugs, fix credit limits, create `free_tool_usage` table |
-| Migration | Update `get_admin_saas_metrics` function |
+| Modify | `src/lib/plans.ts` |
+| Modify | `src/pages/Upgrade.tsx` |
+| Modify | `src/pages/Pricing.tsx` |
+| Modify | `supabase/functions/ai-tool/index.ts` |
+| Modify | `src/components/ToolModal.tsx` |
+| Modify | `src/components/ToolSheet.tsx` |
 
