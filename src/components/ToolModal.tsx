@@ -176,26 +176,25 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
     if (!user || !result) return;
     setSaving(true);
     try {
-      const { data: material, error: matErr } = await supabase
-        .from('materials')
-        .insert({
-          user_id: user.id,
-          title: `${toolTitle} — ${input.substring(0, 50)}`,
-          type: 'blog_article',
-          content: result,
+      const { data, error } = await supabase.functions.invoke('generate-blog-article', {
+        body: {
+          passage: input,
           language: generationLang,
-        })
-        .select('id')
-        .single();
-      if (matErr) throw matErr;
+          title: `${toolTitle} — ${input.substring(0, 50)}`,
+          source_content: result,
+          source_type: toolId,
+        },
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || 'Unknown error');
 
       await supabase.from('editorial_queue').insert({
         user_id: user.id,
-        material_id: material.id,
+        material_id: data.material_id,
         status: 'published',
         published_at: new Date().toISOString(),
       });
-      toast.success(lang === 'PT' ? 'Publicado no blog!' : lang === 'EN' ? 'Published to blog!' : '¡Publicado en el blog!');
+      toast.success(lang === 'PT' ? 'Publicado no blog com imagens!' : lang === 'EN' ? 'Published to blog with images!' : '¡Publicado en el blog con imágenes!');
     } catch (err: any) {
       toast.error(err.message);
     } finally {
