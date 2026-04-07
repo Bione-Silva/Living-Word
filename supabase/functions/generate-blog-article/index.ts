@@ -7,59 +7,129 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-async function generateImage(
+const IMAGE_MODELS = [
+  "google/gemini-3.1-flash-image-preview",
+  "google/gemini-3-pro-image-preview",
+  "google/gemini-2.5-flash-image",
+];
+
+async function generateImageWithRetry(
   lovableApiKey: string,
   prompt: string,
   supabaseAdmin: any,
-  userId: string
+  userId: string,
+  maxRetries = 2
 ): Promise<string | null> {
-  try {
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${lovableApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [{ role: "user", content: prompt }],
-        modalities: ["image", "text"],
-      }),
-    });
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const model = IMAGE_MODELS[Math.min(attempt, IMAGE_MODELS.length - 1)];
+    try {
+      console.log(`[Image] Attempt ${attempt + 1} with model ${model}`);
 
-    if (!response.ok) {
-      console.error("Image gen error:", response.status);
-      return null;
+      // Add delay between retries to avoid rate limits
+      if (attempt > 0) {
+        await new Promise(r => setTimeout(r, 2000 * attempt));
+      }
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: "user", content: prompt }],
+          modalities: ["image", "text"],
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text().catch(() => "");
+        console.error(`[Image] HTTP ${response.status} from ${model}: ${errText}`);
+        if (response.status === 429) {
+          // Rate limited — wait longer before retry
+          await new Promise(r => setTimeout(r, 5000));
+          continue;
+        }
+        if (response.status === 402) {
+          console.error("[Image] Payment required — skipping all image generation");
+          return null;
+        }
+        continue;
+      }
+
+      const data = await response.json();
+      console.log(`[Image] Response keys: ${Object.keys(data).join(", ")}`);
+
+      // Try multiple paths to find the image
+      let imageUrl: string | null = null;
+
+      // Path 1: images array (Gemini image models)
+      const images = data.choices?.[0]?.message?.images;
+      if (images && images.length > 0) {
+        imageUrl = images[0]?.image_url?.url || images[0]?.url || null;
+      }
+
+      // Path 2: content with inline image
+      if (!imageUrl) {
+        const content = data.choices?.[0]?.message?.content;
+        if (typeof content === "string" && content.includes("data:image")) {
+          const match = content.match(/(data:image\/[^;]+;base64,[A-Za-z0-9+/=]+)/);
+          if (match) imageUrl = match[1];
+        }
+        // Path 3: content as array (multimodal response)
+        if (Array.isArray(content)) {
+          for (const part of content) {
+            if (part.type === "image_url") {
+              imageUrl = part.image_url?.url || null;
+              break;
+            }
+            if (part.type === "image" && part.data) {
+              imageUrl = `data:image/png;base64,${part.data}`;
+              break;
+            }
+          }
+        }
+      }
+
+      if (!imageUrl || !imageUrl.startsWith("data:image")) {
+        console.error(`[Image] No valid base64 image found in response from ${model}`);
+        continue;
+      }
+
+      const base64Data = imageUrl.split(",")[1];
+      if (!base64Data) {
+        console.error("[Image] Failed to extract base64 data");
+        continue;
+      }
+
+      const imageBytes = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+      const imagePath = `${userId}/${crypto.randomUUID()}.png`;
+
+      const { error: uploadErr } = await supabaseAdmin.storage
+        .from("blog-images")
+        .upload(imagePath, imageBytes, { contentType: "image/png", upsert: true });
+
+      if (uploadErr) {
+        console.error("[Image] Upload error:", uploadErr);
+        continue;
+      }
+
+      const { data: publicUrl } = supabaseAdmin.storage
+        .from("blog-images")
+        .getPublicUrl(imagePath);
+
+      const url = publicUrl?.publicUrl || null;
+      if (url) {
+        console.log(`[Image] Success on attempt ${attempt + 1}: ${url.substring(0, 80)}...`);
+        return url;
+      }
+    } catch (err) {
+      console.error(`[Image] Exception on attempt ${attempt + 1}:`, err);
     }
-
-    const data = await response.json();
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!imageUrl || !imageUrl.startsWith("data:image")) return null;
-
-    const base64Data = imageUrl.split(",")[1];
-    if (!base64Data) return null;
-
-    const imageBytes = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-    const imagePath = `${userId}/${crypto.randomUUID()}.png`;
-
-    const { error: uploadErr } = await supabaseAdmin.storage
-      .from("blog-images")
-      .upload(imagePath, imageBytes, { contentType: "image/png", upsert: true });
-
-    if (uploadErr) {
-      console.error("Upload error:", uploadErr);
-      return null;
-    }
-
-    const { data: publicUrl } = supabaseAdmin.storage
-      .from("blog-images")
-      .getPublicUrl(imagePath);
-
-    return publicUrl?.publicUrl || null;
-  } catch (err) {
-    console.error("Image generation failed:", err);
-    return null;
   }
+  console.error("[Image] All attempts failed");
+  return null;
 }
 
 serve(async (req) => {
@@ -144,7 +214,8 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
         ? `Write a devotional article about "${passage}" with the title "${inputTitle}".`
         : `Write a devotional article based on the passage: ${passage}.`;
 
-    // Generate article content using GPT-5 for superior writing quality
+    // Generate article content
+    console.log("[Article] Generating text content...");
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -181,6 +252,8 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     const content = aiData.choices?.[0]?.message?.content || "";
     if (!content) throw new Error("Empty AI response");
 
+    console.log(`[Article] Text generated: ${content.length} chars`);
+
     // Log generation for AI billing
     const usage = aiData.usage;
     if (usage) {
@@ -197,7 +270,6 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
 
     const h1Match = content.match(/^#\s+(.+)$/m);
     let articleTitle = inputTitle || h1Match?.[1] || passage;
-    // Clean unwanted prefixes like "Blog & Artigos —", "Blog —", etc.
     articleTitle = articleTitle.replace(/^(Blog\s*&?\s*Artigos?\s*[-—–:]\s*)/i, '').trim();
 
     // Image style mapping
@@ -208,16 +280,15 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     };
     const artStyle = styleMap[image_style] || styleMap["oil"];
 
-    // Extract H2/H3 headings from content to create contextual body image prompts
+    // Extract H2/H3 headings for contextual body images
     const headings = [...content.matchAll(/^#{2,3}\s+(.+)$/gm)].map(m => m[1]);
 
-    // Generate cover image + 2 body images in parallel
+    // Generate cover + 2 body images SEQUENTIALLY to avoid rate limits
     const coverPrompt = `A historically accurate, epoch-representative scene from the Bible passage "${passage}". Ancient Middle Eastern setting with period-appropriate architecture, clothing, and landscape. ${artStyle} No text, no words, no letters.`;
 
     const bodyPrompts = headings.slice(0, 2).map((heading) =>
       `A serene, contemplative biblical illustration representing the concept "${heading}" related to "${passage}". ${artStyle} Ancient Middle Eastern setting. No text, no words, no letters.`
     );
-    // Fallback body prompts if no headings found
     if (bodyPrompts.length === 0) {
       bodyPrompts.push(
         `A peaceful biblical landscape representing spiritual reflection on "${passage}". ${artStyle} No text.`,
@@ -229,13 +300,24 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
       );
     }
 
-    const [coverImage, ...bodyImagesResult] = await Promise.all([
-      generateImage(lovableApiKey, coverPrompt, supabaseAdmin, userId),
-      ...bodyPrompts.map(p => generateImage(lovableApiKey, p, supabaseAdmin, userId)),
-    ]);
+    // Generate images SEQUENTIALLY with delays to avoid rate limiting
+    console.log("[Image] Starting sequential image generation (3 images)...");
 
-    const articleImages: string[] = [coverImage, ...bodyImagesResult].filter(Boolean) as string[];
+    const coverImage = await generateImageWithRetry(lovableApiKey, coverPrompt, supabaseAdmin, userId);
+
+    // Small delay between image generations to avoid rate limits
+    await new Promise(r => setTimeout(r, 1500));
+    const bodyImage1 = await generateImageWithRetry(lovableApiKey, bodyPrompts[0], supabaseAdmin, userId);
+
+    await new Promise(r => setTimeout(r, 1500));
+    const bodyImage2 = bodyPrompts[1]
+      ? await generateImageWithRetry(lovableApiKey, bodyPrompts[1], supabaseAdmin, userId)
+      : null;
+
+    const articleImages: string[] = [coverImage, bodyImage1, bodyImage2].filter(Boolean) as string[];
     const coverImageUrl = coverImage || null;
+
+    console.log(`[Article] Images generated: ${articleImages.length}/3 successful`);
 
     // Save to materials table
     const { data: material, error: matErr } = await supabase
