@@ -1115,20 +1115,23 @@ export default function Landing() {
 
       {/* ===== FOOTER ===== */}
       <footer className="py-8 px-5 sm:px-8" style={{ background: '#1E1510' }}>
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-display text-lg" style={{ color: 'rgba(245,240,232,0.7)' }}>
-            Living <span style={{ color: '#C4956A' }}>Word</span>
-          </span>
-          <div className="flex items-center gap-5">
-            <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Privacidade' : lang === 'EN' ? 'Privacy' : 'Privacidad'}</span>
-            <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Termos' : lang === 'EN' ? 'Terms' : 'Términos'}</span>
-            <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Contato' : lang === 'EN' ? 'Contact' : 'Contacto'}</span>
+        <div className="max-w-4xl mx-auto flex flex-col items-center gap-5">
+          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span className="font-display text-lg" style={{ color: 'rgba(245,240,232,0.7)' }}>
+              Living <span style={{ color: '#C4956A' }}>Word</span>
+            </span>
+            <div className="flex items-center gap-5">
+              <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Privacidade' : lang === 'EN' ? 'Privacy' : 'Privacidad'}</span>
+              <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Termos' : lang === 'EN' ? 'Terms' : 'Términos'}</span>
+              <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Contato' : lang === 'EN' ? 'Contact' : 'Contacto'}</span>
+            </div>
+            <div className="flex gap-3">
+              {(['PT', 'EN', 'ES'] as L[]).map((l) => (
+                <button key={l} onClick={() => setLang(l)} className="text-[13px] font-semibold" style={{ color: l === lang ? '#C4956A' : 'rgba(245,240,232,0.35)' }}>{l}</button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-3">
-            {(['PT', 'EN', 'ES'] as L[]).map((l) => (
-              <button key={l} onClick={() => setLang(l)} className="text-[13px] font-semibold" style={{ color: l === lang ? '#C4956A' : 'rgba(245,240,232,0.35)' }}>{l}</button>
-            ))}
-          </div>
+          <PWAFooterInstallButton lang={lang} />
         </div>
       </footer>
     </div>

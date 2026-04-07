@@ -2,7 +2,7 @@
   "name": "Living Word",
   "short_name": "LivingWord",
   "description": "Gere sermões, devocionais e artigos de blog com IA pastoral.",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#F5F0E8",
   "theme_color": "#3D2B1F",
