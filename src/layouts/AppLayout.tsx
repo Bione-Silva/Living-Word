@@ -714,36 +714,41 @@ export default function AppLayout() {
           )}
         </nav>
 
-        {/* Bottom section */}
+        {/* Bottom section — Credit Wallet always visible */}
         <div className="shrink-0 border-t border-sidebar-border">
-          {!isFree ? (
-            !collapsed ? (
-              <div className="px-4 py-3">
-                <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50 mb-1.5">
+          {!collapsed ? (
+            <div className="px-4 py-3">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <div className={`w-2 h-2 rounded-full shrink-0 ${remaining > 500 ? 'bg-emerald-500' : remaining > 100 ? 'bg-yellow-500' : 'bg-destructive'}`} />
+                <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50">
                   {lang === 'PT' ? 'Créditos' : lang === 'EN' ? 'Credits' : 'Créditos'}
                 </p>
-                <Progress value={pct} className="h-1.5 mb-1" />
-                <p className={`text-[11px] ${creditColor}`}>
-                  {remaining.toLocaleString()} {lang === 'PT' ? 'disponíveis' : lang === 'EN' ? 'available' : 'disponibles'}
-                </p>
               </div>
-            ) : (
-              <div className="px-2 py-3 flex justify-center">
-                <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center" title={`${remaining}/${limit}`}>
-                  <span className="text-[9px] font-bold text-sidebar-primary">{pct}%</span>
-                </div>
-              </div>
-            )
-          ) : null}
-
-          {isFree && !collapsed && (
-            <div className="px-3 py-2">
-              <Link to="/upgrade">
-                <Button className="w-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 gap-2" size="sm">
-                  <Crown className="h-4 w-4" />
-                  {t('nav.upgrade')}
-                </Button>
-              </Link>
+              <Progress value={pct} className="h-1.5 mb-1" />
+              <p className={`text-[11px] font-mono ${creditColor}`}>
+                🟢 {remaining.toLocaleString()} {lang === 'PT' ? 'disponíveis' : lang === 'EN' ? 'available' : 'disponibles'}
+              </p>
+              {isFree && (
+                <Link to="/upgrade" className="block mt-2">
+                  <Button className="w-full bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 gap-2" size="sm">
+                    <Crown className="h-4 w-4" />
+                    {t('nav.upgrade')}
+                  </Button>
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="px-2 py-3 flex justify-center">
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${remaining > 500 ? 'bg-emerald-500/20' : remaining > 100 ? 'bg-yellow-500/20' : 'bg-destructive/20'}`} title={`${remaining}/${limit}`}>
+                    <span className={`text-[9px] font-bold ${creditColor}`}>{remaining > 999 ? `${Math.round(remaining / 1000)}k` : remaining}</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="text-xs font-medium">
+                  🟢 {remaining.toLocaleString()} {lang === 'PT' ? 'créditos' : 'credits'}
+                </TooltipContent>
+              </Tooltip>
             </div>
           )}
 

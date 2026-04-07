@@ -13,6 +13,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { Crown, Camera, Loader2 } from 'lucide-react';
 import { TrialCountdown } from '@/components/TrialCountdown';
+import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
+import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
+import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
 import type { Language } from '@/lib/i18n';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -309,29 +312,45 @@ export default function Configuracoes() {
         </TabsContent>
 
         <TabsContent value="plan">
-          <Card>
-            <CardHeader><CardTitle className="font-display">{t('settings.plan')}</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="capitalize text-sm px-3 py-1">{profile?.plan || 'free'}</Badge>
-                <span className="text-sm text-muted-foreground">
-                  {profile?.generations_used || 0}/{profile?.generations_limit || 5} {t('settings.generations_used')}
-                </span>
-              </div>
-              {isFree && (
-                <>
-                <TrialCountdown />
-                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                  <p className="text-sm font-medium mb-2">{t('upgrade.title')}</p>
-                  <p className="text-xs text-muted-foreground mb-3">{t('upgrade.trial')}</p>
-                  <Button className="bg-primary text-primary-foreground gap-1" asChild>
-                    <a href="/upgrade"><Crown className="h-4 w-4" /> {t('upgrade.cta')}</a>
-                  </Button>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader><CardTitle className="font-display">{t('settings.plan')}</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Badge variant="secondary" className="capitalize text-sm px-3 py-1">{profile?.plan || 'free'}</Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {(() => {
+                      const userPlan = (profile?.plan as PlanSlug) || 'free';
+                      const used = profile?.generations_used || 0;
+                      const limit = PLAN_CREDITS[userPlan] || 500;
+                      const remaining = Math.max(limit - used, 0);
+                      return `🟢 ${remaining.toLocaleString()} / ${limit.toLocaleString()} ${lang === 'PT' ? 'créditos disponíveis' : lang === 'EN' ? 'credits available' : 'créditos disponibles'}`;
+                    })()}
+                  </span>
                 </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                {isFree && (
+                  <>
+                    <TrialCountdown />
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                      <p className="text-sm font-medium mb-2">{t('upgrade.title')}</p>
+                      <p className="text-xs text-muted-foreground mb-3">{t('upgrade.trial')}</p>
+                      <Button className="bg-primary text-primary-foreground gap-1" asChild>
+                        <a href="/upgrade"><Crown className="h-4 w-4" /> {t('upgrade.cta')}</a>
+                      </Button>
+                    </div>
+                  </>
+                )}
+                {(() => {
+                  const userPlan = (profile?.plan as PlanSlug) || 'free';
+                  const used = profile?.generations_used || 0;
+                  const limit = PLAN_CREDITS[userPlan] || 500;
+                  const remaining = Math.max(limit - used, 0);
+                  return remaining < LOW_CREDITS_THRESHOLD ? <CreditTopUpButton /> : null;
+                })()}
+              </CardContent>
+            </Card>
+            <CreditUsageReport />
+          </div>
         </TabsContent>
 
         <TabsContent value="doctrine">

@@ -4,16 +4,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Check, Crown, Zap, Brain, BookOpen, Building2, Sparkles } from 'lucide-react';
+import { Check, Crown, Zap, Brain, BookOpen, Building2, Sparkles, HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useState } from 'react';
-import { PLAN_CREDITS, PLAN_DISPLAY_NAMES } from '@/lib/plans';
+import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_GENERATION_POTENTIAL, type PlanSlug } from '@/lib/plans';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 
 type L = 'PT' | 'EN' | 'ES';
 
 const labels = {
   title: { PT: 'Planos e Preços', EN: 'Plans & Pricing', ES: 'Planes y Precios' } as Record<L, string>,
-  subtitle: { PT: 'Escale sua produção pastoral com a Living Word.', EN: 'Scale your pastoral production with Living Word.', ES: 'Escala tu producción pastoral con Living Word.' } as Record<L, string>,
+  subtitle: { PT: 'Sua carteira de créditos. Use livremente em qualquer ferramenta.', EN: 'Your credit wallet. Use freely on any tool.', ES: 'Tu cartera de créditos. Usa libremente en cualquier herramienta.' } as Record<L, string>,
   monthly: { PT: 'Mensal', EN: 'Monthly', ES: 'Mensual' } as Record<L, string>,
   annual: { PT: 'Anual', EN: 'Annual', ES: 'Anual' } as Record<L, string>,
   annualSave: { PT: '2 meses grátis', EN: '2 months free', ES: '2 meses gratis' } as Record<L, string>,
@@ -21,6 +22,11 @@ const labels = {
   forever: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' } as Record<L, string>,
   popular: { PT: 'Mais Popular', EN: 'Most Popular', ES: 'Más Popular' } as Record<L, string>,
   credits: { PT: 'créditos/mês', EN: 'credits/month', ES: 'créditos/mes' } as Record<L, string>,
+  tooltipTitle: { PT: 'Equivalente a gerar:', EN: 'Equivalent to generating:', ES: 'Equivalente a generar:' } as Record<L, string>,
+  titles: { PT: 'Títulos e Ideias', EN: 'Titles & Ideas', ES: 'Títulos e Ideas' } as Record<L, string>,
+  outlines: { PT: 'Esboços Médios', EN: 'Medium Outlines', ES: 'Esquemas Medios' } as Record<L, string>,
+  sermons: { PT: 'Sermões Completos', EN: 'Full Sermons', ES: 'Sermones Completos' } as Record<L, string>,
+  studies: { PT: 'Estudos Aprofundados', EN: 'Deep Studies', ES: 'Estudios Profundos' } as Record<L, string>,
 };
 
 const plans = [
@@ -30,9 +36,9 @@ const plans = [
     cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Comenzar gratis' },
     href: '/cadastro',
     features: {
-      PT: ['150 créditos/mês', '1 uso/mês por ferramenta', '14 ferramentas', 'Blog cristão básico'],
-      EN: ['150 credits/month', '1 use/month per tool', '14 tools', 'Basic Christian blog'],
-      ES: ['150 créditos/mes', '1 uso/mes por herramienta', '14 herramientas', 'Blog cristiano básico'],
+      PT: ['500 créditos/mês', 'Todas as ferramentas básicas', '14 ferramentas', 'Blog cristão básico'],
+      EN: ['500 credits/month', 'All basic tools', '14 tools', 'Basic Christian blog'],
+      ES: ['500 créditos/mes', 'Todas las herramientas básicas', '14 herramientas', 'Blog cristiano básico'],
     },
   },
   {
@@ -41,9 +47,9 @@ const plans = [
     cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' },
     href: '/cadastro',
     features: {
-      PT: ['3.000 créditos/mês', 'Todas as ferramentas core + extras', 'Uso ilimitado', 'Sem watermark'],
-      EN: ['3,000 credits/month', 'All core + extra tools', 'Unlimited use', 'No watermark'],
-      ES: ['3.000 créditos/mes', 'Todas las herramientas core + extras', 'Uso ilimitado', 'Sin marca de agua'],
+      PT: ['4.000 créditos/mês', 'Todas as ferramentas core + extras', 'Liberdade total de uso', 'Sem watermark'],
+      EN: ['4,000 credits/month', 'All core + extra tools', 'Total freedom of use', 'No watermark'],
+      ES: ['4.000 créditos/mes', 'Todas las herramientas core + extras', 'Libertad total de uso', 'Sin marca de agua'],
     },
   },
   {
@@ -52,9 +58,9 @@ const plans = [
     cta: { PT: 'Começar agora →', EN: 'Start now →', ES: 'Comenzar ahora →' },
     href: '/cadastro',
     features: {
-      PT: ['10.000 créditos/mês', '🧠 Mentes Brilhantes', 'Ilustrações + Calendário', 'YouTube → Blog', 'Até 3 workspaces'],
-      EN: ['10,000 credits/month', '🧠 Brilliant Minds', 'Illustrations + Calendar', 'YouTube → Blog', 'Up to 3 workspaces'],
-      ES: ['10.000 créditos/mes', '🧠 Mentes Brillantes', 'Ilustraciones + Calendario', 'YouTube → Blog', 'Hasta 3 workspaces'],
+      PT: ['8.000 créditos/mês', '🧠 Mentes Brilhantes', 'Ilustrações + Calendário', 'YouTube → Blog', 'Até 3 workspaces'],
+      EN: ['8,000 credits/month', '🧠 Brilliant Minds', 'Illustrations + Calendar', 'YouTube → Blog', 'Up to 3 workspaces'],
+      ES: ['8.000 créditos/mes', '🧠 Mentes Brillantes', 'Ilustraciones + Calendario', 'YouTube → Blog', 'Hasta 3 workspaces'],
     },
   },
   {
@@ -63,12 +69,36 @@ const plans = [
     cta: { PT: 'Começar', EN: 'Get started', ES: 'Comenzar' },
     href: '/cadastro',
     features: {
-      PT: ['30.000 créditos/mês', 'Até 10 usuários', 'Workspaces ilimitados', 'Multiportal', 'Suporte VIP'],
-      EN: ['30,000 credits/month', 'Up to 10 users', 'Unlimited workspaces', 'Multi-portal', 'VIP Support'],
-      ES: ['30.000 créditos/mes', 'Hasta 10 usuarios', 'Workspaces ilimitados', 'Multiportal', 'Soporte VIP'],
+      PT: ['20.000 créditos/mês', 'Até 10 usuários', 'Workspaces ilimitados', 'Multiportal', 'Suporte VIP'],
+      EN: ['20,000 credits/month', 'Up to 10 users', 'Unlimited workspaces', 'Multi-portal', 'VIP Support'],
+      ES: ['20.000 créditos/mes', 'Hasta 10 usuarios', 'Workspaces ilimitados', 'Multiportal', 'Soporte VIP'],
     },
   },
 ];
+
+function CreditPotentialTooltip({ planSlug, lang }: { planSlug: PlanSlug; lang: L }) {
+  const potential = PLAN_GENERATION_POTENTIAL[planSlug];
+  return (
+    <TooltipProvider>
+      <Tooltip delayDuration={200}>
+        <TooltipTrigger asChild>
+          <button className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted hover:bg-muted-foreground/20 transition-colors">
+            <HelpCircle className="h-3 w-3 text-muted-foreground" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[220px] p-3 space-y-1.5">
+          <p className="text-xs font-semibold">{labels.tooltipTitle[lang]}</p>
+          <ul className="text-[11px] space-y-0.5 text-muted-foreground">
+            <li>📝 {potential.titles.toLocaleString()} {labels.titles[lang]}</li>
+            <li>📋 {potential.outlines.toLocaleString()} {labels.outlines[lang]}</li>
+            <li>🎤 {potential.sermons.toLocaleString()} {labels.sermons[lang]}</li>
+            <li>📖 {potential.studies.toLocaleString()} {labels.studies[lang]}</li>
+          </ul>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 export default function Pricing() {
   useForceLightTheme();
@@ -122,7 +152,11 @@ export default function Pricing() {
                   </div>
                   <p className="text-xs text-muted-foreground mb-1">{price === 0 ? labels.forever[lang] : labels.month[lang]}</p>
 
-                  <Badge variant="secondary" className="text-[10px] mb-4 self-start">{credits.toLocaleString()} {labels.credits[lang]}</Badge>
+                  {/* Credits badge + tooltip */}
+                  <div className="flex items-center gap-1.5 mb-4">
+                    <Badge variant="secondary" className="text-[10px]">{credits.toLocaleString()} {labels.credits[lang]}</Badge>
+                    <CreditPotentialTooltip planSlug={plan.slug} lang={lang} />
+                  </div>
 
                   <ul className="space-y-2 mb-5 flex-1">
                     {plan.features[lang].map((f, j) => (
