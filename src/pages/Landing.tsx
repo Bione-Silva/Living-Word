@@ -6,7 +6,7 @@ import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
-import heroPhoneMockup from '@/assets/hero-phone-mockup.png';
+
 import { minds } from '@/data/minds';
 import {
   Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
@@ -62,12 +62,12 @@ const copy = {
     },
     h1: {
       PT: 'Prepare sermões, estudos e conteúdos bíblicos com profundidade',
-      EN: 'Prepare sermons, studies & biblical content with depth',
+      EN: 'Prepare sermons, Bible studies, and biblical content with depth',
       ES: 'Prepara sermones, estudios y contenidos bíblicos con profundidad',
     },
     h1_em: {
       PT: '— sem perder horas em pesquisa.',
-      EN: '— without losing hours in research.',
+      EN: '— without losing hours to research.',
       ES: '— sin perder horas en investigación.',
     },
     sub: {
@@ -544,16 +544,81 @@ export default function Landing() {
               <p className="font-display text-[13px] italic" style={{ color: 'rgba(245,240,232,0.3)' }}>{copy.hero.verse[lang]}</p>
             </div>
 
-            {/* Right: Product Mockup — Phone with real product image */}
+            {/* Right: Product Mockup — CSS-based, no embedded background */}
             <div className="hidden lg:flex relative justify-center items-center">
-              <img
-                src={heroPhoneMockup}
-                alt={lang === 'PT' ? 'Living Word App — Estúdio Pastoral' : lang === 'EN' ? 'Living Word App — Pastoral Studio' : 'Living Word App — Estudio Pastoral'}
-                width={400}
-                height={400}
-                className="relative z-10 drop-shadow-2xl"
-                style={{ maxHeight: '480px', objectFit: 'contain' }}
-              />
+              {/* Phone frame */}
+              <div className="relative z-10 w-[280px]" style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.35))' }}>
+                <div className="rounded-[32px] overflow-hidden" style={{ background: '#1E1510', border: '3px solid rgba(196,149,106,0.3)', boxShadow: 'inset 0 0 0 1px rgba(245,240,232,0.08)' }}>
+                  {/* Status bar */}
+                  <div className="flex items-center justify-between px-5 pt-3 pb-1" style={{ background: '#1E1510' }}>
+                    <span className="text-[9px] font-semibold" style={{ color: 'rgba(245,240,232,0.5)' }}>9:41</span>
+                    <div className="flex gap-1 items-center">
+                      <div className="w-3 h-2 rounded-sm" style={{ background: 'rgba(245,240,232,0.4)' }} />
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'rgba(245,240,232,0.4)' }} />
+                    </div>
+                  </div>
+                  {/* App content */}
+                  <div className="px-4 pb-5 pt-2 space-y-3" style={{ background: '#F5F0E8', minHeight: '400px' }}>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[11px] font-bold" style={{ color: '#3D2B1F' }}>
+                        📖 {lang === 'PT' ? 'Estúdio Pastoral' : lang === 'EN' ? 'Pastoral Studio' : 'Estudio Pastoral'}
+                      </p>
+                      <div className="flex gap-1">
+                        {(['PT', 'EN', 'ES'] as L[]).map((l) => (
+                          <span key={l} className="text-[7px] font-bold px-1.5 py-0.5 rounded" style={{ background: l === lang ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === lang ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Form fields */}
+                    {[
+                      { l: lang === 'PT' ? 'Passagem bíblica' : lang === 'EN' ? 'Bible passage' : 'Pasaje bíblico', v: lang === 'PT' ? 'João 15:1-8' : lang === 'EN' ? 'John 15:1-8' : 'Juan 15:1-8' },
+                      { l: lang === 'PT' ? 'Público' : lang === 'EN' ? 'Audience' : 'Público', v: lang === 'PT' ? 'Jovens adultos' : lang === 'EN' ? 'Young adults' : 'Jóvenes adultos' },
+                      { l: lang === 'PT' ? 'Tema' : lang === 'EN' ? 'Topic' : 'Tema', v: lang === 'PT' ? 'Propósito de vida' : lang === 'EN' ? 'Life purpose' : 'Propósito de vida' },
+                    ].map((f, i) => (
+                      <div key={i}>
+                        <p className="text-[8px] font-semibold mb-0.5" style={{ color: '#8B7355' }}>{f.l}</p>
+                        <div className="rounded-lg px-2.5 py-1.5 text-[9px]" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.12)', color: '#3D2B1F' }}>{f.v}</div>
+                      </div>
+                    ))}
+                    {/* Generate button */}
+                    <div className="rounded-lg px-3 py-2 text-center text-[10px] font-semibold" style={{ background: '#C4956A', color: '#1E1510' }}>
+                      {lang === 'PT' ? 'Gerar conteúdo →' : lang === 'EN' ? 'Generate content →' : 'Generar contenido →'}
+                    </div>
+                    {/* Output chips */}
+                    <div>
+                      <p className="text-[8px] font-bold mb-1.5" style={{ color: '#8B7355' }}>
+                        {lang === 'PT' ? 'FORMATOS DE SAÍDA' : lang === 'EN' ? 'OUTPUT FORMATS' : 'FORMATOS DE SALIDA'}
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {[
+                          { icon: '📖', label: lang === 'PT' ? 'Sermão' : lang === 'EN' ? 'Sermon' : 'Sermón' },
+                          { icon: '🕊️', label: lang === 'PT' ? 'Devocional' : lang === 'EN' ? 'Devotional' : 'Devocional' },
+                          { icon: '✍️', label: lang === 'PT' ? 'Artigo' : lang === 'EN' ? 'Article' : 'Artículo' },
+                          { icon: '📚', label: lang === 'PT' ? 'Estudo' : lang === 'EN' ? 'Study' : 'Estudio' },
+                          { icon: '👥', label: lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula' },
+                          { icon: '📱', label: 'Reels' },
+                        ].map((chip, i) => (
+                          <span key={i} className="text-[7px] font-semibold px-2 py-1 rounded-md flex items-center gap-1" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.1)', color: '#3D2B1F' }}>
+                            <span>{chip.icon}</span> {chip.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Recent generation preview */}
+                    <div className="rounded-lg p-2.5" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.08)' }}>
+                      <p className="text-[7px] font-bold mb-1" style={{ color: '#8B7355' }}>
+                        {lang === 'PT' ? 'GERAÇÃO RECENTE' : lang === 'EN' ? 'RECENT GENERATION' : 'GENERACIÓN RECIENTE'}
+                      </p>
+                      <div className="space-y-1">
+                        <div className="h-1.5 rounded w-full" style={{ background: '#EDD9C8' }} />
+                        <div className="h-1.5 rounded w-5/6" style={{ background: '#F5F0E8' }} />
+                        <div className="h-1.5 rounded w-4/5" style={{ background: '#F5F0E8' }} />
+                        <div className="h-1.5 rounded w-2/3" style={{ background: '#F5F0E8' }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               {/* Floating output cards */}
               <div className="absolute right-0 top-8 z-20 space-y-2">
                 {[
