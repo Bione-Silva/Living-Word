@@ -93,6 +93,14 @@ export default function EstudoBiblicoPage() {
         )}
       </div>
 
+      {/* Bible quick-access button */}
+      <div className="flex justify-end">
+        <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => setBibleOpen(true)}>
+          <BookOpen className="h-3.5 w-3.5" />
+          {lang === 'PT' ? 'Abrir Bíblia' : lang === 'EN' ? 'Open Bible' : 'Abrir Biblia'}
+        </Button>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left sidebar - form */}
         <div className="w-full lg:w-[380px] shrink-0">
