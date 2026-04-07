@@ -492,7 +492,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 overflow-x-hidden break-words">
         {/* ── Help hero header ── */}
         {(() => {
           const article = helpFullArticles.find(a => a.toolId === toolId);

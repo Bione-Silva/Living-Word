@@ -219,7 +219,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 break-words">
         {/* ── Help hero header ── */}
         {(() => {
           const article = helpFullArticles.find(a => a.toolId === toolId);

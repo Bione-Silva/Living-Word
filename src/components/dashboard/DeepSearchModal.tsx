@@ -170,7 +170,7 @@ export function DeepSearchModal({ open, onOpenChange, query: initialQuery }: Dee
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 p-0 gap-0">
-        <div className="px-6 pt-6 pb-4">
+        <div className="px-4 sm:px-6 pt-6 pb-4 break-words">
           {/* ── Hero header ── */}
           <div className="space-y-2 pb-4 border-b border-border">
             <div className="flex items-start gap-3">
