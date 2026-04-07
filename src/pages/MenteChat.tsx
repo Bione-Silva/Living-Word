@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, ThumbsUp, ThumbsDown, Copy, Sparkles, X, Save } from 'lucide-react';
+import { ArtifactActions } from '@/components/mind-chat/ArtifactActions';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { minds } from '@/data/minds';
 import { toast } from 'sonner';
