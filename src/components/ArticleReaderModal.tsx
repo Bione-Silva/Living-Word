@@ -56,6 +56,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
   const [notes, setNotes] = useState('');
   const [savingNotes, setSavingNotes] = useState(false);
   const [enriching, setEnriching] = useState(false);
+  const [enrichStep, setEnrichStep] = useState('');
   const [articleImages, setArticleImages] = useState<string[]>([]);
   const { lang } = useLanguage();
 
