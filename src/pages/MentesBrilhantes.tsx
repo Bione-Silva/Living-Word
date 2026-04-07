@@ -62,7 +62,7 @@ export default function MentesBrilhantes() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       {/* ── Hero Header (Clean/Light) ── */}
-      <div className="relative rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-8 sm:p-10 overflow-hidden">
+      <div className="relative rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-10 overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(35,40%,75%)] to-transparent" />
 
         <div className="relative z-10">
