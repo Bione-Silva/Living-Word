@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Legend } from 'recharts';
 import { TOOL_CREDITS } from '@/lib/plans';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -42,15 +42,16 @@ const FEATURE_LABELS: Record<string, Record<L, string>> = {
   'trivia': { PT: 'Quiz', EN: 'Quiz', ES: 'Quiz' },
 };
 
+// Platform palette: primary (café), accent (gold), warm earth tones
 const PIE_COLORS = [
-  'hsl(var(--primary))',
-  'hsl(35, 60%, 50%)',
-  'hsl(25, 70%, 45%)',
-  'hsl(45, 55%, 55%)',
-  'hsl(15, 50%, 40%)',
-  'hsl(40, 40%, 60%)',
-  'hsl(30, 65%, 35%)',
-  'hsl(50, 45%, 50%)',
+  'hsl(28, 42%, 42%)',   // primary café
+  'hsl(28, 42%, 55%)',   // accent gold
+  'hsl(24, 30%, 32%)',   // dark café
+  'hsl(36, 30%, 60%)',   // warm sand
+  'hsl(24, 18%, 38%)',   // muted brown
+  'hsl(30, 25%, 50%)',   // medium earth
+  'hsl(45, 35%, 48%)',   // olive gold
+  'hsl(20, 35%, 35%)',   // deep brown
 ];
 
 interface Props {
@@ -145,20 +146,18 @@ export function CreditUsageCharts({ entries }: Props) {
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
           {pieLabel}
         </p>
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={240}>
           <PieChart>
             <Pie
               data={featureData}
               cx="50%"
-              cy="50%"
-              innerRadius={45}
-              outerRadius={75}
+              cy="40%"
+              innerRadius={40}
+              outerRadius={68}
               paddingAngle={3}
               dataKey="value"
               animationDuration={1000}
               animationEasing="ease-out"
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              labelLine={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }}
             >
               {featureData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
@@ -172,6 +171,14 @@ export function CreditUsageCharts({ entries }: Props) {
                 fontSize: '12px',
               }}
               formatter={(value: number) => [`${value} créditos`, '']}
+            />
+            <Legend
+              verticalAlign="bottom"
+              align="center"
+              iconType="circle"
+              iconSize={8}
+              wrapperStyle={{ fontSize: '10px', paddingTop: '8px' }}
+              formatter={(value: string) => <span style={{ color: 'hsl(24, 18%, 38%)' }}>{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>
