@@ -170,6 +170,7 @@ export default function AppLayout() {
         <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
           <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
           <div className="flex items-center gap-2 shrink-0">
+            <SupportChatBubble />
             {profile?.blog_handle && (
               <Link to={`/blog/${profile.blog_handle}`} target="_blank" className="text-primary">
                 <ExternalLink className="h-4 w-4" />
