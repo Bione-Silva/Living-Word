@@ -279,7 +279,7 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0">
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden overflow-x-hidden flex flex-col bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 break-words">
         {/* ── Hero header ── */}
         <div className="space-y-2 pb-1 border-b border-border shrink-0">
           <div className="flex items-start gap-3">

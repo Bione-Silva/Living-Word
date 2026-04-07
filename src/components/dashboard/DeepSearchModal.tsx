@@ -169,8 +169,8 @@ export function DeepSearchModal({ open, onOpenChange, query: initialQuery }: Dee
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 p-0 gap-0">
-        <div className="px-6 pt-6 pb-4">
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 p-0 gap-0">
+        <div className="px-4 sm:px-6 pt-6 pb-4 break-words">
           {/* ── Hero header ── */}
           <div className="space-y-2 pb-4 border-b border-border">
             <div className="flex items-start gap-3">
@@ -296,7 +296,7 @@ export function DeepSearchModal({ open, onOpenChange, query: initialQuery }: Dee
               <section className="rounded-lg border border-border bg-muted/30 p-4">
                 <SectionHeader icon={BookOpen} label={labels.passage[lang]} />
                 <p className="text-xs font-medium text-primary mb-1.5">{data.reference}</p>
-                <blockquote className="border-l-[3px] border-primary/50 pl-4 text-[15px] leading-relaxed text-foreground/80 italic">
+                <blockquote className="border-l-[3px] border-primary/50 pl-4 text-sm sm:text-[15px] leading-relaxed text-foreground/80 italic break-words">
                   {data.passage}
                 </blockquote>
               </section>
