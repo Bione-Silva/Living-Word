@@ -427,12 +427,12 @@ export default function AppLayout() {
 
             return (
               <div key={groupKey}>
-                <button
-                  onClick={() => !collapsed && toggleGroup(groupKey)}
-                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
-                  title={collapsed ? group.label[lang] : undefined}
-                >
-                  <GroupIcon className="h-4 w-4 shrink-0" />
+                <SidebarTooltipWrap collapsed={collapsed} label={group.label[lang]}>
+                  <button
+                    onClick={() => !collapsed && toggleGroup(groupKey)}
+                    className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
+                  >
+                    <GroupIcon className="h-4 w-4 shrink-0" />
                   {!collapsed && (
                     <>
                       <span className="flex-1 text-left">{group.label[lang]}</span>
