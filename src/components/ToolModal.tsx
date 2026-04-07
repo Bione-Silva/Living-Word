@@ -390,7 +390,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
+              <div className="flex flex-wrap gap-2 px-6 py-3 border-t border-border shrink-0">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
                   <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}
                 </Button>
