@@ -143,8 +143,9 @@ export default function Upgrade() {
 
     setLoadingPlan(plan.id);
     try {
+      const priceSource = isAnnual ? pricing.annual : pricing.plans;
       const body: Record<string, unknown> = {
-        priceId: pricing.plans[plan.planKey].id,
+        priceId: priceSource[plan.planKey].id,
         successUrl: `${window.location.origin}/dashboard?checkout_success=true`,
         cancelUrl: `${window.location.origin}/upgrade`,
       };

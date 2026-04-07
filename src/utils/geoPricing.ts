@@ -13,6 +13,11 @@ interface RegionPricing {
     pro: PlanPrice;
     igreja: PlanPrice;
   };
+  annual: {
+    starter: PlanPrice;
+    pro: PlanPrice;
+    igreja: PlanPrice;
+  };
   addon: PlanPrice;
 }
 
@@ -21,29 +26,44 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
     currency: 'BRL',
     symbol: 'R$',
     plans: {
-      starter: { id: 'price_starter_brl_monthly', amount: 37.00 },
-      pro: { id: 'price_pro_brl_monthly', amount: 79.00 },
-      igreja: { id: 'price_igreja_brl_monthly', amount: 197.00 },
+      starter: { id: 'price_1TJg0mEaDBbHafP6EjCuGgmk', amount: 37.00 },
+      pro:     { id: 'price_1TJg0oEaDBbHafP6bC747uSG', amount: 79.00 },
+      igreja:  { id: 'price_1TJg0qEaDBbHafP6gyw9BqQ1', amount: 197.00 },
     },
-    addon: { id: 'price_addon_brl', amount: 19.00 },
+    annual: {
+      starter: { id: 'price_1TJg0nEaDBbHafP6R0XrOxCo', amount: 370.00 },
+      pro:     { id: 'price_1TJg0pEaDBbHafP6ToL24iXI', amount: 790.00 },
+      igreja:  { id: 'price_1TJg0rEaDBbHafP69yZFNvtc', amount: 1970.00 },
+    },
+    addon: { id: 'price_1TJg0sEaDBbHafP64xZ2cJWe', amount: 19.00 },
   },
   USD: {
     currency: 'USD',
     symbol: '$',
     plans: {
-      starter: { id: 'price_1TIbCqEaDBbHafP6AqYI1lQ3', amount: 9.90 },
-      pro: { id: 'price_1TIbCsEaDBbHafP6qOWGnzjp', amount: 29.90 },
-      igreja: { id: 'price_1TIbCtEaDBbHafP6D1krnMzA', amount: 79.90 },
+      starter: { id: 'price_1TJg0nEaDBbHafP6FeiNQ1kz', amount: 9.90 },
+      pro:     { id: 'price_1TJg0oEaDBbHafP6D70uKmZo', amount: 29.90 },
+      igreja:  { id: 'price_1TJg0qEaDBbHafP6Abkb2QBm', amount: 79.90 },
     },
-    addon: { id: 'price_1TIbCuEaDBbHafP6FhfTaKnh', amount: 5.90 },
+    annual: {
+      starter: { id: 'price_1TJg0nEaDBbHafP6XFnIRHp9', amount: 99.00 },
+      pro:     { id: 'price_1TJg0pEaDBbHafP6WcxeJbWM', amount: 299.00 },
+      igreja:  { id: 'price_1TJg0rEaDBbHafP6lXkkTQAt', amount: 799.00 },
+    },
+    addon: { id: 'price_1TJg0sEaDBbHafP6v0Tp3XjP', amount: 5.90 },
   },
   LATAM: {
     currency: 'USD',
     symbol: '$',
     plans: {
       starter: { id: 'price_1TIbCrEaDBbHafP6gO6Z5UPt', amount: 5.90 },
-      pro: { id: 'price_1TIbCsEaDBbHafP6kY9apvOc', amount: 19.00 },
-      igreja: { id: 'price_1TIbCtEaDBbHafP6Rh4uTD5Q', amount: 49.00 },
+      pro:     { id: 'price_1TIbCsEaDBbHafP6kY9apvOc', amount: 19.00 },
+      igreja:  { id: 'price_1TIbCtEaDBbHafP6Rh4uTD5Q', amount: 49.00 },
+    },
+    annual: {
+      starter: { id: 'price_1TIbCrEaDBbHafP6gO6Z5UPt', amount: 59.00 },
+      pro:     { id: 'price_1TIbCsEaDBbHafP6kY9apvOc', amount: 190.00 },
+      igreja:  { id: 'price_1TIbCtEaDBbHafP6Rh4uTD5Q', amount: 490.00 },
     },
     addon: { id: 'price_1TIbCvEaDBbHafP6DM4entar', amount: 3.90 },
   },
@@ -52,8 +72,13 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
     symbol: '$',
     plans: {
       starter: { id: 'price_1TIbCrEaDBbHafP6dRTQO3m2', amount: 1.00 },
-      pro: { id: 'price_1TIbCsEaDBbHafP6ximO1Myd', amount: 1.00 },
-      igreja: { id: 'price_1TIbCuEaDBbHafP6RlbFZvJH', amount: 1.00 },
+      pro:     { id: 'price_1TIbCsEaDBbHafP6ximO1Myd', amount: 1.00 },
+      igreja:  { id: 'price_1TIbCuEaDBbHafP6RlbFZvJH', amount: 1.00 },
+    },
+    annual: {
+      starter: { id: 'price_1TIbCrEaDBbHafP6dRTQO3m2', amount: 10.00 },
+      pro:     { id: 'price_1TIbCsEaDBbHafP6ximO1Myd', amount: 10.00 },
+      igreja:  { id: 'price_1TIbCuEaDBbHafP6RlbFZvJH', amount: 10.00 },
     },
     addon: { id: 'price_1TIbCvEaDBbHafP6WaieVawh', amount: 1.00 },
   },
