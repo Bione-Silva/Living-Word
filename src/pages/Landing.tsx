@@ -6,6 +6,7 @@ import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
+import heroPhoneMockup from '@/assets/hero-phone-mockup.png';
 import { minds } from '@/data/minds';
 import {
   Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
@@ -511,76 +512,35 @@ export default function Landing() {
               <p className="font-display text-[13px] italic" style={{ color: 'rgba(245,240,232,0.3)' }}>{copy.hero.verse[lang]}</p>
             </div>
 
-            {/* Right: Product Mockup — Desktop with input → output focus */}
-            <div className="hidden lg:block relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ background: '#F5F0E8', border: '2px solid rgba(196,149,106,0.2)' }}>
-                {/* Browser chrome */}
-                <div className="flex items-center gap-1.5 px-4 py-2.5" style={{ background: '#E8E0D4' }}>
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#EF6B5F' }} />
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#F5BD4F' }} />
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#61C554' }} />
-                  <div className="flex-1 text-center"><span className="text-[10px] font-medium px-4 py-0.5 rounded" style={{ background: 'rgba(107,79,58,0.08)', color: '#8B7355' }}>app.livingword.com</span></div>
-                </div>
-                {/* App content */}
-                <div className="p-5" style={{ minHeight: '320px' }}>
-                  <div className="flex gap-5">
-                    {/* Input side */}
-                    <div className="flex-1 space-y-3">
-                      <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#6B4F3A' }}>
-                        📖 {lang === 'PT' ? 'Estúdio Pastoral' : lang === 'EN' ? 'Pastoral Studio' : 'Estudio Pastoral'}
-                      </p>
-                      {[
-                        { l: lang === 'PT' ? 'Passagem bíblica' : lang === 'EN' ? 'Bible passage' : 'Pasaje bíblico', v: lang === 'PT' ? 'João 15:1-8' : lang === 'EN' ? 'John 15:1-8' : 'Juan 15:1-8' },
-                        { l: lang === 'PT' ? 'Público' : lang === 'EN' ? 'Audience' : 'Público', v: lang === 'PT' ? 'Jovens adultos' : lang === 'EN' ? 'Young adults' : 'Jóvenes adultos' },
-                        { l: lang === 'PT' ? 'Tema' : lang === 'EN' ? 'Topic' : 'Tema', v: lang === 'PT' ? 'Propósito de vida' : lang === 'EN' ? 'Life purpose' : 'Propósito de vida' },
-                      ].map((f, i) => (
-                        <div key={i}>
-                          <p className="text-[8px] font-semibold mb-0.5" style={{ color: '#8B7355' }}>{f.l}</p>
-                          <div className="rounded px-2.5 py-1.5 text-[9px]" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.12)', color: '#3D2B1F' }}>{f.v}</div>
-                        </div>
-                      ))}
-                      <div className="flex gap-1.5 pt-1">
-                        {['PT', 'EN', 'ES'].map((l) => (
-                          <span key={l} className="text-[8px] font-semibold px-2 py-0.5 rounded" style={{ background: l === 'PT' ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === 'PT' ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
-                        ))}
-                      </div>
-                      <div className="rounded-lg px-3 py-2 text-center text-[10px] font-semibold" style={{ background: '#C4956A', color: '#1E1510' }}>
-                        {lang === 'PT' ? 'Gerar conteúdo →' : lang === 'EN' ? 'Generate content →' : 'Generar contenido →'}
-                      </div>
-                    </div>
-                    {/* Output side */}
-                    <div className="flex-1">
-                      <p className="text-[8px] font-bold uppercase tracking-wider mb-2" style={{ color: '#8B7355' }}>
-                        {lang === 'PT' ? 'Saída — 7+ formatos' : lang === 'EN' ? 'Output — 7+ formats' : 'Salida — 7+ formatos'}
-                      </p>
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {[
-                          lang === 'PT' ? 'Sermão' : lang === 'EN' ? 'Sermon' : 'Sermón',
-                          lang === 'PT' ? 'Devocional' : 'Devotional',
-                          lang === 'PT' ? 'Estudo' : lang === 'EN' ? 'Study' : 'Estudio',
-                          lang === 'PT' ? 'Artigo' : lang === 'EN' ? 'Article' : 'Artículo',
-                          lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula',
-                          'EN', 'ES',
-                        ].map((tab, i) => (
-                          <span key={i} className="text-[7px] font-semibold px-1.5 py-0.5 rounded" style={{ background: i === 0 ? '#6B4F3A' : 'rgba(107,79,58,0.08)', color: i === 0 ? '#F5F0E8' : '#8B7355' }}>{tab}</span>
-                        ))}
-                      </div>
-                      <div className="rounded-lg p-3 space-y-2" style={{ background: '#fff', border: '1px solid rgba(107,79,58,0.08)' }}>
-                        <div className="h-2 rounded w-3/4" style={{ background: '#EDD9C8' }} />
-                        <div className="h-1.5 rounded w-full" style={{ background: '#F5F0E8' }} />
-                        <div className="h-1.5 rounded w-full" style={{ background: '#F5F0E8' }} />
-                        <div className="h-1.5 rounded w-5/6" style={{ background: '#F5F0E8' }} />
-                        <div className="h-1.5 rounded w-full" style={{ background: '#F5F0E8' }} />
-                        <div className="h-1.5 rounded w-2/3" style={{ background: '#F5F0E8' }} />
-                      </div>
-                      {/* Tags */}
-                      <div className="flex gap-1.5 mt-2">
-                        <span className="text-[7px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#C4956A20', color: '#C4956A' }}>{lang === 'PT' ? 'Exegese real' : lang === 'EN' ? 'Real exegesis' : 'Exégesis real'}</span>
-                        <span className="text-[7px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#7B9E6B20', color: '#7B9E6B' }}>{lang === 'PT' ? 'Sua voz' : lang === 'EN' ? 'Your voice' : 'Tu voz'}</span>
-                      </div>
-                    </div>
+            {/* Right: Product Mockup — Phone with real product image */}
+            <div className="hidden lg:flex relative justify-center items-center">
+              <img
+                src={heroPhoneMockup}
+                alt="Living Word App — Estúdio Pastoral"
+                width={400}
+                height={400}
+                className="relative z-10 drop-shadow-2xl"
+                style={{ maxHeight: '480px', objectFit: 'contain' }}
+              />
+              {/* Floating output cards */}
+              <div className="absolute right-0 top-8 z-20 space-y-2">
+                {[
+                  { icon: '📖', label: lang === 'PT' ? 'Sermão' : lang === 'EN' ? 'Sermon' : 'Sermón' },
+                  { icon: '🕊️', label: lang === 'PT' ? 'Devocional' : 'Devotional' },
+                  { icon: '✍️', label: lang === 'PT' ? 'Artigo' : lang === 'EN' ? 'Article' : 'Artículo' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm" style={{ background: 'rgba(245,240,232,0.92)', border: '1px solid rgba(196,149,106,0.2)', animationDelay: `${i * 0.2}s` }}>
+                    <span className="text-[16px]">{item.icon}</span>
+                    <span className="text-[12px] font-semibold" style={{ color: '#3D2B1F' }}>{item.label}</span>
+                    <Check className="w-3.5 h-3.5" style={{ color: '#4CAF50' }} />
                   </div>
-                </div>
+                ))}
+              </div>
+              {/* Floating language badge */}
+              <div className="absolute left-0 bottom-12 z-20 flex gap-1.5 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm" style={{ background: 'rgba(245,240,232,0.92)', border: '1px solid rgba(196,149,106,0.2)' }}>
+                {['PT', 'EN', 'ES'].map((l) => (
+                  <span key={l} className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: l === 'PT' ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === 'PT' ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
+                ))}
               </div>
               {/* Glow */}
               <div className="absolute -inset-8 -z-10 rounded-[40px] blur-3xl opacity-15" style={{ background: 'radial-gradient(circle, #C4956A 0%, transparent 70%)' }} />
