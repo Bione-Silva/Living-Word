@@ -27,6 +27,7 @@ interface UserProfile {
   theme_color?: string;
   font_family?: string;
   layout_style?: string;
+  profile_completed?: boolean;
 }
 
 interface AuthContextType {
