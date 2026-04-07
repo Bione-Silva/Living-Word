@@ -41,10 +41,11 @@ const labels: Record<string, Record<L, string>> = {
 
 export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalProps) {
   const { lang } = useLanguage();
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [data, setData] = useState<SearchResult | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const bibleVersion = profile?.bible_version || 'ARA';
 
