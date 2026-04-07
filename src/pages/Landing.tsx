@@ -557,13 +557,13 @@ export default function Landing() {
               {/* Floating output cards */}
               <div className="absolute right-0 top-8 z-20 space-y-2">
                 {[
-                  { icon: '📖', label: lang === 'PT' ? 'Sermão' : lang === 'EN' ? 'Sermon' : 'Sermón' },
-                  { icon: '🕊️', label: lang === 'PT' ? 'Devocional' : 'Devotional' },
-                  { icon: '✍️', label: lang === 'PT' ? 'Artigo' : lang === 'EN' ? 'Article' : 'Artículo' },
+                  { icon: '📖', label: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón' } },
+                  { icon: '🕊️', label: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' } },
+                  { icon: '✍️', label: { PT: 'Artigo', EN: 'Article', ES: 'Artículo' } },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-2 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm" style={{ background: 'rgba(245,240,232,0.92)', border: '1px solid rgba(196,149,106,0.2)', animationDelay: `${i * 0.2}s` }}>
                     <span className="text-[16px]">{item.icon}</span>
-                    <span className="text-[12px] font-semibold" style={{ color: '#3D2B1F' }}>{item.label}</span>
+                    <span className="text-[12px] font-semibold" style={{ color: '#3D2B1F' }}>{item.label[lang]}</span>
                     <Check className="w-3.5 h-3.5" style={{ color: '#4CAF50' }} />
                   </div>
                 ))}
@@ -684,7 +684,7 @@ export default function Landing() {
                       <div className="flex flex-wrap gap-1 mb-2">
                         {[
                           lang === 'PT' ? 'Sermão' : lang === 'EN' ? 'Sermon' : 'Sermón',
-                          lang === 'PT' ? 'Devocional' : 'Devotional',
+                          lang === 'PT' ? 'Devocional' : lang === 'EN' ? 'Devotional' : 'Devocional',
                           lang === 'PT' ? 'Estudo' : lang === 'EN' ? 'Study' : 'Estudio',
                           lang === 'PT' ? 'Artigo' : lang === 'EN' ? 'Article' : 'Artículo',
                           'Blog', lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula',
