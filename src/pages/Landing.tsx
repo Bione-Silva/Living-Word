@@ -503,6 +503,22 @@ export default function Landing() {
             <button onClick={() => scrollTo('pricing')} className="block w-full text-left text-[14px] py-2" style={{ color: 'rgba(245,240,232,0.7)' }}>{copy.nav.plans[lang]}</button>
             <Link to="/login" className="block text-[14px] py-2" style={{ color: 'rgba(245,240,232,0.7)' }}>{copy.nav.login[lang]}</Link>
             <Link to="/cadastro" className="block text-center text-[14px] font-semibold px-4 py-2.5 rounded-lg" style={{ background: '#C4956A', color: '#1E1510' }}>{copy.nav.cta[lang]}</Link>
+            {/* Mobile language toggle */}
+            <div className="flex items-center rounded-lg overflow-hidden w-fit" style={{ background: 'rgba(245,240,232,0.1)', border: '1px solid rgba(245,240,232,0.15)' }}>
+              {(['PT', 'EN', 'ES'] as L[]).map((code) => (
+                <button
+                  key={code}
+                  onClick={() => setLang(code)}
+                  className="text-[13px] font-semibold px-4 py-2 transition-all"
+                  style={{
+                    background: lang === code ? 'rgba(245,240,232,0.9)' : 'transparent',
+                    color: lang === code ? '#1E1510' : 'rgba(245,240,232,0.5)',
+                  }}
+                >
+                  {code}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </nav>
