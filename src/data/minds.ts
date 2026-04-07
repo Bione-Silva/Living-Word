@@ -37,7 +37,7 @@ export const minds: MindFullData[] = [
     flag: '🇺🇸',
     subtitle: { PT: 'O Evangelista da América', EN: 'America\'s Evangelist', ES: 'El Evangelista de América' },
     role: { PT: 'Apelo & Evangelismo em Massa', EN: 'Appeal & Mass Evangelism', ES: 'Apelación & Evangelismo Masivo' },
-    locked: false,
+    locked: true,
     badges: [
       { PT: '350+ Horas de Vídeo', EN: '350+ Hours of Video', ES: '350+ Horas de Video' },
       { PT: '5.000 Páginas Processadas', EN: '5,000 Pages Processed', ES: '5.000 Páginas Procesadas' },
