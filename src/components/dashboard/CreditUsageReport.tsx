@@ -181,6 +181,13 @@ export function CreditUsageReport() {
               </p>
             </div>
           </div>
+
+          {/* Charts */}
+          {!loading && entries.length > 0 && (
+            <div className="px-5 py-4">
+              <CreditUsageCharts entries={entries} />
+            </div>
+          )}
         </div>
 
         {/* Table header */}
