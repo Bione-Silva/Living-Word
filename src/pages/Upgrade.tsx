@@ -13,7 +13,7 @@ import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
-import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, type PlanSlug } from '@/lib/plans';
+import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_PRICES_BRL, type PlanSlug } from '@/lib/plans';
 
 type L = 'PT' | 'EN' | 'ES';
 type PlanKey = 'starter' | 'pro' | 'igreja';
