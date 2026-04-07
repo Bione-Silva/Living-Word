@@ -233,8 +233,8 @@ const copy = {
       { icon: '✍️', label: { PT: 'Artigo de blog', EN: 'Blog article', ES: 'Artículo de blog' } },
       { icon: '👥', label: { PT: 'Material de célula', EN: 'Small group material', ES: 'Material de célula' } },
       { icon: '📱', label: { PT: 'Pontos para Reels', EN: 'Reels talking points', ES: 'Puntos para Reels' } },
-      { icon: '🇬🇧', label: { PT: 'English version', EN: 'English version', ES: 'English version' } },
-      { icon: '🇪🇸', label: { PT: 'Versión en español', EN: 'Versión en español', ES: 'Versión en español' } },
+      { icon: '🇬🇧', label: { PT: 'Versão em inglês', EN: 'English version', ES: 'Versión en inglés' } },
+      { icon: '🇪🇸', label: { PT: 'Versão em espanhol', EN: 'Spanish version', ES: 'Versión en español' } },
     ],
   },
 
@@ -548,7 +548,7 @@ export default function Landing() {
             <div className="hidden lg:flex relative justify-center items-center">
               <img
                 src={heroPhoneMockup}
-                alt="Living Word App — Estúdio Pastoral"
+                alt={lang === 'PT' ? 'Living Word App — Estúdio Pastoral' : lang === 'EN' ? 'Living Word App — Pastoral Studio' : 'Living Word App — Estudio Pastoral'}
                 width={400}
                 height={400}
                 className="relative z-10 drop-shadow-2xl"
@@ -570,8 +570,8 @@ export default function Landing() {
               </div>
               {/* Floating language badge */}
               <div className="absolute left-0 bottom-12 z-20 flex gap-1.5 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm" style={{ background: 'rgba(245,240,232,0.92)', border: '1px solid rgba(196,149,106,0.2)' }}>
-                {['PT', 'EN', 'ES'].map((l) => (
-                  <span key={l} className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: l === 'PT' ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === 'PT' ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
+                {(['PT', 'EN', 'ES'] as L[]).map((l) => (
+                  <span key={l} className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: l === lang ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === lang ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
                 ))}
               </div>
               {/* Glow */}
@@ -672,8 +672,8 @@ export default function Landing() {
                         </div>
                       ))}
                       <div className="flex gap-1.5 pt-1">
-                        {['PT', 'EN', 'ES'].map((l) => (
-                          <span key={l} className="text-[7px] font-semibold px-2 py-0.5 rounded" style={{ background: l === 'PT' ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === 'PT' ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
+                        {(['PT', 'EN', 'ES'] as L[]).map((l) => (
+                          <span key={l} className="text-[7px] font-semibold px-2 py-0.5 rounded" style={{ background: l === lang ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === lang ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
                         ))}
                       </div>
                       <div className="rounded px-3 py-1.5 text-center text-[9px] font-semibold" style={{ background: '#C4956A', color: '#3D2B1F' }}>

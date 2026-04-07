@@ -132,8 +132,8 @@ export const formats = {
       { icon: '📰', name: 'Blog devocional', desc: 'Post otimizado para leitura online' },
       { icon: '👥', name: 'Conteúdo para célula', desc: 'Roteiro com perguntas e dinâmicas' },
       { icon: '📱', name: 'Conteúdo para redes', desc: 'Cards curtos e impactantes' },
-      { icon: '🇬🇧', name: 'English version', desc: 'Mesmo conteúdo adaptado para inglês' },
-      { icon: '🇪🇸', name: 'Versión en español', desc: 'Mismo contenido adaptado al español' },
+      { icon: '🇬🇧', name: 'Versão em inglês', desc: 'Mesmo conteúdo adaptado para inglês' },
+      { icon: '🇪🇸', name: 'Versão em espanhol', desc: 'Mesmo conteúdo adaptado para espanhol' },
     ],
     EN: [
       { icon: '📖', name: 'Full sermon', desc: 'Structured with exegesis, application and closing' },
@@ -143,8 +143,8 @@ export const formats = {
       { icon: '📰', name: 'Blog devotional', desc: 'Post optimized for online reading' },
       { icon: '👥', name: 'Small group content', desc: 'Script with questions and dynamics' },
       { icon: '📱', name: 'Social media content', desc: 'Short and impactful cards' },
-      { icon: '🇧🇷', name: 'Versão em português', desc: 'Same content adapted to Portuguese' },
-      { icon: '🇪🇸', name: 'Versión en español', desc: 'Same content adapted to Spanish' },
+      { icon: '🇧🇷', name: 'Portuguese version', desc: 'Same content adapted to Portuguese' },
+      { icon: '🇪🇸', name: 'Spanish version', desc: 'Same content adapted to Spanish' },
     ],
     ES: [
       { icon: '📖', name: 'Sermón completo', desc: 'Estructurado con exégesis, aplicación y cierre' },
@@ -154,8 +154,8 @@ export const formats = {
       { icon: '📰', name: 'Blog devocional', desc: 'Post optimizado para lectura online' },
       { icon: '👥', name: 'Contenido para célula', desc: 'Guión con preguntas y dinámicas' },
       { icon: '📱', name: 'Contenido para redes', desc: 'Cards cortos e impactantes' },
-      { icon: '🇧🇷', name: 'Versão em português', desc: 'Mismo contenido adaptado al portugués' },
-      { icon: '🇬🇧', name: 'English version', desc: 'Same content adapted to English' },
+      { icon: '🇧🇷', name: 'Versión en portugués', desc: 'Mismo contenido adaptado al portugués' },
+      { icon: '🇬🇧', name: 'Versión en inglés', desc: 'Mismo contenido adaptado al inglés' },
     ],
   },
 };
