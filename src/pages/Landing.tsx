@@ -471,7 +471,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'Inter', sans-serif", color: '#3D2B1F' }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif", color: '#3D2B1F' }}>
 
       {/* ===== NAV ===== */}
       <nav className="fixed top-0 left-0 right-0 z-50" style={{ background: '#3D2B1F' }}>
@@ -524,7 +524,7 @@ export default function Landing() {
             {/* Left — Text */}
             <div className="flex-1 text-center lg:text-left">
               <p className="text-[12px] font-semibold tracking-[0.14em] uppercase mb-5 animate-[fadeSlideUp_0.6s_ease-out_0.1s_both]" style={{ color: '#C4956A' }}>{copy.hero.eyebrow[lang]}</p>
-              <h1 className="font-display text-[34px] sm:text-[48px] font-semibold leading-[1.12] mb-5 animate-[fadeSlideUp_0.7s_ease-out_0.25s_both]" style={{ color: '#F5F0E8' }}>
+              <h1 className="font-display text-[28px] sm:text-[48px] font-semibold leading-[1.12] mb-5 animate-[fadeSlideUp_0.7s_ease-out_0.25s_both]" style={{ color: '#F5F0E8' }}>
                 {copy.hero.h1_line1[lang]}
                 <br /><em style={{ color: '#C4956A' }}>{copy.hero.h1_em[lang]}</em>
               </h1>
@@ -703,7 +703,7 @@ export default function Landing() {
       <section id="how" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }}>
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.how.tag[lang]}</p>
-          <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.how.h2[lang]}</h2>
+          <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.how.h2[lang]}</h2>
           <div className="space-y-0 mb-10">
             {copy.how.steps.map((step, i) => (
               <RevealOnScroll key={i} delay={i * 0.18}>
@@ -791,7 +791,7 @@ export default function Landing() {
       <section id="features" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#FFFFFF' }}>
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.features.tag[lang]}</p>
-          <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.features.h2[lang]}</h2>
+          <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.features.h2[lang]}</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
@@ -839,7 +839,7 @@ export default function Landing() {
       {/* ===== VS COMPETITORS ===== */}
       <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#3D2B1F' }}>
         <div className="max-w-3xl mx-auto">
-          <h2 className="font-display text-[26px] sm:text-[32px] font-semibold text-center mb-8 leading-tight" style={{ color: '#F5F0E8' }}>{copy.vs.h2[lang]}</h2>
+          <h2 className="font-display text-[22px] sm:text-[32px] font-semibold text-center mb-8 leading-tight" style={{ color: '#F5F0E8' }}>{copy.vs.h2[lang]}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Them */}
             <div className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -873,7 +873,7 @@ export default function Landing() {
       <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }}>
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.testimonials.tag[lang]}</p>
-          <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.testimonials.h2[lang]}</h2>
+          <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.testimonials.h2[lang]}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {copy.testimonials.itemsByLang[lang].map((t, i) => (
               <div key={i} className="rounded-2xl p-6" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.08)', boxShadow: '0 1px 4px rgba(107,79,58,0.04)' }}>
@@ -904,7 +904,7 @@ export default function Landing() {
             <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>
               {lang === 'PT' ? 'Mentes Brilhantes' : lang === 'EN' ? 'Brilliant Minds' : 'Mentes Brillantes'}
             </p>
-            <h2 className="font-display text-[30px] sm:text-[40px] font-semibold leading-tight mb-4" style={{ color: '#3D2B1F' }}>
+            <h2 className="font-display text-[24px] sm:text-[40px] font-semibold leading-tight mb-4" style={{ color: '#3D2B1F' }}>
               {lang === 'PT' ? 'Converse com as maiores mentes da pregação cristã.' : lang === 'EN' ? 'Chat with the greatest minds in Christian preaching.' : 'Conversa con las mayores mentes de la predicación cristiana.'}
             </h2>
             <p className="text-[16px] sm:text-[17px] leading-relaxed max-w-2xl mx-auto" style={{ color: '#6B4F3A' }}>
@@ -1022,8 +1022,8 @@ export default function Landing() {
       <section id="pricing" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#FFFFFF' }}>
         <div className="max-w-4xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.pricing.tag[lang]}</p>
-          <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.pricing.h2[lang]}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.pricing.h2[lang]}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-full overflow-x-hidden">
             {regionLoading ? (
               [0,1,2,3].map(i => (
                 <div key={i} className="rounded-xl p-5 flex flex-col gap-3 animate-pulse" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.12)' }}>
@@ -1078,7 +1078,7 @@ export default function Landing() {
       <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }} itemScope itemType="https://schema.org/FAQPage">
         <div className="max-w-5xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.faq.tag[lang]}</p>
-          <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-6" style={{ color: '#3D2B1F' }}>{copy.faq.h2[lang]}</h2>
+          <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-6" style={{ color: '#3D2B1F' }}>{copy.faq.h2[lang]}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {copy.faq.items.map((item, i) => (
               <div key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
@@ -1102,7 +1102,7 @@ export default function Landing() {
       {/* ===== CTA FINAL ===== */}
       <section className="py-16 sm:py-20 px-5 text-center safe-area-bottom" style={{ background: '#6B4F3A' }}>
         <div className="max-w-2xl mx-auto">
-          <h2 className="font-display text-[30px] sm:text-[38px] font-semibold leading-tight mb-4" style={{ color: '#F5F0E8' }}>
+          <h2 className="font-display text-[24px] sm:text-[38px] font-semibold leading-tight mb-4" style={{ color: '#F5F0E8' }}>
             {copy.ctaFinal.h2_1[lang]}<br /><em>{copy.ctaFinal.h2_em[lang]}</em>
           </h2>
           <p className="text-[16px] leading-[1.7] mb-8" style={{ color: 'rgba(245,240,232,0.75)' }}>{copy.ctaFinal.sub[lang]}</p>
