@@ -1078,7 +1078,7 @@ export default function Landing() {
       <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }} itemScope itemType="https://schema.org/FAQPage">
         <div className="max-w-5xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.faq.tag[lang]}</p>
-          <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-6" style={{ color: '#3D2B1F' }}>{copy.faq.h2[lang]}</h2>
+          <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-6" style={{ color: '#3D2B1F' }}>{copy.faq.h2[lang]}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {copy.faq.items.map((item, i) => (
               <div key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
