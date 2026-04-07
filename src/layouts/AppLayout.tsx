@@ -533,6 +533,20 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario'}>
+            <Link
+              to="/calendario"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/calendario'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <CalendarDays className="h-3.5 w-3.5 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario')}
+            </Link>
+          </SidebarTooltipWrap>
+
           <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}>
             <Link
               to="/social-studio"
