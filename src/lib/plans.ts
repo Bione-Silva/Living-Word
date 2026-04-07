@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // Living Word — Plan Configuration (Single Source of Truth)
+// Credit Wallet Model
 // ═══════════════════════════════════════════════════════════════
 
 export type PlanSlug = 'free' | 'starter' | 'pro' | 'igreja';
@@ -30,12 +31,20 @@ export function planIndex(plan: PlanSlug): number {
   return PLAN_ORDER.indexOf(plan);
 }
 
-// ── Monthly credits per plan ──
+// ── Monthly credits per plan (Credit Wallet) ──
 export const PLAN_CREDITS: Record<PlanSlug, number> = {
-  free: 150,
-  starter: 3_000,
-  pro: 10_000,
-  igreja: 30_000,
+  free: 500,
+  starter: 4_000,
+  pro: 8_000,
+  igreja: 20_000,
+};
+
+// ── Generation potential per plan (for tooltips) ──
+export const PLAN_GENERATION_POTENTIAL: Record<PlanSlug, { titles: number; outlines: number; sermons: number; studies: number }> = {
+  free:    { titles: 100,   outlines: 33,    sermons: 16,  studies: 8 },
+  starter: { titles: 600,   outlines: 200,   sermons: 100, studies: 50 },
+  pro:     { titles: 1_600, outlines: 533,   sermons: 266, studies: 133 },
+  igreja:  { titles: 4_000, outlines: 1_333, sermons: 666, studies: 333 },
 };
 
 // ── Credit cost per tool ──
@@ -70,7 +79,6 @@ export const TOOL_CREDITS: Record<string, number> = {
 };
 
 // ── Feature access map ──
-// Which plan FIRST unlocks each feature
 const FEATURE_MIN_PLAN: Record<PlanFeature, PlanSlug> = {
   pesquisa_basica: 'free',
   criacao_core: 'free',
@@ -92,7 +100,6 @@ const FEATURE_MIN_PLAN: Record<PlanFeature, PlanSlug> = {
 };
 
 // ── Tool → feature mapping ──
-// Maps each tool ID to the feature it belongs to
 const TOOL_FEATURE: Record<string, PlanFeature> = {
   'topic-explorer': 'pesquisa_basica',
   'verse-finder': 'pesquisa_basica',
@@ -122,32 +129,27 @@ const TOOL_FEATURE: Record<string, PlanFeature> = {
 
 // ── Helpers ──
 
-/** Check if a plan has access to a feature */
 export function hasAccess(userPlan: PlanSlug, feature: PlanFeature): boolean {
   const minPlan = FEATURE_MIN_PLAN[feature];
   return planIndex(userPlan) >= planIndex(minPlan);
 }
 
-/** Get the minimum plan required for a feature */
 export function getMinPlanFor(feature: PlanFeature): PlanSlug {
   return FEATURE_MIN_PLAN[feature];
 }
 
-/** Check if a specific tool is locked for a given plan */
 export function isToolLockedForPlan(toolId: string, userPlan: PlanSlug): boolean {
   const feature = TOOL_FEATURE[toolId];
   if (!feature) return false;
   return !hasAccess(userPlan, feature);
 }
 
-/** Get the minimum plan required to unlock a specific tool */
 export function getMinPlanForTool(toolId: string): PlanSlug {
   const feature = TOOL_FEATURE[toolId];
   if (!feature) return 'free';
   return FEATURE_MIN_PLAN[feature];
 }
 
-/** Badge type for the upgrade gap */
 export type UpgradeBadgeType = 'lock' | 'crown' | 'church';
 
 export function getUpgradeBadge(currentPlan: PlanSlug, requiredPlan: PlanSlug): UpgradeBadgeType {
@@ -174,7 +176,7 @@ export const PLAN_PRICES = {
     igreja: 79.90,
   },
   annual: {
-    starter: 8.25,  // ~2 months free
+    starter: 8.25,
     pro: 24.92,
     igreja: 66.58,
   },
@@ -204,8 +206,15 @@ export const PLAN_PRICES_BRL = {
   },
 } as const;
 
-// ── Free plan: tools that are available 1x/month ──
-// All research + core creation tools allow 1 use per month for free users
+// ── Top-up add-on pricing ──
+export const TOPUP_CREDITS = 4_000;
+export const TOPUP_PRICE_USD = 7.00;
+export const TOPUP_PRICE_BRL = 27.00;
+
+// ── Low credit threshold (show top-up when below this) ──
+export const LOW_CREDITS_THRESHOLD = 200;
+
+// ── Free plan: tools that are available (limited by credit wallet now) ──
 export const FREE_MONTHLY_TOOLS = new Set([
   'topic-explorer', 'verse-finder', 'historical-context', 'quote-finder',
   'original-text', 'lexical',
@@ -216,7 +225,6 @@ export const FREE_MONTHLY_TOOLS = new Set([
 /** Get the current month key (São Paulo timezone) */
 export function getCurrentMonthKey(): string {
   const now = new Date();
-  // Approximate BRT offset (-3h)
   const brt = new Date(now.getTime() - 3 * 60 * 60 * 1000);
   const y = brt.getUTCFullYear();
   const m = String(brt.getUTCMonth() + 1).padStart(2, '0');
