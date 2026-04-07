@@ -233,8 +233,8 @@ const copy = {
       { icon: '✍️', label: { PT: 'Artigo de blog', EN: 'Blog article', ES: 'Artículo de blog' } },
       { icon: '👥', label: { PT: 'Material de célula', EN: 'Small group material', ES: 'Material de célula' } },
       { icon: '📱', label: { PT: 'Pontos para Reels', EN: 'Reels talking points', ES: 'Puntos para Reels' } },
-      { icon: '🇬🇧', label: { PT: 'English version', EN: 'English version', ES: 'English version' } },
-      { icon: '🇪🇸', label: { PT: 'Versión en español', EN: 'Versión en español', ES: 'Versión en español' } },
+      { icon: '🇬🇧', label: { PT: 'Versão em inglês', EN: 'English version', ES: 'Versión en inglés' } },
+      { icon: '🇪🇸', label: { PT: 'Versão em espanhol', EN: 'Spanish version', ES: 'Versión en español' } },
     ],
   },
 
