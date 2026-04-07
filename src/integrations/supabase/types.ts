@@ -206,6 +206,7 @@ export type Database = {
           favorite: boolean | null
           id: string
           language: string | null
+          notes: string | null
           passage: string | null
           title: string
           type: string
@@ -222,6 +223,7 @@ export type Database = {
           favorite?: boolean | null
           id?: string
           language?: string | null
+          notes?: string | null
           passage?: string | null
           title: string
           type?: string
@@ -238,6 +240,7 @@ export type Database = {
           favorite?: boolean | null
           id?: string
           language?: string | null
+          notes?: string | null
           passage?: string | null
           title?: string
           type?: string

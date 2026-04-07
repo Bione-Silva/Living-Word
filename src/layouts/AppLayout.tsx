@@ -329,6 +329,7 @@ export default function AppLayout() {
                     { to: '/calendario', icon: CalendarDays, label: { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' } },
                     { to: '/workspaces', icon: FolderOpen, label: { PT: 'Workspaces', EN: 'Workspaces', ES: 'Workspaces' } },
                     { to: '/social-studio', icon: ImageIcon, label: { PT: 'Estúdio Social', EN: 'Social Studio', ES: 'Estudio Social' } },
+                    { to: '/bible', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' } },
                     { to: '/ajuda', icon: HelpCircle, label: { PT: 'Central de Ajuda', EN: 'Help Center', ES: 'Centro de Ayuda' } },
                     { to: '/upgrade', icon: Crown, label: { PT: 'Plano e Uso', EN: 'Plan & Usage', ES: 'Plan y Uso' } },
                     { to: '/configuracoes', icon: Settings, label: { PT: 'Configurações', EN: 'Settings', ES: 'Configuración' } },
@@ -558,6 +559,20 @@ export default function AppLayout() {
             >
               <ImageIcon className="h-3.5 w-3.5 shrink-0" />
               {!collapsed && (lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social')}
+            </Link>
+          </SidebarTooltipWrap>
+
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}>
+            <Link
+              to="/bible"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/bible'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <BookOpen className="h-3.5 w-3.5 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia')}
             </Link>
           </SidebarTooltipWrap>
 
