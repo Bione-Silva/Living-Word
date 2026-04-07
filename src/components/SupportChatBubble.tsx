@@ -1,5 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { HelpCircle, X, Send, LifeBuoy } from 'lucide-react';
+import { X, Send, LifeBuoy } from 'lucide-react';
+
+const AiHelpIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5" />
+    <text x="12" y="18.5" textAnchor="middle" fontSize="5" fontWeight="700" fill="currentColor" stroke="none" fontFamily="system-ui">AI</text>
+  </svg>
+);
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
