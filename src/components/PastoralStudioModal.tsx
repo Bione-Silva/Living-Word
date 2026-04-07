@@ -496,15 +496,25 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                   </div>
                 </div>
 
-                <Button
-                  type="button"
-                  onClick={handleGenerate}
-                  className="w-full gap-2 min-h-[48px]"
-                  disabled={loading || !formData.bible_passage.trim() || !formData.output_modes.length}
-                >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                  {loading ? text.generating : text.generate}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    onClick={handleGenerate}
+                    className="flex-1 gap-2 min-h-[48px]"
+                    disabled={loading || !formData.bible_passage.trim() || !formData.output_modes.length}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    {loading ? text.generating : text.generate}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="gap-1.5 min-h-[48px] shrink-0"
+                    onClick={() => setBibleOpen(true)}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
