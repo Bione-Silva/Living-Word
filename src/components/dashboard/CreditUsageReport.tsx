@@ -196,7 +196,7 @@ export function CreditUsageReport() {
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{labels.used[l]}</p>
               <p className="text-2xl font-bold font-mono text-foreground">{totalConsumed.toLocaleString()}</p>
               <p className="text-[10px] text-muted-foreground">
-                {entries.length} {lang === 'PT' ? 'gerações' : lang === 'EN' ? 'generations' : 'generaciones'}
+                {filteredEntries.length} {lang === 'PT' ? 'gerações' : lang === 'EN' ? 'generations' : 'generaciones'}
               </p>
             </div>
           </div>
