@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { hasAccess, type PlanSlug } from '@/lib/plans';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MindCard } from '@/components/MindCard';

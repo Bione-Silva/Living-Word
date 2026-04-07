@@ -82,7 +82,7 @@ export default function MindProfile() {
     );
   }
 
-  const isFree = profile?.plan === 'free';
+  const isFree = !hasAccess((profile?.plan as PlanSlug) || 'free', 'mentes_brilhantes');
   const isLocked = mind.locked && isFree;
 
   const handleModality = (modalityId: string) => {
