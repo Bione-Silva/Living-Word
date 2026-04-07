@@ -56,6 +56,7 @@ async function streamMindChat({
   mindId,
   modality,
   language,
+  userName,
   onDelta,
   onDone,
   onError,
@@ -64,6 +65,7 @@ async function streamMindChat({
   mindId: string;
   modality: string;
   language: string;
+  userName: string;
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (msg: string) => void;
@@ -74,7 +76,7 @@ async function streamMindChat({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ messages, mindId, modality, language }),
+    body: JSON.stringify({ messages, mindId, modality, language, userName }),
   });
 
   if (!resp.ok) {
@@ -125,7 +127,8 @@ export default function MenteChat() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { lang } = useLanguage();
-
+  const { user, profile } = useAuth();
+  const userDisplayName = profile?.full_name || user?.email?.split('@')[0] || 'pastor';
   const menteId = searchParams.get('mente') || '';
   const modalidade = searchParams.get('modalidade') || '';
   const mind = minds.find((m) => m.id === menteId);
@@ -149,7 +152,6 @@ export default function MenteChat() {
   } | null>(null);
   const [improving, setImproving] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
 
   const isArtifact = (content: string) => {
     if (content.length < 800) return false;
@@ -257,6 +259,7 @@ export default function MenteChat() {
         mindId: menteId,
         modality: modalidade,
         language: lang,
+        userName: userDisplayName,
         onDelta: upsert,
         onDone: () => setIsLoading(false),
         onError: (msg) => {
@@ -342,6 +345,7 @@ export default function MenteChat() {
         mindId: menteId,
         modality: modalidade,
         language: lang,
+        userName: userDisplayName,
         onDelta: upsert,
         onDone: () => {
           setIsLoading(false);
