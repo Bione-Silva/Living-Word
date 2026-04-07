@@ -51,7 +51,7 @@ export default function HelpCenter() {
               <BookOpen className="h-7 w-7 text-[hsl(35,45%,45%)]" />
             </div>
             <div>
-              <h1 className="font-display text-3xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] tracking-tight flex items-center gap-3">
+              <h1 className="font-display text-2xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] tracking-tight flex items-center gap-3">
                 {pageLabels.title[lang]}
                 <Sparkles className="h-5 w-5 text-[hsl(35,50%,55%)]" />
               </h1>

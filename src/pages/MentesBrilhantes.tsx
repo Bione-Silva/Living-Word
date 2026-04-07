@@ -71,7 +71,7 @@ export default function MentesBrilhantes() {
               <Brain className="h-6 w-6 text-[hsl(35,45%,45%)]" />
             </div>
             <div>
-              <h1 className="font-display text-3xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] flex items-center gap-3 tracking-tight">
+              <h1 className="font-display text-2xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] flex items-center gap-3 tracking-tight">
                 {pageTitle[lang]}
                 <Sparkles className="h-5 w-5 text-[hsl(35,50%,55%)]" />
               </h1>

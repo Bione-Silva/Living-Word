@@ -187,7 +187,7 @@ export default function Upgrade() {
     <div className="space-y-8 max-w-5xl mx-auto">
       <div className="text-center">
         <Sparkles className="h-10 w-10 text-primary mx-auto mb-4" />
-        <h1 className="font-display text-3xl sm:text-4xl font-bold">{labels.title[lang]}</h1>
+        <h1 className="font-display text-2xl sm:text-4xl font-bold">{labels.title[lang]}</h1>
         <p className="text-muted-foreground mt-2 max-w-lg mx-auto">{labels.subtitle[lang]}</p>
       </div>
 
