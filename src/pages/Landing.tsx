@@ -926,36 +926,38 @@ export default function Landing() {
               ))
             ) : (
               pricingPlans.map((plan, i) => (
-                <div key={i} className="rounded-xl p-5 flex flex-col" style={{
-                  background: plan.featured ? '#F5F0E8' : '#FFFFFF',
-                  border: plan.featured ? '2px solid #6B4F3A' : '1px solid rgba(107,79,58,0.12)',
-                }}>
-                  {plan.featured && (
-                    <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-2 self-start" style={{ background: '#6B4F3A', color: '#F5F0E8' }}>
-                      {lang === 'PT' ? 'Mais escolhido' : lang === 'EN' ? 'Most popular' : 'Más elegido'}
+                <RevealOnScroll key={i} delay={i * 0.1}>
+                  <div className="rounded-xl p-5 flex flex-col h-full" style={{
+                    background: plan.featured ? '#F5F0E8' : '#FFFFFF',
+                    border: plan.featured ? '2px solid #6B4F3A' : '1px solid rgba(107,79,58,0.12)',
+                  }}>
+                    {plan.featured && (
+                      <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-2 self-start" style={{ background: '#6B4F3A', color: '#F5F0E8' }}>
+                        {lang === 'PT' ? 'Mais escolhido' : lang === 'EN' ? 'Most popular' : 'Más elegido'}
+                      </span>
+                    )}
+                    <p className="text-[15px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{plan.name[lang]}</p>
+                    <div className="flex items-baseline gap-0.5 mb-1">
+                      <span className="font-display text-[32px] font-semibold" style={{ color: '#3D2B1F' }}>{plan.price}</span>
+                    </div>
+                    <p className="text-[13px] mb-2 font-medium" style={{ color: '#6B4F3A' }}>{plan.period[lang]}</p>
+                    <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-4 self-start" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>
+                      {plan.capacity[lang]}
                     </span>
-                  )}
-                  <p className="text-[15px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{plan.name[lang]}</p>
-                  <div className="flex items-baseline gap-0.5 mb-1">
-                    <span className="font-display text-[32px] font-semibold" style={{ color: '#3D2B1F' }}>{plan.price}</span>
+                    <div className="space-y-2 mb-4 flex-1 pt-3" style={{ borderTop: '1px solid rgba(107,79,58,0.1)' }}>
+                      {plan.features[lang].map((f, j) => (
+                        <div key={j} className="flex items-start gap-2 text-[14px]" style={{ color: '#3D2B1F' }}>
+                          <span className="shrink-0 font-semibold" style={{ color: '#6B4F3A' }}>✓</span>
+                          <span>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Link to={plan.planKey ? `/cadastro?plan=${plan.planKey}` : '/cadastro'} className="block text-center text-[14px] font-semibold py-3 rounded-lg transition-transform hover:scale-[1.02]" style={{
+                      background: plan.featured ? '#6B4F3A' : '#EDD9C8',
+                      color: plan.featured ? '#FFFFFF' : '#6B4F3A',
+                    }}>{plan.cta[lang]}</Link>
                   </div>
-                  <p className="text-[13px] mb-2 font-medium" style={{ color: '#6B4F3A' }}>{plan.period[lang]}</p>
-                  <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-4 self-start" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>
-                    {plan.capacity[lang]}
-                  </span>
-                  <div className="space-y-2 mb-4 flex-1 pt-3" style={{ borderTop: '1px solid rgba(107,79,58,0.1)' }}>
-                    {plan.features[lang].map((f, j) => (
-                      <div key={j} className="flex items-start gap-2 text-[14px]" style={{ color: '#3D2B1F' }}>
-                        <span className="shrink-0 font-semibold" style={{ color: '#6B4F3A' }}>✓</span>
-                        <span>{f}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <Link to={plan.planKey ? `/cadastro?plan=${plan.planKey}` : '/cadastro'} className="block text-center text-[14px] font-semibold py-3 rounded-lg transition-transform hover:scale-[1.02]" style={{
-                    background: plan.featured ? '#6B4F3A' : '#EDD9C8',
-                    color: plan.featured ? '#FFFFFF' : '#6B4F3A',
-                  }}>{plan.cta[lang]}</Link>
-                </div>
+                </RevealOnScroll>
               ))
             )}
           </div>
