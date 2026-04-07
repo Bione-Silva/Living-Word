@@ -43,7 +43,7 @@ export default function HelpCenter() {
   return (
     <div className="max-w-6xl mx-auto pb-16 space-y-8">
       {/* ── Header ── */}
-      <div className="relative rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-8 sm:p-12 overflow-hidden">
+      <div className="relative rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-12 overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(35,40%,75%)] to-transparent" />
         <div className="relative z-10">
           <div className="flex items-start gap-4 mb-6">
