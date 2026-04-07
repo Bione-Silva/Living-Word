@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
 
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
@@ -14,6 +15,29 @@ import {
 } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
+
+function PWAFooterInstallButton({ lang }: { lang: L }) {
+  const { isInstallable, install } = usePWAInstall();
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
+  }, []);
+
+  if (isStandalone || !isInstallable) return null;
+
+  const label = { PT: '📱 Instale o App Agora', EN: '📱 Install the App Now', ES: '📱 Instala la App Ahora' };
+
+  return (
+    <button
+      onClick={() => void install()}
+      className="text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-all hover:scale-[1.03]"
+      style={{ background: '#C4956A', color: '#1E1510' }}
+    >
+      {label[lang]}
+    </button>
+  );
+}
 
 const copy = {
   nav: {
@@ -1115,20 +1139,23 @@ export default function Landing() {
 
       {/* ===== FOOTER ===== */}
       <footer className="py-8 px-5 sm:px-8" style={{ background: '#1E1510' }}>
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-display text-lg" style={{ color: 'rgba(245,240,232,0.7)' }}>
-            Living <span style={{ color: '#C4956A' }}>Word</span>
-          </span>
-          <div className="flex items-center gap-5">
-            <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Privacidade' : lang === 'EN' ? 'Privacy' : 'Privacidad'}</span>
-            <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Termos' : lang === 'EN' ? 'Terms' : 'Términos'}</span>
-            <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Contato' : lang === 'EN' ? 'Contact' : 'Contacto'}</span>
+        <div className="max-w-4xl mx-auto flex flex-col items-center gap-5">
+          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span className="font-display text-lg" style={{ color: 'rgba(245,240,232,0.7)' }}>
+              Living <span style={{ color: '#C4956A' }}>Word</span>
+            </span>
+            <div className="flex items-center gap-5">
+              <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Privacidade' : lang === 'EN' ? 'Privacy' : 'Privacidad'}</span>
+              <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Termos' : lang === 'EN' ? 'Terms' : 'Términos'}</span>
+              <span className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.4)' }}>{lang === 'PT' ? 'Contato' : lang === 'EN' ? 'Contact' : 'Contacto'}</span>
+            </div>
+            <div className="flex gap-3">
+              {(['PT', 'EN', 'ES'] as L[]).map((l) => (
+                <button key={l} onClick={() => setLang(l)} className="text-[13px] font-semibold" style={{ color: l === lang ? '#C4956A' : 'rgba(245,240,232,0.35)' }}>{l}</button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-3">
-            {(['PT', 'EN', 'ES'] as L[]).map((l) => (
-              <button key={l} onClick={() => setLang(l)} className="text-[13px] font-semibold" style={{ color: l === lang ? '#C4956A' : 'rgba(245,240,232,0.35)' }}>{l}</button>
-            ))}
-          </div>
+          <PWAFooterInstallButton lang={lang} />
         </div>
       </footer>
     </div>

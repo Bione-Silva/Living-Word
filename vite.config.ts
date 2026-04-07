@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => ({
         name: "Living Word",
         short_name: "Living Word",
         description: "Plataforma cristã trilíngue para pastores e líderes evangélicos.",
-        start_url: "/",
+        start_url: "/dashboard",
         display: "standalone",
         background_color: "#F5F0E8",
         theme_color: "#3D2B1F",
@@ -57,5 +57,16 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-popover", "@radix-ui/react-tooltip", "@radix-ui/react-tabs"],
+          charts: ["recharts"],
+        },
+      },
+    },
   },
 }));
