@@ -95,7 +95,7 @@ export default function AdminDashboard() {
         .lt('created_at', thirtyDaysAgo.toISOString());
 
       const totalUsers = Number(m?.total_users_registered || 0);
-      const paidUsers = Number(m?.users_pastoral || 0) + Number(m?.users_church || 0) + Number(m?.users_ministry || 0);
+      const paidUsers = Number(m?.users_starter || 0) + Number(m?.users_pro || 0) + Number(m?.users_igreja || 0);
       const mrr = Number(m?.estimated_mrr_usd || 0);
       const views = pvCount || 0;
       const prevViews = pvPrevCount || 0;

@@ -29,7 +29,7 @@ export function ConversionFunnel() {
       const m = metrics?.[0];
       const totalUsers = Number(m?.total_users_registered || 0);
       const trialing = Number(m?.users_trialing || 0);
-      const paid = Number(m?.users_pastoral || 0) + Number(m?.users_church || 0) + Number(m?.users_ministry || 0);
+      const paid = Number(m?.users_starter || 0) + Number(m?.users_pro || 0) + Number(m?.users_igreja || 0);
 
       setSteps([
         { label: 'Visitantes Landing', value: landingViews || 0, color: 'bg-violet-500' },
