@@ -39,7 +39,7 @@ export function SupportChatBubble() {
 
     try {
       const { data, error } = await supabase.functions.invoke('support-agent', {
-        body: { message: text, history: [...messages, userMsg].slice(-10) },
+        body: { message: text, history: [...messages, userMsg].slice(-10), userName: userName || undefined },
       });
       if (error) throw error;
       setMessages(prev => [...prev, { role: 'assistant', content: data?.reply || 'Desculpe, não consegui responder agora.' }]);

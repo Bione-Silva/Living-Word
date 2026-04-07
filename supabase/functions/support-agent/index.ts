@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { message, history } = await req.json();
+    const { message, history, userName } = await req.json();
 
     if (!message || typeof message !== 'string' || message.length > 2000) {
       return new Response(JSON.stringify({ error: 'Invalid message' }), {
@@ -26,7 +26,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const systemPrompt = `Você é o assistente oficial de treinamento da plataforma Living Word. Ajude pastores com dúvidas sobre pregações, devocionais, estudos bíblicos e uso da plataforma. Seja acolhedor, pastoral e objetivo. Responda sempre em português.`;
+    const nameInstruction = userName ? ` O nome do usuário é ${userName}. Chame-o pelo nome quando apropriado. Nunca presuma que é pastor — trate como líder, estudioso ou usuário da plataforma.` : ' Nunca presuma que o usuário é pastor — trate como líder, estudioso ou usuário da plataforma.';
+
+    const systemPrompt = `Você é o assistente oficial de treinamento da plataforma Living Word. Ajude com dúvidas sobre pregações, devocionais, estudos bíblicos e uso da plataforma. Seja acolhedor, pastoral e objetivo. Responda sempre em português.${nameInstruction}`;
 
     const messages = [
       { role: 'system', content: systemPrompt },
