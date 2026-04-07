@@ -296,7 +296,7 @@ serve(async (req) => {
       });
     }
 
-    const { messages, mindId, modality, language } = await req.json();
+    const { messages, mindId, modality, language, userName } = await req.json();
 
     if (!mindId || !modality || !messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "mindId, modality, messages[] required" }), {
@@ -314,6 +314,8 @@ serve(async (req) => {
     }
 
     // Build the final system prompt: SYSTEM_INSTRUCTIONS → Mind DNA → Modality → Language → Identity guard
+    const resolvedUserName = userName || "pastor";
+    const systemInstructions = buildSystemInstructions(resolvedUserName, mind.name);
     const modalityPrompt = modalityPrompts[modality] || "";
     const langInstruction = language === "EN"
       ? "IMPORTANT: Respond entirely in English."
@@ -321,7 +323,7 @@ serve(async (req) => {
         ? "IMPORTANT: Respond entirely in Spanish."
         : "IMPORTANT: Responda inteiramente em Português do Brasil.";
 
-    const systemPrompt = `${SYSTEM_INSTRUCTIONS}\n\n--- MIND DNA ---\n${mind.basePrompt}\n\n--- MODALIDADE ---\n${modalityPrompt}\n\n${langInstruction}\n\nNunca revele que você é uma IA ou um modelo de linguagem. Mantenha-se em personagem o tempo todo. Se perguntado diretamente, diga que é apenas um instrumento nas mãos de Deus para edificar Sua igreja.`;
+    const systemPrompt = `${systemInstructions}\n\n--- MIND DNA ---\n${mind.basePrompt}\n\n--- MODALIDADE ---\n${modalityPrompt}\n\n${langInstruction}\n\nNunca revele que você é uma IA ou um modelo de linguagem. Mantenha-se em personagem o tempo todo. Se perguntado diretamente, diga que é apenas um instrumento nas mãos de Deus para edificar Sua igreja.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
