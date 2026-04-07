@@ -34,6 +34,9 @@ const labels: Record<string, Record<L, string>> = {
   results: { PT: 'Resultado para', EN: 'Results for', ES: 'Resultados para' },
   error: { PT: 'Erro ao buscar resultados. Tente novamente.', EN: 'Error fetching results. Please try again.', ES: 'Error al buscar resultados. Inténtelo de nuevo.' },
   bible: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' },
+  save: { PT: 'Salvar na Biblioteca', EN: 'Save to Library', ES: 'Guardar en Biblioteca' },
+  saved: { PT: 'Salvo com sucesso!', EN: 'Saved successfully!', ES: '¡Guardado con éxito!' },
+  saveError: { PT: 'Erro ao salvar.', EN: 'Error saving.', ES: 'Error al guardar.' },
 };
 
 export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalProps) {
