@@ -475,6 +475,22 @@ export default function Landing() {
             <button onClick={() => scrollTo('pricing')} className="text-[13px] font-medium transition-colors hover:text-[#C4956A]" style={{ color: 'rgba(245,240,232,0.65)' }}>{copy.nav.plans[lang]}</button>
             <Link to="/login" className="text-[13px] font-medium" style={{ color: 'rgba(245,240,232,0.65)' }}>{copy.nav.login[lang]}</Link>
             <Link to="/cadastro" className="text-[13px] font-semibold px-4 py-2 rounded-lg transition-transform hover:scale-[1.02]" style={{ background: '#C4956A', color: '#1E1510' }}>{copy.nav.cta[lang]}</Link>
+            {/* Language toggle */}
+            <div className="flex items-center rounded-lg overflow-hidden" style={{ background: 'rgba(245,240,232,0.1)', border: '1px solid rgba(245,240,232,0.15)' }}>
+              {(['PT', 'EN', 'ES'] as L[]).map((code) => (
+                <button
+                  key={code}
+                  onClick={() => setLang(code)}
+                  className="text-[12px] font-semibold px-3 py-1.5 transition-all"
+                  style={{
+                    background: lang === code ? 'rgba(245,240,232,0.9)' : 'transparent',
+                    color: lang === code ? '#1E1510' : 'rgba(245,240,232,0.5)',
+                  }}
+                >
+                  {code}
+                </button>
+              ))}
+            </div>
           </div>
           <button className="md:hidden p-1.5" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="h-5 w-5" style={{ color: '#F5F0E8' }} /> : <Menu className="h-5 w-5" style={{ color: '#F5F0E8' }} />}
@@ -487,6 +503,22 @@ export default function Landing() {
             <button onClick={() => scrollTo('pricing')} className="block w-full text-left text-[14px] py-2" style={{ color: 'rgba(245,240,232,0.7)' }}>{copy.nav.plans[lang]}</button>
             <Link to="/login" className="block text-[14px] py-2" style={{ color: 'rgba(245,240,232,0.7)' }}>{copy.nav.login[lang]}</Link>
             <Link to="/cadastro" className="block text-center text-[14px] font-semibold px-4 py-2.5 rounded-lg" style={{ background: '#C4956A', color: '#1E1510' }}>{copy.nav.cta[lang]}</Link>
+            {/* Mobile language toggle */}
+            <div className="flex items-center rounded-lg overflow-hidden w-fit" style={{ background: 'rgba(245,240,232,0.1)', border: '1px solid rgba(245,240,232,0.15)' }}>
+              {(['PT', 'EN', 'ES'] as L[]).map((code) => (
+                <button
+                  key={code}
+                  onClick={() => setLang(code)}
+                  className="text-[13px] font-semibold px-4 py-2 transition-all"
+                  style={{
+                    background: lang === code ? 'rgba(245,240,232,0.9)' : 'transparent',
+                    color: lang === code ? '#1E1510' : 'rgba(245,240,232,0.5)',
+                  }}
+                >
+                  {code}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </nav>
