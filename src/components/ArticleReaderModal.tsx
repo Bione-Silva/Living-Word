@@ -83,6 +83,19 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
   const handleEnrich = useCallback(async () => {
     if (!item?.id) return;
     setEnriching(true);
+    const steps = lang === 'PT'
+      ? ['Analisando o estudo...', 'Extraindo cenas visuais...', 'Gerando imagem 1/3 🎨', 'Gerando imagem 2/3 🎨', 'Gerando imagem 3/3 🎨', 'Salvando ilustrações...']
+      : lang === 'EN'
+      ? ['Analyzing study...', 'Extracting visual scenes...', 'Generating image 1/3 🎨', 'Generating image 2/3 🎨', 'Generating image 3/3 🎨', 'Saving illustrations...']
+      : ['Analizando el estudio...', 'Extrayendo escenas visuales...', 'Generando imagen 1/3 🎨', 'Generando imagen 2/3 🎨', 'Generando imagen 3/3 🎨', 'Guardando ilustraciones...'];
+    
+    let stepIdx = 0;
+    setEnrichStep(steps[0]);
+    const interval = setInterval(() => {
+      stepIdx++;
+      if (stepIdx < steps.length) setEnrichStep(steps[stepIdx]);
+    }, 8000);
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No session');
@@ -110,7 +123,9 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
       console.error('Enrich error:', err);
       toast.error(lang === 'PT' ? 'Erro ao gerar ilustrações' : 'Error generating illustrations');
     } finally {
+      clearInterval(interval);
       setEnriching(false);
+      setEnrichStep('');
     }
   }, [item?.id, lang]);
 
