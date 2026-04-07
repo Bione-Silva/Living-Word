@@ -105,7 +105,7 @@ export function BlogArticleEditorDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="theme-app max-w-7xl w-[96vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0">
+      <DialogContent className="theme-app max-w-7xl w-[96vw] max-h-[95vh] overflow-hidden overflow-x-hidden flex flex-col bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 break-words">
         <DialogHeader className="shrink-0">
           <DialogTitle className="font-display text-xl text-foreground">{text.title}</DialogTitle>
           <DialogDescription>{text.description}</DialogDescription>
