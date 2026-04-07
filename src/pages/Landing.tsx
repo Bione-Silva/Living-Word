@@ -684,7 +684,7 @@ export default function Landing() {
                       <div className="flex flex-wrap gap-1 mb-2">
                         {[
                           lang === 'PT' ? 'Sermão' : lang === 'EN' ? 'Sermon' : 'Sermón',
-                          lang === 'PT' ? 'Devocional' : 'Devotional',
+                          lang === 'PT' ? 'Devocional' : lang === 'EN' ? 'Devotional' : 'Devocional',
                           lang === 'PT' ? 'Estudo' : lang === 'EN' ? 'Study' : 'Estudio',
                           lang === 'PT' ? 'Artigo' : lang === 'EN' ? 'Article' : 'Artículo',
                           'Blog', lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula',
