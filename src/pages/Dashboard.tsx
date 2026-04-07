@@ -95,8 +95,7 @@ export default function Dashboard() {
       {/* 6. More Tools (collapsed) */}
       <MoreToolsAccordion onToolClick={handleToolClick} />
 
-      {/* 7. Account Info — below the fold */}
-      <AccountInfoBar />
+      {/* 7. Account Info — removed per user request (already in profile) */}
 
       {/* 8. Recent Generations */}
       <RecentGenerations />
