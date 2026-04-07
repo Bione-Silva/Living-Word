@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { FileDown, FileText, ChevronDown, Wand2, Loader2 } from 'lucide-react';
+import { FileDown, FileText, ChevronDown, Wand2, Loader2, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BiblicalStudyOutput } from '@/types/biblical-study';
 import { supabase } from '@/integrations/supabase/client';
