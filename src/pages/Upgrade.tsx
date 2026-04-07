@@ -7,20 +7,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2, Building2 } from 'lucide-react';
+import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2, Building2, HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
-import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_PRICES_BRL, type PlanSlug } from '@/lib/plans';
+import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_PRICES_BRL, PLAN_GENERATION_POTENTIAL, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
+import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
+import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 
 type L = 'PT' | 'EN' | 'ES';
 type PlanKey = 'starter' | 'pro' | 'igreja';
 
 const labels = {
-  title: { PT: 'Escolha seu plano de produção', EN: 'Choose your production plan', ES: 'Elige tu plan de producción' } as Record<L, string>,
-  subtitle: { PT: 'Escale sua produção pastoral. Sem créditos técnicos, sem complicação.', EN: 'Scale your pastoral production. No technical credits, no hassle.', ES: 'Escala tu producción pastoral. Sin créditos técnicos, sin complicación.' } as Record<L, string>,
+  title: { PT: 'Sua Carteira de Créditos', EN: 'Your Credit Wallet', ES: 'Tu Cartera de Créditos' } as Record<L, string>,
+  subtitle: { PT: 'Use seus créditos livremente em qualquer ferramenta.', EN: 'Use your credits freely on any tool.', ES: 'Usa tus créditos libremente en cualquier herramienta.' } as Record<L, string>,
   current: { PT: 'Plano atual', EN: 'Current plan', ES: 'Plan actual' } as Record<L, string>,
   popular: { PT: 'Mais escolhido', EN: 'Most popular', ES: 'Más elegido' } as Record<L, string>,
   cta: { PT: 'Começar agora', EN: 'Start now', ES: 'Comenzar ahora' } as Record<L, string>,
@@ -37,6 +40,11 @@ const labels = {
   annual: { PT: 'Anual', EN: 'Annual', ES: 'Anual' } as Record<L, string>,
   annualSave: { PT: '2 meses grátis', EN: '2 months free', ES: '2 meses gratis' } as Record<L, string>,
   credits: { PT: 'créditos/mês', EN: 'credits/month', ES: 'créditos/mes' } as Record<L, string>,
+  tooltipTitle: { PT: 'Equivalente a gerar:', EN: 'Equivalent to generating:', ES: 'Equivalente a generar:' } as Record<L, string>,
+  titles: { PT: 'Títulos e Ideias', EN: 'Titles & Ideas', ES: 'Títulos e Ideas' } as Record<L, string>,
+  outlines: { PT: 'Esboços Médios', EN: 'Medium Outlines', ES: 'Esquemas Medios' } as Record<L, string>,
+  sermons: { PT: 'Sermões Completos', EN: 'Full Sermons', ES: 'Sermones Completos' } as Record<L, string>,
+  studies: { PT: 'Estudos Aprofundados', EN: 'Deep Studies', ES: 'Estudios Profundos' } as Record<L, string>,
 };
 
 interface PlanData {
@@ -46,8 +54,6 @@ interface PlanData {
   icon: React.ElementType;
   features: Record<L, string[]>;
   featured: boolean;
-  capacity: Record<L, string>;
-  sermonsMonth: Record<L, string>;
   isFree: boolean;
   credits: number;
 }
@@ -58,12 +64,10 @@ const plans: PlanData[] = [
     name: PLAN_DISPLAY_NAMES.free,
     icon: BookOpen, featured: false, isFree: true,
     credits: PLAN_CREDITS.free,
-    capacity: { PT: 'Uso básico', EN: 'Basic usage', ES: 'Uso básico' },
-    sermonsMonth: { PT: '1 uso/mês por ferramenta', EN: '1 use/month per tool', ES: '1 uso/mes por herramienta' },
     features: {
-      PT: ['150 créditos/mês', '1 uso/mês por ferramenta', '6 ferramentas de pesquisa', '8 ferramentas de criação', 'Blog cristão básico'],
-      EN: ['150 credits/month', '1 use/month per tool', '6 research tools', '8 creation tools', 'Basic Christian blog'],
-      ES: ['150 créditos/mes', '1 uso/mes por herramienta', '6 herramientas de investigación', '8 herramientas de creación', 'Blog cristiano básico'],
+      PT: ['500 créditos/mês', 'Todas as ferramentas básicas', '6 ferramentas de pesquisa', '8 ferramentas de criação', 'Blog cristão básico'],
+      EN: ['500 credits/month', 'All basic tools', '6 research tools', '8 creation tools', 'Basic Christian blog'],
+      ES: ['500 créditos/mes', 'Todas las herramientas básicas', '6 herramientas de investigación', '8 herramientas de creación', 'Blog cristiano básico'],
     },
   },
   {
@@ -71,12 +75,10 @@ const plans: PlanData[] = [
     name: PLAN_DISPLAY_NAMES.starter,
     icon: Zap, featured: false, isFree: false,
     credits: PLAN_CREDITS.starter,
-    capacity: { PT: 'Produção semanal', EN: 'Weekly production', ES: 'Producción semanal' },
-    sermonsMonth: { PT: '3.000 créditos/mês', EN: '3,000 credits/month', ES: '3.000 créditos/mes' },
     features: {
-      PT: ['3.000 créditos/mês', 'Todas as ferramentas core', '+ 9 ferramentas extras', 'Uso ilimitado por ferramenta', 'Sem watermark', 'Biblioteca com 100 itens'],
-      EN: ['3,000 credits/month', 'All core tools', '+ 9 extra tools', 'Unlimited use per tool', 'No watermark', 'Library with 100 items'],
-      ES: ['3.000 créditos/mes', 'Todas las herramientas core', '+ 9 herramientas extras', 'Uso ilimitado por herramienta', 'Sin marca de agua', 'Biblioteca con 100 ítems'],
+      PT: ['4.000 créditos/mês', 'Todas as ferramentas core + extras', 'Liberdade total de uso', 'Sem watermark', 'Biblioteca com 100 itens'],
+      EN: ['4,000 credits/month', 'All core + extra tools', 'Total freedom of use', 'No watermark', 'Library with 100 items'],
+      ES: ['4.000 créditos/mes', 'Todas las herramientas core + extras', 'Libertad total de uso', 'Sin marca de agua', 'Biblioteca con 100 ítems'],
     },
   },
   {
@@ -84,12 +86,10 @@ const plans: PlanData[] = [
     name: PLAN_DISPLAY_NAMES.pro,
     icon: Brain, featured: true, isFree: false,
     credits: PLAN_CREDITS.pro,
-    capacity: { PT: 'Produção completa', EN: 'Full production', ES: 'Producción completa' },
-    sermonsMonth: { PT: '10.000 créditos/mês', EN: '10,000 credits/month', ES: '10.000 créditos/mes' },
     features: {
-      PT: ['10.000 créditos/mês', 'Tudo do Starter +', '🧠 Mentes Brilhantes', 'Ilustrações para sermões', 'Calendário editorial', 'YouTube → Blog', 'Até 3 workspaces', 'Equipe até 3 usuários'],
-      EN: ['10,000 credits/month', 'Everything in Starter +', '🧠 Brilliant Minds', 'Sermon illustrations', 'Editorial calendar', 'YouTube → Blog', 'Up to 3 workspaces', 'Team up to 3 users'],
-      ES: ['10.000 créditos/mes', 'Todo del Starter +', '🧠 Mentes Brillantes', 'Ilustraciones para sermones', 'Calendario editorial', 'YouTube → Blog', 'Hasta 3 workspaces', 'Equipo hasta 3 usuarios'],
+      PT: ['8.000 créditos/mês', 'Tudo do Starter +', '🧠 Mentes Brilhantes', 'Ilustrações para sermões', 'Calendário editorial', 'YouTube → Blog', 'Até 3 workspaces', 'Equipe até 3 usuários'],
+      EN: ['8,000 credits/month', 'Everything in Starter +', '🧠 Brilliant Minds', 'Sermon illustrations', 'Editorial calendar', 'YouTube → Blog', 'Up to 3 workspaces', 'Team up to 3 users'],
+      ES: ['8.000 créditos/mes', 'Todo del Starter +', '🧠 Mentes Brillantes', 'Ilustraciones para sermones', 'Calendario editorial', 'YouTube → Blog', 'Hasta 3 workspaces', 'Equipo hasta 3 usuarios'],
     },
   },
   {
@@ -97,15 +97,37 @@ const plans: PlanData[] = [
     name: PLAN_DISPLAY_NAMES.igreja,
     icon: Building2, featured: false, isFree: false,
     credits: PLAN_CREDITS.igreja,
-    capacity: { PT: 'Escala ministerial', EN: 'Ministry scale', ES: 'Escala ministerial' },
-    sermonsMonth: { PT: '30.000 créditos/mês', EN: '30,000 credits/month', ES: '30.000 créditos/mes' },
     features: {
-      PT: ['30.000 créditos/mês', 'Tudo do Pro +', 'Até 10 usuários incluídos', 'Workspaces ilimitados', 'Multiportal (5 portais)', 'White-label parcial', 'Automação avançada', 'Suporte VIP (4h)'],
-      EN: ['30,000 credits/month', 'Everything in Pro +', 'Up to 10 users included', 'Unlimited workspaces', 'Multi-portal (5 portals)', 'Partial white-label', 'Advanced automation', 'VIP Support (4h)'],
-      ES: ['30.000 créditos/mes', 'Todo del Pro +', 'Hasta 10 usuarios incluidos', 'Workspaces ilimitados', 'Multiportal (5 portales)', 'White-label parcial', 'Automatización avanzada', 'Soporte VIP (4h)'],
+      PT: ['20.000 créditos/mês', 'Tudo do Pro +', 'Até 10 usuários incluídos', 'Workspaces ilimitados', 'Multiportal (5 portais)', 'White-label parcial', 'Automação avançada', 'Suporte VIP (4h)'],
+      EN: ['20,000 credits/month', 'Everything in Pro +', 'Up to 10 users included', 'Unlimited workspaces', 'Multi-portal (5 portals)', 'Partial white-label', 'Advanced automation', 'VIP Support (4h)'],
+      ES: ['20.000 créditos/mes', 'Todo del Pro +', 'Hasta 10 usuarios incluidos', 'Workspaces ilimitados', 'Multiportal (5 portales)', 'White-label parcial', 'Automatización avanzada', 'Soporte VIP (4h)'],
     },
   },
 ];
+
+function CreditPotentialTooltip({ planSlug, lang }: { planSlug: PlanSlug; lang: L }) {
+  const potential = PLAN_GENERATION_POTENTIAL[planSlug];
+  return (
+    <TooltipProvider>
+      <Tooltip delayDuration={200}>
+        <TooltipTrigger asChild>
+          <button className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted hover:bg-muted-foreground/20 transition-colors">
+            <HelpCircle className="h-3 w-3 text-muted-foreground" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[220px] p-3 space-y-1.5">
+          <p className="text-xs font-semibold">{labels.tooltipTitle[lang]}</p>
+          <ul className="text-[11px] space-y-0.5 text-muted-foreground">
+            <li>📝 {potential.titles.toLocaleString()} {labels.titles[lang]}</li>
+            <li>📋 {potential.outlines.toLocaleString()} {labels.outlines[lang]}</li>
+            <li>🎤 {potential.sermons.toLocaleString()} {labels.sermons[lang]}</li>
+            <li>📖 {potential.studies.toLocaleString()} {labels.studies[lang]}</li>
+          </ul>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 export default function Upgrade() {
   useForceLightTheme();
@@ -118,6 +140,11 @@ export default function Upgrade() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
   const autoCheckoutFired = useRef(false);
+
+  const used = profile?.generations_used || 0;
+  const limit = PLAN_CREDITS[currentPlan] || 500;
+  const remaining = Math.max(limit - used, 0);
+  const showTopUp = remaining < LOW_CREDITS_THRESHOLD;
 
   const igrejaTotal = useMemo(() => {
     if (!pricing) return 0;
@@ -140,7 +167,6 @@ export default function Upgrade() {
 
   const handleSubscribe = async (plan: PlanData) => {
     if (!plan.planKey || plan.isFree || !pricing) return;
-
     setLoadingPlan(plan.id);
     try {
       const priceSource = isAnnual ? pricing.annual : pricing.plans;
@@ -149,26 +175,21 @@ export default function Upgrade() {
         successUrl: `${window.location.origin}/dashboard?checkout_success=true`,
         cancelUrl: `${window.location.origin}/upgrade`,
       };
-
       if (plan.planKey === 'igreja' && extraSeats > 0) {
         body.extraSeats = extraSeats;
         body.stripeAddonPriceId = pricing.addon.id;
       }
-
       const { data, error } = await supabase.functions.invoke('create-checkout', { body });
-
       if (error) {
         const errMsg: Record<L, { title: string; desc: string }> = {
-          PT: { title: 'Ops, contratempo na tesouraria', desc: 'Nosso sistema de pagamento encontrou um problema. Você pode tentar novamente ou assinar depois em Configurações > Assinatura.' },
-          EN: { title: 'Oops, payment hiccup', desc: 'Our payment system encountered an issue. You can try again or subscribe later in Settings > Subscription.' },
-          ES: { title: 'Ups, contratiempo en el pago', desc: 'Nuestro sistema de pago encontró un problema. Puedes intentar de nuevo o suscribirte después en Configuraciones > Suscripción.' },
+          PT: { title: 'Ops, contratempo na tesouraria', desc: 'Nosso sistema de pagamento encontrou um problema. Tente novamente.' },
+          EN: { title: 'Oops, payment hiccup', desc: 'Our payment system encountered an issue. Please try again.' },
+          ES: { title: 'Ups, contratiempo en el pago', desc: 'Nuestro sistema de pago encontró un problema. Intenta de nuevo.' },
         };
         toast({ title: errMsg[lang].title, description: errMsg[lang].desc, variant: 'destructive' });
         return;
       }
-      if (data?.url) {
-        window.location.href = data.url;
-      }
+      if (data?.url) window.location.href = data.url;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Checkout error';
       toast({ title: 'Erro', description: message, variant: 'destructive' });
@@ -284,10 +305,14 @@ export default function Upgrade() {
                   {plan.isFree ? labels.forever[lang] : labels.month[lang]}
                 </p>
 
-                <Badge variant="secondary" className="text-[10px] mb-4 self-start gap-1">
-                  <BarChart3 className="h-3 w-3" />
-                  {plan.credits.toLocaleString()} {labels.credits[lang]}
-                </Badge>
+                {/* Credits badge + tooltip */}
+                <div className="flex items-center gap-1.5 mb-4">
+                  <Badge variant="secondary" className="text-[10px] gap-1">
+                    <BarChart3 className="h-3 w-3" />
+                    {plan.credits.toLocaleString()} {labels.credits[lang]}
+                  </Badge>
+                  <CreditPotentialTooltip planSlug={plan.id as PlanSlug} lang={lang} />
+                </div>
 
                 {/* Igreja plan slider */}
                 {plan.planKey === 'igreja' && (
@@ -355,6 +380,21 @@ export default function Upgrade() {
             </Card>
           );
         })}
+      </div>
+
+      {/* Top-up + Usage Report section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div className="space-y-4">
+          {showTopUp && <CreditTopUpButton />}
+          {!showTopUp && (
+            <div className="rounded-xl border border-border/60 bg-muted/20 p-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                🟢 {remaining.toLocaleString()} {lang === 'PT' ? 'créditos disponíveis' : lang === 'EN' ? 'credits available' : 'créditos disponibles'}
+              </p>
+            </div>
+          )}
+        </div>
+        <CreditUsageReport />
       </div>
     </div>
   );
