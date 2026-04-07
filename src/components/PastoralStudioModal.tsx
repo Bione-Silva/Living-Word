@@ -24,6 +24,7 @@ import { RichLoadingState } from '@/components/generation/RichLoadingState';
 import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFooter';
 import { GenerationMeta } from '@/types/generation-meta';
 import { loadingHints, pastoralLoadingMessages } from '@/lib/generation-ui';
+import { BibleDrawer } from '@/components/BibleDrawer';
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
 interface PastoralStudioModalProps {
@@ -182,6 +183,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [bibleOpen, setBibleOpen] = useState(false);
   const [expandedTab, setExpandedTab] = useState<OutputMode>('sermon');
   const [genMeta, setGenMeta] = useState<GenerationMeta | null>(null);
 
@@ -325,6 +327,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="theme-app max-w-6xl w-[96vw] max-h-[90vh] flex flex-col overflow-hidden overflow-x-hidden bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 break-words">
         {/* ── Help hero header ── */}
@@ -494,15 +497,25 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                   </div>
                 </div>
 
-                <Button
-                  type="button"
-                  onClick={handleGenerate}
-                  className="w-full gap-2 min-h-[48px]"
-                  disabled={loading || !formData.bible_passage.trim() || !formData.output_modes.length}
-                >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                  {loading ? text.generating : text.generate}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    onClick={handleGenerate}
+                    className="flex-1 gap-2 min-h-[48px]"
+                    disabled={loading || !formData.bible_passage.trim() || !formData.output_modes.length}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    {loading ? text.generating : text.generate}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="gap-1.5 min-h-[48px] shrink-0"
+                    onClick={() => setBibleOpen(true)}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
@@ -630,5 +643,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
         </Dialog>
       </DialogContent>
     </Dialog>
+    <BibleDrawer open={bibleOpen} onOpenChange={setBibleOpen} />
+    </>
   );
 }

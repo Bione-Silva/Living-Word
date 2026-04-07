@@ -15,6 +15,7 @@ import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFoot
 import { RichLoadingState } from '@/components/generation/RichLoadingState';
 import { loadingHints, studyLoadingMessages } from '@/lib/generation-ui';
 import { Button } from '@/components/ui/button';
+import { BibleDrawer } from '@/components/BibleDrawer';
 
 export default function EstudoBiblicoPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +25,7 @@ export default function EstudoBiblicoPage() {
   const { lang, t } = useLanguage();
   const isFree = profile?.plan === 'free';
   const [darkStudy, setDarkStudy] = useState(false);
+  const [bibleOpen, setBibleOpen] = useState(false);
 
   const handleGenerate = async (formData: BiblicalStudyFormData) => {
     setIsLoading(true);
@@ -91,6 +93,14 @@ export default function EstudoBiblicoPage() {
         )}
       </div>
 
+      {/* Bible quick-access button */}
+      <div className="flex justify-end">
+        <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => setBibleOpen(true)}>
+          <BookOpen className="h-3.5 w-3.5" />
+          {lang === 'PT' ? 'Abrir Bíblia' : lang === 'EN' ? 'Open Bible' : 'Abrir Biblia'}
+        </Button>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left sidebar - form */}
         <div className="w-full lg:w-[380px] shrink-0">
@@ -129,7 +139,11 @@ export default function EstudoBiblicoPage() {
                     {darkStudy ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
                     {darkStudy ? (lang === 'EN' ? 'Light' : 'Claro') : (lang === 'EN' ? 'Dark' : 'Escuro')}
                   </Button>
-                  <StudyActions study={study} />
+                  <StudyActions
+                    study={study}
+                    materialId={result?.material_id}
+                    onImagesGenerated={(imgs) => toast.success(`${imgs.length} ilustrações adicionadas!`)}
+                  />
                 </div>
               </div>
 
@@ -145,6 +159,8 @@ export default function EstudoBiblicoPage() {
           )}
         </div>
       </div>
+
+      <BibleDrawer open={bibleOpen} onOpenChange={setBibleOpen} />
     </div>
   );
 }

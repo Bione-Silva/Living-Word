@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { FileDown, FileText, ChevronDown, Wand2, Loader2 } from 'lucide-react';
+import { FileDown, FileText, ChevronDown, Wand2, Loader2, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BiblicalStudyOutput } from '@/types/biblical-study';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,12 +11,15 @@ import { sl } from '@/lib/study-i18n';
 
 interface StudyActionsProps {
   study: BiblicalStudyOutput;
+  materialId?: string;
+  onImagesGenerated?: (images: string[]) => void;
 }
 
-export function StudyActions({ study }: StudyActionsProps) {
+export function StudyActions({ study, materialId, onImagesGenerated }: StudyActionsProps) {
   const { user, profile } = useAuth();
   const { lang } = useLanguage();
   const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null);
+  const [enriching, setEnriching] = useState(false);
   const t = (k: string) => sl(k, lang);
 
   const studyTitle = study.verdade_central.frase_central || study.passagem.referencia;
@@ -159,6 +162,7 @@ export function StudyActions({ study }: StudyActionsProps) {
   };
 
   const handleTransform = async (mode: 'sermon' | 'devotional' | 'lesson' | 'blog') => {
+    // ... keep existing code
     try {
       toast.info(t('transforming'));
       if (mode === 'blog') {
@@ -205,8 +209,36 @@ export function StudyActions({ study }: StudyActionsProps) {
     }
   };
 
+  const handleEnrichIllustrations = async () => {
+    if (!materialId || enriching) return;
+    setEnriching(true);
+    try {
+      toast.info(lang === 'PT' ? 'Gerando ilustrações em aquarela...' : lang === 'EN' ? 'Generating watercolor illustrations...' : 'Generando ilustraciones en acuarela...');
+      const { data, error } = await supabase.functions.invoke('enrich-illustrations', {
+        body: { material_id: materialId },
+      });
+      if (error) throw error;
+      if (data?.images?.length) {
+        onImagesGenerated?.(data.images);
+        toast.success(lang === 'PT' ? `${data.images.length} ilustrações geradas!` : lang === 'EN' ? `${data.images.length} illustrations generated!` : `¡${data.images.length} ilustraciones generadas!`);
+      } else {
+        toast.error(lang === 'PT' ? 'Nenhuma imagem gerada' : 'No images generated');
+      }
+    } catch {
+      toast.error(lang === 'PT' ? 'Erro ao gerar ilustrações' : 'Error generating illustrations');
+    } finally {
+      setEnriching(false);
+    }
+  };
+
   return (
     <div className="flex items-center gap-2 flex-wrap">
+      {materialId && (
+        <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={handleEnrichIllustrations} disabled={enriching}>
+          {enriching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ImageIcon className="h-3.5 w-3.5" />}
+          {lang === 'PT' ? 'Ilustrações' : lang === 'EN' ? 'Illustrations' : 'Ilustraciones'}
+        </Button>
+      )}
       <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={handleExportPDF} disabled={!!exporting}>
         {exporting === 'pdf' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
         {lang === 'EN' ? 'Export PDF' : 'Exportar PDF'}
