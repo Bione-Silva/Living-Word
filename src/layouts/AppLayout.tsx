@@ -750,6 +750,7 @@ export default function AppLayout() {
           </Link>
         </header>
         <main className="p-6">
+          <PWAInstallBanner />
           <Outlet />
         </main>
       </div>
