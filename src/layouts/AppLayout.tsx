@@ -19,7 +19,8 @@ import {
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon,
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
-  ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon
+  ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
+  PanelLeftClose, PanelLeftOpen
 } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
