@@ -786,13 +786,15 @@ export default function Landing() {
             {copy.features.secondary.map((card, i) => {
               const Icon = card.icon;
               return (
-                <div key={i} className="flex items-start gap-3 rounded-lg px-3 py-3" style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(107,79,58,0.06)' }}>
-                  <Icon className="h-4 w-4 shrink-0 mt-0.5" style={{ color: '#8B7355' }} />
-                  <div>
-                    <p className="text-[12px] font-semibold" style={{ color: '#3D2B1F' }}>{card.title[lang]}</p>
-                    <p className="text-[11px] leading-[1.4]" style={{ color: '#8B7355' }}>{card.desc[lang]}</p>
+                <RevealOnScroll key={i} delay={i * 0.06}>
+                  <div className="flex items-start gap-3 rounded-xl px-4 py-4 h-full" style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 8px rgba(61,43,31,0.04)' }}>
+                    <Icon className="h-4 w-4 shrink-0 mt-0.5" style={{ color: '#8B7355' }} />
+                    <div>
+                      <p className="text-[12px] font-semibold" style={{ color: '#3D2B1F' }}>{card.title[lang]}</p>
+                      <p className="text-[11px] leading-[1.4]" style={{ color: '#8B7355' }}>{card.desc[lang]}</p>
+                    </div>
                   </div>
-                </div>
+                </RevealOnScroll>
               );
             })}
           </div>
@@ -926,36 +928,38 @@ export default function Landing() {
               ))
             ) : (
               pricingPlans.map((plan, i) => (
-                <div key={i} className="rounded-xl p-5 flex flex-col" style={{
-                  background: plan.featured ? '#F5F0E8' : '#FFFFFF',
-                  border: plan.featured ? '2px solid #6B4F3A' : '1px solid rgba(107,79,58,0.12)',
-                }}>
-                  {plan.featured && (
-                    <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-2 self-start" style={{ background: '#6B4F3A', color: '#F5F0E8' }}>
-                      {lang === 'PT' ? 'Mais escolhido' : lang === 'EN' ? 'Most popular' : 'Más elegido'}
+                <RevealOnScroll key={i} delay={i * 0.1}>
+                  <div className="rounded-xl p-5 flex flex-col h-full" style={{
+                    background: plan.featured ? '#F5F0E8' : '#FFFFFF',
+                    border: plan.featured ? '2px solid #6B4F3A' : '1px solid rgba(107,79,58,0.12)',
+                  }}>
+                    {plan.featured && (
+                      <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-2 self-start" style={{ background: '#6B4F3A', color: '#F5F0E8' }}>
+                        {lang === 'PT' ? 'Mais escolhido' : lang === 'EN' ? 'Most popular' : 'Más elegido'}
+                      </span>
+                    )}
+                    <p className="text-[15px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{plan.name[lang]}</p>
+                    <div className="flex items-baseline gap-0.5 mb-1">
+                      <span className="font-display text-[32px] font-semibold" style={{ color: '#3D2B1F' }}>{plan.price}</span>
+                    </div>
+                    <p className="text-[13px] mb-2 font-medium" style={{ color: '#6B4F3A' }}>{plan.period[lang]}</p>
+                    <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-4 self-start" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>
+                      {plan.capacity[lang]}
                     </span>
-                  )}
-                  <p className="text-[15px] font-semibold mb-1" style={{ color: '#3D2B1F' }}>{plan.name[lang]}</p>
-                  <div className="flex items-baseline gap-0.5 mb-1">
-                    <span className="font-display text-[32px] font-semibold" style={{ color: '#3D2B1F' }}>{plan.price}</span>
+                    <div className="space-y-2 mb-4 flex-1 pt-3" style={{ borderTop: '1px solid rgba(107,79,58,0.1)' }}>
+                      {plan.features[lang].map((f, j) => (
+                        <div key={j} className="flex items-start gap-2 text-[14px]" style={{ color: '#3D2B1F' }}>
+                          <span className="shrink-0 font-semibold" style={{ color: '#6B4F3A' }}>✓</span>
+                          <span>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Link to={plan.planKey ? `/cadastro?plan=${plan.planKey}` : '/cadastro'} className="block text-center text-[14px] font-semibold py-3 rounded-lg transition-transform hover:scale-[1.02]" style={{
+                      background: plan.featured ? '#6B4F3A' : '#EDD9C8',
+                      color: plan.featured ? '#FFFFFF' : '#6B4F3A',
+                    }}>{plan.cta[lang]}</Link>
                   </div>
-                  <p className="text-[13px] mb-2 font-medium" style={{ color: '#6B4F3A' }}>{plan.period[lang]}</p>
-                  <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-4 self-start" style={{ background: '#EDD9C8', color: '#6B4F3A' }}>
-                    {plan.capacity[lang]}
-                  </span>
-                  <div className="space-y-2 mb-4 flex-1 pt-3" style={{ borderTop: '1px solid rgba(107,79,58,0.1)' }}>
-                    {plan.features[lang].map((f, j) => (
-                      <div key={j} className="flex items-start gap-2 text-[14px]" style={{ color: '#3D2B1F' }}>
-                        <span className="shrink-0 font-semibold" style={{ color: '#6B4F3A' }}>✓</span>
-                        <span>{f}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <Link to={plan.planKey ? `/cadastro?plan=${plan.planKey}` : '/cadastro'} className="block text-center text-[14px] font-semibold py-3 rounded-lg transition-transform hover:scale-[1.02]" style={{
-                    background: plan.featured ? '#6B4F3A' : '#EDD9C8',
-                    color: plan.featured ? '#FFFFFF' : '#6B4F3A',
-                  }}>{plan.cta[lang]}</Link>
-                </div>
+                </RevealOnScroll>
               ))
             )}
           </div>
