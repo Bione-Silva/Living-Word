@@ -13,11 +13,13 @@ interface ArticleReaderModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   item: {
+    id?: string;
     title: string;
     passage?: string | null;
     content: string;
     cover_image_url?: string | null;
     article_images?: string[] | null;
+    notes?: string | null;
   } | null;
 }
 
