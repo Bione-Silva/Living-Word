@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2, FolderOpen } from 'lucide-react';
+import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2, FolderOpen, SearchCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
@@ -41,6 +41,7 @@ const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: Rea
   'poetry': { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía', icon: FileText },
   'kids-story': { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil', icon: FileText },
   'deep-translation': { PT: 'Tradução', EN: 'Translation', ES: 'Traducción', icon: FileText },
+  'deep_search': { PT: 'Pesquisa Profunda', EN: 'Deep Search', ES: 'Búsqueda Profunda', icon: SearchCheck },
 };
 
 type ChipFilter = { key: string; label: { PT: string; EN: string; ES: string }; types: string[] };
@@ -55,7 +56,8 @@ const chipFilters: ChipFilter[] = [
   { key: 'reels', label: { PT: 'Reels', EN: 'Reels', ES: 'Reels' }, types: ['reels-script'] },
   { key: 'newsletter', label: { PT: 'Newsletter', EN: 'Newsletter', ES: 'Newsletter' }, types: ['newsletter'] },
   { key: 'social', label: { PT: 'Social', EN: 'Social', ES: 'Social' }, types: ['social-caption', 'announcements'] },
-  { key: 'research', label: { PT: 'Pesquisa', EN: 'Research', ES: 'Investigación' }, types: ['topic-explorer', 'verse-finder', 'historical-context', 'quote-finder', 'movie-scenes', 'original-text', 'lexical', 'illustrations'] },
+  { key: 'research', label: { PT: 'Pesquisa', EN: 'Research', ES: 'Investigación' }, types: ['topic-explorer', 'verse-finder', 'historical-context', 'quote-finder', 'movie-scenes', 'original-text', 'lexical', 'illustrations', 'deep_search'] },
+  { key: 'deep_search', label: { PT: 'Pesquisa Profunda', EN: 'Deep Search', ES: 'Búsqueda Profunda' }, types: ['deep_search'] },
   { key: 'extras', label: { PT: 'Extras', EN: 'Extras', ES: 'Extras' }, types: ['trivia', 'poetry', 'kids-story', 'deep-translation', 'title-gen', 'metaphor-creator', 'bible-modernizer'] },
 ];
 
