@@ -28,7 +28,7 @@ export default function MentesBrilhantes() {
   const { profile } = useAuth();
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
-  const isFree = profile?.plan === 'free';
+  const isFree = !hasAccess((profile?.plan as PlanSlug) || 'free', 'mentes_brilhantes');
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedMind, setSelectedMind] = useState<MindFullData | null>(null);
   const [activeMinds, setActiveMinds] = useState<string[]>([]);
