@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { CreditUsageCharts } from './CreditUsageCharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, ChevronDown, Wallet } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, ChevronDown, Wallet, Filter } from 'lucide-react';
 import { TOOL_CREDITS, PLAN_CREDITS, type PlanSlug } from '@/lib/plans';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -65,6 +66,8 @@ const FEATURE_ICONS: Record<string, string> = {
   'devotional': '🙏', 'outline': '📋', 'sermon': '🎤', 'Blog Creator': '✍️',
 };
 
+const filterAllLabel = { PT: 'Todas as ferramentas', EN: 'All tools', ES: 'Todas las herramientas' } as Record<L, string>;
+
 const labels = {
   title: { PT: 'Extrato de Créditos', EN: 'Credit Statement', ES: 'Extracto de Créditos' } as Record<L, string>,
   period: { PT: 'Período do plano atual', EN: 'Current plan period', ES: 'Período del plan actual' } as Record<L, string>,
@@ -82,7 +85,7 @@ export function CreditUsageReport() {
   const [entries, setEntries] = useState<UsageEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(10);
-
+  const [featureFilter, setFeatureFilter] = useState('all');
   const userPlan = (profile?.plan as PlanSlug) || 'free';
   const totalCredits = PLAN_CREDITS[userPlan] || 500;
   const usedCredits = profile?.generations_used || 0;
@@ -131,20 +134,36 @@ export function CreditUsageReport() {
     return TOOL_CREDITS[feature] || 10;
   };
 
-  const visibleEntries = entries.slice(0, visibleCount);
-  const hasMore = entries.length > visibleCount;
+  // Unique features found in entries for filter dropdown
+  const uniqueFeatures = useMemo(() => {
+    const set = new Set(entries.map((e) => e.feature));
+    return Array.from(set).sort((a, b) => {
+      const la = FEATURE_LABELS[a]?.[l] || a;
+      const lb = FEATURE_LABELS[b]?.[l] || b;
+      return la.localeCompare(lb);
+    });
+  }, [entries, l]);
 
-  // Running balance calculation
+  // Apply feature filter
+  const filteredEntries = useMemo(() => {
+    if (featureFilter === 'all') return entries;
+    return entries.filter((e) => e.feature === featureFilter);
+  }, [entries, featureFilter]);
+
+  const visibleEntries = filteredEntries.slice(0, visibleCount);
+  const hasMore = filteredEntries.length > visibleCount;
+
+  // Running balance calculation (always on full entries, mark filtered)
   let runningBalance = totalCredits;
-  const entriesWithBalance = entries.map((entry) => {
+  const entriesWithBalance = filteredEntries.map((entry) => {
     const credits = getCreditsUsed(entry.feature);
     runningBalance -= credits;
     return { ...entry, balance: Math.max(runningBalance, 0), credits };
   });
   const visibleWithBalance = entriesWithBalance.slice(0, visibleCount);
 
-  // Total consumed in this period
-  const totalConsumed = entries.reduce((sum, e) => sum + getCreditsUsed(e.feature), 0);
+  // Total consumed (filtered)
+  const totalConsumed = filteredEntries.reduce((sum, e) => sum + getCreditsUsed(e.feature), 0);
 
   return (
     <div className="w-full space-y-4">
@@ -177,8 +196,28 @@ export function CreditUsageReport() {
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{labels.used[l]}</p>
               <p className="text-2xl font-bold font-mono text-foreground">{totalConsumed.toLocaleString()}</p>
               <p className="text-[10px] text-muted-foreground">
-                {entries.length} {lang === 'PT' ? 'gerações' : lang === 'EN' ? 'generations' : 'generaciones'}
+                {filteredEntries.length} {lang === 'PT' ? 'gerações' : lang === 'EN' ? 'generations' : 'generaciones'}
               </p>
+            </div>
+          </div>
+
+          {/* Filter */}
+          <div className="mt-4">
+            <div className="flex items-center gap-2">
+              <Filter className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <Select value={featureFilter} onValueChange={(v) => { setFeatureFilter(v); setVisibleCount(10); }}>
+                <SelectTrigger className="h-9 text-sm bg-background border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  <SelectItem value="all">{filterAllLabel[l]}</SelectItem>
+                  {uniqueFeatures.map((f) => (
+                    <SelectItem key={f} value={f}>
+                      {FEATURE_ICONS[f] || '⚡'} {FEATURE_LABELS[f]?.[l] || f}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -247,7 +286,7 @@ export function CreditUsageReport() {
               onClick={() => setVisibleCount((c) => c + 20)}
             >
               <ChevronDown className="h-4 w-4" />
-              {labels.seeMore[l]} ({entries.length - visibleCount} {lang === 'PT' ? 'restantes' : 'remaining'})
+              {labels.seeMore[l]} ({filteredEntries.length - visibleCount} {lang === 'PT' ? 'restantes' : 'remaining'})
             </Button>
           </div>
         )}
