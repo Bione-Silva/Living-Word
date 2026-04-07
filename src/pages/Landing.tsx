@@ -839,7 +839,7 @@ export default function Landing() {
       {/* ===== VS COMPETITORS ===== */}
       <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#3D2B1F' }}>
         <div className="max-w-3xl mx-auto">
-          <h2 className="font-display text-[26px] sm:text-[32px] font-semibold text-center mb-8 leading-tight" style={{ color: '#F5F0E8' }}>{copy.vs.h2[lang]}</h2>
+          <h2 className="font-display text-[22px] sm:text-[32px] font-semibold text-center mb-8 leading-tight" style={{ color: '#F5F0E8' }}>{copy.vs.h2[lang]}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Them */}
             <div className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
