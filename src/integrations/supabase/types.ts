@@ -531,6 +531,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       workspaces: {
         Row: {
           brand_color: string | null
@@ -589,6 +607,41 @@ export type Database = {
           users_trialing: number | null
         }
         Relationships: []
+      }
+      published_queue_public: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          material_id: string | null
+          published_at: string | null
+          scheduled_at: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          material_id?: string | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          material_id?: string | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "editorial_queue_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       team_members_safe: {
         Row: {
@@ -699,6 +752,7 @@ export type Database = {
           title: string
         }[]
       }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
