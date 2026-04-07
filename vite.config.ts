@@ -22,7 +22,8 @@ export default defineConfig(({ mode }) => ({
         enabled: false,
       },
       workbox: {
-        navigateFallbackDenylist: [/^\/~oauth/],
+        navigateFallback: "/offline.html",
+        navigateFallbackDenylist: [/^\/~oauth/, /^\/blog\//, /\.\w+$/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
       },
       includeAssets: ["icon-192.png", "icon-512.png"],
