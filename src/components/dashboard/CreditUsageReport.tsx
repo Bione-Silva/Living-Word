@@ -89,17 +89,13 @@ export function CreditUsageReport() {
 
   // Calculate 30-day billing period based on profile creation
   const periodStart = (() => {
-    if (!profile?.created_at) return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const created = new Date(profile.created_at);
     const now = new Date();
-    const dayOfMonth = created.getDate();
-    const start = new Date(now.getFullYear(), now.getMonth(), dayOfMonth);
-    if (start > now) start.setMonth(start.getMonth() - 1);
-    return start;
+    const d = new Date(now);
+    d.setDate(d.getDate() - 30);
+    return d;
   })();
 
-  const periodEnd = new Date(periodStart);
-  periodEnd.setMonth(periodEnd.getMonth() + 1);
+  const periodEnd = new Date();
 
   useEffect(() => {
     if (!user) return;
