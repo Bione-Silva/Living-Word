@@ -201,8 +201,26 @@ export function CreditUsageReport() {
             </div>
           </div>
 
-          {/* Charts */}
-          {!loading && entries.length > 0 && (
+          {/* Filter */}
+          <div className="mt-4">
+            <div className="flex items-center gap-2">
+              <Filter className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <Select value={featureFilter} onValueChange={(v) => { setFeatureFilter(v); setVisibleCount(10); }}>
+                <SelectTrigger className="h-9 text-sm bg-background border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  <SelectItem value="all">{filterAllLabel[l]}</SelectItem>
+                  {uniqueFeatures.map((f) => (
+                    <SelectItem key={f} value={f}>
+                      {FEATURE_ICONS[f] || '⚡'} {FEATURE_LABELS[f]?.[l] || f}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
             <div className="px-5 py-4">
               <CreditUsageCharts entries={entries} />
             </div>
