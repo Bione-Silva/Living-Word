@@ -93,6 +93,16 @@ const toolGroups: SidebarToolGroup[] = [
   },
 ];
 
+function SidebarTooltipWrap({ collapsed, label, children }: { collapsed: boolean; label: string; children: React.ReactNode }) {
+  if (!collapsed) return <>{children}</>;
+  return (
+    <Tooltip delayDuration={200}>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent side="right" className="text-xs font-medium">{label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
 export default function AppLayout() {
   const { user, profile, signOut } = useAuth();
   const { t, lang } = useLanguage();
