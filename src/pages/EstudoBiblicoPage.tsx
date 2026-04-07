@@ -155,6 +155,8 @@ export default function EstudoBiblicoPage() {
           )}
         </div>
       </div>
+
+      <BibleDrawer open={bibleOpen} onOpenChange={setBibleOpen} />
     </div>
   );
 }
