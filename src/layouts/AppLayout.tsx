@@ -256,7 +256,7 @@ export default function AppLayout() {
         </nav>
 
         <Sheet open={mobileToolsOpen} onOpenChange={setMobileToolsOpen}>
-          <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto rounded-t-2xl">
+          <SheetContent side="bottom" className="theme-app max-h-[80vh] overflow-y-auto rounded-t-2xl">
             <SheetHeader className="pb-2">
               <SheetTitle className="font-display text-lg">
                 {lang === 'PT' ? '⚡ Ferramentas' : lang === 'EN' ? '⚡ Tools' : '⚡ Herramientas'}
