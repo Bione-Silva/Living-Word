@@ -127,7 +127,8 @@ export default function MenteChat() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { lang } = useLanguage();
-
+  const { user, profile } = useAuth();
+  const userDisplayName = profile?.full_name || user?.email?.split('@')[0] || 'pastor';
   const menteId = searchParams.get('mente') || '';
   const modalidade = searchParams.get('modalidade') || '';
   const mind = minds.find((m) => m.id === menteId);
