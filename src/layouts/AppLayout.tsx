@@ -728,6 +728,7 @@ export default function AppLayout() {
               {lang === 'PT' ? 'Acessar Portal' : lang === 'EN' ? 'Open Portal' : 'Abrir Portal'}
             </Link>
           )}
+          <SupportChatBubble />
           <LanguageToggle />
           <Link to="/configuracoes" className="shrink-0">
             {profile?.avatar_url ? (
