@@ -703,7 +703,7 @@ export default function Landing() {
       <section id="how" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F5F0E8' }}>
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.how.tag[lang]}</p>
-          <h2 className="font-display text-[30px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.how.h2[lang]}</h2>
+          <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.how.h2[lang]}</h2>
           <div className="space-y-0 mb-10">
             {copy.how.steps.map((step, i) => (
               <RevealOnScroll key={i} delay={i * 0.18}>
