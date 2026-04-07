@@ -122,7 +122,7 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-[95vw] max-h-[85vh] overflow-y-auto p-0 gap-0">
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[85vh] overflow-y-auto p-0 gap-0 bg-background text-foreground">
         {/* Header */}
         <div className="px-6 pt-6 pb-4 border-b border-border flex items-center justify-between">
           <DialogTitle className="text-lg font-semibold text-foreground">
