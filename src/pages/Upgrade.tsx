@@ -13,7 +13,7 @@ import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
-import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, type PlanSlug } from '@/lib/plans';
+import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_PRICES_BRL, type PlanSlug } from '@/lib/plans';
 
 type L = 'PT' | 'EN' | 'ES';
 type PlanKey = 'starter' | 'pro' | 'igreja';
@@ -195,14 +195,23 @@ export default function Upgrade() {
   const getDisplayPrice = (plan: PlanData) => {
     if (plan.isFree) return `${pricing.symbol}0`;
     if (!plan.planKey) return '';
+    const isBRL = pricing.currency === 'BRL';
 
     if (plan.planKey === 'igreja') {
-      const base = isAnnual ? igrejaTotal * 10 / 12 : igrejaTotal;
+      const addonAmt = isBRL ? 19.00 : pricing.addon.amount;
+      let base: number;
+      if (isBRL) {
+        base = isAnnual ? PLAN_PRICES_BRL.annual.igreja / 12 : PLAN_PRICES_BRL.monthly.igreja;
+        base += extraSeats * addonAmt;
+      } else {
+        base = isAnnual ? igrejaTotal * 10 / 12 : igrejaTotal;
+      }
       return formatPrice(base, pricing.symbol, pricing.currency);
     }
 
-    const monthlyAmount = pricing.plans[plan.planKey].amount;
-    const amount = isAnnual ? monthlyAmount * 10 / 12 : monthlyAmount;
+    const amount = isBRL
+      ? isAnnual ? PLAN_PRICES_BRL.annual[plan.planKey] / 12 : PLAN_PRICES_BRL.monthly[plan.planKey]
+      : isAnnual ? pricing.plans[plan.planKey].amount * 10 / 12 : pricing.plans[plan.planKey].amount;
     return formatPrice(amount, pricing.symbol, pricing.currency);
   };
 
@@ -302,11 +311,14 @@ export default function Upgrade() {
                         </span>
                       )}
                     </div>
-                    {extraSeats > 0 && (
-                      <p className="text-[11px] text-muted-foreground">
-                        +{formatPrice(pricing.addon.amount, pricing.symbol, pricing.currency)} {labels.perSeat[lang]} × {extraSeats} = +{formatPrice(extraSeats * pricing.addon.amount, pricing.symbol, pricing.currency)}
-                      </p>
-                    )}
+                    {extraSeats > 0 && (() => {
+                      const addonAmount = pricing.currency === 'BRL' ? 19.00 : pricing.addon.amount;
+                      return (
+                        <p className="text-[11px] text-muted-foreground">
+                          +{formatPrice(addonAmount, pricing.symbol, pricing.currency)} {labels.perSeat[lang]} × {extraSeats} = +{formatPrice(extraSeats * addonAmount, pricing.symbol, pricing.currency)}
+                        </p>
+                      );
+                    })()}
                   </div>
                 )}
 

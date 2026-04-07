@@ -21,11 +21,11 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
     currency: 'BRL',
     symbol: 'R$',
     plans: {
-      starter: { id: 'price_1TIbCqEaDBbHafP6rVx4M0iq', amount: 19.00 },
-      pro: { id: 'price_1TIbCsEaDBbHafP6jMjpjCWF', amount: 49.00 },
-      igreja: { id: 'price_1TIbCtEaDBbHafP6dIYl8Fjg', amount: 97.00 },
+      starter: { id: 'price_starter_brl_monthly', amount: 37.00 },
+      pro: { id: 'price_pro_brl_monthly', amount: 79.00 },
+      igreja: { id: 'price_igreja_brl_monthly', amount: 197.00 },
     },
-    addon: { id: 'price_1TIbCuEaDBbHafP6fQWCkE7l', amount: 9.00 },
+    addon: { id: 'price_addon_brl', amount: 19.00 },
   },
   USD: {
     currency: 'USD',

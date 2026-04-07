@@ -149,6 +149,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
           body: {
             systemPrompt: config.systemPrompt(genLangLabel),
             userPrompt: input,
+            toolId,
           },
         });
         if (error) throw error;

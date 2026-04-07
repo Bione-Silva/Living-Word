@@ -91,6 +91,12 @@ export default function Pricing() {
           {isAnnual && <Badge className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">{labels.annualSave[lang]}</Badge>}
         </div>
 
+        <p className="text-xs text-muted-foreground text-center mt-2">
+          {lang === 'PT' && 'Preços em R$ disponíveis no checkout para usuários do Brasil.'}
+          {lang === 'EN' && 'BRL pricing available at checkout for Brazil users.'}
+          {lang === 'ES' && 'Precios en R$ disponibles en el pago para usuarios de Brasil.'}
+        </p>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {plans.map((plan) => {
             const Icon = plan.icon;

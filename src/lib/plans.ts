@@ -185,6 +185,25 @@ export const PLAN_PRICES = {
   },
 } as const;
 
+// ── Plan prices (BRL) ──
+export const PLAN_PRICES_BRL = {
+  monthly: {
+    starter: 37.00,
+    pro: 79.00,
+    igreja: 197.00,
+  },
+  annual: {
+    starter: 308.00,
+    pro: 660.00,
+    igreja: 1640.00,
+  },
+  annualSavings: {
+    starter: 136.00,
+    pro: 158.00,
+    igreja: 394.00,
+  },
+} as const;
+
 // ── Free plan: tools that are available 1x/month ──
 // All research + core creation tools allow 1 use per month for free users
 export const FREE_MONTHLY_TOOLS = new Set([
