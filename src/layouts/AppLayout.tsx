@@ -406,18 +406,19 @@ export default function AppLayout() {
         )}
 
         <nav className={`flex-1 ${collapsed ? 'px-1.5' : 'px-3'} space-y-0.5 overflow-y-auto min-h-0`}>
-          <Link
-            to="/dashboard"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/dashboard'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (t('nav.dashboard') || 'Dashboard') : undefined}
-          >
-            <LayoutDashboard className="h-4 w-4 shrink-0" />
-            {!collapsed && t('nav.dashboard')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.dashboard') || 'Dashboard'}>
+            <Link
+              to="/dashboard"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/dashboard'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <LayoutDashboard className="h-4 w-4 shrink-0" />
+              {!collapsed && t('nav.dashboard')}
+            </Link>
+          </SidebarTooltipWrap>
 
           {toolGroups.map((group) => {
             const groupKey = group.label.PT;
