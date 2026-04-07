@@ -162,6 +162,7 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
   };
 
   const handleTransform = async (mode: 'sermon' | 'devotional' | 'lesson' | 'blog') => {
+    // ... keep existing code
     try {
       toast.info(t('transforming'));
       if (mode === 'blog') {
@@ -205,6 +206,28 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
       toast.success(t('transformSuccess'));
     } catch {
       toast.error(t('transformError'));
+    }
+  };
+
+  const handleEnrichIllustrations = async () => {
+    if (!materialId || enriching) return;
+    setEnriching(true);
+    try {
+      toast.info(lang === 'PT' ? 'Gerando ilustrações em aquarela...' : lang === 'EN' ? 'Generating watercolor illustrations...' : 'Generando ilustraciones en acuarela...');
+      const { data, error } = await supabase.functions.invoke('enrich-illustrations', {
+        body: { material_id: materialId },
+      });
+      if (error) throw error;
+      if (data?.images?.length) {
+        onImagesGenerated?.(data.images);
+        toast.success(lang === 'PT' ? `${data.images.length} ilustrações geradas!` : lang === 'EN' ? `${data.images.length} illustrations generated!` : `¡${data.images.length} ilustraciones generadas!`);
+      } else {
+        toast.error(lang === 'PT' ? 'Nenhuma imagem gerada' : 'No images generated');
+      }
+    } catch {
+      toast.error(lang === 'PT' ? 'Erro ao gerar ilustrações' : 'Error generating illustrations');
+    } finally {
+      setEnriching(false);
     }
   };
 
