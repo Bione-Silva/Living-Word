@@ -52,6 +52,28 @@ function getBodyImages(item: any): string[] {
 export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderModalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [savingNotes, setSavingNotes] = useState(false);
+  const { lang } = useLanguage();
+
+  useEffect(() => {
+    if (item) setNotes(item.notes || '');
+  }, [item?.id]);
+
+  const saveNotes = useCallback(async () => {
+    if (!item?.id) return;
+    setSavingNotes(true);
+    try {
+      const { error } = await supabase.from('materials').update({ notes }).eq('id', item.id);
+      if (error) throw error;
+      toast.success(lang === 'PT' ? 'Anotações salvas!' : lang === 'EN' ? 'Notes saved!' : '¡Notas guardadas!');
+    } catch {
+      toast.error(lang === 'PT' ? 'Erro ao salvar' : 'Error saving');
+    } finally {
+      setSavingNotes(false);
+    }
+  }, [item?.id, notes, lang]);
 
   if (!item) return null;
 
