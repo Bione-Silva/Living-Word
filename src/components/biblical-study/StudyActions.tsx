@@ -11,6 +11,8 @@ import { sl } from '@/lib/study-i18n';
 
 interface StudyActionsProps {
   study: BiblicalStudyOutput;
+  materialId?: string;
+  onImagesGenerated?: (images: string[]) => void;
 }
 
 export function StudyActions({ study }: StudyActionsProps) {
