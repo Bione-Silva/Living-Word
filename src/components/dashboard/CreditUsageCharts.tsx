@@ -42,15 +42,16 @@ const FEATURE_LABELS: Record<string, Record<L, string>> = {
   'trivia': { PT: 'Quiz', EN: 'Quiz', ES: 'Quiz' },
 };
 
+// Platform palette: primary (café), accent (gold), warm earth tones
 const PIE_COLORS = [
-  'hsl(var(--primary))',
-  'hsl(35, 60%, 50%)',
-  'hsl(25, 70%, 45%)',
-  'hsl(45, 55%, 55%)',
-  'hsl(15, 50%, 40%)',
-  'hsl(40, 40%, 60%)',
-  'hsl(30, 65%, 35%)',
-  'hsl(50, 45%, 50%)',
+  'hsl(28, 42%, 42%)',   // primary café
+  'hsl(28, 42%, 55%)',   // accent gold
+  'hsl(24, 30%, 32%)',   // dark café
+  'hsl(36, 30%, 60%)',   // warm sand
+  'hsl(24, 18%, 38%)',   // muted brown
+  'hsl(30, 25%, 50%)',   // medium earth
+  'hsl(45, 35%, 48%)',   // olive gold
+  'hsl(20, 35%, 35%)',   // deep brown
 ];
 
 interface Props {
