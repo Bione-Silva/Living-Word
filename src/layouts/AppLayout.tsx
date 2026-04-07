@@ -181,6 +181,10 @@ export default function AppLayout() {
           </div>
         </header>
 
+        <div className="px-4 pt-2">
+          <PWAInstallBanner />
+        </div>
+
         <main className="flex-1 overflow-auto px-4 py-4 pb-20">
           <Outlet />
         </main>
