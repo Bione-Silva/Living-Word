@@ -426,6 +426,7 @@ export default function MenteChat() {
               </div>
 
               {msg.role === 'assistant' && i > 0 && !isLoading && (
+                <>
                 <div className="flex items-center gap-1 mt-1.5 ml-1">
                   <button
                     onClick={() => handleCopy(msg.content)}
@@ -454,26 +455,24 @@ export default function MenteChat() {
                   </button>
 
                   {isArtifact(msg.content) && (
-                    <>
-                      <button
-                        onClick={() => handleSaveToLibrary(msg.content, i)}
-                        disabled={savedIndexes.has(i)}
-                        className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ml-1 ${
-                          savedIndexes.has(i)
-                            ? 'text-emerald-500 bg-emerald-500/10 cursor-default'
-                            : 'text-[hsl(43,55%,58%)] hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,65%)]'
-                        }`}
-                        title={lang === 'PT' ? 'Salvar na Biblioteca' : lang === 'EN' ? 'Save to Library' : 'Guardar en Biblioteca'}
-                      >
-                        <Save className="h-3.5 w-3.5" />
-                        {savedIndexes.has(i)
-                          ? (lang === 'PT' ? 'Salvo' : lang === 'EN' ? 'Saved' : 'Guardado')
-                          : (lang === 'PT' ? 'Salvar na Biblioteca' : lang === 'EN' ? 'Save to Library' : 'Guardar en Biblioteca')}
-                      </button>
-                    </>
+                    <button
+                      onClick={() => handleSaveToLibrary(msg.content, i)}
+                      disabled={savedIndexes.has(i)}
+                      className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ml-1 ${
+                        savedIndexes.has(i)
+                          ? 'text-emerald-500 bg-emerald-500/10 cursor-default'
+                          : 'text-[hsl(43,55%,58%)] hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,65%)]'
+                      }`}
+                      title={lang === 'PT' ? 'Salvar na Biblioteca' : lang === 'EN' ? 'Save to Library' : 'Guardar en Biblioteca'}
+                    >
+                      <Save className="h-3.5 w-3.5" />
+                      {savedIndexes.has(i)
+                        ? (lang === 'PT' ? 'Salvo' : lang === 'EN' ? 'Saved' : 'Guardado')
+                        : (lang === 'PT' ? 'Salvar na Biblioteca' : lang === 'EN' ? 'Save to Library' : 'Guardar en Biblioteca')}
+                    </button>
                   )}
                 </div>
-                {isArtifact(msg.content) && !isLoading && user && (
+                {isArtifact(msg.content) && user && (
                   <ArtifactActions
                     content={msg.content}
                     lang={lang}
@@ -483,6 +482,7 @@ export default function MenteChat() {
                     blogHandle={profile?.blog_handle}
                   />
                 )}
+                </>
               )}
             </div>
           </div>
