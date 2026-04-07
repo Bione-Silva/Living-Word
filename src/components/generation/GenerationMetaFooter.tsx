@@ -2,6 +2,8 @@ import { Clock, Coins, Cpu, Hash } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { GenerationMeta } from '@/types/generation-meta';
 import { GenerationUILang } from '@/lib/generation-ui';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface GenerationMetaFooterProps {
   lang: GenerationUILang;
@@ -15,6 +17,16 @@ const labels = {
 } as const;
 
 export function GenerationMetaFooter({ lang, meta }: GenerationMetaFooterProps) {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    supabase.rpc('is_admin').then(({ data }) => {
+      if (data === true) setIsAdmin(true);
+    });
+  }, []);
+
+  if (!isAdmin) return null;
+
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
       <div className="flex items-center gap-1.5">
