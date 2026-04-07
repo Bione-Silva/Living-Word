@@ -87,6 +87,38 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
     doSearch();
     return () => { cancelled = true; };
   }, [open, query, bibleVersion, lang]);
+  const handleSave = async () => {
+    if (!data || !user) return;
+    setSaving(true);
+    try {
+      const content = [
+        `## ${data.reference}\n`,
+        `> ${data.passage}\n`,
+        `### ${labels.summary[lang]}\n${data.summary}\n`,
+        `### ${labels.context[lang]}\n${data.context}\n`,
+        `### ${labels.insights[lang]}`,
+        ...data.insights.map((ins, i) => `${i + 1}. ${ins}`),
+      ].join('\n');
+
+      const { error: insertError } = await supabase.from('materials').insert({
+        user_id: user.id,
+        title: `${labels.results[lang]}: ${query}`,
+        content,
+        type: 'deep_search',
+        bible_version: bibleVersion,
+        language: lang,
+        passage: data.reference,
+      });
+
+      if (insertError) throw insertError;
+      toast.success(labels.saved[lang]);
+    } catch (err) {
+      console.error('Save error:', err);
+      toast.error(labels.saveError[lang]);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
