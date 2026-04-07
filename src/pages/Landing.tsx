@@ -828,36 +828,34 @@ export default function Landing() {
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>{copy.features.tag[lang]}</p>
           <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#3D2B1F' }}>{copy.features.h2[lang]}</h2>
 
-          {/* Primary 6 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          {/* Primary 6 — tall cards matching reference */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             {copy.features.primary.map((card, i) => {
               const Icon = card.icon;
               return (
                 <RevealOnScroll key={i} delay={i * 0.06}>
-                  <div className="rounded-xl p-5 h-full" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 4px 16px rgba(61,43,31,0.06)' }}>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ background: '#EDD9C8' }}>
+                  <div className="rounded-2xl p-6 h-full flex flex-col" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 12px rgba(61,43,31,0.05)' }}>
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style={{ background: '#EDD9C8' }}>
                       <Icon className="h-5 w-5" style={{ color: '#6B4F3A' }} />
                     </div>
-                    <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#3D2B1F' }}>{card.title[lang]}</h3>
-                    <p className="text-[13px] leading-[1.6]" style={{ color: '#6B4F3A' }}>{card.desc[lang]}</p>
+                    <h3 className="text-[16px] font-bold mb-2" style={{ color: '#3D2B1F' }}>{card.title[lang]}</h3>
+                    <p className="text-[13px] leading-[1.65]" style={{ color: '#6B4F3A' }}>{card.desc[lang]}</p>
                   </div>
                 </RevealOnScroll>
               );
             })}
           </div>
 
-          {/* Secondary — smaller, less prominent */}
+          {/* Secondary — compact row matching reference */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {copy.features.secondary.map((card, i) => {
               const Icon = card.icon;
               return (
                 <RevealOnScroll key={i} delay={i * 0.06}>
-                  <div className="flex items-start gap-3 rounded-xl px-4 py-4 h-full" style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 8px rgba(61,43,31,0.04)' }}>
-                    <Icon className="h-4 w-4 shrink-0 mt-0.5" style={{ color: '#8B7355' }} />
-                    <div>
-                      <p className="text-[12px] font-semibold" style={{ color: '#3D2B1F' }}>{card.title[lang]}</p>
-                      <p className="text-[11px] leading-[1.4]" style={{ color: '#8B7355' }}>{card.desc[lang]}</p>
-                    </div>
+                  <div className="rounded-2xl px-4 py-5 h-full" style={{ background: '#FFFFFF', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 12px rgba(61,43,31,0.05)' }}>
+                    <Icon className="h-4 w-4 mb-3" style={{ color: '#8B7355' }} />
+                    <p className="text-[13px] font-bold mb-1" style={{ color: '#3D2B1F' }}>{card.title[lang]}</p>
+                    <p className="text-[11px] leading-[1.5]" style={{ color: '#8B7355' }}>{card.desc[lang]}</p>
                   </div>
                 </RevealOnScroll>
               );
