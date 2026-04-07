@@ -60,7 +60,7 @@ export function SupportChatBubble() {
           className="w-9 h-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center"
           title="Central de Ajuda"
         >
-          <AiHelpIcon className="h-5 w-5" />
+          <HelpCircle className="h-5 w-5" />
         </button>
       )}
 
