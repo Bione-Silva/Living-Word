@@ -786,13 +786,15 @@ export default function Landing() {
             {copy.features.secondary.map((card, i) => {
               const Icon = card.icon;
               return (
-                <div key={i} className="flex items-start gap-3 rounded-lg px-3 py-3" style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(107,79,58,0.06)' }}>
-                  <Icon className="h-4 w-4 shrink-0 mt-0.5" style={{ color: '#8B7355' }} />
-                  <div>
-                    <p className="text-[12px] font-semibold" style={{ color: '#3D2B1F' }}>{card.title[lang]}</p>
-                    <p className="text-[11px] leading-[1.4]" style={{ color: '#8B7355' }}>{card.desc[lang]}</p>
+                <RevealOnScroll key={i} delay={i * 0.06}>
+                  <div className="flex items-start gap-3 rounded-xl px-4 py-4 h-full" style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid rgba(107,79,58,0.1)', boxShadow: '0 2px 8px rgba(61,43,31,0.04)' }}>
+                    <Icon className="h-4 w-4 shrink-0 mt-0.5" style={{ color: '#8B7355' }} />
+                    <div>
+                      <p className="text-[12px] font-semibold" style={{ color: '#3D2B1F' }}>{card.title[lang]}</p>
+                      <p className="text-[11px] leading-[1.4]" style={{ color: '#8B7355' }}>{card.desc[lang]}</p>
+                    </div>
                   </div>
-                </div>
+                </RevealOnScroll>
               );
             })}
           </div>
