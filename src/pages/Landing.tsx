@@ -6,7 +6,7 @@ import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
-import heroPhoneMockup from '@/assets/hero-phone-mockup.png';
+
 import { minds } from '@/data/minds';
 import {
   Clock, Languages, Zap, Lock, FileText, Globe, Users, Mic,
