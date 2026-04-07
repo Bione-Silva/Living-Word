@@ -530,7 +530,7 @@ export default function MenteChat() {
             onKeyDown={handleKeyDown}
             placeholder={placeholder[lang]}
             disabled={isLoading}
-            className="flex-1 rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[hsl(43,55%,58%)]/30 disabled:opacity-50"
+            className="flex-1 rounded-xl border border-border bg-muted/30 px-4 py-3 text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[hsl(43,55%,58%)]/30 disabled:opacity-50"
           />
           <Button
             size="icon"
