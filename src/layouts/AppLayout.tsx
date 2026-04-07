@@ -33,6 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
 import { ThemeInjector } from '@/components/ThemeInjector';
+import { PWAInstallBanner } from '@/components/PWAInstallBanner';
 
 type L = 'PT' | 'EN' | 'ES';
 
