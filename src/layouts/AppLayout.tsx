@@ -159,11 +159,10 @@ export default function AppLayout() {
     setActiveTool({ id: tool.id, title: tool.label[lang] });
   };
 
-  // Generation usage — derive limit from plan if DB value is unrealistic
-  const planLimits: Record<string, number> = { free: 5, pastoral: 15, church: 60, ministry: 1000 };
+  // Credits usage
+  const planCredits: Record<string, number> = { free: 500, pastoral: 2000, church: 5000, ministry: 15000 };
   const used = profile?.generations_used || 0;
-  const rawLimit = profile?.generations_limit || 5;
-  const limit = rawLimit > 10000 ? (planLimits[(profile as any)?.plan] || 1000) : rawLimit;
+  const limit = planCredits[(profile as any)?.plan] || profile?.generations_limit || 500;
   const pct = limit > 0 ? Math.min(Math.round((used / limit) * 100), 100) : 0;
 
   if (isMobile) {
