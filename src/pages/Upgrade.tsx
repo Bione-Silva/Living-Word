@@ -382,18 +382,15 @@ export default function Upgrade() {
         })}
       </div>
 
-      {/* Top-up + Usage Report section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <div className="space-y-4">
-          {showTopUp && <CreditTopUpButton />}
-          {!showTopUp && (
-            <div className="rounded-xl border border-border/60 bg-muted/20 p-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                🟢 {remaining.toLocaleString()} {lang === 'PT' ? 'créditos disponíveis' : lang === 'EN' ? 'credits available' : 'créditos disponibles'}
-              </p>
-            </div>
-          )}
+      {/* Top-up button */}
+      {showTopUp && (
+        <div className="max-w-md mx-auto mt-6">
+          <CreditTopUpButton />
         </div>
+      )}
+
+      {/* Full-width Usage Report */}
+      <div className="mt-8">
         <CreditUsageReport />
       </div>
     </div>
