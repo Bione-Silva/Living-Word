@@ -195,14 +195,23 @@ export default function Upgrade() {
   const getDisplayPrice = (plan: PlanData) => {
     if (plan.isFree) return `${pricing.symbol}0`;
     if (!plan.planKey) return '';
+    const isBRL = pricing.currency === 'BRL';
 
     if (plan.planKey === 'igreja') {
-      const base = isAnnual ? igrejaTotal * 10 / 12 : igrejaTotal;
+      const addonAmt = isBRL ? 19.00 : pricing.addon.amount;
+      let base: number;
+      if (isBRL) {
+        base = isAnnual ? PLAN_PRICES_BRL.annual.igreja / 12 : PLAN_PRICES_BRL.monthly.igreja;
+        base += extraSeats * addonAmt;
+      } else {
+        base = isAnnual ? igrejaTotal * 10 / 12 : igrejaTotal;
+      }
       return formatPrice(base, pricing.symbol, pricing.currency);
     }
 
-    const monthlyAmount = pricing.plans[plan.planKey].amount;
-    const amount = isAnnual ? monthlyAmount * 10 / 12 : monthlyAmount;
+    const amount = isBRL
+      ? isAnnual ? PLAN_PRICES_BRL.annual[plan.planKey] / 12 : PLAN_PRICES_BRL.monthly[plan.planKey]
+      : isAnnual ? pricing.plans[plan.planKey].amount * 10 / 12 : pricing.plans[plan.planKey].amount;
     return formatPrice(amount, pricing.symbol, pricing.currency);
   };
 
