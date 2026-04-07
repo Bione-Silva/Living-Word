@@ -16,6 +16,29 @@ import {
 
 type L = 'PT' | 'EN' | 'ES';
 
+function PWAFooterInstallButton({ lang }: { lang: L }) {
+  const { isInstallable, install } = usePWAInstall();
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
+  }, []);
+
+  if (isStandalone || !isInstallable) return null;
+
+  const label = { PT: '📱 Instale o App Agora', EN: '📱 Install the App Now', ES: '📱 Instala la App Ahora' };
+
+  return (
+    <button
+      onClick={() => void install()}
+      className="text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-all hover:scale-[1.03]"
+      style={{ background: '#C4956A', color: '#1E1510' }}
+    >
+      {label[lang]}
+    </button>
+  );
+}
+
 const copy = {
   nav: {
     how: { PT: 'Como funciona', EN: 'How it works', ES: 'Cómo funciona' },
