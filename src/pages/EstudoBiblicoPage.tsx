@@ -15,6 +15,7 @@ import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFoot
 import { RichLoadingState } from '@/components/generation/RichLoadingState';
 import { loadingHints, studyLoadingMessages } from '@/lib/generation-ui';
 import { Button } from '@/components/ui/button';
+import { BibleDrawer } from '@/components/BibleDrawer';
 
 export default function EstudoBiblicoPage() {
   const [isLoading, setIsLoading] = useState(false);

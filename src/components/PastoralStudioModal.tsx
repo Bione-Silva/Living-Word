@@ -24,6 +24,7 @@ import { RichLoadingState } from '@/components/generation/RichLoadingState';
 import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFooter';
 import { GenerationMeta } from '@/types/generation-meta';
 import { loadingHints, pastoralLoadingMessages } from '@/lib/generation-ui';
+import { BibleDrawer } from '@/components/BibleDrawer';
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
 interface PastoralStudioModalProps {
