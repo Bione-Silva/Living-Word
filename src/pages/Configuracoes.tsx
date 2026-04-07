@@ -13,6 +13,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { Crown, Camera, Loader2 } from 'lucide-react';
 import { TrialCountdown } from '@/components/TrialCountdown';
+import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
+import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
+import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
 import type { Language } from '@/lib/i18n';
 
 type L = 'PT' | 'EN' | 'ES';
