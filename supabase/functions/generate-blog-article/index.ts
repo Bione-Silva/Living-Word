@@ -131,7 +131,7 @@ serve(async (req) => {
     const systemPrompt = `You are a pastoral content writer for Christian leaders. Write in ${targetLang}.
 Style: ${voice} tone, ${doctrine} tradition.
 Output a complete devotional blog article in Markdown format with:
-- A compelling title (H1)
+- A compelling title (H1) — ONLY the article topic, NEVER include prefixes like "Blog", "Artigos", "Blog & Artigos", "Devotional", category labels, or any similar prefix. Just the topic itself, e.g. "Ressurreição de Lázaro", not "Blog & Artigos — Ressurreição de Lázaro".
 - Opening reflection (2-3 paragraphs)
 - Bible passage reference and commentary with historical and cultural context
 - Practical application for daily life
@@ -196,7 +196,9 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     }
 
     const h1Match = content.match(/^#\s+(.+)$/m);
-    const articleTitle = inputTitle || h1Match?.[1] || `Devotional — ${passage}`;
+    let articleTitle = inputTitle || h1Match?.[1] || passage;
+    // Clean unwanted prefixes like "Blog & Artigos —", "Blog —", etc.
+    articleTitle = articleTitle.replace(/^(Blog\s*&?\s*Artigos?\s*[-—–:]\s*)/i, '').trim();
 
     // Image style mapping
     const styleMap: Record<string, string> = {
