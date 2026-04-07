@@ -33,6 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
 import { ThemeInjector } from '@/components/ThemeInjector';
+import { PWAInstallBanner } from '@/components/PWAInstallBanner';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -179,6 +180,10 @@ export default function AppLayout() {
             <LanguageToggle />
           </div>
         </header>
+
+        <div className="px-4 pt-2">
+          <PWAInstallBanner />
+        </div>
 
         <main className="flex-1 overflow-auto px-4 py-4 pb-20">
           <Outlet />
@@ -745,6 +750,7 @@ export default function AppLayout() {
           </Link>
         </header>
         <main className="p-6">
+          <PWAInstallBanner />
           <Outlet />
         </main>
       </div>
