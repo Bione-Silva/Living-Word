@@ -15,10 +15,11 @@ interface StudyActionsProps {
   onImagesGenerated?: (images: string[]) => void;
 }
 
-export function StudyActions({ study }: StudyActionsProps) {
+export function StudyActions({ study, materialId, onImagesGenerated }: StudyActionsProps) {
   const { user, profile } = useAuth();
   const { lang } = useLanguage();
   const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null);
+  const [enriching, setEnriching] = useState(false);
   const t = (k: string) => sl(k, lang);
 
   const studyTitle = study.verdade_central.frase_central || study.passagem.referencia;
