@@ -82,6 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           theme_color: (data as any).theme_color,
           font_family: (data as any).font_family,
           layout_style: (data as any).layout_style,
+          profile_completed: (data as any).profile_completed ?? false,
         });
       }
     } catch (err) {
