@@ -8,7 +8,7 @@ interface UserProfile {
   id: string;
   full_name: string;
   blog_handle: string;
-  plan: 'free' | 'pastoral' | 'church' | 'ministry';
+  plan: PlanSlug;
   generations_used: number;
   generations_limit: number;
   language: string;

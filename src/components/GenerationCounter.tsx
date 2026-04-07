@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Progress } from '@/components/ui/progress';
+import { PLAN_CREDITS } from '@/lib/plans';
 
 interface GenerationCounterProps {
   compact?: boolean;
@@ -12,9 +13,11 @@ export function GenerationCounter({ compact }: GenerationCounterProps) {
 
   if (!profile) return null;
 
-  const planCredits: Record<string, number> = { free: 500, pastoral: 2000, church: 5000, ministry: 15000 };
+  // Hide credits entirely for free users
+  if (profile.plan === 'free') return null;
+
   const used = profile.generations_used;
-  const limit = planCredits[profile.plan] || profile.generations_limit || 500;
+  const limit = PLAN_CREDITS[profile.plan] || profile.generations_limit || 150;
   const pct = limit > 0 ? Math.round((used / limit) * 100) : 0;
 
   if (compact) {
