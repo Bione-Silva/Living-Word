@@ -296,7 +296,7 @@ export function DeepSearchModal({ open, onOpenChange, query: initialQuery }: Dee
               <section className="rounded-lg border border-border bg-muted/30 p-4">
                 <SectionHeader icon={BookOpen} label={labels.passage[lang]} />
                 <p className="text-xs font-medium text-primary mb-1.5">{data.reference}</p>
-                <blockquote className="border-l-[3px] border-primary/50 pl-4 text-[15px] leading-relaxed text-foreground/80 italic">
+                <blockquote className="border-l-[3px] border-primary/50 pl-4 text-sm sm:text-[15px] leading-relaxed text-foreground/80 italic break-words">
                   {data.passage}
                 </blockquote>
               </section>
