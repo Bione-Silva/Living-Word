@@ -53,20 +53,31 @@ export function SupportChatBubble() {
 
   return (
     <>
-      {/* Floating Bubble */}
+      {/* Inline trigger button — rendered where placed in layout, not floating */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-105 transition-transform flex items-center justify-center"
+          className="w-9 h-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center"
           title="Central de Ajuda"
         >
-          <LifeBuoy className="h-6 w-6" />
+          <LifeBuoy className="h-4 w-4" />
         </button>
       )}
 
-      {/* Chat Window */}
+      {/* Inline close button when chat is open */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-[360px] h-[480px] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <button
+          onClick={() => setOpen(false)}
+          className="w-9 h-9 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-colors flex items-center justify-center"
+          title="Fechar Ajuda"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+
+      {/* Chat Window — fixed overlay */}
+      {open && (
+        <div className="fixed top-16 right-4 z-50 w-[360px] h-[480px] max-h-[calc(100vh-5rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center gap-3 px-4 py-3 bg-primary text-primary-foreground shrink-0">
             <LifeBuoy className="h-5 w-5" />
