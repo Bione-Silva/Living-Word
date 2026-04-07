@@ -176,13 +176,13 @@ export default function Configuracoes() {
       <h1 className="font-display text-2xl md:text-3xl font-bold">{t('settings.title')}</h1>
 
       <Tabs defaultValue="profile">
-        <TabsList className="bg-secondary/50 flex-wrap h-auto">
-          <TabsTrigger value="profile">{t('settings.profile')}</TabsTrigger>
-          <TabsTrigger value="blog">{t('settings.blog')}</TabsTrigger>
-          <TabsTrigger value="plan">{t('settings.plan')}</TabsTrigger>
-          <TabsTrigger value="doctrine">{t('settings.doctrine')}</TabsTrigger>
-          <TabsTrigger value="language">{t('settings.language')}</TabsTrigger>
-          <TabsTrigger value="account">{t('settings.account')}</TabsTrigger>
+        <TabsList className="bg-secondary/50 flex-wrap h-auto gap-1">
+          <TabsTrigger value="profile" className="text-xs sm:text-sm">{t('settings.profile')}</TabsTrigger>
+          <TabsTrigger value="blog" className="text-xs sm:text-sm">{t('settings.blog')}</TabsTrigger>
+          <TabsTrigger value="plan" className="text-xs sm:text-sm">{t('settings.plan')}</TabsTrigger>
+          <TabsTrigger value="doctrine" className="text-xs sm:text-sm">{t('settings.doctrine')}</TabsTrigger>
+          <TabsTrigger value="language" className="text-xs sm:text-sm">{t('settings.language')}</TabsTrigger>
+          <TabsTrigger value="account" className="text-xs sm:text-sm">{t('settings.account')}</TabsTrigger>
         </TabsList>
 
         {/* PROFILE TAB — Complete */}
