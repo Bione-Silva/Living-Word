@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { CreditUsageCharts } from './CreditUsageCharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, ChevronDown, Wallet } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, ChevronDown, Wallet, Filter } from 'lucide-react';
 import { TOOL_CREDITS, PLAN_CREDITS, type PlanSlug } from '@/lib/plans';
 
 type L = 'PT' | 'EN' | 'ES';
