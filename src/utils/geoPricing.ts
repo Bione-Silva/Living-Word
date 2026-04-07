@@ -11,7 +11,7 @@ interface RegionPricing {
   plans: {
     starter: PlanPrice;
     pro: PlanPrice;
-    church: PlanPrice;
+    igreja: PlanPrice;
   };
   addon: PlanPrice;
 }
@@ -23,7 +23,7 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
     plans: {
       starter: { id: 'price_1TIbCqEaDBbHafP6rVx4M0iq', amount: 19.00 },
       pro: { id: 'price_1TIbCsEaDBbHafP6jMjpjCWF', amount: 49.00 },
-      church: { id: 'price_1TIbCtEaDBbHafP6dIYl8Fjg', amount: 97.00 },
+      igreja: { id: 'price_1TIbCtEaDBbHafP6dIYl8Fjg', amount: 97.00 },
     },
     addon: { id: 'price_1TIbCuEaDBbHafP6fQWCkE7l', amount: 9.00 },
   },
@@ -33,7 +33,7 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
     plans: {
       starter: { id: 'price_1TIbCqEaDBbHafP6AqYI1lQ3', amount: 9.90 },
       pro: { id: 'price_1TIbCsEaDBbHafP6qOWGnzjp', amount: 29.90 },
-      church: { id: 'price_1TIbCtEaDBbHafP6D1krnMzA', amount: 79.90 },
+      igreja: { id: 'price_1TIbCtEaDBbHafP6D1krnMzA', amount: 79.90 },
     },
     addon: { id: 'price_1TIbCuEaDBbHafP6FhfTaKnh', amount: 5.90 },
   },
@@ -43,7 +43,7 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
     plans: {
       starter: { id: 'price_1TIbCrEaDBbHafP6gO6Z5UPt', amount: 5.90 },
       pro: { id: 'price_1TIbCsEaDBbHafP6kY9apvOc', amount: 19.00 },
-      church: { id: 'price_1TIbCtEaDBbHafP6Rh4uTD5Q', amount: 49.00 },
+      igreja: { id: 'price_1TIbCtEaDBbHafP6Rh4uTD5Q', amount: 49.00 },
     },
     addon: { id: 'price_1TIbCvEaDBbHafP6DM4entar', amount: 3.90 },
   },
@@ -53,7 +53,7 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
     plans: {
       starter: { id: 'price_1TIbCrEaDBbHafP6dRTQO3m2', amount: 1.00 },
       pro: { id: 'price_1TIbCsEaDBbHafP6ximO1Myd', amount: 1.00 },
-      church: { id: 'price_1TIbCuEaDBbHafP6RlbFZvJH', amount: 1.00 },
+      igreja: { id: 'price_1TIbCuEaDBbHafP6RlbFZvJH', amount: 1.00 },
     },
     addon: { id: 'price_1TIbCvEaDBbHafP6WaieVawh', amount: 1.00 },
   },

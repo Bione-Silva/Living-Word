@@ -6,31 +6,37 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2, AlertCircle } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2, Building2 } from 'lucide-react';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
+import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, type PlanSlug } from '@/lib/plans';
 
 type L = 'PT' | 'EN' | 'ES';
-type PlanKey = 'starter' | 'pro' | 'church';
+type PlanKey = 'starter' | 'pro' | 'igreja';
 
 const labels = {
   title: { PT: 'Escolha seu plano de produção', EN: 'Choose your production plan', ES: 'Elige tu plan de producción' } as Record<L, string>,
   subtitle: { PT: 'Escale sua produção pastoral. Sem créditos técnicos, sem complicação.', EN: 'Scale your pastoral production. No technical credits, no hassle.', ES: 'Escala tu producción pastoral. Sin créditos técnicos, sin complicación.' } as Record<L, string>,
   current: { PT: 'Plano atual', EN: 'Current plan', ES: 'Plan actual' } as Record<L, string>,
   popular: { PT: 'Mais escolhido', EN: 'Most popular', ES: 'Más elegido' } as Record<L, string>,
-  cta: { PT: 'Assinar agora', EN: 'Subscribe now', ES: 'Suscribirse ahora' } as Record<L, string>,
+  cta: { PT: 'Começar agora', EN: 'Start now', ES: 'Comenzar ahora' } as Record<L, string>,
   ctaFree: { PT: 'Plano atual', EN: 'Current plan', ES: 'Plan actual' } as Record<L, string>,
-  ctaTrial: { PT: '7 dias grátis', EN: '7 days free', ES: '7 días gratis' } as Record<L, string>,
+  ctaTrial: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' } as Record<L, string>,
+  ctaIgreja: { PT: 'Começar', EN: 'Get started', ES: 'Comenzar' } as Record<L, string>,
   month: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
   forever: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' } as Record<L, string>,
   extraSeats: { PT: 'Membros da equipe extras', EN: 'Extra team members', ES: 'Miembros del equipo extras' } as Record<L, string>,
   perSeat: { PT: 'por assento extra', EN: 'per extra seat', ES: 'por asiento extra' } as Record<L, string>,
-  totalPrice: { PT: 'Preço total', EN: 'Total price', ES: 'Precio total' } as Record<L, string>,
   included: { PT: '10 incluídos', EN: '10 included', ES: '10 incluidos' } as Record<L, string>,
   capacityBoost: { PT: 'de capacidade extra', EN: 'extra capacity', ES: 'de capacidad extra' } as Record<L, string>,
+  monthly: { PT: 'Mensal', EN: 'Monthly', ES: 'Mensual' } as Record<L, string>,
+  annual: { PT: 'Anual', EN: 'Annual', ES: 'Anual' } as Record<L, string>,
+  annualSave: { PT: '2 meses grátis', EN: '2 months free', ES: '2 meses gratis' } as Record<L, string>,
+  credits: { PT: 'créditos/mês', EN: 'credits/month', ES: 'créditos/mes' } as Record<L, string>,
 };
 
 interface PlanData {
@@ -43,55 +49,60 @@ interface PlanData {
   capacity: Record<L, string>;
   sermonsMonth: Record<L, string>;
   isFree: boolean;
+  credits: number;
 }
 
 const plans: PlanData[] = [
   {
     id: 'free', planKey: null,
-    name: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
+    name: PLAN_DISPLAY_NAMES.free,
     icon: BookOpen, featured: false, isFree: true,
+    credits: PLAN_CREDITS.free,
     capacity: { PT: 'Uso básico', EN: 'Basic usage', ES: 'Uso básico' },
-    sermonsMonth: { PT: '5 gerações/mês', EN: '5 generations/month', ES: '5 generaciones/mes' },
+    sermonsMonth: { PT: '1 uso/mês por ferramenta', EN: '1 use/month per tool', ES: '1 uso/mes por herramienta' },
     features: {
-      PT: ['5 gerações/mês', 'Sermão + esboço', '1 artigo devocional/mês', 'Blog cristão no ar'],
-      EN: ['5 generations/month', 'Sermon + outline', '1 devotional article/month', 'Christian blog live'],
-      ES: ['5 generaciones/mes', 'Sermón + bosquejo', '1 artículo devocional/mes', 'Blog cristiano en línea'],
+      PT: ['150 créditos/mês', '1 uso/mês por ferramenta', '6 ferramentas de pesquisa', '8 ferramentas de criação', 'Blog cristão básico'],
+      EN: ['150 credits/month', '1 use/month per tool', '6 research tools', '8 creation tools', 'Basic Christian blog'],
+      ES: ['150 créditos/mes', '1 uso/mes por herramienta', '6 herramientas de investigación', '8 herramientas de creación', 'Blog cristiano básico'],
     },
   },
   {
     id: 'starter', planKey: 'starter',
-    name: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
+    name: PLAN_DISPLAY_NAMES.starter,
     icon: Zap, featured: false, isFree: false,
+    credits: PLAN_CREDITS.starter,
     capacity: { PT: 'Produção semanal', EN: 'Weekly production', ES: 'Producción semanal' },
-    sermonsMonth: { PT: 'Até 15 sermões/mês', EN: 'Up to 15 sermons/month', ES: 'Hasta 15 sermones/mes' },
+    sermonsMonth: { PT: '3.000 créditos/mês', EN: '3,000 credits/month', ES: '3.000 créditos/mes' },
     features: {
-      PT: ['Até 15 sermões/mês', 'Até 50 conteúdos', 'Todos os 7+ formatos', 'Publicação automática', 'Sem watermark'],
-      EN: ['Up to 15 sermons/month', 'Up to 50 contents', 'All 7+ formats', 'Auto-publishing', 'No watermark'],
-      ES: ['Hasta 15 sermones/mes', 'Hasta 50 contenidos', 'Los 7+ formatos', 'Publicación automática', 'Sin marca de agua'],
+      PT: ['3.000 créditos/mês', 'Todas as ferramentas core', '+ 9 ferramentas extras', 'Uso ilimitado por ferramenta', 'Sem watermark', 'Biblioteca com 100 itens'],
+      EN: ['3,000 credits/month', 'All core tools', '+ 9 extra tools', 'Unlimited use per tool', 'No watermark', 'Library with 100 items'],
+      ES: ['3.000 créditos/mes', 'Todas las herramientas core', '+ 9 herramientas extras', 'Uso ilimitado por herramienta', 'Sin marca de agua', 'Biblioteca con 100 ítems'],
     },
   },
   {
     id: 'pro', planKey: 'pro',
-    name: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
+    name: PLAN_DISPLAY_NAMES.pro,
     icon: Brain, featured: true, isFree: false,
+    credits: PLAN_CREDITS.pro,
     capacity: { PT: 'Produção completa', EN: 'Full production', ES: 'Producción completa' },
-    sermonsMonth: { PT: 'Até 60 sermões/mês', EN: 'Up to 60 sermons/month', ES: 'Hasta 60 sermones/mes' },
+    sermonsMonth: { PT: '10.000 créditos/mês', EN: '10,000 credits/month', ES: '10.000 créditos/mes' },
     features: {
-      PT: ['Até 60 sermões/mês', 'Produção completa semanal', 'Mentes Brilhantes', 'Estudo bíblico profundo', 'Séries automáticas', 'Calendário editorial'],
-      EN: ['Up to 60 sermons/month', 'Full weekly production', 'Brilliant Minds', 'Deep Bible study', 'Automatic series', 'Editorial calendar'],
-      ES: ['Hasta 60 sermones/mes', 'Producción completa semanal', 'Mentes Brillantes', 'Estudio bíblico profundo', 'Series automáticas', 'Calendario editorial'],
+      PT: ['10.000 créditos/mês', 'Tudo do Starter +', '🧠 Mentes Brilhantes', 'Ilustrações para sermões', 'Calendário editorial', 'YouTube → Blog', 'Até 3 workspaces', 'Equipe até 3 usuários'],
+      EN: ['10,000 credits/month', 'Everything in Starter +', '🧠 Brilliant Minds', 'Sermon illustrations', 'Editorial calendar', 'YouTube → Blog', 'Up to 3 workspaces', 'Team up to 3 users'],
+      ES: ['10.000 créditos/mes', 'Todo del Starter +', '🧠 Mentes Brillantes', 'Ilustraciones para sermones', 'Calendario editorial', 'YouTube → Blog', 'Hasta 3 workspaces', 'Equipo hasta 3 usuarios'],
     },
   },
   {
-    id: 'church', planKey: 'church',
-    name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
-    icon: Users, featured: false, isFree: false,
+    id: 'igreja', planKey: 'igreja',
+    name: PLAN_DISPLAY_NAMES.igreja,
+    icon: Building2, featured: false, isFree: false,
+    credits: PLAN_CREDITS.igreja,
     capacity: { PT: 'Escala ministerial', EN: 'Ministry scale', ES: 'Escala ministerial' },
-    sermonsMonth: { PT: 'Produção compartilhada', EN: 'Shared production', ES: 'Producción compartida' },
+    sermonsMonth: { PT: '30.000 créditos/mês', EN: '30,000 credits/month', ES: '30.000 créditos/mes' },
     features: {
-      PT: ['Até 10 usuários incluídos', 'Produção compartilhada', 'Fluxo editorial completo', 'Múltiplos blogs', 'Analytics da equipe'],
-      EN: ['Up to 10 users included', 'Shared production', 'Full editorial workflow', 'Multiple blogs', 'Team analytics'],
-      ES: ['Hasta 10 usuarios incluidos', 'Producción compartida', 'Flujo editorial completo', 'Múltiples blogs', 'Analytics del equipo'],
+      PT: ['30.000 créditos/mês', 'Tudo do Pro +', 'Até 10 usuários incluídos', 'Workspaces ilimitados', 'Multiportal (5 portais)', 'White-label parcial', 'Automação avançada', 'Suporte VIP (4h)'],
+      EN: ['30,000 credits/month', 'Everything in Pro +', 'Up to 10 users included', 'Unlimited workspaces', 'Multi-portal (5 portals)', 'Partial white-label', 'Advanced automation', 'VIP Support (4h)'],
+      ES: ['30.000 créditos/mes', 'Todo del Pro +', 'Hasta 10 usuarios incluidos', 'Workspaces ilimitados', 'Multiportal (5 portales)', 'White-label parcial', 'Automatización avanzada', 'Soporte VIP (4h)'],
     },
   },
 ];
@@ -102,25 +113,24 @@ export default function Upgrade() {
   const { profile } = useAuth();
   const { pricing, loading: regionLoading } = useGeoRegion();
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentPlan = profile?.plan || 'free';
+  const currentPlan = (profile?.plan as PlanSlug) || 'free';
   const [extraSeats, setExtraSeats] = useState(0);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [isAnnual, setIsAnnual] = useState(false);
   const autoCheckoutFired = useRef(false);
 
-  const churchTotal = useMemo(() => {
+  const igrejaTotal = useMemo(() => {
     if (!pricing) return 0;
-    const base = pricing.plans.church.amount;
+    const base = pricing.plans.igreja.amount;
     return base + extraSeats * pricing.addon.amount;
   }, [extraSeats, pricing]);
 
   const autoCheckoutPlan = searchParams.get('autoCheckout');
   const isAutoCheckout = !!autoCheckoutPlan && !autoCheckoutFired.current;
 
-  // Auto-checkout from landing page flow (wait for pricing to load)
   useEffect(() => {
     if (!autoCheckoutPlan || autoCheckoutFired.current || !pricing) return;
     autoCheckoutFired.current = true;
-
     const targetPlan = plans.find(p => p.planKey === autoCheckoutPlan);
     if (targetPlan && !targetPlan.isFree) {
       setSearchParams({}, { replace: true });
@@ -139,7 +149,7 @@ export default function Upgrade() {
         cancelUrl: `${window.location.origin}/upgrade`,
       };
 
-      if (plan.planKey === 'church' && extraSeats > 0) {
+      if (plan.planKey === 'igreja' && extraSeats > 0) {
         body.extraSeats = extraSeats;
         body.stripeAddonPriceId = pricing.addon.id;
       }
@@ -147,7 +157,6 @@ export default function Upgrade() {
       const { data, error } = await supabase.functions.invoke('create-checkout', { body });
 
       if (error) {
-        console.warn('[Stripe Bypass] Checkout failed:', error);
         const errMsg: Record<L, { title: string; desc: string }> = {
           PT: { title: 'Ops, contratempo na tesouraria', desc: 'Nosso sistema de pagamento encontrou um problema. Você pode tentar novamente ou assinar depois em Configurações > Assinatura.' },
           EN: { title: 'Oops, payment hiccup', desc: 'Our payment system encountered an issue. You can try again or subscribe later in Settings > Subscription.' },
@@ -183,6 +192,27 @@ export default function Upgrade() {
     );
   }
 
+  const getDisplayPrice = (plan: PlanData) => {
+    if (plan.isFree) return `${pricing.symbol}0`;
+    if (!plan.planKey) return '';
+
+    if (plan.planKey === 'igreja') {
+      const base = isAnnual ? igrejaTotal * 10 / 12 : igrejaTotal;
+      return formatPrice(base, pricing.symbol, pricing.currency);
+    }
+
+    const monthlyAmount = pricing.plans[plan.planKey].amount;
+    const amount = isAnnual ? monthlyAmount * 10 / 12 : monthlyAmount;
+    return formatPrice(amount, pricing.symbol, pricing.currency);
+  };
+
+  const getCta = (plan: PlanData) => {
+    if (plan.planKey === 'starter') return labels.ctaTrial[lang];
+    if (plan.planKey === 'igreja') return labels.ctaIgreja[lang];
+    if (plan.planKey === 'pro') return labels.cta[lang];
+    return labels.ctaFree[lang];
+  };
+
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <div className="text-center">
@@ -191,21 +221,21 @@ export default function Upgrade() {
         <p className="text-muted-foreground mt-2 max-w-lg mx-auto">{labels.subtitle[lang]}</p>
       </div>
 
+      {/* Billing toggle */}
+      <div className="flex items-center justify-center gap-3">
+        <span className={`text-sm font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>{labels.monthly[lang]}</span>
+        <Switch checked={isAnnual} onCheckedChange={setIsAnnual} />
+        <span className={`text-sm font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>{labels.annual[lang]}</span>
+        {isAnnual && (
+          <Badge className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">{labels.annualSave[lang]}</Badge>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {plans.map((plan) => {
           const Icon = plan.icon;
           const isCurrent = currentPlan === plan.id;
           const isLoading = loadingPlan === plan.id;
-
-          const displayPrice = plan.isFree
-            ? `${pricing.symbol}0`
-            : plan.planKey
-            ? formatPrice(
-                plan.planKey === 'church' ? churchTotal : pricing.plans[plan.planKey].amount,
-                pricing.symbol,
-                pricing.currency
-              )
-            : '';
 
           return (
             <Card
@@ -238,20 +268,19 @@ export default function Upgrade() {
                 </div>
 
                 <div className="flex items-baseline gap-0.5 mb-1">
-                  <span className="text-3xl font-bold">{displayPrice}</span>
+                  <span className="text-3xl font-bold">{getDisplayPrice(plan)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground mb-1">
                   {plan.isFree ? labels.forever[lang] : labels.month[lang]}
                 </p>
+
                 <Badge variant="secondary" className="text-[10px] mb-4 self-start gap-1">
                   <BarChart3 className="h-3 w-3" />
-                  {plan.capacity[lang]}
+                  {plan.credits.toLocaleString()} {labels.credits[lang]}
                 </Badge>
 
-                <p className="text-sm font-semibold text-foreground mb-3">{plan.sermonsMonth[lang]}</p>
-
-                {/* Church plan slider */}
-                {plan.planKey === 'church' && (
+                {/* Igreja plan slider */}
+                {plan.planKey === 'igreja' && (
                   <div className="rounded-lg border border-border/60 bg-muted/30 p-3 mb-3 space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-medium text-foreground">{labels.extraSeats[lang]}</span>
@@ -305,7 +334,7 @@ export default function Upgrade() {
                   ) : (
                     <>
                       <Crown className="h-4 w-4" />
-                      {plan.planKey === 'starter' ? labels.ctaTrial[lang] : labels.cta[lang]}
+                      {getCta(plan)}
                     </>
                   )}
                 </Button>

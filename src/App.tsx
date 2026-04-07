@@ -90,6 +90,7 @@ const App = () => (
               <Route path="/blog/:handle" element={<BlogPublic />} />
               <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
               <Route path="/invite/:token" element={<AcceptInvite />} />
+              <Route path="/pricing" element={<Pricing />} />
 
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/blog-onboarding" element={<BlogOnboarding />} />
