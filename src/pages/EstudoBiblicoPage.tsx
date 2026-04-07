@@ -139,7 +139,11 @@ export default function EstudoBiblicoPage() {
                     {darkStudy ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
                     {darkStudy ? (lang === 'EN' ? 'Light' : 'Claro') : (lang === 'EN' ? 'Dark' : 'Escuro')}
                   </Button>
-                  <StudyActions study={study} />
+                  <StudyActions
+                    study={study}
+                    materialId={result?.material_id}
+                    onImagesGenerated={(imgs) => toast.success(`${imgs.length} ilustrações adicionadas!`)}
+                  />
                 </div>
               </div>
 
