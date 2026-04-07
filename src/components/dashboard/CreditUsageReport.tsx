@@ -211,7 +211,7 @@ export function CreditUsageReport() {
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-base shrink-0">{icon}</span>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{featureLabel}</p>
+                      <p className="text-sm font-semibold text-foreground truncate">{featureLabel}</p>
                       <p className="text-[10px] text-muted-foreground">{formatDate(entry.created_at)}</p>
                     </div>
                   </div>
