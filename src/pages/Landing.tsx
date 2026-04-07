@@ -16,6 +16,7 @@ import {
 
 type L = 'PT' | 'EN' | 'ES';
 
+/* PWA install button for the landing footer */
 function PWAFooterInstallButton({ lang }: { lang: L }) {
   const { isInstallable, install } = usePWAInstall();
   const [isStandalone, setIsStandalone] = useState(false);
