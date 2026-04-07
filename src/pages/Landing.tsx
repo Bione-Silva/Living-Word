@@ -524,7 +524,7 @@ export default function Landing() {
             {/* Left — Text */}
             <div className="flex-1 text-center lg:text-left">
               <p className="text-[12px] font-semibold tracking-[0.14em] uppercase mb-5 animate-[fadeSlideUp_0.6s_ease-out_0.1s_both]" style={{ color: '#C4956A' }}>{copy.hero.eyebrow[lang]}</p>
-              <h1 className="font-display text-[34px] sm:text-[48px] font-semibold leading-[1.12] mb-5 animate-[fadeSlideUp_0.7s_ease-out_0.25s_both]" style={{ color: '#F5F0E8' }}>
+              <h1 className="font-display text-[28px] sm:text-[48px] font-semibold leading-[1.12] mb-5 animate-[fadeSlideUp_0.7s_ease-out_0.25s_both]" style={{ color: '#F5F0E8' }}>
                 {copy.hero.h1_line1[lang]}
                 <br /><em style={{ color: '#C4956A' }}>{copy.hero.h1_em[lang]}</em>
               </h1>
