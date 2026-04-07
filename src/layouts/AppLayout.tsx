@@ -764,7 +764,6 @@ export default function AppLayout() {
           toolId={helpToolId}
         />
       )}
-      <SupportChatBubble />
     </div>
   );
 }
