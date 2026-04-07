@@ -100,6 +100,17 @@ export default function AppLayout() {
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [helpToolId, setHelpToolId] = useState<string | null>(null);
   const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({});
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return localStorage.getItem('lw-sidebar-collapsed') === 'true'; } catch { return false; }
+  });
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try { localStorage.setItem('lw-sidebar-collapsed', String(next)); } catch {}
+      return next;
+    });
+  };
 
   const handleSignOut = async () => {
     await signOut();
