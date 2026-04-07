@@ -170,7 +170,6 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [convertingToBlog, setConvertingToBlog] = useState(false);
-  const [showBlogPrompt, setShowBlogPrompt] = useState(false);
   const [imageStyle, setImageStyle] = useState<'oil' | 'watercolor' | 'minimalist'>('oil');
   const [generationLang, setGenerationLang] = useState<Language>(lang);
   const [expanded, setExpanded] = useState(false);
