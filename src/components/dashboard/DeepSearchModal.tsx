@@ -79,17 +79,12 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-2xl border-border/60 bg-card backdrop-blur-sm">
+      <DialogContent className="max-w-2xl w-[95vw] max-h-[85vh] overflow-y-auto p-0 gap-0">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-md border-b border-border/40 px-5 py-4 flex items-center justify-between">
-          <div className="min-w-0 flex-1">
-            <DialogTitle className="text-base font-semibold text-foreground truncate">
-              {labels.results[lang]} <span className="text-primary">"{query}"</span>
-            </DialogTitle>
-          </div>
-          <button onClick={() => onOpenChange(false)} className="ml-3 shrink-0 rounded-full p-1.5 hover:bg-muted/60 transition-colors">
-            <X className="h-4 w-4 text-muted-foreground" />
-          </button>
+        <div className="px-6 pt-6 pb-4 border-b border-border">
+          <DialogTitle className="text-lg font-semibold text-foreground">
+            {labels.results[lang]} <span className="text-primary">"{query}"</span>
+          </DialogTitle>
         </div>
 
         {loading ? (
@@ -98,12 +93,12 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
             <p className="text-sm text-muted-foreground">{labels.searching[lang]}</p>
           </div>
         ) : (
-          <div className="px-5 py-5 space-y-6">
+          <div className="px-6 py-5 space-y-5">
             {/* 1. Passagem */}
-            <section>
+            <section className="rounded-lg border border-border bg-muted/30 p-4">
               <SectionHeader icon={BookOpen} label={labels.passage[lang]} />
-              <p className="text-xs font-medium text-primary/80 mb-1.5">{data.reference}</p>
-              <blockquote className="border-l-[3px] border-primary/40 pl-4 text-[15px] leading-relaxed text-foreground/90 italic font-serif">
+              <p className="text-xs font-medium text-primary mb-1.5">{data.reference}</p>
+              <blockquote className="border-l-[3px] border-primary/50 pl-4 text-[15px] leading-relaxed text-foreground/80 italic">
                 {data.passage}
               </blockquote>
             </section>
@@ -111,22 +106,22 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
             {/* 2. Resumo */}
             <section>
               <SectionHeader icon={ScrollText} label={labels.summary[lang]} />
-              <p className="text-sm leading-relaxed text-foreground/85">{data.summary}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{data.summary}</p>
             </section>
 
             {/* 3. Contexto Histórico */}
             <section>
               <SectionHeader icon={MapPin} label={labels.context[lang]} />
-              <p className="text-sm leading-relaxed text-foreground/85">{data.context}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{data.context}</p>
             </section>
 
             {/* 4. Insights */}
             <section>
               <SectionHeader icon={Lightbulb} label={labels.insights[lang]} />
-              <ul className="space-y-2.5">
+              <ul className="space-y-3">
                 {data.insights.map((item, i) => (
-                  <li key={i} className="flex gap-2.5 text-sm leading-relaxed text-foreground/85">
-                    <span className="shrink-0 mt-1 h-5 w-5 rounded-full bg-primary/10 text-primary text-[11px] font-bold flex items-center justify-center">{i + 1}</span>
+                  <li key={i} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
+                    <span className="shrink-0 mt-0.5 h-5 w-5 rounded-full bg-primary/10 text-primary text-[11px] font-bold flex items-center justify-center">{i + 1}</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -141,8 +136,8 @@ export function DeepSearchModal({ open, onOpenChange, query }: DeepSearchModalPr
 
 function SectionHeader({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
-    <div className="flex items-center gap-2 mb-2.5">
-      <Icon className="h-4 w-4 text-primary/70" />
+    <div className="flex items-center gap-2 mb-2">
+      <Icon className="h-4 w-4 text-primary" />
       <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</h3>
     </div>
   );
