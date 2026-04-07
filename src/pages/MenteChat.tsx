@@ -56,6 +56,7 @@ async function streamMindChat({
   mindId,
   modality,
   language,
+  userName,
   onDelta,
   onDone,
   onError,
@@ -64,6 +65,7 @@ async function streamMindChat({
   mindId: string;
   modality: string;
   language: string;
+  userName: string;
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (msg: string) => void;
