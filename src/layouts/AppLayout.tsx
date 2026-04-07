@@ -7,6 +7,11 @@ import { LanguageToggle } from '@/components/LanguageToggle';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -87,6 +92,16 @@ const toolGroups: SidebarToolGroup[] = [
     ],
   },
 ];
+
+function SidebarTooltipWrap({ collapsed, label, children }: { collapsed: boolean; label: string; children: React.ReactNode }) {
+  if (!collapsed) return <>{children}</>;
+  return (
+    <Tooltip delayDuration={200}>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent side="right" className="text-xs font-medium">{label}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 export default function AppLayout() {
   const { user, profile, signOut } = useAuth();
@@ -376,9 +391,16 @@ export default function AppLayout() {
 
         {collapsed && (
           <div className="flex justify-center py-1 shrink-0">
-            <button onClick={toggleCollapsed} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors p-1.5 rounded-lg hover:bg-sidebar-accent/50" title="Expandir sidebar">
-              <PanelLeftOpen className="h-4 w-4" />
-            </button>
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <button onClick={toggleCollapsed} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors p-1.5 rounded-lg hover:bg-sidebar-accent/50">
+                  <PanelLeftOpen className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs font-medium">
+                {lang === 'PT' ? 'Expandir sidebar' : lang === 'EN' ? 'Expand sidebar' : 'Expandir sidebar'}
+              </TooltipContent>
+            </Tooltip>
           </div>
         )}
 
@@ -391,18 +413,19 @@ export default function AppLayout() {
         )}
 
         <nav className={`flex-1 ${collapsed ? 'px-1.5' : 'px-3'} space-y-0.5 overflow-y-auto min-h-0`}>
-          <Link
-            to="/dashboard"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/dashboard'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (t('nav.dashboard') || 'Dashboard') : undefined}
-          >
-            <LayoutDashboard className="h-4 w-4 shrink-0" />
-            {!collapsed && t('nav.dashboard')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.dashboard') || 'Dashboard'}>
+            <Link
+              to="/dashboard"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/dashboard'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <LayoutDashboard className="h-4 w-4 shrink-0" />
+              {!collapsed && t('nav.dashboard')}
+            </Link>
+          </SidebarTooltipWrap>
 
           {toolGroups.map((group) => {
             const groupKey = group.label.PT;
@@ -411,19 +434,20 @@ export default function AppLayout() {
 
             return (
               <div key={groupKey}>
-                <button
-                  onClick={() => !collapsed && toggleGroup(groupKey)}
-                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
-                  title={collapsed ? group.label[lang] : undefined}
-                >
-                  <GroupIcon className="h-4 w-4 shrink-0" />
-                  {!collapsed && (
-                    <>
-                      <span className="flex-1 text-left">{group.label[lang]}</span>
-                      <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'}`} />
-                    </>
-                  )}
-                </button>
+                <SidebarTooltipWrap collapsed={collapsed} label={group.label[lang]}>
+                  <button
+                    onClick={() => !collapsed && toggleGroup(groupKey)}
+                    className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
+                  >
+                    <GroupIcon className="h-4 w-4 shrink-0" />
+                    {!collapsed && (
+                      <>
+                        <span className="flex-1 text-left">{group.label[lang]}</span>
+                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'}`} />
+                      </>
+                    )}
+                  </button>
+                </SidebarTooltipWrap>
 
                 {isOpen && !collapsed && (
                   <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5">
@@ -454,64 +478,68 @@ export default function AppLayout() {
             );
           })}
 
-          <Link
-            to="/dashboard/mentes"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname.startsWith('/dashboard/mentes')
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (lang === 'EN' ? 'Brilliant Minds' : 'Mentes Brilhantes') : undefined}
-          >
-            <Brain className="h-4 w-4 shrink-0" />
-            {!collapsed && (
-              <>
-                {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
-                <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
-                  Premium
-                </Badge>
-              </>
-            )}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'EN' ? 'Brilliant Minds' : lang === 'ES' ? 'Mentes Brillantes' : 'Mentes Brilhantes'}>
+            <Link
+              to="/dashboard/mentes"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname.startsWith('/dashboard/mentes')
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Brain className="h-4 w-4 shrink-0" />
+              {!collapsed && (
+                <>
+                  {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
+                  <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
+                    Premium
+                  </Badge>
+                </>
+              )}
+            </Link>
+          </SidebarTooltipWrap>
 
-          <Link
-            to="/biblioteca"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/biblioteca'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (t('nav.library') || 'Biblioteca') : undefined}
-          >
-            <Library className="h-3.5 w-3.5 shrink-0" />
-            {!collapsed && t('nav.library')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.library') || 'Biblioteca'}>
+            <Link
+              to="/biblioteca"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/biblioteca'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Library className="h-3.5 w-3.5 shrink-0" />
+              {!collapsed && t('nav.library')}
+            </Link>
+          </SidebarTooltipWrap>
 
-          <Link
-            to="/workspaces"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/workspaces'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? 'Workspaces' : undefined}
-          >
-            <FolderOpen className="h-3.5 w-3.5 shrink-0" />
-            {!collapsed && 'Workspaces'}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label="Workspaces">
+            <Link
+              to="/workspaces"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/workspaces'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+              {!collapsed && 'Workspaces'}
+            </Link>
+          </SidebarTooltipWrap>
 
-          <Link
-            to="/social-studio"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/social-studio'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (lang === 'PT' ? 'Estúdio Social' : 'Social Studio') : undefined}
-          >
-            <ImageIcon className="h-3.5 w-3.5 shrink-0" />
-            {!collapsed && (lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}>
+            <Link
+              to="/social-studio"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/social-studio'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <ImageIcon className="h-3.5 w-3.5 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social')}
+            </Link>
+          </SidebarTooltipWrap>
 
           <div className="flex-1" />
 
@@ -525,96 +553,103 @@ export default function AppLayout() {
             <div className="pt-3 mt-2 border-t border-sidebar-border" />
           )}
 
-          <Link
-            to="/configuracoes"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/configuracoes'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (lang === 'PT' ? 'Meu Perfil' : 'My Profile') : undefined}
-          >
-            <User className="h-4 w-4 shrink-0" />
-            {!collapsed && (lang === 'PT' ? 'Meu Perfil' : lang === 'EN' ? 'My Profile' : 'Mi Perfil')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Meu Perfil' : lang === 'EN' ? 'My Profile' : 'Mi Perfil'}>
+            <Link
+              to="/configuracoes"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/configuracoes'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <User className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Meu Perfil' : lang === 'EN' ? 'My Profile' : 'Mi Perfil')}
+            </Link>
+          </SidebarTooltipWrap>
 
-          <Link
-            to="/upgrade"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/upgrade'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (lang === 'PT' ? 'Plano e Uso' : 'Plan & Usage') : undefined}
-          >
-            <Crown className="h-4 w-4 shrink-0" />
-            {!collapsed && (lang === 'PT' ? 'Plano e Uso' : lang === 'EN' ? 'Plan & Usage' : 'Plan y Uso')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Plano e Uso' : lang === 'EN' ? 'Plan & Usage' : 'Plan y Uso'}>
+            <Link
+              to="/upgrade"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/upgrade'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Crown className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Plano e Uso' : lang === 'EN' ? 'Plan & Usage' : 'Plan y Uso')}
+            </Link>
+          </SidebarTooltipWrap>
 
           {profile?.blog_handle && (
-            <Link
-              to={`/blog/${profile.blog_handle}`}
-              target="_blank"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
-              title={collapsed ? 'Portal' : (lang === 'PT' ? 'Abrir portal público' : 'Open public portal')}
-            >
-              <ExternalLink className="h-4 w-4 shrink-0" />
-              {!collapsed && 'Portal'}
-            </Link>
+            <SidebarTooltipWrap collapsed={collapsed} label="Portal">
+              <Link
+                to={`/blog/${profile.blog_handle}`}
+                target="_blank"
+                className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
+              >
+                <ExternalLink className="h-4 w-4 shrink-0" />
+                {!collapsed && 'Portal'}
+              </Link>
+            </SidebarTooltipWrap>
           )}
 
-          <Link
-            to="/blog"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/blog'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (t('nav.blog') || 'Blog') : undefined}
-          >
-            <BookOpen className="h-3.5 w-3.5 shrink-0" />
-            {!collapsed && t('nav.blog')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.blog') || 'Blog'}>
+            <Link
+              to="/blog"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/blog'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <BookOpen className="h-3.5 w-3.5 shrink-0" />
+              {!collapsed && t('nav.blog')}
+            </Link>
+          </SidebarTooltipWrap>
 
-          <Link
-            to="/ajuda"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname.startsWith('/ajuda')
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (lang === 'PT' ? 'Central de Ajuda' : 'Help Center') : undefined}
-          >
-            <HelpCircle className="h-4 w-4 shrink-0" />
-            {!collapsed && (lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda'}>
+            <Link
+              to="/ajuda"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname.startsWith('/ajuda')
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <HelpCircle className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda')}
+            </Link>
+          </SidebarTooltipWrap>
 
-          <Link
-            to="/configuracoes"
-            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              location.pathname === '/configuracoes'
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-            }`}
-            title={collapsed ? (t('nav.settings') || 'Configurações') : undefined}
-          >
-            <Settings className="h-4 w-4 shrink-0" />
-            {!collapsed && t('nav.settings')}
-          </Link>
+          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.settings') || 'Configurações'}>
+            <Link
+              to="/configuracoes"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/configuracoes'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Settings className="h-4 w-4 shrink-0" />
+              {!collapsed && t('nav.settings')}
+            </Link>
+          </SidebarTooltipWrap>
 
           {isAdmin && (
-            <Link
-              to="/admin/dashboard"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors mt-1 ${
-                location.pathname === '/admin/dashboard'
-                  ? 'bg-destructive/10 text-destructive'
-                  : 'text-sidebar-foreground/40 hover:bg-destructive/10 hover:text-destructive/70'
-              }`}
-              title={collapsed ? 'Back-office' : undefined}
-            >
-              <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-              {!collapsed && 'Back-office'}
-            </Link>
+            <SidebarTooltipWrap collapsed={collapsed} label="Back-office">
+              <Link
+                to="/admin/dashboard"
+                className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors mt-1 ${
+                  location.pathname === '/admin/dashboard'
+                    ? 'bg-destructive/10 text-destructive'
+                    : 'text-sidebar-foreground/40 hover:bg-destructive/10 hover:text-destructive/70'
+                }`}
+              >
+                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                {!collapsed && 'Back-office'}
+              </Link>
+            </SidebarTooltipWrap>
           )}
         </nav>
 
