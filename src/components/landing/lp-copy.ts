@@ -154,8 +154,8 @@ export const formats = {
       { icon: '📰', name: 'Blog devocional', desc: 'Post optimizado para lectura online' },
       { icon: '👥', name: 'Contenido para célula', desc: 'Guión con preguntas y dinámicas' },
       { icon: '📱', name: 'Contenido para redes', desc: 'Cards cortos e impactantes' },
-      { icon: '🇧🇷', name: 'Versão em português', desc: 'Mismo contenido adaptado al portugués' },
-      { icon: '🇬🇧', name: 'English version', desc: 'Same content adapted to English' },
+      { icon: '🇧🇷', name: 'Versión en portugués', desc: 'Mismo contenido adaptado al portugués' },
+      { icon: '🇬🇧', name: 'Versión en inglés', desc: 'Mismo contenido adaptado al inglés' },
     ],
   },
 };
