@@ -14,6 +14,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      bible_highlights: {
+        Row: {
+          book_id: string
+          chapter_number: number
+          color_key: string
+          created_at: string
+          end_char_offset: number
+          end_verse_number: number
+          id: string
+          language: string
+          selected_text: string
+          start_char_offset: number
+          start_verse_number: number
+          translation_code: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          chapter_number: number
+          color_key: string
+          created_at?: string
+          end_char_offset?: number
+          end_verse_number: number
+          id?: string
+          language: string
+          selected_text: string
+          start_char_offset?: number
+          start_verse_number: number
+          translation_code: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          chapter_number?: number
+          color_key?: string
+          created_at?: string
+          end_char_offset?: number
+          end_verse_number?: number
+          id?: string
+          language?: string
+          selected_text?: string
+          start_char_offset?: number
+          start_verse_number?: number
+          translation_code?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bible_highlights_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       editorial_queue: {
         Row: {
           created_at: string
