@@ -61,6 +61,12 @@ export function UniversalSearch() {
     saveHistory(updated);
   }, [query, history]);
 
+  const handleOpenModal = () => {
+    setActiveQuery(query.trim());
+    setModalOpen(true);
+    setShowHistory(false);
+  };
+
   const removeFromHistory = (item: string, e: React.MouseEvent) => {
     e.stopPropagation();
     const updated = history.filter((h) => h !== item);
