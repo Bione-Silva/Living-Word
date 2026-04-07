@@ -60,7 +60,10 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
   const { lang } = useLanguage();
 
   useEffect(() => {
-    if (item) setNotes(item.notes || '');
+    if (item) {
+      setNotes(item.notes || '');
+      setArticleImages((item.article_images as string[]) || []);
+    }
   }, [item?.id]);
 
   const saveNotes = useCallback(async () => {
