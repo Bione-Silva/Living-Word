@@ -41,6 +41,7 @@ const typeLabels: Record<string, { PT: string; EN: string; ES: string; icon: Rea
   'poetry': { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía', icon: FileText },
   'kids-story': { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil', icon: FileText },
   'deep-translation': { PT: 'Tradução', EN: 'Translation', ES: 'Traducción', icon: FileText },
+  'deep_search': { PT: 'Pesquisa Profunda', EN: 'Deep Search', ES: 'Búsqueda Profunda', icon: SearchCheck },
 };
 
 type ChipFilter = { key: string; label: { PT: string; EN: string; ES: string }; types: string[] };
