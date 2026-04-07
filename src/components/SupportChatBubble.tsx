@@ -77,7 +77,7 @@ export function SupportChatBubble() {
 
       {/* Chat Window — fixed overlay */}
       {open && (
-        <div className="fixed top-16 right-4 z-50 w-[360px] h-[480px] max-h-[calc(100vh-5rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed top-16 right-2 sm:right-4 z-50 w-[calc(100vw-1rem)] sm:w-[360px] h-[480px] max-h-[calc(100vh-5rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center gap-3 px-4 py-3 bg-primary text-primary-foreground shrink-0">
             <LifeBuoy className="h-5 w-5" />
