@@ -345,6 +345,7 @@ export default function MenteChat() {
         mindId: menteId,
         modality: modalidade,
         language: lang,
+        userName: userDisplayName,
         onDelta: upsert,
         onDone: () => {
           setIsLoading(false);
