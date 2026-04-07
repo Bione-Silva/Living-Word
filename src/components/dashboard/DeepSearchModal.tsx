@@ -1,11 +1,12 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { BookOpen, MapPin, Lightbulb, ScrollText, Loader2, AlertCircle } from 'lucide-react';
+import { BookOpen, MapPin, Lightbulb, ScrollText, Loader2, AlertCircle, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
