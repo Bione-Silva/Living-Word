@@ -77,6 +77,9 @@ export default function Dashboard() {
       {/* 1. Greeting — first fold mobile */}
       <DashboardGreeting />
 
+      {/* 1.5 Stats Cards — compact summary */}
+      <StatsCards />
+
       {/* 2. Universal Search */}
       <UniversalSearch />
 
