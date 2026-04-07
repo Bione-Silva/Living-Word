@@ -672,8 +672,8 @@ export default function Landing() {
                         </div>
                       ))}
                       <div className="flex gap-1.5 pt-1">
-                        {['PT', 'EN', 'ES'].map((l) => (
-                          <span key={l} className="text-[7px] font-semibold px-2 py-0.5 rounded" style={{ background: l === 'PT' ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === 'PT' ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
+                        {(['PT', 'EN', 'ES'] as L[]).map((l) => (
+                          <span key={l} className="text-[7px] font-semibold px-2 py-0.5 rounded" style={{ background: l === lang ? '#6B4F3A' : 'rgba(107,79,58,0.1)', color: l === lang ? '#F5F0E8' : '#6B4F3A' }}>{l}</span>
                         ))}
                       </div>
                       <div className="rounded px-3 py-1.5 text-center text-[9px] font-semibold" style={{ background: '#C4956A', color: '#3D2B1F' }}>
