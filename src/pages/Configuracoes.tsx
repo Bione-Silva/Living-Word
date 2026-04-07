@@ -173,7 +173,7 @@ export default function Configuracoes() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl md:text-3xl font-bold">{t('settings.title')}</h1>
+      <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">{t('settings.title')}</h1>
 
       <Tabs defaultValue="profile">
         <TabsList className="bg-secondary/50 flex-wrap h-auto gap-1">
