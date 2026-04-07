@@ -233,6 +233,12 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
+      {materialId && (
+        <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={handleEnrichIllustrations} disabled={enriching}>
+          {enriching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ImageIcon className="h-3.5 w-3.5" />}
+          {lang === 'PT' ? 'Ilustrações' : lang === 'EN' ? 'Illustrations' : 'Ilustraciones'}
+        </Button>
+      )}
       <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={handleExportPDF} disabled={!!exporting}>
         {exporting === 'pdf' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
         {lang === 'EN' ? 'Export PDF' : 'Exportar PDF'}
