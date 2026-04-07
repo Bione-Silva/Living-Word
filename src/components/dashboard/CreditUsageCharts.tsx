@@ -146,20 +146,18 @@ export function CreditUsageCharts({ entries }: Props) {
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
           {pieLabel}
         </p>
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={240}>
           <PieChart>
             <Pie
               data={featureData}
               cx="50%"
-              cy="50%"
-              innerRadius={45}
-              outerRadius={75}
+              cy="40%"
+              innerRadius={40}
+              outerRadius={68}
               paddingAngle={3}
               dataKey="value"
               animationDuration={1000}
               animationEasing="ease-out"
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              labelLine={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }}
             >
               {featureData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
@@ -173,6 +171,14 @@ export function CreditUsageCharts({ entries }: Props) {
                 fontSize: '12px',
               }}
               formatter={(value: number) => [`${value} créditos`, '']}
+            />
+            <Legend
+              verticalAlign="bottom"
+              align="center"
+              iconType="circle"
+              iconSize={8}
+              wrapperStyle={{ fontSize: '10px', paddingTop: '8px' }}
+              formatter={(value: string) => <span style={{ color: 'hsl(24, 18%, 38%)' }}>{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>
