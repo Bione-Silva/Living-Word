@@ -108,6 +108,16 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
       >
         {/* Action buttons */}
         <div className="absolute right-4 top-4 z-20 flex items-center gap-1">
+          {item.id && (
+            <button
+              onClick={() => setShowNotes(!showNotes)}
+              className={`rounded-full p-2 hover:bg-black/5 transition-colors ${showNotes ? 'bg-black/5' : ''}`}
+              style={{ color: '#6B4F3A' }}
+              title={lang === 'PT' ? 'Anotações do Pregador' : 'Preacher Notes'}
+            >
+              <StickyNote className="h-5 w-5" />
+            </button>
+          )}
           <button
             onClick={handleExportPDF}
             disabled={exporting}
