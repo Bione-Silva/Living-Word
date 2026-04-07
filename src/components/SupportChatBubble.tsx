@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { LifeBuoy, X, Send } from 'lucide-react';
+import { HelpCircle, X, Send, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -60,7 +60,7 @@ export function SupportChatBubble() {
           className="w-9 h-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center"
           title="Central de Ajuda"
         >
-          <LifeBuoy className="h-4 w-4" />
+          <HelpCircle className="h-5 w-5" />
         </button>
       )}
 
