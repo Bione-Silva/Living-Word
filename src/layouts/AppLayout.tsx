@@ -159,11 +159,10 @@ export default function AppLayout() {
     setActiveTool({ id: tool.id, title: tool.label[lang] });
   };
 
-  // Generation usage — derive limit from plan if DB value is unrealistic
-  const planLimits: Record<string, number> = { free: 5, pastoral: 15, church: 60, ministry: 1000 };
+  // Credits usage
+  const planCredits: Record<string, number> = { free: 500, pastoral: 2000, church: 5000, ministry: 15000 };
   const used = profile?.generations_used || 0;
-  const rawLimit = profile?.generations_limit || 5;
-  const limit = rawLimit > 10000 ? (planLimits[(profile as any)?.plan] || 1000) : rawLimit;
+  const limit = planCredits[(profile as any)?.plan] || profile?.generations_limit || 500;
   const pct = limit > 0 ? Math.min(Math.round((used / limit) * 100), 100) : 0;
 
   if (isMobile) {
@@ -695,11 +694,11 @@ export default function AppLayout() {
           {!collapsed ? (
             <div className="px-4 py-3">
               <p className="text-[10px] font-semibold tracking-wider uppercase text-sidebar-foreground/50 mb-1.5">
-                {lang === 'PT' ? 'Uso do mês' : lang === 'EN' ? 'Monthly usage' : 'Uso del mes'}
+                {lang === 'PT' ? 'Créditos' : lang === 'EN' ? 'Credits' : 'Créditos'}
               </p>
               <Progress value={pct} className="h-1.5 mb-1" />
               <p className="text-[11px] text-sidebar-foreground/60">
-                {used} {lang === 'PT' ? 'de' : lang === 'EN' ? 'of' : 'de'} {limit} · {limit > 0 ? ((used / limit) * 100).toFixed(1) : '0'}%
+                {used} {lang === 'PT' ? 'de' : lang === 'EN' ? 'of' : 'de'} {limit} · {pct}%
               </p>
             </div>
           ) : (

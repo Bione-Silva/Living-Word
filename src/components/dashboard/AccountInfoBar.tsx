@@ -8,15 +8,16 @@ export function AccountInfoBar() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
 
+  const planCredits: Record<string, number> = { free: 500, pastoral: 2000, church: 5000, ministry: 15000 };
   const used = profile?.generations_used || 0;
-  const limit = profile?.generations_limit || 5;
+  const limit = planCredits[profile?.plan || 'free'] || profile?.generations_limit || 500;
   const pct = Math.min(Math.round((used / limit) * 100), 100);
   const isFree = profile?.plan === 'free';
 
   const labels = {
-    PT: { title: 'Uso do mês', of: 'de', contents: 'conteúdos', upgrade: 'Fazer upgrade' },
-    EN: { title: 'Monthly usage', of: 'of', contents: 'contents', upgrade: 'Upgrade' },
-    ES: { title: 'Uso del mes', of: 'de', contents: 'contenidos', upgrade: 'Hacer upgrade' },
+    PT: { title: 'Créditos', of: 'de', contents: 'créditos', upgrade: 'Fazer upgrade' },
+    EN: { title: 'Credits', of: 'of', contents: 'credits', upgrade: 'Upgrade' },
+    ES: { title: 'Créditos', of: 'de', contents: 'créditos', upgrade: 'Hacer upgrade' },
   };
   const l = labels[lang];
 

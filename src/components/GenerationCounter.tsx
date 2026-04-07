@@ -12,9 +12,10 @@ export function GenerationCounter({ compact }: GenerationCounterProps) {
 
   if (!profile) return null;
 
+  const planCredits: Record<string, number> = { free: 500, pastoral: 2000, church: 5000, ministry: 15000 };
   const used = profile.generations_used;
-  const limit = profile.generations_limit;
-  const pct = Math.round((used / limit) * 100);
+  const limit = planCredits[profile.plan] || profile.generations_limit || 500;
+  const pct = limit > 0 ? Math.round((used / limit) * 100) : 0;
 
   if (compact) {
     return (

@@ -75,7 +75,7 @@ export default function BibleReader() {
         {/* Book combobox */}
         <Popover open={bookOpen} onOpenChange={setBookOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[200px] justify-between font-normal">
+            <Button variant="outline" className="w-[200px] justify-between font-normal text-foreground border-border">
               {getBookName(book, lang)}
               <Search className="ml-2 h-3.5 w-3.5 opacity-50" />
             </Button>
@@ -104,7 +104,7 @@ export default function BibleReader() {
 
         {/* Chapter selector */}
         <Select value={String(chapter)} onValueChange={(v) => setChapter(Number(v))}>
-          <SelectTrigger className="w-[100px]">
+          <SelectTrigger className="w-[100px] text-foreground border-border">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
@@ -169,12 +169,12 @@ export default function BibleReader() {
 
       {/* Navigation */}
       <div className="flex items-center justify-between">
-        <Button variant="outline" size="sm" onClick={() => chapter > 1 && setChapter(chapter - 1)} disabled={chapter <= 1} className="gap-1.5">
+        <Button variant="outline" size="sm" onClick={() => chapter > 1 && setChapter(chapter - 1)} disabled={chapter <= 1} className="gap-1.5 text-foreground border-border">
           <ChevronLeft className="h-3.5 w-3.5" />
           {lang === 'PT' ? 'Anterior' : lang === 'EN' ? 'Previous' : 'Anterior'}
         </Button>
         <span className="text-xs text-muted-foreground">{chapter} / {currentBook.chapters}</span>
-        <Button variant="outline" size="sm" onClick={() => chapter < currentBook.chapters && setChapter(chapter + 1)} disabled={chapter >= currentBook.chapters} className="gap-1.5">
+        <Button variant="outline" size="sm" onClick={() => chapter < currentBook.chapters && setChapter(chapter + 1)} disabled={chapter >= currentBook.chapters} className="gap-1.5 text-foreground border-border">
           {lang === 'PT' ? 'Próximo' : lang === 'EN' ? 'Next' : 'Siguiente'}
           <ChevronRight className="h-3.5 w-3.5" />
         </Button>
