@@ -3,6 +3,7 @@ import { HelpCircle, X, Send, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -11,9 +12,13 @@ interface Message {
 }
 
 export function SupportChatBubble() {
+  const { profile } = useAuth();
+  const userName = profile?.full_name?.split(' ')[0] || '';
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Olá! Eu sou o assistente oficial de treinamento da LivingWord. Dúvidas sobre pregações ou devocionais?' },
+    { role: 'assistant', content: userName
+      ? `Olá, ${userName}! Eu sou o assistente oficial de treinamento da Living Word. Como posso te ajudar hoje?`
+      : 'Olá! Eu sou o assistente oficial de treinamento da Living Word. Como posso te ajudar hoje?' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
