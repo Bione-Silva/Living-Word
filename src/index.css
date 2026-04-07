@@ -239,8 +239,10 @@
 
   /* ── Premium pastoral prose for rich AI-generated markdown ── */
   .pastoral-prose {
-    @apply leading-relaxed;
+    @apply leading-relaxed break-words;
     color: hsl(var(--foreground));
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
   .pastoral-prose :where(h1) {
     @apply text-2xl font-bold mt-6 mb-3 pb-2 border-b border-border/40 text-foreground;
