@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { BookOpen, Download, Loader2, X, StickyNote, Save } from 'lucide-react';
+import { BookOpen, Download, Loader2, X, StickyNote, Save, Palette } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,10 +55,15 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState('');
   const [savingNotes, setSavingNotes] = useState(false);
+  const [enriching, setEnriching] = useState(false);
+  const [articleImages, setArticleImages] = useState<string[]>([]);
   const { lang } = useLanguage();
 
   useEffect(() => {
-    if (item) setNotes(item.notes || '');
+    if (item) {
+      setNotes(item.notes || '');
+      setArticleImages((item.article_images as string[]) || []);
+    }
   }, [item?.id]);
 
   const saveNotes = useCallback(async () => {
@@ -74,10 +79,44 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
       setSavingNotes(false);
     }
   }, [item?.id, notes, lang]);
+  const handleEnrich = useCallback(async () => {
+    if (!item?.id) return;
+    setEnriching(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session');
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const resp = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/enrich-illustrations`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ material_id: item.id }),
+        }
+      );
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Failed');
+      setArticleImages(data.images);
+      toast.success(
+        lang === 'PT' ? `${data.images.length} ilustrações geradas!` :
+        lang === 'EN' ? `${data.images.length} illustrations generated!` :
+        `¡${data.images.length} ilustraciones generadas!`
+      );
+    } catch (err: any) {
+      console.error('Enrich error:', err);
+      toast.error(lang === 'PT' ? 'Erro ao gerar ilustrações' : 'Error generating illustrations');
+    } finally {
+      setEnriching(false);
+    }
+  }, [item?.id, lang]);
 
   if (!item) return null;
 
-  const finalContent = intercalateImages(item.content || '', getBodyImages(item));
+  const currentImages = articleImages.length > 0 ? articleImages : (getBodyImages(item));
+  const finalContent = intercalateImages(item.content || '', currentImages);
 
   const handleExportPDF = async () => {
     if (!contentRef.current) return;
@@ -108,6 +147,17 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
       >
         {/* Action buttons */}
         <div className="absolute right-4 top-4 z-20 flex items-center gap-1">
+          {item.id && (
+            <button
+              onClick={handleEnrich}
+              disabled={enriching}
+              className="rounded-full p-2 hover:bg-black/5 transition-colors"
+              style={{ color: '#6B4F3A' }}
+              title={lang === 'PT' ? 'Enriquecer com Ilustrações' : lang === 'EN' ? 'Enrich with Illustrations' : 'Enriquecer con Ilustraciones'}
+            >
+              {enriching ? <Loader2 className="h-5 w-5 animate-spin" /> : <Palette className="h-5 w-5" />}
+            </button>
+          )}
           {item.id && (
             <button
               onClick={() => setShowNotes(!showNotes)}
