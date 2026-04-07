@@ -62,7 +62,7 @@ export default function MentesBrilhantes() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       {/* ── Hero Header (Clean/Light) ── */}
-      <div className="relative rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-8 sm:p-10 overflow-hidden">
+      <div className="relative rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-10 overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(35,40%,75%)] to-transparent" />
 
         <div className="relative z-10">
@@ -71,7 +71,7 @@ export default function MentesBrilhantes() {
               <Brain className="h-6 w-6 text-[hsl(35,45%,45%)]" />
             </div>
             <div>
-              <h1 className="font-display text-3xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] flex items-center gap-3 tracking-tight">
+              <h1 className="font-display text-2xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] flex items-center gap-3 tracking-tight">
                 {pageTitle[lang]}
                 <Sparkles className="h-5 w-5 text-[hsl(35,50%,55%)]" />
               </h1>

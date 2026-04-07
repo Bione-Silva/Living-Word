@@ -377,7 +377,7 @@ export default function MenteChat() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] max-w-4xl mx-auto">
+    <div className="flex flex-col h-[calc(100vh-80px)] max-w-4xl mx-auto overflow-x-hidden">
       <div className="flex items-center gap-3 pb-4 border-b border-border shrink-0">
         <Button variant="ghost" size="icon" onClick={() => navigate(`/dashboard/mentes/${menteId}`)}>
           <ArrowLeft className="h-4 w-4" />
@@ -530,7 +530,7 @@ export default function MenteChat() {
             onKeyDown={handleKeyDown}
             placeholder={placeholder[lang]}
             disabled={isLoading}
-            className="flex-1 rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[hsl(43,55%,58%)]/30 disabled:opacity-50"
+            className="flex-1 rounded-xl border border-border bg-muted/30 px-4 py-3 text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[hsl(43,55%,58%)]/30 disabled:opacity-50"
           />
           <Button
             size="icon"
