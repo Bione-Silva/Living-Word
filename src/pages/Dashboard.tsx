@@ -13,6 +13,7 @@ import { CoreToolsGrid } from '@/components/dashboard/CoreToolsGrid';
 import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { AccountInfoBar } from '@/components/dashboard/AccountInfoBar';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
+import { StatsCards } from '@/components/dashboard/StatsCards';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
   Wand2, PenLine, Type, Lightbulb, Sparkles, Film,
