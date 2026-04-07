@@ -433,13 +433,14 @@ export default function AppLayout() {
                     className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
                   >
                     <GroupIcon className="h-4 w-4 shrink-0" />
-                  {!collapsed && (
-                    <>
-                      <span className="flex-1 text-left">{group.label[lang]}</span>
-                      <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'}`} />
-                    </>
-                  )}
-                </button>
+                    {!collapsed && (
+                      <>
+                        <span className="flex-1 text-left">{group.label[lang]}</span>
+                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'}`} />
+                      </>
+                    )}
+                  </button>
+                </SidebarTooltipWrap>
 
                 {isOpen && !collapsed && (
                   <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5">
