@@ -904,7 +904,7 @@ export default function Landing() {
             <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#C4956A' }}>
               {lang === 'PT' ? 'Mentes Brilhantes' : lang === 'EN' ? 'Brilliant Minds' : 'Mentes Brillantes'}
             </p>
-            <h2 className="font-display text-[30px] sm:text-[40px] font-semibold leading-tight mb-4" style={{ color: '#3D2B1F' }}>
+            <h2 className="font-display text-[24px] sm:text-[40px] font-semibold leading-tight mb-4" style={{ color: '#3D2B1F' }}>
               {lang === 'PT' ? 'Converse com as maiores mentes da pregação cristã.' : lang === 'EN' ? 'Chat with the greatest minds in Christian preaching.' : 'Conversa con las mayores mentes de la predicación cristiana.'}
             </h2>
             <p className="text-[16px] sm:text-[17px] leading-relaxed max-w-2xl mx-auto" style={{ color: '#6B4F3A' }}>
