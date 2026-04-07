@@ -471,7 +471,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'Inter', sans-serif", color: '#3D2B1F' }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif", color: '#3D2B1F' }}>
 
       {/* ===== NAV ===== */}
       <nav className="fixed top-0 left-0 right-0 z-50" style={{ background: '#3D2B1F' }}>
