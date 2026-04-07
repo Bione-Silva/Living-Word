@@ -217,16 +217,42 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setResult('');
     setHistoricalSources(null);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-tool', {
-        body: {
-          systemPrompt: config.systemPrompt(genLangLabel),
-          userPrompt: input,
-        },
-      });
-      if (error) throw error;
-      setResult(data?.content || 'No response');
-      setHistoricalSources(data?.historical_sources_used || null);
-      if (!isArticleTool) {
+      if (isArticleTool) {
+        // Article tools go through the dedicated blog edge function
+        const { data, error } = await supabase.functions.invoke('generate-blog-article', {
+          body: {
+            passage: input,
+            language: generationLang,
+            title: toolId === 'youtube-blog' ? undefined : undefined,
+            image_style: imageStyle,
+            ...(toolId === 'youtube-blog' ? { source_content: input, source_type: 'youtube-blog' } : {}),
+          },
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Unknown error');
+        setResult(data.content || '');
+        // Pre-populate blog article for editor
+        setBlogArticle({
+          id: data.material_id,
+          title: data.title || '',
+          content: data.content || '',
+          passage: data.passage || input,
+          cover_image_url: data.cover_image_url || null,
+          article_images: data.article_images || null,
+          queue_status: 'draft',
+          queue_id: null,
+          language: data.language || generationLang,
+        });
+      } else {
+        const { data, error } = await supabase.functions.invoke('ai-tool', {
+          body: {
+            systemPrompt: config.systemPrompt(genLangLabel),
+            userPrompt: input,
+          },
+        });
+        if (error) throw error;
+        setResult(data?.content || 'No response');
+        setHistoricalSources(data?.historical_sources_used || null);
       }
     } catch (err: any) {
       toast.error(err.message || 'Error generating content');
