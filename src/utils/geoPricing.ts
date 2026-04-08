@@ -18,7 +18,8 @@ interface RegionPricing {
     pro: PlanPrice;
     igreja: PlanPrice;
   };
-  addon: PlanPrice;
+  addon_seat: PlanPrice;
+  addon_topup: PlanPrice;
 }
 
 export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
@@ -35,7 +36,8 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
       pro:     { id: 'price_1TJg0pEaDBbHafP6ToL24iXI', amount: 790.00 },
       igreja:  { id: 'price_1TJg0rEaDBbHafP69yZFNvtc', amount: 1970.00 },
     },
-    addon: { id: 'price_1TJg0sEaDBbHafP64xZ2cJWe', amount: 19.00 },
+    addon_seat:  { id: 'COLE_AQUI_O_PRICE_ID_DO_ASSENTO_BRL', amount: 19.90 },
+    addon_topup: { id: 'COLE_AQUI_O_PRICE_ID_DA_RECARGA_BRL', amount: 27.00 },
   },
   USD: {
     currency: 'USD',
@@ -50,7 +52,8 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
       pro:     { id: 'price_1TJg0pEaDBbHafP6WcxeJbWM', amount: 299.00 },
       igreja:  { id: 'price_1TJg0rEaDBbHafP6lXkkTQAt', amount: 799.00 },
     },
-    addon: { id: 'price_1TJg0sEaDBbHafP6v0Tp3XjP', amount: 5.90 },
+    addon_seat:  { id: 'COLE_AQUI_O_PRICE_ID_DO_ASSENTO_USD', amount: 10.00 },
+    addon_topup: { id: 'COLE_AQUI_O_PRICE_ID_DA_RECARGA_USD', amount: 7.00 },
   },
   LATAM: {
     currency: 'USD',
@@ -65,7 +68,8 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
       pro:     { id: 'price_1TIbCsEaDBbHafP6kY9apvOc', amount: 190.00 },
       igreja:  { id: 'price_1TIbCtEaDBbHafP6Rh4uTD5Q', amount: 490.00 },
     },
-    addon: { id: 'price_1TIbCvEaDBbHafP6DM4entar', amount: 3.90 },
+    addon_seat:  { id: 'price_1TIbCvEaDBbHafP6DM4entar', amount: 5.90 },
+    addon_topup: { id: 'price_1TIbCvEaDBbHafP6DM4entar', amount: 3.90 },
   },
   TEST: {
     currency: 'USD',
@@ -80,7 +84,8 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
       pro:     { id: 'price_1TIbCsEaDBbHafP6ximO1Myd', amount: 10.00 },
       igreja:  { id: 'price_1TIbCuEaDBbHafP6RlbFZvJH', amount: 10.00 },
     },
-    addon: { id: 'price_1TIbCvEaDBbHafP6WaieVawh', amount: 1.00 },
+    addon_seat:  { id: 'price_1TIbCvEaDBbHafP6WaieVawh', amount: 1.00 },
+    addon_topup: { id: 'price_1TIbCvEaDBbHafP6WaieVawh', amount: 1.00 },
   },
 };
 
