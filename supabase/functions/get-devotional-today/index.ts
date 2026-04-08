@@ -45,7 +45,7 @@ async function generateCoverImage(
 
     const imagePrompt = `Generate a beautiful devotional cover image. Theme: "${devotional.title}". Category: ${devotional.category}. Bible verse: ${devotional.anchor_verse}. Style: atmospheric, ethereal, warm golden light, biblical landscape or symbolic imagery inspired by the verse. Painterly, artistic, museum-quality. Vertical 3:4 orientation. Do NOT include any text, letters, words, or typography in the image.`
 
-    const imgResponse = await fetch('https://api.lovable.dev/v1/chat/completions', {
+    const imgResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -56,6 +56,7 @@ async function generateCoverImage(
         messages: [
           { role: 'user', content: imagePrompt },
         ],
+        modalities: ['image', 'text'],
       }),
     })
 
