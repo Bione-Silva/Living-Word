@@ -31,6 +31,12 @@ const templates: { id: CanvasTemplate; emoji: string; label: Record<string, stri
     label: { PT: 'Gradient Poster', EN: 'Gradient Poster', ES: 'Gradient Poster' },
     desc: { PT: 'Gradiente vibrante + geometria', EN: 'Vibrant gradient + geometry', ES: 'Gradiente vibrante + geometría' },
   },
+  {
+    id: 'lw-amber',
+    emoji: '✨',
+    label: { PT: 'Living Word', EN: 'Living Word', ES: 'Living Word' },
+    desc: { PT: 'Âmbar + ouro pastoral', EN: 'Amber + pastoral gold', ES: 'Ámbar + oro pastoral' },
+  },
 ];
 
 export function TemplatePicker({ value, onChange, lang }: Props) {
