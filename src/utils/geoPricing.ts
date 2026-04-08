@@ -18,7 +18,6 @@ interface RegionPricing {
     pro: PlanPrice;
     igreja: PlanPrice;
   };
-  addon_seat: PlanPrice;
   addon_topup: PlanPrice;
 }
 
@@ -36,24 +35,22 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
       pro:     { id: 'price_1TJg0pEaDBbHafP6ToL24iXI', amount: 790.00 },
       igreja:  { id: 'price_1TJg0rEaDBbHafP69yZFNvtc', amount: 1970.00 },
     },
-    addon_seat:  { id: 'price_1TJl2REaDBbHafP6jvw9OflM', amount: 19.90 },
-    addon_topup: { id: 'price_1TJl2SEaDBbHafP6pmEHdFEq', amount: 27.00 },
+    addon_topup: { id: 'price_1TJl2SEaDBbHafP6pmEHdFEq', amount: 39.90 },
   },
   USD: {
     currency: 'USD',
     symbol: '$',
     plans: {
-      starter: { id: 'price_1TJg0nEaDBbHafP6FeiNQ1kz', amount: 9.90 },
-      pro:     { id: 'price_1TJg0oEaDBbHafP6D70uKmZo', amount: 29.90 },
-      igreja:  { id: 'price_1TJg0qEaDBbHafP6Abkb2QBm', amount: 79.90 },
+      starter: { id: 'price_1TJg2MEaDBbHafP6XJj9s3F9', amount: 9.90 },
+      pro:     { id: 'price_1TJg2OEaDBbHafP61mI4YwO1', amount: 29.90 },
+      igreja:  { id: 'price_1TJg2PEaDBbHafP6K9X4N4C4', amount: 79.90 },
     },
     annual: {
-      starter: { id: 'price_1TJg0nEaDBbHafP6XFnIRHp9', amount: 99.00 },
-      pro:     { id: 'price_1TJg0pEaDBbHafP6WcxeJbWM', amount: 299.00 },
-      igreja:  { id: 'price_1TJg0rEaDBbHafP6lXkkTQAt', amount: 799.00 },
+      starter: { id: 'price_1TJg2NEaDBbHafP6L5R5s5X5', amount: 99.00 },
+      pro:     { id: 'price_1TJg2OEaDBbHafP6yyyyyyy2', amount: 299.00 },
+      igreja:  { id: 'price_1TJg2QEaDBbHafP6zzzzzzz3', amount: 799.00 },
     },
-    addon_seat:  { id: 'price_1TJl2REaDBbHafP6teiwBeyR', amount: 10.00 },
-    addon_topup: { id: 'price_1TJl2TEaDBbHafP6X6urHSkN', amount: 7.00 },
+    addon_topup: { id: 'price_1TJl2TEaDBbHafP6X6urHSkN', amount: 9.90 },
   },
   LATAM: {
     currency: 'USD',
@@ -68,7 +65,6 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
       pro:     { id: 'price_1TIbCsEaDBbHafP6kY9apvOc', amount: 190.00 },
       igreja:  { id: 'price_1TIbCtEaDBbHafP6Rh4uTD5Q', amount: 490.00 },
     },
-    addon_seat:  { id: 'price_1TIbCvEaDBbHafP6DM4entar', amount: 5.90 },
     addon_topup: { id: 'price_1TIbCvEaDBbHafP6DM4entar', amount: 3.90 },
   },
   TEST: {
@@ -84,7 +80,6 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
       pro:     { id: 'price_1TIbCsEaDBbHafP6ximO1Myd', amount: 10.00 },
       igreja:  { id: 'price_1TIbCuEaDBbHafP6RlbFZvJH', amount: 10.00 },
     },
-    addon_seat:  { id: 'price_1TIbCvEaDBbHafP6WaieVawh', amount: 1.00 },
     addon_topup: { id: 'price_1TIbCvEaDBbHafP6WaieVawh', amount: 1.00 },
   },
 };

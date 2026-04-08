@@ -1,20 +1,19 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { Check, Crown, Sparkles, Users, Brain, BookOpen, Zap, BarChart3, Loader2, Building2, HelpCircle } from 'lucide-react';
+import { Check, Crown, Sparkles, Brain, BookOpen, Zap, BarChart3, Loader2, Building2, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
-import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_PRICES_BRL, PLAN_GENERATION_POTENTIAL, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
+import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_GENERATION_POTENTIAL, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
 import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 
@@ -32,10 +31,6 @@ const labels = {
   ctaIgreja: { PT: 'Começar', EN: 'Get started', ES: 'Comenzar' } as Record<L, string>,
   month: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
   forever: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' } as Record<L, string>,
-  extraSeats: { PT: 'Membros da equipe extras', EN: 'Extra team members', ES: 'Miembros del equipo extras' } as Record<L, string>,
-  perSeat: { PT: 'por assento extra', EN: 'per extra seat', ES: 'por asiento extra' } as Record<L, string>,
-  included: { PT: '10 incluídos', EN: '10 included', ES: '10 incluidos' } as Record<L, string>,
-  capacityBoost: { PT: 'de capacidade extra', EN: 'extra capacity', ES: 'de capacidad extra' } as Record<L, string>,
   monthly: { PT: 'Mensal', EN: 'Monthly', ES: 'Mensual' } as Record<L, string>,
   annual: { PT: 'Anual', EN: 'Annual', ES: 'Anual' } as Record<L, string>,
   annualSave: { PT: '2 meses grátis', EN: '2 months free', ES: '2 meses gratis' } as Record<L, string>,
@@ -136,7 +131,6 @@ export default function Upgrade() {
   const { pricing, loading: regionLoading } = useGeoRegion();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPlan = (profile?.plan as PlanSlug) || 'free';
-  const [extraSeats, setExtraSeats] = useState(0);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
   const autoCheckoutFired = useRef(false);
@@ -145,12 +139,6 @@ export default function Upgrade() {
   const limit = PLAN_CREDITS[currentPlan] || 500;
   const remaining = Math.max(limit - used, 0);
   const showTopUp = remaining < LOW_CREDITS_THRESHOLD;
-
-  const igrejaTotal = useMemo(() => {
-    if (!pricing) return 0;
-    const base = pricing.plans.igreja.amount;
-    return base + extraSeats * pricing.addon_seat.amount;
-  }, [extraSeats, pricing]);
 
   const autoCheckoutPlan = searchParams.get('autoCheckout');
   const isAutoCheckout = !!autoCheckoutPlan && !autoCheckoutFired.current;
@@ -169,17 +157,20 @@ export default function Upgrade() {
     if (!plan.planKey || plan.isFree || !pricing) return;
     setLoadingPlan(plan.id);
     try {
+      const interval = isAnnual ? 'annual' : 'monthly';
       const priceSource = isAnnual ? pricing.annual : pricing.plans;
-      const body: Record<string, unknown> = {
-        priceId: priceSource[plan.planKey].id,
-        successUrl: `${window.location.origin}/dashboard?checkout_success=true`,
-        cancelUrl: `${window.location.origin}/upgrade`,
-      };
-      if (plan.planKey === 'igreja' && extraSeats > 0) {
-        body.extraSeats = extraSeats;
-        body.stripeAddonPriceId = pricing.addon_seat.id;
-      }
-      const { data, error } = await supabase.functions.invoke('create-checkout', { body });
+      const priceId = priceSource[plan.planKey].id;
+
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          priceId,
+          plan: plan.planKey,
+          interval,
+          success_url: `${window.location.origin}/dashboard?upgraded=true`,
+          cancel_url: `${window.location.origin}/upgrade`,
+        },
+      });
+
       if (error) {
         const errMsg: Record<L, { title: string; desc: string }> = {
           PT: { title: 'Ops, contratempo na tesouraria', desc: 'Nosso sistema de pagamento encontrou um problema. Tente novamente.' },
@@ -189,7 +180,7 @@ export default function Upgrade() {
         toast({ title: errMsg[lang].title, description: errMsg[lang].desc, variant: 'destructive' });
         return;
       }
-      if (data?.url) window.location.href = data.url;
+      if (data?.checkout_url) window.location.href = data.checkout_url;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Checkout error';
       toast({ title: 'Erro', description: message, variant: 'destructive' });
@@ -217,23 +208,10 @@ export default function Upgrade() {
   const getDisplayPrice = (plan: PlanData) => {
     if (plan.isFree) return `${pricing.symbol}0`;
     if (!plan.planKey) return '';
-    const isBRL = pricing.currency === 'BRL';
-
-    if (plan.planKey === 'igreja') {
-      const addonAmt = isBRL ? 19.00 : pricing.addon_seat.amount;
-      let base: number;
-      if (isBRL) {
-        base = isAnnual ? PLAN_PRICES_BRL.annual.igreja / 12 : PLAN_PRICES_BRL.monthly.igreja;
-        base += extraSeats * addonAmt;
-      } else {
-        base = isAnnual ? igrejaTotal * 10 / 12 : igrejaTotal;
-      }
-      return formatPrice(base, pricing.symbol, pricing.currency);
-    }
-
-    const amount = isBRL
-      ? isAnnual ? PLAN_PRICES_BRL.annual[plan.planKey] / 12 : PLAN_PRICES_BRL.monthly[plan.planKey]
-      : isAnnual ? pricing.plans[plan.planKey].amount * 10 / 12 : pricing.plans[plan.planKey].amount;
+    const priceSource = isAnnual ? pricing.annual : pricing.plans;
+    const amount = isAnnual
+      ? priceSource[plan.planKey].amount / 12
+      : priceSource[plan.planKey].amount;
     return formatPrice(amount, pricing.symbol, pricing.currency);
   };
 
@@ -252,7 +230,6 @@ export default function Upgrade() {
         <p className="text-muted-foreground mt-2 max-w-lg mx-auto">{labels.subtitle[lang]}</p>
       </div>
 
-      {/* Billing toggle */}
       <div className="flex items-center justify-center gap-3">
         <span className={`text-sm font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>{labels.monthly[lang]}</span>
         <Switch checked={isAnnual} onCheckedChange={setIsAnnual} />
@@ -305,7 +282,6 @@ export default function Upgrade() {
                   {plan.isFree ? labels.forever[lang] : labels.month[lang]}
                 </p>
 
-                {/* Credits badge + tooltip */}
                 <div className="flex items-center gap-1.5 mb-4">
                   <Badge variant="secondary" className="text-[10px] gap-1">
                     <BarChart3 className="h-3 w-3" />
@@ -313,40 +289,6 @@ export default function Upgrade() {
                   </Badge>
                   <CreditPotentialTooltip planSlug={plan.id as PlanSlug} lang={lang} />
                 </div>
-
-                {/* Igreja plan slider */}
-                {plan.planKey === 'igreja' && (
-                  <div className="rounded-lg border border-border/60 bg-muted/30 p-3 mb-3 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-foreground">{labels.extraSeats[lang]}</span>
-                      <span className="font-mono font-bold text-foreground">{extraSeats}</span>
-                    </div>
-                    <Slider
-                      value={[extraSeats]}
-                      onValueChange={([v]) => setExtraSeats(v)}
-                      min={0}
-                      max={40}
-                      step={1}
-                      className="py-1"
-                    />
-                    <div className="flex justify-between text-[10px] text-muted-foreground">
-                      <span>{labels.included[lang]}</span>
-                      {extraSeats > 0 && (
-                        <span className="text-primary font-semibold">
-                          +{extraSeats * 10}% {labels.capacityBoost[lang]}
-                        </span>
-                      )}
-                    </div>
-                    {extraSeats > 0 && (() => {
-                      const addonAmount = pricing.currency === 'BRL' ? 19.00 : pricing.addon_seat.amount;
-                      return (
-                        <p className="text-[11px] text-muted-foreground">
-                          +{formatPrice(addonAmount, pricing.symbol, pricing.currency)} {labels.perSeat[lang]} × {extraSeats} = +{formatPrice(extraSeats * addonAmount, pricing.symbol, pricing.currency)}
-                        </p>
-                      );
-                    })()}
-                  </div>
-                )}
 
                 <ul className="space-y-2 mb-5 flex-1">
                   {plan.features[lang].map((f, j) => (
@@ -382,14 +324,12 @@ export default function Upgrade() {
         })}
       </div>
 
-      {/* Top-up button */}
       {showTopUp && (
         <div className="max-w-md mx-auto mt-6">
           <CreditTopUpButton />
         </div>
       )}
 
-      {/* Full-width Usage Report */}
       <div className="mt-8">
         <CreditUsageReport />
       </div>
