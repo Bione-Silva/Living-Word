@@ -475,20 +475,7 @@ export default function Devocional() {
 
   const handleSaveNote = async () => {
     if (!personalNote.trim() || !user || !data) return;
-    setSavingNote(true);
-    try {
-      await supabase.from('materials').insert({
-        user_id: user.id,
-        title: `Reflexão: ${data.title}`,
-        type: 'devotional_reflection',
-        content: personalNote,
-        passage: data.anchor_verse,
-      });
-      toast.success(labels.saved[lang]);
-      setPersonalNote('');
-    } catch { /* silent */ } finally {
-      setSavingNote(false);
-    }
+    autoSaveNote(personalNote);
   };
 
   if (loading) {
