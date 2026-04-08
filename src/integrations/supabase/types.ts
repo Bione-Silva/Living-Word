@@ -577,6 +577,8 @@ export type Database = {
           bio: string | null
           blog_handle: string | null
           blog_name: string | null
+          bonus_day_count: number
+          bonus_last_claimed: string | null
           church_name: string | null
           church_role: string | null
           city: string | null
@@ -614,6 +616,8 @@ export type Database = {
           bio?: string | null
           blog_handle?: string | null
           blog_name?: string | null
+          bonus_day_count?: number
+          bonus_last_claimed?: string | null
           church_name?: string | null
           church_role?: string | null
           city?: string | null
@@ -651,6 +655,8 @@ export type Database = {
           bio?: string | null
           blog_handle?: string | null
           blog_name?: string | null
+          bonus_day_count?: number
+          bonus_last_claimed?: string | null
           church_name?: string | null
           church_role?: string | null
           city?: string | null
