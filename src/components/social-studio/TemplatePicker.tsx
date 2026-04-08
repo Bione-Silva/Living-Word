@@ -1,4 +1,4 @@
-export type CanvasTemplate = 'editorial' | 'swiss' | 'cinematic' | 'gradient';
+export type CanvasTemplate = 'editorial' | 'swiss' | 'cinematic' | 'gradient' | 'lw-amber';
 
 interface Props {
   value: CanvasTemplate;
