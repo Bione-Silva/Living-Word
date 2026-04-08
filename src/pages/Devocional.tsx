@@ -489,7 +489,15 @@ export default function Devocional() {
 
   const handleSaveNote = async () => {
     if (!personalNote.trim() || !user || !data) return;
-    autoSaveNote(personalNote);
+    await autoSaveNote(personalNote);
+    setNoteSavedSuccess(true);
+    setShowAddReflection(false);
+    toast.success(labels.saved[lang]);
+  };
+
+  const handleAddMoreReflection = () => {
+    setShowAddReflection(true);
+    setNoteSavedSuccess(false);
   };
 
   /* ─── Styles ─── */
