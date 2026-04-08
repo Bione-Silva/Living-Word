@@ -739,33 +739,6 @@ export default function Devocional() {
         </div>
       </div>
 
-      {/* Personal reflection */}
-      {!isViewingPast && (
-        <div className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-2.5">
-            <PenLine className="h-4 w-4 text-foreground" />
-            <p className="text-sm font-bold text-foreground">{labels.personalReflection[lang]}</p>
-          </div>
-          <p className="text-xs text-muted-foreground">{labels.personalReflectionSub[lang]}</p>
-          <textarea
-            value={personalNote}
-            onChange={(e) => setPersonalNote(e.target.value)}
-            placeholder={labels.personalPlaceholder[lang]}
-            rows={4}
-            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
-          />
-          <div className="flex justify-end">
-            <button
-              onClick={handleSaveNote}
-              disabled={!personalNote.trim() || savingNote}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
-            >
-              <Send className="h-4 w-4" /> {labels.saveReflection[lang]}
-            </button>
-          </div>
-        </div>
-      )}
-
         {/* Bottom action bar */}
         <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/20">
           <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors">
