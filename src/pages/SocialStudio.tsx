@@ -518,7 +518,7 @@ export default function SocialStudio() {
                         profileName={profile?.full_name || 'Pastor'}
                         profileHandle={profile?.blog_handle || 'seuministério'}
                         profileAvatar={profile?.avatar_url || undefined}
-                        brandName={profile?.church_name || profile?.blog_name || 'Living Word'}
+                        brandName={profile?.full_name || 'Living Word'}
                         lang={lang}
                       />
                     ))}
