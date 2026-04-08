@@ -13,6 +13,7 @@ import { CoreToolsGrid } from '@/components/dashboard/CoreToolsGrid';
 import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
 import { StatsCards } from '@/components/dashboard/StatsCards';
+import { DevotionalCard } from '@/components/dashboard/DevotionalCard';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
