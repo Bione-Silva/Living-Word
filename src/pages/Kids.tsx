@@ -86,12 +86,15 @@ Return ONLY valid JSON: {"title": "story title", "content": "full story with par
       if (error) throw error;
       const content = data?.content;
       if (content) {
+        let parsed: { title: string; content: string };
         try {
-          const parsed = JSON.parse(content);
-          setStory(parsed);
+          parsed = JSON.parse(content);
         } catch {
-          setStory({ title: char.name[lang], content });
+          parsed = { title: char.name[lang], content };
         }
+        setStory(parsed);
+        // Generate illustration
+        generateImage(char.name.EN, parsed.title);
       }
     } catch {
       toast.error(lang === 'PT' ? 'Erro ao gerar história' : 'Error generating story');
