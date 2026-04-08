@@ -172,6 +172,7 @@ function createInitialFormData(language: 'PT' | 'EN' | 'ES', bibleVersion?: stri
 export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralStudioModalProps) {
   const { profile, user } = useAuth();
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const text = copy[lang];
 
   const [formData, setFormData] = useState<PastoralStudioFormData>(() =>
