@@ -54,8 +54,11 @@ export default function Kids() {
   const [ageGroup, setAgeGroup] = useState('6-8');
   const [loading, setLoading] = useState(false);
   const [story, setStory] = useState<{ title: string; content: string } | null>(null);
+  const [lesson, setLesson] = useState<string | null>(null);
   const [storyImage, setStoryImage] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
+  const [drawingImage, setDrawingImage] = useState<string | null>(null);
+  const [drawingLoading, setDrawingLoading] = useState(false);
 
   const handleGenerate = async () => {
     if (!selected || !user) return;
