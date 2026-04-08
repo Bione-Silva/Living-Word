@@ -338,7 +338,7 @@ export default function Upgrade() {
                       )}
                     </div>
                     {extraSeats > 0 && (() => {
-                      const addonAmount = pricing.currency === 'BRL' ? 19.00 : pricing.addon.amount;
+                      const addonAmount = pricing.currency === 'BRL' ? 19.00 : pricing.addon_seat.amount;
                       return (
                         <p className="text-[11px] text-muted-foreground">
                           +{formatPrice(addonAmount, pricing.symbol, pricing.currency)} {labels.perSeat[lang]} × {extraSeats} = +{formatPrice(extraSeats * addonAmount, pricing.symbol, pricing.currency)}

@@ -39,7 +39,7 @@ export function CreditTopUpButton() {
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
-          priceId: isBRL ? pricing?.addon?.id : pricing?.addon?.id,
+          priceId: pricing?.addon_topup?.id,
           successUrl: `${window.location.origin}/dashboard?topup_success=true`,
           cancelUrl: `${window.location.origin}/upgrade`,
           mode: 'payment', // one-time
