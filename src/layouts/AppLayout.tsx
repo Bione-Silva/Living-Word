@@ -81,6 +81,7 @@ const sidebarGroups: SidebarToolGroup[] = [
       { id: 'poetry', icon: Feather, label: { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía' } },
       { id: 'kids-story', icon: Baby, label: { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil' } },
       { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução', EN: 'Translation', ES: 'Traducción' } },
+      { id: 'social-content', icon: ImageIcon, label: { PT: 'Conteúdo Social', EN: 'Social Content', ES: 'Contenido Social' } },
     ],
   },
   {
