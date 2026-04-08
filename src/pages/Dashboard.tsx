@@ -13,6 +13,7 @@ import { CoreToolsGrid } from '@/components/dashboard/CoreToolsGrid';
 import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
 import { StatsCards } from '@/components/dashboard/StatsCards';
+import { DevotionalCard } from '@/components/dashboard/DevotionalCard';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
@@ -83,6 +84,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <DashboardGreeting />
+      <DevotionalCard />
       <StatsCards />
       <UniversalSearch />
       <StartHereBlock onToolClick={handleToolClick} />
