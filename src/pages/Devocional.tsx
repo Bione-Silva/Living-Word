@@ -572,72 +572,49 @@ export default function Devocional() {
       {/* ═══ EDITORIAL CARD ═══ */}
       <div className={`rounded-2xl border border-border bg-card overflow-hidden shadow-sm transition-all duration-200 ${transitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
 
-        {/* Date bar */}
-        <div className="flex items-center justify-center py-2.5 border-b border-border bg-muted/30">
+        {/* ── 1. DATE BAR ── */}
+        <div className="flex items-center justify-between px-5 sm:px-8 py-3 border-b border-border bg-muted/30">
           <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-muted-foreground flex items-center gap-2">
             <Calendar className="h-3 w-3" />
-            {editorialDate}
+            {formatDate(isViewingPast ? displayDate.slice(0, 10) : data.scheduled_date, lang)}
           </span>
+          {displayCategory && (
+            <span className="inline-flex items-center gap-1 bg-primary/15 text-primary text-[10px] px-3 py-1 rounded-full font-semibold">
+              📗 {displayCategory}
+            </span>
+          )}
         </div>
 
-        {/* Cover image */}
-        {displayCover && (
-          <div className="relative w-full aspect-[16/7] overflow-hidden">
-            <img
-              src={displayCover}
-              alt={displayTitle}
-              className="absolute inset-0 w-full h-full object-cover"
-              loading="lazy"
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, hsla(var(--card), 1) 0%, hsla(var(--card), 0.7) 30%, transparent 60%)' }}
-            />
-          </div>
-        )}
-
-        {/* Title + verse header */}
-        <div className="px-5 sm:px-8 pt-5 pb-5 text-center border-b border-border/50">
-          <h1 className="text-xl sm:text-2xl font-display font-black uppercase tracking-wide text-foreground leading-tight">
+        {/* ── 2. TITLE ── */}
+        <div className="px-5 sm:px-8 pt-6 pb-2">
+          <h1 className="text-xl sm:text-2xl font-display font-black text-foreground leading-tight">
             {displayTitle}
           </h1>
-          {displayVerseText && (
-            <div className="mt-3 max-w-lg mx-auto">
-              <p className="text-sm italic text-foreground/70 leading-relaxed">
-                {displayVerseText}
-              </p>
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary mt-2">
-                {displayVerse}
-              </p>
-            </div>
-          )}
-          {displayCategory && (
-            <div className="mt-3">
-              <span className="inline-flex items-center gap-1 bg-primary/15 text-primary text-[11px] px-3 py-1 rounded-full font-semibold">
-                📗 {displayCategory}
-              </span>
-            </div>
-          )}
         </div>
 
-        {/* Verse quote block (styled) */}
-        {!isViewingPast && (
-          <div className="mx-5 sm:mx-8 mt-5 rounded-xl bg-primary/5 border border-primary/15 p-5">
-            <blockquote className="text-sm sm:text-base italic text-foreground/90 leading-relaxed border-l-[3px] border-primary/50 pl-4">
-              "{data.anchor_verse_text}"
-            </blockquote>
-            <p className="text-xs font-bold text-primary mt-2 pl-4">— {data.anchor_verse}</p>
+        {/* ── 3. VERSE QUOTE (always first content block) ── */}
+        {!isViewingPast && displayVerseText && (
+          <div className="mx-5 sm:mx-8 mt-4 rounded-xl bg-primary/5 border border-primary/15 p-5">
+            <div className="flex gap-3">
+              <span className="text-3xl text-primary/40 font-display font-black leading-none shrink-0 select-none">"</span>
+              <div>
+                <blockquote className="text-sm sm:text-base italic text-foreground/90 leading-relaxed">
+                  {displayVerseText}
+                </blockquote>
+                <p className="text-xs font-bold text-primary mt-2.5">— {displayVerse}</p>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Audio player */}
+        {/* ── 4. AUDIO PLAYER (immediately visible) ── */}
         {!isViewingPast && data.audio_url && (
           <div className="mx-5 sm:mx-8 mt-5">
             <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
           </div>
         )}
 
-        {/* Cover image section (save/share) */}
+        {/* ── 5. COVER IMAGE + save/share ── */}
         {displayCover && (
           <div className="mx-5 sm:mx-8 mt-5 rounded-xl border border-border bg-card p-5 space-y-4">
             <div className="flex items-center gap-3">
@@ -706,9 +683,9 @@ export default function Devocional() {
           </div>
         )}
 
-        {/* ── REFLEXÃO — body text with structured headings ── */}
-        <div className="px-5 sm:px-8 pt-6 pb-4">
-          <div className="flex items-center gap-2.5 mb-4">
+        {/* ── 6. REFLEXÃO — body text with rich editorial typography ── */}
+        <div className="px-5 sm:px-8 pt-8 pb-4">
+          <div className="flex items-center gap-2.5 mb-5">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <MessageCircle className="h-4 w-4 text-primary" />
             </div>
@@ -722,7 +699,7 @@ export default function Devocional() {
           </div>
         </div>
 
-        {/* Practice of the day */}
+        {/* ── 7. PRÁTICA DO DIA ── */}
         {!isViewingPast && data.daily_practice && (
           <div className="mx-5 sm:mx-8 mb-5 rounded-xl bg-primary/5 border border-primary/20 p-5">
             <div className="flex items-start gap-2.5">
@@ -738,6 +715,56 @@ export default function Devocional() {
             </div>
           </div>
         )}
+
+        {/* ── 8. ACTION BAR ── */}
+        <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/20">
+          <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors">
+            <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
+          </button>
+          <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors">
+            <WhatsAppIcon /> {labels.shareWa[lang]}
+          </button>
+          <button
+            onClick={() => { if (navigator.share) navigator.share({ title: displayTitle, text: `${displayTitle} — ${displayVerse}` }); }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+          >
+            <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
+          </button>
+          <Link
+            to="/mente-chat"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+          >
+            <MessageCircle className="h-3.5 w-3.5" /> {labels.continueChat[lang]}
+          </Link>
+        </div>
+      </div>
+
+      {/* Personal reflection */}
+      {!isViewingPast && (
+        <div className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
+          <div className="flex items-center gap-2.5">
+            <PenLine className="h-4 w-4 text-foreground" />
+            <p className="text-sm font-bold text-foreground">{labels.personalReflection[lang]}</p>
+          </div>
+          <p className="text-xs text-muted-foreground">{labels.personalReflectionSub[lang]}</p>
+          <textarea
+            value={personalNote}
+            onChange={(e) => setPersonalNote(e.target.value)}
+            placeholder={labels.personalPlaceholder[lang]}
+            rows={4}
+            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+          />
+          <div className="flex justify-end">
+            <button
+              onClick={handleSaveNote}
+              disabled={!personalNote.trim() || savingNote}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+            >
+              <Send className="h-4 w-4" /> {labels.saveReflection[lang]}
+            </button>
+          </div>
+        </div>
+      )}
 
         {/* Bottom action bar */}
         <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/20">
