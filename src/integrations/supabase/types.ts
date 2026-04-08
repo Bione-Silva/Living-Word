@@ -148,6 +148,66 @@ export type Database = {
         }
         Relationships: []
       }
+      devotionals: {
+        Row: {
+          anchor_verse: string
+          anchor_verse_text: string
+          audio_url_alloy: string | null
+          audio_url_nova: string | null
+          audio_url_onyx: string | null
+          body_text: string
+          category: string
+          closing_prayer: string | null
+          cover_image_url: string | null
+          created_at: string
+          daily_practice: string | null
+          id: string
+          language: string
+          reflection_question: string | null
+          scheduled_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          anchor_verse?: string
+          anchor_verse_text?: string
+          audio_url_alloy?: string | null
+          audio_url_nova?: string | null
+          audio_url_onyx?: string | null
+          body_text?: string
+          category?: string
+          closing_prayer?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          daily_practice?: string | null
+          id?: string
+          language?: string
+          reflection_question?: string | null
+          scheduled_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          anchor_verse?: string
+          anchor_verse_text?: string
+          audio_url_alloy?: string | null
+          audio_url_nova?: string | null
+          audio_url_onyx?: string | null
+          body_text?: string
+          category?: string
+          closing_prayer?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          daily_practice?: string | null
+          id?: string
+          language?: string
+          reflection_question?: string | null
+          scheduled_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       editorial_queue: {
         Row: {
           created_at: string
