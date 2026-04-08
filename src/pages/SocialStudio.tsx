@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, createRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import JSZip from 'jszip';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
 import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { SlideCanvas, type SlideData } from '@/components/social-studio/SlideCanvas';
+import { SlideCard, type ArtStyle } from '@/components/social-studio/SlideCard';
 import { VerseOfDayBanner, type VerseData } from '@/components/social-studio/VerseOfDayBanner';
 import { CarouselNavigator } from '@/components/social-studio/CarouselNavigator';
 import { DownloadButton } from '@/components/social-studio/DownloadButton';
@@ -19,9 +20,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import {
   Sparkles, Layers, Loader2, Archive, Image, Download,
-  PanelLeftClose, PanelLeftOpen, Palette, Wand2
+  PanelLeftClose, PanelLeftOpen, Palette, Wand2, Twitter
 } from 'lucide-react';
 import { toast } from 'sonner';
 
