@@ -134,13 +134,7 @@ export function StreakBar() {
         </div>
 
         {/* Ranking pill */}
-        <div className="flex items-center gap-2 bg-card rounded-xl px-4 py-2.5 border border-border shadow-sm">
-          <Trophy className="h-4 w-4 text-primary" />
-          <div>
-            <p className="text-sm font-bold text-foreground leading-none">🏆 #—</p>
-            <p className="text-[10px] text-muted-foreground">{labels.ranking[lang]}</p>
-          </div>
-        </div>
+        <RankingPill lang={lang} userId={user?.id} />
 
         {/* Quiz button */}
         <Link
