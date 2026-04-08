@@ -25,9 +25,9 @@ import {
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
-  PanelLeftClose, PanelLeftOpen, Lock, Building2
+  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
@@ -49,28 +49,20 @@ interface SidebarToolItem {
 }
 
 interface SidebarToolGroup {
+  key: string;
   label: Record<L, string>;
   icon: React.ElementType;
   tools: SidebarToolItem[];
 }
 
-const toolGroups: SidebarToolGroup[] = [
+/* ─── NEW STRUCTURE: "Criar" merges old Criar + Extras + Estúdio Social ─── */
+const sidebarGroups: SidebarToolGroup[] = [
   {
-    label: { PT: 'Pesquisa', EN: 'Research', ES: 'Investigación' },
-    icon: Search,
-    tools: [
-      { id: 'topic-explorer', icon: Lightbulb, label: { PT: 'Explorador de Temas', EN: 'Topic Explorer', ES: 'Explorador de Temas' } },
-      { id: 'verse-finder', icon: Search, label: { PT: 'Versículos', EN: 'Verse Finder', ES: 'Versículos' } },
-      { id: 'historical-context', icon: BookOpen, label: { PT: 'Contexto Histórico', EN: 'Historical Context', ES: 'Contexto Histórico' } },
-      { id: 'quote-finder', icon: Quote, label: { PT: 'Citações', EN: 'Quotes', ES: 'Citas' } },
-      { id: 'original-text', icon: FileText, label: { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original' } },
-      { id: 'lexical', icon: LanguagesIcon, label: { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico' } },
-    ],
-  },
-  {
+    key: 'criar',
     label: { PT: 'Criar', EN: 'Create', ES: 'Crear' },
-    icon: PenTool,
+    icon: Sparkles,
     tools: [
+      // from old "Criar"
       { id: 'studio', icon: Wand2, label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' } },
       { id: 'biblical-study', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' } },
       { id: 'free-article', icon: PenTool, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' } },
@@ -79,12 +71,7 @@ const toolGroups: SidebarToolGroup[] = [
       { id: 'illustrations', icon: Film, label: { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones' } },
       { id: 'bible-modernizer', icon: Repeat, label: { PT: 'Modernizador', EN: 'Modernizer', ES: 'Modernizador' } },
       { id: 'youtube-blog', icon: Video, label: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' } },
-    ],
-  },
-  {
-    label: { PT: 'Extras', EN: 'Extras', ES: 'Extras' },
-    icon: Package,
-    tools: [
+      // from old "Extras"
       { id: 'reels-script', icon: Video, label: { PT: 'Roteiro Reels', EN: 'Reels Script', ES: 'Guión Reels' } },
       { id: 'cell-group', icon: Users, label: { PT: 'Célula', EN: 'Cell Group', ES: 'Célula' } },
       { id: 'social-caption', icon: MessageSquare, label: { PT: 'Legendas', EN: 'Captions', ES: 'Leyendas' } },
@@ -94,6 +81,19 @@ const toolGroups: SidebarToolGroup[] = [
       { id: 'poetry', icon: Feather, label: { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía' } },
       { id: 'kids-story', icon: Baby, label: { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil' } },
       { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução', EN: 'Translation', ES: 'Traducción' } },
+    ],
+  },
+  {
+    key: 'pesquisar',
+    label: { PT: 'Pesquisar', EN: 'Research', ES: 'Investigar' },
+    icon: Search,
+    tools: [
+      { id: 'topic-explorer', icon: Lightbulb, label: { PT: 'Explorador de Temas', EN: 'Topic Explorer', ES: 'Explorador de Temas' } },
+      { id: 'verse-finder', icon: Search, label: { PT: 'Versículos', EN: 'Verse Finder', ES: 'Versículos' } },
+      { id: 'historical-context', icon: BookOpen, label: { PT: 'Contexto Histórico', EN: 'Historical Context', ES: 'Contexto Histórico' } },
+      { id: 'quote-finder', icon: Quote, label: { PT: 'Citações', EN: 'Quotes', ES: 'Citas' } },
+      { id: 'original-text', icon: FileText, label: { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original' } },
+      { id: 'lexical', icon: LanguagesIcon, label: { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico' } },
     ],
   },
 ];
@@ -123,14 +123,20 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+
+  // Only ONE group open at a time — stored in localStorage for session persistence
+  const [openGroup, setOpenGroup] = useState<string | null>(() => {
+    try { return localStorage.getItem('lw-sidebar-open-group') || null; } catch { return null; }
+  });
   const [activeTool, setActiveTool] = useState<{ id: string; title: string } | null>(null);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
   const [helpToolId, setHelpToolId] = useState<string | null>(null);
   const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({});
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem('lw-sidebar-collapsed') === 'true'; } catch { return false; }
   });
+  const [accountOpen, setAccountOpen] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState<{ featureName: string; toolId: string; requiredPlan: PlanSlug } | null>(null);
 
   const userPlan: PlanSlug = (profile?.plan as PlanSlug) || 'free';
@@ -149,9 +155,14 @@ export default function AppLayout() {
     navigate('/');
   };
 
-  const toggleGroup = (key: string) => {
-    setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+  // Only one group open at a time
+  const toggleGroup = useCallback((key: string) => {
+    setOpenGroup((prev) => {
+      const next = prev === key ? null : key;
+      try { localStorage.setItem('lw-sidebar-open-group', next || ''); } catch {}
+      return next;
+    });
+  }, []);
 
   const toggleMobileGroup = (key: string) => {
     setMobileOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -184,6 +195,21 @@ export default function AppLayout() {
   const remaining = Math.max(limit - used, 0);
   const creditColor = remaining > 500 ? 'text-emerald-500' : remaining > 100 ? 'text-yellow-500' : 'text-destructive';
 
+  // ─── Account items for dropdown ───
+  const accountItems = [
+    { to: '/configuracoes', icon: User, label: { PT: 'Meu Perfil', EN: 'My Profile', ES: 'Mi Perfil' } },
+    { to: '/upgrade', icon: Crown, label: { PT: 'Plano e Uso', EN: 'Plan & Usage', ES: 'Plan y Uso' } },
+    ...(profile?.blog_handle ? [{ to: `/blog/${profile.blog_handle}`, icon: ExternalLink, label: { PT: 'Portal', EN: 'Portal', ES: 'Portal' }, external: true }] : []),
+    { to: '/blog', icon: BookOpen, label: { PT: 'Blog', EN: 'Blog', ES: 'Blog' } },
+    { to: '/ajuda', icon: HelpCircle, label: { PT: 'Central de Ajuda', EN: 'Help Center', ES: 'Centro de Ayuda' } },
+    { to: '/configuracoes', icon: Settings, label: { PT: 'Configurações', EN: 'Settings', ES: 'Configuración' } },
+    { to: '/workspaces', icon: FolderOpen, label: { PT: 'Workspaces', EN: 'Workspaces', ES: 'Workspaces' } },
+    ...(isAdmin ? [{ to: '/admin/dashboard', icon: ShieldAlert, label: { PT: 'Back-office', EN: 'Back-office', ES: 'Back-office' }, admin: true }] : []),
+  ] as Array<{ to: string; icon: React.ElementType; label: Record<L, string>; external?: boolean; admin?: boolean }>;
+
+  /* ═══════════════════════════════════════════════════════════════
+     MOBILE LAYOUT
+     ═══════════════════════════════════════════════════════════════ */
   if (isMobile) {
     return (
       <div className="theme-app min-h-screen bg-background flex flex-col">
@@ -209,6 +235,7 @@ export default function AppLayout() {
           <Outlet />
         </main>
 
+        {/* ─── Mobile BottomNavBar: 5 items ─── */}
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border px-2 py-1 safe-area-bottom">
           <div className="flex justify-around items-center">
             <Link
@@ -222,14 +249,24 @@ export default function AppLayout() {
             </Link>
 
             <button
-              onClick={() => setMobileToolsOpen(true)}
+              onClick={() => { setMobileToolsOpen(true); setMobileAccountOpen(false); }}
               className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
                 mobileToolsOpen ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Wand2 className="h-5 w-5" />
-              <span className="truncate">{t('nav.studio')}</span>
+              <Sparkles className="h-5 w-5" />
+              <span className="truncate">{lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear'}</span>
             </button>
+
+            <Link
+              to="/bible"
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+                location.pathname === '/bible' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <BookOpen className="h-5 w-5" />
+              <span className="truncate">{lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}</span>
+            </Link>
 
             <Link
               to="/dashboard/mentes"
@@ -241,40 +278,19 @@ export default function AppLayout() {
               <span className="truncate">{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
             </Link>
 
-            <Link
-              to="/blog"
+            <button
+              onClick={() => { setMobileAccountOpen(true); setMobileToolsOpen(false); }}
               className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                location.pathname === '/blog' ? 'text-primary' : 'text-muted-foreground'
+                mobileAccountOpen ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <BookOpen className="h-5 w-5" />
-              <span className="truncate">{t('nav.blog')}</span>
-            </Link>
-
-            {isAdmin ? (
-              <Link
-                to="/admin/dashboard"
-                className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                  location.pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                <ShieldAlert className="h-5 w-5" />
-                <span className="truncate">Admin</span>
-              </Link>
-            ) : (
-              <Link
-                to="/configuracoes"
-                className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                  location.pathname === '/configuracoes' ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                <Settings className="h-5 w-5" />
-                <span className="truncate">{t('nav.settings')}</span>
-              </Link>
-            )}
+              <User className="h-5 w-5" />
+              <span className="truncate">{lang === 'PT' ? 'Conta' : lang === 'EN' ? 'Account' : 'Cuenta'}</span>
+            </button>
           </div>
         </nav>
 
+        {/* ─── Mobile "Criar" bottom sheet ─── */}
         <Sheet open={mobileToolsOpen} onOpenChange={setMobileToolsOpen}>
           <SheetContent side="bottom" className="theme-app max-h-[80vh] overflow-y-auto rounded-t-2xl">
             <SheetHeader className="pb-2">
@@ -287,15 +303,14 @@ export default function AppLayout() {
             </SheetHeader>
 
             <div className="space-y-3 mt-2">
-              {toolGroups.map((group) => {
-                const groupKey = group.label.PT;
-                const isOpen = mobileOpenGroups[groupKey] ?? false;
+              {sidebarGroups.map((group) => {
+                const isOpen = mobileOpenGroups[group.key] ?? false;
                 const GroupIcon = group.icon;
 
                 return (
-                  <div key={groupKey}>
+                  <div key={group.key}>
                     <button
-                      onClick={() => toggleMobileGroup(groupKey)}
+                      onClick={() => toggleMobileGroup(group.key)}
                       className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm font-semibold text-foreground"
                     >
                       <GroupIcon className="h-4 w-4 text-primary" />
@@ -336,6 +351,7 @@ export default function AppLayout() {
                 );
               })}
 
+              {/* Navigation shortcuts in mobile tools sheet */}
               <div className="pt-3 border-t border-border mt-2">
                 <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground px-2 mb-2">
                   {lang === 'PT' ? 'NAVEGAÇÃO' : lang === 'EN' ? 'NAVIGATION' : 'NAVEGACIÓN'}
@@ -344,12 +360,8 @@ export default function AppLayout() {
                   {[
                     { to: '/biblioteca', icon: Library, label: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' } },
                     { to: '/calendario', icon: CalendarDays, label: { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' } },
-                    { to: '/workspaces', icon: FolderOpen, label: { PT: 'Workspaces', EN: 'Workspaces', ES: 'Workspaces' } },
                     { to: '/social-studio', icon: ImageIcon, label: { PT: 'Estúdio Social', EN: 'Social Studio', ES: 'Estudio Social' } },
                     { to: '/bible', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' } },
-                    { to: '/ajuda', icon: HelpCircle, label: { PT: 'Central de Ajuda', EN: 'Help Center', ES: 'Centro de Ayuda' } },
-                    { to: '/upgrade', icon: Crown, label: { PT: 'Plano e Uso', EN: 'Plan & Usage', ES: 'Plan y Uso' } },
-                    { to: '/configuracoes', icon: Settings, label: { PT: 'Configurações', EN: 'Settings', ES: 'Configuración' } },
                   ].map((nav) => {
                     const NavIcon = nav.icon;
                     return (
@@ -378,6 +390,54 @@ export default function AppLayout() {
           </SheetContent>
         </Sheet>
 
+        {/* ─── Mobile "Conta" bottom sheet ─── */}
+        <Sheet open={mobileAccountOpen} onOpenChange={setMobileAccountOpen}>
+          <SheetContent side="bottom" className="theme-app max-h-[70vh] overflow-y-auto rounded-t-2xl">
+            <SheetHeader className="pb-2">
+              <SheetTitle className="font-display text-lg">
+                {lang === 'PT' ? '👤 Conta' : lang === 'EN' ? '👤 Account' : '👤 Cuenta'}
+              </SheetTitle>
+              <SheetDescription className="sr-only">
+                {lang === 'PT' ? 'Menu de conta' : lang === 'EN' ? 'Account menu' : 'Menú de cuenta'}
+              </SheetDescription>
+            </SheetHeader>
+            <div className="space-y-1 mt-2">
+              {accountItems.map((item) => {
+                const ItemIcon = item.icon;
+                return (
+                  <Link
+                    key={item.to + item.label.PT}
+                    to={item.to}
+                    target={item.external ? '_blank' : undefined}
+                    onClick={() => setMobileAccountOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                      item.admin
+                        ? 'text-destructive hover:bg-destructive/10'
+                        : location.pathname === item.to
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-foreground/70 hover:bg-muted'
+                    }`}
+                  >
+                    <ItemIcon className="h-4 w-4 shrink-0" />
+                    <span>{item.label[lang]}</span>
+                    {item.external && <ExternalLink className="h-3 w-3 ml-auto text-muted-foreground" />}
+                  </Link>
+                );
+              })}
+
+              <div className="border-t border-border pt-2 mt-2">
+                <button
+                  onClick={() => { setMobileAccountOpen(false); handleSignOut(); }}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 w-full"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  <span>{lang === 'PT' ? 'Sair' : lang === 'EN' ? 'Sign Out' : 'Salir'}</span>
+                </button>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+
         {activeTool && (
           <ToolSheet
             open={!!activeTool}
@@ -401,12 +461,16 @@ export default function AppLayout() {
     );
   }
 
+  /* ═══════════════════════════════════════════════════════════════
+     DESKTOP LAYOUT
+     ═══════════════════════════════════════════════════════════════ */
   const sidebarW = collapsed ? 'w-[68px]' : 'w-[260px]';
   const mainMl = collapsed ? 'ml-[68px]' : 'ml-[260px]';
 
   return (
     <div className="theme-app min-h-screen bg-background flex">
       <ThemeInjector />
+
       {/* Desktop Sidebar */}
       <aside className={`${sidebarW} min-h-screen flex flex-col fixed left-0 top-0 bottom-0 z-40 bg-sidebar text-sidebar-foreground transition-all duration-200`}>
         {/* Logo */}
@@ -439,6 +503,7 @@ export default function AppLayout() {
           </div>
         )}
 
+        {/* ─── SECTION 1: FERRAMENTAS ─── */}
         {!collapsed && (
           <div className="px-5 pt-2 pb-1 shrink-0">
             <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
@@ -448,6 +513,7 @@ export default function AppLayout() {
         )}
 
         <nav className={`flex-1 ${collapsed ? 'px-1.5' : 'px-3'} space-y-0.5 overflow-y-auto min-h-0`}>
+          {/* 1.1 — Dashboard */}
           <SidebarTooltipWrap collapsed={collapsed} label={t('nav.dashboard') || 'Dashboard'}>
             <Link
               to="/dashboard"
@@ -462,30 +528,34 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
-          {toolGroups.map((group) => {
-            const groupKey = group.label.PT;
-            const isOpen = openGroups[groupKey] ?? false;
+          {/* 1.2 & 1.3 — Criar + Pesquisar (collapsible, only one open) */}
+          {sidebarGroups.map((group) => {
+            const isOpen = openGroup === group.key;
             const GroupIcon = group.icon;
 
             return (
-              <div key={groupKey}>
+              <div key={group.key}>
                 <SidebarTooltipWrap collapsed={collapsed} label={group.label[lang]}>
                   <button
-                    onClick={() => !collapsed && toggleGroup(groupKey)}
-                    className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
+                    onClick={() => !collapsed && toggleGroup(group.key)}
+                    className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isOpen
+                        ? 'text-sidebar-primary bg-sidebar-accent/30'
+                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                    }`}
                   >
                     <GroupIcon className="h-4 w-4 shrink-0" />
                     {!collapsed && (
                       <>
                         <span className="flex-1 text-left">{group.label[lang]}</span>
-                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'}`} />
+                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'} ${isOpen ? 'text-sidebar-primary' : 'text-sidebar-foreground/40'}`} />
                       </>
                     )}
                   </button>
                 </SidebarTooltipWrap>
 
                 {isOpen && !collapsed && (
-                  <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5">
+                  <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5 max-h-[280px] overflow-y-auto">
                     {group.tools.map((tool) => {
                       const Icon = tool.icon;
                       const isLocked = isToolLockedForPlan(tool.id, userPlan);
@@ -511,6 +581,34 @@ export default function AppLayout() {
             );
           })}
 
+          {/* 1.4 — Bíblia */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}>
+            <Link
+              to="/bible"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/bible'
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <BookOpen className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia')}
+            </Link>
+          </SidebarTooltipWrap>
+
+          {/* ─── Separator ─── */}
+          <div className={`${collapsed ? 'mx-1' : 'mx-0'} border-t border-sidebar-border my-2`} />
+
+          {/* ─── SECTION 2: RECURSOS ─── */}
+          {!collapsed && (
+            <div className="px-3 pb-1">
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
+                {lang === 'PT' ? 'RECURSOS' : lang === 'EN' ? 'RESOURCES' : 'RECURSOS'}
+              </span>
+            </div>
+          )}
+
+          {/* 2.1 — Mentes Brilhantes */}
           <SidebarTooltipWrap collapsed={collapsed} label={lang === 'EN' ? 'Brilliant Minds' : lang === 'ES' ? 'Mentes Brillantes' : 'Mentes Brilhantes'}>
             <Link
               to="/dashboard/mentes"
@@ -532,6 +630,7 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
+          {/* 2.2 — Biblioteca */}
           <SidebarTooltipWrap collapsed={collapsed} label={t('nav.library') || 'Biblioteca'}>
             <Link
               to="/biblioteca"
@@ -541,25 +640,12 @@ export default function AppLayout() {
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
-              <Library className="h-3.5 w-3.5 shrink-0" />
+              <Library className="h-4 w-4 shrink-0" />
               {!collapsed && t('nav.library')}
             </Link>
           </SidebarTooltipWrap>
 
-          <SidebarTooltipWrap collapsed={collapsed} label="Workspaces">
-            <Link
-              to="/workspaces"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/workspaces'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <FolderOpen className="h-3.5 w-3.5 shrink-0" />
-              {!collapsed && 'Workspaces'}
-            </Link>
-          </SidebarTooltipWrap>
-
+          {/* 2.3 — Calendário */}
           <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario'}>
             <Link
               to="/calendario"
@@ -569,153 +655,15 @@ export default function AppLayout() {
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
-              <CalendarDays className="h-3.5 w-3.5 shrink-0" />
+              <CalendarDays className="h-4 w-4 shrink-0" />
               {!collapsed && (lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario')}
             </Link>
           </SidebarTooltipWrap>
-
-          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}>
-            <Link
-              to="/social-studio"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/social-studio'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <ImageIcon className="h-3.5 w-3.5 shrink-0" />
-              {!collapsed && (lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}>
-            <Link
-              to="/bible"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/bible'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <BookOpen className="h-3.5 w-3.5 shrink-0" />
-              {!collapsed && (lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          <div className="flex-1" />
-
-          {!collapsed ? (
-            <div className="pt-3 pb-1 border-t border-sidebar-border mt-2">
-              <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50 px-3">
-                {lang === 'PT' ? 'CONTA' : lang === 'EN' ? 'ACCOUNT' : 'CUENTA'}
-              </span>
-            </div>
-          ) : (
-            <div className="pt-3 mt-2 border-t border-sidebar-border" />
-          )}
-
-          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Meu Perfil' : lang === 'EN' ? 'My Profile' : 'Mi Perfil'}>
-            <Link
-              to="/configuracoes"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/configuracoes'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <User className="h-4 w-4 shrink-0" />
-              {!collapsed && (lang === 'PT' ? 'Meu Perfil' : lang === 'EN' ? 'My Profile' : 'Mi Perfil')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Plano e Uso' : lang === 'EN' ? 'Plan & Usage' : 'Plan y Uso'}>
-            <Link
-              to="/upgrade"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/upgrade'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <Crown className="h-4 w-4 shrink-0" />
-              {!collapsed && (lang === 'PT' ? 'Plano e Uso' : lang === 'EN' ? 'Plan & Usage' : 'Plan y Uso')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          {profile?.blog_handle && (
-            <SidebarTooltipWrap collapsed={collapsed} label="Portal">
-              <Link
-                to={`/blog/${profile.blog_handle}`}
-                target="_blank"
-                className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}
-              >
-                <ExternalLink className="h-4 w-4 shrink-0" />
-                {!collapsed && 'Portal'}
-              </Link>
-            </SidebarTooltipWrap>
-          )}
-
-          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.blog') || 'Blog'}>
-            <Link
-              to="/blog"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/blog'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <BookOpen className="h-3.5 w-3.5 shrink-0" />
-              {!collapsed && t('nav.blog')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda'}>
-            <Link
-              to="/ajuda"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname.startsWith('/ajuda')
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <HelpCircle className="h-4 w-4 shrink-0" />
-              {!collapsed && (lang === 'PT' ? 'Central de Ajuda' : lang === 'EN' ? 'Help Center' : 'Centro de Ayuda')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.settings') || 'Configurações'}>
-            <Link
-              to="/configuracoes"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/configuracoes'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <Settings className="h-4 w-4 shrink-0" />
-              {!collapsed && t('nav.settings')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          {isAdmin && (
-            <SidebarTooltipWrap collapsed={collapsed} label="Back-office">
-              <Link
-                to="/admin/dashboard"
-                className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors mt-1 ${
-                  location.pathname === '/admin/dashboard'
-                    ? 'bg-destructive/10 text-destructive'
-                    : 'text-sidebar-foreground/40 hover:bg-destructive/10 hover:text-destructive/70'
-                }`}
-              >
-                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                {!collapsed && 'Back-office'}
-              </Link>
-            </SidebarTooltipWrap>
-          )}
         </nav>
 
-        {/* Bottom section — Credit Wallet always visible */}
+        {/* ─── Bottom section: Credits + Account ─── */}
         <div className="shrink-0 border-t border-sidebar-border">
+          {/* Credits wallet */}
           {!collapsed ? (
             <div className="px-4 py-3">
               <div className="flex items-center gap-1.5 mb-1.5">
@@ -752,6 +700,7 @@ export default function AppLayout() {
             </div>
           )}
 
+          {/* ─── SECTION 3: CONTA (collapsible) ─── */}
           <div className={`${collapsed ? 'px-1.5' : 'px-3'} py-2 border-t border-sidebar-border`}>
             <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
               <Link to="/configuracoes" className={`flex items-center ${collapsed ? '' : 'gap-3 flex-1 min-w-0'}`}>
@@ -776,11 +725,51 @@ export default function AppLayout() {
                 )}
               </Link>
               {!collapsed && (
-                <button onClick={handleSignOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground shrink-0" title="Sair">
-                  <LogOut className="h-4 w-4" />
+                <button
+                  onClick={() => setAccountOpen((prev) => !prev)}
+                  className="text-sidebar-foreground/50 hover:text-sidebar-foreground shrink-0 p-1 rounded hover:bg-sidebar-accent/50 transition-colors"
+                  title={lang === 'PT' ? 'Menu de conta' : 'Account menu'}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
                 </button>
               )}
             </div>
+
+            {/* Account dropdown (desktop) */}
+            {accountOpen && !collapsed && (
+              <div className="mt-2 space-y-0.5 animate-in slide-in-from-bottom-2 duration-150">
+                {accountItems.map((item) => {
+                  const ItemIcon = item.icon;
+                  return (
+                    <Link
+                      key={item.to + item.label.PT}
+                      to={item.to}
+                      target={item.external ? '_blank' : undefined}
+                      onClick={() => setAccountOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                        item.admin
+                          ? 'text-destructive/70 hover:bg-destructive/10 hover:text-destructive'
+                          : location.pathname === item.to
+                            ? 'bg-sidebar-accent text-sidebar-primary'
+                            : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground'
+                      }`}
+                    >
+                      <ItemIcon className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">{item.label[lang]}</span>
+                      {item.external && <ExternalLink className="h-3 w-3 ml-auto text-sidebar-foreground/30" />}
+                    </Link>
+                  );
+                })}
+
+                <button
+                  onClick={() => { setAccountOpen(false); handleSignOut(); }}
+                  className="w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-colors"
+                >
+                  <LogOut className="h-3.5 w-3.5 shrink-0" />
+                  <span>{lang === 'PT' ? 'Sair' : lang === 'EN' ? 'Sign Out' : 'Salir'}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </aside>
