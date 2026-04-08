@@ -195,14 +195,12 @@ export default function Devocional() {
   const [personalNote, setPersonalNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
 
-  // Sidebar state
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
-  const [activeItemId, setActiveItemId] = useState<string | null>(null); // null = today
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [viewingPast, setViewingPast] = useState<PastDevotional | null>(null);
   const [transitioning, setTransitioning] = useState(false);
 
-  // Load today's devotional
   useEffect(() => {
     if (!user) return;
     const load = async () => {
@@ -211,7 +209,6 @@ export default function Devocional() {
         if (err || !result) throw err;
         setData(result);
 
-        // Persist devotional to materials for history
         const todayDate = result.scheduled_date;
         const { data: existing } = await supabase
           .from('materials')
@@ -241,7 +238,6 @@ export default function Devocional() {
     load();
   }, [user]);
 
-  // Load past devotionals
   useEffect(() => {
     if (!user) return;
     const load = async () => {
@@ -258,7 +254,6 @@ export default function Devocional() {
     load();
   }, [user]);
 
-  // When clicking a past devotional — with fade transition
   const handleSelectPast = useCallback((item: PastDevotional) => {
     if (activeItemId === item.id) {
       setTransitioning(true);
@@ -324,10 +319,9 @@ export default function Devocional() {
     }
   };
 
-  // ─── Loading state ───
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto space-y-5">
+      <div className="w-full space-y-5">
         <Skeleton className="h-5 w-24" />
         <Skeleton className="h-64 w-full rounded-xl" />
         <Skeleton className="h-40 w-full rounded-xl" />
@@ -338,7 +332,7 @@ export default function Devocional() {
 
   if (error || !data) {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="w-full">
         <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
         </Link>
@@ -349,7 +343,6 @@ export default function Devocional() {
     );
   }
 
-  // Determine what to display
   const isViewingPast = !!viewingPast;
   const displayTitle = isViewingPast ? viewingPast.title : data.title;
   const displayBody = isViewingPast ? viewingPast.content : data.body_text;
@@ -359,23 +352,9 @@ export default function Devocional() {
   const displayDate = isViewingPast ? viewingPast.created_at : data.scheduled_date;
   const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
-  const editorialDate = (() => {
-    const dateStr = isViewingPast ? displayDate.slice(0, 10) : data.scheduled_date;
-    const d = new Date(dateStr + 'T12:00:00');
-    const day = d.getDate().toString().padStart(2, '0');
-    const monthNames: Record<L, string[]> = {
-      PT: ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'],
-      EN: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],
-      ES: ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'],
-    };
-    return `${day} | ${monthNames[lang][d.getMonth()]}`;
-  })();
-
-  /* ─── Render body text with rich editorial formatting ─── */
   const renderBodyText = (text: string) => {
     const paragraphs = text.split('\n\n').filter(p => p.trim());
     if (paragraphs.length === 0) {
-      // Fallback: split by single newlines for flat text
       const lines = text.split('\n').filter(l => l.trim());
       if (lines.length <= 1) {
         return [<p key={0} className="text-sm sm:text-[15px] text-foreground/90 leading-[1.95] first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none">{text.trim()}</p>];
@@ -414,7 +393,6 @@ export default function Devocional() {
         );
       }
 
-      // Detect prayer/concluding paragraphs (starts with "Senhor," "Pai," "Deus," "Lord," etc.)
       const isPrayer = /^(Senhor|Pai|Deus|Lord|Father|God|Señor|Padre),?\s/i.test(trimmed);
       if (isPrayer) {
         return (
@@ -426,7 +404,6 @@ export default function Devocional() {
         );
       }
 
-      // Regular paragraph with drop cap on first
       return (
         <p
           key={idx}
@@ -444,9 +421,8 @@ export default function Devocional() {
 
   /* ─── Sidebar (right) ─── */
   const sidebar = user && (
-    <div className="w-[320px] shrink-0 hidden lg:block">
+    <div className="w-[300px] shrink-0 hidden lg:block">
       <div className="sticky top-6 rounded-xl border border-border bg-card overflow-hidden">
-        {/* Header */}
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2.5">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -463,7 +439,6 @@ export default function Devocional() {
           </div>
         </div>
 
-        {/* List */}
         <ScrollArea className="max-h-[calc(100vh-200px)]">
           <div className="p-1.5">
             {pastLoading ? (
@@ -495,7 +470,6 @@ export default function Devocional() {
                         : 'hover:bg-muted/50 border border-transparent'
                     }`}
                   >
-                    {/* Thumbnail */}
                     {item.cover_image_url ? (
                       <div className="h-11 w-11 rounded-lg overflow-hidden shrink-0 bg-muted">
                         <img src={item.cover_image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
@@ -505,7 +479,6 @@ export default function Devocional() {
                         <BookOpen className="h-5 w-5 text-primary/50" />
                       </div>
                     )}
-                    {/* Text */}
                     <div className="min-w-0 flex-1">
                       <p className={`text-sm font-medium leading-snug line-clamp-2 transition-colors ${
                         isActive ? 'text-primary' : 'text-foreground group-hover:text-primary'
@@ -514,16 +487,15 @@ export default function Devocional() {
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-[10px] text-muted-foreground">
+                          {item.passage && (
+                            <span className="truncate">{item.passage}</span>
+                          )}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">
                           {formatShortDate(item.created_at, lang)}
                         </span>
-                        {item.passage && (
-                          <span className="text-[10px] text-muted-foreground truncate">
-                            📖 {item.passage}
-                          </span>
-                        )}
                       </div>
                     </div>
-                    {/* Active check */}
                     {isActive && (
                       <Check className="h-4 w-4 text-primary shrink-0 mt-1" />
                     )}
@@ -540,11 +512,6 @@ export default function Devocional() {
   /* ─── Main content ─── */
   const mainContent = (
     <div className="flex-1 min-w-0 pb-10">
-      {/* Back */}
-      <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5">
-        <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
-      </Link>
-
       {/* Page header */}
       {!isViewingPast && (
         <div className="flex items-center gap-3 mb-5">
@@ -558,7 +525,6 @@ export default function Devocional() {
         </div>
       )}
 
-      {/* Back to today button when viewing past */}
       {isViewingPast && (
         <button
           onClick={handleBackToToday}
@@ -592,22 +558,22 @@ export default function Devocional() {
           </h1>
         </div>
 
-        {/* ── 3. VERSE QUOTE (always first content block) ── */}
+        {/* ── 3. VERSE QUOTE ── */}
         {!isViewingPast && displayVerseText && (
           <div className="mx-5 sm:mx-8 mt-4 rounded-xl bg-primary/5 border border-primary/15 p-5">
             <div className="flex gap-3">
-              <span className="text-3xl text-primary/40 font-display font-black leading-none shrink-0 select-none">"</span>
+              <span className="text-3xl text-primary/40 font-display font-black leading-none shrink-0 select-none">&ldquo;</span>
               <div>
                 <blockquote className="text-sm sm:text-base italic text-foreground/90 leading-relaxed">
                   {displayVerseText}
                 </blockquote>
-                <p className="text-xs font-bold text-primary mt-2.5">— {displayVerse}</p>
+                <p className="text-xs font-bold text-primary mt-2.5">&mdash; {displayVerse}</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── 4. AUDIO PLAYER (immediately visible) ── */}
+        {/* ── 4. AUDIO PLAYER ── */}
         {!isViewingPast && data.audio_url && (
           <div className="mx-5 sm:mx-8 mt-5">
             <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
@@ -642,7 +608,7 @@ export default function Devocional() {
                   <h3 className="text-white text-lg font-display font-bold leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{displayTitle}</h3>
                   {displayVerse && (
                     <p className="text-white/80 text-xs italic leading-relaxed line-clamp-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]">
-                      "{displayVerseText || displayVerse}"
+                      &ldquo;{displayVerseText || displayVerse}&rdquo;
                     </p>
                   )}
                 </div>
@@ -683,7 +649,7 @@ export default function Devocional() {
           </div>
         )}
 
-        {/* ── 6. REFLEXÃO — body text with rich editorial typography ── */}
+        {/* ── 6. REFLEXÃO ── */}
         <div className="px-5 sm:px-8 pt-8 pb-4">
           <div className="flex items-center gap-2.5 mb-5">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -739,7 +705,6 @@ export default function Devocional() {
         </div>
       </div>
 
-
       {/* Personal reflection */}
       {!isViewingPast && (
         <div className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
@@ -778,7 +743,7 @@ export default function Devocional() {
           </div>
           <div className="p-2 max-h-[300px] overflow-y-auto">
             {pastLoading ? (
-              <div className="space-y-2 p-2">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full rounded-lg" />)}</div>
+              <div className="space-y-2 p-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full rounded-lg" />)}</div>
             ) : pastItems.length === 0 ? (
               <p className="text-xs text-muted-foreground p-3 text-center">{labels.noPrevious[lang]}</p>
             ) : (
@@ -818,7 +783,6 @@ export default function Devocional() {
     </div>
   );
 
-  // Desktop: side-by-side with sidebar
   if (!isMobile && user) {
     return (
       <div className="flex gap-5 items-start w-full">
