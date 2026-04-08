@@ -17,6 +17,8 @@ export default {
         display: ['"Montserrat"', 'sans-serif'],
         body: ['"Montserrat"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
+        playfair: ['"Playfair Display"', 'Georgia', 'serif'],
+        serif: ['Georgia', '"Playfair Display"', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
