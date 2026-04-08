@@ -82,7 +82,7 @@ The story should be:
 - Use simple, vivid language with dialogue
 - Be biblically accurate but told in a fun way
 
-Return ONLY valid JSON: {"title": "story title", "content": "full story with paragraphs separated by \\n\\n"}`,
+Return ONLY valid JSON: {"title": "story title", "content": "full story with paragraphs separated by \\n\\n", "lesson": "a single sentence with the moral lesson of the story"}`,
           userPrompt: `Tell me a story about ${char.name[lang]} for children aged ${ageGroup}`,
           toolId: 'kids-story',
         },
