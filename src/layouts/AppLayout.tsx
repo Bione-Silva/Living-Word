@@ -81,6 +81,7 @@ const sidebarGroups: SidebarToolGroup[] = [
       { id: 'poetry', icon: Feather, label: { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía' } },
       { id: 'kids-story', icon: Baby, label: { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil' } },
       { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução', EN: 'Translation', ES: 'Traducción' } },
+      { id: 'social-content', icon: ImageIcon, label: { PT: 'Conteúdo Social', EN: 'Social Content', ES: 'Contenido Social' } },
     ],
   },
   {
@@ -181,6 +182,11 @@ export default function AppLayout() {
     }
     if (tool.id === 'biblical-study') {
       navigate('/estudos/novo');
+      setMobileToolsOpen(false);
+      return;
+    }
+    if (tool.id === 'social-content') {
+      navigate('/social-studio');
       setMobileToolsOpen(false);
       return;
     }
@@ -360,7 +366,6 @@ export default function AppLayout() {
                   {[
                     { to: '/biblioteca', icon: Library, label: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' } },
                     { to: '/calendario', icon: CalendarDays, label: { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' } },
-                    { to: '/social-studio', icon: ImageIcon, label: { PT: 'Estúdio Social', EN: 'Social Studio', ES: 'Estudio Social' } },
                     { to: '/bible', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' } },
                   ].map((nav) => {
                     const NavIcon = nav.icon;
