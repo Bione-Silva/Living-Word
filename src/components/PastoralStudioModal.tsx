@@ -568,6 +568,20 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                           {text.saveCurrent}
                         </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                          onClick={() => {
+                            const content = outputs[activeTab] || '';
+                            const passage = formData.bible_passage;
+                            onOpenChange(false);
+                            navigate('/social-studio', { state: { sermonContent: content, passage } });
+                          }}
+                        >
+                          <LayoutGrid className="h-4 w-4" />
+                          {lang === 'PT' ? 'Carrossel' : lang === 'ES' ? 'Carrusel' : 'Carousel'}
+                        </Button>
                       </div>
                     </div>
 
