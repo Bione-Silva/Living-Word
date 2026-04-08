@@ -185,6 +185,11 @@ export default function AppLayout() {
       setMobileToolsOpen(false);
       return;
     }
+    if (tool.id === 'social-content') {
+      navigate('/social-studio');
+      setMobileToolsOpen(false);
+      return;
+    }
     setMobileToolsOpen(false);
     setActiveTool({ id: tool.id, title: tool.label[lang] });
   };
