@@ -5,11 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import {
   BookOpen, ArrowLeft, Headphones, Calendar, MessageCircle,
   Play, Pause, Volume2, VolumeX, Share2, Copy, ListChecks,
-  PenLine, Send, Download, Image as ImageIcon
+  PenLine, Send, Download, Image as ImageIcon, Clock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -26,6 +28,14 @@ interface DevotionalData {
   reflection_question: string;
   scheduled_date: string;
   cover_image_url?: string | null;
+}
+
+interface PastDevotional {
+  id: string;
+  title: string;
+  type: string;
+  passage: string | null;
+  created_at: string;
 }
 
 const labels = {
@@ -58,12 +68,20 @@ const labels = {
   copied: { PT: 'Texto copiado!', EN: 'Text copied!', ES: '¡Texto copiado!' },
   imageSaved: { PT: 'Imagem salva!', EN: 'Image saved!', ES: '¡Imagen guardada!' },
   error: { PT: 'Não foi possível carregar o devocional.', EN: 'Could not load devotional.', ES: 'No se pudo cargar el devocional.' },
+  previousDevotionals: { PT: 'Devocionais Anteriores', EN: 'Previous Devotionals', ES: 'Devocionales Anteriores' },
+  noPrevious: { PT: 'Nenhum devocional salvo ainda.', EN: 'No saved devotionals yet.', ES: 'Aún no hay devocionales guardados.' },
 } satisfies Record<string, Record<L, string>>;
 
 function formatDate(dateStr: string, lang: L): string {
   const d = new Date(dateStr + 'T12:00:00');
   const locale = lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US';
   return d.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function formatShortDate(dateStr: string, lang: L): string {
+  const d = new Date(dateStr);
+  const locale = lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US';
+  return d.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
 }
 
 function formatTime(seconds: number): string {
@@ -163,7 +181,7 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-/* ─── Cover Image Section ─── */
+/* ─── Cover Image with Overlay ─── */
 function CoverImageSection({ imageUrl, title, category, verse, lang }: {
   imageUrl: string;
   title: string;
@@ -185,7 +203,6 @@ function CoverImageSection({ imageUrl, title, category, verse, lang }: {
       URL.revokeObjectURL(url);
       toast.success(labels.imageSaved[lang]);
     } catch {
-      // fallback: open in new tab
       window.open(imageUrl, '_blank');
     }
   };
@@ -193,11 +210,7 @@ function CoverImageSection({ imageUrl, title, category, verse, lang }: {
   const handleShare = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({
-          title,
-          text: `${title} — ${verse}`,
-          url: imageUrl,
-        });
+        await navigator.share({ title, text: `${title} — ${verse}`, url: imageUrl });
       } catch { /* user cancelled */ }
     } else {
       navigator.clipboard.writeText(imageUrl);
@@ -225,15 +238,43 @@ function CoverImageSection({ imageUrl, title, category, verse, lang }: {
         </div>
       </div>
 
-      {/* Image */}
+      {/* Image with overlay */}
       <div className="flex justify-center">
-        <div className="relative rounded-xl overflow-hidden shadow-lg max-w-sm w-full">
+        <div className="relative rounded-xl overflow-hidden shadow-lg max-w-sm w-full aspect-[3/4]">
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-auto object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
             loading="lazy"
           />
+          {/* Gradient overlay */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.1) 55%, transparent 70%)',
+            }}
+          />
+          {/* Top badge */}
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+            <span className="inline-flex items-center gap-1 bg-white/15 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
+              📗 {category}
+            </span>
+            <span className="text-white/50 text-[10px] font-medium uppercase tracking-wider">
+              Living Word
+            </span>
+          </div>
+          {/* Bottom text overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 flex flex-col gap-3">
+            <h3 className="text-white text-lg sm:text-xl font-display font-bold leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+              {title}
+            </h3>
+            <div className="flex items-center gap-2">
+              <div className="h-px flex-1 bg-white/20" />
+            </div>
+            <p className="text-white/80 text-xs sm:text-sm italic leading-relaxed line-clamp-3 drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]">
+              "{verse}"
+            </p>
+          </div>
         </div>
       </div>
 
@@ -262,10 +303,100 @@ function CoverImageSection({ imageUrl, title, category, verse, lang }: {
   );
 }
 
+/* ─── Previous Devotionals Sidebar ─── */
+function PreviousDevotionalsSidebar({ lang, userId }: { lang: L; userId: string }) {
+  const [items, setItems] = useState<PastDevotional[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from('materials')
+        .select('id, title, type, passage, created_at')
+        .eq('user_id', userId)
+        .in('type', ['devotional', 'devotional_reflection'])
+        .order('created_at', { ascending: false })
+        .limit(20);
+      setItems(data || []);
+      setLoading(false);
+    };
+    load();
+  }, [userId]);
+
+  const categoryLabels: Record<string, string> = {
+    devotional: lang === 'PT' ? 'Devocional' : lang === 'ES' ? 'Devocional' : 'Devotional',
+    devotional_reflection: lang === 'PT' ? 'Reflexão' : lang === 'ES' ? 'Reflexión' : 'Reflection',
+  };
+
+  return (
+    <div className="w-72 shrink-0 hidden lg:block">
+      <div className="sticky top-6 rounded-xl border border-border bg-card overflow-hidden">
+        {/* Header */}
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Clock className="h-4 w-4 text-primary" />
+            </div>
+            <p className="text-sm font-bold text-foreground">
+              {labels.previousDevotionals[lang]}
+            </p>
+          </div>
+        </div>
+
+        {/* List */}
+        <ScrollArea className="max-h-[calc(100vh-200px)]">
+          <div className="p-2">
+            {loading ? (
+              <div className="space-y-2 p-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="space-y-1.5">
+                    <Skeleton className="h-3.5 w-full" />
+                    <Skeleton className="h-3 w-2/3" />
+                  </div>
+                ))}
+              </div>
+            ) : items.length === 0 ? (
+              <p className="text-xs text-muted-foreground p-3 text-center">
+                {labels.noPrevious[lang]}
+              </p>
+            ) : (
+              items.map((item) => (
+                <Link
+                  key={item.id}
+                  to={`/biblioteca`}
+                  className="block p-3 rounded-lg hover:bg-muted/50 transition-colors group"
+                >
+                  <p className="text-sm font-medium text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                    {item.title}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-primary/70 bg-primary/8 px-2 py-0.5 rounded">
+                      {categoryLabels[item.type] || item.type}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">
+                      {formatShortDate(item.created_at, lang)}
+                    </span>
+                  </div>
+                  {item.passage && (
+                    <p className="text-[11px] text-muted-foreground mt-1 truncate">
+                      📖 {item.passage}
+                    </p>
+                  )}
+                </Link>
+              ))
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Page ─── */
 export default function Devocional() {
   const { lang } = useLanguage();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [data, setData] = useState<DevotionalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -353,8 +484,8 @@ export default function Devocional() {
     );
   }
 
-  return (
-    <div className="max-w-2xl mx-auto space-y-5 pb-10">
+  const mainContent = (
+    <div className="flex-1 min-w-0 max-w-2xl space-y-5 pb-10">
       {/* Back */}
       <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
@@ -409,7 +540,7 @@ export default function Devocional() {
         <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
       )}
 
-      {/* Cover image */}
+      {/* Cover image with overlay */}
       {data.cover_image_url && (
         <CoverImageSection
           imageUrl={data.cover_image_url}
@@ -504,4 +635,16 @@ export default function Devocional() {
       </div>
     </div>
   );
+
+  // Desktop: side-by-side layout with sidebar
+  if (!isMobile && user) {
+    return (
+      <div className="flex gap-6 items-start">
+        {mainContent}
+        <PreviousDevotionalsSidebar lang={lang} userId={user.id} />
+      </div>
+    );
+  }
+
+  return mainContent;
 }
