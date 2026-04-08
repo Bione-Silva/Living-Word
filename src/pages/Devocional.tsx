@@ -714,12 +714,22 @@ export default function Devocional() {
             </div>
             <div className="flex items-center justify-center gap-2 flex-wrap">
               <button
-                onClick={() => {
-                  const a = document.createElement('a');
-                  a.href = displayCover!;
-                  a.target = '_blank';
-                  a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
-                  a.click();
+                onClick={async () => {
+                  try {
+                    const resp = await fetch(displayCover!, { mode: 'cors' });
+                    const blob = await resp.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  } catch {
+                    // Fallback: open in new tab
+                    window.open(displayCover!, '_blank');
+                  }
                 }}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
               >
