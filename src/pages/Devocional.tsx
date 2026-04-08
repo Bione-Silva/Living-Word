@@ -329,6 +329,9 @@ export default function Devocional() {
   const [error, setError] = useState(false);
   const [personalNote, setPersonalNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  const [noteLoaded, setNoteLoaded] = useState(false);
+  const [noteSavedAt, setNoteSavedAt] = useState<string | null>(null);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
@@ -389,6 +392,55 @@ export default function Devocional() {
     load();
   }, [user]);
 
+  // Load existing note for today's devotional
+  useEffect(() => {
+    if (!user || !data) return;
+    const loadNote = async () => {
+      const { data: existing } = await supabase
+        .from('materials')
+        .select('id, content, notes')
+        .eq('user_id', user.id)
+        .eq('type', 'devotional')
+        .gte('created_at', data.scheduled_date + 'T00:00:00')
+        .lte('created_at', data.scheduled_date + 'T23:59:59')
+        .limit(1);
+      if (existing && existing.length > 0 && existing[0].notes) {
+        setPersonalNote(existing[0].notes);
+      }
+      setNoteLoaded(true);
+    };
+    loadNote();
+  }, [user, data]);
+
+  // Auto-save note with debounce
+  const autoSaveNote = useCallback(async (noteText: string) => {
+    if (!user || !data || !noteText.trim()) return;
+    setSavingNote(true);
+    try {
+      const { data: existing } = await supabase
+        .from('materials')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('type', 'devotional')
+        .gte('created_at', data.scheduled_date + 'T00:00:00')
+        .lte('created_at', data.scheduled_date + 'T23:59:59')
+        .limit(1);
+      if (existing && existing.length > 0) {
+        await supabase.from('materials').update({ notes: noteText }).eq('id', existing[0].id);
+      }
+      const now = new Date();
+      setNoteSavedAt(now.toLocaleTimeString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { hour: '2-digit', minute: '2-digit' }));
+    } catch { /* silent */ } finally {
+      setSavingNote(false);
+    }
+  }, [user, data, lang]);
+
+  const handleNoteChange = (value: string) => {
+    setPersonalNote(value);
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => autoSaveNote(value), 1500);
+  };
+
   const handleSelectPast = useCallback((item: PastDevotional) => {
     if (activeItemId === item.id) {
       setTransitioning(true);
@@ -423,20 +475,7 @@ export default function Devocional() {
 
   const handleSaveNote = async () => {
     if (!personalNote.trim() || !user || !data) return;
-    setSavingNote(true);
-    try {
-      await supabase.from('materials').insert({
-        user_id: user.id,
-        title: `Reflexão: ${data.title}`,
-        type: 'devotional_reflection',
-        content: personalNote,
-        passage: data.anchor_verse,
-      });
-      toast.success(labels.saved[lang]);
-      setPersonalNote('');
-    } catch { /* silent */ } finally {
-      setSavingNote(false);
-    }
+    autoSaveNote(personalNote);
   };
 
   if (loading) {
@@ -474,6 +513,21 @@ export default function Devocional() {
   const displayDate = isViewingPast ? viewingPast.created_at : data.scheduled_date;
   const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
+  /* ─── Inline bold/italic renderer ─── */
+  const renderInlineFormatting = (text: string, key: string) => {
+    // Support **bold** and *italic*
+    const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={`${key}-${i}`} className="font-bold text-foreground">{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <em key={`${key}-${i}`} className="italic text-foreground/80">{part.slice(1, -1)}</em>;
+      }
+      return <span key={`${key}-${i}`}>{part}</span>;
+    });
+  };
+
   /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
     const paragraphs = text.split('\n\n').filter(p => p.trim());
@@ -498,9 +552,12 @@ export default function Devocional() {
         );
       }
 
+      // Detect "Oração:" prefix paragraphs
+      const isOracaoLabel = /^Ora[çc][ãa]o:/i.test(trimmed);
       // Detect prayer paragraphs
-      const isPrayer = /^(Senhor|Pai|Deus|Lord|Father|God|Señor|Padre),?\s/i.test(trimmed);
+      const isPrayer = isOracaoLabel || /^(Senhor|Pai|Deus|Lord|Father|God|Señor|Padre),?\s/i.test(trimmed);
       if (isPrayer) {
+        const prayerText = isOracaoLabel ? trimmed.replace(/^Ora[çc][ãa]o:\s*/i, '') : trimmed;
         return (
           <div key={idx} className="mt-8 rounded-xl bg-accent/5 border border-accent/15 p-5">
             <div className="flex items-start gap-3">
@@ -510,7 +567,7 @@ export default function Devocional() {
                   {labels.prayer[lang]}
                 </p>
                 <p className="font-serif text-[1.05rem] italic text-foreground/85 leading-[1.9]">
-                  {trimmed}
+                  {renderInlineFormatting(prayerText, `prayer-${idx}`)}
                 </p>
               </div>
             </div>
@@ -518,17 +575,28 @@ export default function Devocional() {
         );
       }
 
+      // Add a subtle separator between thematic sections (every 2-3 paragraphs)
+      const showDivider = idx > 0 && idx % 3 === 0 && idx < paragraphs.length - 1;
+
       return (
-        <p
-          key={idx}
-          className={`font-serif text-[1.05rem] sm:text-[1.1rem] text-foreground/90 leading-[1.9] ${
-            idx === 0
-              ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
-              : 'mt-5'
-          }`}
-        >
-          {trimmed}
-        </p>
+        <div key={idx}>
+          {showDivider && (
+            <div className="flex items-center justify-center gap-3 my-6">
+              <span className="h-px w-8 bg-primary/20" />
+              <span className="text-primary/30 text-xs">✦</span>
+              <span className="h-px w-8 bg-primary/20" />
+            </div>
+          )}
+          <p
+            className={`font-serif text-[1.05rem] sm:text-[1.1rem] text-foreground/90 leading-[1.9] ${
+              idx === 0
+                ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
+                : 'mt-5'
+            }`}
+          >
+            {renderInlineFormatting(trimmed, `p-${idx}`)}
+          </p>
+        </div>
       );
     });
   };
@@ -824,14 +892,27 @@ export default function Devocional() {
       {/* ── 9. DIÁRIO ESPIRITUAL ── */}
       {!isViewingPast && (
         <div className="mt-6 rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-2.5">
-            <PenLine className="h-4 w-4 text-primary" />
-            <p className="text-sm font-bold text-foreground">{labels.journal[lang]}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <PenLine className="h-4 w-4 text-primary" />
+              <p className="text-sm font-bold text-foreground">{labels.journal[lang]}</p>
+            </div>
+            {noteSavedAt && (
+              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                <Check className="h-3 w-3 text-primary" />
+                {noteSavedAt}
+              </span>
+            )}
+            {savingNote && (
+              <span className="text-[10px] text-muted-foreground italic">
+                {lang === 'PT' ? 'Salvando...' : lang === 'ES' ? 'Guardando...' : 'Saving...'}
+              </span>
+            )}
           </div>
           <p className="text-xs text-muted-foreground">{labels.journalSub[lang]}</p>
           <textarea
             value={personalNote}
-            onChange={(e) => setPersonalNote(e.target.value)}
+            onChange={(e) => handleNoteChange(e.target.value)}
             placeholder={labels.journalPlaceholder[lang]}
             rows={4}
             className="w-full px-4 py-3 rounded-xl border border-border bg-background font-serif text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
