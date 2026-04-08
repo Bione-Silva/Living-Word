@@ -392,6 +392,55 @@ export default function Devocional() {
     load();
   }, [user]);
 
+  // Load existing note for today's devotional
+  useEffect(() => {
+    if (!user || !data) return;
+    const loadNote = async () => {
+      const { data: existing } = await supabase
+        .from('materials')
+        .select('id, content, notes')
+        .eq('user_id', user.id)
+        .eq('type', 'devotional')
+        .gte('created_at', data.scheduled_date + 'T00:00:00')
+        .lte('created_at', data.scheduled_date + 'T23:59:59')
+        .limit(1);
+      if (existing && existing.length > 0 && existing[0].notes) {
+        setPersonalNote(existing[0].notes);
+      }
+      setNoteLoaded(true);
+    };
+    loadNote();
+  }, [user, data]);
+
+  // Auto-save note with debounce
+  const autoSaveNote = useCallback(async (noteText: string) => {
+    if (!user || !data || !noteText.trim()) return;
+    setSavingNote(true);
+    try {
+      const { data: existing } = await supabase
+        .from('materials')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('type', 'devotional')
+        .gte('created_at', data.scheduled_date + 'T00:00:00')
+        .lte('created_at', data.scheduled_date + 'T23:59:59')
+        .limit(1);
+      if (existing && existing.length > 0) {
+        await supabase.from('materials').update({ notes: noteText }).eq('id', existing[0].id);
+      }
+      const now = new Date();
+      setNoteSavedAt(now.toLocaleTimeString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { hour: '2-digit', minute: '2-digit' }));
+    } catch { /* silent */ } finally {
+      setSavingNote(false);
+    }
+  }, [user, data, lang]);
+
+  const handleNoteChange = (value: string) => {
+    setPersonalNote(value);
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => autoSaveNote(value), 1500);
+  };
+
   const handleSelectPast = useCallback((item: PastDevotional) => {
     if (activeItemId === item.id) {
       setTransitioning(true);
