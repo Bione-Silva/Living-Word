@@ -134,8 +134,21 @@ export default function Pricing() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {plans.map((plan) => {
             const Icon = plan.icon;
-            const price = isAnnual ? plan.price.annual : plan.price.monthly;
-            const credits = PLAN_CREDITS[plan.slug];
+            const planKey = plan.slug as PlanSlug;
+            const credits = PLAN_CREDITS[planKey];
+
+            // Geo-aware pricing
+            let displayPrice: string;
+            if (plan.slug === 'free') {
+              displayPrice = `${pricing.symbol}0`;
+            } else {
+              const key = plan.slug as 'starter' | 'pro' | 'igreja';
+              const priceTable = isBRL ? PLAN_PRICES_BRL : PLAN_PRICES;
+              const amount = isAnnual
+                ? priceTable.annual[key] / 12
+                : priceTable.monthly[key];
+              displayPrice = formatPrice(amount, pricing.symbol, pricing.currency);
+            }
 
             return (
               <Card key={plan.slug} className={`relative overflow-hidden flex flex-col ${plan.featured ? 'border-primary ring-1 ring-primary/30 shadow-lg' : 'border-border/60'}`}>
