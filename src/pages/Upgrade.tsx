@@ -149,7 +149,7 @@ export default function Upgrade() {
   const igrejaTotal = useMemo(() => {
     if (!pricing) return 0;
     const base = pricing.plans.igreja.amount;
-    return base + extraSeats * pricing.addon.amount;
+    return base + extraSeats * pricing.addon_seat.amount;
   }, [extraSeats, pricing]);
 
   const autoCheckoutPlan = searchParams.get('autoCheckout');
@@ -177,7 +177,7 @@ export default function Upgrade() {
       };
       if (plan.planKey === 'igreja' && extraSeats > 0) {
         body.extraSeats = extraSeats;
-        body.stripeAddonPriceId = pricing.addon.id;
+        body.stripeAddonPriceId = pricing.addon_seat.id;
       }
       const { data, error } = await supabase.functions.invoke('create-checkout', { body });
       if (error) {
@@ -220,7 +220,7 @@ export default function Upgrade() {
     const isBRL = pricing.currency === 'BRL';
 
     if (plan.planKey === 'igreja') {
-      const addonAmt = isBRL ? 19.00 : pricing.addon.amount;
+      const addonAmt = isBRL ? 19.00 : pricing.addon_seat.amount;
       let base: number;
       if (isBRL) {
         base = isAnnual ? PLAN_PRICES_BRL.annual.igreja / 12 : PLAN_PRICES_BRL.monthly.igreja;
@@ -338,7 +338,7 @@ export default function Upgrade() {
                       )}
                     </div>
                     {extraSeats > 0 && (() => {
-                      const addonAmount = pricing.currency === 'BRL' ? 19.00 : pricing.addon.amount;
+                      const addonAmount = pricing.currency === 'BRL' ? 19.00 : pricing.addon_seat.amount;
                       return (
                         <p className="text-[11px] text-muted-foreground">
                           +{formatPrice(addonAmount, pricing.symbol, pricing.currency)} {labels.perSeat[lang]} × {extraSeats} = +{formatPrice(extraSeats * addonAmount, pricing.symbol, pricing.currency)}

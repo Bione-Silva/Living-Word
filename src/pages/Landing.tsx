@@ -447,9 +447,9 @@ export default function Landing() {
         price: fmt(pricing.plans.igreja.amount),
         period: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
         features: {
-          PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', `+${fmt(pricing.addon.amount)} por usuário extra`, 'Capacidade escala com a equipe'],
-          EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', `+${fmt(pricing.addon.amount)} per extra user`, 'Capacity scales with team'],
-          ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', `+${fmt(pricing.addon.amount)} por usuario extra`, 'Capacidad escala con el equipo'],
+          PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', `+${fmt(pricing.addon_seat.amount)} por usuário extra`, 'Capacidade escala com a equipe'],
+          EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', `+${fmt(pricing.addon_seat.amount)} per extra user`, 'Capacity scales with team'],
+          ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', `+${fmt(pricing.addon_seat.amount)} por usuario extra`, 'Capacidad escala con el equipo'],
         } as Record<L, string[]>,
         cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' } as Record<L, string>,
         featured: false,
