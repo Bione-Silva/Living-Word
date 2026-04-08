@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { bibleBooks, getBookName, getTranslation, getTranslationLabel, type L } from '@/lib/bible-data';
 import { VerseContextMenu } from '@/components/bible/VerseContextMenu';
 import { BibleTabs } from '@/components/bible/BibleTabs';
+import { ReadingPlans } from '@/components/bible/ReadingPlans';
 
 const pageTitle: Record<L, string> = { PT: 'A Bíblia', EN: 'The Bible', ES: 'La Biblia' };
 
