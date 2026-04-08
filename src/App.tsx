@@ -37,6 +37,7 @@ import SocialStudio from "./pages/SocialStudio";
 import BibleReader from "./pages/BibleReader";
 import Pricing from "./pages/Pricing";
 import Onboarding from "./pages/Onboarding";
+import Devocional from "./pages/Devocional";
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,7 @@ const App = () => (
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/blog-onboarding" element={<BlogOnboarding />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/devocional" element={<Devocional />} />
                 <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
                 <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
                 <Route path="/expos" element={<ExposStudioPage />} />
