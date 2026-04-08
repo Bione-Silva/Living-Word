@@ -103,8 +103,42 @@ Return ONLY valid JSON: {"title": "story title", "content": "full story with par
     }
   };
 
+  const generateImage = async (characterName: string, storyTitle: string) => {
+    setImageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-tool', {
+        body: {
+          systemPrompt: `You are an illustration generator. Return ONLY a single URL of a placeholder illustration. Actually, generate a vivid text description for an illustration.
+Return ONLY valid JSON: {"description": "a warm, colorful children's book illustration of..."}`,
+          userPrompt: `Describe a children's book illustration for a Bible story about ${characterName}: "${storyTitle}"`,
+          toolId: 'kids-illustration',
+        },
+      });
+      if (!error && data?.content) {
+        try {
+          const parsed = JSON.parse(data.content);
+          // Use the description as alt-text; generate image via Lovable AI
+          const imgRes = await supabase.functions.invoke('ai-tool', {
+            body: {
+              systemPrompt: 'Generate a children\'s book style illustration based on the description. Use warm colors, friendly characters, and a storybook feel. Return the image.',
+              userPrompt: parsed.description || `Children's Bible illustration of ${characterName}`,
+              toolId: 'kids-image',
+              model: 'google/gemini-2.5-flash',
+              modalities: ['image', 'text'],
+            },
+          });
+          if (imgRes.data?.images?.[0]?.image_url?.url) {
+            setStoryImage(imgRes.data.images[0].image_url.url);
+          }
+        } catch { /* ignore parse errors */ }
+      }
+    } catch { /* ignore image errors */ }
+    setImageLoading(false);
+  };
+
   const handleReset = () => {
     setStory(null);
+    setStoryImage(null);
     setSelected(null);
   };
 
