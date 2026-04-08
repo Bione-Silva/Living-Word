@@ -371,34 +371,58 @@ export default function Devocional() {
     return `${day} | ${monthNames[lang][d.getMonth()]}`;
   })();
 
-  /* ─── Render body text with H2/H3 formatting ─── */
+  /* ─── Render body text with rich editorial formatting ─── */
   const renderBodyText = (text: string) => {
     const paragraphs = text.split('\n\n').filter(p => p.trim());
+    if (paragraphs.length === 0) {
+      // Fallback: split by single newlines for flat text
+      const lines = text.split('\n').filter(l => l.trim());
+      if (lines.length <= 1) {
+        return [<p key={0} className="text-sm sm:text-[15px] text-foreground/90 leading-[1.95] first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none">{text.trim()}</p>];
+      }
+      return lines.map((line, idx) => (
+        <p key={idx} className={`text-sm sm:text-[15px] text-foreground/90 leading-[1.95] ${idx === 0 ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none' : 'mt-5'}`}>
+          {line.trim()}
+        </p>
+      ));
+    }
+
     return paragraphs.map((paragraph, idx) => {
       const trimmed = paragraph.trim();
 
-      // Detect markdown-style headers
       if (trimmed.startsWith('### ')) {
         return (
-          <h3 key={idx} className="text-base font-display font-bold text-primary mt-6 mb-2 flex items-center gap-2">
-            <span className="w-1 h-5 bg-primary/40 rounded-full" />
+          <h3 key={idx} className="text-base font-display font-bold text-primary mt-8 mb-3 flex items-center gap-2.5">
+            <span className="w-1 h-5 bg-primary/40 rounded-full shrink-0" />
             {trimmed.replace('### ', '')}
           </h3>
         );
       }
       if (trimmed.startsWith('## ')) {
         return (
-          <h2 key={idx} className="text-lg font-display font-bold text-foreground mt-8 mb-3 flex items-center gap-2">
-            <span className="w-1.5 h-6 bg-primary rounded-full" />
+          <h2 key={idx} className="text-lg font-display font-bold text-foreground mt-10 mb-4 flex items-center gap-2.5">
+            <span className="w-1.5 h-6 bg-primary rounded-full shrink-0" />
             {trimmed.replace('## ', '')}
           </h2>
         );
       }
       if (trimmed.startsWith('# ')) {
         return (
-          <h2 key={idx} className="text-xl font-display font-black text-foreground mt-8 mb-3 uppercase tracking-wide">
+          <h2 key={idx} className="text-xl font-display font-black text-foreground mt-10 mb-4 uppercase tracking-wide">
             {trimmed.replace('# ', '')}
           </h2>
+        );
+      }
+
+      // Detect prayer/concluding paragraphs (starts with "Senhor," "Pai," "Deus," "Lord," etc.)
+      const isPrayer = /^(Senhor|Pai|Deus|Lord|Father|God|Señor|Padre),?\s/i.test(trimmed);
+      if (isPrayer) {
+        return (
+          <div key={idx} className="mt-8 rounded-xl bg-primary/5 border border-primary/15 p-5">
+            <p className="text-sm sm:text-[15px] italic text-foreground/85 leading-[1.95]">
+              {trimmed}
+            </p>
+          </div>
         );
       }
 
@@ -406,7 +430,11 @@ export default function Devocional() {
       return (
         <p
           key={idx}
-          className={`text-sm sm:text-[15px] text-foreground/90 leading-[1.9] ${idx === 0 ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-1.5 first-letter:mt-0.5 first-letter:leading-none' : 'mt-4'}`}
+          className={`text-sm sm:text-[15px] text-foreground/90 leading-[1.95] ${
+            idx === 0
+              ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
+              : 'mt-5'
+          }`}
         >
           {trimmed}
         </p>
