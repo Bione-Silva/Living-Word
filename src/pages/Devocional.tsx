@@ -610,9 +610,6 @@ export default function Devocional() {
             {renderInlineFormatting(trimmed, `p-${idx}`)}
           </p>
         </div>
-        >
-          {trimmed}
-        </p>
       );
     });
   };
