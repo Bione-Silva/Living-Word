@@ -84,7 +84,7 @@ const headings: Record<L, Record<string, string>> = {
     zipLoading: 'Generando...',
     savedToCloud: '¡Arte guardado en la nube! ☁️',
     emptyCanvas: 'Busca un versículo o genera contenido para empezar a crear.',
-    devotionalCheck: 'Generar devocional en carrusel',
+    devotionalCheck: 'Generar guión de carrusel',
     carouselEmpty: 'Genera un versículo con devocional en la pestaña "Crear" para montar slides automáticos.',
     goCreate: 'Ir a Crear',
     generateAnother: 'Generar Otro',
