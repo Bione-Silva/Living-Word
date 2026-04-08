@@ -276,21 +276,19 @@ export default function Devocional() {
   };
 
   const handleCopy = () => {
-    const d = viewingPast || data;
-    if (!d) return;
+    if (!data) return;
     const text = viewingPast
-      ? `*${d.title}*\n\n${d.content}`
-      : `*${data!.title}*\n\n"${data!.anchor_verse_text}"\n— ${data!.anchor_verse}\n\n${data!.body_text}\n\n💡 ${data!.daily_practice || ''}\n\n💭 ${data!.reflection_question}`;
+      ? `*${viewingPast.title}*\n\n${viewingPast.content}`
+      : `*${data.title}*\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${data.body_text}\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
     navigator.clipboard.writeText(text);
     toast.success(labels.copied[lang]);
   };
 
   const handleWhatsApp = () => {
-    const d = viewingPast || data;
-    if (!d) return;
+    if (!data) return;
     const text = viewingPast
-      ? `*${d.title}*\n\n${d.content.slice(0, 500)}...`
-      : `*${data!.title}*\n\n_"${data!.anchor_verse_text}"_\n— ${data!.anchor_verse}\n\n${data!.body_text.slice(0, 500)}...\n\n💡 ${data!.daily_practice || ''}\n\n💭 ${data!.reflection_question}`;
+      ? `*${viewingPast.title}*\n\n${viewingPast.content.slice(0, 500)}...`
+      : `*${data.title}*\n\n_"${data.anchor_verse_text}"_\n— ${data.anchor_verse}\n\n${data.body_text.slice(0, 500)}...\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
