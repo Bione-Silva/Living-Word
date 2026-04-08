@@ -7,6 +7,139 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
 
+interface DevotionalPayload {
+  title: string
+  category: string
+  anchor_verse: string
+  anchor_verse_text: string
+  body_text: string
+  daily_practice?: string
+  reflection_question: string
+  scheduled_date: string
+}
+
+async function generateCoverImage(
+  devotional: DevotionalPayload,
+  userId: string,
+  supabaseUrl: string,
+): Promise<string | null> {
+  try {
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const adminClient = createClient(supabaseUrl, serviceRoleKey)
+    const today = devotional.scheduled_date
+
+    // Check if image already exists for today
+    const fileName = `devotional-covers/${today}.png`
+    const { data: existingUrl } = adminClient.storage
+      .from('blog-images')
+      .getPublicUrl(fileName)
+
+    // Try to check if file exists
+    const { data: existingFile } = await adminClient.storage
+      .from('blog-images')
+      .list('devotional-covers', { search: `${today}.png` })
+
+    if (existingFile && existingFile.length > 0) {
+      return existingUrl.publicUrl
+    }
+
+    const imagePrompt = `Generate a beautiful devotional cover image. Theme: "${devotional.title}". Category: ${devotional.category}. Bible verse: ${devotional.anchor_verse}. Style: atmospheric, ethereal, warm golden light, biblical landscape or symbolic imagery inspired by the verse. Painterly, artistic, museum-quality. Vertical 3:4 orientation. Do NOT include any text, letters, words, or typography in the image.`
+
+    const imgResponse = await fetch('https://api.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-3.1-flash-image-preview',
+        messages: [
+          { role: 'user', content: imagePrompt },
+        ],
+      }),
+    })
+
+    if (!imgResponse.ok) {
+      console.error('Image API error:', imgResponse.status, await imgResponse.text())
+      return null
+    }
+
+    const imgData = await imgResponse.json()
+    const msgContent = imgData.choices?.[0]?.message?.content
+
+    // Extract base64 image data from various possible response formats
+    let base64Data: string | null = null
+
+    if (typeof msgContent === 'string') {
+      // Format: "data:image/png;base64,..."
+      const dataUrlMatch = msgContent.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/)
+      if (dataUrlMatch) {
+        base64Data = dataUrlMatch[1]
+      }
+    } else if (Array.isArray(msgContent)) {
+      // Format: [{ type: "image_url", image_url: { url: "data:..." } }, ...]
+      for (const part of msgContent) {
+        const url = part?.image_url?.url || part?.image?.url || part?.url
+        if (typeof url === 'string') {
+          const match = url.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/)
+          if (match) {
+            base64Data = match[1]
+            break
+          }
+        }
+        // Direct base64 in content
+        if (part?.type === 'image' && part?.source?.data) {
+          base64Data = part.source.data
+          break
+        }
+      }
+    }
+
+    if (!base64Data) {
+      // Try parsing the whole response for any base64 image pattern
+      const fullStr = JSON.stringify(imgData)
+      const match = fullStr.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]{100,})/)
+      if (match) {
+        base64Data = match[1]
+      }
+    }
+
+    if (!base64Data) {
+      console.error('Could not extract image data from response. Keys:', Object.keys(imgData))
+      console.error('Content type:', typeof msgContent, Array.isArray(msgContent) ? 'array' : '')
+      return null
+    }
+
+    // Decode and upload
+    const raw = atob(base64Data)
+    const imageBytes = new Uint8Array(raw.length)
+    for (let i = 0; i < raw.length; i++) {
+      imageBytes[i] = raw.charCodeAt(i)
+    }
+
+    const { error: uploadError } = await adminClient.storage
+      .from('blog-images')
+      .upload(fileName, imageBytes, {
+        contentType: 'image/png',
+        upsert: true,
+      })
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError)
+      return null
+    }
+
+    const { data: urlData } = adminClient.storage
+      .from('blog-images')
+      .getPublicUrl(fileName)
+
+    return urlData.publicUrl
+  } catch (err) {
+    console.error('Image generation failed (non-critical):', err)
+    return null
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -97,16 +230,7 @@ The tone should be warm, pastoral, and encouraging.`
     const aiData = await aiResponse.json()
     const content = aiData.choices?.[0]?.message?.content
 
-    let parsed: {
-      title: string
-      category: string
-      anchor_verse: string
-      anchor_verse_text: string
-      body_text: string
-      daily_practice?: string
-      reflection_question: string
-      scheduled_date: string
-    }
+    let parsed: DevotionalPayload
 
     try {
       parsed = JSON.parse(content)
@@ -153,6 +277,9 @@ The tone should be warm, pastoral, and encouraging.`
       cost_usd: ((inputTokens * 0.075 + outputTokens * 0.3) / 1_000_000),
     })
 
+    // Generate cover image (non-blocking for response — we still await but it's fault-tolerant)
+    const coverImageUrl = await generateCoverImage(parsed, user.id, supabaseUrl)
+
     return new Response(JSON.stringify({
       id: `devotional-${today}`,
       title: parsed.title,
@@ -163,6 +290,7 @@ The tone should be warm, pastoral, and encouraging.`
       daily_practice: parsed.daily_practice || '',
       reflection_question: parsed.reflection_question,
       scheduled_date: parsed.scheduled_date,
+      cover_image_url: coverImageUrl,
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -180,6 +308,7 @@ The tone should be warm, pastoral, and encouraging.`
       daily_practice: 'Reserve um momento hoje para escrever três formas específicas em que Deus tem sido fiel a você esta semana.',
       reflection_question: 'Como você tem experimentado a fidelidade de Deus recentemente no seu ministério?',
       scheduled_date: today,
+      cover_image_url: null,
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
