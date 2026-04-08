@@ -329,6 +329,9 @@ export default function Devocional() {
   const [error, setError] = useState(false);
   const [personalNote, setPersonalNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  const [noteLoaded, setNoteLoaded] = useState(false);
+  const [noteSavedAt, setNoteSavedAt] = useState<string | null>(null);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
