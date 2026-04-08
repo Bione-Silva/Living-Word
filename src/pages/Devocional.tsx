@@ -378,27 +378,7 @@ export default function Devocional() {
         const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today');
         if (err || !result) throw err;
         setData(result);
-
-        const todayDate = result.scheduled_date;
-        const { data: existing } = await supabase
-          .from('materials')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('type', 'devotional')
-          .gte('created_at', todayDate + 'T00:00:00')
-          .lte('created_at', todayDate + 'T23:59:59')
-          .limit(1);
-
-        if (!existing || existing.length === 0) {
-          await supabase.from('materials').insert({
-            user_id: user.id,
-            title: result.title,
-            type: 'devotional',
-            content: result.body_text,
-            passage: result.anchor_verse,
-            cover_image_url: result.cover_image_url || null,
-          });
-        }
+        // Edge function now handles caching & persistence — no client-side insert needed
       } catch {
         setError(true);
       } finally {
