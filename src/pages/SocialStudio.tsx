@@ -23,7 +23,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import {
   Sparkles, Layers, Loader2, Archive, Image, Download,
-  PanelLeftClose, PanelLeftOpen, Palette, Wand2, Twitter
+  PanelLeftClose, PanelLeftOpen, Palette, Wand2
 } from 'lucide-react';
 import { toast } from 'sonner';
 
