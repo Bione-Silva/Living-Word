@@ -101,6 +101,7 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
   const [duration, setDuration] = useState(0);
   const [muted, setMuted] = useState(false);
   const [speed, setSpeed] = useState(1);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -115,14 +116,19 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
     if (audioRef.current) audioRef.current.playbackRate = next;
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = Number(e.target.value);
-    if (audioRef.current) audioRef.current.currentTime = val;
-    setCurrentTime(val);
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressRef.current || !audioRef.current) return;
+    const rect = progressRef.current.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const newTime = pct * (duration || 1);
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
   };
 
+  const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   return (
-    <div className="rounded-xl border border-border bg-card p-4 sm:p-5 space-y-4">
+    <div className="rounded-xl border border-primary/20 bg-primary/[0.04] p-5 sm:p-6 space-y-5">
       <audio
         ref={audioRef}
         src={src}
@@ -132,8 +138,9 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
         onEnded={() => setPlaying(false)}
       />
 
+      {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+        <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
           <Headphones className="h-5 w-5 text-primary" />
         </div>
         <div>
@@ -144,35 +151,95 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
         </div>
       </div>
 
+      {/* Progress bar */}
       <div className="space-y-1.5">
-        <input
-          type="range"
-          min={0}
-          max={duration || 1}
-          value={currentTime}
-          onChange={handleSeek}
-          className="w-full h-1.5 rounded-full appearance-none bg-muted cursor-pointer accent-primary [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md"
-        />
-        <div className="flex justify-between text-[11px] text-muted-foreground">
+        <div
+          ref={progressRef}
+          onClick={handleSeek}
+          className="w-full h-2 rounded-full bg-muted cursor-pointer relative group"
+        >
+          <div
+            className="absolute inset-y-0 left-0 rounded-full bg-primary transition-all"
+            style={{ width: `${progressPct}%` }}
+          />
+          <div
+            className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-primary shadow-md border-2 border-background opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{ left: `calc(${progressPct}% - 8px)` }}
+          />
+        </div>
+        <div className="flex justify-between text-[11px] text-muted-foreground font-medium tabular-nums">
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-6">
-        <button onClick={() => setMuted(!muted)} className="text-muted-foreground hover:text-foreground transition-colors">
+      {/* Controls */}
+      <div className="flex items-center justify-center gap-8">
+        <button
+          onClick={() => setMuted(!muted)}
+          className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+        >
           {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
         </button>
         <button
           onClick={togglePlay}
-          className="h-14 w-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95"
+          className="h-16 w-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 active:scale-95"
         >
-          {playing ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
+          {playing ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7 ml-0.5" />}
         </button>
-        <button onClick={cycleSpeed} className="text-muted-foreground hover:text-foreground text-sm font-semibold transition-colors min-w-[32px]">
+        <button
+          onClick={cycleSpeed}
+          className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 text-sm font-bold transition-all"
+        >
           {speed}x
         </button>
       </div>
+    </div>
+  );
+}
+
+/* ─── Audio Player Placeholder (no audio yet) ─── */
+function AudioPlayerPlaceholder({ title, lang }: { title: string; lang: L }) {
+  return (
+    <div className="rounded-xl border border-border bg-muted/30 p-5 sm:p-6 space-y-5">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+          <Headphones className="h-5 w-5 text-primary/60" />
+        </div>
+        <div>
+          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary/60">
+            {labels.listenSection[lang]}
+          </p>
+          <p className="text-sm font-medium text-foreground/70 leading-snug">{title}</p>
+        </div>
+      </div>
+
+      {/* Disabled progress bar */}
+      <div className="space-y-1.5">
+        <div className="w-full h-2 rounded-full bg-muted" />
+        <div className="flex justify-between text-[11px] text-muted-foreground/50 font-medium tabular-nums">
+          <span>0:00</span>
+          <span>0:00</span>
+        </div>
+      </div>
+
+      {/* Disabled controls */}
+      <div className="flex items-center justify-center gap-8">
+        <div className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground/40">
+          <Volume2 className="h-5 w-5" />
+        </div>
+        <div className="h-16 w-16 rounded-full bg-primary/20 text-primary-foreground/50 flex items-center justify-center shadow-sm">
+          <Play className="h-7 w-7 ml-0.5" />
+        </div>
+        <div className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground/40 text-sm font-bold">
+          1x
+        </div>
+      </div>
+
+      <p className="text-center text-[11px] text-muted-foreground/60 italic">
+        {lang === 'PT' ? 'Áudio em breve disponível' : lang === 'ES' ? 'Audio disponible pronto' : 'Audio coming soon'}
+      </p>
     </div>
   );
 }
@@ -574,9 +641,13 @@ export default function Devocional() {
         )}
 
         {/* ── 4. AUDIO PLAYER ── */}
-        {!isViewingPast && data.audio_url && (
+        {!isViewingPast && (
           <div className="mx-5 sm:mx-8 mt-5">
-            <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
+            {data.audio_url ? (
+              <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
+            ) : (
+              <AudioPlayerPlaceholder title={data.title} lang={lang} />
+            )}
           </div>
         )}
 
