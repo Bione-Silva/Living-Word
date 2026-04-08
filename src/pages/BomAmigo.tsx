@@ -210,6 +210,29 @@ export default function BomAmigo() {
         )}
       </div>
 
+      {/* Emotion chips */}
+      {messages.length === 0 && !loading && (
+        <div className="shrink-0 px-4 pb-2 flex flex-wrap gap-2">
+          {[
+            { PT: 'Ansioso', EN: 'Anxious', ES: 'Ansioso', emoji: '😰' },
+            { PT: 'Triste', EN: 'Sad', ES: 'Triste', emoji: '😢' },
+            { PT: 'Sobrecarregado', EN: 'Overwhelmed', ES: 'Agobiado', emoji: '😩' },
+            { PT: 'Com medo', EN: 'Afraid', ES: 'Con miedo', emoji: '😨' },
+            { PT: 'Sozinho', EN: 'Lonely', ES: 'Solo', emoji: '😔' },
+            { PT: 'Cansado', EN: 'Tired', ES: 'Cansado', emoji: '😴' },
+            { PT: 'Grato', EN: 'Grateful', ES: 'Agradecido', emoji: '🙏' },
+          ].map((chip) => (
+            <button
+              key={chip.EN}
+              onClick={() => { setInput(chip[lang]); inputRef.current?.focus(); }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-background text-xs text-muted-foreground hover:border-primary hover:bg-primary/10 hover:text-primary transition-colors"
+            >
+              {chip.emoji} {chip[lang]}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Input area */}
       <div className="shrink-0 border-t border-border px-4 py-3">
         <div className="flex items-end gap-2">
