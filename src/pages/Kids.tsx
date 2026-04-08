@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -54,8 +54,11 @@ export default function Kids() {
   const [ageGroup, setAgeGroup] = useState('6-8');
   const [loading, setLoading] = useState(false);
   const [story, setStory] = useState<{ title: string; content: string } | null>(null);
+  const [lesson, setLesson] = useState<string | null>(null);
   const [storyImage, setStoryImage] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
+  const [drawingImage, setDrawingImage] = useState<string | null>(null);
+  const [drawingLoading, setDrawingLoading] = useState(false);
 
   const handleGenerate = async () => {
     if (!selected || !user) return;
@@ -64,6 +67,8 @@ export default function Kids() {
 
     setLoading(true);
     setStory(null);
+    setLesson(null);
+    setDrawingImage(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
@@ -77,7 +82,7 @@ The story should be:
 - Use simple, vivid language with dialogue
 - Be biblically accurate but told in a fun way
 
-Return ONLY valid JSON: {"title": "story title", "content": "full story with paragraphs separated by \\n\\n"}`,
+Return ONLY valid JSON: {"title": "story title", "content": "full story with paragraphs separated by \\n\\n", "lesson": "a single sentence with the moral lesson of the story"}`,
           userPrompt: `Tell me a story about ${char.name[lang]} for children aged ${ageGroup}`,
           toolId: 'kids-story',
         },
@@ -86,14 +91,25 @@ Return ONLY valid JSON: {"title": "story title", "content": "full story with par
       if (error) throw error;
       const content = data?.content;
       if (content) {
-        let parsed: { title: string; content: string };
+        let parsed: { title: string; content: string; lesson?: string };
         try {
           parsed = JSON.parse(content);
         } catch {
           parsed = { title: char.name[lang], content };
         }
+        // Extract lesson: from JSON field, or from content lines starting with "Lição:" / "Lesson:" / "Lección:"
+        let extractedLesson = parsed.lesson || null;
+        if (!extractedLesson) {
+          const lines = parsed.content.split('\n');
+          const lessonLine = lines.find(l => /^(Lição|Lesson|Lección)\s*:/i.test(l.trim()));
+          if (lessonLine) {
+            extractedLesson = lessonLine.replace(/^(Lição|Lesson|Lección)\s*:\s*/i, '').trim();
+            // Remove the lesson line from content
+            parsed.content = lines.filter(l => l !== lessonLine).join('\n');
+          }
+        }
+        setLesson(extractedLesson);
         setStory(parsed);
-        // Generate illustration
         generateImage(char.name.EN, parsed.title);
       }
     } catch {
@@ -136,9 +152,47 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
     setImageLoading(false);
   };
 
+  const generateDrawing = async () => {
+    if (!selected) return;
+    const char = characters.find(c => c.id === selected);
+    if (!char) return;
+    setDrawingLoading(true);
+    setDrawingImage(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
+        body: {
+          verse_text: `Cena bíblica infantil: ${char.name.EN} - ${story?.title || ''}`,
+          style: 'ilustração infantil colorida, estilo cartoon cristão, cores vibrantes, personagens amigáveis',
+          format: '1:1',
+        },
+      });
+      if (!error && data?.image_url) {
+        setDrawingImage(data.image_url);
+      } else {
+        // Fallback: use ai-tool with image generation prompt
+        const imgRes = await supabase.functions.invoke('ai-tool', {
+          body: {
+            systemPrompt: 'You are a children\'s illustration artist. Describe a beautiful, colorful children\'s book illustration.',
+            userPrompt: `Create a warm, colorful children's Bible illustration of ${char.name[lang]} in the story "${story?.title}". Style: cartoon, friendly, vibrant colors, storybook feel.`,
+            toolId: 'kids-drawing',
+          },
+        });
+        if (imgRes.data?.content) {
+          toast.success(lang === 'PT' ? 'Descrição gerada! Em breve com imagem real.' : 'Description generated!');
+        }
+      }
+    } catch {
+      toast.error(lang === 'PT' ? 'Erro ao gerar desenho' : 'Error generating drawing');
+    } finally {
+      setDrawingLoading(false);
+    }
+  };
+
   const handleReset = () => {
     setStory(null);
     setStoryImage(null);
+    setLesson(null);
+    setDrawingImage(null);
     setSelected(null);
   };
 
@@ -230,7 +284,22 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
                 <p key={i} className="mb-3">{p}</p>
               ))}
             </div>
+
+            {/* Lesson card */}
+            {lesson && (
+              <div className="bg-accent/10 border-l-4 border-primary rounded-r-xl p-4 mt-4">
+                <p className="text-sm">
+                  <span className="font-bold text-primary">💡 {lang === 'PT' ? 'Lição' : lang === 'ES' ? 'Lección' : 'Lesson'}:</span>{' '}
+                  <span className="text-foreground/85">{lesson}</span>
+                </p>
+              </div>
+            )}
           </div>
+
+          {/* Drawing */}
+          {drawingImage && (
+            <img src={drawingImage} alt={`Desenho de ${characters.find(c => c.id === selected)?.name[lang]}`} className="w-full aspect-square rounded-2xl object-cover" />
+          )}
 
           {/* Actions */}
           <div className="flex gap-3">
@@ -248,6 +317,19 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '🔄'} {lang === 'PT' ? 'Recontar' : 'Retell'}
             </button>
           </div>
+
+          {/* Generate Drawing button */}
+          <button
+            onClick={generateDrawing}
+            disabled={drawingLoading}
+            className="w-full bg-primary/10 text-primary border border-primary/30 rounded-xl px-4 py-2 text-sm font-medium hover:bg-primary/15 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {drawingLoading ? (
+              <><span className="animate-pulse text-lg">{characters.find(c => c.id === selected)?.emoji}</span> {lang === 'PT' ? 'Gerando desenho mágico...' : 'Generating magic drawing...'}</>
+            ) : (
+              <><Palette className="h-4 w-4" /> 🎨 {lang === 'PT' ? `Gerar Desenho de ${characters.find(c => c.id === selected)?.name[lang]}` : `Generate Drawing of ${characters.find(c => c.id === selected)?.name[lang]}`}</>
+            )}
+          </button>
         </div>
       )}
     </div>
