@@ -67,6 +67,8 @@ export default function Kids() {
 
     setLoading(true);
     setStory(null);
+    setLesson(null);
+    setDrawingImage(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
