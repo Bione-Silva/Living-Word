@@ -47,7 +47,7 @@ export function CreditTopUpButton() {
         },
       });
       if (error) throw error;
-      if (data?.url) window.location.href = data.url;
+      if (data?.checkout_url) window.location.href = data.checkout_url;
     } catch {
       toast({
         title: lang === 'PT' ? 'Erro' : 'Error',
