@@ -739,28 +739,6 @@ export default function Devocional() {
         </div>
       </div>
 
-        {/* Bottom action bar */}
-        <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/20">
-          <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors">
-            <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
-          </button>
-          <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors">
-            <WhatsAppIcon /> {labels.shareWa[lang]}
-          </button>
-          <button
-            onClick={() => { if (navigator.share) navigator.share({ title: displayTitle, text: `${displayTitle} — ${displayVerse}` }); }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-          >
-            <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
-          </button>
-          <Link
-            to="/mente-chat"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-          >
-            <MessageCircle className="h-3.5 w-3.5" /> {labels.continueChat[lang]}
-          </Link>
-        </div>
-      </div>
 
       {/* Personal reflection */}
       {!isViewingPast && (
