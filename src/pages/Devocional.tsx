@@ -47,7 +47,7 @@ interface PastDevotional {
 
 const labels = {
   back: { PT: 'Voltar', EN: 'Back', ES: 'Volver' },
-  pageTitle: { PT: 'Palavra Viva', EN: 'Living Word', ES: 'Palabra Viva' },
+  pageTitle: { PT: 'Café com Deus Pai', EN: 'Coffee with God', ES: 'Café con Dios Padre' },
   subtitle: { PT: 'Sua dose diária de inspiração bíblica, preparada com IA pastoral', EN: 'Your daily dose of biblical inspiration, crafted with pastoral AI', ES: 'Tu dosis diaria de inspiración bíblica, preparada con IA pastoral' },
   listenLabel: { PT: 'ESCUTE A PALAVRA', EN: 'HEAR THE WORD', ES: 'ESCUCHA LA PALABRA' },
   coverSection: { PT: 'ARTE DO DIA', EN: "TODAY'S ART", ES: 'ARTE DEL DÍA' },
@@ -59,20 +59,20 @@ const labels = {
   saveImage: { PT: 'Baixar arte', EN: 'Download art', ES: 'Descargar arte' },
   share: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   shareWa: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
-  deepenChat: { PT: 'Aprofundar no Chat', EN: 'Go deeper in Chat', ES: 'Profundizar en el Chat' },
-  journal: { PT: 'Diário Espiritual', EN: 'Spiritual Journal', ES: 'Diario Espiritual' },
+  deepenChat: { PT: 'Continuar no Chat', EN: 'Continue in Chat', ES: 'Continuar en el Chat' },
+  journal: { PT: '✍️ Minha Reflexão Pessoal', EN: '✍️ My Personal Reflection', ES: '✍️ Mi Reflexión Personal' },
   journalSub: {
-    PT: 'Registre aqui o que Deus falou ao seu coração hoje. Suas anotações ficam salvas na sua biblioteca.',
-    EN: 'Write down what God spoke to your heart today. Your notes are saved in your library.',
-    ES: 'Registra aquí lo que Dios habló a tu corazón hoy. Tus notas se guardan en tu biblioteca.',
+    PT: 'Escreva suas reflexões, orações ou pensamentos sobre o devocional de hoje...',
+    EN: 'Write your reflections, prayers or thoughts about today\'s devotional...',
+    ES: 'Escribe tus reflexiones, oraciones o pensamientos sobre el devocional de hoy...',
   },
   journalPlaceholder: {
-    PT: 'O que o Espírito destacou para você nesta leitura?',
-    EN: 'What did the Spirit highlight for you in this reading?',
-    ES: '¿Qué destacó el Espíritu para ti en esta lectura?',
+    PT: 'Escreva suas reflexões pessoais...',
+    EN: 'Write your personal reflections...',
+    ES: 'Escribe tus reflexiones personales...',
   },
-  saveNote: { PT: 'Guardar anotação', EN: 'Save note', ES: 'Guardar nota' },
-  saved: { PT: 'Anotação guardada!', EN: 'Note saved!', ES: '¡Nota guardada!' },
+  saveNote: { PT: 'Salvar Reflexão', EN: 'Save Reflection', ES: 'Guardar Reflexión' },
+  saved: { PT: 'Reflexão salva!', EN: 'Reflection saved!', ES: '¡Reflexión guardada!' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
   error: { PT: 'Ops, não conseguimos carregar a palavra de hoje. Tente novamente.', EN: "Oops, we couldn't load today's word. Please try again.", ES: 'Ups, no pudimos cargar la palabra de hoy. Inténtalo de nuevo.' },
   history: { PT: 'Histórico de Leituras', EN: 'Reading History', ES: 'Historial de Lecturas' },
@@ -110,10 +110,11 @@ function SoundWaves({ active }: { active: boolean }) {
       {[1, 2, 3, 4, 5].map(i => (
         <div
           key={i}
-          className={`w-[3px] rounded-full bg-primary transition-all ${active ? 'animate-sound-wave' : 'h-1 opacity-40'}`}
+          className={`w-[3px] rounded-full transition-all ${active ? 'animate-sound-wave' : 'h-1 opacity-40'}`}
           style={{
             animationDelay: active ? `${i * 0.12}s` : undefined,
             height: active ? undefined : '4px',
+            backgroundColor: 'hsl(38, 52%, 58%)',
           }}
         />
       ))}
@@ -188,7 +189,7 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   if (!audioSrc) return <AudioPlaceholder title={data.title} lang={lang} />;
 
   return (
-    <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.06] to-primary/[0.02] p-5 sm:p-6 space-y-5">
+    <div className="rounded-2xl border p-5 sm:p-6 space-y-5" style={{ borderColor: 'hsl(38, 40%, 80%)', background: 'linear-gradient(135deg, hsl(38, 40%, 96%), hsl(36, 30%, 94%))' }}>
       <audio
         ref={audioRef}
         src={audioSrc}
@@ -201,14 +202,14 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
       {/* Header with waves */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+          <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(38, 52%, 58%, 0.15)' }}>
             <SoundWaves active={playing} />
           </div>
           <div>
-            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary">
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ color: 'hsl(38, 52%, 48%)' }}>
               {labels.listenLabel[lang]}
             </p>
-            <p className="text-sm font-medium text-foreground leading-snug line-clamp-1">{data.title}</p>
+            <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: 'hsl(24, 30%, 15%)' }}>{data.title}</p>
           </div>
         </div>
       </div>
@@ -219,11 +220,11 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
           <button
             key={opt.key}
             onClick={() => handleVoiceChange(opt.key)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
-              voice === opt.key
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
-            }`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all"
+            style={voice === opt.key
+              ? { backgroundColor: 'hsl(38, 52%, 48%)', color: '#fff', boxShadow: '0 2px 8px hsl(38, 52%, 48%, 0.3)' }
+              : { backgroundColor: 'hsl(36, 20%, 90%)', color: 'hsl(24, 18%, 45%)' }
+            }
           >
             {opt.icon}
             <span className="hidden sm:inline">{opt.label}</span>
@@ -236,18 +237,19 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
         <div
           ref={progressRef}
           onClick={handleSeek}
-          className="w-full h-2 rounded-full bg-muted cursor-pointer relative group"
+          className="w-full h-2 rounded-full cursor-pointer relative group"
+          style={{ backgroundColor: 'hsl(36, 20%, 88%)' }}
         >
           <div
-            className="absolute inset-y-0 left-0 rounded-full bg-primary transition-all"
-            style={{ width: `${progressPct}%` }}
+            className="absolute inset-y-0 left-0 rounded-full transition-all"
+            style={{ width: `${progressPct}%`, backgroundColor: 'hsl(38, 52%, 48%)' }}
           />
           <div
-            className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-primary shadow-md border-2 border-background opacity-0 group-hover:opacity-100 transition-opacity"
-            style={{ left: `calc(${progressPct}% - 8px)` }}
+            className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full shadow-md border-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{ left: `calc(${progressPct}% - 8px)`, backgroundColor: 'hsl(38, 52%, 48%)', borderColor: '#fff' }}
           />
         </div>
-        <div className="flex justify-between text-[11px] text-muted-foreground font-medium tabular-nums">
+        <div className="flex justify-between text-[11px] font-medium tabular-nums" style={{ color: 'hsl(24, 18%, 50%)' }}>
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
@@ -257,19 +259,22 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
       <div className="flex items-center justify-center gap-8">
         <button
           onClick={() => setMuted(!muted)}
-          className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+          className="h-10 w-10 rounded-full flex items-center justify-center transition-all hover:bg-accent/10"
+          style={{ color: 'hsl(24, 18%, 50%)' }}
         >
           {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
         </button>
         <button
           onClick={togglePlay}
-          className="h-16 w-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 active:scale-95"
+          className="h-16 w-16 rounded-full flex items-center justify-center transition-all active:scale-95"
+          style={{ backgroundColor: 'hsl(38, 52%, 48%)', color: '#fff', boxShadow: '0 8px 24px hsl(38, 52%, 48%, 0.35)' }}
         >
           {playing ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7 ml-0.5" />}
         </button>
         <button
           onClick={cycleSpeed}
-          className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 text-sm font-bold transition-all"
+          className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold transition-all hover:bg-accent/10"
+          style={{ color: 'hsl(24, 18%, 50%)' }}
         >
           {speed}x
         </button>
@@ -281,31 +286,31 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
 /* ─── Audio Placeholder (no audio yet) ─── */
 function AudioPlaceholder({ title, lang }: { title: string; lang: L }) {
   return (
-    <div className="rounded-2xl border border-accent/30 bg-accent/[0.04] p-5 sm:p-6 space-y-5">
+    <div className="rounded-2xl border p-5 sm:p-6 space-y-5" style={{ borderColor: 'hsl(38, 40%, 85%)', background: 'hsl(38, 30%, 96%)' }}>
       <div className="flex items-center gap-3">
-        <div className="h-11 w-11 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+        <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(38, 52%, 58%, 0.12)' }}>
           <SoundWaves active={false} />
         </div>
         <div>
-          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-accent">
+          <p className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ color: 'hsl(38, 40%, 60%)' }}>
             {labels.listenLabel[lang]}
           </p>
-          <p className="text-sm font-medium text-foreground leading-snug">{title}</p>
+          <p className="text-sm font-medium leading-snug" style={{ color: 'hsl(24, 30%, 15%)' }}>{title}</p>
         </div>
       </div>
-      <div className="w-full h-2 rounded-full bg-accent/15" />
+      <div className="w-full h-2 rounded-full" style={{ backgroundColor: 'hsl(38, 30%, 90%)' }} />
       <div className="flex items-center justify-center gap-8">
-        <div className="h-10 w-10 rounded-full flex items-center justify-center text-accent/50">
+        <div className="h-10 w-10 rounded-full flex items-center justify-center" style={{ color: 'hsl(38, 40%, 70%)' }}>
           <Volume2 className="h-5 w-5" />
         </div>
-        <div className="h-16 w-16 rounded-full bg-accent/20 text-accent flex items-center justify-center shadow-md">
+        <div className="h-16 w-16 rounded-full flex items-center justify-center shadow-md" style={{ backgroundColor: 'hsl(38, 40%, 85%)', color: 'hsl(38, 40%, 55%)' }}>
           <Play className="h-7 w-7 ml-0.5" />
         </div>
-        <div className="h-10 w-10 rounded-full flex items-center justify-center text-accent/60 text-sm font-bold">
+        <div className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold" style={{ color: 'hsl(38, 40%, 65%)' }}>
           1x
         </div>
       </div>
-      <p className="text-center text-[11px] text-accent/50 italic">
+      <p className="text-center text-[11px] italic" style={{ color: 'hsl(38, 30%, 60%)' }}>
         {labels.audioSoon[lang]}
       </p>
     </div>
@@ -318,6 +323,33 @@ const WhatsAppIcon = () => (
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
   </svg>
 );
+
+/* ─── BibleRichText: intercepts [Text](/biblia/...) links ─── */
+function BibleRichText({ text, className }: { text: string; className?: string }) {
+  // Parse inline **bold**, *italic*, and [text](/biblia/...) links
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g);
+  return (
+    <span className={className}>
+      {parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={i} className="font-bold" style={{ color: 'hsl(24, 30%, 12%)' }}>{part.slice(2, -2)}</strong>;
+        }
+        if (part.startsWith('*') && part.endsWith('*')) {
+          return <em key={i} className="italic" style={{ color: 'hsl(24, 30%, 20%, 0.85)' }}>{part.slice(1, -1)}</em>;
+        }
+        const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+        if (linkMatch) {
+          const [, label, href] = linkMatch;
+          if (href.startsWith('/biblia')) {
+            return <Link key={i} to={href} className="underline decoration-1 underline-offset-2 font-medium transition-colors hover:opacity-80" style={{ color: 'hsl(38, 52%, 42%)' }}>{label}</Link>;
+          }
+          return <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="underline decoration-1 underline-offset-2 font-medium transition-colors hover:opacity-80" style={{ color: 'hsl(38, 52%, 42%)' }}>{label}</a>;
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </span>
+  );
+}
 
 /* ─── Main Page ─── */
 export default function Devocional() {
@@ -478,9 +510,23 @@ export default function Devocional() {
     autoSaveNote(personalNote);
   };
 
+  /* ─── Styles ─── */
+  const colors = {
+    bg: '#F5F0E8',
+    text: '#2C2416',
+    textMuted: 'hsl(24, 18%, 45%)',
+    gold: '#C9A84C',
+    goldLight: 'hsl(38, 52%, 92%)',
+    goldMuted: 'hsl(38, 40%, 75%)',
+    cardBg: '#FFFDF9',
+    verseBg: '#FEFCF5',
+    prayerBg: '#F0EBE1',
+    border: 'hsl(30, 20%, 85%)',
+  };
+
   if (loading) {
     return (
-      <div className="w-full max-w-3xl mx-auto space-y-5 py-4">
+      <div className="w-full max-w-3xl mx-auto space-y-5 py-4" style={{ backgroundColor: colors.bg }}>
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-5 w-64" />
         <Skeleton className="h-64 w-full rounded-2xl" />
@@ -492,13 +538,13 @@ export default function Devocional() {
 
   if (error || !data) {
     return (
-      <div className="w-full max-w-3xl mx-auto py-8">
-        <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
+      <div className="w-full max-w-3xl mx-auto py-8" style={{ backgroundColor: colors.bg }}>
+        <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm hover:opacity-80 mb-6" style={{ color: colors.textMuted }}>
           <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
         </Link>
-        <div className="rounded-2xl border border-border bg-card p-8 text-center">
-          <BookOpen className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">{labels.error[lang]}</p>
+        <div className="rounded-2xl border p-8 text-center" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
+          <BookOpen className="h-10 w-10 mx-auto mb-3" style={{ color: colors.textMuted }} />
+          <p style={{ color: colors.textMuted }}>{labels.error[lang]}</p>
         </div>
       </div>
     );
@@ -513,61 +559,45 @@ export default function Devocional() {
   const displayDate = isViewingPast ? viewingPast.created_at : data.scheduled_date;
   const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
-  /* ─── Inline bold/italic renderer ─── */
-  const renderInlineFormatting = (text: string, key: string) => {
-    // Support **bold** and *italic*
-    const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={`${key}-${i}`} className="font-bold text-foreground">{part.slice(2, -2)}</strong>;
-      }
-      if (part.startsWith('*') && part.endsWith('*')) {
-        return <em key={`${key}-${i}`} className="italic text-foreground/80">{part.slice(1, -1)}</em>;
-      }
-      return <span key={`${key}-${i}`}>{part}</span>;
-    });
-  };
-
   /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
     const paragraphs = text.split('\n\n').filter(p => p.trim());
-    if (paragraphs.length === 0) return [<p key={0} className="font-serif text-[1.05rem] sm:text-[1.1rem] text-foreground/90 leading-[1.9]">{text.trim()}</p>];
+    if (paragraphs.length === 0) return [<p key={0} className="font-serif text-[1.1rem] leading-[1.9]" style={{ color: colors.text }}>{text.trim()}</p>];
 
     return paragraphs.map((paragraph, idx) => {
       const trimmed = paragraph.trim();
 
       if (trimmed.startsWith('### ')) {
         return (
-          <h3 key={idx} className="text-base font-display font-bold text-primary mt-8 mb-3 flex items-center gap-2.5">
-            <span className="w-1 h-5 bg-primary/40 rounded-full shrink-0" />
+          <h3 key={idx} className="text-base font-playfair font-bold mt-8 mb-3 flex items-center gap-2.5" style={{ color: colors.gold }}>
+            <span className="w-1 h-5 rounded-full shrink-0" style={{ backgroundColor: colors.goldMuted }} />
             {trimmed.replace('### ', '')}
           </h3>
         );
       }
       if (trimmed.startsWith('## ')) {
         return (
-          <h2 key={idx} className="text-lg font-display font-bold text-foreground mt-10 mb-4">
+          <h2 key={idx} className="text-lg font-playfair font-bold mt-10 mb-4" style={{ color: colors.text }}>
             {trimmed.replace('## ', '')}
           </h2>
         );
       }
 
-      // Detect "Oração:" prefix paragraphs
+      // Detect "Oração:" prefix paragraphs or prayer-like starts
       const isOracaoLabel = /^Ora[çc][ãa]o:/i.test(trimmed);
-      // Detect prayer paragraphs
       const isPrayer = isOracaoLabel || /^(Senhor|Pai|Deus|Lord|Father|God|Señor|Padre),?\s/i.test(trimmed);
       if (isPrayer) {
         const prayerText = isOracaoLabel ? trimmed.replace(/^Ora[çc][ãa]o:\s*/i, '') : trimmed;
         return (
-          <div key={idx} className="mt-8 rounded-xl bg-accent/5 border border-accent/15 p-5">
+          <div key={idx} className="mt-8 rounded-xl p-5" style={{ backgroundColor: colors.prayerBg }}>
             <div className="flex items-start gap-3">
               <span className="text-xl mt-0.5">🙏</span>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-accent mb-2">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-2" style={{ color: colors.gold }}>
                   {labels.prayer[lang]}
                 </p>
-                <p className="font-serif text-[1.05rem] italic text-foreground/85 leading-[1.9]">
-                  {renderInlineFormatting(prayerText, `prayer-${idx}`)}
+                <p className="font-serif text-[1.05rem] italic leading-[1.9]" style={{ color: 'hsl(24, 30%, 20%, 0.85)' }}>
+                  <BibleRichText text={prayerText} />
                 </p>
               </div>
             </div>
@@ -575,44 +605,61 @@ export default function Devocional() {
         );
       }
 
-      // Add a subtle separator between thematic sections (every 2-3 paragraphs)
       const showDivider = idx > 0 && idx % 3 === 0 && idx < paragraphs.length - 1;
 
       return (
         <div key={idx}>
           {showDivider && (
             <div className="flex items-center justify-center gap-3 my-6">
-              <span className="h-px w-8 bg-primary/20" />
-              <span className="text-primary/30 text-xs">✦</span>
-              <span className="h-px w-8 bg-primary/20" />
+              <span className="h-px w-8" style={{ backgroundColor: colors.goldMuted + '40' }} />
+              <span className="text-xs" style={{ color: colors.goldMuted + '60' }}>✦</span>
+              <span className="h-px w-8" style={{ backgroundColor: colors.goldMuted + '40' }} />
             </div>
           )}
           <p
-            className={`font-serif text-[1.05rem] sm:text-[1.1rem] text-foreground/90 leading-[1.9] ${
+            className={`font-serif text-[1.05rem] sm:text-[1.1rem] leading-[1.9] ${
               idx === 0
-                ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
+                ? 'first-letter:text-4xl first-letter:font-playfair first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
                 : 'mt-5'
             }`}
+            style={{ color: 'hsl(24, 30%, 18%, 0.92)' }}
           >
-            {renderInlineFormatting(trimmed, `p-${idx}`)}
+            <BibleRichText text={trimmed} />
           </p>
         </div>
       );
     });
   };
 
+  /* ─── Closing prayer section (explicit field) ─── */
+  const closingPrayerSection = !isViewingPast && data.closing_prayer && (
+    <div className="mx-5 sm:mx-8 mb-5 rounded-xl p-5" style={{ backgroundColor: colors.prayerBg }}>
+      <div className="flex items-start gap-3">
+        <span className="text-xl mt-0.5">🙏</span>
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-2" style={{ color: colors.gold }}>
+            {labels.prayer[lang]}
+          </p>
+          <p className="font-serif text-[1.05rem] italic leading-[1.9]" style={{ color: 'hsl(24, 30%, 20%, 0.85)' }}>
+            <BibleRichText text={data.closing_prayer} />
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
   /* ─── Sidebar (right) ─── */
   const sidebar = user && (
     <div className="w-[300px] shrink-0 hidden lg:block">
-      <div className="sticky top-6 rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-border">
+      <div className="sticky top-6 rounded-2xl border overflow-hidden shadow-sm" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
+        <div className="p-4 border-b" style={{ borderColor: colors.border }}>
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Clock className="h-4 w-4 text-primary" />
+            <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: colors.goldLight }}>
+              <Clock className="h-4 w-4" style={{ color: colors.gold }} />
             </div>
             <div>
-              <p className="text-sm font-bold text-foreground">{labels.history[lang]}</p>
-              <p className="text-[10px] text-muted-foreground">{labels.historySub[lang]}</p>
+              <p className="text-sm font-bold" style={{ color: colors.text }}>{labels.history[lang]}</p>
+              <p className="text-[10px]" style={{ color: colors.textMuted }}>{labels.historySub[lang]}</p>
             </div>
           </div>
         </div>
@@ -632,7 +679,7 @@ export default function Devocional() {
                 ))}
               </div>
             ) : pastItems.length === 0 ? (
-              <p className="text-xs text-muted-foreground p-3 text-center">{labels.noHistory[lang]}</p>
+              <p className="text-xs p-3 text-center" style={{ color: colors.textMuted }}>{labels.noHistory[lang]}</p>
             ) : (
               pastItems.map(item => {
                 const isActive = activeItemId === item.id;
@@ -640,29 +687,31 @@ export default function Devocional() {
                   <button
                     key={item.id}
                     onClick={() => handleSelectPast(item)}
-                    className={`w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left group ${
-                      isActive ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted/50 border border-transparent'
-                    }`}
+                    className="w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left group border"
+                    style={{
+                      backgroundColor: isActive ? colors.goldLight : 'transparent',
+                      borderColor: isActive ? colors.goldMuted : 'transparent',
+                    }}
                   >
                     {item.cover_image_url ? (
-                      <div className="h-11 w-11 rounded-lg overflow-hidden shrink-0 bg-muted">
+                      <div className="h-11 w-11 rounded-lg overflow-hidden shrink-0" style={{ backgroundColor: colors.goldLight }}>
                         <img src={item.cover_image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
                       </div>
                     ) : (
-                      <div className="h-11 w-11 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
-                        <BookOpen className="h-5 w-5 text-primary/50" />
+                      <div className="h-11 w-11 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: colors.goldLight }}>
+                        <BookOpen className="h-5 w-5" style={{ color: colors.goldMuted }} />
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className={`text-sm font-medium leading-snug line-clamp-2 transition-colors ${isActive ? 'text-primary' : 'text-foreground group-hover:text-primary'}`}>
+                      <p className="text-sm font-medium leading-snug line-clamp-2 transition-colors" style={{ color: isActive ? colors.gold : colors.text }}>
                         {item.title}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        {item.passage && <span className="text-[10px] text-muted-foreground truncate">{item.passage}</span>}
-                        <span className="text-[10px] text-muted-foreground">{formatShortDate(item.created_at, lang)}</span>
+                        {item.passage && <span className="text-[10px] truncate" style={{ color: colors.textMuted }}>{item.passage}</span>}
+                        <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.created_at, lang)}</span>
                       </div>
                     </div>
-                    {isActive && <Check className="h-4 w-4 text-primary shrink-0 mt-1" />}
+                    {isActive && <Check className="h-4 w-4 shrink-0 mt-1" style={{ color: colors.gold }} />}
                   </button>
                 );
               })
@@ -676,16 +725,20 @@ export default function Devocional() {
   /* ─── Main content ─── */
   const mainContent = (
     <div className="flex-1 min-w-0 pb-10">
-      {/* Page header */}
+      {/* Page header — "Café com Deus Pai" */}
       {!isViewingPast && (
-        <div className="mb-6">
+        <div className="mb-8">
           <div className="flex items-center gap-3 mb-1">
-            <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-              <BookOpen className="h-5 w-5 text-primary" />
+            <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: colors.goldLight }}>
+              <BookOpen className="h-5 w-5" style={{ color: colors.gold }} />
             </div>
             <div>
-              <h1 className="font-display text-xl sm:text-2xl font-black text-foreground">{labels.pageTitle[lang]}</h1>
-              <p className="text-xs text-muted-foreground">{labels.subtitle[lang]}</p>
+              <h1 className="font-playfair text-2xl sm:text-3xl font-black tracking-tight" style={{ color: colors.text }}>
+                {labels.pageTitle[lang]}
+              </h1>
+              <p className="text-xs capitalize" style={{ color: colors.textMuted }}>
+                {formatDateFull(data.scheduled_date, lang)}
+              </p>
             </div>
           </div>
         </div>
@@ -694,7 +747,8 @@ export default function Devocional() {
       {isViewingPast && (
         <button
           onClick={handleBackToToday}
-          className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 font-medium mb-4 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium mb-4 transition-colors hover:opacity-80"
+          style={{ color: colors.gold }}
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           {labels.backToday[lang]}
@@ -702,38 +756,44 @@ export default function Devocional() {
       )}
 
       {/* ═══ EDITORIAL CARD ═══ */}
-      <div className={`rounded-2xl border border-border bg-card overflow-hidden shadow-sm transition-all duration-200 ${transitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
+      <div
+        className={`rounded-2xl border overflow-hidden shadow-sm transition-all duration-200 ${transitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}
+        style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}
+      >
 
-        {/* ── 1. DATE BAR ── */}
-        <div className="flex items-center justify-between px-5 sm:px-8 py-3.5 border-b border-border bg-muted/20">
-          <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-2">
-            <Calendar className="h-3.5 w-3.5" />
-            {formatDateFull(isViewingPast ? displayDate.slice(0, 10) : data.scheduled_date, lang)}
-          </span>
-          {displayCategory && (
-            <span className="inline-flex items-center gap-1 bg-accent/15 text-accent text-[10px] px-3 py-1 rounded-full font-semibold">
+        {/* ── 1. Category badge ── */}
+        {displayCategory && (
+          <div className="px-5 sm:px-8 pt-5">
+            <span
+              className="inline-flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full font-semibold uppercase tracking-wider"
+              style={{ backgroundColor: colors.goldLight, color: colors.gold }}
+            >
               ✦ {displayCategory}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* ── 2. TITLE ── */}
-        <div className="px-5 sm:px-8 pt-7 pb-2">
-          <h1 className="text-2xl sm:text-3xl font-display font-black text-foreground leading-tight tracking-tight">
+        {/* ── 2. TITLE (Playfair Display) ── */}
+        <div className="px-5 sm:px-8 pt-5 pb-2">
+          <h1 className="font-playfair text-2xl sm:text-[2rem] font-black leading-tight tracking-tight" style={{ color: colors.text }}>
             {displayTitle}
           </h1>
+          <p className="text-[11px] mt-2 capitalize flex items-center gap-2" style={{ color: colors.textMuted }}>
+            <Calendar className="h-3.5 w-3.5" />
+            {formatDateFull(isViewingPast ? displayDate.slice(0, 10) : data.scheduled_date, lang)}
+          </p>
         </div>
 
         {/* ── 3. VERSE QUOTE ── */}
         {!isViewingPast && displayVerseText && (
-          <div className="mx-5 sm:mx-8 mt-5 rounded-xl border-l-4 border-accent/60 bg-accent/[0.04] p-5">
+          <div className="mx-5 sm:mx-8 mt-5 rounded-xl p-5" style={{ borderLeft: `4px solid ${colors.gold}`, backgroundColor: colors.verseBg }}>
             <div className="flex gap-3">
-              <span className="text-3xl text-accent/50 font-display font-black leading-none shrink-0 select-none">&ldquo;</span>
+              <span className="text-3xl font-playfair font-black leading-none shrink-0 select-none" style={{ color: colors.goldMuted }}>&ldquo;</span>
               <div>
-                <blockquote className="font-serif text-base sm:text-lg italic text-foreground/90 leading-relaxed">
+                <blockquote className="font-serif text-base sm:text-lg italic leading-relaxed" style={{ color: 'hsl(24, 30%, 18%, 0.9)' }}>
                   {displayVerseText}
                 </blockquote>
-                <p className="text-xs font-bold text-accent mt-3">&mdash; {displayVerse}</p>
+                <p className="text-xs font-bold mt-3" style={{ color: colors.gold }}>&mdash; {displayVerse}</p>
               </div>
             </div>
           </div>
@@ -748,14 +808,14 @@ export default function Devocional() {
 
         {/* ── 5. COVER IMAGE ── */}
         {displayCover && (
-          <div className="mx-5 sm:mx-8 mt-6 rounded-xl border border-border bg-card p-5 space-y-4">
+          <div className="mx-5 sm:mx-8 mt-6 rounded-xl border p-5 space-y-4" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <ImageIcon className="h-4 w-4 text-primary" />
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: colors.goldLight }}>
+                <ImageIcon className="h-4 w-4" style={{ color: colors.gold }} />
               </div>
               <div>
-                <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary">{labels.coverSection[lang]}</p>
-                <p className="text-xs text-muted-foreground">{labels.coverSub[lang]}</p>
+                <p className="text-[10px] font-bold tracking-[0.12em] uppercase" style={{ color: colors.gold }}>{labels.coverSection[lang]}</p>
+                <p className="text-xs" style={{ color: colors.textMuted }}>{labels.coverSub[lang]}</p>
               </div>
             </div>
             <div className="flex justify-center">
@@ -771,7 +831,7 @@ export default function Devocional() {
                   <span className="text-white/40 text-[10px] font-medium uppercase tracking-wider">Living Word</span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col gap-2">
-                  <h3 className="text-white text-lg font-display font-bold leading-snug drop-shadow-lg">{displayTitle}</h3>
+                  <h3 className="text-white text-lg font-playfair font-bold leading-snug drop-shadow-lg">{displayTitle}</h3>
                   {displayVerse && (
                     <p className="text-white/80 text-xs italic leading-relaxed line-clamp-2 drop-shadow-md">
                       &ldquo;{displayVerseText || displayVerse}&rdquo;
@@ -795,11 +855,11 @@ export default function Devocional() {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                   } catch {
-                    // Fallback: open in new tab
                     window.open(displayCover!, '_blank');
                   }
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Download className="h-4 w-4" /> {labels.saveImage[lang]}
               </button>
@@ -808,7 +868,8 @@ export default function Devocional() {
                   if (navigator.share) navigator.share({ title: displayTitle, url: displayCover! });
                   else { navigator.clipboard.writeText(displayCover!); toast.success(labels.copied[lang]); }
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Share2 className="h-4 w-4" /> {labels.share[lang]}
               </button>
@@ -817,7 +878,8 @@ export default function Devocional() {
                   const text = `*${displayTitle}*\n📖 ${displayVerse}\n\n${displayCover}`;
                   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/30 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}
               >
                 <WhatsAppIcon /> {labels.shareWa[lang]}
               </button>
@@ -828,10 +890,10 @@ export default function Devocional() {
         {/* ── 6. MEDITAÇÃO (Body) ── */}
         <div className="px-5 sm:px-8 pt-8 pb-4">
           <div className="flex items-center gap-2.5 mb-6">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <MessageCircle className="h-4 w-4 text-primary" />
+            <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: colors.goldLight }}>
+              <MessageCircle className="h-4 w-4" style={{ color: colors.gold }} />
             </div>
-            <h2 className="text-[11px] font-bold tracking-[0.15em] uppercase text-primary">
+            <h2 className="text-[11px] font-bold tracking-[0.15em] uppercase" style={{ color: colors.gold }}>
               {labels.meditation[lang]}
             </h2>
           </div>
@@ -841,24 +903,27 @@ export default function Devocional() {
 
           {/* Reflection question */}
           {!isViewingPast && data.reflection_question && (
-            <div className="mt-8 border-l-3 border-primary/30 pl-5 py-2">
-              <p className="font-serif text-base italic text-foreground/80 leading-relaxed">
+            <div className="mt-8 pl-5 py-2" style={{ borderLeft: `3px solid ${colors.goldMuted}` }}>
+              <p className="font-serif text-base italic leading-relaxed" style={{ color: 'hsl(24, 30%, 20%, 0.8)' }}>
                 💭 {data.reflection_question}
               </p>
             </div>
           )}
         </div>
 
+        {/* ── 6b. CLOSING PRAYER (explicit field) ── */}
+        {closingPrayerSection}
+
         {/* ── 7. DESAFIO DO DIA ── */}
         {!isViewingPast && data.daily_practice && (
-          <div className="mx-5 sm:mx-8 mb-5 rounded-xl bg-primary/5 border border-primary/20 p-5">
+          <div className="mx-5 sm:mx-8 mb-5 rounded-xl p-5" style={{ backgroundColor: colors.goldLight, border: `1px solid ${colors.goldMuted}40` }}>
             <div className="flex items-start gap-2.5">
-              <ListChecks className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <ListChecks className="h-4 w-4 mt-0.5 shrink-0" style={{ color: colors.gold }} />
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary mb-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-1.5" style={{ color: colors.gold }}>
                   {labels.challenge[lang]}
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-sm leading-relaxed" style={{ color: colors.text }}>
                   {data.daily_practice}
                 </p>
               </div>
@@ -867,61 +932,77 @@ export default function Devocional() {
         )}
 
         {/* ── 8. ACTION BAR ── */}
-        <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/15">
-          <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors">
+        <div className="border-t px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap" style={{ borderColor: colors.border, backgroundColor: colors.goldLight + '60' }}>
+          <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
-          <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors">
+          <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}>
             <WhatsAppIcon /> {labels.shareWa[lang]}
           </button>
           <button
             onClick={() => { if (navigator.share) navigator.share({ title: displayTitle, text: `${displayTitle} — ${displayVerse}` }); }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80"
+            style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
           >
             <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
           </button>
           <Link
             to="/mente-chat"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80"
+            style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
           >
             <MessageCircle className="h-3.5 w-3.5" /> {labels.deepenChat[lang]}
           </Link>
         </div>
       </div>
 
-      {/* ── 9. DIÁRIO ESPIRITUAL ── */}
+      {/* ── 9. JOURNALING ── */}
       {!isViewingPast && (
-        <div className="mt-6 rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-4">
+        <div className="mt-6 rounded-2xl border p-5 sm:p-6 space-y-4" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <PenLine className="h-4 w-4 text-primary" />
-              <p className="text-sm font-bold text-foreground">{labels.journal[lang]}</p>
+              <PenLine className="h-4 w-4" style={{ color: colors.gold }} />
+              <p className="text-sm font-bold" style={{ color: colors.text }}>{labels.journal[lang]}</p>
             </div>
             {noteSavedAt && (
-              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                <Check className="h-3 w-3 text-primary" />
+              <span className="text-[10px] flex items-center gap-1" style={{ color: colors.textMuted }}>
+                <Check className="h-3 w-3" style={{ color: colors.gold }} />
                 {noteSavedAt}
               </span>
             )}
             {savingNote && (
-              <span className="text-[10px] text-muted-foreground italic">
+              <span className="text-[10px] italic" style={{ color: colors.textMuted }}>
                 {lang === 'PT' ? 'Salvando...' : lang === 'ES' ? 'Guardando...' : 'Saving...'}
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{labels.journalSub[lang]}</p>
+
+          {/* Show reflection question as prompt */}
+          {data.reflection_question && (
+            <p className="text-sm italic pl-3" style={{ color: 'hsl(24, 30%, 30%, 0.75)', borderLeft: `2px solid ${colors.goldMuted}` }}>
+              {data.reflection_question}
+            </p>
+          )}
+
           <textarea
             value={personalNote}
             onChange={(e) => handleNoteChange(e.target.value)}
             placeholder={labels.journalPlaceholder[lang]}
             rows={4}
-            className="w-full px-4 py-3 rounded-xl border border-border bg-background font-serif text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+            className="w-full px-4 py-3 rounded-xl border font-serif text-sm resize-none focus:outline-none focus:ring-2 transition-all"
+            style={{
+              borderColor: colors.border,
+              backgroundColor: colors.bg,
+              color: colors.text,
+              '--tw-ring-color': colors.gold + '40',
+            } as React.CSSProperties}
           />
           <div className="flex justify-end">
             <button
               onClick={handleSaveNote}
               disabled={!personalNote.trim() || savingNote}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-40 disabled:pointer-events-none"
+              style={{ backgroundColor: colors.gold, color: '#fff' }}
             >
               <Send className="h-4 w-4" /> {labels.saveNote[lang]}
             </button>
@@ -931,18 +1012,18 @@ export default function Devocional() {
 
       {/* Mobile: reading history */}
       {isMobile && user && (
-        <div className="mt-6 rounded-2xl border border-border bg-card overflow-hidden">
-          <div className="p-4 border-b border-border">
+        <div className="mt-6 rounded-2xl border overflow-hidden" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
+          <div className="p-4 border-b" style={{ borderColor: colors.border }}>
             <div className="flex items-center gap-2.5">
-              <Clock className="h-4 w-4 text-primary" />
-              <p className="text-sm font-bold text-foreground">{labels.history[lang]}</p>
+              <Clock className="h-4 w-4" style={{ color: colors.gold }} />
+              <p className="text-sm font-bold" style={{ color: colors.text }}>{labels.history[lang]}</p>
             </div>
           </div>
           <div className="p-2 max-h-[300px] overflow-y-auto">
             {pastLoading ? (
               <div className="space-y-2 p-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full rounded-lg" />)}</div>
             ) : pastItems.length === 0 ? (
-              <p className="text-xs text-muted-foreground p-3 text-center">{labels.noHistory[lang]}</p>
+              <p className="text-xs p-3 text-center" style={{ color: colors.textMuted }}>{labels.noHistory[lang]}</p>
             ) : (
               pastItems.map(item => {
                 const isActive = activeItemId === item.id;
@@ -950,24 +1031,25 @@ export default function Devocional() {
                   <button
                     key={item.id}
                     onClick={() => handleSelectPast(item)}
-                    className={`w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left ${isActive ? 'bg-primary/10' : 'hover:bg-muted/50'}`}
+                    className="w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left"
+                    style={{ backgroundColor: isActive ? colors.goldLight : 'transparent' }}
                   >
                     {item.cover_image_url ? (
-                      <div className="h-10 w-10 rounded-lg overflow-hidden shrink-0 bg-muted">
+                      <div className="h-10 w-10 rounded-lg overflow-hidden shrink-0" style={{ backgroundColor: colors.goldLight }}>
                         <img src={item.cover_image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
                       </div>
                     ) : (
-                      <div className="h-10 w-10 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
-                        <BookOpen className="h-4 w-4 text-primary/50" />
+                      <div className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: colors.goldLight }}>
+                        <BookOpen className="h-4 w-4" style={{ color: colors.goldMuted }} />
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className={`text-sm font-medium leading-snug line-clamp-1 ${isActive ? 'text-primary' : 'text-foreground'}`}>
+                      <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: isActive ? colors.gold : colors.text }}>
                         {item.title}
                       </p>
-                      <span className="text-[10px] text-muted-foreground">{formatShortDate(item.created_at, lang)}</span>
+                      <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.created_at, lang)}</span>
                     </div>
-                    {isActive && <Check className="h-4 w-4 text-primary shrink-0 mt-1" />}
+                    {isActive && <Check className="h-4 w-4 shrink-0 mt-1" style={{ color: colors.gold }} />}
                   </button>
                 );
               })
