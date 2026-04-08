@@ -641,9 +641,13 @@ export default function Devocional() {
         )}
 
         {/* ── 4. AUDIO PLAYER ── */}
-        {!isViewingPast && data.audio_url && (
+        {!isViewingPast && (
           <div className="mx-5 sm:mx-8 mt-5">
-            <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
+            {data.audio_url ? (
+              <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
+            ) : (
+              <AudioPlayerPlaceholder title={data.title} lang={lang} />
+            )}
           </div>
         )}
 
