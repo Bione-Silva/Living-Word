@@ -238,7 +238,7 @@ function AudioPlayerPlaceholder({ title, lang }: { title: string; lang: L }) {
       </div>
 
       <p className="text-center text-[11px] text-muted-foreground/60 italic">
-        {lang === 'PT' ? 'Áudio em breve disponível' : lang === 'ES' ? 'Audio disponible pronto' : 'Audio coming soon'}
+        {lang === 'PT' ? 'Versão em áudio chegando em breve' : lang === 'ES' ? 'Versión en audio llegando pronto' : 'Audio version arriving soon'}
       </p>
     </div>
   );
