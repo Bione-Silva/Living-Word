@@ -21,7 +21,7 @@ serve(async (req) => {
       });
     }
 
-    const { systemPrompt, userPrompt, toolId } = await req.json();
+    const { systemPrompt, userPrompt, toolId, history } = await req.json();
 
     if (!systemPrompt || !userPrompt) {
       return new Response(JSON.stringify({ error: "systemPrompt and userPrompt are required" }), {
@@ -84,6 +84,7 @@ serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
+          ...(Array.isArray(history) ? history.map((m: any) => ({ role: m.role, content: m.content })) : []),
           { role: "user", content: userPrompt },
         ],
       }),
