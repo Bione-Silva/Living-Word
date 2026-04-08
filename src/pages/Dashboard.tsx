@@ -6,15 +6,12 @@ import { ToolSheet } from '@/components/ToolSheet';
 import { ExtrasModal } from '@/components/ExtrasModal';
 import { extraOutreachTools, extraFunTools } from '@/components/ExtraToolsSections';
 import { DashboardGreeting } from '@/components/dashboard/DashboardGreeting';
-import { UniversalSearch } from '@/components/dashboard/UniversalSearch';
-import { StartHereBlock } from '@/components/dashboard/StartHereBlock';
-import { QuickAccessBar } from '@/components/dashboard/QuickAccessBar';
-import { CoreToolsGrid } from '@/components/dashboard/CoreToolsGrid';
+import { BomAmigoCard } from '@/components/dashboard/BomAmigoCard';
+import { DevotionalCard } from '@/components/dashboard/DevotionalCard';
+import { ToolsCircleGrid } from '@/components/dashboard/ToolsCircleGrid';
+import { StreakBar } from '@/components/dashboard/StreakBar';
 import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
-import { StatsCards } from '@/components/dashboard/StatsCards';
-import { DevotionalCard } from '@/components/dashboard/DevotionalCard';
-import { StreakBar } from '@/components/dashboard/StreakBar';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
@@ -85,13 +82,12 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <DashboardGreeting />
+      <div id="bom-amigo">
+        <BomAmigoCard />
+      </div>
       <DevotionalCard />
+      <ToolsCircleGrid onToolClick={handleToolClick} />
       <StreakBar />
-      <StatsCards />
-      <UniversalSearch />
-      <StartHereBlock onToolClick={handleToolClick} />
-      <QuickAccessBar onToolClick={handleToolClick} />
-      <CoreToolsGrid onToolClick={handleToolClick} />
       <MoreToolsAccordion onToolClick={handleToolClick} />
       <RecentGenerations />
 
