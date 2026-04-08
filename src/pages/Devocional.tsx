@@ -519,131 +519,225 @@ export default function Devocional() {
     );
   }
 
+  /* Day number within year (1–365) */
+  const dayOfYear = (() => {
+    const d = new Date(data.scheduled_date + 'T12:00:00');
+    const start = new Date(d.getFullYear(), 0, 0);
+    return Math.floor((d.getTime() - start.getTime()) / 86400000);
+  })();
+
+  /* Short date for editorial header (e.g. "28 | FEV") */
+  const editorialDate = (() => {
+    const d = new Date(data.scheduled_date + 'T12:00:00');
+    const day = d.getDate().toString().padStart(2, '0');
+    const monthNames: Record<L, string[]> = {
+      PT: ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'],
+      EN: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],
+      ES: ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'],
+    };
+    return `${day} | ${monthNames[lang][d.getMonth()]}`;
+  })();
+
   const mainContent = (
-    <div className="flex-1 min-w-0 max-w-2xl space-y-5 pb-10">
+    <div className="flex-1 min-w-0 max-w-2xl pb-10">
       {/* Back */}
-      <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+      <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5">
         <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
       </Link>
 
-      {/* Page header */}
-      <div className="flex items-center gap-3">
-        <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <BookOpen className="h-5 w-5 text-primary" />
+      {/* ═══ EDITORIAL DEVOTIONAL CARD ═══ */}
+      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+
+        {/* ── Top bar: date ── */}
+        <div className="flex items-center justify-center py-2.5 border-b border-border bg-muted/30">
+          <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-muted-foreground">
+            {editorialDate}
+          </span>
         </div>
-        <div>
-          <p className="text-base sm:text-lg font-display font-bold text-foreground">
-            Living Word {labels.pageTitle[lang]}
-          </p>
-          <p className="text-xs text-muted-foreground">{labels.subtitle[lang]}</p>
-        </div>
-      </div>
 
-      {/* Date + Category */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="inline-flex items-center gap-1.5 text-muted-foreground text-xs px-3 py-1.5 rounded-lg font-medium bg-muted">
-          <Calendar className="h-3.5 w-3.5" />
-          <span className="capitalize">{formatDate(data.scheduled_date, lang)}</span>
-        </span>
-        <span className="inline-flex items-center gap-1 bg-primary/15 text-primary text-xs px-3 py-1.5 rounded-lg font-semibold">
-          📗 {data.category}
-        </span>
-      </div>
+        {/* ── Cover image hero ── */}
+        {data.cover_image_url && (
+          <div className="relative w-full aspect-[16/7] overflow-hidden">
+            <img
+              src={data.cover_image_url}
+              alt={data.title}
+              className="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(to top, hsla(var(--card), 1) 0%, hsla(var(--card), 0.7) 30%, transparent 60%)' }}
+            />
+          </div>
+        )}
 
-      {/* Title */}
-      <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground leading-snug">
-        {data.title}
-      </h1>
-
-      {/* Verse quote */}
-      <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <div className="flex gap-3">
-          <span className="text-3xl text-primary/30 font-serif leading-none shrink-0">"</span>
-          <div>
-            <blockquote className="text-base sm:text-lg italic text-foreground/90 leading-relaxed">
+        {/* ── Title + Verse header ── */}
+        <div className="px-5 sm:px-8 pt-5 pb-4 text-center border-b border-border/50">
+          <h1 className="text-xl sm:text-2xl font-display font-black uppercase tracking-wide text-foreground leading-tight">
+            {data.title}
+          </h1>
+          <div className="mt-3 max-w-md mx-auto">
+            <p className="text-sm italic text-foreground/70 leading-relaxed">
               {data.anchor_verse_text}
-            </blockquote>
-            <p className="text-sm text-primary mt-3 font-medium">
-              — {data.anchor_verse}
+            </p>
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary mt-2">
+              {data.anchor_verse}
             </p>
           </div>
         </div>
-      </div>
 
-      {/* Audio player */}
-      {data.audio_url && (
-        <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
-      )}
+        {/* ── Two-column layout: sidebar quote + body ── */}
+        <div className="flex flex-col sm:flex-row">
 
-      {/* Cover image with overlay */}
-      {data.cover_image_url && (
-        <CoverImageSection
-          imageUrl={data.cover_image_url}
-          title={data.title}
-          category={data.category}
-          verse={data.anchor_verse}
-          lang={lang}
-        />
-      )}
-
-      {/* REFLEXÃO */}
-      <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <BookOpen className="h-4 w-4 text-primary" />
-          </div>
-          <p className="text-xs font-bold tracking-[0.12em] uppercase text-primary">
-            {labels.reflection[lang]}
-          </p>
-        </div>
-        <div className="text-sm sm:text-[15px] text-foreground/90 leading-[1.8] whitespace-pre-line">
-          {data.body_text}
-        </div>
-      </div>
-
-      {/* PRÁTICA DO DIA */}
-      {data.daily_practice && (
-        <div className="rounded-xl bg-primary/5 border border-primary/20 p-5 space-y-3">
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <ListChecks className="h-4 w-4 text-primary" />
+          {/* Left sidebar — quote card + meta */}
+          <div className="sm:w-48 md:w-56 shrink-0 border-b sm:border-b-0 sm:border-r border-border/50 p-5 sm:p-6 flex flex-col gap-5 bg-primary/[0.03]">
+            {/* Highlighted quote */}
+            <div className="rounded-xl border-l-4 border-primary bg-primary/8 p-4">
+              <p className="text-sm font-display font-bold italic text-foreground leading-relaxed">
+                "{data.anchor_verse_text.length > 120
+                  ? data.anchor_verse_text.slice(0, 120) + '…'
+                  : data.anchor_verse_text}"
+              </p>
             </div>
-            <p className="text-xs font-bold tracking-[0.12em] uppercase text-primary">
-              {labels.practice[lang]}
-            </p>
-          </div>
-          <p className="text-sm sm:text-[15px] text-foreground leading-relaxed">
-            {data.daily_practice}
-          </p>
-        </div>
-      )}
 
-      {/* Action buttons */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <button
-          onClick={handleCopy}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-        >
-          <Copy className="h-4 w-4" /> {labels.copy[lang]}
-        </button>
-        <button
-          onClick={handleWhatsApp}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/30 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
-        >
-          <WhatsAppIcon /> {labels.shareWa[lang]}
-        </button>
-        <Link
-          to="/dashboard/mentes/chat"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-        >
-          <MessageCircle className="h-4 w-4" /> {labels.continueChat[lang]}
-        </Link>
+            {/* Meta info */}
+            <div className="space-y-3 text-[11px]">
+              <div>
+                <p className="font-bold uppercase tracking-[0.15em] text-primary">
+                  {labels.pageTitle[lang].toUpperCase()} 365
+                </p>
+                <p className="text-muted-foreground font-medium">
+                  {dayOfYear}/365
+                </p>
+              </div>
+              <div>
+                <p className="font-bold uppercase tracking-[0.15em] text-primary flex items-center gap-1.5">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'LEITURA BÍBLICA' : lang === 'ES' ? 'LECTURA BÍBLICA' : 'BIBLE READING'}
+                </p>
+                <p className="text-foreground font-medium mt-0.5">
+                  {data.anchor_verse}
+                </p>
+              </div>
+              <div>
+                <span className="inline-flex items-center gap-1 bg-primary/15 text-primary text-[10px] px-2.5 py-1 rounded-md font-semibold uppercase">
+                  📗 {data.category}
+                </span>
+              </div>
+            </div>
+
+            {/* Anotações label */}
+            <div className="mt-auto pt-3 border-t border-border/50">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
+                {lang === 'PT' ? 'ANOTAÇÕES' : lang === 'ES' ? 'ANOTACIONES' : 'NOTES'}
+              </p>
+              <div className="mt-2 space-y-2">
+                {[1,2,3].map(i => (
+                  <div key={i} className="h-px bg-border/60" />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right content — body text */}
+          <div className="flex-1 p-5 sm:p-6 md:p-8">
+            {/* Audio player inline */}
+            {data.audio_url && (
+              <div className="mb-6">
+                <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
+              </div>
+            )}
+
+            {/* Body text — editorial style with drop cap */}
+            <div className="text-sm sm:text-[15px] text-foreground/90 leading-[1.85] whitespace-pre-line">
+              {data.body_text.split('\n\n').map((paragraph, idx) => (
+                <p key={idx} className={`${idx > 0 ? 'mt-4' : ''} ${idx === 0 ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-1.5 first-letter:mt-0.5 first-letter:leading-none' : ''}`}>
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+
+            {/* Reflection question */}
+            {data.reflection_question && (
+              <div className="mt-6 rounded-xl bg-muted/50 border border-border p-4 sm:p-5">
+                <div className="flex items-start gap-2.5">
+                  <MessageCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary mb-1.5">
+                      {labels.reflection[lang]}
+                    </p>
+                    <p className="text-sm text-foreground/80 italic leading-relaxed">
+                      {data.reflection_question}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Daily practice */}
+            {data.daily_practice && (
+              <div className="mt-5 rounded-xl bg-primary/5 border border-primary/20 p-4 sm:p-5">
+                <div className="flex items-start gap-2.5">
+                  <ListChecks className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary mb-1.5">
+                      {labels.practice[lang]}
+                    </p>
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {data.daily_practice}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Bottom action bar ── */}
+        <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/20">
+          <button
+            onClick={handleCopy}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+          >
+            <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
+          </button>
+          {data.cover_image_url && (
+            <button
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = data.cover_image_url!;
+                a.target = '_blank';
+                a.download = `devocional-${data.title.slice(0,20).replace(/\s+/g,'-')}.png`;
+                a.click();
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+            >
+              <Download className="h-3.5 w-3.5" /> {labels.saveImage[lang]}
+            </button>
+          )}
+          <button
+            onClick={handleWhatsApp}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
+          >
+            <WhatsAppIcon /> {labels.shareWa[lang]}
+          </button>
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({ title: data.title, text: `${data.title} — ${data.anchor_verse}` });
+              }
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+          >
+            <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
+          </button>
+        </div>
       </div>
 
-      {/* Minha Reflexão Pessoal */}
-      <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
+      {/* ═══ PERSONAL REFLECTION (below the card) ═══ */}
+      <div className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
         <div className="flex items-center gap-2.5">
-          <PenLine className="h-4.5 w-4.5 text-foreground" />
+          <PenLine className="h-4 w-4 text-foreground" />
           <p className="text-sm font-bold text-foreground">
             {labels.personalReflection[lang]}
           </p>
@@ -671,7 +765,7 @@ export default function Devocional() {
     </div>
   );
 
-  // Desktop: side-by-side layout with sidebar
+  // Desktop: side-by-side layout with previous devotionals sidebar
   if (!isMobile && user) {
     return (
       <div className="flex gap-6 items-start">
