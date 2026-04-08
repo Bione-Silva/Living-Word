@@ -870,7 +870,7 @@ export default function Devocional() {
   // Desktop: side-by-side with sidebar
   if (!isMobile && user) {
     return (
-      <div className="flex gap-6 items-start">
+      <div className="flex gap-5 items-start w-full">
         {mainContent}
         {sidebar}
       </div>
