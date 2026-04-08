@@ -214,6 +214,17 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
               <h2 className="text-xl font-display font-bold text-foreground">{story.title}</h2>
             </div>
 
+            {/* AI Illustration */}
+            {imageLoading && (
+              <div className="rounded-xl bg-muted/30 h-48 flex items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <span className="ml-2 text-xs text-muted-foreground">{lang === 'PT' ? 'Criando ilustração...' : 'Creating illustration...'}</span>
+              </div>
+            )}
+            {storyImage && !imageLoading && (
+              <img src={storyImage} alt={story.title} className="w-full rounded-xl object-cover max-h-64" />
+            )}
+
             <div className="prose prose-sm max-w-none text-foreground/85 leading-[1.9]">
               {story.content.split('\n\n').map((p, i) => (
                 <p key={i} className="mb-3">{p}</p>
