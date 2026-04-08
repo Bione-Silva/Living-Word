@@ -200,6 +200,7 @@ export default function Devocional() {
   const [pastLoading, setPastLoading] = useState(true);
   const [activeItemId, setActiveItemId] = useState<string | null>(null); // null = today
   const [viewingPast, setViewingPast] = useState<PastDevotional | null>(null);
+  const [transitioning, setTransitioning] = useState(false);
 
   // Load today's devotional
   useEffect(() => {
