@@ -36,8 +36,8 @@ export const PRICING_MAP: Record<GeoRegion, RegionPricing> = {
       pro:     { id: 'price_1TJg0pEaDBbHafP6ToL24iXI', amount: 790.00 },
       igreja:  { id: 'price_1TJg0rEaDBbHafP69yZFNvtc', amount: 1970.00 },
     },
-    addon_seat:  { id: 'COLE_AQUI_O_PRICE_ID_DO_ASSENTO_BRL', amount: 19.90 },
-    addon_topup: { id: 'COLE_AQUI_O_PRICE_ID_DA_RECARGA_BRL', amount: 27.00 },
+    addon_seat:  { id: 'price_1TJl2REaDBbHafP6jvw9OflM', amount: 19.90 },
+    addon_topup: { id: 'price_1TJl2SEaDBbHafP6pmEHdFEq', amount: 27.00 },
   },
   USD: {
     currency: 'USD',
