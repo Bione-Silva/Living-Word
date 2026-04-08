@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
 import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { SlideCanvas, type SlideData } from '@/components/social-studio/SlideCanvas';
+import { SlideCard, type ArtStyle } from '@/components/social-studio/SlideCard';
 import { VerseOfDayBanner, type VerseData } from '@/components/social-studio/VerseOfDayBanner';
 import { CarouselNavigator } from '@/components/social-studio/CarouselNavigator';
 import { DownloadButton } from '@/components/social-studio/DownloadButton';
@@ -19,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import {
   Sparkles, Layers, Loader2, Archive, Image, Download,
   PanelLeftClose, PanelLeftOpen, Palette, Wand2
@@ -45,6 +47,9 @@ const headings: Record<L, Record<string, string>> = {
     goCreate: 'Ir para Criar',
     generateAnother: 'Gerar Outro',
     designPanel: 'Design',
+    igClassic: 'Instagram',
+    xThread: 'X Thread',
+    artStyle: 'Estilo',
   },
   EN: {
     title: '🎨 Social Studio',
@@ -63,6 +68,9 @@ const headings: Record<L, Record<string, string>> = {
     goCreate: 'Go to Create',
     generateAnother: 'Generate Another',
     designPanel: 'Design',
+    igClassic: 'Instagram',
+    xThread: 'X Thread',
+    artStyle: 'Style',
   },
   ES: {
     title: '🎨 Estudio Social',
@@ -81,6 +89,9 @@ const headings: Record<L, Record<string, string>> = {
     goCreate: 'Ir a Crear',
     generateAnother: 'Generar Otro',
     designPanel: 'Diseño',
+    igClassic: 'Instagram',
+    xThread: 'X Thread',
+    artStyle: 'Estilo',
   },
 };
 
@@ -100,7 +111,7 @@ export default function SocialStudio() {
   const h = headings[lang];
 
   const [activeTab, setActiveTab] = useState<string>('create');
-  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('4:5');
   const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [verse, setVerse] = useState<VerseData | null>(null);
@@ -111,6 +122,7 @@ export default function SocialStudio() {
   const [galleryRefresh, setGalleryRefresh] = useState(0);
   const [showDesignPanel, setShowDesignPanel] = useState(true);
   const [canvasText, setCanvasText] = useState<SlideData | null>(null);
+  const [artStyle, setArtStyle] = useState<ArtStyle>('instagram');
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
     fontFamily: "'Cormorant Garamond', 'Georgia', serif",
@@ -475,16 +487,43 @@ export default function SocialStudio() {
                 </Card>
               ) : (
                 <>
-                  <SlideCanvas
-                    ref={slideRef}
-                    slide={carousel[currentSlide]}
-                    aspectRatio={aspectRatio}
-                    template={template}
-                    bgImageUrl={theme.backgroundImageUrl}
-                    themeColor={theme.gradient}
-                    fontFamily={theme.fontFamily}
-                    textColor={theme.textColor}
-                  />
+                  {/* Art Style Toggle */}
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-xs font-semibold text-foreground">{h.artStyle}:</span>
+                    <div className="flex items-center gap-2 rounded-lg bg-secondary border border-border px-3 py-1.5">
+                      <span className={`text-xs font-medium transition-colors ${artStyle === 'instagram' ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        📸 {h.igClassic}
+                      </span>
+                      <Switch
+                        checked={artStyle === 'x-thread'}
+                        onCheckedChange={(checked) => setArtStyle(checked ? 'x-thread' : 'instagram')}
+                        className="data-[state=checked]:bg-primary"
+                      />
+                      <span className={`text-xs font-medium transition-colors ${artStyle === 'x-thread' ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        𝕏 {h.xThread}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Swipable Carousel Track */}
+                  <div className="w-full overflow-x-auto snap-x snap-mandatory flex gap-4 pb-4 rounded-xl">
+                    {carousel.map((slide, idx) => (
+                      <SlideCard
+                        key={idx}
+                        ref={idx === currentSlide ? slideRef : undefined}
+                        slide={slide}
+                        index={idx}
+                        totalSlides={carousel.length}
+                        artStyle={artStyle}
+                        profileName={profile?.full_name || 'Pastor'}
+                        profileHandle={profile?.blog_handle || 'seuministério'}
+                        profileAvatar={profile?.avatar_url || undefined}
+                        brandName={profile?.full_name || 'Living Word'}
+                        lang={lang}
+                      />
+                    ))}
+                  </div>
+
                   <CarouselNavigator
                     current={currentSlide}
                     total={carousel.length}
