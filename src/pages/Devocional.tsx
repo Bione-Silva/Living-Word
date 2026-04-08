@@ -3,9 +3,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  BookOpen, ArrowLeft, Headphones, Calendar, MessageCircle,
+  BookOpen, ArrowLeft, Calendar, MessageCircle,
   Play, Pause, Volume2, VolumeX, Share2, Copy, ListChecks,
-  PenLine, Send, Download, Image as ImageIcon, Clock, Check
+  PenLine, Send, Download, Image as ImageIcon, Clock, Check,
+  Mic, User, UserRound
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,10 +25,14 @@ interface DevotionalData {
   body_text: string;
   daily_practice?: string;
   audio_url?: string;
+  audio_url_nova?: string;
+  audio_url_alloy?: string;
+  audio_url_onyx?: string;
   audio_duration_seconds?: number;
   reflection_question: string;
   scheduled_date: string;
   cover_image_url?: string | null;
+  closing_prayer?: string;
 }
 
 interface PastDevotional {
@@ -44,38 +49,43 @@ const labels = {
   back: { PT: 'Voltar', EN: 'Back', ES: 'Volver' },
   pageTitle: { PT: 'Palavra Viva', EN: 'Living Word', ES: 'Palabra Viva' },
   subtitle: { PT: 'Sua dose diária de inspiração bíblica, preparada com IA pastoral', EN: 'Your daily dose of biblical inspiration, crafted with pastoral AI', ES: 'Tu dosis diaria de inspiración bíblica, preparada con IA pastoral' },
-  listenSection: { PT: 'ESCUTE A PALAVRA', EN: 'HEAR THE WORD', ES: 'ESCUCHA LA PALABRA' },
+  listenLabel: { PT: 'ESCUTE A PALAVRA', EN: 'HEAR THE WORD', ES: 'ESCUCHA LA PALABRA' },
   coverSection: { PT: 'ARTE DO DIA', EN: "TODAY'S ART", ES: 'ARTE DEL DÍA' },
   coverSub: { PT: 'Baixe ou envie para sua comunidade', EN: 'Download or send to your community', ES: 'Descarga o envía a tu comunidad' },
-  reflection: { PT: 'MEDITAÇÃO', EN: 'MEDITATION', ES: 'MEDITACIÓN' },
-  practice: { PT: 'DESAFIO DO DIA', EN: "TODAY'S CHALLENGE", ES: 'DESAFÍO DEL DÍA' },
+  meditation: { PT: 'MEDITAÇÃO', EN: 'MEDITATION', ES: 'MEDITACIÓN' },
+  challenge: { PT: 'DESAFIO DO DIA', EN: "TODAY'S CHALLENGE", ES: 'DESAFÍO DEL DÍA' },
+  prayer: { PT: 'ORAÇÃO', EN: 'PRAYER', ES: 'ORACIÓN' },
   copy: { PT: 'Copiar texto', EN: 'Copy text', ES: 'Copiar texto' },
   saveImage: { PT: 'Baixar arte', EN: 'Download art', ES: 'Descargar arte' },
   share: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   shareWa: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
-  continueChat: { PT: 'Aprofundar no Chat', EN: 'Go deeper in Chat', ES: 'Profundizar en el Chat' },
-  personalReflection: { PT: 'Diário Espiritual', EN: 'Spiritual Journal', ES: 'Diario Espiritual' },
-  personalReflectionSub: {
+  deepenChat: { PT: 'Aprofundar no Chat', EN: 'Go deeper in Chat', ES: 'Profundizar en el Chat' },
+  journal: { PT: 'Diário Espiritual', EN: 'Spiritual Journal', ES: 'Diario Espiritual' },
+  journalSub: {
     PT: 'Registre aqui o que Deus falou ao seu coração hoje. Suas anotações ficam salvas na sua biblioteca.',
     EN: 'Write down what God spoke to your heart today. Your notes are saved in your library.',
     ES: 'Registra aquí lo que Dios habló a tu corazón hoy. Tus notas se guardan en tu biblioteca.',
   },
-  personalPlaceholder: {
+  journalPlaceholder: {
     PT: 'O que o Espírito destacou para você nesta leitura?',
     EN: 'What did the Spirit highlight for you in this reading?',
     ES: '¿Qué destacó el Espíritu para ti en esta lectura?',
   },
-  saveReflection: { PT: 'Guardar anotação', EN: 'Save note', ES: 'Guardar nota' },
+  saveNote: { PT: 'Guardar anotação', EN: 'Save note', ES: 'Guardar nota' },
   saved: { PT: 'Anotação guardada!', EN: 'Note saved!', ES: '¡Nota guardada!' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
-  imageSaved: { PT: 'Arte salva!', EN: 'Art saved!', ES: '¡Arte guardada!' },
-  error: { PT: 'Ops, não conseguimos carregar a palavra de hoje. Tente novamente.', EN: 'Oops, we couldn\'t load today\'s word. Please try again.', ES: 'Ups, no pudimos cargar la palabra de hoy. Inténtalo de nuevo.' },
-  previousDevotionals: { PT: 'Histórico de Leituras', EN: 'Reading History', ES: 'Historial de Lecturas' },
-  previousSub: { PT: 'Releia as palavras que marcaram sua semana', EN: 'Revisit the words that marked your week', ES: 'Relee las palabras que marcaron tu semana' },
-  noPrevious: { PT: 'Suas leituras aparecerão aqui.', EN: 'Your readings will appear here.', ES: 'Tus lecturas aparecerán aquí.' },
+  error: { PT: 'Ops, não conseguimos carregar a palavra de hoje. Tente novamente.', EN: "Oops, we couldn't load today's word. Please try again.", ES: 'Ups, no pudimos cargar la palabra de hoy. Inténtalo de nuevo.' },
+  history: { PT: 'Histórico de Leituras', EN: 'Reading History', ES: 'Historial de Lecturas' },
+  historySub: { PT: 'Releia as palavras que marcaram sua semana', EN: 'Revisit the words that marked your week', ES: 'Relee las palabras que marcaron tu semana' },
+  noHistory: { PT: 'Suas leituras aparecerão aqui.', EN: 'Your readings will appear here.', ES: 'Tus lecturas aparecerán aquí.' },
+  voiceFemale: { PT: 'Feminina', EN: 'Female', ES: 'Femenina' },
+  voiceSoftMale: { PT: 'Masculina Suave', EN: 'Soft Male', ES: 'Masculina Suave' },
+  voiceDeepMale: { PT: 'Masculina Forte', EN: 'Deep Male', ES: 'Masculina Fuerte' },
+  audioSoon: { PT: 'Versão em áudio chegando em breve', EN: 'Audio version arriving soon', ES: 'Versión en audio llegando pronto' },
+  backToday: { PT: 'Voltar à leitura de hoje', EN: "Back to today's reading", ES: 'Volver a la lectura de hoy' },
 } satisfies Record<string, Record<L, string>>;
 
-function formatDate(dateStr: string, lang: L): string {
+function formatDateFull(dateStr: string, lang: L): string {
   const d = new Date(dateStr + 'T12:00:00');
   const locale = lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US';
   return d.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -93,24 +103,57 @@ function formatTime(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-/* ─── Audio Player ─── */
-function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L }) {
+/* ─── Animated Sound Waves ─── */
+function SoundWaves({ active }: { active: boolean }) {
+  return (
+    <div className="flex items-end gap-[3px] h-5">
+      {[1, 2, 3, 4, 5].map(i => (
+        <div
+          key={i}
+          className={`w-[3px] rounded-full bg-primary transition-all ${active ? 'animate-sound-wave' : 'h-1 opacity-40'}`}
+          style={{
+            animationDelay: active ? `${i * 0.12}s` : undefined,
+            height: active ? undefined : '4px',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ─── Voice type ─── */
+type VoiceKey = 'nova' | 'alloy' | 'onyx';
+
+/* ─── Audio Player with Voice Selector ─── */
+function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [muted, setMuted] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const progressRef = useRef<HTMLDivElement>(null);
+  const [voice, setVoice] = useState<VoiceKey>('nova');
+
+  const voiceOptions: { key: VoiceKey; label: string; icon: React.ReactNode }[] = [
+    { key: 'nova', label: labels.voiceFemale[lang], icon: <UserRound className="h-3.5 w-3.5" /> },
+    { key: 'alloy', label: labels.voiceSoftMale[lang], icon: <User className="h-3.5 w-3.5" /> },
+    { key: 'onyx', label: labels.voiceDeepMale[lang], icon: <Mic className="h-3.5 w-3.5" /> },
+  ];
+
+  const audioSrc = voice === 'alloy' ? (data.audio_url_alloy || data.audio_url)
+    : voice === 'onyx' ? (data.audio_url_onyx || data.audio_url)
+    : (data.audio_url_nova || data.audio_url);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    if (playing) { audioRef.current.pause(); } else { audioRef.current.play(); }
+    if (playing) audioRef.current.pause();
+    else audioRef.current.play();
     setPlaying(!playing);
   };
 
   const cycleSpeed = () => {
-    const speeds = [1, 1.25, 1.5, 2];
+    const speeds = [0.75, 1, 1.25, 1.5];
     const next = speeds[(speeds.indexOf(speed) + 1) % speeds.length];
     setSpeed(next);
     if (audioRef.current) audioRef.current.playbackRate = next;
@@ -125,30 +168,67 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
     setCurrentTime(newTime);
   };
 
+  const handleVoiceChange = (v: VoiceKey) => {
+    const wasPlaying = playing;
+    if (audioRef.current) audioRef.current.pause();
+    setPlaying(false);
+    setVoice(v);
+    setCurrentTime(0);
+    setTimeout(() => {
+      if (wasPlaying && audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+        setPlaying(true);
+      }
+    }, 100);
+  };
+
   const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  if (!audioSrc) return <AudioPlaceholder title={data.title} lang={lang} />;
+
   return (
-    <div className="rounded-xl border border-primary/20 bg-primary/[0.04] p-5 sm:p-6 space-y-5">
+    <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.06] to-primary/[0.02] p-5 sm:p-6 space-y-5">
       <audio
         ref={audioRef}
-        src={src}
+        src={audioSrc}
         muted={muted}
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
         onEnded={() => setPlaying(false)}
       />
 
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-          <Headphones className="h-5 w-5 text-primary" />
+      {/* Header with waves */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+            <SoundWaves active={playing} />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary">
+              {labels.listenLabel[lang]}
+            </p>
+            <p className="text-sm font-medium text-foreground leading-snug line-clamp-1">{data.title}</p>
+          </div>
         </div>
-        <div>
-          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary">
-            {labels.listenSection[lang]}
-          </p>
-          <p className="text-sm font-medium text-foreground leading-snug">{title}</p>
-        </div>
+      </div>
+
+      {/* Voice Selector */}
+      <div className="flex items-center gap-2">
+        {voiceOptions.map(opt => (
+          <button
+            key={opt.key}
+            onClick={() => handleVoiceChange(opt.key)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
+              voice === opt.key
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+            }`}
+          >
+            {opt.icon}
+            <span className="hidden sm:inline">{opt.label}</span>
+          </button>
+        ))}
       </div>
 
       {/* Progress bar */}
@@ -198,47 +278,35 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
   );
 }
 
-/* ─── Audio Player Placeholder (no audio yet) ─── */
-function AudioPlayerPlaceholder({ title, lang }: { title: string; lang: L }) {
+/* ─── Audio Placeholder (no audio yet) ─── */
+function AudioPlaceholder({ title, lang }: { title: string; lang: L }) {
   return (
-    <div className="rounded-xl border border-border bg-muted/30 p-5 sm:p-6 space-y-5">
-      {/* Header */}
+    <div className="rounded-2xl border border-border bg-muted/20 p-5 sm:p-6 space-y-5">
       <div className="flex items-center gap-3">
         <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <Headphones className="h-5 w-5 text-primary/60" />
+          <SoundWaves active={false} />
         </div>
         <div>
           <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary/60">
-            {labels.listenSection[lang]}
+            {labels.listenLabel[lang]}
           </p>
           <p className="text-sm font-medium text-foreground/70 leading-snug">{title}</p>
         </div>
       </div>
-
-      {/* Disabled progress bar */}
-      <div className="space-y-1.5">
-        <div className="w-full h-2 rounded-full bg-muted" />
-        <div className="flex justify-between text-[11px] text-muted-foreground/50 font-medium tabular-nums">
-          <span>0:00</span>
-          <span>0:00</span>
-        </div>
-      </div>
-
-      {/* Disabled controls */}
+      <div className="w-full h-2 rounded-full bg-muted" />
       <div className="flex items-center justify-center gap-8">
         <div className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground/40">
           <Volume2 className="h-5 w-5" />
         </div>
-        <div className="h-16 w-16 rounded-full bg-primary/20 text-primary-foreground/50 flex items-center justify-center shadow-sm">
+        <div className="h-16 w-16 rounded-full bg-primary/20 text-primary-foreground/50 flex items-center justify-center">
           <Play className="h-7 w-7 ml-0.5" />
         </div>
         <div className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground/40 text-sm font-bold">
           1x
         </div>
       </div>
-
       <p className="text-center text-[11px] text-muted-foreground/60 italic">
-        {lang === 'PT' ? 'Versão em áudio chegando em breve' : lang === 'ES' ? 'Versión en audio llegando pronto' : 'Audio version arriving soon'}
+        {labels.audioSoon[lang]}
       </p>
     </div>
   );
@@ -314,7 +382,7 @@ export default function Devocional() {
         .eq('user_id', user.id)
         .eq('type', 'devotional')
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(30);
       setPastItems((data as any) || []);
       setPastLoading(false);
     };
@@ -324,31 +392,16 @@ export default function Devocional() {
   const handleSelectPast = useCallback((item: PastDevotional) => {
     if (activeItemId === item.id) {
       setTransitioning(true);
-      setTimeout(() => {
-        setActiveItemId(null);
-        setViewingPast(null);
-        setTransitioning(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 200);
+      setTimeout(() => { setActiveItemId(null); setViewingPast(null); setTransitioning(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }, 200);
       return;
     }
     setTransitioning(true);
-    setTimeout(() => {
-      setActiveItemId(item.id);
-      setViewingPast(item);
-      setTransitioning(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 200);
+    setTimeout(() => { setActiveItemId(item.id); setViewingPast(item); setTransitioning(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }, 200);
   }, [activeItemId]);
 
   const handleBackToToday = () => {
     setTransitioning(true);
-    setTimeout(() => {
-      setActiveItemId(null);
-      setViewingPast(null);
-      setTransitioning(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 200);
+    setTimeout(() => { setActiveItemId(null); setViewingPast(null); setTransitioning(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }, 200);
   };
 
   const handleCopy = () => {
@@ -388,22 +441,24 @@ export default function Devocional() {
 
   if (loading) {
     return (
-      <div className="w-full space-y-5">
-        <Skeleton className="h-5 w-24" />
-        <Skeleton className="h-64 w-full rounded-xl" />
-        <Skeleton className="h-40 w-full rounded-xl" />
-        <Skeleton className="h-64 w-full rounded-xl" />
+      <div className="w-full max-w-3xl mx-auto space-y-5 py-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-5 w-64" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+        <Skeleton className="h-48 w-full rounded-2xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="w-full">
+      <div className="w-full max-w-3xl mx-auto py-8">
         <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
         </Link>
-        <div className="rounded-2xl border border-border bg-card p-6">
+        <div className="rounded-2xl border border-border bg-card p-8 text-center">
+          <BookOpen className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
           <p className="text-muted-foreground">{labels.error[lang]}</p>
         </div>
       </div>
@@ -419,19 +474,10 @@ export default function Devocional() {
   const displayDate = isViewingPast ? viewingPast.created_at : data.scheduled_date;
   const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
+  /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
     const paragraphs = text.split('\n\n').filter(p => p.trim());
-    if (paragraphs.length === 0) {
-      const lines = text.split('\n').filter(l => l.trim());
-      if (lines.length <= 1) {
-        return [<p key={0} className="text-sm sm:text-[15px] text-foreground/90 leading-[1.95] first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none">{text.trim()}</p>];
-      }
-      return lines.map((line, idx) => (
-        <p key={idx} className={`text-sm sm:text-[15px] text-foreground/90 leading-[1.95] ${idx === 0 ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none' : 'mt-5'}`}>
-          {line.trim()}
-        </p>
-      ));
-    }
+    if (paragraphs.length === 0) return [<p key={0} className="font-serif text-[1.05rem] sm:text-[1.1rem] text-foreground/90 leading-[1.9]">{text.trim()}</p>];
 
     return paragraphs.map((paragraph, idx) => {
       const trimmed = paragraph.trim();
@@ -446,27 +492,28 @@ export default function Devocional() {
       }
       if (trimmed.startsWith('## ')) {
         return (
-          <h2 key={idx} className="text-lg font-display font-bold text-foreground mt-10 mb-4 flex items-center gap-2.5">
-            <span className="w-1.5 h-6 bg-primary rounded-full shrink-0" />
+          <h2 key={idx} className="text-lg font-display font-bold text-foreground mt-10 mb-4">
             {trimmed.replace('## ', '')}
           </h2>
         );
       }
-      if (trimmed.startsWith('# ')) {
-        return (
-          <h2 key={idx} className="text-xl font-display font-black text-foreground mt-10 mb-4 uppercase tracking-wide">
-            {trimmed.replace('# ', '')}
-          </h2>
-        );
-      }
 
+      // Detect prayer paragraphs
       const isPrayer = /^(Senhor|Pai|Deus|Lord|Father|God|Señor|Padre),?\s/i.test(trimmed);
       if (isPrayer) {
         return (
-          <div key={idx} className="mt-8 rounded-xl bg-primary/5 border border-primary/15 p-5">
-            <p className="text-sm sm:text-[15px] italic text-foreground/85 leading-[1.95]">
-              {trimmed}
-            </p>
+          <div key={idx} className="mt-8 rounded-xl bg-accent/5 border border-accent/15 p-5">
+            <div className="flex items-start gap-3">
+              <span className="text-xl mt-0.5">🙏</span>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-accent mb-2">
+                  {labels.prayer[lang]}
+                </p>
+                <p className="font-serif text-[1.05rem] italic text-foreground/85 leading-[1.9]">
+                  {trimmed}
+                </p>
+              </div>
+            </div>
           </div>
         );
       }
@@ -474,7 +521,7 @@ export default function Devocional() {
       return (
         <p
           key={idx}
-          className={`text-sm sm:text-[15px] text-foreground/90 leading-[1.95] ${
+          className={`font-serif text-[1.05rem] sm:text-[1.1rem] text-foreground/90 leading-[1.9] ${
             idx === 0
               ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
               : 'mt-5'
@@ -489,19 +536,15 @@ export default function Devocional() {
   /* ─── Sidebar (right) ─── */
   const sidebar = user && (
     <div className="w-[300px] shrink-0 hidden lg:block">
-      <div className="sticky top-6 rounded-xl border border-border bg-card overflow-hidden">
+      <div className="sticky top-6 rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2.5">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <Clock className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <p className="text-sm font-bold text-foreground">
-                {labels.previousDevotionals[lang]}
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                {labels.previousSub[lang]}
-              </p>
+              <p className="text-sm font-bold text-foreground">{labels.history[lang]}</p>
+              <p className="text-[10px] text-muted-foreground">{labels.historySub[lang]}</p>
             </div>
           </div>
         </div>
@@ -510,7 +553,7 @@ export default function Devocional() {
           <div className="p-1.5">
             {pastLoading ? (
               <div className="space-y-2 p-2">
-                {[1, 2, 3, 4, 5].map((i) => (
+                {[1, 2, 3, 4, 5].map(i => (
                   <div key={i} className="flex gap-3 p-2">
                     <Skeleton className="h-11 w-11 rounded-lg shrink-0" />
                     <div className="space-y-1.5 flex-1">
@@ -521,20 +564,16 @@ export default function Devocional() {
                 ))}
               </div>
             ) : pastItems.length === 0 ? (
-              <p className="text-xs text-muted-foreground p-3 text-center">
-                {labels.noPrevious[lang]}
-              </p>
+              <p className="text-xs text-muted-foreground p-3 text-center">{labels.noHistory[lang]}</p>
             ) : (
-              pastItems.map((item) => {
+              pastItems.map(item => {
                 const isActive = activeItemId === item.id;
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleSelectPast(item)}
                     className={`w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left group ${
-                      isActive
-                        ? 'bg-primary/10 border border-primary/20'
-                        : 'hover:bg-muted/50 border border-transparent'
+                      isActive ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted/50 border border-transparent'
                     }`}
                   >
                     {item.cover_image_url ? (
@@ -547,25 +586,15 @@ export default function Devocional() {
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className={`text-sm font-medium leading-snug line-clamp-2 transition-colors ${
-                        isActive ? 'text-primary' : 'text-foreground group-hover:text-primary'
-                      }`}>
+                      <p className={`text-sm font-medium leading-snug line-clamp-2 transition-colors ${isActive ? 'text-primary' : 'text-foreground group-hover:text-primary'}`}>
                         {item.title}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-muted-foreground">
-                          {item.passage && (
-                            <span className="truncate">{item.passage}</span>
-                          )}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {formatShortDate(item.created_at, lang)}
-                        </span>
+                        {item.passage && <span className="text-[10px] text-muted-foreground truncate">{item.passage}</span>}
+                        <span className="text-[10px] text-muted-foreground">{formatShortDate(item.created_at, lang)}</span>
                       </div>
                     </div>
-                    {isActive && (
-                      <Check className="h-4 w-4 text-primary shrink-0 mt-1" />
-                    )}
+                    {isActive && <Check className="h-4 w-4 text-primary shrink-0 mt-1" />}
                   </button>
                 );
               })
@@ -581,13 +610,15 @@ export default function Devocional() {
     <div className="flex-1 min-w-0 pb-10">
       {/* Page header */}
       {!isViewingPast && (
-        <div className="flex items-center gap-3 mb-5">
-          <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-            <BookOpen className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="font-display text-lg font-bold text-foreground">{labels.pageTitle[lang]}</h1>
-            <p className="text-xs text-muted-foreground">{labels.subtitle[lang]}</p>
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-1">
+            <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+              <BookOpen className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="font-display text-xl sm:text-2xl font-black text-foreground">{labels.pageTitle[lang]}</h1>
+              <p className="text-xs text-muted-foreground">{labels.subtitle[lang]}</p>
+            </div>
           </div>
         </div>
       )}
@@ -598,7 +629,7 @@ export default function Devocional() {
           className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 font-medium mb-4 transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          {lang === 'PT' ? 'Voltar à leitura de hoje' : lang === 'ES' ? 'Volver a la lectura de hoy' : 'Back to today\'s reading'}
+          {labels.backToday[lang]}
         </button>
       )}
 
@@ -606,35 +637,35 @@ export default function Devocional() {
       <div className={`rounded-2xl border border-border bg-card overflow-hidden shadow-sm transition-all duration-200 ${transitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
 
         {/* ── 1. DATE BAR ── */}
-        <div className="flex items-center justify-between px-5 sm:px-8 py-3 border-b border-border bg-muted/30">
-          <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-muted-foreground flex items-center gap-2">
-            <Calendar className="h-3 w-3" />
-            {formatDate(isViewingPast ? displayDate.slice(0, 10) : data.scheduled_date, lang)}
+        <div className="flex items-center justify-between px-5 sm:px-8 py-3.5 border-b border-border bg-muted/20">
+          <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-2">
+            <Calendar className="h-3.5 w-3.5" />
+            {formatDateFull(isViewingPast ? displayDate.slice(0, 10) : data.scheduled_date, lang)}
           </span>
           {displayCategory && (
-            <span className="inline-flex items-center gap-1 bg-primary/15 text-primary text-[10px] px-3 py-1 rounded-full font-semibold">
-              📗 {displayCategory}
+            <span className="inline-flex items-center gap-1 bg-accent/15 text-accent text-[10px] px-3 py-1 rounded-full font-semibold">
+              ✦ {displayCategory}
             </span>
           )}
         </div>
 
         {/* ── 2. TITLE ── */}
-        <div className="px-5 sm:px-8 pt-6 pb-2">
-          <h1 className="text-xl sm:text-2xl font-display font-black text-foreground leading-tight">
+        <div className="px-5 sm:px-8 pt-7 pb-2">
+          <h1 className="text-2xl sm:text-3xl font-display font-black text-foreground leading-tight tracking-tight">
             {displayTitle}
           </h1>
         </div>
 
         {/* ── 3. VERSE QUOTE ── */}
         {!isViewingPast && displayVerseText && (
-          <div className="mx-5 sm:mx-8 mt-4 rounded-xl bg-primary/5 border border-primary/15 p-5">
+          <div className="mx-5 sm:mx-8 mt-5 rounded-xl border-l-4 border-accent/60 bg-accent/[0.04] p-5">
             <div className="flex gap-3">
-              <span className="text-3xl text-primary/40 font-display font-black leading-none shrink-0 select-none">&ldquo;</span>
+              <span className="text-3xl text-accent/50 font-display font-black leading-none shrink-0 select-none">&ldquo;</span>
               <div>
-                <blockquote className="text-sm sm:text-base italic text-foreground/90 leading-relaxed">
+                <blockquote className="font-serif text-base sm:text-lg italic text-foreground/90 leading-relaxed">
                   {displayVerseText}
                 </blockquote>
-                <p className="text-xs font-bold text-primary mt-2.5">&mdash; {displayVerse}</p>
+                <p className="text-xs font-bold text-accent mt-3">&mdash; {displayVerse}</p>
               </div>
             </div>
           </div>
@@ -642,18 +673,14 @@ export default function Devocional() {
 
         {/* ── 4. AUDIO PLAYER ── */}
         {!isViewingPast && (
-          <div className="mx-5 sm:mx-8 mt-5">
-            {data.audio_url ? (
-              <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
-            ) : (
-              <AudioPlayerPlaceholder title={data.title} lang={lang} />
-            )}
+          <div className="mx-5 sm:mx-8 mt-6">
+            <AudioPlayer data={data} lang={lang} />
           </div>
         )}
 
-        {/* ── 5. COVER IMAGE + save/share ── */}
+        {/* ── 5. COVER IMAGE ── */}
         {displayCover && (
-          <div className="mx-5 sm:mx-8 mt-5 rounded-xl border border-border bg-card p-5 space-y-4">
+          <div className="mx-5 sm:mx-8 mt-6 rounded-xl border border-border bg-card p-5 space-y-4">
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <ImageIcon className="h-4 w-4 text-primary" />
@@ -664,21 +691,21 @@ export default function Devocional() {
               </div>
             </div>
             <div className="flex justify-center">
-              <div className="relative rounded-xl overflow-hidden shadow-lg max-w-xs w-full aspect-[3/4]">
+              <div className="relative rounded-xl overflow-hidden shadow-lg w-full aspect-video max-w-lg">
                 <img src={displayCover} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.1) 55%, transparent 70%)' }} />
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.05) 55%, transparent 70%)' }} />
                 <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
                   {displayCategory && (
                     <span className="inline-flex items-center gap-1 bg-white/15 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
-                      📗 {displayCategory}
+                      ✦ {displayCategory}
                     </span>
                   )}
-                  <span className="text-white/50 text-[10px] font-medium uppercase tracking-wider">Living Word</span>
+                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-wider">Living Word</span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col gap-2">
-                  <h3 className="text-white text-lg font-display font-bold leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{displayTitle}</h3>
+                  <h3 className="text-white text-lg font-display font-bold leading-snug drop-shadow-lg">{displayTitle}</h3>
                   {displayVerse && (
-                    <p className="text-white/80 text-xs italic leading-relaxed line-clamp-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]">
+                    <p className="text-white/80 text-xs italic leading-relaxed line-clamp-2 drop-shadow-md">
                       &ldquo;{displayVerseText || displayVerse}&rdquo;
                     </p>
                   )}
@@ -720,30 +747,38 @@ export default function Devocional() {
           </div>
         )}
 
-        {/* ── 6. REFLEXÃO ── */}
+        {/* ── 6. MEDITAÇÃO (Body) ── */}
         <div className="px-5 sm:px-8 pt-8 pb-4">
-          <div className="flex items-center gap-2.5 mb-5">
+          <div className="flex items-center gap-2.5 mb-6">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <MessageCircle className="h-4 w-4 text-primary" />
             </div>
             <h2 className="text-[11px] font-bold tracking-[0.15em] uppercase text-primary">
-              {labels.reflection[lang]}
+              {labels.meditation[lang]}
             </h2>
           </div>
-
           <div className="space-y-0">
             {renderBodyText(displayBody)}
           </div>
+
+          {/* Reflection question */}
+          {!isViewingPast && data.reflection_question && (
+            <div className="mt-8 border-l-3 border-primary/30 pl-5 py-2">
+              <p className="font-serif text-base italic text-foreground/80 leading-relaxed">
+                💭 {data.reflection_question}
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* ── 7. PRÁTICA DO DIA ── */}
+        {/* ── 7. DESAFIO DO DIA ── */}
         {!isViewingPast && data.daily_practice && (
           <div className="mx-5 sm:mx-8 mb-5 rounded-xl bg-primary/5 border border-primary/20 p-5">
             <div className="flex items-start gap-2.5">
               <ListChecks className="h-4 w-4 text-primary mt-0.5 shrink-0" />
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary mb-1.5">
-                  {labels.practice[lang]}
+                  {labels.challenge[lang]}
                 </p>
                 <p className="text-sm text-foreground leading-relaxed">
                   {data.daily_practice}
@@ -754,7 +789,7 @@ export default function Devocional() {
         )}
 
         {/* ── 8. ACTION BAR ── */}
-        <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/20">
+        <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/15">
           <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors">
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
@@ -771,25 +806,25 @@ export default function Devocional() {
             to="/mente-chat"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
           >
-            <MessageCircle className="h-3.5 w-3.5" /> {labels.continueChat[lang]}
+            <MessageCircle className="h-3.5 w-3.5" /> {labels.deepenChat[lang]}
           </Link>
         </div>
       </div>
 
-      {/* Personal reflection */}
+      {/* ── 9. DIÁRIO ESPIRITUAL ── */}
       {!isViewingPast && (
-        <div className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
+        <div className="mt-6 rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-4">
           <div className="flex items-center gap-2.5">
-            <PenLine className="h-4 w-4 text-foreground" />
-            <p className="text-sm font-bold text-foreground">{labels.personalReflection[lang]}</p>
+            <PenLine className="h-4 w-4 text-primary" />
+            <p className="text-sm font-bold text-foreground">{labels.journal[lang]}</p>
           </div>
-          <p className="text-xs text-muted-foreground">{labels.personalReflectionSub[lang]}</p>
+          <p className="text-xs text-muted-foreground">{labels.journalSub[lang]}</p>
           <textarea
             value={personalNote}
             onChange={(e) => setPersonalNote(e.target.value)}
-            placeholder={labels.personalPlaceholder[lang]}
+            placeholder={labels.journalPlaceholder[lang]}
             rows={4}
-            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-border bg-background font-serif text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
           />
           <div className="flex justify-end">
             <button
@@ -797,26 +832,26 @@ export default function Devocional() {
               disabled={!personalNote.trim() || savingNote}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
             >
-              <Send className="h-4 w-4" /> {labels.saveReflection[lang]}
+              <Send className="h-4 w-4" /> {labels.saveNote[lang]}
             </button>
           </div>
         </div>
       )}
 
-      {/* Mobile: past devotionals list */}
+      {/* Mobile: reading history */}
       {isMobile && user && (
-        <div className="mt-6 rounded-xl border border-border bg-card overflow-hidden">
+        <div className="mt-6 rounded-2xl border border-border bg-card overflow-hidden">
           <div className="p-4 border-b border-border">
             <div className="flex items-center gap-2.5">
               <Clock className="h-4 w-4 text-primary" />
-              <p className="text-sm font-bold text-foreground">{labels.previousDevotionals[lang]}</p>
+              <p className="text-sm font-bold text-foreground">{labels.history[lang]}</p>
             </div>
           </div>
           <div className="p-2 max-h-[300px] overflow-y-auto">
             {pastLoading ? (
               <div className="space-y-2 p-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full rounded-lg" />)}</div>
             ) : pastItems.length === 0 ? (
-              <p className="text-xs text-muted-foreground p-3 text-center">{labels.noPrevious[lang]}</p>
+              <p className="text-xs text-muted-foreground p-3 text-center">{labels.noHistory[lang]}</p>
             ) : (
               pastItems.map(item => {
                 const isActive = activeItemId === item.id;
@@ -824,9 +859,7 @@ export default function Devocional() {
                   <button
                     key={item.id}
                     onClick={() => handleSelectPast(item)}
-                    className={`w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left ${
-                      isActive ? 'bg-primary/10' : 'hover:bg-muted/50'
-                    }`}
+                    className={`w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left ${isActive ? 'bg-primary/10' : 'hover:bg-muted/50'}`}
                   >
                     {item.cover_image_url ? (
                       <div className="h-10 w-10 rounded-lg overflow-hidden shrink-0 bg-muted">
