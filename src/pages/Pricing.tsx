@@ -165,9 +165,9 @@ export default function Pricing() {
                   </div>
 
                   <div className="flex items-baseline gap-0.5 mb-1">
-                    <span className="text-3xl font-bold">${price.toFixed(2)}</span>
+                    <span className="text-3xl font-bold">{displayPrice}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-1">{price === 0 ? labels.forever[lang] : labels.month[lang]}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{plan.slug === 'free' ? labels.forever[lang] : labels.month[lang]}</p>
 
                   {/* Credits badge + tooltip */}
                   <div className="flex items-center gap-1.5 mb-4">
