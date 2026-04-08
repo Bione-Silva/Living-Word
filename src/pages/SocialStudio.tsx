@@ -42,7 +42,7 @@ const headings: Record<L, Record<string, string>> = {
     zipLoading: 'Gerando...',
     savedToCloud: 'Arte salva na nuvem! ☁️',
     emptyCanvas: 'Busque um versículo ou gere conteúdo para começar a criar.',
-    devotionalCheck: 'Gerar devocional em carrossel',
+    devotionalCheck: 'Gerar Roteiro de Carrossel',
     carouselEmpty: 'Gere um versículo com devocional na aba "Criar" para montar slides automáticos.',
     goCreate: 'Ir para Criar',
     generateAnother: 'Gerar Outro',
@@ -63,7 +63,7 @@ const headings: Record<L, Record<string, string>> = {
     zipLoading: 'Generating...',
     savedToCloud: 'Art saved to cloud! ☁️',
     emptyCanvas: 'Search a verse or generate content to start creating.',
-    devotionalCheck: 'Generate devotional carousel',
+    devotionalCheck: 'Generate carousel script',
     carouselEmpty: 'Generate a verse with devotional on the "Create" tab to auto-build carousel slides.',
     goCreate: 'Go to Create',
     generateAnother: 'Generate Another',
@@ -84,7 +84,7 @@ const headings: Record<L, Record<string, string>> = {
     zipLoading: 'Generando...',
     savedToCloud: '¡Arte guardado en la nube! ☁️',
     emptyCanvas: 'Busca un versículo o genera contenido para empezar a crear.',
-    devotionalCheck: 'Generar devocional en carrusel',
+    devotionalCheck: 'Generar guión de carrusel',
     carouselEmpty: 'Genera un versículo con devocional en la pestaña "Crear" para montar slides automáticos.',
     goCreate: 'Ir a Crear',
     generateAnother: 'Generar Otro',
@@ -251,38 +251,31 @@ export default function SocialStudio() {
   const generateDevotional = async (verseText: string, book: string) => {
     setLoadingDevotional(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-pastoral-material', {
+      const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
         body: {
-          bible_passage: `${book} — "${verseText}"`,
+          verse: `${book} — "${verseText}"`,
+          topic: book,
           language: lang,
-          bible_version: profile?.bible_version || 'ARA',
-          outputModes: ['devotional'],
-          pastoral_voice: profile?.pastoral_voice || undefined,
         },
       });
       if (error) throw error;
-      const devotionalText = data?.outputs?.devotional || data?.outputs?.devotional_content || '';
-      if (devotionalText) {
-        const paragraphs = devotionalText
-          .split(/\n{2,}/)
-          .map((p: string) => p.replace(/^#+\s*/gm, '').trim())
-          .filter((p: string) => p.length > 20);
-        const totalSlides = Math.min(paragraphs.length, 5) + 1;
-        const devotionalSlides: SlideData[] = paragraphs.slice(0, 5).map((p: string, i: number) => ({
-          text: p.length > 200 ? p.slice(0, 197) + '…' : p,
-          subtitle: i === paragraphs.slice(0, 5).length - 1 ? '@seuministério' : undefined,
-          slideNumber: i + 2,
+
+      const slides = data?.slides as Array<{ slide: number; type: string; title: string; content: string }>;
+      if (slides && slides.length > 0) {
+        const totalSlides = slides.length;
+        const carouselSlides: SlideData[] = slides.map((s, i) => ({
+          text: s.type === 'verse' ? `"${s.content}"` : s.title,
+          subtitle: s.type === 'verse' ? book : s.content,
+          slideNumber: i + 1,
           totalSlides,
         }));
-        setCarousel([
-          { text: `"${verseText}"`, subtitle: book, slideNumber: 1, totalSlides },
-          ...devotionalSlides,
-        ]);
+        setCarousel(carouselSlides);
         setCurrentSlide(0);
-        toast.success(lang === 'PT' ? 'Devocional gerado!' : lang === 'EN' ? 'Devotional generated!' : '¡Devocional generado!');
+        setActiveTab('carousel');
+        toast.success(lang === 'PT' ? 'Carrossel gerado!' : lang === 'EN' ? 'Carousel generated!' : '¡Carrusel generado!');
       }
     } catch {
-      toast.error(lang === 'PT' ? 'Erro ao gerar devocional' : lang === 'EN' ? 'Error generating devotional' : 'Error al generar devocional');
+      toast.error(lang === 'PT' ? 'Erro ao gerar carrossel' : lang === 'EN' ? 'Error generating carousel' : 'Error al generar carrusel');
     } finally {
       setLoadingDevotional(false);
     }
