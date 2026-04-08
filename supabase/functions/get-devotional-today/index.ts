@@ -205,7 +205,7 @@ Return JSON with exactly these fields:
 Choose from the FULL Bible — avoid overused verses like John 3:16, Psalm 23, Jeremiah 29:11.
 The tone should be warm, pastoral, and encouraging.`
 
-    const aiResponse = await fetch('https://api.lovable.dev/v1/chat/completions', {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
