@@ -281,31 +281,31 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
 /* ─── Audio Placeholder (no audio yet) ─── */
 function AudioPlaceholder({ title, lang }: { title: string; lang: L }) {
   return (
-    <div className="rounded-2xl border border-border bg-muted/20 p-5 sm:p-6 space-y-5">
+    <div className="rounded-2xl border border-accent/30 bg-accent/[0.04] p-5 sm:p-6 space-y-5">
       <div className="flex items-center gap-3">
-        <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+        <div className="h-11 w-11 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
           <SoundWaves active={false} />
         </div>
         <div>
-          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary/60">
+          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-accent">
             {labels.listenLabel[lang]}
           </p>
-          <p className="text-sm font-medium text-foreground/70 leading-snug">{title}</p>
+          <p className="text-sm font-medium text-foreground leading-snug">{title}</p>
         </div>
       </div>
-      <div className="w-full h-2 rounded-full bg-muted" />
+      <div className="w-full h-2 rounded-full bg-accent/15" />
       <div className="flex items-center justify-center gap-8">
-        <div className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground/40">
+        <div className="h-10 w-10 rounded-full flex items-center justify-center text-accent/50">
           <Volume2 className="h-5 w-5" />
         </div>
-        <div className="h-16 w-16 rounded-full bg-primary/20 text-primary-foreground/50 flex items-center justify-center">
+        <div className="h-16 w-16 rounded-full bg-accent/20 text-accent flex items-center justify-center shadow-md">
           <Play className="h-7 w-7 ml-0.5" />
         </div>
-        <div className="h-10 w-10 rounded-full flex items-center justify-center text-muted-foreground/40 text-sm font-bold">
+        <div className="h-10 w-10 rounded-full flex items-center justify-center text-accent/60 text-sm font-bold">
           1x
         </div>
       </div>
-      <p className="text-center text-[11px] text-muted-foreground/60 italic">
+      <p className="text-center text-[11px] text-accent/50 italic">
         {labels.audioSoon[lang]}
       </p>
     </div>
