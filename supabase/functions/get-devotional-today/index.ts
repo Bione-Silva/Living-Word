@@ -16,6 +16,7 @@ interface DevotionalPayload {
   daily_practice?: string
   reflection_question: string
   scheduled_date: string
+  closing_prayer?: string
 }
 
 async function generateCoverImage(
@@ -28,19 +29,17 @@ async function generateCoverImage(
     const adminClient = createClient(supabaseUrl, serviceRoleKey)
     const today = devotional.scheduled_date
 
-    // Check if image already exists for today
     const fileName = `devotional-covers/${today}.png`
-    const { data: existingUrl } = adminClient.storage
-      .from('blog-images')
-      .getPublicUrl(fileName)
 
-    // Try to check if file exists
     const { data: existingFile } = await adminClient.storage
       .from('blog-images')
       .list('devotional-covers', { search: `${today}.png` })
 
     if (existingFile && existingFile.length > 0) {
-      return existingUrl.publicUrl
+      const { data: urlData } = adminClient.storage
+        .from('blog-images')
+        .getPublicUrl(fileName)
+      return urlData.publicUrl
     }
 
     const imagePrompt = `Generate a beautiful devotional cover image. Theme: "${devotional.title}". Category: ${devotional.category}. Bible verse: ${devotional.anchor_verse}. Style: atmospheric, ethereal, warm golden light, biblical landscape or symbolic imagery inspired by the verse. Painterly, artistic, museum-quality. Vertical 3:4 orientation. Do NOT include any text, letters, words, or typography in the image.`
@@ -69,10 +68,8 @@ async function generateCoverImage(
     const msg = imgData.choices?.[0]?.message
     const msgContent = msg?.content
 
-    // Extract base64 image data from various possible response formats
     let base64Data: string | null = null
 
-    // Format 1: images array from Lovable AI Gateway
     const imageUrl = msg?.images?.[0]?.image_url?.url
     if (imageUrl && typeof imageUrl === 'string') {
       const match = imageUrl.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/)
@@ -108,7 +105,6 @@ async function generateCoverImage(
       return null
     }
 
-    // Decode and upload
     const raw = atob(base64Data)
     const imageBytes = new Uint8Array(raw.length)
     for (let i = 0; i < raw.length; i++) {
@@ -154,9 +150,11 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     })
+    const adminClient = createClient(supabaseUrl, serviceRoleKey)
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -166,6 +164,56 @@ Deno.serve(async (req) => {
       })
     }
 
+    const today = new Date().toISOString().slice(0, 10)
+
+    // ─── CHECK CACHE: existing devotional for this user today ───
+    const { data: cached } = await adminClient
+      .from('materials')
+      .select('id, title, content, passage, cover_image_url, notes, created_at')
+      .eq('user_id', user.id)
+      .eq('type', 'devotional')
+      .gte('created_at', today + 'T00:00:00')
+      .lte('created_at', today + 'T23:59:59')
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (cached && cached.length > 0) {
+      const row = cached[0]
+      // Parse the stored content to reconstruct fields
+      // We store structured data as JSON in the 'content' field
+      let parsedContent: any = {}
+      try {
+        parsedContent = JSON.parse(row.content)
+      } catch {
+        // Content is plain text — wrap it
+        parsedContent = { body_text: row.content }
+      }
+
+      console.log('Returning cached devotional for', today)
+
+      return new Response(JSON.stringify({
+        id: row.id,
+        title: row.title,
+        category: parsedContent.category || '',
+        anchor_verse: row.passage || parsedContent.anchor_verse || '',
+        anchor_verse_text: parsedContent.anchor_verse_text || '',
+        body_text: parsedContent.body_text || row.content,
+        daily_practice: parsedContent.daily_practice || '',
+        reflection_question: parsedContent.reflection_question || '',
+        closing_prayer: parsedContent.closing_prayer || '',
+        scheduled_date: today,
+        cover_image_url: row.cover_image_url,
+        audio_url: parsedContent.audio_url || null,
+        audio_url_nova: parsedContent.audio_url_nova || null,
+        audio_url_alloy: parsedContent.audio_url_alloy || null,
+        audio_url_onyx: parsedContent.audio_url_onyx || null,
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // ─── GENERATE NEW DEVOTIONAL ───
     const { data: profile } = await supabase
       .from('profiles')
       .select('language')
@@ -181,7 +229,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    const today = new Date().toISOString().slice(0, 10)
     const langLabel = language === 'EN' ? 'English' : language === 'ES' ? 'Spanish' : 'Portuguese'
 
     const systemPrompt = `You are a pastoral devotional writer. Return ONLY valid JSON, no markdown.
@@ -191,10 +238,11 @@ Use today's date seed: ${today}
 
 Return JSON with exactly these fields:
 - "title": a compelling devotional title (max 60 chars)
-- "category": one category word in ${langLabel} (e.g. Fé, Esperança, Graça, Amor, Sabedoria, Coragem, Perseverança)
+- "category": one category word in ${langLabel} (e.g. Fé, Esperança, Graça, Amor, Sabedoria, Coragem, Perseverança, Santidade)
 - "anchor_verse": the Bible reference (e.g. "Filipenses 4:13")
 - "anchor_verse_text": the full verse text
-- "body_text": a 3-4 paragraph devotional reflection (about 250 words total). Use \\n\\n between paragraphs. End with a short prayer.
+- "body_text": a 3-4 paragraph devotional reflection (about 250 words total). Use \\n\\n between paragraphs. Use **bold** for key phrases. Do NOT include the prayer here.
+- "closing_prayer": a short closing prayer (2-3 sentences). Start with "Senhor," or "Pai," or equivalent.
 - "daily_practice": a single concrete, actionable practice for the day (1-2 sentences). Start with a verb.
 - "reflection_question": one thought-provoking question for personal reflection
 - "scheduled_date": "${today}"
@@ -275,8 +323,28 @@ The tone should be warm, pastoral, and encouraging.`
       cost_usd: ((inputTokens * 0.075 + outputTokens * 0.3) / 1_000_000),
     })
 
-    // Generate cover image (non-blocking for response — we still await but it's fault-tolerant)
+    // Generate cover image
     const coverImageUrl = await generateCoverImage(parsed, user.id, supabaseUrl)
+
+    // ─── PERSIST: store as JSON in content so we can reconstruct all fields ───
+    const contentJson = JSON.stringify({
+      category: parsed.category,
+      anchor_verse: parsed.anchor_verse,
+      anchor_verse_text: parsed.anchor_verse_text,
+      body_text: parsed.body_text,
+      daily_practice: parsed.daily_practice || '',
+      reflection_question: parsed.reflection_question,
+      closing_prayer: parsed.closing_prayer || '',
+    })
+
+    await adminClient.from('materials').insert({
+      user_id: user.id,
+      title: parsed.title,
+      type: 'devotional',
+      content: contentJson,
+      passage: parsed.anchor_verse,
+      cover_image_url: coverImageUrl,
+    })
 
     return new Response(JSON.stringify({
       id: `devotional-${today}`,
@@ -287,6 +355,7 @@ The tone should be warm, pastoral, and encouraging.`
       body_text: parsed.body_text,
       daily_practice: parsed.daily_practice || '',
       reflection_question: parsed.reflection_question,
+      closing_prayer: parsed.closing_prayer || '',
       scheduled_date: parsed.scheduled_date,
       cover_image_url: coverImageUrl,
     }), {
@@ -305,6 +374,7 @@ The tone should be warm, pastoral, and encouraging.`
       body_text: 'Cada nova manhã é um lembrete da fidelidade inabalável de Deus.\n\nNão importa os desafios de ontem, hoje Suas misericórdias se renovam.\n\nQue esta verdade ancore seu coração enquanto você serve ao Seu povo hoje.',
       daily_practice: 'Reserve um momento hoje para escrever três formas específicas em que Deus tem sido fiel a você esta semana.',
       reflection_question: 'Como você tem experimentado a fidelidade de Deus recentemente no seu ministério?',
+      closing_prayer: '',
       scheduled_date: today,
       cover_image_url: null,
     }), {
