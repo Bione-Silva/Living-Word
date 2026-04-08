@@ -38,7 +38,7 @@ const labels = {
 } satisfies Record<string, Record<L, string>>;
 
 const SYSTEM_PROMPT = (lang: L, userName?: string) =>
-  `Você é um conselheiro pastoral cristão chamado "O Bom Amigo".
+  `Você é um conselheiro pastoral cristão chamado "Palavra Amiga".
 Seu papel é oferecer suporte emocional e espiritual genuíno.
 
 REGRAS DE TOM (não negociáveis):
