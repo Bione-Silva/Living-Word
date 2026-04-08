@@ -899,7 +899,7 @@ export default function Devocional() {
             </div>
             {noteSavedAt && (
               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                <Check className="h-3 w-3 text-green-600" />
+                <Check className="h-3 w-3 text-primary" />
                 {noteSavedAt}
               </span>
             )}
