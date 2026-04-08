@@ -487,16 +487,43 @@ export default function SocialStudio() {
                 </Card>
               ) : (
                 <>
-                  <SlideCanvas
-                    ref={slideRef}
-                    slide={carousel[currentSlide]}
-                    aspectRatio={aspectRatio}
-                    template={template}
-                    bgImageUrl={theme.backgroundImageUrl}
-                    themeColor={theme.gradient}
-                    fontFamily={theme.fontFamily}
-                    textColor={theme.textColor}
-                  />
+                  {/* Art Style Toggle */}
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-xs font-semibold text-foreground">{h.artStyle}:</span>
+                    <div className="flex items-center gap-2 rounded-lg bg-secondary border border-border px-3 py-1.5">
+                      <span className={`text-xs font-medium transition-colors ${artStyle === 'instagram' ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        📸 {h.igClassic}
+                      </span>
+                      <Switch
+                        checked={artStyle === 'x-thread'}
+                        onCheckedChange={(checked) => setArtStyle(checked ? 'x-thread' : 'instagram')}
+                        className="data-[state=checked]:bg-primary"
+                      />
+                      <span className={`text-xs font-medium transition-colors ${artStyle === 'x-thread' ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        𝕏 {h.xThread}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Swipable Carousel Track */}
+                  <div className="w-full overflow-x-auto snap-x snap-mandatory flex gap-4 pb-4 rounded-xl">
+                    {carousel.map((slide, idx) => (
+                      <SlideCard
+                        key={idx}
+                        ref={idx === currentSlide ? slideRef : undefined}
+                        slide={slide}
+                        index={idx}
+                        totalSlides={carousel.length}
+                        artStyle={artStyle}
+                        profileName={profile?.full_name || 'Pastor'}
+                        profileHandle={profile?.blog_handle || 'seuministério'}
+                        profileAvatar={profile?.avatar_url || undefined}
+                        brandName={profile?.church_name || profile?.blog_name || 'Living Word'}
+                        lang={lang}
+                      />
+                    ))}
+                  </div>
+
                   <CarouselNavigator
                     current={currentSlide}
                     total={carousel.length}
