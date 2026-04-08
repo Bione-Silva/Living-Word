@@ -21,7 +21,7 @@ serve(async (req) => {
       });
     }
 
-    const { systemPrompt, userPrompt, toolId } = await req.json();
+    const { systemPrompt, userPrompt, toolId, history } = await req.json();
 
     if (!systemPrompt || !userPrompt) {
       return new Response(JSON.stringify({ error: "systemPrompt and userPrompt are required" }), {
