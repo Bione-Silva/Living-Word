@@ -7,8 +7,10 @@ import { Switch } from '@/components/ui/switch';
 import { Check, Crown, Zap, Brain, BookOpen, Building2, Sparkles, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useState } from 'react';
-import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_GENERATION_POTENTIAL, type PlanSlug } from '@/lib/plans';
+import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_GENERATION_POTENTIAL, PLAN_PRICES, PLAN_PRICES_BRL, type PlanSlug } from '@/lib/plans';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
+import { useGeoRegion } from '@/hooks/useGeoRegion';
+import { formatPrice } from '@/utils/geoPricing';
 
 type L = 'PT' | 'EN' | 'ES';
 
