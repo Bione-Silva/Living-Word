@@ -45,7 +45,7 @@ async function generateCoverImage(
 
     const imagePrompt = `Generate a beautiful devotional cover image. Theme: "${devotional.title}". Category: ${devotional.category}. Bible verse: ${devotional.anchor_verse}. Style: atmospheric, ethereal, warm golden light, biblical landscape or symbolic imagery inspired by the verse. Painterly, artistic, museum-quality. Vertical 3:4 orientation. Do NOT include any text, letters, words, or typography in the image.`
 
-    const imgResponse = await fetch('https://api.lovable.dev/v1/chat/completions', {
+    const imgResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -56,6 +56,7 @@ async function generateCoverImage(
         messages: [
           { role: 'user', content: imagePrompt },
         ],
+        modalities: ['image', 'text'],
       }),
     })
 
@@ -65,48 +66,45 @@ async function generateCoverImage(
     }
 
     const imgData = await imgResponse.json()
-    const msgContent = imgData.choices?.[0]?.message?.content
+    const msg = imgData.choices?.[0]?.message
+    const msgContent = msg?.content
 
     // Extract base64 image data from various possible response formats
     let base64Data: string | null = null
 
-    if (typeof msgContent === 'string') {
-      // Format: "data:image/png;base64,..."
+    // Format 1: images array from Lovable AI Gateway
+    const imageUrl = msg?.images?.[0]?.image_url?.url
+    if (imageUrl && typeof imageUrl === 'string') {
+      const match = imageUrl.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/)
+      if (match) base64Data = match[1]
+    }
+
+    if (!base64Data && typeof msgContent === 'string') {
       const dataUrlMatch = msgContent.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/)
-      if (dataUrlMatch) {
-        base64Data = dataUrlMatch[1]
-      }
-    } else if (Array.isArray(msgContent)) {
-      // Format: [{ type: "image_url", image_url: { url: "data:..." } }, ...]
+      if (dataUrlMatch) base64Data = dataUrlMatch[1]
+    }
+
+    if (!base64Data && Array.isArray(msgContent)) {
       for (const part of msgContent) {
         const url = part?.image_url?.url || part?.image?.url || part?.url
         if (typeof url === 'string') {
           const match = url.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/)
-          if (match) {
-            base64Data = match[1]
-            break
-          }
+          if (match) { base64Data = match[1]; break }
         }
-        // Direct base64 in content
         if (part?.type === 'image' && part?.source?.data) {
-          base64Data = part.source.data
-          break
+          base64Data = part.source.data; break
         }
       }
     }
 
     if (!base64Data) {
-      // Try parsing the whole response for any base64 image pattern
       const fullStr = JSON.stringify(imgData)
       const match = fullStr.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]{100,})/)
-      if (match) {
-        base64Data = match[1]
-      }
+      if (match) base64Data = match[1]
     }
 
     if (!base64Data) {
-      console.error('Could not extract image data from response. Keys:', Object.keys(imgData))
-      console.error('Content type:', typeof msgContent, Array.isArray(msgContent) ? 'array' : '')
+      console.error('Could not extract image data. Keys:', Object.keys(imgData))
       return null
     }
 
@@ -204,7 +202,7 @@ Return JSON with exactly these fields:
 Choose from the FULL Bible — avoid overused verses like John 3:16, Psalm 23, Jeremiah 29:11.
 The tone should be warm, pastoral, and encouraging.`
 
-    const aiResponse = await fetch('https://api.lovable.dev/v1/chat/completions', {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
