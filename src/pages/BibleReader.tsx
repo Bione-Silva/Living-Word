@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { bibleBooks, getBookName, getTranslation, getTranslationLabel, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getTranslation, translationOptions, getTranslationLabelByCode, type L } from '@/lib/bible-data';
 import { VerseContextMenu } from '@/components/bible/VerseContextMenu';
 import { BibleTabs } from '@/components/bible/BibleTabs';
 import { ReadingPlans } from '@/components/bible/ReadingPlans';
@@ -22,6 +22,7 @@ export default function BibleReader() {
   const { user } = useAuth();
   const [book, setBook] = useState('John');
   const [chapter, setChapter] = useState(1);
+  const [translation, setTranslation] = useState(() => getTranslation(lang));
   const [verses, setVerses] = useState<Verse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -36,7 +37,7 @@ export default function BibleReader() {
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
 
   const currentBook = bibleBooks.find((b) => b.id === book)!;
-  const translation = getTranslation(lang);
+  const availableTranslations = translationOptions[lang];
 
   const fetchChapter = useCallback(async () => {
     setLoading(true);
@@ -60,6 +61,11 @@ export default function BibleReader() {
   }, [book, chapter, lang, translation]);
 
   useEffect(() => { fetchChapter(); }, [fetchChapter]);
+
+  // Reset translation when language changes
+  useEffect(() => {
+    setTranslation(getTranslation(lang));
+  }, [lang]);
 
   // Load favorites and highlights for current chapter
   useEffect(() => {
@@ -93,13 +99,13 @@ export default function BibleReader() {
     setGoToVerse('');
   };
 
-  const handleVerseClick = (verse: Verse) => {
+  const handleVerseClick = (e: React.MouseEvent, verse: Verse) => {
+    e.stopPropagation();
     setSelectedVerse(verse);
   };
 
   const handleHighlight = async (color: string) => {
     if (!user || !selectedVerse) return;
-    // Upsert: delete existing then insert
     await supabase.from('bible_highlights')
       .delete()
       .eq('user_id', user.id)
@@ -195,6 +201,20 @@ export default function BibleReader() {
           </SelectContent>
         </Select>
 
+        {/* Translation selector */}
+        {availableTranslations.length > 1 && (
+          <Select value={translation} onValueChange={setTranslation}>
+            <SelectTrigger className="w-[90px] text-foreground border-border">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableTranslations.map((t) => (
+                <SelectItem key={t.code} value={t.code}>{t.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
         <div className="flex items-center gap-1">
           <Input
             type="number"
@@ -225,7 +245,7 @@ export default function BibleReader() {
         <h2 className="font-display text-lg font-semibold text-foreground mb-1">
           {getBookName(book, lang)} {chapter}
         </h2>
-        <p className="text-[11px] text-muted-foreground mb-6">{getTranslationLabel(lang)}</p>
+        <p className="text-[11px] text-muted-foreground mb-6">{getTranslationLabelByCode(translation)}</p>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -239,7 +259,7 @@ export default function BibleReader() {
               <span
                 key={v.verse}
                 ref={(el) => { verseRefs.current[v.verse] = el; }}
-                onClick={() => handleVerseClick(v)}
+                onClick={(e) => handleVerseClick(e, v)}
                 className={`cursor-pointer rounded px-0.5 transition-colors hover:bg-primary/10 ${highlights[v.verse] ? highlightClass(highlights[v.verse]) : ''}`}
               >
                 <sup className="text-primary/60 font-sans text-[11px] font-bold mr-1 select-none">{v.verse}</sup>
