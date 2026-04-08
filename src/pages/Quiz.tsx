@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Trophy, Zap, Timer, CheckCircle2, XCircle, Loader2, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { Leaderboard } from '@/components/quiz/Leaderboard';
+import { DailyBonusCard } from '@/components/quiz/DailyBonusCard';
 
 type L = 'PT' | 'EN' | 'ES';
 
