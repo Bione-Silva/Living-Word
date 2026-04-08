@@ -152,9 +152,47 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
     setImageLoading(false);
   };
 
+  const generateDrawing = async () => {
+    if (!selected) return;
+    const char = characters.find(c => c.id === selected);
+    if (!char) return;
+    setDrawingLoading(true);
+    setDrawingImage(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
+        body: {
+          verse_text: `Cena bíblica infantil: ${char.name.EN} - ${story?.title || ''}`,
+          style: 'ilustração infantil colorida, estilo cartoon cristão, cores vibrantes, personagens amigáveis',
+          format: '1:1',
+        },
+      });
+      if (!error && data?.image_url) {
+        setDrawingImage(data.image_url);
+      } else {
+        // Fallback: use ai-tool with image generation prompt
+        const imgRes = await supabase.functions.invoke('ai-tool', {
+          body: {
+            systemPrompt: 'You are a children\'s illustration artist. Describe a beautiful, colorful children\'s book illustration.',
+            userPrompt: `Create a warm, colorful children's Bible illustration of ${char.name[lang]} in the story "${story?.title}". Style: cartoon, friendly, vibrant colors, storybook feel.`,
+            toolId: 'kids-drawing',
+          },
+        });
+        if (imgRes.data?.content) {
+          toast.success(lang === 'PT' ? 'Descrição gerada! Em breve com imagem real.' : 'Description generated!');
+        }
+      }
+    } catch {
+      toast.error(lang === 'PT' ? 'Erro ao gerar desenho' : 'Error generating drawing');
+    } finally {
+      setDrawingLoading(false);
+    }
+  };
+
   const handleReset = () => {
     setStory(null);
     setStoryImage(null);
+    setLesson(null);
+    setDrawingImage(null);
     setSelected(null);
   };
 
