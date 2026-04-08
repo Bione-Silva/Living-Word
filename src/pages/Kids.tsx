@@ -91,14 +91,25 @@ Return ONLY valid JSON: {"title": "story title", "content": "full story with par
       if (error) throw error;
       const content = data?.content;
       if (content) {
-        let parsed: { title: string; content: string };
+        let parsed: { title: string; content: string; lesson?: string };
         try {
           parsed = JSON.parse(content);
         } catch {
           parsed = { title: char.name[lang], content };
         }
+        // Extract lesson: from JSON field, or from content lines starting with "Lição:" / "Lesson:" / "Lección:"
+        let extractedLesson = parsed.lesson || null;
+        if (!extractedLesson) {
+          const lines = parsed.content.split('\n');
+          const lessonLine = lines.find(l => /^(Lição|Lesson|Lección)\s*:/i.test(l.trim()));
+          if (lessonLine) {
+            extractedLesson = lessonLine.replace(/^(Lição|Lesson|Lección)\s*:\s*/i, '').trim();
+            // Remove the lesson line from content
+            parsed.content = lines.filter(l => l !== lessonLine).join('\n');
+          }
+        }
+        setLesson(extractedLesson);
         setStory(parsed);
-        // Generate illustration
         generateImage(char.name.EN, parsed.title);
       }
     } catch {
