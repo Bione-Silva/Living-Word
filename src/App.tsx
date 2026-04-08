@@ -37,6 +37,7 @@ import SocialStudio from "./pages/SocialStudio";
 import BibleReader from "./pages/BibleReader";
 import Pricing from "./pages/Pricing";
 import Onboarding from "./pages/Onboarding";
+import Devocional from "./pages/Devocional";
 
 const queryClient = new QueryClient();
 
