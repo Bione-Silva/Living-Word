@@ -71,6 +71,29 @@ function calculateStreak(dates: string[]): number {
   return streak;
 }
 
+function RankingPill({ lang, userId }: { lang: L; userId?: string }) {
+  const [rank, setRank] = useState<number | null>(null);
+  useEffect(() => {
+    if (!userId) return;
+    supabase.from('quiz_scores').select('user_id').order('total_xp', { ascending: false }).limit(100)
+      .then(({ data }) => {
+        if (!data) return;
+        const idx = data.findIndex(d => d.user_id === userId);
+        setRank(idx >= 0 ? idx + 1 : null);
+      });
+  }, [userId]);
+
+  return (
+    <div className="flex items-center gap-2 bg-card rounded-xl px-4 py-2.5 border border-border shadow-sm">
+      <Trophy className="h-4 w-4 text-primary" />
+      <div>
+        <p className="text-sm font-bold text-foreground leading-none">🏆 #{rank ?? '—'}</p>
+        <p className="text-[10px] text-muted-foreground">{labels.ranking[lang]}</p>
+      </div>
+    </div>
+  );
+}
+
 export function StreakBar() {
   const { lang } = useLanguage();
   const { user } = useAuth();

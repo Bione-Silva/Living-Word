@@ -250,6 +250,11 @@ export default function BibleReader() {
         )}
       </div>
 
+      {/* Reading Plans */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <ReadingPlans onNavigate={handleNavigate} />
+      </div>
+
       {/* Favorites & Notes tabs */}
       <div className="rounded-xl border border-border bg-card p-4">
         <BibleTabs refreshKey={tabsRefreshKey} onNavigate={handleNavigate} />

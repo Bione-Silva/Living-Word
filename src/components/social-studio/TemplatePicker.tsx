@@ -45,7 +45,7 @@ export function TemplatePicker({ value, onChange, lang }: Props) {
       <span className="text-xs text-foreground font-semibold uppercase tracking-wider">
         {lang === 'PT' ? 'Estilo do Cartaz' : lang === 'EN' ? 'Poster Style' : 'Estilo del Cartel'}
       </span>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
         {templates.map((t) => {
           const active = value === t.id;
           return (
