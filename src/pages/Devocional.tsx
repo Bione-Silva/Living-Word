@@ -444,7 +444,7 @@ export default function Devocional() {
 
   /* ─── Sidebar (right) ─── */
   const sidebar = user && (
-    <div className="w-[280px] shrink-0 hidden lg:block">
+    <div className="w-[320px] shrink-0 hidden lg:block">
       <div className="sticky top-6 rounded-xl border border-border bg-card overflow-hidden">
         {/* Header */}
         <div className="p-4 border-b border-border">
