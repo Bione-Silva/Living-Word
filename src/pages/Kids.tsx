@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
