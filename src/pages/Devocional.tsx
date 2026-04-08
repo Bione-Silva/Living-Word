@@ -258,22 +258,35 @@ export default function Devocional() {
     load();
   }, [user]);
 
-  // When clicking a past devotional
+  // When clicking a past devotional — with fade transition
   const handleSelectPast = useCallback((item: PastDevotional) => {
     if (activeItemId === item.id) {
-      // Clicking same = go back to today
-      setActiveItemId(null);
-      setViewingPast(null);
+      setTransitioning(true);
+      setTimeout(() => {
+        setActiveItemId(null);
+        setViewingPast(null);
+        setTransitioning(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 200);
       return;
     }
-    setActiveItemId(item.id);
-    setViewingPast(item);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTransitioning(true);
+    setTimeout(() => {
+      setActiveItemId(item.id);
+      setViewingPast(item);
+      setTransitioning(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
   }, [activeItemId]);
 
   const handleBackToToday = () => {
-    setActiveItemId(null);
-    setViewingPast(null);
+    setTransitioning(true);
+    setTimeout(() => {
+      setActiveItemId(null);
+      setViewingPast(null);
+      setTransitioning(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
   };
 
   const handleCopy = () => {
