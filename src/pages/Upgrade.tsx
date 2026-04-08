@@ -220,7 +220,7 @@ export default function Upgrade() {
     const isBRL = pricing.currency === 'BRL';
 
     if (plan.planKey === 'igreja') {
-      const addonAmt = isBRL ? 19.00 : pricing.addon.amount;
+      const addonAmt = isBRL ? 19.00 : pricing.addon_seat.amount;
       let base: number;
       if (isBRL) {
         base = isAnnual ? PLAN_PRICES_BRL.annual.igreja / 12 : PLAN_PRICES_BRL.monthly.igreja;
