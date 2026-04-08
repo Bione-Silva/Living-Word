@@ -305,28 +305,23 @@ function CoverImageSection({ imageUrl, title, category, verse, lang }: {
 
 /* ─── Previous Devotionals Sidebar ─── */
 function PreviousDevotionalsSidebar({ lang, userId }: { lang: L; userId: string }) {
-  const [items, setItems] = useState<PastDevotional[]>([]);
+  const [items, setItems] = useState<(PastDevotional & { cover_image_url?: string | null })[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       const { data } = await supabase
         .from('materials')
-        .select('id, title, type, passage, created_at')
+        .select('id, title, type, passage, created_at, cover_image_url')
         .eq('user_id', userId)
-        .in('type', ['devotional', 'devotional_reflection'])
+        .eq('type', 'devotional')
         .order('created_at', { ascending: false })
-        .limit(20);
-      setItems(data || []);
+        .limit(15);
+      setItems((data as any) || []);
       setLoading(false);
     };
     load();
   }, [userId]);
-
-  const categoryLabels: Record<string, string> = {
-    devotional: lang === 'PT' ? 'Devocional' : lang === 'ES' ? 'Devocional' : 'Devotional',
-    devotional_reflection: lang === 'PT' ? 'Reflexão' : lang === 'ES' ? 'Reflexión' : 'Reflection',
-  };
 
   return (
     <div className="w-72 shrink-0 hidden lg:block">
@@ -347,11 +342,14 @@ function PreviousDevotionalsSidebar({ lang, userId }: { lang: L; userId: string 
         <ScrollArea className="max-h-[calc(100vh-200px)]">
           <div className="p-2">
             {loading ? (
-              <div className="space-y-2 p-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="space-y-1.5">
-                    <Skeleton className="h-3.5 w-full" />
-                    <Skeleton className="h-3 w-2/3" />
+              <div className="space-y-3 p-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex gap-3">
+                    <Skeleton className="h-12 w-12 rounded-lg shrink-0" />
+                    <div className="space-y-1.5 flex-1">
+                      <Skeleton className="h-3.5 w-full" />
+                      <Skeleton className="h-3 w-2/3" />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -361,28 +359,42 @@ function PreviousDevotionalsSidebar({ lang, userId }: { lang: L; userId: string 
               </p>
             ) : (
               items.map((item) => (
-                <Link
+                <div
                   key={item.id}
-                  to={`/biblioteca`}
-                  className="block p-3 rounded-lg hover:bg-muted/50 transition-colors group"
+                  className="flex gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group cursor-default"
                 >
-                  <p className="text-sm font-medium text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                    {item.title}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-primary/70 bg-primary/8 px-2 py-0.5 rounded">
-                      {categoryLabels[item.type] || item.type}
-                    </span>
-                    <span className="text-[11px] text-muted-foreground">
-                      {formatShortDate(item.created_at, lang)}
-                    </span>
-                  </div>
-                  {item.passage && (
-                    <p className="text-[11px] text-muted-foreground mt-1 truncate">
-                      📖 {item.passage}
-                    </p>
+                  {/* Thumbnail */}
+                  {item.cover_image_url ? (
+                    <div className="h-12 w-12 rounded-lg overflow-hidden shrink-0 bg-muted">
+                      <img
+                        src={item.cover_image_url}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-12 w-12 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+                      <BookOpen className="h-5 w-5 text-primary/50" />
+                    </div>
                   )}
-                </Link>
+                  {/* Text */}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                      {item.title}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[11px] text-muted-foreground">
+                        {formatShortDate(item.created_at, lang)}
+                      </span>
+                      {item.passage && (
+                        <span className="text-[10px] text-muted-foreground truncate">
+                          📖 {item.passage}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               ))
             )}
           </div>
@@ -410,6 +422,29 @@ export default function Devocional() {
         const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today');
         if (err || !result) throw err;
         setData(result);
+
+        // Persist devotional to materials for history sidebar (upsert by date)
+        const todayTitle = result.title;
+        const todayDate = result.scheduled_date;
+        const { data: existing } = await supabase
+          .from('materials')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('type', 'devotional')
+          .gte('created_at', todayDate + 'T00:00:00')
+          .lte('created_at', todayDate + 'T23:59:59')
+          .limit(1);
+
+        if (!existing || existing.length === 0) {
+          await supabase.from('materials').insert({
+            user_id: user.id,
+            title: todayTitle,
+            type: 'devotional',
+            content: result.body_text,
+            passage: result.anchor_verse,
+            cover_image_url: result.cover_image_url || null,
+          });
+        }
       } catch {
         setError(true);
       } finally {
