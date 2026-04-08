@@ -542,7 +542,7 @@ export default function Devocional() {
       )}
 
       {/* ═══ EDITORIAL CARD ═══ */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+      <div className={`rounded-2xl border border-border bg-card overflow-hidden shadow-sm transition-all duration-200 ${transitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
 
         {/* Date bar */}
         <div className="flex items-center justify-center py-2.5 border-b border-border bg-muted/30">
