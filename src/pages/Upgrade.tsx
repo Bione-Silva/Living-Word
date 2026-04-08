@@ -149,7 +149,7 @@ export default function Upgrade() {
   const igrejaTotal = useMemo(() => {
     if (!pricing) return 0;
     const base = pricing.plans.igreja.amount;
-    return base + extraSeats * pricing.addon.amount;
+    return base + extraSeats * pricing.addon_seat.amount;
   }, [extraSeats, pricing]);
 
   const autoCheckoutPlan = searchParams.get('autoCheckout');
