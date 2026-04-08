@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      bible_favorites: {
+        Row: {
+          book_id: string
+          chapter_number: number
+          created_at: string
+          id: string
+          language: string
+          translation_code: string
+          user_id: string
+          verse_number: number
+          verse_text: string
+        }
+        Insert: {
+          book_id: string
+          chapter_number: number
+          created_at?: string
+          id?: string
+          language?: string
+          translation_code?: string
+          user_id: string
+          verse_number: number
+          verse_text?: string
+        }
+        Update: {
+          book_id?: string
+          chapter_number?: number
+          created_at?: string
+          id?: string
+          language?: string
+          translation_code?: string
+          user_id?: string
+          verse_number?: number
+          verse_text?: string
+        }
+        Relationships: []
+      }
       bible_highlights: {
         Row: {
           book_id: string
@@ -72,6 +108,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      bible_notes: {
+        Row: {
+          book_id: string
+          chapter_number: number
+          created_at: string
+          id: string
+          language: string
+          note_text: string
+          translation_code: string
+          updated_at: string
+          user_id: string
+          verse_number: number
+        }
+        Insert: {
+          book_id: string
+          chapter_number: number
+          created_at?: string
+          id?: string
+          language?: string
+          note_text?: string
+          translation_code?: string
+          updated_at?: string
+          user_id: string
+          verse_number: number
+        }
+        Update: {
+          book_id?: string
+          chapter_number?: number
+          created_at?: string
+          id?: string
+          language?: string
+          note_text?: string
+          translation_code?: string
+          updated_at?: string
+          user_id?: string
+          verse_number?: number
+        }
+        Relationships: []
       }
       editorial_queue: {
         Row: {
@@ -545,6 +620,75 @@ export type Database = {
           updated_at?: string
           wordpress_url?: string | null
           zip_code?: string | null
+        }
+        Relationships: []
+      }
+      quiz_scores: {
+        Row: {
+          best_streak: number
+          created_at: string
+          games_played: number
+          id: string
+          level: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number
+          created_at?: string
+          games_played?: number
+          id?: string
+          level?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number
+          created_at?: string
+          games_played?: number
+          id?: string
+          level?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_sessions: {
+        Row: {
+          category: string
+          correct_answers: number
+          created_at: string
+          id: string
+          score: number
+          time_seconds: number
+          total_questions: number
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          category?: string
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          score?: number
+          time_seconds?: number
+          total_questions?: number
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          category?: string
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          score?: number
+          time_seconds?: number
+          total_questions?: number
+          user_id?: string
+          xp_earned?: number
         }
         Relationships: []
       }
