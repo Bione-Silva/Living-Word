@@ -526,6 +526,21 @@ export default function Devocional() {
   const displayDate = isViewingPast ? viewingPast.created_at : data.scheduled_date;
   const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
+  /* ─── Inline bold/italic renderer ─── */
+  const renderInlineFormatting = (text: string, key: string) => {
+    // Support **bold** and *italic*
+    const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={`${key}-${i}`} className="font-bold text-foreground">{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <em key={`${key}-${i}`} className="italic text-foreground/80">{part.slice(1, -1)}</em>;
+      }
+      return <span key={`${key}-${i}`}>{part}</span>;
+    });
+  };
+
   /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
     const paragraphs = text.split('\n\n').filter(p => p.trim());
@@ -550,9 +565,12 @@ export default function Devocional() {
         );
       }
 
+      // Detect "Oração:" prefix paragraphs
+      const isOracaoLabel = /^Ora[çc][ãa]o:/i.test(trimmed);
       // Detect prayer paragraphs
-      const isPrayer = /^(Senhor|Pai|Deus|Lord|Father|God|Señor|Padre),?\s/i.test(trimmed);
+      const isPrayer = isOracaoLabel || /^(Senhor|Pai|Deus|Lord|Father|God|Señor|Padre),?\s/i.test(trimmed);
       if (isPrayer) {
+        const prayerText = isOracaoLabel ? trimmed.replace(/^Ora[çc][ãa]o:\s*/i, '') : trimmed;
         return (
           <div key={idx} className="mt-8 rounded-xl bg-accent/5 border border-accent/15 p-5">
             <div className="flex items-start gap-3">
@@ -562,7 +580,7 @@ export default function Devocional() {
                   {labels.prayer[lang]}
                 </p>
                 <p className="font-serif text-[1.05rem] italic text-foreground/85 leading-[1.9]">
-                  {trimmed}
+                  {renderInlineFormatting(prayerText, `prayer-${idx}`)}
                 </p>
               </div>
             </div>
@@ -570,14 +588,28 @@ export default function Devocional() {
         );
       }
 
+      // Add a subtle separator between thematic sections (every 2-3 paragraphs)
+      const showDivider = idx > 0 && idx % 3 === 0 && idx < paragraphs.length - 1;
+
       return (
-        <p
-          key={idx}
-          className={`font-serif text-[1.05rem] sm:text-[1.1rem] text-foreground/90 leading-[1.9] ${
-            idx === 0
-              ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
-              : 'mt-5'
-          }`}
+        <div key={idx}>
+          {showDivider && (
+            <div className="flex items-center justify-center gap-3 my-6">
+              <span className="h-px w-8 bg-primary/20" />
+              <span className="text-primary/30 text-xs">✦</span>
+              <span className="h-px w-8 bg-primary/20" />
+            </div>
+          )}
+          <p
+            className={`font-serif text-[1.05rem] sm:text-[1.1rem] text-foreground/90 leading-[1.9] ${
+              idx === 0
+                ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
+                : 'mt-5'
+            }`}
+          >
+            {renderInlineFormatting(trimmed, `p-${idx}`)}
+          </p>
+        </div>
         >
           {trimmed}
         </p>
