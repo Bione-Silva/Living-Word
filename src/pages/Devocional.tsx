@@ -715,7 +715,7 @@ export default function Devocional() {
   /* ─── Main content ─── */
   const mainContent = (
     <div className="flex-1 min-w-0 pb-10">
-      {/* Page header — "Café com Deus Pai" */}
+      {/* Page header — "Café com a Palavra Viva de Deus" */}
       {!isViewingPast && (
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-1">

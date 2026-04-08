@@ -22,7 +22,7 @@ interface DevotionalData {
 }
 
 const labels = {
-  section: { PT: '📖 PALAVRA VIVA DE HOJE', EN: '📖 TODAY\'S LIVING WORD', ES: '📖 PALABRA VIVA DE HOY' },
+  section: { PT: '☕ CAFÉ COM A PALAVRA VIVA DE DEUS', EN: '☕ COFFEE WITH THE LIVING WORD OF GOD', ES: '☕ CAFÉ CON LA PALABRA VIVA DE DIOS' },
   header: { PT: 'SUA LEITURA DIÁRIA', EN: 'YOUR DAILY READING', ES: 'TU LECTURA DIARIA' },
   listen: { PT: 'Escutar', EN: 'Listen', ES: 'Escuchar' },
   cta: { PT: 'Abrir leitura completa', EN: 'Open full reading', ES: 'Abrir lectura completa' },
