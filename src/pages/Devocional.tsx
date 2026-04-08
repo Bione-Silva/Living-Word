@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
   BookOpen, ArrowLeft, Headphones, Calendar, MessageCircle,
   Play, Pause, Volume2, VolumeX, Share2, Copy, ListChecks,
-  PenLine, Send, Download, Image as ImageIcon, Clock
+  PenLine, Send, Download, Image as ImageIcon, Clock, Check
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,6 +36,8 @@ interface PastDevotional {
   type: string;
   passage: string | null;
   created_at: string;
+  content: string;
+  cover_image_url?: string | null;
 }
 
 const labels = {
@@ -43,7 +45,7 @@ const labels = {
   pageTitle: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' },
   subtitle: { PT: 'Reflexões diárias para fortalecer sua fé', EN: 'Daily reflections to strengthen your faith', ES: 'Reflexiones diarias para fortalecer tu fe' },
   listenSection: { PT: 'OUVIR DEVOCIONAL', EN: 'LISTEN TO DEVOTIONAL', ES: 'ESCUCHAR DEVOCIONAL' },
-  coverSection: { PT: 'CAPA DO DEVOCIONAL', EN: 'DEVOTIONAL COVER', ES: 'PORTADA DEL DEVOCIONAL' },
+  coverSection: { PT: 'IMAGEM DO DEVOCIONAL', EN: 'DEVOTIONAL IMAGE', ES: 'IMAGEN DEL DEVOCIONAL' },
   coverSub: { PT: 'Salve e compartilhe', EN: 'Save and share', ES: 'Guarda y comparte' },
   reflection: { PT: 'REFLEXÃO', EN: 'REFLECTION', ES: 'REFLEXIÓN' },
   practice: { PT: 'PRÁTICA DO DIA', EN: 'DAILY PRACTICE', ES: 'PRÁCTICA DEL DÍA' },
@@ -69,6 +71,7 @@ const labels = {
   imageSaved: { PT: 'Imagem salva!', EN: 'Image saved!', ES: '¡Imagen guardada!' },
   error: { PT: 'Não foi possível carregar o devocional.', EN: 'Could not load devotional.', ES: 'No se pudo cargar el devocional.' },
   previousDevotionals: { PT: 'Devocionais Anteriores', EN: 'Previous Devotionals', ES: 'Devocionales Anteriores' },
+  previousSub: { PT: 'Acesse os devocionais dos dias anteriores', EN: 'Access previous days\' devotionals', ES: 'Accede a los devocionales de días anteriores' },
   noPrevious: { PT: 'Nenhum devocional salvo ainda.', EN: 'No saved devotionals yet.', ES: 'Aún no hay devocionales guardados.' },
 } satisfies Record<string, Record<L, string>>;
 
@@ -181,229 +184,6 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-/* ─── Cover Image with Overlay ─── */
-function CoverImageSection({ imageUrl, title, category, verse, lang }: {
-  imageUrl: string;
-  title: string;
-  category: string;
-  verse: string;
-  lang: L;
-}) {
-  const handleSaveImage = async () => {
-    try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `devocional-${title.slice(0, 30).replace(/\s+/g, '-').toLowerCase()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast.success(labels.imageSaved[lang]);
-    } catch {
-      window.open(imageUrl, '_blank');
-    }
-  };
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, text: `${title} — ${verse}`, url: imageUrl });
-      } catch { /* user cancelled */ }
-    } else {
-      navigator.clipboard.writeText(imageUrl);
-      toast.success(labels.copied[lang]);
-    }
-  };
-
-  const handleWhatsApp = () => {
-    const text = `*${title}*\n📗 ${category}\n📖 ${verse}\n\n${imageUrl}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-  };
-
-  return (
-    <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
-      {/* Section header */}
-      <div className="flex items-center gap-3">
-        <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-          <ImageIcon className="h-4 w-4 text-primary" />
-        </div>
-        <div>
-          <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary">
-            {labels.coverSection[lang]}
-          </p>
-          <p className="text-xs text-muted-foreground">{labels.coverSub[lang]}</p>
-        </div>
-      </div>
-
-      {/* Image with overlay */}
-      <div className="flex justify-center">
-        <div className="relative rounded-xl overflow-hidden shadow-lg max-w-sm w-full aspect-[3/4]">
-          <img
-            src={imageUrl}
-            alt={title}
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-          {/* Gradient overlay */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.1) 55%, transparent 70%)',
-            }}
-          />
-          {/* Top badge */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-            <span className="inline-flex items-center gap-1 bg-white/15 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
-              📗 {category}
-            </span>
-            <span className="text-white/50 text-[10px] font-medium uppercase tracking-wider">
-              Living Word
-            </span>
-          </div>
-          {/* Bottom text overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 flex flex-col gap-3">
-            <h3 className="text-white text-lg sm:text-xl font-display font-bold leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
-              {title}
-            </h3>
-            <div className="flex items-center gap-2">
-              <div className="h-px flex-1 bg-white/20" />
-            </div>
-            <p className="text-white/80 text-xs sm:text-sm italic leading-relaxed line-clamp-3 drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]">
-              "{verse}"
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Action buttons */}
-      <div className="flex items-center justify-center gap-2 flex-wrap">
-        <button
-          onClick={handleSaveImage}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-        >
-          <Download className="h-4 w-4" /> {labels.saveImage[lang]}
-        </button>
-        <button
-          onClick={handleShare}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-        >
-          <Share2 className="h-4 w-4" /> {labels.share[lang]}
-        </button>
-        <button
-          onClick={handleWhatsApp}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/30 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
-        >
-          <WhatsAppIcon /> {labels.shareWa[lang]}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Previous Devotionals Sidebar ─── */
-function PreviousDevotionalsSidebar({ lang, userId }: { lang: L; userId: string }) {
-  const [items, setItems] = useState<(PastDevotional & { cover_image_url?: string | null })[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const load = async () => {
-      const { data } = await supabase
-        .from('materials')
-        .select('id, title, type, passage, created_at, cover_image_url')
-        .eq('user_id', userId)
-        .eq('type', 'devotional')
-        .order('created_at', { ascending: false })
-        .limit(15);
-      setItems((data as any) || []);
-      setLoading(false);
-    };
-    load();
-  }, [userId]);
-
-  return (
-    <div className="w-72 shrink-0 hidden lg:block">
-      <div className="sticky top-6 rounded-xl border border-border bg-card overflow-hidden">
-        {/* Header */}
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Clock className="h-4 w-4 text-primary" />
-            </div>
-            <p className="text-sm font-bold text-foreground">
-              {labels.previousDevotionals[lang]}
-            </p>
-          </div>
-        </div>
-
-        {/* List */}
-        <ScrollArea className="max-h-[calc(100vh-200px)]">
-          <div className="p-2">
-            {loading ? (
-              <div className="space-y-3 p-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex gap-3">
-                    <Skeleton className="h-12 w-12 rounded-lg shrink-0" />
-                    <div className="space-y-1.5 flex-1">
-                      <Skeleton className="h-3.5 w-full" />
-                      <Skeleton className="h-3 w-2/3" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : items.length === 0 ? (
-              <p className="text-xs text-muted-foreground p-3 text-center">
-                {labels.noPrevious[lang]}
-              </p>
-            ) : (
-              items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group cursor-default"
-                >
-                  {/* Thumbnail */}
-                  {item.cover_image_url ? (
-                    <div className="h-12 w-12 rounded-lg overflow-hidden shrink-0 bg-muted">
-                      <img
-                        src={item.cover_image_url}
-                        alt=""
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-12 w-12 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
-                      <BookOpen className="h-5 w-5 text-primary/50" />
-                    </div>
-                  )}
-                  {/* Text */}
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                      {item.title}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[11px] text-muted-foreground">
-                        {formatShortDate(item.created_at, lang)}
-                      </span>
-                      {item.passage && (
-                        <span className="text-[10px] text-muted-foreground truncate">
-                          📖 {item.passage}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </ScrollArea>
-      </div>
-    </div>
-  );
-}
-
 /* ─── Main Page ─── */
 export default function Devocional() {
   const { lang } = useLanguage();
@@ -415,6 +195,13 @@ export default function Devocional() {
   const [personalNote, setPersonalNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
 
+  // Sidebar state
+  const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
+  const [pastLoading, setPastLoading] = useState(true);
+  const [activeItemId, setActiveItemId] = useState<string | null>(null); // null = today
+  const [viewingPast, setViewingPast] = useState<PastDevotional | null>(null);
+
+  // Load today's devotional
   useEffect(() => {
     if (!user) return;
     const load = async () => {
@@ -423,8 +210,7 @@ export default function Devocional() {
         if (err || !result) throw err;
         setData(result);
 
-        // Persist devotional to materials for history sidebar (upsert by date)
-        const todayTitle = result.title;
+        // Persist devotional to materials for history
         const todayDate = result.scheduled_date;
         const { data: existing } = await supabase
           .from('materials')
@@ -438,7 +224,7 @@ export default function Devocional() {
         if (!existing || existing.length === 0) {
           await supabase.from('materials').insert({
             user_id: user.id,
-            title: todayTitle,
+            title: result.title,
             type: 'devotional',
             content: result.body_text,
             passage: result.anchor_verse,
@@ -454,16 +240,57 @@ export default function Devocional() {
     load();
   }, [user]);
 
+  // Load past devotionals
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from('materials')
+        .select('id, title, type, passage, created_at, content, cover_image_url')
+        .eq('user_id', user.id)
+        .eq('type', 'devotional')
+        .order('created_at', { ascending: false })
+        .limit(20);
+      setPastItems((data as any) || []);
+      setPastLoading(false);
+    };
+    load();
+  }, [user]);
+
+  // When clicking a past devotional
+  const handleSelectPast = useCallback((item: PastDevotional) => {
+    if (activeItemId === item.id) {
+      // Clicking same = go back to today
+      setActiveItemId(null);
+      setViewingPast(null);
+      return;
+    }
+    setActiveItemId(item.id);
+    setViewingPast(item);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeItemId]);
+
+  const handleBackToToday = () => {
+    setActiveItemId(null);
+    setViewingPast(null);
+  };
+
   const handleCopy = () => {
-    if (!data) return;
-    const text = `*${data.title}*\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${data.body_text}\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
+    const d = viewingPast || data;
+    if (!d) return;
+    const text = viewingPast
+      ? `*${d.title}*\n\n${d.content}`
+      : `*${data!.title}*\n\n"${data!.anchor_verse_text}"\n— ${data!.anchor_verse}\n\n${data!.body_text}\n\n💡 ${data!.daily_practice || ''}\n\n💭 ${data!.reflection_question}`;
     navigator.clipboard.writeText(text);
     toast.success(labels.copied[lang]);
   };
 
   const handleWhatsApp = () => {
-    if (!data) return;
-    const text = `*${data.title}*\n\n_"${data.anchor_verse_text}"_\n— ${data.anchor_verse}\n\n${data.body_text.slice(0, 500)}${data.body_text.length > 500 ? '...' : ''}\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
+    const d = viewingPast || data;
+    if (!d) return;
+    const text = viewingPast
+      ? `*${d.title}*\n\n${d.content.slice(0, 500)}...`
+      : `*${data!.title}*\n\n_"${data!.anchor_verse_text}"_\n— ${data!.anchor_verse}\n\n${data!.body_text.slice(0, 500)}...\n\n💡 ${data!.daily_practice || ''}\n\n💭 ${data!.reflection_question}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -480,28 +307,19 @@ export default function Devocional() {
       });
       toast.success(labels.saved[lang]);
       setPersonalNote('');
-    } catch {
-      // silent
-    } finally {
+    } catch { /* silent */ } finally {
       setSavingNote(false);
     }
   };
 
+  // ─── Loading state ───
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto space-y-5">
         <Skeleton className="h-5 w-24" />
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-11 w-11 rounded-xl" />
-          <div className="space-y-1.5"><Skeleton className="h-4 w-36" /><Skeleton className="h-3 w-52" /></div>
-        </div>
-        <Skeleton className="h-5 w-56" />
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
         <Skeleton className="h-40 w-full rounded-xl" />
         <Skeleton className="h-64 w-full rounded-xl" />
-        <Skeleton className="h-48 w-full rounded-xl" />
-        <Skeleton className="h-24 w-full rounded-xl" />
       </div>
     );
   }
@@ -519,16 +337,19 @@ export default function Devocional() {
     );
   }
 
-  /* Day number within year (1–365) */
-  const dayOfYear = (() => {
-    const d = new Date(data.scheduled_date + 'T12:00:00');
-    const start = new Date(d.getFullYear(), 0, 0);
-    return Math.floor((d.getTime() - start.getTime()) / 86400000);
-  })();
+  // Determine what to display
+  const isViewingPast = !!viewingPast;
+  const displayTitle = isViewingPast ? viewingPast.title : data.title;
+  const displayBody = isViewingPast ? viewingPast.content : data.body_text;
+  const displayVerse = isViewingPast ? (viewingPast.passage || '') : data.anchor_verse;
+  const displayVerseText = isViewingPast ? '' : data.anchor_verse_text;
+  const displayCategory = isViewingPast ? '' : data.category;
+  const displayDate = isViewingPast ? viewingPast.created_at : data.scheduled_date;
+  const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
-  /* Short date for editorial header (e.g. "28 | FEV") */
   const editorialDate = (() => {
-    const d = new Date(data.scheduled_date + 'T12:00:00');
+    const dateStr = isViewingPast ? displayDate.slice(0, 10) : data.scheduled_date;
+    const d = new Date(dateStr + 'T12:00:00');
     const day = d.getDate().toString().padStart(2, '0');
     const monthNames: Record<L, string[]> = {
       PT: ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'],
@@ -538,29 +359,193 @@ export default function Devocional() {
     return `${day} | ${monthNames[lang][d.getMonth()]}`;
   })();
 
+  /* ─── Render body text with H2/H3 formatting ─── */
+  const renderBodyText = (text: string) => {
+    const paragraphs = text.split('\n\n').filter(p => p.trim());
+    return paragraphs.map((paragraph, idx) => {
+      const trimmed = paragraph.trim();
+
+      // Detect markdown-style headers
+      if (trimmed.startsWith('### ')) {
+        return (
+          <h3 key={idx} className="text-base font-display font-bold text-primary mt-6 mb-2 flex items-center gap-2">
+            <span className="w-1 h-5 bg-primary/40 rounded-full" />
+            {trimmed.replace('### ', '')}
+          </h3>
+        );
+      }
+      if (trimmed.startsWith('## ')) {
+        return (
+          <h2 key={idx} className="text-lg font-display font-bold text-foreground mt-8 mb-3 flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-primary rounded-full" />
+            {trimmed.replace('## ', '')}
+          </h2>
+        );
+      }
+      if (trimmed.startsWith('# ')) {
+        return (
+          <h2 key={idx} className="text-xl font-display font-black text-foreground mt-8 mb-3 uppercase tracking-wide">
+            {trimmed.replace('# ', '')}
+          </h2>
+        );
+      }
+
+      // Regular paragraph with drop cap on first
+      return (
+        <p
+          key={idx}
+          className={`text-sm sm:text-[15px] text-foreground/90 leading-[1.9] ${idx === 0 ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-1.5 first-letter:mt-0.5 first-letter:leading-none' : 'mt-4'}`}
+        >
+          {trimmed}
+        </p>
+      );
+    });
+  };
+
+  /* ─── Sidebar (right) ─── */
+  const sidebar = user && (
+    <div className="w-[280px] shrink-0 hidden lg:block">
+      <div className="sticky top-6 rounded-xl border border-border bg-card overflow-hidden">
+        {/* Header */}
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Clock className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-foreground">
+                {labels.previousDevotionals[lang]}
+              </p>
+              <p className="text-[10px] text-muted-foreground">
+                {labels.previousSub[lang]}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* List */}
+        <ScrollArea className="max-h-[calc(100vh-200px)]">
+          <div className="p-1.5">
+            {pastLoading ? (
+              <div className="space-y-2 p-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex gap-3 p-2">
+                    <Skeleton className="h-11 w-11 rounded-lg shrink-0" />
+                    <div className="space-y-1.5 flex-1">
+                      <Skeleton className="h-3.5 w-full" />
+                      <Skeleton className="h-3 w-2/3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : pastItems.length === 0 ? (
+              <p className="text-xs text-muted-foreground p-3 text-center">
+                {labels.noPrevious[lang]}
+              </p>
+            ) : (
+              pastItems.map((item) => {
+                const isActive = activeItemId === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleSelectPast(item)}
+                    className={`w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left group ${
+                      isActive
+                        ? 'bg-primary/10 border border-primary/20'
+                        : 'hover:bg-muted/50 border border-transparent'
+                    }`}
+                  >
+                    {/* Thumbnail */}
+                    {item.cover_image_url ? (
+                      <div className="h-11 w-11 rounded-lg overflow-hidden shrink-0 bg-muted">
+                        <img src={item.cover_image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
+                      </div>
+                    ) : (
+                      <div className="h-11 w-11 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+                        <BookOpen className="h-5 w-5 text-primary/50" />
+                      </div>
+                    )}
+                    {/* Text */}
+                    <div className="min-w-0 flex-1">
+                      <p className={`text-sm font-medium leading-snug line-clamp-2 transition-colors ${
+                        isActive ? 'text-primary' : 'text-foreground group-hover:text-primary'
+                      }`}>
+                        {item.title}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] text-muted-foreground">
+                          {formatShortDate(item.created_at, lang)}
+                        </span>
+                        {item.passage && (
+                          <span className="text-[10px] text-muted-foreground truncate">
+                            📖 {item.passage}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {/* Active check */}
+                    {isActive && (
+                      <Check className="h-4 w-4 text-primary shrink-0 mt-1" />
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    </div>
+  );
+
+  /* ─── Main content ─── */
   const mainContent = (
-    <div className="flex-1 min-w-0 max-w-2xl pb-10">
+    <div className="flex-1 min-w-0 max-w-3xl pb-10">
       {/* Back */}
       <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5">
         <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
       </Link>
 
-      {/* ═══ EDITORIAL DEVOTIONAL CARD ═══ */}
+      {/* Page header */}
+      {!isViewingPast && (
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+            <BookOpen className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="font-display text-lg font-bold text-foreground">{labels.pageTitle[lang]}</h1>
+            <p className="text-xs text-muted-foreground">{labels.subtitle[lang]}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Back to today button when viewing past */}
+      {isViewingPast && (
+        <button
+          onClick={handleBackToToday}
+          className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 font-medium mb-4 transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          {lang === 'PT' ? 'Voltar ao devocional de hoje' : lang === 'ES' ? 'Volver al devocional de hoy' : 'Back to today\'s devotional'}
+        </button>
+      )}
+
+      {/* ═══ EDITORIAL CARD ═══ */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
 
-        {/* ── Top bar: date ── */}
+        {/* Date bar */}
         <div className="flex items-center justify-center py-2.5 border-b border-border bg-muted/30">
-          <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-muted-foreground">
+          <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-muted-foreground flex items-center gap-2">
+            <Calendar className="h-3 w-3" />
             {editorialDate}
           </span>
         </div>
 
-        {/* ── Cover image hero ── */}
-        {data.cover_image_url && (
+        {/* Cover image */}
+        {displayCover && (
           <div className="relative w-full aspect-[16/7] overflow-hidden">
             <img
-              src={data.cover_image_url}
-              alt={data.title}
+              src={displayCover}
+              alt={displayTitle}
               className="absolute inset-0 w-full h-full object-cover"
               loading="lazy"
             />
@@ -571,206 +556,256 @@ export default function Devocional() {
           </div>
         )}
 
-        {/* ── Title + Verse header ── */}
-        <div className="px-5 sm:px-8 pt-5 pb-4 text-center border-b border-border/50">
+        {/* Title + verse header */}
+        <div className="px-5 sm:px-8 pt-5 pb-5 text-center border-b border-border/50">
           <h1 className="text-xl sm:text-2xl font-display font-black uppercase tracking-wide text-foreground leading-tight">
-            {data.title}
+            {displayTitle}
           </h1>
-          <div className="mt-3 max-w-md mx-auto">
-            <p className="text-sm italic text-foreground/70 leading-relaxed">
-              {data.anchor_verse_text}
-            </p>
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary mt-2">
-              {data.anchor_verse}
-            </p>
+          {displayVerseText && (
+            <div className="mt-3 max-w-lg mx-auto">
+              <p className="text-sm italic text-foreground/70 leading-relaxed">
+                {displayVerseText}
+              </p>
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary mt-2">
+                {displayVerse}
+              </p>
+            </div>
+          )}
+          {displayCategory && (
+            <div className="mt-3">
+              <span className="inline-flex items-center gap-1 bg-primary/15 text-primary text-[11px] px-3 py-1 rounded-full font-semibold">
+                📗 {displayCategory}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Verse quote block (styled) */}
+        {!isViewingPast && (
+          <div className="mx-5 sm:mx-8 mt-5 rounded-xl bg-primary/5 border border-primary/15 p-5">
+            <blockquote className="text-sm sm:text-base italic text-foreground/90 leading-relaxed border-l-[3px] border-primary/50 pl-4">
+              "{data.anchor_verse_text}"
+            </blockquote>
+            <p className="text-xs font-bold text-primary mt-2 pl-4">— {data.anchor_verse}</p>
+          </div>
+        )}
+
+        {/* Audio player */}
+        {!isViewingPast && data.audio_url && (
+          <div className="mx-5 sm:mx-8 mt-5">
+            <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
+          </div>
+        )}
+
+        {/* Cover image section (save/share) */}
+        {displayCover && (
+          <div className="mx-5 sm:mx-8 mt-5 rounded-xl border border-border bg-card p-5 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <ImageIcon className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary">{labels.coverSection[lang]}</p>
+                <p className="text-xs text-muted-foreground">{labels.coverSub[lang]}</p>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="relative rounded-xl overflow-hidden shadow-lg max-w-xs w-full aspect-[3/4]">
+                <img src={displayCover} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.1) 55%, transparent 70%)' }} />
+                <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                  {displayCategory && (
+                    <span className="inline-flex items-center gap-1 bg-white/15 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
+                      📗 {displayCategory}
+                    </span>
+                  )}
+                  <span className="text-white/50 text-[10px] font-medium uppercase tracking-wider">Living Word</span>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col gap-2">
+                  <h3 className="text-white text-lg font-display font-bold leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{displayTitle}</h3>
+                  {displayVerse && (
+                    <p className="text-white/80 text-xs italic leading-relaxed line-clamp-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]">
+                      "{displayVerseText || displayVerse}"
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              <button
+                onClick={() => {
+                  const a = document.createElement('a');
+                  a.href = displayCover!;
+                  a.target = '_blank';
+                  a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
+                  a.click();
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+              >
+                <Download className="h-4 w-4" /> {labels.saveImage[lang]}
+              </button>
+              <button
+                onClick={() => {
+                  if (navigator.share) navigator.share({ title: displayTitle, url: displayCover! });
+                  else { navigator.clipboard.writeText(displayCover!); toast.success(labels.copied[lang]); }
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+              >
+                <Share2 className="h-4 w-4" /> {labels.share[lang]}
+              </button>
+              <button
+                onClick={() => {
+                  const text = `*${displayTitle}*\n📖 ${displayVerse}\n\n${displayCover}`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/30 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
+              >
+                <WhatsAppIcon /> {labels.shareWa[lang]}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── REFLEXÃO — body text with structured headings ── */}
+        <div className="px-5 sm:px-8 pt-6 pb-4">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <MessageCircle className="h-4 w-4 text-primary" />
+            </div>
+            <h2 className="text-[11px] font-bold tracking-[0.15em] uppercase text-primary">
+              {labels.reflection[lang]}
+            </h2>
+          </div>
+
+          <div className="space-y-0">
+            {renderBodyText(displayBody)}
           </div>
         </div>
 
-        {/* ── Two-column layout: sidebar quote + body ── */}
-        <div className="flex flex-col sm:flex-row">
-
-          {/* Left sidebar — quote card + meta */}
-          <div className="sm:w-48 md:w-56 shrink-0 border-b sm:border-b-0 sm:border-r border-border/50 p-5 sm:p-6 flex flex-col gap-5 bg-primary/[0.03]">
-            {/* Highlighted quote */}
-            <div className="rounded-xl border-l-4 border-primary bg-primary/8 p-4">
-              <p className="text-sm font-display font-bold italic text-foreground leading-relaxed">
-                "{data.anchor_verse_text.length > 120
-                  ? data.anchor_verse_text.slice(0, 120) + '…'
-                  : data.anchor_verse_text}"
-              </p>
-            </div>
-
-            {/* Meta info */}
-            <div className="space-y-3 text-[11px]">
+        {/* Practice of the day */}
+        {!isViewingPast && data.daily_practice && (
+          <div className="mx-5 sm:mx-8 mb-5 rounded-xl bg-primary/5 border border-primary/20 p-5">
+            <div className="flex items-start gap-2.5">
+              <ListChecks className="h-4 w-4 text-primary mt-0.5 shrink-0" />
               <div>
-                <p className="font-bold uppercase tracking-[0.15em] text-primary">
-                  {labels.pageTitle[lang].toUpperCase()} 365
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary mb-1.5">
+                  {labels.practice[lang]}
                 </p>
-                <p className="text-muted-foreground font-medium">
-                  {dayOfYear}/365
+                <p className="text-sm text-foreground leading-relaxed">
+                  {data.daily_practice}
                 </p>
-              </div>
-              <div>
-                <p className="font-bold uppercase tracking-[0.15em] text-primary flex items-center gap-1.5">
-                  <BookOpen className="h-3.5 w-3.5" />
-                  {lang === 'PT' ? 'LEITURA BÍBLICA' : lang === 'ES' ? 'LECTURA BÍBLICA' : 'BIBLE READING'}
-                </p>
-                <p className="text-foreground font-medium mt-0.5">
-                  {data.anchor_verse}
-                </p>
-              </div>
-              <div>
-                <span className="inline-flex items-center gap-1 bg-primary/15 text-primary text-[10px] px-2.5 py-1 rounded-md font-semibold uppercase">
-                  📗 {data.category}
-                </span>
-              </div>
-            </div>
-
-            {/* Anotações label */}
-            <div className="mt-auto pt-3 border-t border-border/50">
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
-                {lang === 'PT' ? 'ANOTAÇÕES' : lang === 'ES' ? 'ANOTACIONES' : 'NOTES'}
-              </p>
-              <div className="mt-2 space-y-2">
-                {[1,2,3].map(i => (
-                  <div key={i} className="h-px bg-border/60" />
-                ))}
               </div>
             </div>
           </div>
+        )}
 
-          {/* Right content — body text */}
-          <div className="flex-1 p-5 sm:p-6 md:p-8">
-            {/* Audio player inline */}
-            {data.audio_url && (
-              <div className="mb-6">
-                <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
-              </div>
-            )}
-
-            {/* Body text — editorial style with drop cap */}
-            <div className="text-sm sm:text-[15px] text-foreground/90 leading-[1.85] whitespace-pre-line">
-              {data.body_text.split('\n\n').map((paragraph, idx) => (
-                <p key={idx} className={`${idx > 0 ? 'mt-4' : ''} ${idx === 0 ? 'first-letter:text-4xl first-letter:font-display first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-1.5 first-letter:mt-0.5 first-letter:leading-none' : ''}`}>
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-
-            {/* Reflection question */}
-            {data.reflection_question && (
-              <div className="mt-6 rounded-xl bg-muted/50 border border-border p-4 sm:p-5">
-                <div className="flex items-start gap-2.5">
-                  <MessageCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary mb-1.5">
-                      {labels.reflection[lang]}
-                    </p>
-                    <p className="text-sm text-foreground/80 italic leading-relaxed">
-                      {data.reflection_question}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Daily practice */}
-            {data.daily_practice && (
-              <div className="mt-5 rounded-xl bg-primary/5 border border-primary/20 p-4 sm:p-5">
-                <div className="flex items-start gap-2.5">
-                  <ListChecks className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary mb-1.5">
-                      {labels.practice[lang]}
-                    </p>
-                    <p className="text-sm text-foreground leading-relaxed">
-                      {data.daily_practice}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ── Bottom action bar ── */}
+        {/* Bottom action bar */}
         <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/20">
-          <button
-            onClick={handleCopy}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-          >
+          <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors">
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
-          {data.cover_image_url && (
-            <button
-              onClick={() => {
-                const a = document.createElement('a');
-                a.href = data.cover_image_url!;
-                a.target = '_blank';
-                a.download = `devocional-${data.title.slice(0,20).replace(/\s+/g,'-')}.png`;
-                a.click();
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-            >
-              <Download className="h-3.5 w-3.5" /> {labels.saveImage[lang]}
-            </button>
-          )}
-          <button
-            onClick={handleWhatsApp}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
-          >
+          <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors">
             <WhatsAppIcon /> {labels.shareWa[lang]}
           </button>
           <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({ title: data.title, text: `${data.title} — ${data.anchor_verse}` });
-              }
-            }}
+            onClick={() => { if (navigator.share) navigator.share({ title: displayTitle, text: `${displayTitle} — ${displayVerse}` }); }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
           >
             <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
           </button>
+          <Link
+            to="/mente-chat"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+          >
+            <MessageCircle className="h-3.5 w-3.5" /> {labels.continueChat[lang]}
+          </Link>
         </div>
       </div>
 
-      {/* ═══ PERSONAL REFLECTION (below the card) ═══ */}
-      <div className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
-        <div className="flex items-center gap-2.5">
-          <PenLine className="h-4 w-4 text-foreground" />
-          <p className="text-sm font-bold text-foreground">
-            {labels.personalReflection[lang]}
-          </p>
+      {/* Personal reflection */}
+      {!isViewingPast && (
+        <div className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
+          <div className="flex items-center gap-2.5">
+            <PenLine className="h-4 w-4 text-foreground" />
+            <p className="text-sm font-bold text-foreground">{labels.personalReflection[lang]}</p>
+          </div>
+          <p className="text-xs text-muted-foreground">{labels.personalReflectionSub[lang]}</p>
+          <textarea
+            value={personalNote}
+            onChange={(e) => setPersonalNote(e.target.value)}
+            placeholder={labels.personalPlaceholder[lang]}
+            rows={4}
+            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+          />
+          <div className="flex justify-end">
+            <button
+              onClick={handleSaveNote}
+              disabled={!personalNote.trim() || savingNote}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+            >
+              <Send className="h-4 w-4" /> {labels.saveReflection[lang]}
+            </button>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground">
-          {labels.personalReflectionSub[lang]}
-        </p>
-        <textarea
-          value={personalNote}
-          onChange={(e) => setPersonalNote(e.target.value)}
-          placeholder={labels.personalPlaceholder[lang]}
-          rows={4}
-          className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
-        />
-        <div className="flex justify-end">
-          <button
-            onClick={handleSaveNote}
-            disabled={!personalNote.trim() || savingNote}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
-          >
-            <Send className="h-4 w-4" /> {labels.saveReflection[lang]}
-          </button>
+      )}
+
+      {/* Mobile: past devotionals list */}
+      {isMobile && user && (
+        <div className="mt-6 rounded-xl border border-border bg-card overflow-hidden">
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center gap-2.5">
+              <Clock className="h-4 w-4 text-primary" />
+              <p className="text-sm font-bold text-foreground">{labels.previousDevotionals[lang]}</p>
+            </div>
+          </div>
+          <div className="p-2 max-h-[300px] overflow-y-auto">
+            {pastLoading ? (
+              <div className="space-y-2 p-2">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full rounded-lg" />)}</div>
+            ) : pastItems.length === 0 ? (
+              <p className="text-xs text-muted-foreground p-3 text-center">{labels.noPrevious[lang]}</p>
+            ) : (
+              pastItems.map(item => {
+                const isActive = activeItemId === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleSelectPast(item)}
+                    className={`w-full flex gap-3 p-2.5 rounded-lg transition-colors text-left ${
+                      isActive ? 'bg-primary/10' : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    {item.cover_image_url ? (
+                      <div className="h-10 w-10 rounded-lg overflow-hidden shrink-0 bg-muted">
+                        <img src={item.cover_image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
+                      </div>
+                    ) : (
+                      <div className="h-10 w-10 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+                        <BookOpen className="h-4 w-4 text-primary/50" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className={`text-sm font-medium leading-snug line-clamp-1 ${isActive ? 'text-primary' : 'text-foreground'}`}>
+                        {item.title}
+                      </p>
+                      <span className="text-[10px] text-muted-foreground">{formatShortDate(item.created_at, lang)}</span>
+                    </div>
+                    {isActive && <Check className="h-4 w-4 text-primary shrink-0 mt-1" />}
+                  </button>
+                );
+              })
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 
-  // Desktop: side-by-side layout with previous devotionals sidebar
+  // Desktop: side-by-side with sidebar
   if (!isMobile && user) {
     return (
       <div className="flex gap-6 items-start">
         {mainContent}
-        <PreviousDevotionalsSidebar lang={lang} userId={user.id} />
+        {sidebar}
       </div>
     );
   }
