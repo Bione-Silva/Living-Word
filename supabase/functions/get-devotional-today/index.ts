@@ -35,7 +35,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get user language from profile
     const { data: profile } = await supabase
       .from('profiles')
       .select('language')
@@ -64,7 +63,8 @@ Return JSON with exactly these fields:
 - "category": one category word in ${langLabel} (e.g. Fé, Esperança, Graça, Amor, Sabedoria, Coragem, Perseverança)
 - "anchor_verse": the Bible reference (e.g. "Filipenses 4:13")
 - "anchor_verse_text": the full verse text
-- "body_text": a 3-paragraph devotional reflection (about 200 words total). Use \\n\\n between paragraphs.
+- "body_text": a 3-4 paragraph devotional reflection (about 250 words total). Use \\n\\n between paragraphs. End with a short prayer.
+- "daily_practice": a single concrete, actionable practice for the day (1-2 sentences). Start with a verb.
 - "reflection_question": one thought-provoking question for personal reflection
 - "scheduled_date": "${today}"
 
@@ -103,6 +103,7 @@ The tone should be warm, pastoral, and encouraging.`
       anchor_verse: string
       anchor_verse_text: string
       body_text: string
+      daily_practice?: string
       reflection_question: string
       scheduled_date: string
     }
@@ -111,7 +112,6 @@ The tone should be warm, pastoral, and encouraging.`
       parsed = JSON.parse(content)
     } catch {
       console.error('Failed to parse AI response:', content)
-      // Fallback devotional
       parsed = {
         title: language === 'EN' ? "God's Faithfulness" : language === 'ES' ? 'La Fidelidad de Dios' : 'A Fidelidade de Deus',
         category: language === 'EN' ? 'Faith' : language === 'ES' ? 'Fe' : 'Fé',
@@ -126,6 +126,11 @@ The tone should be warm, pastoral, and encouraging.`
           : language === 'ES'
           ? 'Cada nueva mañana es un recordatorio de la fidelidad inquebrantable de Dios.\n\nNo importa los desafíos de ayer, hoy Sus misericordias se renuevan.\n\nQue esta verdad ancle tu corazón mientras sirves a Su pueblo hoy.'
           : 'Cada nova manhã é um lembrete da fidelidade inabalável de Deus.\n\nNão importa os desafios de ontem, hoje Suas misericórdias se renovam.\n\nQue esta verdade ancore seu coração enquanto você serve ao Seu povo hoje.',
+        daily_practice: language === 'EN'
+          ? 'Take a moment today to write down three specific ways God has been faithful to you this week.'
+          : language === 'ES'
+          ? 'Tómate un momento hoy para escribir tres formas específicas en que Dios ha sido fiel contigo esta semana.'
+          : 'Reserve um momento hoje para escrever três formas específicas em que Deus tem sido fiel a você esta semana.',
         reflection_question: language === 'EN'
           ? 'How have you experienced God\'s faithfulness recently in your ministry?'
           : language === 'ES'
@@ -155,6 +160,7 @@ The tone should be warm, pastoral, and encouraging.`
       anchor_verse: parsed.anchor_verse,
       anchor_verse_text: parsed.anchor_verse_text,
       body_text: parsed.body_text,
+      daily_practice: parsed.daily_practice || '',
       reflection_question: parsed.reflection_question,
       scheduled_date: parsed.scheduled_date,
     }), {
@@ -171,6 +177,7 @@ The tone should be warm, pastoral, and encouraging.`
       anchor_verse: 'Lamentações 3:22-23',
       anchor_verse_text: 'As misericórdias do Senhor são a causa de não sermos consumidos; porque as suas misericórdias não têm fim.',
       body_text: 'Cada nova manhã é um lembrete da fidelidade inabalável de Deus.\n\nNão importa os desafios de ontem, hoje Suas misericórdias se renovam.\n\nQue esta verdade ancore seu coração enquanto você serve ao Seu povo hoje.',
+      daily_practice: 'Reserve um momento hoje para escrever três formas específicas em que Deus tem sido fiel a você esta semana.',
       reflection_question: 'Como você tem experimentado a fidelidade de Deus recentemente no seu ministério?',
       scheduled_date: today,
     }), {

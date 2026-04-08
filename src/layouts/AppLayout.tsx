@@ -218,7 +218,7 @@ export default function AppLayout() {
      ═══════════════════════════════════════════════════════════════ */
   if (isMobile) {
     return (
-      <div className="theme-app min-h-screen bg-background flex flex-col">
+      <div className="theme-app h-screen bg-background flex flex-col">
         <ThemeInjector />
         <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
           <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
@@ -780,7 +780,7 @@ export default function AppLayout() {
       </aside>
 
       {/* Main content */}
-      <div className={`flex-1 ${mainMl} transition-all duration-200`}>
+      <div className={`flex-1 ${mainMl} transition-all duration-200 h-screen flex flex-col`}>
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border px-6 py-3 flex items-center justify-end gap-3">
           {profile?.blog_handle && (
             <Link
@@ -808,7 +808,7 @@ export default function AppLayout() {
             )}
           </Link>
         </header>
-        <main className="p-6">
+        <main className="flex-1 overflow-y-auto p-6">
           <PWAInstallBanner />
           <Outlet />
         </main>

@@ -4,7 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
   BookOpen, ArrowLeft, Headphones, Calendar, MessageCircle,
-  Play, Pause, Volume2, VolumeX, Share2, Download, ChevronRight
+  Play, Pause, Volume2, VolumeX, Share2, Copy, ListChecks,
+  PenLine, Send
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,6 +20,7 @@ interface DevotionalData {
   anchor_verse: string;
   anchor_verse_text: string;
   body_text: string;
+  daily_practice?: string;
   audio_url?: string;
   audio_duration_seconds?: number;
   reflection_question: string;
@@ -31,10 +33,23 @@ const labels = {
   subtitle: { PT: 'Reflexões diárias para fortalecer sua fé', EN: 'Daily reflections to strengthen your faith', ES: 'Reflexiones diarias para fortalecer tu fe' },
   listenSection: { PT: 'OUVIR DEVOCIONAL', EN: 'LISTEN TO DEVOTIONAL', ES: 'ESCUCHAR DEVOCIONAL' },
   reflection: { PT: 'REFLEXÃO', EN: 'REFLECTION', ES: 'REFLEXIÓN' },
-  reflectionQ: { PT: 'PARA REFLETIR', EN: 'TO REFLECT', ES: 'PARA REFLEXIONAR' },
-  share: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
-  whatsapp: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
-  copyText: { PT: 'Copiar texto', EN: 'Copy text', ES: 'Copiar texto' },
+  practice: { PT: 'PRÁTICA DO DIA', EN: 'DAILY PRACTICE', ES: 'PRÁCTICA DEL DÍA' },
+  copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
+  shareWa: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
+  continueChat: { PT: 'Continuar no Chat', EN: 'Continue in Chat', ES: 'Continuar en el Chat' },
+  personalReflection: { PT: 'Minha Reflexão Pessoal', EN: 'My Personal Reflection', ES: 'Mi Reflexión Personal' },
+  personalReflectionSub: {
+    PT: 'Escreva suas reflexões pessoais, orações ou pensamentos sobre o devocional de hoje.',
+    EN: 'Write your personal reflections, prayers or thoughts about today\'s devotional.',
+    ES: 'Escribe tus reflexiones personales, oraciones o pensamientos sobre el devocional de hoy.',
+  },
+  personalPlaceholder: {
+    PT: 'O que este devocional significou para você hoje?',
+    EN: 'What did this devotional mean to you today?',
+    ES: '¿Qué significó este devocional para ti hoy?',
+  },
+  saveReflection: { PT: 'Salvar Reflexão', EN: 'Save Reflection', ES: 'Guardar Reflexión' },
+  saved: { PT: 'Reflexão salva!', EN: 'Reflection saved!', ES: '¡Reflexión guardada!' },
   copied: { PT: 'Texto copiado!', EN: 'Text copied!', ES: '¡Texto copiado!' },
   error: { PT: 'Não foi possível carregar o devocional.', EN: 'Could not load devotional.', ES: 'No se pudo cargar el devocional.' },
 } satisfies Record<string, Record<L, string>>;
@@ -90,7 +105,6 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
         onEnded={() => setPlaying(false)}
       />
 
-      {/* Header */}
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
           <Headphones className="h-5 w-5 text-primary" />
@@ -103,7 +117,6 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="space-y-1.5">
         <input
           type="range"
@@ -119,7 +132,6 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
         </div>
       </div>
 
-      {/* Controls */}
       <div className="flex items-center justify-center gap-6">
         <button onClick={() => setMuted(!muted)} className="text-muted-foreground hover:text-foreground transition-colors">
           {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
@@ -128,10 +140,7 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
           onClick={togglePlay}
           className="h-14 w-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95"
         >
-          {playing
-            ? <Pause className="h-6 w-6" />
-            : <Play className="h-6 w-6 ml-0.5" />
-          }
+          {playing ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
         </button>
         <button onClick={cycleSpeed} className="text-muted-foreground hover:text-foreground text-sm font-semibold transition-colors min-w-[32px]">
           {speed}x
@@ -141,6 +150,13 @@ function AudioPlayer({ src, title, lang }: { src: string; title: string; lang: L
   );
 }
 
+/* ─── WhatsApp SVG Icon ─── */
+const WhatsAppIcon = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+  </svg>
+);
+
 /* ─── Main Page ─── */
 export default function Devocional() {
   const { lang } = useLanguage();
@@ -148,6 +164,8 @@ export default function Devocional() {
   const [data, setData] = useState<DevotionalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [personalNote, setPersonalNote] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -165,47 +183,51 @@ export default function Devocional() {
     load();
   }, [user]);
 
-  const handleCopyText = () => {
+  const handleCopy = () => {
     if (!data) return;
-    const text = `${data.title}\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${data.body_text}\n\n${data.reflection_question}`;
+    const text = `*${data.title}*\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${data.body_text}\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
     navigator.clipboard.writeText(text);
     toast.success(labels.copied[lang]);
   };
 
   const handleWhatsApp = () => {
     if (!data) return;
-    const text = `*${data.title}*\n\n_"${data.anchor_verse_text}"_\n— ${data.anchor_verse}\n\n${data.body_text.slice(0, 500)}${data.body_text.length > 500 ? '...' : ''}\n\n💭 ${data.reflection_question}`;
+    const text = `*${data.title}*\n\n_"${data.anchor_verse_text}"_\n— ${data.anchor_verse}\n\n${data.body_text.slice(0, 500)}${data.body_text.length > 500 ? '...' : ''}\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  const handleShare = async () => {
-    if (!data) return;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: data.title,
-          text: `"${data.anchor_verse_text}" — ${data.anchor_verse}\n\n${data.reflection_question}`,
-        });
-      } catch { /* cancelled */ }
-    } else {
-      handleCopyText();
+  const handleSaveNote = async () => {
+    if (!personalNote.trim() || !user || !data) return;
+    setSavingNote(true);
+    try {
+      await supabase.from('materials').insert({
+        user_id: user.id,
+        title: `Reflexão: ${data.title}`,
+        type: 'devotional_reflection',
+        content: personalNote,
+        passage: data.anchor_verse,
+      });
+      toast.success(labels.saved[lang]);
+      setPersonalNote('');
+    } catch {
+      // silent
+    } finally {
+      setSavingNote(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-5">
         <Skeleton className="h-5 w-24" />
         <div className="flex items-center gap-3">
           <Skeleton className="h-11 w-11 rounded-xl" />
-          <div className="space-y-1.5">
-            <Skeleton className="h-3 w-32" />
-            <Skeleton className="h-5 w-56" />
-          </div>
+          <div className="space-y-1.5"><Skeleton className="h-4 w-36" /><Skeleton className="h-3 w-52" /></div>
         </div>
-        <Skeleton className="h-5 w-64" />
-        <Skeleton className="h-7 w-full" />
+        <Skeleton className="h-5 w-56" />
+        <Skeleton className="h-8 w-full" />
         <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
         <Skeleton className="h-48 w-full rounded-xl" />
         <Skeleton className="h-24 w-full rounded-xl" />
       </div>
@@ -226,8 +248,8 @@ export default function Devocional() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5 pb-8">
-      {/* Back link */}
+    <div className="max-w-2xl mx-auto space-y-5 pb-10">
+      {/* Back */}
       <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
       </Link>
@@ -245,7 +267,7 @@ export default function Devocional() {
         </div>
       </div>
 
-      {/* Date + Category badges */}
+      {/* Date + Category */}
       <div className="flex items-center gap-2 flex-wrap">
         <span className="inline-flex items-center gap-1.5 text-muted-foreground text-xs px-3 py-1.5 rounded-lg font-medium bg-muted">
           <Calendar className="h-3.5 w-3.5" />
@@ -261,14 +283,19 @@ export default function Devocional() {
         {data.title}
       </h1>
 
-      {/* Verse quote card */}
+      {/* Verse quote */}
       <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <blockquote className="text-base sm:text-lg italic text-foreground/90 leading-relaxed border-l-[3px] border-primary/50 pl-4">
-          "{data.anchor_verse_text}"
-        </blockquote>
-        <p className="text-sm text-primary mt-3 pl-4 font-medium">
-          — {data.anchor_verse}
-        </p>
+        <div className="flex gap-3">
+          <span className="text-3xl text-primary/30 font-serif leading-none shrink-0">"</span>
+          <div>
+            <blockquote className="text-base sm:text-lg italic text-foreground/90 leading-relaxed">
+              {data.anchor_verse_text}
+            </blockquote>
+            <p className="text-sm text-primary mt-3 font-medium">
+              — {data.anchor_verse}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Audio player */}
@@ -276,32 +303,9 @@ export default function Devocional() {
         <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
       )}
 
-      {/* Share buttons */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <button
-          onClick={handleCopyText}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-        >
-          <Download className="h-4 w-4" /> {labels.copyText[lang]}
-        </button>
-        <button
-          onClick={handleShare}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-        >
-          <Share2 className="h-4 w-4" /> {labels.share[lang]}
-        </button>
-        <button
-          onClick={handleWhatsApp}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/30 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
-        >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          {labels.whatsapp[lang]}
-        </button>
-      </div>
-
-      {/* Reflexão (body text) */}
-      <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-3">
-        <div className="flex items-center gap-2">
+      {/* REFLEXÃO */}
+      <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
+        <div className="flex items-center gap-2.5">
           <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
             <BookOpen className="h-4 w-4 text-primary" />
           </div>
@@ -309,25 +313,78 @@ export default function Devocional() {
             {labels.reflection[lang]}
           </p>
         </div>
-        <div className="text-sm sm:text-base text-foreground/90 leading-relaxed whitespace-pre-line">
+        <div className="text-sm sm:text-[15px] text-foreground/90 leading-[1.8] whitespace-pre-line">
           {data.body_text}
         </div>
       </div>
 
-      {/* Reflection question */}
-      {data.reflection_question && (
+      {/* PRÁTICA DO DIA */}
+      {data.daily_practice && (
         <div className="rounded-xl bg-primary/5 border border-primary/20 p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4 text-primary" />
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <ListChecks className="h-4 w-4 text-primary" />
+            </div>
             <p className="text-xs font-bold tracking-[0.12em] uppercase text-primary">
-              {labels.reflectionQ[lang]}
+              {labels.practice[lang]}
             </p>
           </div>
-          <p className="text-sm sm:text-base text-foreground leading-relaxed italic">
-            {data.reflection_question}
+          <p className="text-sm sm:text-[15px] text-foreground leading-relaxed">
+            {data.daily_practice}
           </p>
         </div>
       )}
+
+      {/* Action buttons */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <button
+          onClick={handleCopy}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+        >
+          <Copy className="h-4 w-4" /> {labels.copy[lang]}
+        </button>
+        <button
+          onClick={handleWhatsApp}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/30 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
+        >
+          <WhatsAppIcon /> {labels.shareWa[lang]}
+        </button>
+        <Link
+          to="/dashboard/mentes/chat"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+        >
+          <MessageCircle className="h-4 w-4" /> {labels.continueChat[lang]}
+        </Link>
+      </div>
+
+      {/* Minha Reflexão Pessoal */}
+      <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
+        <div className="flex items-center gap-2.5">
+          <PenLine className="h-4.5 w-4.5 text-foreground" />
+          <p className="text-sm font-bold text-foreground">
+            {labels.personalReflection[lang]}
+          </p>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {labels.personalReflectionSub[lang]}
+        </p>
+        <textarea
+          value={personalNote}
+          onChange={(e) => setPersonalNote(e.target.value)}
+          placeholder={labels.personalPlaceholder[lang]}
+          rows={4}
+          className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+        />
+        <div className="flex justify-end">
+          <button
+            onClick={handleSaveNote}
+            disabled={!personalNote.trim() || savingNote}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+          >
+            <Send className="h-4 w-4" /> {labels.saveReflection[lang]}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
