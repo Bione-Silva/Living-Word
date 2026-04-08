@@ -539,7 +539,7 @@ export default function Devocional() {
 
   /* ─── Main content ─── */
   const mainContent = (
-    <div className="flex-1 min-w-0 max-w-3xl pb-10">
+    <div className="flex-1 min-w-0 pb-10">
       {/* Back */}
       <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5">
         <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
