@@ -84,6 +84,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <DashboardGreeting />
+      <DevotionalCard />
       <StatsCards />
       <UniversalSearch />
       <StartHereBlock onToolClick={handleToolClick} />
