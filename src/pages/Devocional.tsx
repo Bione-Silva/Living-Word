@@ -47,7 +47,7 @@ interface PastDevotional {
 
 const labels = {
   back: { PT: 'Voltar', EN: 'Back', ES: 'Volver' },
-  pageTitle: { PT: 'Café com Deus Pai', EN: 'Coffee with God', ES: 'Café con Dios Padre' },
+  pageTitle: { PT: 'Café com a Palavra Viva de Deus', EN: 'Coffee with the Living Word of God', ES: 'Café con la Palabra Viva de Dios' },
   subtitle: { PT: 'Sua dose diária de inspiração bíblica, preparada com IA pastoral', EN: 'Your daily dose of biblical inspiration, crafted with pastoral AI', ES: 'Tu dosis diaria de inspiración bíblica, preparada con IA pastoral' },
   listenLabel: { PT: 'ESCUTE A PALAVRA', EN: 'HEAR THE WORD', ES: 'ESCUCHA LA PALABRA' },
   coverSection: { PT: 'ARTE DO DIA', EN: "TODAY'S ART", ES: 'ARTE DEL DÍA' },
