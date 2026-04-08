@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap, LayoutGrid } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
