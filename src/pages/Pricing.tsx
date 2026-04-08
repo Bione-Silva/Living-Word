@@ -106,6 +106,8 @@ export default function Pricing() {
   useForceLightTheme();
   const { lang } = useLanguage();
   const [isAnnual, setIsAnnual] = useState(false);
+  const { pricing, loading: regionLoading } = useGeoRegion();
+  const isBRL = pricing.currency === 'BRL';
 
   return (
     <div className="min-h-screen bg-background">
