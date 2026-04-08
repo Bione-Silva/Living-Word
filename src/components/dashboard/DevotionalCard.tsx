@@ -22,12 +22,12 @@ interface DevotionalData {
 }
 
 const labels = {
-  section: { PT: '📖 PALAVRA DO DIA', EN: '📖 WORD OF THE DAY', ES: '📖 PALABRA DEL DÍA' },
-  header: { PT: 'DEVOCIONAL DO DIA', EN: "TODAY'S DEVOTIONAL", ES: 'DEVOCIONAL DEL DÍA' },
-  listen: { PT: 'Áudio', EN: 'Audio', ES: 'Audio' },
-  cta: { PT: 'Toque para ler ou ouvir', EN: 'Tap to read or listen', ES: 'Toca para leer o escuchar' },
-  loading: { PT: 'Carregando...', EN: 'Loading...', ES: 'Cargando...' },
-  error: { PT: 'Não foi possível carregar o devocional.', EN: 'Could not load devotional.', ES: 'No se pudo cargar el devocional.' },
+  section: { PT: '📖 PALAVRA VIVA DE HOJE', EN: '📖 TODAY\'S LIVING WORD', ES: '📖 PALABRA VIVA DE HOY' },
+  header: { PT: 'SUA LEITURA DIÁRIA', EN: 'YOUR DAILY READING', ES: 'TU LECTURA DIARIA' },
+  listen: { PT: 'Escutar', EN: 'Listen', ES: 'Escuchar' },
+  cta: { PT: 'Abrir leitura completa', EN: 'Open full reading', ES: 'Abrir lectura completa' },
+  loading: { PT: 'Preparando sua palavra...', EN: 'Preparing your word...', ES: 'Preparando tu palabra...' },
+  error: { PT: 'Não conseguimos carregar a palavra de hoje.', EN: 'We couldn\'t load today\'s word.', ES: 'No pudimos cargar la palabra de hoy.' },
 } satisfies Record<string, Record<L, string>>;
 
 function formatDate(dateStr: string, lang: L): string {
