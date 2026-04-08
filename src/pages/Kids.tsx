@@ -54,6 +54,8 @@ export default function Kids() {
   const [ageGroup, setAgeGroup] = useState('6-8');
   const [loading, setLoading] = useState(false);
   const [story, setStory] = useState<{ title: string; content: string } | null>(null);
+  const [storyImage, setStoryImage] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(false);
 
   const handleGenerate = async () => {
     if (!selected || !user) return;
@@ -84,12 +86,15 @@ Return ONLY valid JSON: {"title": "story title", "content": "full story with par
       if (error) throw error;
       const content = data?.content;
       if (content) {
+        let parsed: { title: string; content: string };
         try {
-          const parsed = JSON.parse(content);
-          setStory(parsed);
+          parsed = JSON.parse(content);
         } catch {
-          setStory({ title: char.name[lang], content });
+          parsed = { title: char.name[lang], content };
         }
+        setStory(parsed);
+        // Generate illustration
+        generateImage(char.name.EN, parsed.title);
       }
     } catch {
       toast.error(lang === 'PT' ? 'Erro ao gerar história' : 'Error generating story');
@@ -98,8 +103,42 @@ Return ONLY valid JSON: {"title": "story title", "content": "full story with par
     }
   };
 
+  const generateImage = async (characterName: string, storyTitle: string) => {
+    setImageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-tool', {
+        body: {
+          systemPrompt: `You are an illustration generator. Return ONLY a single URL of a placeholder illustration. Actually, generate a vivid text description for an illustration.
+Return ONLY valid JSON: {"description": "a warm, colorful children's book illustration of..."}`,
+          userPrompt: `Describe a children's book illustration for a Bible story about ${characterName}: "${storyTitle}"`,
+          toolId: 'kids-illustration',
+        },
+      });
+      if (!error && data?.content) {
+        try {
+          const parsed = JSON.parse(data.content);
+          // Use the description as alt-text; generate image via Lovable AI
+          const imgRes = await supabase.functions.invoke('ai-tool', {
+            body: {
+              systemPrompt: 'Generate a children\'s book style illustration based on the description. Use warm colors, friendly characters, and a storybook feel. Return the image.',
+              userPrompt: parsed.description || `Children's Bible illustration of ${characterName}`,
+              toolId: 'kids-image',
+              model: 'google/gemini-2.5-flash',
+              modalities: ['image', 'text'],
+            },
+          });
+          if (imgRes.data?.images?.[0]?.image_url?.url) {
+            setStoryImage(imgRes.data.images[0].image_url.url);
+          }
+        } catch { /* ignore parse errors */ }
+      }
+    } catch { /* ignore image errors */ }
+    setImageLoading(false);
+  };
+
   const handleReset = () => {
     setStory(null);
+    setStoryImage(null);
     setSelected(null);
   };
 
@@ -174,6 +213,17 @@ Return ONLY valid JSON: {"title": "story title", "content": "full story with par
               <span className="text-4xl">{characters.find(c => c.id === selected)?.emoji}</span>
               <h2 className="text-xl font-display font-bold text-foreground">{story.title}</h2>
             </div>
+
+            {/* AI Illustration */}
+            {imageLoading && (
+              <div className="rounded-xl bg-muted/30 h-48 flex items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <span className="ml-2 text-xs text-muted-foreground">{lang === 'PT' ? 'Criando ilustração...' : 'Creating illustration...'}</span>
+              </div>
+            )}
+            {storyImage && !imageLoading && (
+              <img src={storyImage} alt={story.title} className="w-full rounded-xl object-cover max-h-64" />
+            )}
 
             <div className="prose prose-sm max-w-none text-foreground/85 leading-[1.9]">
               {story.content.split('\n\n').map((p, i) => (

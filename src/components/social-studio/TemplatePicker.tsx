@@ -1,4 +1,4 @@
-export type CanvasTemplate = 'editorial' | 'swiss' | 'cinematic' | 'gradient';
+export type CanvasTemplate = 'editorial' | 'swiss' | 'cinematic' | 'gradient' | 'lw-amber';
 
 interface Props {
   value: CanvasTemplate;
@@ -31,6 +31,12 @@ const templates: { id: CanvasTemplate; emoji: string; label: Record<string, stri
     label: { PT: 'Gradient Poster', EN: 'Gradient Poster', ES: 'Gradient Poster' },
     desc: { PT: 'Gradiente vibrante + geometria', EN: 'Vibrant gradient + geometry', ES: 'Gradiente vibrante + geometría' },
   },
+  {
+    id: 'lw-amber',
+    emoji: '✨',
+    label: { PT: 'Living Word', EN: 'Living Word', ES: 'Living Word' },
+    desc: { PT: 'Âmbar + ouro pastoral', EN: 'Amber + pastoral gold', ES: 'Ámbar + oro pastoral' },
+  },
 ];
 
 export function TemplatePicker({ value, onChange, lang }: Props) {
@@ -39,7 +45,7 @@ export function TemplatePicker({ value, onChange, lang }: Props) {
       <span className="text-xs text-foreground font-semibold uppercase tracking-wider">
         {lang === 'PT' ? 'Estilo do Cartaz' : lang === 'EN' ? 'Poster Style' : 'Estilo del Cartel'}
       </span>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
         {templates.map((t) => {
           const active = value === t.id;
           return (

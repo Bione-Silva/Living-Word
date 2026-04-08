@@ -254,6 +254,63 @@ function GradientTemplate({ slide, themeColor, fontFamily, showWatermark }: Omit
 }
 
 /* ────────────────────────────────────────────
+   TEMPLATE 5 — LIVING WORD AMBER
+   Warm amber/gold pastoral gradient with cross motif
+   ──────────────────────────────────────────── */
+function LwAmberTemplate({ slide, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl' | 'textColor'>) {
+  const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+
+  return (
+    <div className="relative h-full w-full overflow-hidden flex items-center justify-center"
+      style={{ background: 'linear-gradient(145deg, #1a0f05 0%, #2d1a0a 25%, #4a2c17 50%, #6b4f3a 75%, #d4a853 100%)' }}>
+      {/* Decorative elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Cross motif */}
+        <div className="absolute" style={{ top: '8%', left: '50%', width: '1px', height: '20%', backgroundColor: 'rgba(212,168,83,0.15)', transform: 'translateX(-50%)' }} />
+        <div className="absolute" style={{ top: '16%', left: '50%', width: '12%', height: '1px', backgroundColor: 'rgba(212,168,83,0.15)', transform: 'translateX(-50%)' }} />
+        {/* Corner accents */}
+        <div className="absolute" style={{ bottom: '6%', left: '6%', width: '30px', height: '30px', borderLeft: '1px solid rgba(212,168,83,0.2)', borderBottom: '1px solid rgba(212,168,83,0.2)' }} />
+        <div className="absolute" style={{ top: '6%', right: '6%', width: '30px', height: '30px', borderRight: '1px solid rgba(212,168,83,0.2)', borderTop: '1px solid rgba(212,168,83,0.2)' }} />
+        {/* Radial glow */}
+        <div className="absolute" style={{ top: '50%', left: '50%', width: '80%', height: '80%', transform: 'translate(-50%, -50%)', background: 'radial-gradient(circle, rgba(212,168,83,0.08) 0%, transparent 70%)' }} />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-10 sm:px-14 max-w-full">
+        {slide.slideNumber && slide.totalSlides && (
+          <span className="text-[10px] font-sans font-medium tracking-[0.3em] uppercase mb-6" style={{ color: 'rgba(212,168,83,0.5)' }}>
+            {slide.slideNumber} / {slide.totalSlides}
+          </span>
+        )}
+
+        <p
+          className="text-xl sm:text-2xl md:text-3xl font-bold leading-snug tracking-wide"
+          style={{ color: '#F5E6C8', fontFamily: font, textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}
+        >
+          {slide.text}
+        </p>
+
+        {slide.subtitle && (
+          <div className="mt-6 flex items-center gap-3">
+            <div className="h-px w-10" style={{ backgroundColor: 'rgba(212,168,83,0.4)' }} />
+            <p className="text-xs font-sans font-semibold uppercase tracking-[0.3em]" style={{ color: '#D4A853' }}>
+              {slide.subtitle}
+            </p>
+            <div className="h-px w-10" style={{ backgroundColor: 'rgba(212,168,83,0.4)' }} />
+          </div>
+        )}
+
+        {showWatermark && (
+          <span className="mt-8 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(212,168,83,0.25)' }}>
+            Living Word
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
    EXPORTED COMPONENT
    ──────────────────────────────────────────── */
 export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
@@ -279,6 +336,9 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
           )}
           {template === 'gradient' && (
             <GradientTemplate slide={slide} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+          )}
+          {template === 'lw-amber' && (
+            <LwAmberTemplate slide={slide} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
         </div>
       </div>
