@@ -40,6 +40,7 @@ import Onboarding from "./pages/Onboarding";
 import Devocional from "./pages/Devocional";
 import BomAmigo from "./pages/BomAmigo";
 import Quiz from "./pages/Quiz";
+import Kids from "./pages/Kids";
 
 const queryClient = new QueryClient();
 
