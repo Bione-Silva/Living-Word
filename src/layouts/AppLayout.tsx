@@ -780,7 +780,7 @@ export default function AppLayout() {
       </aside>
 
       {/* Main content */}
-      <div className={`flex-1 ${mainMl} transition-all duration-200`}>
+      <div className={`flex-1 ${mainMl} transition-all duration-200 min-h-screen flex flex-col`}>
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border px-6 py-3 flex items-center justify-end gap-3">
           {profile?.blog_handle && (
             <Link
