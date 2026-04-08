@@ -37,12 +37,13 @@ export function CreditTopUpButton() {
   const handleTopUp = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: {
           priceId: pricing?.addon_topup?.id,
-          successUrl: `${window.location.origin}/dashboard?topup_success=true`,
-          cancelUrl: `${window.location.origin}/upgrade`,
-          mode: 'payment', // one-time
+          plan: 'topup',
+          interval: 'one_time',
+          success_url: `${window.location.origin}/dashboard?topup_success=true`,
+          cancel_url: `${window.location.origin}/upgrade`,
         },
       });
       if (error) throw error;
