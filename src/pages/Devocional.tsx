@@ -444,7 +444,7 @@ export default function Devocional() {
 
   /* ─── Sidebar (right) ─── */
   const sidebar = user && (
-    <div className="w-[280px] shrink-0 hidden lg:block">
+    <div className="w-[320px] shrink-0 hidden lg:block">
       <div className="sticky top-6 rounded-xl border border-border bg-card overflow-hidden">
         {/* Header */}
         <div className="p-4 border-b border-border">
@@ -539,7 +539,7 @@ export default function Devocional() {
 
   /* ─── Main content ─── */
   const mainContent = (
-    <div className="flex-1 min-w-0 max-w-3xl pb-10">
+    <div className="flex-1 min-w-0 pb-10">
       {/* Back */}
       <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5">
         <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
@@ -739,55 +739,6 @@ export default function Devocional() {
         </div>
       </div>
 
-      {/* Personal reflection */}
-      {!isViewingPast && (
-        <div className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-2.5">
-            <PenLine className="h-4 w-4 text-foreground" />
-            <p className="text-sm font-bold text-foreground">{labels.personalReflection[lang]}</p>
-          </div>
-          <p className="text-xs text-muted-foreground">{labels.personalReflectionSub[lang]}</p>
-          <textarea
-            value={personalNote}
-            onChange={(e) => setPersonalNote(e.target.value)}
-            placeholder={labels.personalPlaceholder[lang]}
-            rows={4}
-            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
-          />
-          <div className="flex justify-end">
-            <button
-              onClick={handleSaveNote}
-              disabled={!personalNote.trim() || savingNote}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
-            >
-              <Send className="h-4 w-4" /> {labels.saveReflection[lang]}
-            </button>
-          </div>
-        </div>
-      )}
-
-        {/* Bottom action bar */}
-        <div className="border-t border-border px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap bg-muted/20">
-          <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors">
-            <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
-          </button>
-          <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors">
-            <WhatsAppIcon /> {labels.shareWa[lang]}
-          </button>
-          <button
-            onClick={() => { if (navigator.share) navigator.share({ title: displayTitle, text: `${displayTitle} — ${displayVerse}` }); }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-          >
-            <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
-          </button>
-          <Link
-            to="/mente-chat"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
-          >
-            <MessageCircle className="h-3.5 w-3.5" /> {labels.continueChat[lang]}
-          </Link>
-        </div>
-      </div>
 
       {/* Personal reflection */}
       {!isViewingPast && (
@@ -870,7 +821,7 @@ export default function Devocional() {
   // Desktop: side-by-side with sidebar
   if (!isMobile && user) {
     return (
-      <div className="flex gap-6 items-start">
+      <div className="flex gap-5 items-start w-full">
         {mainContent}
         {sidebar}
       </div>
