@@ -363,6 +363,8 @@ export default function Devocional() {
   const [savingNote, setSavingNote] = useState(false);
   const [noteLoaded, setNoteLoaded] = useState(false);
   const [noteSavedAt, setNoteSavedAt] = useState<string | null>(null);
+  const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
+  const [showAddReflection, setShowAddReflection] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
@@ -487,7 +489,15 @@ export default function Devocional() {
 
   const handleSaveNote = async () => {
     if (!personalNote.trim() || !user || !data) return;
-    autoSaveNote(personalNote);
+    await autoSaveNote(personalNote);
+    setNoteSavedSuccess(true);
+    setShowAddReflection(false);
+    toast.success(labels.saved[lang]);
+  };
+
+  const handleAddMoreReflection = () => {
+    setShowAddReflection(true);
+    setNoteSavedSuccess(false);
   };
 
   /* ─── Styles ─── */
@@ -964,29 +974,59 @@ export default function Devocional() {
             </p>
           )}
 
-          <textarea
-            value={personalNote}
-            onChange={(e) => handleNoteChange(e.target.value)}
-            placeholder={labels.journalPlaceholder[lang]}
-            rows={4}
-            className="w-full px-4 py-3 rounded-xl border font-serif text-sm resize-none focus:outline-none focus:ring-2 transition-all"
-            style={{
-              borderColor: colors.border,
-              backgroundColor: colors.bg,
-              color: colors.text,
-              '--tw-ring-color': colors.gold + '40',
-            } as React.CSSProperties}
-          />
-          <div className="flex justify-end">
-            <button
-              onClick={handleSaveNote}
-              disabled={!personalNote.trim() || savingNote}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-40 disabled:pointer-events-none"
-              style={{ backgroundColor: colors.gold, color: '#fff' }}
-            >
-              <Send className="h-4 w-4" /> {labels.saveNote[lang]}
-            </button>
-          </div>
+          {/* Success state after manual save */}
+          {noteSavedSuccess && !showAddReflection ? (
+            <div className="space-y-4">
+              {/* Show saved note preview */}
+              <div className="rounded-xl p-4" style={{ backgroundColor: colors.goldLight, border: `1px solid ${colors.goldMuted}40` }}>
+                <p className="font-serif text-sm leading-relaxed" style={{ color: colors.text }}>
+                  {personalNote}
+                </p>
+              </div>
+
+              {/* Success message + Add Reflection button */}
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <span className="text-xs flex items-center gap-1.5" style={{ color: colors.gold }}>
+                  <Check className="h-4 w-4" />
+                  {lang === 'PT' ? 'Reflexão salva com sucesso!' : lang === 'ES' ? '¡Reflexión guardada!' : 'Reflection saved!'}
+                </span>
+                <button
+                  onClick={handleAddMoreReflection}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                  style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}
+                >
+                  <PenLine className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Adicionar Reflexão' : lang === 'ES' ? 'Agregar Reflexión' : 'Add Reflection'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <textarea
+                value={personalNote}
+                onChange={(e) => { handleNoteChange(e.target.value); setNoteSavedSuccess(false); }}
+                placeholder={labels.journalPlaceholder[lang]}
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl border font-serif text-sm resize-none focus:outline-none focus:ring-2 transition-all"
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: colors.bg,
+                  color: colors.text,
+                  '--tw-ring-color': colors.gold + '40',
+                } as React.CSSProperties}
+              />
+              <div className="flex justify-end">
+                <button
+                  onClick={handleSaveNote}
+                  disabled={!personalNote.trim() || savingNote}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                  style={{ backgroundColor: colors.gold, color: '#fff' }}
+                >
+                  <Send className="h-4 w-4" /> {labels.saveNote[lang]}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 
