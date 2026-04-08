@@ -692,6 +692,33 @@ export type Database = {
         }
         Relationships: []
       }
+      reading_plan_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string
+          day_number: number
+          id: string
+          plan_id: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string
+          day_number: number
+          id?: string
+          plan_id: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string
+          day_number?: number
+          id?: string
+          plan_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       social_arts: {
         Row: {
           aspect_ratio: string
