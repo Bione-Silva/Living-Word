@@ -224,6 +224,7 @@ Return ONLY valid JSON array: [{"question":"...","options":["A","B","C","D"],"co
       {/* HUB */}
       {phase === 'hub' && (
         <div className="space-y-4">
+          <Leaderboard />
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {categories.map(cat => (
               <button
