@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlanSlug } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 interface UserProfile {
   id: string;
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: data.id,
           full_name: data.full_name || '',
           blog_handle: data.blog_handle || '',
-          plan: (data.plan as UserProfile['plan']) || 'free',
+            plan: normalizePlan(data.plan),
           generations_used: data.generations_used || 0,
           generations_limit: data.generations_limit || 5,
           language: data.language || 'PT',
