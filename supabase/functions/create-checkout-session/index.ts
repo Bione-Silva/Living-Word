@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: lineItems,
-      mode: "subscription",
+      mode: checkoutMode,
       success_url: success_url || `${req.headers.get("origin")}/dashboard?checkout_success=true`,
       cancel_url: cancel_url || `${req.headers.get("origin")}/upgrade`,
       allow_promotion_codes: true,
