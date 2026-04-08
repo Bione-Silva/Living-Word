@@ -8,6 +8,7 @@ Edge functions: generate-pastoral-material, generate-blog-article, fetch-bible-v
 Conversão: 7 gatilhos, nunca bloquear geração, 1 modal/sessão, tom pastoral.
 Free: 5 gerações/mês, 3 formatos, 1 blog article, watermark. Trial 7d sem cartão.
 Copy vem do PRD + plataforma existente, NUNCA das screenshots de referência.
+Devocionais: tabela `devotionals` (read-only no frontend). Áudio/imagem via cron job externa.
 
 ## Memories
 - [Design System](mem://design/system) — Full palette, typography, glass-card utilities
@@ -16,3 +17,4 @@ Copy vem do PRD + plataforma existente, NUNCA das screenshots de referência.
 - [Edge Functions](mem://features/edge-functions) — API endpoints and payloads
 - [Copy source rule](mem://constraints/copy-source) — Screenshots = layout only, copy from PRD/platform
 - [Dashboard hierarchy](mem://features/dashboard-hierarchy) — Mobile-first layout order and components
+- [Devotional architecture](mem://constraints/devotional-architecture) — Devotionals from `devotionals` table, edge fn read-only, cron generates audio/image
