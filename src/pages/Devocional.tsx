@@ -200,6 +200,7 @@ export default function Devocional() {
   const [pastLoading, setPastLoading] = useState(true);
   const [activeItemId, setActiveItemId] = useState<string | null>(null); // null = today
   const [viewingPast, setViewingPast] = useState<PastDevotional | null>(null);
+  const [transitioning, setTransitioning] = useState(false);
 
   // Load today's devotional
   useEffect(() => {
@@ -257,22 +258,35 @@ export default function Devocional() {
     load();
   }, [user]);
 
-  // When clicking a past devotional
+  // When clicking a past devotional — with fade transition
   const handleSelectPast = useCallback((item: PastDevotional) => {
     if (activeItemId === item.id) {
-      // Clicking same = go back to today
-      setActiveItemId(null);
-      setViewingPast(null);
+      setTransitioning(true);
+      setTimeout(() => {
+        setActiveItemId(null);
+        setViewingPast(null);
+        setTransitioning(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 200);
       return;
     }
-    setActiveItemId(item.id);
-    setViewingPast(item);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTransitioning(true);
+    setTimeout(() => {
+      setActiveItemId(item.id);
+      setViewingPast(item);
+      setTransitioning(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
   }, [activeItemId]);
 
   const handleBackToToday = () => {
-    setActiveItemId(null);
-    setViewingPast(null);
+    setTransitioning(true);
+    setTimeout(() => {
+      setActiveItemId(null);
+      setViewingPast(null);
+      setTransitioning(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
   };
 
   const handleCopy = () => {
@@ -528,7 +542,7 @@ export default function Devocional() {
       )}
 
       {/* ═══ EDITORIAL CARD ═══ */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+      <div className={`rounded-2xl border border-border bg-card overflow-hidden shadow-sm transition-all duration-200 ${transitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
 
         {/* Date bar */}
         <div className="flex items-center justify-center py-2.5 border-b border-border bg-muted/30">
