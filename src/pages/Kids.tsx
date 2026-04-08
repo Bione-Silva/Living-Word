@@ -296,6 +296,11 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
             )}
           </div>
 
+          {/* Drawing */}
+          {drawingImage && (
+            <img src={drawingImage} alt={`Desenho de ${characters.find(c => c.id === selected)?.name[lang]}`} className="w-full aspect-square rounded-2xl object-cover" />
+          )}
+
           {/* Actions */}
           <div className="flex gap-3">
             <button
@@ -312,6 +317,19 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '🔄'} {lang === 'PT' ? 'Recontar' : 'Retell'}
             </button>
           </div>
+
+          {/* Generate Drawing button */}
+          <button
+            onClick={generateDrawing}
+            disabled={drawingLoading}
+            className="w-full bg-primary/10 text-primary border border-primary/30 rounded-xl px-4 py-2 text-sm font-medium hover:bg-primary/15 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {drawingLoading ? (
+              <><span className="animate-pulse text-lg">{characters.find(c => c.id === selected)?.emoji}</span> {lang === 'PT' ? 'Gerando desenho mágico...' : 'Generating magic drawing...'}</>
+            ) : (
+              <><Palette className="h-4 w-4" /> 🎨 {lang === 'PT' ? `Gerar Desenho de ${characters.find(c => c.id === selected)?.name[lang]}` : `Generate Drawing of ${characters.find(c => c.id === selected)?.name[lang]}`}</>
+            )}
+          </button>
         </div>
       )}
     </div>
