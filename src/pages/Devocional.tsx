@@ -598,7 +598,7 @@ export default function Devocional() {
           className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 font-medium mb-4 transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          {lang === 'PT' ? 'Voltar ao devocional de hoje' : lang === 'ES' ? 'Volver al devocional de hoy' : 'Back to today\'s devotional'}
+          {lang === 'PT' ? 'Voltar à leitura de hoje' : lang === 'ES' ? 'Volver a la lectura de hoy' : 'Back to today\'s reading'}
         </button>
       )}
 
