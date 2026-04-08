@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap, LayoutGrid } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -171,6 +172,7 @@ function createInitialFormData(language: 'PT' | 'EN' | 'ES', bibleVersion?: stri
 export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralStudioModalProps) {
   const { profile, user } = useAuth();
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const text = copy[lang];
 
   const [formData, setFormData] = useState<PastoralStudioFormData>(() =>
@@ -565,6 +567,20 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                         <Button variant="outline" size="sm" className="gap-2" onClick={handleSave} disabled={saving}>
                           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                           {text.saveCurrent}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                          onClick={() => {
+                            const content = outputs[activeTab] || '';
+                            const passage = formData.bible_passage;
+                            onOpenChange(false);
+                            navigate('/social-studio', { state: { sermonContent: content, passage } });
+                          }}
+                        >
+                          <LayoutGrid className="h-4 w-4" />
+                          {lang === 'PT' ? 'Carrossel' : lang === 'ES' ? 'Carrusel' : 'Carousel'}
                         </Button>
                       </div>
                     </div>

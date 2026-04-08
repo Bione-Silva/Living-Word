@@ -40,6 +40,7 @@ import Onboarding from "./pages/Onboarding";
 import Devocional from "./pages/Devocional";
 import BomAmigo from "./pages/BomAmigo";
 import Quiz from "./pages/Quiz";
+import Kids from "./pages/Kids";
 
 const queryClient = new QueryClient();
 
@@ -115,6 +116,7 @@ const App = () => (
                 <Route path="/devocional" element={<Devocional />} />
                 <Route path="/bom-amigo" element={<BomAmigo />} />
                 <Route path="/quiz" element={<Quiz />} />
+                <Route path="/kids" element={<Kids />} />
                 <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
                 <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
                 <Route path="/expos" element={<ExposStudioPage />} />

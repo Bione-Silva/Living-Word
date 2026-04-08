@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { bibleBooks, getBookName, getTranslation, getTranslationLabel, type L } from '@/lib/bible-data';
+import { VerseContextMenu } from '@/components/bible/VerseContextMenu';
+import { BibleTabs } from '@/components/bible/BibleTabs';
 
 const pageTitle: Record<L, string> = { PT: 'A Bíblia', EN: 'The Bible', ES: 'La Biblia' };
 
@@ -14,6 +18,7 @@ interface Verse { verse: number; text: string; }
 
 export default function BibleReader() {
   const { lang } = useLanguage();
+  const { user } = useAuth();
   const [book, setBook] = useState('John');
   const [chapter, setChapter] = useState(1);
   const [verses, setVerses] = useState<Verse[]>([]);
@@ -22,6 +27,12 @@ export default function BibleReader() {
   const [bookOpen, setBookOpen] = useState(false);
   const [goToVerse, setGoToVerse] = useState('');
   const verseRefs = useRef<Record<number, HTMLSpanElement | null>>({});
+
+  // Context menu state
+  const [selectedVerse, setSelectedVerse] = useState<Verse | null>(null);
+  const [favoritedVerses, setFavoritedVerses] = useState<Set<number>>(new Set());
+  const [highlights, setHighlights] = useState<Record<number, string>>({});
+  const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
 
   const currentBook = bibleBooks.find((b) => b.id === book)!;
   const translation = getTranslation(lang);
@@ -49,11 +60,80 @@ export default function BibleReader() {
 
   useEffect(() => { fetchChapter(); }, [fetchChapter]);
 
+  // Load favorites and highlights for current chapter
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('bible_favorites')
+      .select('verse_number')
+      .eq('user_id', user.id)
+      .eq('book_id', book)
+      .eq('chapter_number', chapter)
+      .then(({ data }) => {
+        if (data) setFavoritedVerses(new Set(data.map(d => d.verse_number)));
+      });
+    supabase.from('bible_highlights')
+      .select('start_verse_number, color_key')
+      .eq('user_id', user.id)
+      .eq('book_id', book)
+      .eq('chapter_number', chapter)
+      .then(({ data }) => {
+        if (data) {
+          const map: Record<number, string> = {};
+          data.forEach(d => { map[d.start_verse_number] = d.color_key; });
+          setHighlights(map);
+        }
+      });
+  }, [user, book, chapter]);
+
   const handleGoToVerse = () => {
     const num = parseInt(goToVerse, 10);
     if (!num || !verseRefs.current[num]) return;
     verseRefs.current[num]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setGoToVerse('');
+  };
+
+  const handleVerseClick = (verse: Verse) => {
+    setSelectedVerse(verse);
+  };
+
+  const handleHighlight = async (color: string) => {
+    if (!user || !selectedVerse) return;
+    // Upsert: delete existing then insert
+    await supabase.from('bible_highlights')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('book_id', book)
+      .eq('chapter_number', chapter)
+      .eq('start_verse_number', selectedVerse.verse);
+
+    await supabase.from('bible_highlights').insert({
+      user_id: user.id,
+      book_id: book,
+      chapter_number: chapter,
+      start_verse_number: selectedVerse.verse,
+      end_verse_number: selectedVerse.verse,
+      selected_text: selectedVerse.text.trim(),
+      color_key: color,
+      language: lang,
+      translation_code: translation,
+    });
+
+    setHighlights(prev => ({ ...prev, [selectedVerse.verse]: color }));
+  };
+
+  const handleNavigate = (bookId: string, chapterNum: number) => {
+    setBook(bookId);
+    setChapter(chapterNum);
+  };
+
+  const highlightClass = (colorKey: string) => {
+    const map: Record<string, string> = {
+      yellow: 'bg-yellow-200/40',
+      green: 'bg-green-200/40',
+      blue: 'bg-blue-200/40',
+      pink: 'bg-pink-200/40',
+    };
+    return map[colorKey] || '';
   };
 
   const bookItems = useMemo(() =>
@@ -72,7 +152,6 @@ export default function BibleReader() {
 
       {/* Selectors */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Book combobox */}
         <Popover open={bookOpen} onOpenChange={setBookOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-[200px] justify-between font-normal text-foreground border-border">
@@ -102,7 +181,6 @@ export default function BibleReader() {
           </PopoverContent>
         </Popover>
 
-        {/* Chapter selector */}
         <Select value={String(chapter)} onValueChange={(v) => setChapter(Number(v))}>
           <SelectTrigger className="w-[100px] text-foreground border-border">
             <SelectValue />
@@ -116,12 +194,11 @@ export default function BibleReader() {
           </SelectContent>
         </Select>
 
-        {/* Verse jump */}
         <div className="flex items-center gap-1">
           <Input
             type="number"
             min={1}
-            placeholder={lang === 'PT' ? 'v.' : 'v.'}
+            placeholder="v."
             value={goToVerse}
             onChange={(e) => setGoToVerse(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()}
@@ -158,13 +235,23 @@ export default function BibleReader() {
         ) : (
           <div className="space-y-1 leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90">
             {verses.map((v) => (
-              <span key={v.verse} ref={(el) => { verseRefs.current[v.verse] = el; }}>
+              <span
+                key={v.verse}
+                ref={(el) => { verseRefs.current[v.verse] = el; }}
+                onClick={() => handleVerseClick(v)}
+                className={`cursor-pointer rounded px-0.5 transition-colors hover:bg-primary/10 ${highlights[v.verse] ? highlightClass(highlights[v.verse]) : ''}`}
+              >
                 <sup className="text-primary/60 font-sans text-[11px] font-bold mr-1 select-none">{v.verse}</sup>
                 {v.text.trim()}{' '}
               </span>
             ))}
           </div>
         )}
+      </div>
+
+      {/* Favorites & Notes tabs */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <BibleTabs refreshKey={tabsRefreshKey} onNavigate={handleNavigate} />
       </div>
 
       {/* Navigation */}
@@ -179,6 +266,29 @@ export default function BibleReader() {
           <ChevronRight className="h-3.5 w-3.5" />
         </Button>
       </div>
+
+      {/* Context menu */}
+      {selectedVerse && (
+        <VerseContextMenu
+          verse={selectedVerse}
+          bookId={book}
+          chapter={chapter}
+          translationCode={translation}
+          isFavorited={favoritedVerses.has(selectedVerse.verse)}
+          onClose={() => setSelectedVerse(null)}
+          onFavoriteToggle={() => {
+            setFavoritedVerses(prev => {
+              const next = new Set(prev);
+              if (next.has(selectedVerse.verse)) next.delete(selectedVerse.verse);
+              else next.add(selectedVerse.verse);
+              return next;
+            });
+            setTabsRefreshKey(prev => prev + 1);
+          }}
+          onHighlight={handleHighlight}
+          onNoteSaved={() => setTabsRefreshKey(prev => prev + 1)}
+        />
+      )}
     </div>
   );
 }
