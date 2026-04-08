@@ -84,6 +84,7 @@ serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
+          ...(Array.isArray(history) ? history.map((m: any) => ({ role: m.role, content: m.content })) : []),
           { role: "user", content: userPrompt },
         ],
       }),
