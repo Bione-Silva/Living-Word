@@ -106,7 +106,8 @@ export default function Pricing() {
   useForceLightTheme();
   const { lang } = useLanguage();
   const [isAnnual, setIsAnnual] = useState(false);
-  const { pricing, loading: regionLoading } = useGeoRegion();
+  const { pricing: geoPricing } = useGeoRegion();
+  const pricing = geoPricing || { currency: 'USD', symbol: '$' };
   const isBRL = pricing.currency === 'BRL';
 
   return (
