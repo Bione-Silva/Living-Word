@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import {
   BookOpen, ArrowLeft, Headphones, Calendar, MessageCircle,
   Play, Pause, Volume2, VolumeX, Share2, Copy, ListChecks,
-  PenLine, Send
+  PenLine, Send, Download, Image as ImageIcon
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,6 +25,7 @@ interface DevotionalData {
   audio_duration_seconds?: number;
   reflection_question: string;
   scheduled_date: string;
+  cover_image_url?: string | null;
 }
 
 const labels = {
@@ -32,10 +33,14 @@ const labels = {
   pageTitle: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' },
   subtitle: { PT: 'Reflexões diárias para fortalecer sua fé', EN: 'Daily reflections to strengthen your faith', ES: 'Reflexiones diarias para fortalecer tu fe' },
   listenSection: { PT: 'OUVIR DEVOCIONAL', EN: 'LISTEN TO DEVOTIONAL', ES: 'ESCUCHAR DEVOCIONAL' },
+  coverSection: { PT: 'CAPA DO DEVOCIONAL', EN: 'DEVOTIONAL COVER', ES: 'PORTADA DEL DEVOCIONAL' },
+  coverSub: { PT: 'Salve e compartilhe', EN: 'Save and share', ES: 'Guarda y comparte' },
   reflection: { PT: 'REFLEXÃO', EN: 'REFLECTION', ES: 'REFLEXIÓN' },
   practice: { PT: 'PRÁTICA DO DIA', EN: 'DAILY PRACTICE', ES: 'PRÁCTICA DEL DÍA' },
   copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
-  shareWa: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
+  saveImage: { PT: 'Salvar Imagem', EN: 'Save Image', ES: 'Guardar Imagen' },
+  share: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
+  shareWa: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
   continueChat: { PT: 'Continuar no Chat', EN: 'Continue in Chat', ES: 'Continuar en el Chat' },
   personalReflection: { PT: 'Minha Reflexão Pessoal', EN: 'My Personal Reflection', ES: 'Mi Reflexión Personal' },
   personalReflectionSub: {
@@ -51,6 +56,7 @@ const labels = {
   saveReflection: { PT: 'Salvar Reflexão', EN: 'Save Reflection', ES: 'Guardar Reflexión' },
   saved: { PT: 'Reflexão salva!', EN: 'Reflection saved!', ES: '¡Reflexión guardada!' },
   copied: { PT: 'Texto copiado!', EN: 'Text copied!', ES: '¡Texto copiado!' },
+  imageSaved: { PT: 'Imagem salva!', EN: 'Image saved!', ES: '¡Imagen guardada!' },
   error: { PT: 'Não foi possível carregar o devocional.', EN: 'Could not load devotional.', ES: 'No se pudo cargar el devocional.' },
 } satisfies Record<string, Record<L, string>>;
 
@@ -157,6 +163,105 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
+/* ─── Cover Image Section ─── */
+function CoverImageSection({ imageUrl, title, category, verse, lang }: {
+  imageUrl: string;
+  title: string;
+  category: string;
+  verse: string;
+  lang: L;
+}) {
+  const handleSaveImage = async () => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `devocional-${title.slice(0, 30).replace(/\s+/g, '-').toLowerCase()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success(labels.imageSaved[lang]);
+    } catch {
+      // fallback: open in new tab
+      window.open(imageUrl, '_blank');
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text: `${title} — ${verse}`,
+          url: imageUrl,
+        });
+      } catch { /* user cancelled */ }
+    } else {
+      navigator.clipboard.writeText(imageUrl);
+      toast.success(labels.copied[lang]);
+    }
+  };
+
+  const handleWhatsApp = () => {
+    const text = `*${title}*\n📗 ${category}\n📖 ${verse}\n\n${imageUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
+      {/* Section header */}
+      <div className="flex items-center gap-3">
+        <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <ImageIcon className="h-4 w-4 text-primary" />
+        </div>
+        <div>
+          <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary">
+            {labels.coverSection[lang]}
+          </p>
+          <p className="text-xs text-muted-foreground">{labels.coverSub[lang]}</p>
+        </div>
+      </div>
+
+      {/* Image */}
+      <div className="flex justify-center">
+        <div className="relative rounded-xl overflow-hidden shadow-lg max-w-sm w-full">
+          <img
+            src={imageUrl}
+            alt={title}
+            className="w-full h-auto object-cover"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex items-center justify-center gap-2 flex-wrap">
+        <button
+          onClick={handleSaveImage}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+        >
+          <Download className="h-4 w-4" /> {labels.saveImage[lang]}
+        </button>
+        <button
+          onClick={handleShare}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium text-foreground bg-card hover:bg-muted/50 transition-colors"
+        >
+          <Share2 className="h-4 w-4" /> {labels.share[lang]}
+        </button>
+        <button
+          onClick={handleWhatsApp}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/30 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
+        >
+          <WhatsAppIcon /> {labels.shareWa[lang]}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Page ─── */
 export default function Devocional() {
   const { lang } = useLanguage();
@@ -228,6 +333,7 @@ export default function Devocional() {
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-32 w-full rounded-xl" />
         <Skeleton className="h-40 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
         <Skeleton className="h-48 w-full rounded-xl" />
         <Skeleton className="h-24 w-full rounded-xl" />
       </div>
@@ -301,6 +407,17 @@ export default function Devocional() {
       {/* Audio player */}
       {data.audio_url && (
         <AudioPlayer src={data.audio_url} title={data.title} lang={lang} />
+      )}
+
+      {/* Cover image */}
+      {data.cover_image_url && (
+        <CoverImageSection
+          imageUrl={data.cover_image_url}
+          title={data.title}
+          category={data.category}
+          verse={data.anchor_verse}
+          lang={lang}
+        />
       )}
 
       {/* REFLEXÃO */}
