@@ -892,14 +892,27 @@ export default function Devocional() {
       {/* ── 9. DIÁRIO ESPIRITUAL ── */}
       {!isViewingPast && (
         <div className="mt-6 rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-2.5">
-            <PenLine className="h-4 w-4 text-primary" />
-            <p className="text-sm font-bold text-foreground">{labels.journal[lang]}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <PenLine className="h-4 w-4 text-primary" />
+              <p className="text-sm font-bold text-foreground">{labels.journal[lang]}</p>
+            </div>
+            {noteSavedAt && (
+              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                <Check className="h-3 w-3 text-green-600" />
+                {noteSavedAt}
+              </span>
+            )}
+            {savingNote && (
+              <span className="text-[10px] text-muted-foreground italic">
+                {lang === 'PT' ? 'Salvando...' : lang === 'ES' ? 'Guardando...' : 'Saving...'}
+              </span>
+            )}
           </div>
           <p className="text-xs text-muted-foreground">{labels.journalSub[lang]}</p>
           <textarea
             value={personalNote}
-            onChange={(e) => setPersonalNote(e.target.value)}
+            onChange={(e) => handleNoteChange(e.target.value)}
             placeholder={labels.journalPlaceholder[lang]}
             rows={4}
             className="w-full px-4 py-3 rounded-xl border border-border bg-background font-serif text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
