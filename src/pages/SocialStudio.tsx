@@ -47,6 +47,9 @@ const headings: Record<L, Record<string, string>> = {
     goCreate: 'Ir para Criar',
     generateAnother: 'Gerar Outro',
     designPanel: 'Design',
+    igClassic: 'Instagram',
+    xThread: 'X Thread',
+    artStyle: 'Estilo',
   },
   EN: {
     title: '🎨 Social Studio',
@@ -65,6 +68,9 @@ const headings: Record<L, Record<string, string>> = {
     goCreate: 'Go to Create',
     generateAnother: 'Generate Another',
     designPanel: 'Design',
+    igClassic: 'Instagram',
+    xThread: 'X Thread',
+    artStyle: 'Style',
   },
   ES: {
     title: '🎨 Estudio Social',
@@ -83,6 +89,9 @@ const headings: Record<L, Record<string, string>> = {
     goCreate: 'Ir a Crear',
     generateAnother: 'Generar Otro',
     designPanel: 'Diseño',
+    igClassic: 'Instagram',
+    xThread: 'X Thread',
+    artStyle: 'Estilo',
   },
 };
 
