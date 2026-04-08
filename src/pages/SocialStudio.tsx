@@ -111,7 +111,7 @@ export default function SocialStudio() {
   const h = headings[lang];
 
   const [activeTab, setActiveTab] = useState<string>('create');
-  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('4:5');
   const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [verse, setVerse] = useState<VerseData | null>(null);
@@ -122,6 +122,7 @@ export default function SocialStudio() {
   const [galleryRefresh, setGalleryRefresh] = useState(0);
   const [showDesignPanel, setShowDesignPanel] = useState(true);
   const [canvasText, setCanvasText] = useState<SlideData | null>(null);
+  const [artStyle, setArtStyle] = useState<ArtStyle>('instagram');
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
     fontFamily: "'Cormorant Garamond', 'Georgia', serif",
