@@ -177,7 +177,7 @@ export default function Upgrade() {
       };
       if (plan.planKey === 'igreja' && extraSeats > 0) {
         body.extraSeats = extraSeats;
-        body.stripeAddonPriceId = pricing.addon.id;
+        body.stripeAddonPriceId = pricing.addon_seat.id;
       }
       const { data, error } = await supabase.functions.invoke('create-checkout', { body });
       if (error) {
