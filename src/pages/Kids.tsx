@@ -284,6 +284,16 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
                 <p key={i} className="mb-3">{p}</p>
               ))}
             </div>
+
+            {/* Lesson card */}
+            {lesson && (
+              <div className="bg-accent/10 border-l-4 border-primary rounded-r-xl p-4 mt-4">
+                <p className="text-sm">
+                  <span className="font-bold text-primary">💡 {lang === 'PT' ? 'Lição' : lang === 'ES' ? 'Lección' : 'Lesson'}:</span>{' '}
+                  <span className="text-foreground/85">{lesson}</span>
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Actions */}
