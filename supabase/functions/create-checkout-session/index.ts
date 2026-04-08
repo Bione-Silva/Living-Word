@@ -64,6 +64,8 @@ Deno.serve(async (req) => {
       { price: priceId, quantity: 1 },
     ];
 
+    const checkoutMode = interval === 'one_time' ? 'payment' : 'subscription';
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: lineItems,
