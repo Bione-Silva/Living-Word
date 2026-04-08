@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Trophy, Zap, Timer, CheckCircle2, XCircle, Loader2, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { Leaderboard } from '@/components/quiz/Leaderboard';
+import { DailyBonusCard } from '@/components/quiz/DailyBonusCard';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -224,6 +225,9 @@ Return ONLY valid JSON array: [{"question":"...","options":["A","B","C","D"],"co
       {/* HUB */}
       {phase === 'hub' && (
         <div className="space-y-4">
+          <DailyBonusCard onXpClaimed={(xp) => {
+            if (scoreData) setScoreData({ ...scoreData, total_xp: scoreData.total_xp + xp, level: Math.floor((scoreData.total_xp + xp) / 100) + 1 });
+          }} />
           <Leaderboard />
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {categories.map(cat => (
