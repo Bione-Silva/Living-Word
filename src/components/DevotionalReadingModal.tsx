@@ -126,7 +126,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
         </div>
 
         {/* Scrollable content */}
-        <ScrollArea className="flex-1 min-h-0">
+        <ScrollArea className="flex-1 min-h-0 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 160px)' }}>
           <div ref={contentRef} className="px-5 sm:px-8 py-6 space-y-6" style={{ backgroundColor: colors.bg }}>
             {/* Title + date + category */}
             <div>
