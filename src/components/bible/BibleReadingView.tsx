@@ -355,6 +355,20 @@ export function BibleReadingView({
           {next[lang]} <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
+
+      {/* Study Sidebar */}
+      <StudySidebar
+        open={studyOpen}
+        onOpenChange={setStudyOpen}
+        passage={studyPassage}
+        verseText={studyVerseText}
+        bookId={bookId}
+        chapter={chapter}
+        onNavigate={(bId, ch) => {
+          onChapterChange(ch);
+          setStudyOpen(false);
+        }}
+      />
     </div>
   );
 }
