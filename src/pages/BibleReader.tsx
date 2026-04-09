@@ -198,17 +198,27 @@ export default function BibleReader() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFavSidebarOpen(true)}
-            className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
             title={lang === 'PT' ? 'Favoritos' : lang === 'EN' ? 'Favorites' : 'Favoritos'}
           >
             <Star className="h-4 w-4 text-foreground" />
+            {favCount > 0 && (
+              <Badge className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center">
+                {favCount > 99 ? '99+' : favCount}
+              </Badge>
+            )}
           </button>
           <button
             onClick={() => scrollToTabs('notes')}
-            className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
             title={lang === 'PT' ? 'Notas' : lang === 'EN' ? 'Notes' : 'Notas'}
           >
             <MessageSquare className="h-4 w-4 text-foreground" />
+            {noteCount > 0 && (
+              <Badge className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center">
+                {noteCount > 99 ? '99+' : noteCount}
+              </Badge>
+            )}
           </button>
         </div>
       </div>
