@@ -796,7 +796,7 @@ export default function Devocional() {
           </div>
         )}
 
-        {/* ── 5. COVER IMAGE ── */}
+        {/* ── 5. IMAGEM DO DEVOCIONAL (portrait, competitor-style) ── */}
         {displayCover && (
           <div className="mx-5 sm:mx-8 mt-6 rounded-xl border p-5 space-y-4" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
             <div className="flex items-center gap-3">
@@ -809,23 +809,57 @@ export default function Devocional() {
               </div>
             </div>
             <div className="flex justify-center">
-              <div className="relative rounded-xl overflow-hidden shadow-lg w-full aspect-video max-w-lg">
+              <div className="relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm aspect-[3/4]">
+                {/* Background image */}
                 <img src={displayCover} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.05) 55%, transparent 70%)' }} />
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                  {displayCategory && (
-                    <span className="inline-flex items-center gap-1 bg-white/15 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
-                      ✦ {displayCategory}
-                    </span>
-                  )}
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-wider">Living Word</span>
+
+                {/* Gradient overlays for text readability */}
+                <div className="absolute inset-0" style={{
+                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 20%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.55) 85%, rgba(0,0,0,0.75) 100%)',
+                }} />
+
+                {/* Top: Brand */}
+                <div className="absolute top-5 left-0 right-0 flex items-center justify-center">
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-[0.25em] px-4 py-1"
+                    style={{ color: 'rgba(255,255,255,0.7)', borderTop: '1px solid rgba(255,255,255,0.25)', borderBottom: '1px solid rgba(255,255,255,0.25)' }}
+                  >
+                    Living Word
+                  </span>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col gap-2">
-                  <h3 className="text-white text-lg font-playfair font-bold leading-snug drop-shadow-lg">{displayTitle}</h3>
-                  {displayVerse && (
-                    <p className="text-white/80 text-xs italic leading-relaxed line-clamp-2 drop-shadow-md">
-                      &ldquo;{displayVerseText || displayVerse}&rdquo;
+
+                {/* Center: Title + Category */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+                  <h3
+                    className="font-playfair text-3xl sm:text-4xl font-black leading-tight text-white drop-shadow-lg"
+                    style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}
+                  >
+                    {displayTitle}
+                  </h3>
+                  {displayCategory && (
+                    <>
+                      <div className="flex items-center gap-3 mt-4 mb-1">
+                        <span className="h-px w-6" style={{ backgroundColor: 'rgba(255,255,255,0.4)' }} />
+                        <span className="text-white/50 text-xs">✦</span>
+                        <span className="h-px w-6" style={{ backgroundColor: 'rgba(255,255,255,0.4)' }} />
+                      </div>
+                      <span className="text-sm tracking-wider text-white/80 font-medium">{displayCategory}</span>
+                    </>
+                  )}
+                </div>
+
+                {/* Bottom: Verse */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 pt-10">
+                  {displayVerseText && (
+                    <p
+                      className="text-white/90 text-xs sm:text-sm italic leading-relaxed mb-1"
+                      style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
+                    >
+                      {displayVerseText}
                     </p>
+                  )}
+                  {displayVerse && (
+                    <p className="text-white/60 text-[11px] font-medium">&mdash; {displayVerse}</p>
                   )}
                 </div>
               </div>
