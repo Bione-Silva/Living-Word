@@ -73,6 +73,15 @@ export function BibleReadingView({
   const [favoritedVerses, setFavoritedVerses] = useState<Set<number>>(new Set());
   const [highlights, setHighlights] = useState<Record<number, string>>({});
   const [chapterPickerOpen, setChapterPickerOpen] = useState(false);
+  const [studyOpen, setStudyOpen] = useState(false);
+  const [studyPassage, setStudyPassage] = useState('');
+  const [studyVerseText, setStudyVerseText] = useState('');
+
+  const handleOpenStudy = (passage: string, verseText: string) => {
+    setStudyPassage(passage);
+    setStudyVerseText(verseText);
+    setStudyOpen(true);
+  };
 
   const name = getBookName(bookId, lang);
   const prev: Record<L, string> = { PT: 'Anterior', EN: 'Previous', ES: 'Anterior' };
