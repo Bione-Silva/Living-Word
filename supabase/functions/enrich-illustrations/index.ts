@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const IMAGE_MODEL = "gemini-2.0-flash";
+const IMAGE_MODEL = "gemini-2.5-flash";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
         Authorization: `Bearer ${geminiApiKey}`,
       },
       body: JSON.stringify({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         tools: [{
           type: "function",
           function: {
