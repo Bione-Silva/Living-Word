@@ -93,7 +93,7 @@ export function getTranslation(lang: L): string {
 }
 
 export function getTranslationLabel(lang: L): string {
-  if (lang === 'PT') return 'Almeida Revista e Corrigida';
+  if (lang === 'PT') return 'Nova Versão Internacional';
   if (lang === 'ES') return 'Reina Valera';
   return 'World English Bible (WEB)';
 }
