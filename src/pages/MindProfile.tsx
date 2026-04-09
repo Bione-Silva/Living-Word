@@ -10,6 +10,8 @@ import {
   Lock, Crown, Fingerprint, ScrollText, Sparkles,
   Shield, ChevronRight, Database, Cpu, BookMarked
 } from 'lucide-react';
+import { TheologyDNAChart } from '@/components/minds/TheologyDNAChart';
+} from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
 
