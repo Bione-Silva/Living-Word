@@ -23,9 +23,9 @@ import {
   Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain,
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon, Type,
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
-  HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
+  HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert, ChevronUp,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
-  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal, ChevronUp
+  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal,
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
