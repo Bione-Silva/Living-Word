@@ -35,6 +35,16 @@ const labels = {
     EN: 'Finding a word for you...',
     ES: 'Buscando una palabra para ti...',
   },
+  emptyTitle: {
+    PT: 'Como você está se sentindo?',
+    EN: 'How are you feeling?',
+    ES: '¿Cómo te sientes?',
+  },
+  emptyDesc: {
+    PT: 'Escolha um sentimento ou digite o que está no seu coração. Eu vou buscar uma palavra para você.',
+    EN: "Pick a feeling or type what\u2019s in your heart. I\u2019ll find a word for you.",
+    ES: 'Elige un sentimiento o escribe lo que hay en tu corazón. Buscaré una palabra para ti.',
+  },
 } satisfies Record<string, Record<L, string>>;
 
 const SYSTEM_PROMPT = (lang: L, userName?: string) =>
@@ -69,6 +79,19 @@ FORMATO: Responda sempre em Markdown puro. NUNCA retorne JSON.
 NUNCA escreva mais que um parágrafo curto por seção. Mantenha a resposta total em no máximo 200 palavras.
 Responda em ${lang === 'EN' ? 'English' : lang === 'ES' ? 'Spanish' : 'Portuguese'}.`;
 
+const emotionChips = [
+  { PT: 'Ansioso', EN: 'Anxious', ES: 'Ansioso', emoji: '😰' },
+  { PT: 'Triste', EN: 'Sad', ES: 'Triste', emoji: '😢' },
+  { PT: 'Sobrecarregado', EN: 'Overwhelmed', ES: 'Agobiado', emoji: '😩' },
+  { PT: 'Com medo', EN: 'Afraid', ES: 'Con miedo', emoji: '😨' },
+  { PT: 'Sozinho', EN: 'Lonely', ES: 'Solo', emoji: '😔' },
+  { PT: 'Cansado', EN: 'Tired', ES: 'Cansado', emoji: '😴' },
+  { PT: 'Sem esperança', EN: 'Hopeless', ES: 'Sin esperanza', emoji: '💔' },
+  { PT: 'Grato', EN: 'Grateful', ES: 'Agradecido', emoji: '🙏' },
+  { PT: 'Em paz', EN: 'At peace', ES: 'En paz', emoji: '🕊️' },
+  { PT: 'Confuso', EN: 'Confused', ES: 'Confundido', emoji: '😶‍🌫️' },
+] as const;
+
 export default function BomAmigo() {
   const { lang } = useLanguage();
   const { user, profile } = useAuth();
@@ -79,12 +102,10 @@ export default function BomAmigo() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-scroll to bottom on new messages
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
 
-  // Handle initial feeling from query param
   useEffect(() => {
     const feeling = searchParams.get('feeling');
     if (feeling && messages.length === 0 && user) {
@@ -113,11 +134,15 @@ export default function BomAmigo() {
       });
 
       if (error) throw error;
-
       const content = data?.content || 'Desculpe, não consegui gerar uma resposta.';
       setMessages(prev => [...prev, { role: 'assistant', content }]);
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.' : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.' : 'Sorry, an error occurred. Please try again.' }]);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.'
+          : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.'
+          : 'Sorry, an error occurred. Please try again.',
+      }]);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
@@ -145,6 +170,8 @@ export default function BomAmigo() {
     }
   };
 
+  const isEmpty = messages.length === 0 && !loading;
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-3xl mx-auto">
       {/* Header */}
@@ -152,8 +179,8 @@ export default function BomAmigo() {
         <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <div className="h-9 w-9 rounded-full bg-primary/15 flex items-center justify-center">
-          <Heart className="h-4 w-4 text-primary" />
+        <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center">
+          <Heart className="h-5 w-5 text-primary" />
         </div>
         <div>
           <h1 className="text-sm font-bold text-foreground">{labels.title[lang]}</h1>
@@ -163,8 +190,35 @@ export default function BomAmigo() {
 
       {/* Chat messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        {/* Empty state */}
+        {isEmpty && (
+          <div className="flex flex-col items-center justify-center h-full text-center px-6 animate-in fade-in duration-500">
+            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-5">
+              <Heart className="h-9 w-9 text-primary" />
+            </div>
+            <h2 className="text-lg font-bold text-foreground font-serif">{labels.emptyTitle[lang]}</h2>
+            <p className="text-sm text-muted-foreground mt-2 max-w-sm leading-relaxed">
+              {labels.emptyDesc[lang]}
+            </p>
+
+            {/* Emotion chips grid */}
+            <div className="flex flex-wrap justify-center gap-2 mt-6 max-w-md">
+              {emotionChips.map((chip) => (
+                <button
+                  key={chip.EN}
+                  onClick={() => sendMessage(chip[lang])}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-border bg-card text-sm text-foreground hover:border-primary hover:bg-primary/10 hover:shadow-sm active:scale-95 transition-all"
+                >
+                  <span className="text-base">{chip.emoji}</span>
+                  {chip[lang]}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
             <div className={`max-w-[85%] ${msg.role === 'user'
               ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-2.5'
               : 'bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3'
@@ -174,7 +228,6 @@ export default function BomAmigo() {
                   <div className="prose prose-sm dark:prose-invert max-w-none text-foreground [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
-                  {/* Action buttons */}
                   <div className="flex items-center gap-2 pt-1 border-t border-border/50">
                     <button
                       onClick={() => handleCopy(msg.content)}
@@ -197,44 +250,24 @@ export default function BomAmigo() {
           </div>
         ))}
 
-        {/* Loading indicator */}
         {loading && (
-          <div className="flex justify-start">
+          <div className="flex justify-start animate-in fade-in duration-300">
             <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {labels.thinking[lang]}
+                <div className="flex gap-1">
+                  <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:0ms]" />
+                  <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:150ms]" />
+                  <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:300ms]" />
+                </div>
+                <span className="text-xs">{labels.thinking[lang]}</span>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Emotion chips */}
-      {messages.length === 0 && !loading && (
-        <div className="shrink-0 px-4 pb-2 flex flex-wrap gap-2">
-          {[
-            { PT: 'Ansioso', EN: 'Anxious', ES: 'Ansioso', emoji: '😰' },
-            { PT: 'Triste', EN: 'Sad', ES: 'Triste', emoji: '😢' },
-            { PT: 'Sobrecarregado', EN: 'Overwhelmed', ES: 'Agobiado', emoji: '😩' },
-            { PT: 'Com medo', EN: 'Afraid', ES: 'Con miedo', emoji: '😨' },
-            { PT: 'Sozinho', EN: 'Lonely', ES: 'Solo', emoji: '😔' },
-            { PT: 'Cansado', EN: 'Tired', ES: 'Cansado', emoji: '😴' },
-            { PT: 'Grato', EN: 'Grateful', ES: 'Agradecido', emoji: '🙏' },
-          ].map((chip) => (
-            <button
-              key={chip.EN}
-              onClick={() => { setInput(chip[lang]); inputRef.current?.focus(); }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-background text-xs text-muted-foreground hover:border-primary hover:bg-primary/10 hover:text-primary transition-colors"
-            >
-              {chip.emoji} {chip[lang]}
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* Input area */}
-      <div className="shrink-0 border-t border-border px-4 py-3">
+      <div className="shrink-0 border-t border-border px-4 py-3 bg-background">
         <div className="flex items-end gap-2">
           <textarea
             ref={inputRef}
@@ -243,7 +276,7 @@ export default function BomAmigo() {
             onKeyDown={handleKeyDown}
             placeholder={labels.placeholder[lang]}
             rows={1}
-            className="flex-1 min-h-[44px] max-h-32 px-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+            className="flex-1 min-h-[44px] max-h-32 px-4 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
           />
           <button
             onClick={() => sendMessage(input)}
