@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw } from 'lucide-react';
 import { getBookName, getApiBookName, translationOptions, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
+import { StudySidebar } from './StudySidebar';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
