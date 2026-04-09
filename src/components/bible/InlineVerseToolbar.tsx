@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Star, Copy, Share2, Pencil, BookOpen, Palette } from 'lucide-react';
+import { Star, Copy, Share2, Pencil, BookOpen, Palette, FileText } from 'lucide-react';
 import { toast } from 'sonner';
-import type { L } from '@/lib/bible-data';
+import { getBookName, type L } from '@/lib/bible-data';
 
 const highlightColors = [
   { key: 'yellow', class: 'bg-yellow-400' },
@@ -15,7 +15,7 @@ const highlightColors = [
 ];
 
 const labels = {
-  copied: { PT: 'Versículo copiado!', EN: 'Verse copied!', ES: '¡Versículo copiado!' },
+  copied: { PT: 'Versículo(s) copiado(s)!', EN: 'Verse(s) copied!', ES: '¡Versículo(s) copiado(s)!' },
   favorited: { PT: 'Favoritado!', EN: 'Favorited!', ES: '¡Favorito!' },
   removed: { PT: 'Favorito removido', EN: 'Favorite removed', ES: 'Favorito eliminado' },
   shared: { PT: 'Link copiado!', EN: 'Link copied!', ES: '¡Enlace copiado!' },
@@ -24,23 +24,28 @@ const labels = {
   save: { PT: 'Salvar', EN: 'Save', ES: 'Guardar' },
   study: { PT: 'Estudo', EN: 'Study', ES: 'Estudio' },
   art: { PT: 'Arte', EN: 'Art', ES: 'Arte' },
+  blog: { PT: 'Blog', EN: 'Blog', ES: 'Blog' },
+  selected: { PT: 'selecionados', EN: 'selected', ES: 'seleccionados' },
 } satisfies Record<string, Record<L, string>>;
 
+interface VerseItem { verse: number; text: string; }
+
 interface Props {
-  verse: { verse: number; text: string };
+  /** All selected verses (multi-select) */
+  selectedVerses: VerseItem[];
   bookId: string;
   chapter: number;
   translationCode: string;
-  isFavorited: boolean;
-  onFavoriteToggle: () => void;
-  onHighlight: (color: string) => void;
+  favoritedVerses: Set<number>;
+  onFavoriteToggle: (verseNum: number) => void;
+  onHighlight: (color: string, verseNums: number[]) => void;
   onNoteSaved: () => void;
   onClose: () => void;
 }
 
 export function InlineVerseToolbar({
-  verse, bookId, chapter, translationCode,
-  isFavorited, onFavoriteToggle, onHighlight, onNoteSaved, onClose,
+  selectedVerses, bookId, chapter, translationCode,
+  favoritedVerses, onFavoriteToggle, onHighlight, onNoteSaved, onClose,
 }: Props) {
   const { lang } = useLanguage();
   const { user } = useAuth();
@@ -49,8 +54,22 @@ export function InlineVerseToolbar({
   const [noteText, setNoteText] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const verseRef = `${bookId} ${chapter}:${verse.verse}`;
-  const verseFullText = `${verse.text.trim()} (${verseRef})`;
+  const sorted = [...selectedVerses].sort((a, b) => a.verse - b.verse);
+  const firstVerse = sorted[0];
+  const lastVerse = sorted[sorted.length - 1];
+
+  // Build reference like "Genesis 3:1-5" or "Genesis 3:2"
+  const verseRange = sorted.length === 1
+    ? `${firstVerse.verse}`
+    : `${firstVerse.verse}-${lastVerse.verse}`;
+  const verseRef = `${getBookName(bookId, lang)} ${chapter}:${verseRange}`;
+  const combinedText = sorted.map(v => v.text.trim()).join(' ');
+  const verseFullText = `${combinedText} (${verseRef})`;
+
+  const verseNums = sorted.map(v => v.verse);
+
+  // Are ALL selected verses favorited?
+  const allFavorited = sorted.every(v => favoritedVerses.has(v.verse));
 
   const handleCopy = () => {
     navigator.clipboard.writeText(verseFullText);
@@ -68,28 +87,33 @@ export function InlineVerseToolbar({
 
   const handleFavorite = async () => {
     if (!user) return;
-    if (isFavorited) {
-      await supabase.from('bible_favorites')
-        .delete().eq('user_id', user.id).eq('book_id', bookId)
-        .eq('chapter_number', chapter).eq('verse_number', verse.verse);
-      toast.success(labels.removed[lang]);
-    } else {
-      await supabase.from('bible_favorites').insert({
-        user_id: user.id, book_id: bookId, chapter_number: chapter,
-        verse_number: verse.verse, verse_text: verse.text.trim(),
-        translation_code: translationCode, language: lang,
-      });
-      toast.success(labels.favorited[lang]);
+    for (const v of sorted) {
+      const isFav = favoritedVerses.has(v.verse);
+      if (allFavorited) {
+        // Remove all
+        await supabase.from('bible_favorites')
+          .delete().eq('user_id', user.id).eq('book_id', bookId)
+          .eq('chapter_number', chapter).eq('verse_number', v.verse);
+      } else if (!isFav) {
+        // Add missing
+        await supabase.from('bible_favorites').insert({
+          user_id: user.id, book_id: bookId, chapter_number: chapter,
+          verse_number: v.verse, verse_text: v.text.trim(),
+          translation_code: translationCode, language: lang,
+        });
+      }
+      onFavoriteToggle(v.verse);
     }
-    onFavoriteToggle();
+    toast.success(allFavorited ? labels.removed[lang] : labels.favorited[lang]);
   };
 
   const handleSaveNote = async () => {
     if (!user || !noteText.trim()) return;
     setSaving(true);
+    // Save note on first verse
     await supabase.from('bible_notes').insert({
       user_id: user.id, book_id: bookId, chapter_number: chapter,
-      verse_number: verse.verse, note_text: noteText.trim(),
+      verse_number: firstVerse.verse, note_text: noteText.trim(),
       translation_code: translationCode, language: lang,
     });
     toast.success(labels.noteSaved[lang]);
@@ -132,7 +156,7 @@ export function InlineVerseToolbar({
       {highlightColors.map(c => (
         <button
           key={c.key}
-          onClick={() => onHighlight(c.key)}
+          onClick={() => onHighlight(c.key, verseNums)}
           className={`w-5 h-5 rounded-full ${c.class} hover:scale-125 transition-transform active:scale-95`}
         />
       ))}
@@ -141,7 +165,7 @@ export function InlineVerseToolbar({
 
       {/* Actions */}
       <button onClick={handleFavorite} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Star className={`h-4 w-4 ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground'}`} />
+        <Star className={`h-4 w-4 ${allFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground'}`} />
       </button>
       <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-muted transition-colors">
         <Copy className="h-4 w-4 text-muted-foreground" />
@@ -155,7 +179,7 @@ export function InlineVerseToolbar({
 
       <div className="w-px h-4 bg-border mx-1" />
 
-      {/* Study & Art buttons */}
+      {/* Study, Art & Blog buttons */}
       <button
         onClick={() => { navigate('/estudo-biblico', { state: { passage: verseRef } }); onClose(); }}
         className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors"
@@ -164,11 +188,18 @@ export function InlineVerseToolbar({
         <span className="text-[11px] font-medium text-primary">{labels.study[lang]}</span>
       </button>
       <button
-        onClick={() => { navigate('/social-studio', { state: { verseText: verse.text.trim(), passage: verseRef } }); onClose(); }}
+        onClick={() => { navigate('/social-studio', { state: { verseText: combinedText, passage: verseRef } }); onClose(); }}
         className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors"
       >
         <Palette className="h-3.5 w-3.5 text-primary" />
         <span className="text-[11px] font-medium text-primary">{labels.art[lang]}</span>
+      </button>
+      <button
+        onClick={() => { navigate('/blog', { state: { passage: verseRef, verseText: combinedText } }); onClose(); }}
+        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors"
+      >
+        <FileText className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[11px] font-medium text-primary">{labels.blog[lang]}</span>
       </button>
     </div>
   );
