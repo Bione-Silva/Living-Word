@@ -54,7 +54,7 @@ export function InlineVerseToolbar({
   const [noteText, setNoteText] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const sorted = [...selectedVerses].sort((a, b) => a.verse - b.verse);
+  const sorted = (Array.isArray(selectedVerses) ? selectedVerses : []).sort((a, b) => a.verse - b.verse);
   const firstVerse = sorted[0];
   const lastVerse = sorted[sorted.length - 1];
 
