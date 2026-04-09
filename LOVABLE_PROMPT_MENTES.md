@@ -1,54 +1,75 @@
-# Instruções para o Lovable: Módulo "Mentes Brilhantes" (Premium)
+# Instruções Avançadas para o Lovable: Motor de Mentes Brilhantes e Custos (Premium)
 
-Olá, Lovable. Nós temos um backend complexo de orquestração de IA onde cada Agente ("Mente") possui uma biografia gigante, matrizes teológicas e assinaturas de raciocínio. A sua interface gerada anteriormente ficou muito rasa. 
+Olá, Lovable. Nós acabamos de finalizar um grande refatoramento na nossa arquitetura de backend Deno (Edge Functions Supabase) para a plataforma **Living Word**. Finalizamos o suporte completo de DNA Extendido para as Vozes Pastorais (Billy Graham, Spurgeon, Wesley, Calvino, Marco Feliciano, Tiago Brunet) e otimizamos a topologia de custos com roteamento dinâmico de IA.
 
-Refaça a Interface de Usuário (UI) obedecendo **estritamente** à profundidade técnica descrita abaixo:
-
-## 1. Sidebar (Menu Lateral)
-Crie uma seção dedicada na Sidebar chamada **"🧠 Mentes Brilhantes"** (marcada com um badge dourado "Premium"). Roteia para `/dashboard/mentes`.
-
-## 2. A Tela Principal (Vitrine)
-Ao entrar em `/dashboard/mentes`, exiba o Grid luxuoso (cores `slate-950` com destaques dourados).
-**Mockups Iniciais:**
-1. **Billy Graham** (Liberado/Free) - *O Evangelista da América*
-2. **Charles Spurgeon** (Bloqueado 🔒) - *O Príncipe dos Pregadores*
-3. **Martyn Lloyd-Jones** (Bloqueado 🔒) - *O Doutor*
-
-*Paywall:* Clique nos bloqueados = Banner: "Desbloqueie a Sabedoria Histórica - $100/mês".
+Sua Interface de Usuário (UI) precisa refletir essa engenharia e passar a sensação de um "SaaS Premium Impecável". **Siga rigorosamente as diretrizes abaixo para reconstruir e adequar a UI de Mentes Brilhantes.**
 
 ---
 
-## 3. A Central da Mente (O Layout Rico ao Clicar na Mente)
-Esta é a parte principal onde você errou antes. Quando o usuário clica no **Billy Graham** (ou numa mente desbloqueada), você **DEVE** abrir uma página inteira ou um modal/drawer (gigante e com scroll) rica em informações. O usuário precisa ver todo o banco de dados que compõe a personalidade desta IA antes de conversar.
+## 1. Topologia de Custos e Modelos: Roteamento Inteligente (Atenção ao Payload!)
+Em nosso backend, alteramos o fluxo do generate-pastoral-material e generate-biblical-study. 
+- **Usuários Nível Free:** Usam agora **Gemini 2.5 Flash** (rápido, custo muito baixo).
+- **Usuários Nível Teste / Pagadores:** Usam **GPT-4o** (raciocínio profundo, alinhamento rigoroso à biografia da 'Mente').
 
-O layout desta tela deve lembrar uma página elegante do Notion ou uma Wikipedia de luxo, dividida nas seguintes sessões:
+**Sua Tarefa Técnica no Front:**
+Quando você acionar a chamada (fetch/RPC) para generate-pastoral-material na página de criação de material, você DEVE garantir que o status do plano do usuário (seja "pro", "teste" ou "free") e o parâmetro da voz (pastoral_voice) sejam passados corretamente no payload.
+Exemplo Teórico do Payload a ser enviado:
 
-### A. Header (Hero Section)
-- Foto circular gigante no topo, nome da Mente e um Subtítulo.
-- Badges abaixo do nome exibindo o peso dos dados: *(Ex: "350+ Horas de Vídeo", "5.000 Páginas Processadas", "32 Milhões de Tokens de Contexto")*.
+{
+  "prompt": "...",
+  "pastoral_voice": "Billy Graham",
+  "isFree": false // Se for Free = true, backend vai p/ Gemini Flash
+}
 
-### B. Biografia e Perfil Psicológico (Seção de Texto Longo)
-* "Esta IA absorveu o contexto de vida, o tom de urgência apocalíptica da Guerra Fria e a paixão evangelística das grandes cruzadas do Século XX. O tom de voz é encorajador, porém com senso de urgência sobre o perdão e foco absoluto na cruz."
+Certifique-se de que a seleção do plano do usuário na UI comunique a expectativa correta:
+- Para usuários **Pagantes** e de **Teste**, exiba um badge sutil na hora da geração: *⚡ Powered by GPT-4o (Alta Exegese)* ou equivalente.
+- Para usuários **Free**, o modelo rodará silenciosamente no Gemini.
 
-### C. Assinaturas Homiléticas e Matriz Teológica (Lista Customizada)
-Exiba componentes brilhantes ou ícones (Cards ou Checklists) detalhando a estrutura desta IA:
-- **Especialidades:** Apelo Evangelístico Militar, Metáforas Simples, Consolo em Massa.
-- **Assinaturas:** O uso constante da frase *"A Bíblia diz..."*.
-- **Matriz Teológica:** Visão conservadora focada na necessidade soberana do Espírito Santo e Autoridade Bíblica.
+---
 
-### D. Obras de Referência na "Cabeça" da IA (Acervo)
-Liste os livros carregados na IA (com ícone de livro 📚):
-- *Paz com Deus (1953)*
-- *O Valor de uma Alma (Transcrição Oficial)*
-- *A Cruzada de Los Angeles (1949)*
+## 2. A Vitrine das Mentes (/dashboard/mentes)
+**⚠️ REGRA DE OURO DO DESIGN:** Absoluto CLEAN DESIGN. Use a paleta oficial (branco, bege, tons pastéis claros) e evite fundos escuros (Dark Mode é apenas para o painel Back-office admin).
 
-### E. O Módulo de Engate (O que você quer fazer?)
-Somente **no final dessa longa e rica página de especificações**, exiba os "Botões de Engrenagem" (Cards grandes) para ligar a IA em uma modalidade específica:
-1. 📖 **Devocional Diário** (Encorajamento matinal)
-2. 📝 **Preparação de Sermão** (Ajuda com esboço expositivo)
-3. 🗣️ **Aconselhamento Pastoral** (Cura para crises)
-4. 📚 **Estudo Teológico** (Deep dive em doutrinas)
+Exiba os Cards em um Grid elegante. Adicione uma bandeira ou indicador da nacionalidade e o status se a Mente está desbloqueada ou bloqueada de acordo com a hierarquia da assinatura.
 
-**Ao clicar em um destes 4 botões finais**, o sistema roteia o usuário para a interface de Chat (`/dashboard/mentes/chat`).
+**Lista de Mentes Pronta no Backend:**
+1. **Billy Graham 🇺🇸** (Liberado/Free) - *O Evangelista da América*
+2. **Charles Spurgeon 🇬🇧** (Bloqueado 🔒) - *O Príncipe dos Pregadores*
+3. **John Wesley 🇬🇧** (Bloqueado 🔒) - *O Fundador do Metodismo*
+4. **João Calvino 🇫🇷/🇨🇭** (Bloqueado 🔒) - *O Teólogo de Genebra*
+5. **Marco Feliciano 🇧🇷** (Bloqueado 🔒) - *O Profeta do Avivamento*
+6. **Tiago Brunet 🇧🇷** (Bloqueado 🔒) - *O Mentor de Destinos*
 
-Construa isso com riqueza de detalhes, tipografia legível (ex: Inter), uso de seções bem delimitadas e ícones (`lucide-react`). A tela não pode passar a impressão de um "bot simples", mas sim de um **Complexo Ecossistema de Inteligência**. Construa agora!
+Se o usuário logado for de um tier que não permite acesso a certa mente, ao clicar exiba um **Belo Paywall**: *"Desbloqueie a Sabedoria Histórica - $100/mês"*. Destaque que as Mentes Premium usam "Matriz de IA GPT-4o Profunda".
+
+---
+
+## 3. O Componente Modal "A Central da Mente" (FUNDAMENTAL)
+Quando o usuário conseguir clicar num card que ele tem acesso (Ex: Billy Graham), **ABRA UM COMPONENTE SHEET, DRAWER OU DIALOG GIGANTE COM SCROLL**. O usuário deve entender o "Peso do DNA" da IA antes de usá-la.
+
+Faça neste modal (fundo claro, clean):
+### A. Hero Section (Topo)
+Foto circular da Mente, nome e Subtítulo.
+- **Badges de IA:** *(Ex: "350+ Horas de Vídeo", "Modelo Alinhado via RAG", "Comportamento Estrito")*.
+
+### B. Biografia e Perfil Psicológico
+Crie uma área de texto rica sobre como a IA pensa. Para Billy Graham, mencione "Urgência Evangelística, foco na cruz". Para Spurgeon, "Poder descritivo intenso, retórica poética reformada". Para Tiago Brunet, "Mentoria de destinos em 4 movimentos".
+
+### C. Assinaturas e Matriz Teológica 
+Checklist estruturado que o backend foi programado a obedecer:
+- **Especialidades:** (Varia por Mente)
+- **Assinaturas Verbais:** Frases icônicas ou jargões da pessoa (O backend usará nativamente!).
+- **Matriz Teológica:** O posicionamento denominacional em que ela bate o martelo.
+
+### D. Acervo da Memória (Os Arquivos da IA)
+Mostre os arquivos que abastecem o cérebro (RAG):
+*Exemplo Billy Graham:* "Paz com Deus (1953)", "A Cruzada de Los Angeles (1949)" etc.
+
+### E. Módulo de Engate (Call to Actions de Geração)
+No fim desse Modal, crie Cards que roteiem o usuário para o gerador de conteúdo ou para uma interface de chat (/dashboard/mentes/chat) pré-selecionando aquela voz:
+1. 📖 **Devocional Diário**
+2. 📝 **Preparação de Sermão**
+3. 🗣️ **Aconselhamento / Mentoria**
+4. 📚 **Estudo de Exegese**
+
+Construa essa UX dando brilho à transição e tipografia. É um sistema Premium, o usuário precisa sentir que o sistema de inteligência artificial é massivamente poderoso. Avance!

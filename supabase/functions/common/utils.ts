@@ -71,13 +71,17 @@ export async function getAuthUser(req: Request) {
 }
 
 // ============================================================
-// Limites por Plano
+// Limites por Plano (DEPRECIADO — use credits.ts)
 // ============================================================
+// PLAN_LIMITS foi migrado para common/credits.ts
+// Use PLAN_CREDITS + checkAndDebitCredits() ao invés deste.
+// Mantido como stub para não quebrar imports legados.
+/** @deprecated Use PLAN_CREDITS de credits.ts */
 export const PLAN_LIMITS: Record<string, number> = {
-  free: 5,
-  pastoral: 40,
-  church: 200,
-  ministry: 500,
+  free: 500,
+  starter: 2000,
+  pro: 8000,
+  church: 10000,
 }
 
 // ============================================================

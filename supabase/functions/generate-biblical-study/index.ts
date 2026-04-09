@@ -5,6 +5,16 @@
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { getMenteDNA } from '../common/mentes_dna.ts'
+import {
+  checkAndDebitCredits,
+  checkRateLimit,
+  selectAIModel,
+  isGeminiModel,
+  estimateApiCostUsd,
+  getGenerationCost,
+  PLAN_CREDITS,
+} from '../common/credits.ts'
 
 // ─────────────────────────────────────────────────────────────
 // Tipos (espelhados do shared/types/biblicalStudy.ts)
@@ -24,47 +34,69 @@ interface BiblicalStudyInput {
 }
 
 interface BiblicalStudyOutput {
-  schema_version: '1.0'
-  title: string
-  bible_passage: string
-  central_idea: string
-  depth_level: DepthLevel
-  doctrine_line: string
-  language: string
-  caution_mode: boolean
-  sensitive_topic_detected?: string
-  summary: string
-  historical_context: { text: string; source_confidence: SourceConfidence }
-  literary_context: { genre: string; position_in_book: string; source_confidence: SourceConfidence }
-  text_structure: Array<{ section: string; verses: string; description: string }>
-  bible_text: Array<{ reference: string; text: string; version: string }>
-  exegesis: Array<{
-    focus: string
-    linguistic_note: string
-    theological_insight: string
-    source_confidence: SourceConfidence
-  }>
-  theological_interpretation: Array<{
-    perspective: string
-    interpretation: string
-    is_debated: boolean
-    sources?: string[]
-    source_confidence: SourceConfidence
-  }>
-  biblical_connections: Array<{
-    reference: string
-    relationship: string
-    note: string
-  }>
-  application: Array<{
-    context: string
-    application: string
-    practical_action: string
-  }>
-  reflection_questions: Array<{ question: string; target_audience?: string }>
-  conclusion: string
-  pastoral_warning: string
-  generated_at: string
+  metadata: {
+    versao_template: '1.0'
+    tipo_uso: string
+    duracao_estimada_min?: number
+    criado_em: string
+  }
+  ancora_espiritual: { oracao_abertura?: string }
+  passagem: {
+    referencia: string
+    texto: string
+    versao: string
+    genero: 'narrativa' | 'epistola' | 'lei' | 'profecia' | 'sabedoria' | 'salmo' | 'apocalipse'
+  }
+  contexto: {
+    historico: string
+    literario: string
+    canonico?: string
+  }
+  observacao: {
+    perguntas_5wh: Array<{ pergunta: string; resposta: string }>
+    palavras_chave: Array<{ palavra: string; explicacao: string }>
+    elementos_notaveis?: string
+  }
+  interpretacao: {
+    estudo_palavras?: Array<{ palavra: string; original?: string; significado: string }>
+    cruzamento_escrituras?: string[]
+    logica_interna?: string
+    significado_original: string
+  }
+  verdade_central: {
+    frase_central: string
+    proposicao_expandida?: string
+  }
+  conexao_cristologica?: {
+    como_aponta_para_cristo: string
+    tipo_conexao: 'tipologia' | 'promessa_cumprimento' | 'reflexo_carater' | 'aplicacao_direta' | 'proclamacao_evangelho'
+  }
+  aplicacao: {
+    crer: string
+    mudar: string
+    agir: string
+    reflexao_pessoal?: string
+  }
+  perguntas_discussao: {
+    observacao: string[]
+    interpretacao: string[]
+    aplicacao: string[]
+    bonus?: string
+  }
+  encerramento: {
+    oracao_sugerida: string
+    instrucao_lider?: string
+  }
+  notas_lider?: {
+    como_introduzir?: string
+    pontos_atencao?: string[]
+    erros_comuns?: string[]
+    recursos_adicionais?: string[]
+  }
+  
+  // Custom Living Word meta fields
+  caution_mode?: boolean
+  sensitive_topic_detected?: string | null
   rag_sources_used?: string[]
 }
 
@@ -97,7 +129,7 @@ function getDepthConfig(depth: DepthLevel) {
       questions: 3,
       rag_threshold: 0.8,
       has_linguistic_notes: false,
-      model: 'gpt-4o-mini',
+      model: 'gemini-2.5-flash',
     },
     intermediate: {
       exegesis_points: 4,
@@ -107,7 +139,7 @@ function getDepthConfig(depth: DepthLevel) {
       questions: 5,
       rag_threshold: 0.75,
       has_linguistic_notes: true,
-      model: 'gpt-4o-mini',
+      model: 'gemini-2.5-flash',
     },
     advanced: {
       exegesis_points: 6,
@@ -179,11 +211,8 @@ async function fetchCommentaryContext(
 // ─────────────────────────────────────────────────────────────
 
 const REQUIRED_KEYS = [
-  'schema_version', 'title', 'bible_passage', 'central_idea',
-  'historical_context', 'literary_context', 'text_structure',
-  'exegesis', 'theological_interpretation', 'biblical_connections',
-  'application', 'reflection_questions', 'conclusion',
-  'pastoral_warning', 'caution_mode',
+  'metadata', 'passagem', 'contexto', 'observacao', 'interpretacao',
+  'verdade_central', 'aplicacao', 'perguntas_discussao', 'encerramento'
 ] as const
 
 function validateOutput(data: unknown): { valid: boolean; error?: string } {
@@ -198,20 +227,13 @@ function validateOutput(data: unknown): { valid: boolean; error?: string } {
     }
   }
 
-  if (!Array.isArray(obj.exegesis) || (obj.exegesis as unknown[]).length < 1) {
-    return { valid: false, error: 'exegesis must be a non-empty array' }
+  // Basic structure checks
+  if (typeof obj.verdade_central !== 'object' || obj.verdade_central === null || typeof (obj.verdade_central as any).frase_central !== 'string') {
+    return { valid: false, error: 'verdade_central.frase_central is missing' }
   }
 
-  if (!Array.isArray(obj.reflection_questions) || (obj.reflection_questions as unknown[]).length < 3) {
-    return { valid: false, error: 'reflection_questions must have at least 3 items' }
-  }
-
-  if (typeof obj.title !== 'string' || obj.title.trim() === '') {
-    return { valid: false, error: 'title must be a non-empty string' }
-  }
-
-  if (typeof obj.central_idea !== 'string' || obj.central_idea.trim() === '') {
-    return { valid: false, error: 'central_idea must be a non-empty string' }
+  if (typeof obj.aplicacao !== 'object' || obj.aplicacao === null) {
+    return { valid: false, error: 'aplicacao is missing' }
   }
 
   return { valid: true }
@@ -229,121 +251,125 @@ function buildSystemPrompt(
   depthConfig: ReturnType<typeof getDepthConfig>,
 ): string {
   const cautionInstruction = cautionMode
-    ? `
-⚠️ CAUTION MODE ATIVADO — tópico sensível detectado: "${sensitiveTopicDetected}".
-Regras adicionais:
-- Use linguagem cuidadosa, acolhedora e nunca prescritiva.
-- Evite imperativo que possa soar como julgamento.
-- Saliente o cuidado pastoral e encaminhe para ajuda profissional quando cabível.
-- NUNCA minimize a dor ou trivialize o sofrimento humano.
-`
+    ? `\n⚠️ CAUTION MODE ATIVADO — tópico sensível detectado: "${sensitiveTopicDetected}".\nRegras adicionais:\n- Use linguagem cuidadosa, acolhedora e nunca prescritiva.\n- Evite imperativo que possa soar como julgamento.\n- Saliente o cuidado pastoral e encaminhe para ajuda profissional quando cabível.\n- NUNCA minimize a dor ou trivialize o sofrimento humano.\n`
     : ''
 
   const ragInstruction = ragContext
     ? `\nContexto histórico e comentarístico (RAG — use para enriquecer, NUNCA para contradizer o texto):\n${ragContext}\n`
     : ''
 
-  const linguisticNote = depthConfig.has_linguistic_notes
-    ? '- Em cada ponto de exegese, inclua notas linguísticas (hebraico, grego ou aramaico quando aplicável).'
-    : '- Neste nível básico, omita notas linguísticas avançadas.'
+  const menteDNA = getMenteDNA(input.pastoral_voice)
+  const voiceAuthBlock = menteDNA 
+    ? `\n---------------------------------------\nVOICE AUTHENTICATION & DNA (CRITICAL)\n---------------------------------------\n${menteDNA}\n\n⚠️ INSTRUÇÃO OBRIGATÓRIA: Como você está utilizando o DNA de uma Mente específica, você DEVE INICIAR a "verdade_central.frase_central" e o "encerramento.oracao_sugerida" identificando claramente que este estudo foi elaborado pelas lentes e o DNA teológico de ${input.pastoral_voice}. Molde de forma rígida todas as interpretações, vocabulários e reflexões ao estilo dessa Mente.\n`
+    : ''
 
-  return `Você é um copiloto pastoral teológico de alto nível, treinado para gerar estudos bíblicos completos, fiéis e pastoralmente responsáveis.
+  // Language mapping
+  let languageRule = ''
+  if (input.language === 'EN') {
+    languageRule = 'Use clear American English. Accessible to a small group leader without seminary training.'
+  } else if (input.language === 'ES') {
+    languageRule = 'Use español latinoamericano claro y accesible. Evite vocabulario teológico denso.'
+  } else {
+    languageRule = 'Use português brasileiro claro, direto e correto. Linguagem acessível ao líder de célula, não apenas ao pastor com seminário.'
+  }
 
-PRINCÍPIOS INEGOCIÁVEIS:
-1. Sempre parta do texto bíblico e seu contexto. O texto manda.
-2. NUNCA invente versículos ou referências. Se não souber, diga "passagem não localizada".
-3. Separe claramente: OBSERVAÇÃO (o que diz), INTERPRETAÇÃO (o que significava), APLICAÇÃO (o que exige hoje).
-4. Se uma interpretação for debatida entre scholars: diga explicitamente "Existem diferentes interpretações...".
-5. Não misture exegese com aplicação. A exegese precisa vir antes.
-6. A aplicação deve fluir da exegese, não do achismo.
-7. Sempre inclua o aviso pastoral: "Este material foi gerado por IA e deve ser revisado por um pastor ou teólogo."
+  return `Você é um teólogo evangélico com formação seminarista e experiência pastoral.
+Sua tarefa é gerar um Estudo Bíblico Estruturado completo baseado no texto bíblico fornecido,
+seguindo RIGOROSAMENTE o template EBS-EXPÓS v1.0.
 
-CONTEXTO DO USUÁRIO:
-- Passagem: ${input.bible_passage}
-- Tema (opcional): ${input.theme ?? 'não especificado'}
-- Idioma: ${input.language}
-- Versão bíblica: ${input.bible_version}
-- Doutrina: ${input.doctrine_line}
-- Tom pastoral: ${input.pastoral_voice}
-- Profundidade: ${input.depth_level}
+PASSAGEM: ${input.bible_passage}
+TEMA FOCO (se aplicável): ${input.theme ?? 'Nenhum específico. Foque no texto.'}
+MODO DE USO: estudo_biblico_v1
+VERSÃO BÍBLICA: ${input.bible_version}
+IDIOMA / RESTRIÇÃO: ${input.language}. ${languageRule}
 
-CONFIGURAÇÃO DA PROFUNDIDADE (${input.depth_level}):
-- Pontos de exegese: mínimo ${depthConfig.exegesis_points}
-- Interpretações teológicas: mínimo ${depthConfig.interpretations}
-- Conexões bíblicas: mínimo ${depthConfig.connections}
-- Pontos de aplicação: mínimo ${depthConfig.applications}
-- Perguntas de reflexão: mínimo ${depthConfig.questions}
-${linguisticNote}
+---
+
+REGRAS OBRIGATÓRIAS:
+1. NUNCA pule da leitura para a aplicação. A sequência é SEMPRE: Contexto → Observação → Interpretação → Verdade Central → Aplicação.
+2. Identifique o gênero literário antes de qualquer análise. Gêneros diferentes exigem regras hermenêuticas diferentes.
+3. O bloco de Interpretação deve responder: o que o AUTOR ORIGINAL quis comunicar ao leitor ORIGINAL? Não ao leitor de hoje ainda.
+4. A Verdade Central (Big Idea) deve ser uma única frase de até 20 palavras, declarativa, que resuma o que Deus está comunicando neste texto.
+5. A Aplicação deve ser específica, não genérica. "Ore mais" não é aplicação. "Separe 10 minutos esta semana para orar pela pessoa que você está evitando" É aplicação.
+6. Cruzamentos de Escritura devem ser relevantes e não decorativos.
+7. NUNCA imponha ao texto o que ele não diz (eisegese).
+8. As perguntas de discussão devem seguir a ordem: observação → interpretação → aplicação. Nunca misture.
+9. A Conexão Cristológica deve ser honesta com o gênero: nem forçada (alegoria artificial), nem omitida (texto no vácuo).
 ${cautionInstruction}
 ${ragInstruction}
+${voiceAuthBlock}
 
-FORMATO DE SAÍDA OBRIGATÓRIO — JSON PURO com schema_version "1.0":
-Retorne APENAS o JSON. Nenhum texto antes ou depois. Siga exatamente a estrutura abaixo:
-
+FORMATO DE SAÍDA OBRIGATÓRIO (JSON PURO):
+Retorne APENAS o JSON conforme o schema exato abaixo. Não use marcações Markdown envolvendo o JSON.
 {
-  "schema_version": "1.0",
-  "title": "título do estudo",
-  "bible_passage": "passagem exata",
-  "central_idea": "ideia central em 1-2 frases",
-  "depth_level": "${input.depth_level}",
-  "doctrine_line": "${input.doctrine_line}",
-  "language": "${input.language}",
-  "caution_mode": ${cautionMode},
-  "sensitive_topic_detected": ${sensitiveTopicDetected ? `"${sensitiveTopicDetected}"` : 'null'},
-  "summary": "resumo executivo do estudo",
-  "historical_context": {
-    "text": "contexto histórico detalhado",
-    "source_confidence": "high|medium|low"
+  "metadata": {
+    "versao_template": "1.0",
+    "tipo_uso": "geral",
+    "duracao_estimada_min": 60,
+    "criado_em": "${new Date().toISOString()}"
   },
-  "literary_context": {
-    "genre": "gênero literário",
-    "position_in_book": "posição no livro/cânon",
-    "source_confidence": "high|medium|low"
+  "ancora_espiritual": {
+    "oracao_abertura": "Sugestão de oração de abertura..."
   },
-  "text_structure": [
-    { "section": "nome da seção", "verses": "v.X-Y", "description": "descrição" }
-  ],
-  "bible_text": [
-    { "reference": "Passagem X:Y", "text": "texto completo do versículo", "version": "${input.bible_version}" }
-  ],
-  "exegesis": [
-    {
-      "focus": "versículo ou frase",
-      "linguistic_note": "análise linguística (hebraico/grego)",
-      "theological_insight": "contribuição teológica",
-      "source_confidence": "high|medium|low"
-    }
-  ],
-  "theological_interpretation": [
-    {
-      "perspective": "nome da perspectiva",
-      "interpretation": "interpretação detalhada",
-      "is_debated": false,
-      "sources": ["comentarista A"],
-      "source_confidence": "high|medium|low"
-    }
-  ],
-  "biblical_connections": [
-    {
-      "reference": "passagem relacionada",
-      "relationship": "typology|fulfillment|parallel|contrast|echo",
-      "note": "explicação da conexão"
-    }
-  ],
-  "application": [
-    {
-      "context": "vida pessoal|liderança|família|missão",
-      "application": "como se aplica",
-      "practical_action": "ação prática concreta"
-    }
-  ],
-  "reflection_questions": [
-    { "question": "pergunta reflexiva", "target_audience": "congregante|pastor|líder" }
-  ],
-  "conclusion": "conclusão pastoral do estudo",
-  "pastoral_warning": "Este material foi gerado por inteligência artificial com fins de estudo e apoio pastoral. Ele não substitui a orientação de um pastor, teólogo ou conselheiro cristão qualificado. Verifique sempre com as Escrituras e com lideranças maduras antes de ensinar ou aplicar este conteúdo.",
-  "generated_at": "${new Date().toISOString()}",
-  "rag_sources_used": []
+  "passagem": {
+    "referencia": "${input.bible_passage}",
+    "texto": "Texto completo da passagem na versão pedida",
+    "versao": "${input.bible_version}",
+    "genero": "narrativa|epistola|lei|profecia|sabedoria|salmo|apocalipse"
+  },
+  "contexto": {
+    "historico": "contexto histórico detalhado...",
+    "literario": "contexto literário...",
+    "canonico": "contexto canônico (opcional)"
+  },
+  "observacao": {
+    "perguntas_5wh": [
+      { "pergunta": "Quem?", "resposta": "..." },
+      { "pergunta": "O quê?", "resposta": "..." }
+    ],
+    "palavras_chave": [
+      { "palavra": "...", "explicacao": "..." }
+    ],
+    "elementos_notaveis": "Repetições, contrastes..."
+  },
+  "interpretacao": {
+    "estudo_palavras": [
+      { "palavra": "...", "original": "...", "significado": "..." }
+    ],
+    "cruzamento_escrituras": ["Passagem 1", "Passagem 2"],
+    "logica_interna": "...",
+    "significado_original": "Significado para o leitor original..."
+  },
+  "verdade_central": {
+    "frase_central": "A grande, única ideia com menos de 20 palavras.",
+    "proposicao_expandida": "Proposição em 2 a 4 frases..."
+  },
+  "conexao_cristologica": {
+    "como_aponta_para_cristo": "...",
+    "tipo_conexao": "tipologia|promessa_cumprimento|reflexo_carater|aplicacao_direta|proclamacao_evangelho"
+  },
+  "aplicacao": {
+    "crer": "O que crer...",
+    "mudar": "O que mudar...",
+    "agir": "Ação específica...",
+    "reflexao_pessoal": "Campo aberto opcional..."
+  },
+  "perguntas_discussao": {
+    "observacao": ["Pergunta ob 1", "Pergunta ob 2"],
+    "interpretacao": ["Pergunta int 1", "Pergunta int 2"],
+    "aplicacao": ["Pergunta app 1", "Pergunta app 2"],
+    "bonus": "Pergunta profunda bônus..."
+  },
+  "encerramento": {
+    "oracao_sugerida": "Oração de encerramento...",
+    "instrucao_lider": "Instrução..."
+  },
+  "notas_lider": {
+    "como_introduzir": "...",
+    "pontos_atencao": ["...", "..."],
+    "erros_comuns": ["...", "..."],
+    "recursos_adicionais": ["...", "..."]
+  }
 }`
 }
 
@@ -419,23 +445,33 @@ serve(async (req: Request) => {
       depth_level: body.depth_level ?? 'intermediate',
     }
 
-    // ── 3. Verificar limite do plano ──
+    // ── 3. Verificar plano e créditos ──
     const { data: userData } = await supabase
       .from('users')
-      .select('plan, generation_count_month, generation_reset_date')
+      .select('plan, credits_balance')
       .eq('id', user.id)
       .single()
 
-    const planLimits: Record<string, number> = {
-      free: 3, pastoral: 30, church: 100, ministry: 999,
-    }
-    const limit = planLimits[userData?.plan ?? 'free'] ?? 3
-
-    if ((userData?.generation_count_month ?? 0) >= limit) {
+    // Rate Limiting
+    const rateLimitResult = await checkRateLimit(supabaseService, user.id, userData?.plan ?? 'free', 'generate-biblical-study')
+    if (!rateLimitResult.allowed) {
       return new Response(JSON.stringify({
-        error: 'generation_limit_reached',
-        message: 'Você atingiu o limite de estudos do seu plano. Faça upgrade para continuar.',
+        error: 'rate_limit_exceeded',
+        retry_after_seconds: rateLimitResult.retryAfterSeconds,
+        detail: rateLimitResult.error,
       }), { status: 429, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    // Debitar créditos (30 créditos por estudo)
+    const studyCost = getGenerationCost('study')
+    const creditResult = await checkAndDebitCredits(supabaseService, user.id, 'study', undefined, studyCost)
+    if (!creditResult.success) {
+      return new Response(JSON.stringify({
+        error: 'insufficient_credits',
+        credits_required: studyCost,
+        credits_remaining: creditResult.remaining,
+        message: `Você precisa de ${studyCost} créditos para gerar um estudo. Restam ${creditResult.remaining}.`,
+      }), { status: 402, headers: { 'Content-Type': 'application/json' } })
     }
 
     // ── 4. Detectar tópico sensível → Caution Mode ──
@@ -468,33 +504,55 @@ serve(async (req: Request) => {
     const MAX_RETRIES = 2
 
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${openaiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: depthConfig.model,
-          temperature: 0.4,  // baixo para consistência teológica
-          response_format: { type: 'json_object' },
-          messages: [
-            { role: 'system', content: systemPrompt },
-            {
-              role: 'user',
-              content: `Gere o estudo bíblico completo e estruturado para: "${input.bible_passage}"${input.theme ? ` com foco em: "${input.theme}"` : ''}. Retorne apenas o JSON conforme o schema definido.`,
-            },
-          ],
-        }),
-      })
+      let rawContent = ""
+      const userPrompt = `Gere o estudo bíblico completo e estruturado para: "${input.bible_passage}"${input.theme ? ` com foco em: "${input.theme}"` : ''}. Retorne apenas o JSON conforme o schema definido.`
 
-      if (!aiRes.ok) {
-        const err = await aiRes.json()
-        throw new Error(`OpenAI error: ${JSON.stringify(err)}`)
+      if (depthConfig.model === 'gemini-2.5-flash') {
+        const geminiKey = Deno.env.get("GEMINI_API_KEY")!
+        const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ parts: [{ text: userPrompt }] }],
+            generationConfig: { 
+              responseMimeType: "application/json",
+              temperature: 0.4
+            }
+          })
+        })
+
+        if (!aiRes.ok) {
+          const err = await aiRes.json()
+          throw new Error(`Gemini error: ${JSON.stringify(err)}`)
+        }
+        const aiData = await aiRes.json()
+        rawContent = aiData.candidates?.[0]?.content?.parts?.[0]?.text ?? ""
+      } else {
+        const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${openaiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: depthConfig.model,
+            temperature: 0.4,
+            response_format: { type: 'json_object' },
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt },
+            ],
+          }),
+        })
+
+        if (!aiRes.ok) {
+          const err = await aiRes.json()
+          throw new Error(`OpenAI error: ${JSON.stringify(err)}`)
+        }
+        const aiData = await aiRes.json()
+        rawContent = aiData.choices[0]?.message?.content ?? ""
       }
-
-      const aiData = await aiRes.json()
-      const rawContent = aiData.choices[0]?.message?.content
 
       let parsed: unknown
       try {
@@ -512,7 +570,6 @@ serve(async (req: Request) => {
 
       // Output válido
       studyOutput = parsed as BiblicalStudyOutput
-      studyOutput.generated_at = new Date().toISOString()
       studyOutput.rag_sources_used = ragSources
       break
     }
@@ -575,23 +632,34 @@ serve(async (req: Request) => {
       generation_time_ms: generationTimeMs,
       theology_guardrails_triggered: cautionMode,
       sensitive_topic_detected: sensitiveTopicDetected,
-      // custo estimado: input ~2k tokens + output ~4k tokens
-      cost_usd: depthConfig.model === 'gpt-4o' ? 0.000060 : 0.000012,
+      cost_usd: estimateApiCostUsd(depthConfig.model, 2000, 4000),
+      credits_consumed: studyCost,
     })
 
-    // Incrementar contador de uso do usuário
-    await supabaseService
-      .from('users')
-      .update({ generation_count_month: (userData?.generation_count_month ?? 0) + 1 })
-      .eq('id', user.id)
+    const calculatedCostUsd = estimateApiCostUsd(depthConfig.model, 2000, 4000)
 
-    // ── 9. Retornar JSON limpo ──
     return new Response(JSON.stringify({
       success: true,
       material_id: material.id,
       caution_mode: cautionMode,
       sensitive_topic_detected: sensitiveTopicDetected,
       study: studyOutput,
+      credits_consumed: studyCost,
+      credits_remaining: creditResult.remaining,
+      generation_meta: {
+        model: depthConfig.model,
+        total_tokens: 6000,
+        total_cost_usd: calculatedCostUsd,
+        elapsed_ms: generationTimeMs,
+        per_format: {
+          biblical_study: {
+            tokens: 6000,
+            words: JSON.stringify(studyOutput).split(/\s+/).filter(Boolean).length,
+            cost_usd: calculatedCostUsd,
+            attempts: schemaErrors.length + 1
+          }
+        }
+      }
     }), {
       status: 200,
       headers: {

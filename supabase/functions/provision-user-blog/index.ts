@@ -72,6 +72,12 @@ serve(async (req: Request) => {
     const name = user_metadata.full_name || user_metadata.name || email?.split("@")[0] || "Pastor";
     const language = user_metadata.language || "PT";
     const doctrine_line = user_metadata.doctrine_line || "evangelical_general";
+    
+    // Capturar dados de personalização do wizard
+    const tone = user_metadata.tone || body.tone || "welcoming";
+    const theme_color = user_metadata.theme_color || body.theme_color || "#2d3748";
+    const font_family = user_metadata.font_family || body.font_family || "Inter";
+    const layout_style = user_metadata.layout_style || body.layout_style || "modern";
 
     // 2. Usar service_role para operações admin (provisioning é server-side)
     const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -119,7 +125,10 @@ serve(async (req: Request) => {
     if (!existingProfile) {
       await adminClient.from("user_editorial_profile").insert({
         user_id,
-        tone: "welcoming",
+        tone: tone,
+        theme_color: theme_color,
+        font_family: font_family,
+        layout_style: layout_style,
         active_sites: [{
           url: blogUrl,
           name: `Blog de ${name}`,
@@ -140,6 +149,7 @@ serve(async (req: Request) => {
       passage: liturgical.passage,
       theme: liturgical.theme,
       articleType: "devotional_seasonal",
+      adminClient,
     });
 
     // 6. Gerar artigo 2: passagem clássica de encorajamento
@@ -150,12 +160,24 @@ serve(async (req: Request) => {
       passage: WELCOME_PASSAGE.passage,
       theme: WELCOME_PASSAGE.theme,
       articleType: "devotional_welcome",
+      adminClient,
     });
 
-    // 7. Salvar ambos os artigos no banco
+    // 6.5 Gerar artigo 3: Provérbios
+    const article3 = await generateWelcomeArticle({
+      name,
+      language,
+      doctrine_line,
+      passage: "Provérbios 3:5-6",
+      theme: "Confiar no Senhor além do nosso próprio entendimento",
+      articleType: "devotional_wisdom",
+      adminClient,
+    });
+
+    // 7. Salvar os 3 artigos no banco
     const savedArticles = [];
 
-    for (const article of [article1, article2]) {
+    for (const article of [article1, article2, article3]) {
       // Salvar material
       const { data: material } = await adminClient.from("materials").insert({
         user_id,
@@ -196,7 +218,7 @@ serve(async (req: Request) => {
     }
 
     // 8. Registrar log de geração (custo de onboarding)
-    for (const article of [article1, article2]) {
+    for (const article of [article1, article2, article3]) {
       await adminClient.from("generation_logs").insert({
         user_id,
         language,
@@ -244,6 +266,7 @@ interface WelcomeArticleInput {
   passage: string;
   theme: string;
   articleType: string;
+  adminClient?: any;
 }
 
 interface WelcomeArticleOutput {
@@ -258,6 +281,17 @@ interface WelcomeArticleOutput {
   generation_time_ms?: number;
 }
 
+// Helper para base64 -> Uint8Array
+const decodeBase64 = (b64: string) => {
+  const binString = atob(b64);
+  const size = binString.length;
+  const bytes = new Uint8Array(size);
+  for (let i = 0; i < size; i++) {
+    bytes[i] = binString.charCodeAt(i);
+  }
+  return bytes;
+};
+
 async function generateWelcomeArticle(input: WelcomeArticleInput): Promise<WelcomeArticleOutput> {
   const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
@@ -269,32 +303,33 @@ async function generateWelcomeArticle(input: WelcomeArticleInput): Promise<Welco
 
   const langName = languageNames[input.language] || "português brasileiro";
 
-  const prompt = `Você é um escritor cristão pastoral experiente. Gere um devocional breve e inspirador em ${langName}.
+  const prompt = `Você é um escritor cristão pastoral. Gere um artigo profundo e SEO-otimizado (Omniseen standards) em ${langName}.
 
 PASSAGEM BÍBLICA: ${input.passage}
 TEMA: ${input.theme}
 LINHA DOUTRINÁRIA: ${input.doctrine_line}
 AUTOR: ${input.name}
 
-INSTRUÇÕES:
-- Escreva um devocional de 400-600 palavras
-- Tom acolhedor e pastoral, como se estivesse conversando com um amigo na fé
-- Comece com a citação bíblica
-- Faça uma reflexão prática e aplicável ao dia a dia
-- Termine com uma oração curta
-- Marque citações bíblicas com [CITAÇÃO DIRETA]
-- Respeite a linha doutrinária informada
+INSTRUÇÕES (CRÍTICAS):
+1. **EXPANSION MANDATE:** O artigo deve ter entre 400-800 palavras.
+2. **OMNISEEN EDITORIAL STRUCTURE:** O 'body' deve usar Markdown premium:
+   - **USE MARKDOWN STRICTLY:** Você deve obrigatóriamente usar "##" para cabeçalhos H2 e "###" para H3. NUNCA substitua os cabeçalhos H2 por texto normal em negrito! Não use H1.
+   - **MANDATORY HERO IMAGE (1):** Adicione EXATAMENTE UM (1) placeholder de imagem no topo do texto (antes de qualquer coisa): [IMAGE_PROMPT: <Descreva um prompt fotorealista e cinemático em inglês para Gemini Imagen>]
+   - Use blockquotes (> ) para ênfase bíblica.
+   - Termine sempre com uma seção "## Perguntas Frequentes" com 3 perguntas comuns sobre o tema.
+3. Marque citações com [CITAÇÃO DIRETA].
+4. Tom acolhedor e pastoral.
 
 FORMATO DE SAÍDA (JSON):
 {
-  "title": "título atraente para o devocional",
+  "title": "título atraente",
   "meta_description": "descrição de 150 chars para SEO",
-  "body": "corpo completo do devocional em markdown",
+  "body": "corpo completo em markdown com a hero image",
   "tags": ["tag1", "tag2", "tag3"],
-  "word_count": 500
+  "word_count": 600
 }
 
-Retorne APENAS o JSON válido, sem texto antes ou depois.`;
+Retorne APENAS o JSON válido.`;
 
   const startTime = Date.now();
 
@@ -320,6 +355,48 @@ Retorne APENAS o JSON válido, sem texto antes ou depois.`;
       tags: [input.theme, input.passage.split(" ")[0]],
       word_count: content.split(/\s+/).length,
     };
+  }
+
+  // Gemini Imagen Hero Image Processing
+  const imagePromptRegex = /\[IMAGE_PROMPT:\s*(.+?)\]/;
+  const match = parsed.body?.match(imagePromptRegex);
+  const geminiKey = Deno.env.get("GEMINI_API_KEY");
+
+  if (match && geminiKey && input.adminClient) {
+    const fullTag = match[0];
+    const imageDesc = match[1];
+
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${geminiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          instances: [{ prompt: `An editorial blog illustration, photorealistic, cinematic lighting: ${imageDesc}` }],
+          parameters: { sampleCount: 1, aspectRatio: "16:9", outputOptions: { mimeType: "image/jpeg" } }
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        const b64 = data.predictions?.[0]?.bytesBase64Encoded;
+        if (b64) {
+          const fileName = `${crypto.randomUUID()}.jpg`;
+          const filePath = `generated/${fileName}`;
+          await input.adminClient.storage.from("images").upload(filePath, decodeBase64(b64), { contentType: "image/jpeg" });
+          const { data: publicUrlData } = input.adminClient.storage.from("images").getPublicUrl(filePath);
+          parsed.body = parsed.body.replace(fullTag, `\n\n![Ilustração](${publicUrlData.publicUrl})\n\n`);
+        } else {
+          parsed.body = parsed.body.replace(fullTag, `\n\n![Ilustração de Capa](https://via.placeholder.com/1024x576?text=Fallback+API+Gemini)\n\n`);
+        }
+      } else {
+        parsed.body = parsed.body.replace(fullTag, `\n\n![Ilustração de Capa](https://via.placeholder.com/1024x576?text=Fallback+API+Gemini+Error)\n\n`);
+      }
+    } catch(e) {
+      console.error("Gemini Imagen erro in Onboarding:", e);
+      parsed.body = parsed.body.replace(fullTag, `\n\n![Ilustração de Capa](https://via.placeholder.com/1024x576?text=Catch+Gemini+Error)\n\n`);
+    }
+  } else if (match) {
+    parsed.body = parsed.body.replace(match[0], `\n\n![Ilustração de Capa](https://via.placeholder.com/1024x576?text=Gemini+Key+Missing)\n\n`);
   }
 
   return {
