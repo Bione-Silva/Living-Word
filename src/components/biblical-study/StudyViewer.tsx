@@ -47,7 +47,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
           )}
         </CardContent>
       </Card>
-      )
+      )}
 
       {/* ── Âncora Espiritual ── */}
       {study.ancora_espiritual?.oracao_abertura && (
