@@ -142,6 +142,7 @@ export default function BibleReader() {
                 onHome={() => setReadView('books')}
                 onChapterChange={setSelectedChapter}
                 onTabsRefresh={() => setTabsRefreshKey(k => k + 1)}
+                onTranslationChange={setTranslation}
               />
             )}
           </>
