@@ -2,9 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, Home, Loader2, Star } from 'lucide-react';
-import { getBookName, getTranslationLabelByCode, type L } from '@/lib/bible-data';
-import { InlineVerseToolbar } from './InlineVerseToolbar';
+import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown } from 'lucide-react';
+import { getBookName, getTranslationLabelByCode, translationOptions, type L } from '@/lib/bible-data';
+import { VerseContextMenu } from './VerseContextMenu';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 
 interface Verse { verse: number; text: string; }
 
@@ -17,6 +20,7 @@ interface Props {
   onHome: () => void;
   onChapterChange: (ch: number) => void;
   onTabsRefresh: () => void;
+  onTranslationChange?: (code: string) => void;
 }
 
 const highlightClassMap: Record<string, string> = {
@@ -28,7 +32,7 @@ const highlightClassMap: Record<string, string> = {
 
 export function BibleReadingView({
   bookId, chapter, totalChapters, translation,
-  onBack, onHome, onChapterChange, onTabsRefresh,
+  onBack, onHome, onChapterChange, onTabsRefresh, onTranslationChange,
 }: Props) {
   const { lang } = useLanguage();
   const { user } = useAuth();
@@ -38,11 +42,11 @@ export function BibleReadingView({
   const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
   const [favoritedVerses, setFavoritedVerses] = useState<Set<number>>(new Set());
   const [highlights, setHighlights] = useState<Record<number, string>>({});
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const name = getBookName(bookId, lang);
   const prev = { PT: 'Anterior', EN: 'Previous', ES: 'Anterior' };
   const next = { PT: 'Próximo', EN: 'Next', ES: 'Siguiente' };
+  const options = translationOptions[lang];
 
   const fetchChapter = useCallback(async () => {
     setLoading(true); setError(''); setVerses([]); setSelectedVerse(null);
@@ -92,20 +96,11 @@ export function BibleReadingView({
     setHighlights(prev => ({ ...prev, [selectedVerse]: color }));
   };
 
-  // Close toolbar on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setSelectedVerse(null);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+  const selectedVerseObj = selectedVerse !== null ? verses.find(v => v.verse === selectedVerse) : null;
 
   return (
-    <div ref={containerRef} className="space-y-4">
-      {/* Breadcrumb */}
+    <div className="space-y-4">
+      {/* Breadcrumb + translation selector */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-sm">
           <button onClick={onHome} className="p-1.5 rounded-md hover:bg-muted transition-colors">
@@ -115,15 +110,20 @@ export function BibleReadingView({
             📖 {name} <ChevronRight className="h-3 w-3 text-muted-foreground" />
           </button>
           <span className="px-2 py-1 rounded-md bg-muted/50 text-foreground text-xs font-medium">
-            Cap {chapter} <ChevronRight className="h-3 w-3 text-muted-foreground inline" />
+            Cap {chapter}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-1 rounded-md border border-border text-xs text-muted-foreground">
-            {getTranslationLabelByCode(translation).split(' ')[0] || translation}
-          </span>
-          <Star className="h-4 w-4 text-muted-foreground" />
-        </div>
+        {/* Translation selector */}
+        <Select value={translation} onValueChange={(v) => onTranslationChange?.(v)}>
+          <SelectTrigger className="w-auto h-8 px-3 gap-1 text-xs font-medium border-border bg-muted/50">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map(o => (
+              <SelectItem key={o.code} value={o.code}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Prev/Next */}
@@ -159,39 +159,18 @@ export function BibleReadingView({
               const hlClass = highlights[v.verse] ? highlightClassMap[highlights[v.verse]] || '' : '';
 
               return (
-                <div key={v.verse}>
-                  <span
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVerse(isSelected ? null : v.verse); }}
-                    className={`cursor-pointer rounded-lg px-1 py-0.5 transition-all ${
-                      isSelected
-                        ? 'bg-primary/10 ring-1 ring-primary/30'
-                        : hlClass || 'hover:bg-primary/5'
-                    }`}
-                  >
-                    <sup className="text-primary/60 font-sans text-[11px] font-bold mr-1 select-none">{v.verse}</sup>
-                    {v.text.trim()}{' '}
-                  </span>
-                  {isSelected && (
-                    <InlineVerseToolbar
-                      verse={v}
-                      bookId={bookId}
-                      chapter={chapter}
-                      translationCode={translation}
-                      isFavorited={favoritedVerses.has(v.verse)}
-                      onFavoriteToggle={() => {
-                        setFavoritedVerses(prev => {
-                          const next = new Set(prev);
-                          if (next.has(v.verse)) next.delete(v.verse); else next.add(v.verse);
-                          return next;
-                        });
-                        onTabsRefresh();
-                      }}
-                      onHighlight={handleHighlight}
-                      onNoteSaved={onTabsRefresh}
-                      onClose={() => setSelectedVerse(null)}
-                    />
-                  )}
-                </div>
+                <span
+                  key={v.verse}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVerse(isSelected ? null : v.verse); }}
+                  className={`cursor-pointer rounded-lg px-1 py-0.5 transition-all inline ${
+                    isSelected
+                      ? 'bg-primary/10 ring-1 ring-primary/30'
+                      : hlClass || 'hover:bg-primary/5'
+                  }`}
+                >
+                  <sup className="text-primary/60 font-sans text-[11px] font-bold mr-1 select-none">{v.verse}</sup>
+                  {v.text.trim()}{' '}
+                </span>
               );
             })}
           </div>
@@ -216,6 +195,28 @@ export function BibleReadingView({
           {next[lang]} <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
+
+      {/* Verse context menu (bottom sheet) */}
+      {selectedVerse !== null && selectedVerseObj && (
+        <VerseContextMenu
+          verse={selectedVerseObj}
+          bookId={bookId}
+          chapter={chapter}
+          translationCode={translation}
+          isFavorited={favoritedVerses.has(selectedVerse)}
+          onClose={() => setSelectedVerse(null)}
+          onFavoriteToggle={() => {
+            setFavoritedVerses(prev => {
+              const next = new Set(prev);
+              if (next.has(selectedVerse)) next.delete(selectedVerse); else next.add(selectedVerse);
+              return next;
+            });
+            onTabsRefresh();
+          }}
+          onHighlight={handleHighlight}
+          onNoteSaved={onTabsRefresh}
+        />
+      )}
     </div>
   );
 }
