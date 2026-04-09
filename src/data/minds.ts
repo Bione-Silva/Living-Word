@@ -13,6 +13,11 @@ export interface MindWork {
   year?: string;
 }
 
+export interface TheologyDNAItem {
+  axis: Record<L, string>;
+  value: number;
+}
+
 export interface MindFullData {
   id: string;
   name: string;
@@ -27,6 +32,7 @@ export interface MindFullData {
   signatures: Record<L, string>[];
   theologyMatrix: Record<L, string>;
   works: MindWork[];
+  theologyDNA: TheologyDNAItem[];
 }
 
 export const minds: MindFullData[] = [
@@ -71,6 +77,15 @@ export const minds: MindFullData[] = [
       { title: { PT: 'Como Nascer de Novo', EN: 'How to Be Born Again', ES: 'Cómo Nacer de Nuevo' }, year: '1977' },
       { title: { PT: 'O Mundo em Chamas', EN: 'World Aflame', ES: 'Mundo en Llamas' }, year: '1965' },
     ],
+    theologyDNA: [
+      { axis: { PT: 'Evangelismo', EN: 'Evangelism', ES: 'Evangelismo' }, value: 100 },
+      { axis: { PT: 'Profecia', EN: 'Prophecy', ES: 'Profecía' }, value: 40 },
+      { axis: { PT: 'Teologia Sistemática', EN: 'Systematic Theology', ES: 'Teología Sistemática' }, value: 55 },
+      { axis: { PT: 'Aconselhamento', EN: 'Counseling', ES: 'Consejería' }, value: 60 },
+      { axis: { PT: 'Avivamento', EN: 'Revival', ES: 'Avivamiento' }, value: 75 },
+      { axis: { PT: 'Apelo Emocional', EN: 'Emotional Appeal', ES: 'Apelación Emocional' }, value: 95 },
+      { axis: { PT: 'Soberania', EN: 'Sovereignty', ES: 'Soberanía' }, value: 50 },
+    ],
   },
   {
     id: 'charles-spurgeon',
@@ -111,6 +126,15 @@ export const minds: MindFullData[] = [
       { title: { PT: 'Sermões Matutinos e Noturnos (63 Volumes)', EN: 'Morning & Evening Sermons (63 Volumes)', ES: 'Sermones Matutinos y Nocturnos' } },
       { title: { PT: 'Lições aos Meus Alunos', EN: 'Lectures to My Students', ES: 'Lecciones a Mis Estudiantes' } },
       { title: { PT: 'Devotional: Manhã e Noite', EN: 'Devotional: Morning & Evening', ES: 'Devocional: Mañana y Noche' } },
+    ],
+    theologyDNA: [
+      { axis: { PT: 'Evangelismo', EN: 'Evangelism', ES: 'Evangelismo' }, value: 85 },
+      { axis: { PT: 'Profecia', EN: 'Prophecy', ES: 'Profecía' }, value: 50 },
+      { axis: { PT: 'Teologia Sistemática', EN: 'Systematic Theology', ES: 'Teología Sistemática' }, value: 90 },
+      { axis: { PT: 'Aconselhamento', EN: 'Counseling', ES: 'Consejería' }, value: 70 },
+      { axis: { PT: 'Avivamento', EN: 'Revival', ES: 'Avivamiento' }, value: 80 },
+      { axis: { PT: 'Apelo Emocional', EN: 'Emotional Appeal', ES: 'Apelación Emocional' }, value: 85 },
+      { axis: { PT: 'Soberania', EN: 'Sovereignty', ES: 'Soberanía' }, value: 88 },
     ],
   },
   {
@@ -153,6 +177,15 @@ export const minds: MindFullData[] = [
       { title: { PT: 'Uma Clara Exposição da Perfeição Cristã', EN: 'A Plain Account of Christian Perfection', ES: 'Un Relato Claro de la Perfección Cristiana' }, year: '1766' },
       { title: { PT: 'Notas sobre o Novo Testamento', EN: 'Notes on the New Testament', ES: 'Notas sobre el Nuevo Testamento' }, year: '1755' },
     ],
+    theologyDNA: [
+      { axis: { PT: 'Evangelismo', EN: 'Evangelism', ES: 'Evangelismo' }, value: 80 },
+      { axis: { PT: 'Profecia', EN: 'Prophecy', ES: 'Profecía' }, value: 55 },
+      { axis: { PT: 'Teologia Sistemática', EN: 'Systematic Theology', ES: 'Teología Sistemática' }, value: 75 },
+      { axis: { PT: 'Aconselhamento', EN: 'Counseling', ES: 'Consejería' }, value: 80 },
+      { axis: { PT: 'Avivamento', EN: 'Revival', ES: 'Avivamiento' }, value: 95 },
+      { axis: { PT: 'Apelo Emocional', EN: 'Emotional Appeal', ES: 'Apelación Emocional' }, value: 75 },
+      { axis: { PT: 'Soberania', EN: 'Sovereignty', ES: 'Soberanía' }, value: 40 },
+    ],
   },
   {
     id: 'joao-calvino',
@@ -194,6 +227,15 @@ export const minds: MindFullData[] = [
       { title: { PT: 'Comentário dos Salmos', EN: 'Commentary on Psalms', ES: 'Comentario de los Salmos' } },
       { title: { PT: 'Tratados Teológicos Diversos', EN: 'Various Theological Treatises', ES: 'Tratados Teológicos Diversos' } },
     ],
+    theologyDNA: [
+      { axis: { PT: 'Evangelismo', EN: 'Evangelism', ES: 'Evangelismo' }, value: 60 },
+      { axis: { PT: 'Profecia', EN: 'Prophecy', ES: 'Profecía' }, value: 45 },
+      { axis: { PT: 'Teologia Sistemática', EN: 'Systematic Theology', ES: 'Teología Sistemática' }, value: 100 },
+      { axis: { PT: 'Aconselhamento', EN: 'Counseling', ES: 'Consejería' }, value: 55 },
+      { axis: { PT: 'Avivamento', EN: 'Revival', ES: 'Avivamiento' }, value: 40 },
+      { axis: { PT: 'Apelo Emocional', EN: 'Emotional Appeal', ES: 'Apelación Emocional' }, value: 50 },
+      { axis: { PT: 'Soberania', EN: 'Sovereignty', ES: 'Soberanía' }, value: 100 },
+    ],
   },
   {
     id: 'marco-feliciano',
@@ -233,6 +275,15 @@ export const minds: MindFullData[] = [
       { title: { PT: 'Maquiavel no Inferno', EN: 'Machiavelli in Hell', ES: 'Maquiavelo en el Infierno' } },
       { title: { PT: 'Pregações Históricas (Coletânea)', EN: 'Historical Sermons (Collection)', ES: 'Predicaciones Históricas (Colección)' } },
       { title: { PT: 'Conferências de Avivamento', EN: 'Revival Conferences', ES: 'Conferencias de Avivamiento' } },
+    ],
+    theologyDNA: [
+      { axis: { PT: 'Evangelismo', EN: 'Evangelism', ES: 'Evangelismo' }, value: 85 },
+      { axis: { PT: 'Profecia', EN: 'Prophecy', ES: 'Profecía' }, value: 95 },
+      { axis: { PT: 'Teologia Sistemática', EN: 'Systematic Theology', ES: 'Teología Sistemática' }, value: 55 },
+      { axis: { PT: 'Aconselhamento', EN: 'Counseling', ES: 'Consejería' }, value: 65 },
+      { axis: { PT: 'Avivamento', EN: 'Revival', ES: 'Avivamiento' }, value: 100 },
+      { axis: { PT: 'Apelo Emocional', EN: 'Emotional Appeal', ES: 'Apelación Emocional' }, value: 90 },
+      { axis: { PT: 'Soberania', EN: 'Sovereignty', ES: 'Soberanía' }, value: 45 },
     ],
   },
   {
@@ -275,6 +326,15 @@ export const minds: MindFullData[] = [
       { title: { PT: 'Destino', EN: 'Destiny', ES: 'Destino' } },
       { title: { PT: '12 Dias para Atualizar Sua Vida', EN: '12 Days to Update Your Life', ES: '12 Días para Actualizar Tu Vida' } },
     ],
+    theologyDNA: [
+      { axis: { PT: 'Evangelismo', EN: 'Evangelism', ES: 'Evangelismo' }, value: 70 },
+      { axis: { PT: 'Profecia', EN: 'Prophecy', ES: 'Profecía' }, value: 60 },
+      { axis: { PT: 'Teologia Sistemática', EN: 'Systematic Theology', ES: 'Teología Sistemática' }, value: 60 },
+      { axis: { PT: 'Aconselhamento', EN: 'Counseling', ES: 'Consejería' }, value: 100 },
+      { axis: { PT: 'Avivamento', EN: 'Revival', ES: 'Avivamiento' }, value: 65 },
+      { axis: { PT: 'Apelo Emocional', EN: 'Emotional Appeal', ES: 'Apelación Emocional' }, value: 95 },
+      { axis: { PT: 'Soberania', EN: 'Sovereignty', ES: 'Soberanía' }, value: 45 },
+    ],
   },
   {
     id: 'martyn-lloyd-jones',
@@ -315,6 +375,15 @@ export const minds: MindFullData[] = [
       { title: { PT: 'Estudos no Sermão do Monte (2 Vol.)', EN: 'Studies in the Sermon on the Mount (2 Vol.)', ES: 'Estudios en el Sermón del Monte' } },
       { title: { PT: 'Romanos (14 Volumes)', EN: 'Romans (14 Volumes)', ES: 'Romanos (14 Volúmenes)' } },
       { title: { PT: 'Depressão Espiritual', EN: 'Spiritual Depression', ES: 'Depresión Espiritual' }, year: '1965' },
+    ],
+    theologyDNA: [
+      { axis: { PT: 'Evangelismo', EN: 'Evangelism', ES: 'Evangelismo' }, value: 75 },
+      { axis: { PT: 'Profecia', EN: 'Prophecy', ES: 'Profecía' }, value: 45 },
+      { axis: { PT: 'Teologia Sistemática', EN: 'Systematic Theology', ES: 'Teología Sistemática' }, value: 95 },
+      { axis: { PT: 'Aconselhamento', EN: 'Counseling', ES: 'Consejería' }, value: 60 },
+      { axis: { PT: 'Avivamento', EN: 'Revival', ES: 'Avivamiento' }, value: 70 },
+      { axis: { PT: 'Apelo Emocional', EN: 'Emotional Appeal', ES: 'Apelación Emocional' }, value: 80 },
+      { axis: { PT: 'Soberania', EN: 'Sovereignty', ES: 'Soberanía' }, value: 85 },
     ],
   },
 ];
