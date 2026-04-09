@@ -89,9 +89,12 @@ export default function Dashboard() {
         <BomAmigoCard />
       </div>
       <DevotionalCard />
+      <SmartDevotionalRecommender />
       <ToolsCircleGrid onToolClick={handleToolClick} />
       <StreakBar />
+      <NotificationCenter />
       <MoreToolsAccordion onToolClick={handleToolClick} />
+      <UserEngagementDashboard />
       <RecentGenerations />
 
       <ExtrasModal
