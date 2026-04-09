@@ -100,7 +100,10 @@ export function getTranslationLabel(lang: L): string {
 
 export function getTranslationLabelByCode(code: string): string {
   const map: Record<string, string> = {
-    almeida: 'Almeida Revista e Corrigida',
+    nvi: 'Nova Versão Internacional (NVI)',
+    almeida: 'Almeida Revista e Atualizada (ARA)',
+    acf: 'Almeida Corrigida Fiel (ACF)',
+    ntlh: 'Nova Tradução na Linguagem de Hoje (NTLH)',
     web: 'World English Bible (WEB)',
     kjv: 'King James Version (KJV)',
     valera: 'Reina Valera',
