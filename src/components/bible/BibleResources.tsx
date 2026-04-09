@@ -51,11 +51,58 @@ const mapItems = [
       'Monte Ararate (atual Turquia): onde a arca de Noé repousou',
     ],
   },
-  { icon: Footprints, title: 'Rota do Êxodo', desc: 'Caminho de Israel pelo deserto até Canaã', locations: [] },
-  { icon: Building2, title: 'Terra Prometida Dividida', desc: 'As 12 tribos de Israel e suas porções', locations: [] },
-  { icon: Cross, title: 'Israel no Tempo de Jesus', desc: 'Galileia, Samaria, Judeia e região', locations: [] },
-  { icon: Scroll, title: 'Viagens Missionárias de Paulo', desc: '3 viagens pelo Mediterrâneo (Atos 13-21)', locations: [] },
-  { icon: Church, title: 'Sete Igrejas do Apocalipse', desc: 'Localização das igrejas de Apocalipse 2-3', locations: [] },
+  {
+    icon: Footprints, title: 'Rota do Êxodo', desc: 'Caminho de Israel pelo deserto até Canaã',
+    locations: [
+      'Ramsés (Egito): ponto de partida dos israelitas',
+      'Mar Vermelho: travessia milagrosa (Êxodo 14)',
+      'Monte Sinai: entrega dos Dez Mandamentos',
+      'Cades-Barneia: acampamento no deserto por 38 anos',
+      'Planícies de Moabe: último acampamento antes de Canaã',
+    ],
+  },
+  {
+    icon: Building2, title: 'Terra Prometida Dividida', desc: 'As 12 tribos de Israel e suas porções',
+    locations: [
+      'Judá: maior porção ao sul, inclui Jerusalém e Belém',
+      'Efraim e Manassés: porções centrais, filhos de José',
+      'Benjamim: pequena faixa entre Judá e Efraim',
+      'Dã: litoral do Mediterrâneo, migrou para o norte',
+      'Naftali e Zebulom: região da Galileia ao norte',
+    ],
+  },
+  {
+    icon: Cross, title: 'Israel no Tempo de Jesus', desc: 'Galileia, Samaria, Judeia e região',
+    locations: [
+      'Belém: nascimento de Jesus (Mateus 2)',
+      'Nazaré: cidade onde Jesus cresceu (Lucas 2:51)',
+      'Cafarnaum: base do ministério na Galileia (Mateus 4:13)',
+      'Mar da Galileia: milagres e chamado dos discípulos',
+      'Jerusalém: crucificação, sepultamento e ressurreição',
+      'Betânia: lar de Lázaro, Marta e Maria (João 11)',
+    ],
+  },
+  {
+    icon: Scroll, title: 'Viagens Missionárias de Paulo', desc: '3 viagens pelo Mediterrâneo (Atos 13-21)',
+    locations: [
+      '1ª viagem: Antioquia → Chipre → Ásia Menor (Atos 13-14)',
+      '2ª viagem: Filipos, Tessalônica, Atenas, Corinto (Atos 15-18)',
+      '3ª viagem: Éfeso (3 anos), Macedônia, Grécia (Atos 18-21)',
+      'Viagem a Roma: naufrágio em Malta, chegada a Roma (Atos 27-28)',
+    ],
+  },
+  {
+    icon: Church, title: 'Sete Igrejas do Apocalipse', desc: 'Localização das igrejas de Apocalipse 2-3',
+    locations: [
+      'Éfeso: abandonou o primeiro amor (Ap 2:1-7)',
+      'Esmirna: fiel na perseguição (Ap 2:8-11)',
+      'Pérgamo: onde está o trono de Satanás (Ap 2:12-17)',
+      'Tiatira: tolerava a falsa profetisa Jezabel (Ap 2:18-29)',
+      'Sardes: aparência de viva, mas morta (Ap 3:1-6)',
+      'Filadélfia: porta aberta, pouca força (Ap 3:7-13)',
+      'Laodiceia: morna, nem fria nem quente (Ap 3:14-22)',
+    ],
+  },
 ];
 
 const timelineItems = [
@@ -171,13 +218,15 @@ export function BibleResources() {
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+      <div className="flex items-center gap-1 bg-muted/60 rounded-lg p-1 border border-border/50">
         {tabs.map(t => (
           <button
             key={t.key}
             onClick={() => { setTab(t.key); setSelectedContextBook(null); }}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold transition-all ${
-              tab === t.key ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-md text-xs font-semibold transition-all ${
+              tab === t.key
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-foreground/70 bg-card/50 border border-border/40 hover:text-foreground hover:bg-card'
             }`}
           >
             <t.icon className="h-3.5 w-3.5" />
