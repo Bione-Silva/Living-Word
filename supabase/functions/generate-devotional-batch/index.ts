@@ -77,7 +77,7 @@ async function generateCoverImage(apiKey: string, title: string, category: strin
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'google/gemini-3-pro-image-preview',
+        model: 'google/gemini-3.1-flash-image-preview',
         messages: [{ role: 'user', content: prompt }],
         modalities: ['image', 'text'],
       }),
@@ -87,16 +87,36 @@ async function generateCoverImage(apiKey: string, title: string, category: strin
       return null
     }
     const data = await resp.json()
-    const parts = data.choices?.[0]?.message?.content
-    if (Array.isArray(parts)) {
-      for (const part of parts) {
+    const msgContent = data.choices?.[0]?.message?.content
+    console.log('Image response type:', typeof msgContent, Array.isArray(msgContent) ? 'array' : '')
+    
+    // Try array format (multimodal response)
+    if (Array.isArray(msgContent)) {
+      for (const part of msgContent) {
+        // Format 1: { type: 'image_url', image_url: { url: 'data:...' } }
         if (part.type === 'image_url' && part.image_url?.url) {
           const b64 = part.image_url.url.replace(/^data:image\/[^;]+;base64,/, '')
           return Uint8Array.from(atob(b64), c => c.charCodeAt(0))
         }
+        // Format 2: { type: 'image', source: { data: '...' } }
+        if (part.type === 'image' && part.source?.data) {
+          return Uint8Array.from(atob(part.source.data), c => c.charCodeAt(0))
+        }
+        // Format 3: inline_data
+        if (part.inline_data?.data) {
+          return Uint8Array.from(atob(part.inline_data.data), c => c.charCodeAt(0))
+        }
       }
+      console.error('No image found in array parts. Keys:', JSON.stringify(msgContent.map((p: any) => ({ type: p.type, keys: Object.keys(p) }))))
     }
-    console.error('No image in response')
+    
+    // Try string format with base64
+    if (typeof msgContent === 'string' && msgContent.startsWith('data:image')) {
+      const b64 = msgContent.replace(/^data:image\/[^;]+;base64,/, '')
+      return Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+    }
+    
+    console.error('No image in response. Content preview:', JSON.stringify(msgContent)?.slice(0, 300))
     return null
   } catch (e) {
     console.error('Image gen failed:', e)
