@@ -17,6 +17,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
 import { useEngagementTracker } from '@/components/engagement/EngagementTracker';
 import { ReflectionCapture } from '@/components/engagement/ReflectionCapture';
+import { DevotionalShareModal } from '@/components/DevotionalShareModal';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -327,6 +328,7 @@ export default function Devocional() {
   const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
   const [showAddReflection, setShowAddReflection] = useState(false);
   const [readingModalOpen, setReadingModalOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const coverCardRef = useRef<HTMLDivElement>(null);
 
@@ -990,11 +992,11 @@ export default function Devocional() {
             <WhatsAppIcon /> {labels.shareWa[lang]}
           </button>
           <button
-            onClick={() => { if (navigator.share) navigator.share({ title: displayTitle, text: `${displayTitle} — ${displayVerse}` }); }}
+            onClick={() => setShareModalOpen(true)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80"
-            style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
+            style={{ borderColor: colors.gold + '50', color: '#fff', backgroundColor: colors.gold }}
           >
-            <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
+            <Send className="h-3.5 w-3.5" /> {labels.share[lang]}
           </button>
           <Link
             to="/mente-chat"
@@ -1169,14 +1171,25 @@ export default function Devocional() {
     </div>
   );
 
+  const shareModal = data ? (
+    <DevotionalShareModal
+      open={shareModalOpen}
+      onOpenChange={setShareModalOpen}
+      devotionalTitle={data.title}
+      devotionalVerse={`${data.anchor_verse} — ${data.anchor_verse_text}`}
+      devotionalDate={data.scheduled_date}
+    />
+  ) : null;
+
   if (!isMobile && user) {
     return (
       <div className="flex gap-5 items-start w-full">
         {mainContent}
         {sidebar}
+        {shareModal}
       </div>
     );
   }
 
-  return mainContent;
+  return <>{mainContent}{shareModal}</>;
 }

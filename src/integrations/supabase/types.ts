@@ -148,6 +148,33 @@ export type Database = {
         }
         Relationships: []
       }
+      devocional_compartilhamentos: {
+        Row: {
+          cliques: number
+          created_at: string
+          devocional_date: string
+          id: string
+          share_token: string
+          user_id: string
+        }
+        Insert: {
+          cliques?: number
+          created_at?: string
+          devocional_date: string
+          id?: string
+          share_token: string
+          user_id: string
+        }
+        Update: {
+          cliques?: number
+          created_at?: string
+          devocional_date?: string
+          id?: string
+          share_token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       devotional_comments: {
         Row: {
           created_at: string
@@ -1264,6 +1291,7 @@ export type Database = {
         }[]
       }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      increment_share_click: { Args: { p_token: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {

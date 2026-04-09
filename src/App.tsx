@@ -38,6 +38,7 @@ import BibleReader from "./pages/BibleReader";
 import Pricing from "./pages/Pricing";
 import Onboarding from "./pages/Onboarding";
 import Devocional from "./pages/Devocional";
+import DevocionalPublico from "./pages/DevocionalPublico";
 import BomAmigo from "./pages/BomAmigo";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
@@ -108,6 +109,7 @@ const App = () => (
               <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
               <Route path="/invite/:token" element={<AcceptInvite />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/devocional/publico/:shareToken" element={<DevocionalPublico />} />
 
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/onboarding" element={<Onboarding />} />
