@@ -34,6 +34,7 @@ export default function MentesBrilhantes() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedMind, setSelectedMind] = useState<MindFullData | null>(null);
   const [activeMinds, setActiveMinds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
   const [loadingMinds, setLoadingMinds] = useState(true);
 
   useEffect(() => {
