@@ -395,18 +395,23 @@ export default function Devocional() {
   useEffect(() => {
     if (!user) return;
     const load = async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('language')
+        .eq('id', user.id)
+        .single();
+      const userLang = profile?.language || lang;
       const { data } = await supabase
-        .from('materials')
-        .select('id, title, type, passage, created_at, content, cover_image_url')
-        .eq('user_id', user.id)
-        .eq('type', 'devotional')
-        .order('created_at', { ascending: false })
+        .from('devotionals')
+        .select('id, title, anchor_verse, scheduled_date, body_text, cover_image_url, audio_url_nova, audio_url_alloy, audio_url_onyx')
+        .eq('language', userLang)
+        .order('scheduled_date', { ascending: false })
         .limit(30);
-      setPastItems((data as any) || []);
+      setPastItems((data as PastDevotional[]) || []);
       setPastLoading(false);
     };
     load();
-  }, [user]);
+  }, [user, lang]);
 
   // Load existing note for today's devotional
   useEffect(() => {
