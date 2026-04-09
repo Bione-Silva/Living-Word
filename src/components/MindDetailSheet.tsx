@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TheologyDNAChart } from '@/components/minds/TheologyDNAChart';
+import { CompareMindsDialog } from '@/components/minds/CompareMindsDialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import type { MindFullData } from '@/data/minds';
+import { minds } from '@/data/minds';
 import {
   Database, Fingerprint, Zap, Sparkles, Shield, BookOpen,
-  PenTool, Users, GraduationCap, BookMarked, ChevronRight, Cpu, ScrollText
+  PenTool, Users, GraduationCap, BookMarked, ChevronRight, Cpu, ScrollText, ArrowLeftRight
 } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -69,6 +73,7 @@ interface MindDetailSheetProps {
 export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetProps) {
   const navigate = useNavigate();
   const { lang } = useLanguage();
+  const [showCompare, setShowCompare] = useState(false);
 
   if (!mind) return null;
 
@@ -76,6 +81,8 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
     onOpenChange(false);
     navigate(`/dashboard/mentes/chat?mente=${mind.id}&modalidade=${modalityId}`);
   };
+
+  const compareLabel = { PT: 'Comparar com outra Mente', EN: 'Compare with another Mind', ES: 'Comparar con otra Mente' };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -97,8 +104,17 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
-              <span className="text-xs text-emerald-600 font-semibold tracking-wide uppercase">{labels.mentorOnline[lang]}</span>
-            </div>
+               <span className="text-xs text-emerald-600 font-semibold tracking-wide uppercase">{labels.mentorOnline[lang]}</span>
+             </div>
+             <Button
+               variant="outline"
+               size="sm"
+               onClick={() => setShowCompare(true)}
+               className="mt-3 gap-2 border-[hsl(35,25%,82%)] text-[hsl(220,10%,40%)] hover:border-[hsl(35,50%,50%)] hover:text-[hsl(35,50%,45%)]"
+             >
+               <ArrowLeftRight className="h-3.5 w-3.5" />
+               {compareLabel[lang]}
+             </Button>
             {/* Data badges */}
             <div className="flex flex-wrap justify-center gap-2 mt-5">
               {mind.badges.map((badge, i) => (
@@ -240,7 +256,15 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
           </section>
 
         </div>
-      </SheetContent>
+       </SheetContent>
+
+       <CompareMindsDialog
+         open={showCompare}
+         onOpenChange={setShowCompare}
+         minds={minds.filter(m => !m.locked)}
+         lang={lang}
+         preSelectedId={mind.id}
+       />
     </Sheet>
   );
 }
