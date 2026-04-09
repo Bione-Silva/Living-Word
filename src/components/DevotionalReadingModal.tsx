@@ -102,7 +102,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0 gap-0 max-h-[90vh] sm:max-h-[85vh] overflow-hidden" style={{ backgroundColor: colors.bg }}>
+      <DialogContent className="max-w-2xl p-0 gap-0 max-h-[90vh] sm:max-h-[85vh] overflow-hidden flex flex-col" style={{ backgroundColor: colors.bg }}>
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: colors.border }}>
           <DialogHeader className="flex-1 space-y-0">
@@ -126,7 +126,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
         </div>
 
         {/* Scrollable content */}
-        <ScrollArea className="flex-1 min-h-0">
+        <ScrollArea className="flex-1 min-h-0 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 160px)' }}>
           <div ref={contentRef} className="px-5 sm:px-8 py-6 space-y-6" style={{ backgroundColor: colors.bg }}>
             {/* Title + date + category */}
             <div>
