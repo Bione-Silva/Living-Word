@@ -205,13 +205,15 @@ Deno.serve(async (req) => {
         console.log(`[${lang}] Generating text...`)
         const devotional = await generateDevotionalText(lovableKey, lang, targetDate)
 
-        // Generate cover image
-        console.log(`[${lang}] Generating cover image...`)
-        const imgData = await generateCoverImage(lovableKey, devotional.title, devotional.category)
+        // Generate cover image (skip if requested for speed)
         let coverUrl: string | null = null
-        if (imgData) {
-          coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
-          console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
+        if (!skipImage) {
+          console.log(`[${lang}] Generating cover image...`)
+          const imgData = await generateCoverImage(lovableKey, devotional.title, devotional.category)
+          if (imgData) {
+            coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
+            console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
+          }
         }
 
         // Generate TTS audio (3 voices in parallel)
