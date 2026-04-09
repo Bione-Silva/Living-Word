@@ -44,8 +44,9 @@ Deno.serve(async (req) => {
     )
 
     if (!geminiResp.ok) {
-      console.error('Gemini error:', geminiResp.status)
-      throw new Error(`Gemini error: ${geminiResp.status}`)
+      const errBody = await geminiResp.text()
+      console.error('Gemini error:', geminiResp.status, errBody)
+      throw new Error(`Gemini error: ${geminiResp.status} - ${errBody.slice(0, 200)}`)
     }
 
     const geminiData = await geminiResp.json()
