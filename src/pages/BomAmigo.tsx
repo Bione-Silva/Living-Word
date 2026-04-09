@@ -42,7 +42,7 @@ const labels = {
   },
   emptyDesc: {
     PT: 'Escolha um sentimento ou digite o que está no seu coração. Eu vou buscar uma palavra para você.',
-    EN: 'Pick a feeling or type what's in your heart. I'll find a word for you.',
+    EN: "Pick a feeling or type what\u2019s in your heart. I\u2019ll find a word for you.",
     ES: 'Elige un sentimiento o escribe lo que hay en tu corazón. Buscaré una palabra para ti.',
   },
 } satisfies Record<string, Record<L, string>>;
