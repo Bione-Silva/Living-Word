@@ -1171,14 +1171,25 @@ export default function Devocional() {
     </div>
   );
 
+  const shareModal = data ? (
+    <DevotionalShareModal
+      open={shareModalOpen}
+      onOpenChange={setShareModalOpen}
+      devotionalTitle={data.title}
+      devotionalVerse={`${data.anchor_verse} — ${data.anchor_verse_text}`}
+      devotionalDate={data.scheduled_date}
+    />
+  ) : null;
+
   if (!isMobile && user) {
     return (
       <div className="flex gap-5 items-start w-full">
         {mainContent}
         {sidebar}
+        {shareModal}
       </div>
     );
   }
 
-  return mainContent;
+  return <>{mainContent}{shareModal}</>;
 }
