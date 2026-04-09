@@ -1,4 +1,5 @@
 import { Brain } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import {
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   Radar, ResponsiveContainer, Tooltip,
@@ -113,6 +114,9 @@ function buildProfileSummary(data: { axis: string; value: number }[], lang: L): 
 }
 
 export function TheologyDNAChart({ data, lang }: Props) {
+  const [animated, setAnimated] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
   const chartData = data.map(d => ({
     axis: d.axis[lang],
     short: shortLabel(d.axis[lang]),
@@ -122,8 +126,19 @@ export function TheologyDNAChart({ data, lang }: Props) {
   const sorted = [...chartData].sort((a, b) => b.value - a.value);
   const summary = buildProfileSummary(chartData, lang);
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setAnimated(true); observer.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-7 md:p-10">
+    <section ref={sectionRef} className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-7 md:p-10">
       <div className="flex items-center gap-3 mb-4 sm:mb-5">
         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
           <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(35,45%,45%)]" />
@@ -179,8 +194,11 @@ export function TheologyDNAChart({ data, lang }: Props) {
               <div className="flex-1 flex items-center gap-2">
                 <div className="flex-1 h-2.5 rounded-full bg-[hsl(30,15%,92%)] overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${getStrengthColor(d.value)}`}
-                    style={{ width: `${d.value}%` }}
+                    className={`h-full rounded-full transition-all duration-700 ease-out ${getStrengthColor(d.value)}`}
+                    style={{
+                      width: animated ? `${d.value}%` : '0%',
+                      transitionDelay: `${i * 80}ms`,
+                    }}
                   />
                 </div>
                 <span className="text-xs font-mono font-bold text-[hsl(220,10%,30%)] w-8 text-right">{d.value}</span>
