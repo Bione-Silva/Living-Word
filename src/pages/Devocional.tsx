@@ -992,11 +992,11 @@ export default function Devocional() {
             <WhatsAppIcon /> {labels.shareWa[lang]}
           </button>
           <button
-            onClick={() => { if (navigator.share) navigator.share({ title: displayTitle, text: `${displayTitle} — ${displayVerse}` }); }}
+            onClick={() => setShareModalOpen(true)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80"
-            style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
+            style={{ borderColor: colors.gold + '50', color: '#fff', backgroundColor: colors.gold }}
           >
-            <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
+            <Send className="h-3.5 w-3.5" /> {labels.share[lang]}
           </button>
           <Link
             to="/mente-chat"
