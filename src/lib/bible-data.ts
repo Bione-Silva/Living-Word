@@ -74,7 +74,10 @@ export function getBookName(id: string, lang: L): string {
 /** Available translations per language with their bible-api.com codes */
 export const translationOptions: Record<L, { code: string; label: string }[]> = {
   PT: [
-    { code: 'almeida', label: 'ARC' },
+    { code: 'nvi', label: 'NVI' },
+    { code: 'almeida', label: 'ARA' },
+    { code: 'acf', label: 'ACF' },
+    { code: 'ntlh', label: 'NTLH' },
   ],
   EN: [
     { code: 'web', label: 'WEB' },
@@ -90,14 +93,17 @@ export function getTranslation(lang: L): string {
 }
 
 export function getTranslationLabel(lang: L): string {
-  if (lang === 'PT') return 'Almeida Revista e Corrigida';
+  if (lang === 'PT') return 'Nova Versão Internacional';
   if (lang === 'ES') return 'Reina Valera';
   return 'World English Bible (WEB)';
 }
 
 export function getTranslationLabelByCode(code: string): string {
   const map: Record<string, string> = {
-    almeida: 'Almeida Revista e Corrigida',
+    nvi: 'Nova Versão Internacional (NVI)',
+    almeida: 'Almeida Revista e Atualizada (ARA)',
+    acf: 'Almeida Corrigida Fiel (ACF)',
+    ntlh: 'Nova Tradução na Linguagem de Hoje (NTLH)',
     web: 'World English Bible (WEB)',
     kjv: 'King James Version (KJV)',
     valera: 'Reina Valera',
