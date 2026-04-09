@@ -41,7 +41,13 @@ Deno.serve(async (req) => {
       .single()
 
     const language = profile?.language || 'PT'
-    const today = new Date().toISOString().slice(0, 10)
+
+    // Optional ?date= query param for testing specific dates
+    const url = new URL(req.url)
+    const dateParam = url.searchParams.get('date')
+    const today = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)
+      ? dateParam
+      : new Date().toISOString().slice(0, 10)
 
     // Read-only: fetch today's devotional from the devotionals table
     const { data: devotional, error: dbError } = await supabase
