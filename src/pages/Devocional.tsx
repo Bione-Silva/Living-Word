@@ -124,10 +124,7 @@ function SoundWaves({ active }: { active: boolean }) {
   );
 }
 
-/* ─── Voice type ─── */
-type VoiceKey = 'nova' | 'alloy' | 'onyx';
-
-/* ─── Audio Player with Voice Selector ─── */
+/* ─── Audio Player (Onyx voice only) ─── */
 function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -136,17 +133,8 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   const [duration, setDuration] = useState(0);
   const [muted, setMuted] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const [voice, setVoice] = useState<VoiceKey>('nova');
 
-  const voiceOptions: { key: VoiceKey; label: string; icon: React.ReactNode }[] = [
-    { key: 'nova', label: labels.voiceFemale[lang], icon: <UserRound className="h-3.5 w-3.5" /> },
-    { key: 'alloy', label: labels.voiceSoftMale[lang], icon: <User className="h-3.5 w-3.5" /> },
-    { key: 'onyx', label: labels.voiceDeepMale[lang], icon: <Mic className="h-3.5 w-3.5" /> },
-  ];
-
-  const audioSrc = voice === 'alloy' ? (data.audio_url_alloy || data.audio_url)
-    : voice === 'onyx' ? (data.audio_url_onyx || data.audio_url)
-    : (data.audio_url_nova || data.audio_url);
+  const audioSrc = data.audio_url_onyx || data.audio_url;
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -169,21 +157,6 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
     const newTime = pct * (duration || 1);
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
-  };
-
-  const handleVoiceChange = (v: VoiceKey) => {
-    const wasPlaying = playing;
-    if (audioRef.current) audioRef.current.pause();
-    setPlaying(false);
-    setVoice(v);
-    setCurrentTime(0);
-    setTimeout(() => {
-      if (wasPlaying && audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-        setPlaying(true);
-      }
-    }, 100);
   };
 
   const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -214,24 +187,6 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
             <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: 'hsl(24, 30%, 15%)' }}>{data.title}</p>
           </div>
         </div>
-      </div>
-
-      {/* Voice Selector */}
-      <div className="flex items-center gap-2">
-        {voiceOptions.map(opt => (
-          <button
-            key={opt.key}
-            onClick={() => handleVoiceChange(opt.key)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all"
-            style={voice === opt.key
-              ? { backgroundColor: 'hsl(38, 52%, 48%)', color: '#fff', boxShadow: '0 2px 8px hsl(38, 52%, 48%, 0.3)' }
-              : { backgroundColor: 'hsl(36, 20%, 90%)', color: 'hsl(24, 18%, 45%)' }
-            }
-          >
-            {opt.icon}
-            <span className="hidden sm:inline">{opt.label}</span>
-          </button>
-        ))}
       </div>
 
       {/* Progress bar */}
