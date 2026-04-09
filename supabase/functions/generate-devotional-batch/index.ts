@@ -47,7 +47,7 @@ async function generateDevotionalText(apiKey: string, lang: Lang, dateStr: strin
     method: 'POST',
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       messages: [
         { role: 'system', content: getSystemPrompt(lang) },
         { role: 'user', content: getUserPrompt(lang, dateStr) },
@@ -69,7 +69,7 @@ async function generateCoverImage(apiKey: string, title: string, category: strin
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-flash',
         messages: [{ role: 'user', content: prompt }],
         modalities: ['image', 'text'],
       }),

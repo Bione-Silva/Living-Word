@@ -10,7 +10,7 @@ function getGeminiKey(): string | null {
 }
 
 async function callGemini(apiKey: string, prompt: string): Promise<string | null> {
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro']
+  const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro']
   const versions = ['v1beta', 'v1']
 
   for (const version of versions) {
