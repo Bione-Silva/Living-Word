@@ -17,6 +17,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
 import { useEngagementTracker } from '@/components/engagement/EngagementTracker';
 import { ReflectionCapture } from '@/components/engagement/ReflectionCapture';
+import { DevotionalShareModal } from '@/components/DevotionalShareModal';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -327,6 +328,7 @@ export default function Devocional() {
   const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
   const [showAddReflection, setShowAddReflection] = useState(false);
   const [readingModalOpen, setReadingModalOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const coverCardRef = useRef<HTMLDivElement>(null);
 
