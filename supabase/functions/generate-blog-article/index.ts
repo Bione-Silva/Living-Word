@@ -8,13 +8,13 @@ const corsHeaders = {
 };
 
 const IMAGE_MODELS = [
-  "google/gemini-3.1-flash-image-preview",
-  "google/gemini-3-pro-image-preview",
-  "google/gemini-2.5-flash-image",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash",
 ];
 
 async function generateImageWithRetry(
-  lovableApiKey: string,
+  geminiApiKey: string,
   prompt: string,
   supabaseAdmin: any,
   userId: string,
@@ -30,10 +30,10 @@ async function generateImageWithRetry(
         await new Promise(r => setTimeout(r, 2000 * attempt));
       }
 
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const response = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${lovableApiKey}`,
+          Authorization: `Bearer ${geminiApiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -149,10 +149,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY');
 
-    if (!lovableApiKey) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
+    if (!geminiApiKey) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -216,14 +216,14 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
 
     // Generate article content
     console.log("[Article] Generating text content...");
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${lovableApiKey}`,
+        Authorization: `Bearer ${geminiApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openai/gpt-5",
+        model: "gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -260,7 +260,7 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
       await supabaseAdmin.from("generation_logs").insert({
         user_id: userId,
         feature: "Blog Creator",
-        model: "openai/gpt-5",
+        model: "gemini-2.5-flash",
         input_tokens: usage.prompt_tokens || 0,
         output_tokens: usage.completion_tokens || 0,
         total_tokens: usage.total_tokens || 0,
@@ -303,15 +303,15 @@ The article MUST have between 400 and 700 words. Structure it like a well-organi
     // Generate images SEQUENTIALLY with delays to avoid rate limiting
     console.log("[Image] Starting sequential image generation (3 images)...");
 
-    const coverImage = await generateImageWithRetry(lovableApiKey, coverPrompt, supabaseAdmin, userId);
+    const coverImage = await generateImageWithRetry(geminiApiKey, coverPrompt, supabaseAdmin, userId);
 
     // Small delay between image generations to avoid rate limits
     await new Promise(r => setTimeout(r, 1500));
-    const bodyImage1 = await generateImageWithRetry(lovableApiKey, bodyPrompts[0], supabaseAdmin, userId);
+    const bodyImage1 = await generateImageWithRetry(geminiApiKey, bodyPrompts[0], supabaseAdmin, userId);
 
     await new Promise(r => setTimeout(r, 1500));
     const bodyImage2 = bodyPrompts[1]
-      ? await generateImageWithRetry(lovableApiKey, bodyPrompts[1], supabaseAdmin, userId)
+      ? await generateImageWithRetry(geminiApiKey, bodyPrompts[1], supabaseAdmin, userId)
       : null;
 
     const articleImages: string[] = [coverImage, bodyImage1, bodyImage2].filter(Boolean) as string[];

@@ -43,11 +43,11 @@ Return ONLY the JSON object.`
 }
 
 async function generateDevotionalText(apiKey: string, lang: Lang, dateStr: string): Promise<Record<string, string>> {
-  const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+  const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'google/gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       messages: [
         { role: 'system', content: getSystemPrompt(lang) },
         { role: 'user', content: getUserPrompt(lang, dateStr) },
@@ -65,11 +65,11 @@ async function generateDevotionalText(apiKey: string, lang: Lang, dateStr: strin
 async function generateCoverImage(apiKey: string, title: string, category: string): Promise<Uint8Array | null> {
   try {
     const prompt = `Create a breathtaking, museum-quality devotional artwork in a painterly Renaissance-meets-Romantic style. Theme: "${category}", inspired by "${title}". The scene should evoke deep spiritual emotion — golden ethereal light pouring through ancient stone architecture, mystical pathways, serene water reflections, dramatic skies. Use a warm palette of amber, gold, sepia, and deep earth tones. Oil painting texture, impasto brushstrokes, chiaroscuro lighting. Absolutely NO text, NO letters, NO words, NO typography anywhere in the image. Portrait orientation (3:4 ratio). The image should feel like a masterpiece from a sacred art gallery.`
-    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'google/gemini-3.1-flash-image-preview',
+        model: 'gemini-2.0-flash',
         messages: [{ role: 'user', content: prompt }],
         modalities: ['image', 'text'],
       }),
@@ -157,8 +157,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const lovableKey = Deno.env.get('LOVABLE_API_KEY')
-    if (!lovableKey) throw new Error('LOVABLE_API_KEY not configured')
+    const geminiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
+    if (!geminiKey) throw new Error('GEMINI_API_KEY not configured')
     const openaiKey = Deno.env.get('OPENAI_API_KEY') || ''
 
     const supabaseAdmin = createClient(
@@ -203,13 +203,13 @@ Deno.serve(async (req) => {
     for (const lang of missingLangs) {
       try {
         console.log(`[${lang}] Generating text...`)
-        const devotional = await generateDevotionalText(lovableKey, lang, targetDate)
+        const devotional = await generateDevotionalText(geminiKey, lang, targetDate)
 
         // Generate cover image (skip if requested for speed)
         let coverUrl: string | null = null
         if (!skipImage) {
           console.log(`[${lang}] Generating cover image...`)
-          const imgData = await generateCoverImage(lovableKey, devotional.title, devotional.category)
+          const imgData = await generateCoverImage(geminiKey, devotional.title, devotional.category)
           if (imgData) {
             coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
             console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
