@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { bibleBooks, getBookName, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
 import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
@@ -115,6 +117,17 @@ export default function BibleReader() {
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  const [favCount, setFavCount] = useState(0);
+  const [noteCount, setNoteCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('bible_favorites').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      .then(({ count }) => { if (count != null) setFavCount(count); });
+    supabase.from('bible_notes').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      .then(({ count }) => { if (count != null) setNoteCount(count); });
+  }, [user, tabsRefreshKey]);
+
   const currentBook = selectedBook ? bibleBooks.find(b => b.id === selectedBook) : null;
 
   const handleSelectBook = (bookId: string) => { setSelectedBook(bookId); setReadView('chapters'); };
@@ -185,17 +198,27 @@ export default function BibleReader() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFavSidebarOpen(true)}
-            className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
             title={lang === 'PT' ? 'Favoritos' : lang === 'EN' ? 'Favorites' : 'Favoritos'}
           >
             <Star className="h-4 w-4 text-foreground" />
+            {favCount > 0 && (
+              <Badge className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center">
+                {favCount > 99 ? '99+' : favCount}
+              </Badge>
+            )}
           </button>
           <button
             onClick={() => scrollToTabs('notes')}
-            className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
             title={lang === 'PT' ? 'Notas' : lang === 'EN' ? 'Notes' : 'Notas'}
           >
             <MessageSquare className="h-4 w-4 text-foreground" />
+            {noteCount > 0 && (
+              <Badge className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center">
+                {noteCount > 99 ? '99+' : noteCount}
+              </Badge>
+            )}
           </button>
         </div>
       </div>
