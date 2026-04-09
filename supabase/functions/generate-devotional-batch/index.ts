@@ -64,7 +64,7 @@ async function generateDevotionalText(apiKey: string, lang: Lang, dateStr: strin
 
 async function generateCoverImage(apiKey: string, title: string, category: string): Promise<Uint8Array | null> {
   try {
-    const prompt = `Create a beautiful, serene Christian devotional cover image. Theme: "${category}". Warm golden light, peaceful landscape, no text or letters. Painterly, ethereal, spiritual atmosphere. Wide format.`
+    const prompt = `Create a breathtaking, museum-quality devotional artwork in a painterly Renaissance-meets-Romantic style. Theme: "${category}", inspired by "${title}". The scene should evoke deep spiritual emotion — golden ethereal light pouring through ancient stone architecture, mystical pathways, serene water reflections, dramatic skies. Use a warm palette of amber, gold, sepia, and deep earth tones. Oil painting texture, impasto brushstrokes, chiaroscuro lighting. Absolutely NO text, NO letters, NO words, NO typography anywhere in the image. Portrait orientation (3:4 ratio). The image should feel like a masterpiece from a sacred art gallery.`
     const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
