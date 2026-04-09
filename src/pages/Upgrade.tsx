@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Check, Crown, Sparkles, Brain, BookOpen, Zap, BarChart3, Loader2, Building2, HelpCircle } from 'lucide-react';
+import { Check, Crown, Sparkles, Brain, BookOpen, Zap, BarChart3, Loader2, Building2, HelpCircle, Minus, Plus, Users } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
@@ -40,6 +40,9 @@ const labels = {
   outlines: { PT: 'Esboços Médios', EN: 'Medium Outlines', ES: 'Esquemas Medios' } as Record<L, string>,
   sermons: { PT: 'Sermões Completos', EN: 'Full Sermons', ES: 'Sermones Completos' } as Record<L, string>,
   studies: { PT: 'Estudos Aprofundados', EN: 'Deep Studies', ES: 'Estudios Profundos' } as Record<L, string>,
+  teamExtras: { PT: 'Membros da equipe extras', EN: 'Extra team members', ES: 'Miembros del equipo extras' } as Record<L, string>,
+  included: { PT: 'incluídos', EN: 'included', ES: 'incluidos' } as Record<L, string>,
+  perSeat: { PT: 'por membro extra/mês', EN: 'per extra member/month', ES: 'por miembro extra/mes' } as Record<L, string>,
 };
 
 interface PlanData {
@@ -121,6 +124,56 @@ function CreditPotentialTooltip({ planSlug, lang }: { planSlug: PlanSlug; lang: 
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
+  );
+}
+
+const IGREJA_BASE_SEATS = 10;
+const EXTRA_SEAT_PRICE_USD = 5.00;
+const EXTRA_SEAT_PRICE_BRL = 15.00;
+const EXTRA_SEAT_CREDITS = 2_000;
+
+function TeamSeatsSelector({ lang, isBRL }: { lang: L; isBRL: boolean }) {
+  const [extraSeats, setExtraSeats] = useState(0);
+  const seatPrice = isBRL ? EXTRA_SEAT_PRICE_BRL : EXTRA_SEAT_PRICE_USD;
+  const symbol = isBRL ? 'R$' : '$';
+  const currency = isBRL ? 'BRL' : 'USD';
+  const totalSeats = IGREJA_BASE_SEATS + extraSeats;
+  const extraCredits = extraSeats * EXTRA_SEAT_CREDITS;
+
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <Users className="h-3.5 w-3.5 text-primary" />
+        <span className="text-xs font-semibold">{labels.teamExtras[lang]}</span>
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setExtraSeats(Math.max(0, extraSeats - 1))}
+            disabled={extraSeats === 0}
+            className="w-7 h-7 rounded-lg border border-border bg-background flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors"
+          >
+            <Minus className="h-3 w-3" />
+          </button>
+          <span className="text-lg font-bold font-mono w-8 text-center">{totalSeats}</span>
+          <button
+            onClick={() => setExtraSeats(Math.min(40, extraSeats + 1))}
+            className="w-7 h-7 rounded-lg border border-border bg-background flex items-center justify-center hover:bg-muted transition-colors"
+          >
+            <Plus className="h-3 w-3" />
+          </button>
+        </div>
+        <span className="text-[10px] text-muted-foreground">
+          {IGREJA_BASE_SEATS} {labels.included[lang]}
+        </span>
+      </div>
+      {extraSeats > 0 && (
+        <div className="text-[10px] text-muted-foreground space-y-0.5 pt-1 border-t border-border/50">
+          <p>+{extraSeats} × {formatPrice(seatPrice, symbol, currency)} {labels.perSeat[lang]}</p>
+          <p className="text-primary font-semibold">+{extraCredits.toLocaleString()} {lang === 'PT' ? 'créditos extras' : lang === 'EN' ? 'extra credits' : 'créditos extras'}</p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -290,7 +343,7 @@ export default function Upgrade() {
                   <CreditPotentialTooltip planSlug={plan.id as PlanSlug} lang={lang} />
                 </div>
 
-                <ul className="space-y-2 mb-5 flex-1">
+                <ul className="space-y-2 mb-4 flex-1">
                   {plan.features[lang].map((f, j) => (
                     <li key={j} className="flex items-start gap-2 text-sm">
                       <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -298,6 +351,12 @@ export default function Upgrade() {
                     </li>
                   ))}
                 </ul>
+
+                {plan.id === 'igreja' && (
+                  <div className="mb-4">
+                    <TeamSeatsSelector lang={lang} isBRL={pricing.currency === 'BRL'} />
+                  </div>
+                )}
 
                 <Button
                   className="w-full gap-1.5 min-h-[48px]"
