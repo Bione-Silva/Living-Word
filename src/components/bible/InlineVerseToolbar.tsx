@@ -41,6 +41,7 @@ interface Props {
   onHighlight: (color: string, verseNums: number[]) => void;
   onNoteSaved: () => void;
   onClose: () => void;
+  onStudySidebar?: (passage: string, verseText: string) => void;
 }
 
 export function InlineVerseToolbar({
