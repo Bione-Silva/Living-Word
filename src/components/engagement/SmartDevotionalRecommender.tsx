@@ -28,8 +28,8 @@ interface RecommendationData {
 
 export function SmartDevotionalRecommender() {
   const { user } = useAuth();
-  const { language } = useLanguage();
-  const lang = (language || 'PT') as L;
+  const { lang: currentLang } = useLanguage();
+  const lang = (currentLang || 'PT') as L;
   const navigate = useNavigate();
   const [data, setData] = useState<RecommendationData | null>(null);
   const [loading, setLoading] = useState(true);

@@ -28,8 +28,8 @@ interface ReflectionCaptureProps {
 }
 
 export function ReflectionCapture({ devotionalId, theme, onSaved }: ReflectionCaptureProps) {
-  const { language } = useLanguage();
-  const lang = (language || 'PT') as L;
+  const { lang: currentLang } = useLanguage();
+  const lang = (currentLang || 'PT') as L;
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [sentiment, setSentiment] = useState<string | null>(null);

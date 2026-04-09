@@ -46,8 +46,8 @@ function formatRelativeDate(dateStr: string, lang: L): string {
 
 export function NotificationCenter() {
   const { user } = useAuth();
-  const { language } = useLanguage();
-  const lang = (language || 'PT') as L;
+  const { lang: currentLang } = useLanguage();
+  const lang = (currentLang || 'PT') as L;
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {

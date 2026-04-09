@@ -44,8 +44,8 @@ interface TrendingData {
 
 export function UserEngagementDashboard() {
   const { user } = useAuth();
-  const { language } = useLanguage();
-  const lang = (language || 'PT') as L;
+  const { lang: currentLang } = useLanguage();
+  const lang = (currentLang || 'PT') as L;
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [trending, setTrending] = useState<TrendingData | null>(null);
   const [themeStats, setThemeStats] = useState<{ name: string; count: number }[]>([]);
