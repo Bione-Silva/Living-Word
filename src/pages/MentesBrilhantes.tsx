@@ -175,6 +175,14 @@ export default function MentesBrilhantes() {
           </Button>
         </DialogContent>
       </Dialog>
+
+      {/* ── Compare Dialog ── */}
+      <CompareMindsDialog
+        open={showCompare}
+        onOpenChange={setShowCompare}
+        minds={visibleMinds}
+        lang={lang}
+      />
     </div>
   );
 }
