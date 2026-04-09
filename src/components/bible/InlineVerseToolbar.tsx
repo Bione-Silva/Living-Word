@@ -182,7 +182,14 @@ export function InlineVerseToolbar({
 
       {/* Study, Art & Blog buttons */}
       <button
-        onClick={() => { navigate('/estudo-biblico', { state: { passage: verseRef } }); onClose(); }}
+        onClick={() => {
+          if (onStudySidebar) {
+            onStudySidebar(verseRef, combinedText);
+          } else {
+            navigate('/estudo-biblico', { state: { passage: verseRef } });
+            onClose();
+          }
+        }}
         className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
       >
         <BookOpen className="h-3.5 w-3.5" />
