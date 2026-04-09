@@ -15,6 +15,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   minds: MindFullData[];
   lang: L;
+  preSelectedId?: string;
 }
 
 const labels = {
@@ -51,8 +52,8 @@ function CompareTooltip({ active, payload }: any) {
   );
 }
 
-export function CompareMindsDialog({ open, onOpenChange, minds, lang }: Props) {
-  const [selected, setSelected] = useState<string[]>([]);
+export function CompareMindsDialog({ open, onOpenChange, minds, lang, preSelectedId }: Props) {
+  const [selected, setSelected] = useState<string[]>(preSelectedId ? [preSelectedId] : []);
 
   const toggle = (id: string) => {
     setSelected(prev => {
@@ -75,7 +76,7 @@ export function CompareMindsDialog({ open, onOpenChange, minds, lang }: Props) {
     : [];
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) setSelected([]); onOpenChange(v); }}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) setSelected(preSelectedId ? [preSelectedId] : []); onOpenChange(v); }}>
       <DialogContent className="bg-white border-[hsl(30,15%,85%)] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <DialogTitle className="font-display text-xl flex items-center justify-center gap-2 text-[hsl(220,15%,15%)]">
