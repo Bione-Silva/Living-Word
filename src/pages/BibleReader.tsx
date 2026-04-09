@@ -8,6 +8,7 @@ import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
 import { BibleChapterGrid } from '@/components/bible/BibleChapterGrid';
 import { BibleReadingView } from '@/components/bible/BibleReadingView';
 import { BibleTabs } from '@/components/bible/BibleTabs';
+import { FavoritesSidebar } from '@/components/bible/FavoritesSidebar';
 import { ReadingPlans } from '@/components/bible/ReadingPlans';
 import { BibleProgress } from '@/components/bible/BibleProgress';
 import { BibleResources } from '@/components/bible/BibleResources';
@@ -106,6 +107,7 @@ export default function BibleReader() {
 
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
   const [tabsDefaultTab, setTabsDefaultTab] = useState<'favorites' | 'notes'>('favorites');
+  const [favSidebarOpen, setFavSidebarOpen] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -182,7 +184,7 @@ export default function BibleReader() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => scrollToTabs('favorites')}
+            onClick={() => setFavSidebarOpen(true)}
             className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
             title={lang === 'PT' ? 'Favoritos' : lang === 'EN' ? 'Favorites' : 'Favoritos'}
           >
@@ -287,6 +289,14 @@ export default function BibleReader() {
           <BibleTabs ref={tabsRef} refreshKey={tabsRefreshKey} onNavigate={handleNavigate} defaultTab={tabsDefaultTab} />
         </div>
       )}
+
+      {/* Favorites Sidebar */}
+      <FavoritesSidebar
+        open={favSidebarOpen}
+        onOpenChange={setFavSidebarOpen}
+        onNavigate={handleNavigate}
+        refreshKey={tabsRefreshKey}
+      />
     </div>
   );
 }
