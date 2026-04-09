@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -323,6 +324,7 @@ export default function Devocional() {
   const [noteSavedAt, setNoteSavedAt] = useState<string | null>(null);
   const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
   const [showAddReflection, setShowAddReflection] = useState(false);
+  const [readingModalOpen, setReadingModalOpen] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const coverCardRef = useRef<HTMLDivElement>(null);
 
@@ -968,6 +970,11 @@ export default function Devocional() {
 
         {/* ── 8. ACTION BAR ── */}
         <div className="border-t px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap" style={{ borderColor: colors.border, backgroundColor: colors.goldLight + '60' }}>
+          {!isViewingPast && (
+            <button onClick={() => setReadingModalOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.gold + '50', color: '#fff', backgroundColor: colors.gold }}>
+              <BookOpen className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Versão Escrita' : lang === 'ES' ? 'Versión Escrita' : 'Written Version'}
+            </button>
+          )}
           <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
@@ -990,6 +997,16 @@ export default function Devocional() {
           </Link>
         </div>
       </div>
+
+      {/* Devotional Reading Modal */}
+      {!isViewingPast && (
+        <DevotionalReadingModal
+          open={readingModalOpen}
+          onOpenChange={setReadingModalOpen}
+          data={data}
+          lang={lang}
+        />
+      )}
 
       {/* ── 9. JOURNALING ── */}
       {!isViewingPast && (
