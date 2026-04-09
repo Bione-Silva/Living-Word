@@ -1,0 +1,1 @@
+UPDATE public.devotionals SET cover_image_url = 'https://osusqcbyybfuwdewvbai.supabase.co/storage/v1/object/public/devotional-assets/covers/2026-04-10-PT.jpg' WHERE id = '16b71f12-4e14-402e-91e2-f5a835aed0cf';
