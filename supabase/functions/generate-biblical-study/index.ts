@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const MODEL = "google/gemini-3-flash-preview";
+const MODEL = "gemini-2.0-flash";
 
 const depthRequirements = {
   basic: {
@@ -129,18 +129,18 @@ function validateStudy(candidate: Record<string, unknown>, requirements: StudyRe
 }
 
 async function requestStudyGeneration({
-  lovableApiKey,
+  geminiApiKey,
   systemPrompt,
   userPrompt,
 }: {
-  lovableApiKey: string;
+  geminiApiKey: string;
   systemPrompt: string;
   userPrompt: string;
 }) {
-  const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const aiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${lovableApiKey}`,
+      Authorization: `Bearer ${geminiApiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -200,10 +200,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY');
 
-    if (!lovableApiKey) {
-      return jsonResponse({ error: "LOVABLE_API_KEY not configured" }, 500);
+    if (!geminiApiKey) {
+      return jsonResponse({ error: "GEMINI_API_KEY not configured" }, 500);
     }
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -343,7 +343,7 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
         : `${baseUserPrompt}\n\nCRITICAL REVISION REQUIRED (attempt ${attempt}): your previous JSON was REJECTED for these reasons:\n- ${lastIssues.join("\n- ")}\n\nYou MUST fix ALL of the above. For any field that was "too short", write AT LEAST double the minimum word count. The conclusion MUST be a substantial, multi-paragraph reflection of at least ${requirements.conclusionWords} words. Rewrite the ENTIRE study from scratch.`;
 
       const generation = await requestStudyGeneration({
-        lovableApiKey,
+        geminiApiKey,
         systemPrompt,
         userPrompt: repairPrompt,
       });

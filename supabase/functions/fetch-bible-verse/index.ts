@@ -5,7 +5,7 @@ const corsHeaders = {
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
+const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -45,8 +45,8 @@ Deno.serve(async (req) => {
       })
     }
 
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
+    if (!GEMINI_API_KEY) {
+      return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -64,14 +64,14 @@ Rules:
 - Do NOT hallucinate — if you are unsure of the exact wording, return your best known canonical text
 - Return the verse text EXACTLY as it appears in the ${version} translation`
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${GEMINI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Return the exact text of: ${passage}` },

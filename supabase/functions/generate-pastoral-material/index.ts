@@ -35,10 +35,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY');
 
-    if (!lovableApiKey) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
+    if (!geminiApiKey) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -202,14 +202,14 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
           ? `\n\nCRITICAL: Your previous response had only ${bestWordCount} words. The ABSOLUTE MINIMUM is ${requiredMin} words. You MUST write significantly more. Expand every section with detailed explanations, examples, illustrations, and applications. Do NOT summarize.`
           : "";
 
-        const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        const aiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${lovableApiKey}`,
+            Authorization: `Bearer ${geminiApiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
+            model: "gemini-2.0-flash",
             max_tokens: 7000,
             messages: [
               { role: "system", content: systemPrompt },
@@ -270,7 +270,7 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
         await adminClient.from("generation_logs").insert({
           user_id: userId,
           feature: mode,
-          model: "google/gemini-3-flash-preview",
+          model: "gemini-2.0-flash",
           input_tokens: lastUsage.prompt_tokens || 0,
           output_tokens: lastUsage.completion_tokens || 0,
           total_tokens: lastUsage.total_tokens || 0,
@@ -306,7 +306,7 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
         generations_remaining: generationsRemaining,
         upgrade_hint: upgradeHint,
         generation_meta: {
-          model: "google/gemini-3-flash-preview",
+          model: "gemini-2.0-flash",
           total_tokens: totalTokensAll,
           total_cost_usd: totalCostAll,
           elapsed_ms: elapsedMs,

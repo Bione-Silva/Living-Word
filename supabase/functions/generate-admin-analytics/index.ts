@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get('Authorization');
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY');
 
     // Verify caller is admin
     const supabase = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
 
     if (!apiKey) {
       return new Response(JSON.stringify({
-        insight: `📊 **Resumo Rápido**\n\n- ${totalUsers} usuários registrados\n- ${free} free, ${pastoral} pastoral, ${church} church, ${ministry} ministry\n- MRR estimado: US$ ${mrr.toFixed(2)}\n- ${totalGenerations} gerações utilizadas\n\n*Configure a LOVABLE_API_KEY para análises mais profundas com IA.*`
+        insight: `📊 **Resumo Rápido**\n\n- ${totalUsers} usuários registrados\n- ${free} free, ${pastoral} pastoral, ${church} church, ${ministry} ministry\n- MRR estimado: US$ ${mrr.toFixed(2)}\n- ${totalGenerations} gerações utilizadas\n\n*Configure a GEMINI_API_KEY para análises mais profundas com IA.*`
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -61,14 +61,14 @@ Dê insights sobre:
 
 Seja direto, use números e percentuais. Responda em português.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gemini-2.5-flash',
         messages: [
           { role: 'system', content: 'Você é um CFO analítico de SaaS. Dê conselhos financeiros baseados em dados reais.' },
           { role: 'user', content: prompt },

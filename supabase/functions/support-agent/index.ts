@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY');
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'API key not configured' }), {
         status: 500,
@@ -36,14 +36,14 @@ Deno.serve(async (req) => {
       { role: 'user', content: message },
     ];
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gemini-2.5-flash',
         messages,
         max_tokens: 800,
       }),
