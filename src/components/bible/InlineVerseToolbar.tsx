@@ -46,7 +46,7 @@ interface Props {
 
 export function InlineVerseToolbar({
   selectedVerses, bookId, chapter, translationCode,
-  favoritedVerses, onFavoriteToggle, onHighlight, onNoteSaved, onClose,
+  favoritedVerses, onFavoriteToggle, onHighlight, onNoteSaved, onClose, onStudySidebar,
 }: Props) {
   const { lang } = useLanguage();
   const { user } = useAuth();
