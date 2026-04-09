@@ -67,12 +67,18 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
     } finally {
       setLoading(false);
     }
-  }, [user, passage, lang, content]);
+  }, [user, passage, lang]);
 
-  // Trigger generation when opened
+  // Trigger generation when sidebar opens
+  const prevOpenRef = useRef(false);
+  if (open && !prevOpenRef.current && passage) {
+    prevOpenRef.current = true;
+    generate();
+  }
+  if (!open) prevOpenRef.current = false;
+
   const handleOpenChange = (val: boolean) => {
     onOpenChange(val);
-    if (val && passage) generate();
   };
 
   const handleCopy = () => {
