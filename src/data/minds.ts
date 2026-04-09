@@ -13,6 +13,11 @@ export interface MindWork {
   year?: string;
 }
 
+export interface TheologyDNAItem {
+  axis: Record<L, string>;
+  value: number;
+}
+
 export interface MindFullData {
   id: string;
   name: string;
@@ -27,6 +32,7 @@ export interface MindFullData {
   signatures: Record<L, string>[];
   theologyMatrix: Record<L, string>;
   works: MindWork[];
+  theologyDNA: TheologyDNAItem[];
 }
 
 export const minds: MindFullData[] = [
