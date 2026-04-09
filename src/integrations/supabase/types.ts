@@ -148,6 +148,97 @@ export type Database = {
         }
         Relationships: []
       }
+      devotional_engagements: {
+        Row: {
+          action: string
+          created_at: string
+          devotional_id: string | null
+          duration_seconds: number | null
+          emotional_response: string | null
+          id: string
+          reflection_sentiment: string | null
+          reflection_text: string | null
+          series_number: number | null
+          theme: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          devotional_id?: string | null
+          duration_seconds?: number | null
+          emotional_response?: string | null
+          id?: string
+          reflection_sentiment?: string | null
+          reflection_text?: string | null
+          series_number?: number | null
+          theme?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          devotional_id?: string | null
+          duration_seconds?: number | null
+          emotional_response?: string | null
+          id?: string
+          reflection_sentiment?: string | null
+          reflection_text?: string | null
+          series_number?: number | null
+          theme?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devotional_engagements_devotional_id_fkey"
+            columns: ["devotional_id"]
+            isOneToOne: false
+            referencedRelation: "devotionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devotional_user_profiles: {
+        Row: {
+          average_time_spent: number | null
+          consecutive_days_engaged: number | null
+          created_at: string
+          favorite_themes: Json | null
+          last_devotional_id: string | null
+          last_devotional_theme: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          average_time_spent?: number | null
+          consecutive_days_engaged?: number | null
+          created_at?: string
+          favorite_themes?: Json | null
+          last_devotional_id?: string | null
+          last_devotional_theme?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          average_time_spent?: number | null
+          consecutive_days_engaged?: number | null
+          created_at?: string
+          favorite_themes?: Json | null
+          last_devotional_id?: string | null
+          last_devotional_theme?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devotional_user_profiles_last_devotional_id_fkey"
+            columns: ["last_devotional_id"]
+            isOneToOne: false
+            referencedRelation: "devotionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       devotionals: {
         Row: {
           anchor_verse: string
@@ -165,6 +256,8 @@ export type Database = {
           language: string
           reflection_question: string | null
           scheduled_date: string
+          series_id: string | null
+          series_number: number | null
           title: string
           updated_at: string
         }
@@ -184,6 +277,8 @@ export type Database = {
           language?: string
           reflection_question?: string | null
           scheduled_date: string
+          series_id?: string | null
+          series_number?: number | null
           title: string
           updated_at?: string
         }
@@ -203,6 +298,8 @@ export type Database = {
           language?: string
           reflection_question?: string | null
           scheduled_date?: string
+          series_id?: string | null
+          series_number?: number | null
           title?: string
           updated_at?: string
         }
@@ -524,6 +621,36 @@ export type Database = {
           notes?: string | null
           revenue?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_queue: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          scheduled_for: string
+          sent: boolean
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          scheduled_for: string
+          sent?: boolean
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          scheduled_for?: string
+          sent?: boolean
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }

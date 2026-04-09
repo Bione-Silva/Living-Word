@@ -15,6 +15,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
+import { useEngagementTracker } from '@/components/engagement/EngagementTracker';
+import { ReflectionCapture } from '@/components/engagement/ReflectionCapture';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -333,6 +335,12 @@ export default function Devocional() {
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [viewingPast, setViewingPast] = useState<PastDevotional | null>(null);
   const [transitioning, setTransitioning] = useState(false);
+
+  // Engagement tracking
+  const { trackAction } = useEngagementTracker({
+    devotionalId: data?.id,
+    theme: data?.category,
+  });
 
   // Admin debug date picker
   const [isAdmin, setIsAdmin] = useState(false);
@@ -1089,6 +1097,25 @@ export default function Devocional() {
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* AI-powered Reflection Analysis */}
+      {!isViewingPast && data && (
+        <div className="mt-4 rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
+          <div className="flex items-center gap-2.5 mb-3">
+            <MessageCircle className="h-4 w-4" style={{ color: colors.gold }} />
+            <p className="text-sm font-bold" style={{ color: colors.text }}>
+              {lang === 'PT' ? '🧠 Análise Inteligente' : lang === 'ES' ? '🧠 Análisis Inteligente' : '🧠 Smart Analysis'}
+            </p>
+          </div>
+          <ReflectionCapture
+            devotionalId={data.id}
+            theme={data.category}
+            onSaved={(sentiment) => {
+              trackAction('complete_reflection', { reflectionSentiment: sentiment });
+            }}
+          />
         </div>
       )}
 
