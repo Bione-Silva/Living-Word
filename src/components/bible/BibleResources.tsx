@@ -171,13 +171,15 @@ export function BibleResources() {
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+      <div className="flex items-center gap-1 bg-muted/60 rounded-lg p-1 border border-border/50">
         {tabs.map(t => (
           <button
             key={t.key}
             onClick={() => { setTab(t.key); setSelectedContextBook(null); }}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold transition-all ${
-              tab === t.key ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-md text-xs font-semibold transition-all ${
+              tab === t.key
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-foreground/70 bg-card/50 border border-border/40 hover:text-foreground hover:bg-card'
             }`}
           >
             <t.icon className="h-3.5 w-3.5" />
