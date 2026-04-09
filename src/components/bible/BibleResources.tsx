@@ -256,8 +256,8 @@ export function BibleResources() {
                     <item.icon className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{item.title}</p>
-                    <p className="text-[11px] text-muted-foreground">{item.desc}</p>
+                    <p className="text-sm font-medium text-foreground">{item.title[lang]}</p>
+                    <p className="text-[11px] text-muted-foreground">{item.desc[lang]}</p>
                   </div>
                   <ChevronDown className="h-4 w-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-transform shrink-0 group-data-[state=open]:rotate-180" />
                 </button>
@@ -269,17 +269,17 @@ export function BibleResources() {
                       <div key={li} className="space-y-1.5">
                         <div className="flex items-start gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                          <p className="text-sm text-foreground/80">{loc}</p>
+                          <p className="text-sm text-foreground/80">{loc[lang]}</p>
                         </div>
                         <div className="flex items-center gap-2 ml-3.5">
                           <button
-                            onClick={() => handleGenerateArt(loc)}
+                            onClick={() => handleGenerateArt(loc[lang])}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-primary/15 text-primary hover:bg-primary/25 transition-colors"
                           >
                             <Sparkles className="h-3 w-3" /> {labels.generateArt[lang]}
                           </button>
                           <button
-                            onClick={() => handleStudy(item.title)}
+                            onClick={() => handleStudy(item.title[lang])}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                           >
                             <GraduationCap className="h-3 w-3" /> {labels.study[lang]}
@@ -292,13 +292,13 @@ export function BibleResources() {
                   <div className="ml-4 border-l-2 border-border pl-4 py-3">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleGenerateArt(item.title)}
+                        onClick={() => handleGenerateArt(item.title[lang])}
                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-primary/15 text-primary hover:bg-primary/25 transition-colors"
                       >
                         <Sparkles className="h-3 w-3" /> {labels.generateArt[lang]}
                       </button>
                       <button
-                        onClick={() => handleStudy(item.title)}
+                        onClick={() => handleStudy(item.title[lang])}
                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                       >
                         <GraduationCap className="h-3 w-3" /> {labels.study[lang]}
