@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
 
 type L = 'PT' | 'EN' | 'ES';
 
