@@ -45,7 +45,6 @@ export function ReflectionCapture({ devotionalId, theme, onSaved }: ReflectionCa
       });
 
       const detectedSentiment = sentimentError ? 'mixed' : sentimentData?.sentiment || 'mixed';
-      setSentiment(detectedSentiment);
 
       // Track the reflection engagement
       await supabase.functions.invoke('track-engagement', {
@@ -79,12 +78,6 @@ export function ReflectionCapture({ devotionalId, theme, onSaved }: ReflectionCa
         maxLength={2000}
       />
 
-      {sentiment && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Heart className="h-3.5 w-3.5" />
-          <span>{sentimentLabels[sentiment]?.[lang] || sentiment}</span>
-        </div>
-      )}
 
       <Button
         onClick={handleSave}
