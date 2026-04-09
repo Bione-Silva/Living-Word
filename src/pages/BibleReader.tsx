@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { bibleBooks, getBookName, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
 import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
