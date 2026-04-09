@@ -324,6 +324,7 @@ export default function Devocional() {
   const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
   const [showAddReflection, setShowAddReflection] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const coverCardRef = useRef<HTMLDivElement>(null);
 
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
