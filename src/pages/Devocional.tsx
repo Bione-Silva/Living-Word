@@ -151,61 +151,13 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-      if (wasPlaying && audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-        setPlaying(true);
-      }
-    }, 100);
+    if (!progressRef.current || !audioRef.current) return;
+    const rect = progressRef.current.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const newTime = pct * (duration || 1);
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
   };
-
-  const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
-
-  if (!audioSrc) return <AudioPlaceholder title={data.title} lang={lang} />;
-
-  return (
-    <div className="rounded-2xl border p-5 sm:p-6 space-y-5" style={{ borderColor: 'hsl(38, 40%, 80%)', background: 'linear-gradient(135deg, hsl(38, 40%, 96%), hsl(36, 30%, 94%))' }}>
-      <audio
-        ref={audioRef}
-        src={audioSrc}
-        muted={muted}
-        onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
-        onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
-        onEnded={() => setPlaying(false)}
-      />
-
-      {/* Header with waves */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(38, 52%, 58%, 0.15)' }}>
-            <SoundWaves active={playing} />
-          </div>
-          <div>
-            <p className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ color: 'hsl(38, 52%, 48%)' }}>
-              {labels.listenLabel[lang]}
-            </p>
-            <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: 'hsl(24, 30%, 15%)' }}>{data.title}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Voice Selector */}
-      <div className="flex items-center gap-2">
-        {voiceOptions.map(opt => (
-          <button
-            key={opt.key}
-            onClick={() => handleVoiceChange(opt.key)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all"
-            style={voice === opt.key
-              ? { backgroundColor: 'hsl(38, 52%, 48%)', color: '#fff', boxShadow: '0 2px 8px hsl(38, 52%, 48%, 0.3)' }
-              : { backgroundColor: 'hsl(36, 20%, 90%)', color: 'hsl(24, 18%, 45%)' }
-            }
-          >
-            {opt.icon}
-            <span className="hidden sm:inline">{opt.label}</span>
-          </button>
-        ))}
-      </div>
 
       {/* Progress bar */}
       <div className="space-y-1.5">
