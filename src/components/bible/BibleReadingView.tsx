@@ -131,34 +131,45 @@ export function BibleReadingView({
       });
   }, [user, bookId, chapter]);
 
-  const handleHighlight = async (color: string) => {
-    if (!user || selectedVerse === null) return;
-    const v = verses.find(vv => vv.verse === selectedVerse);
-    if (!v) return;
+  const handleHighlight = async (color: string, verseNums: number[]) => {
+    if (!user || verseNums.length === 0) return;
 
-    // Toggle: same color = remove
-    if (highlights[selectedVerse] === color) {
+    for (const vn of verseNums) {
+      const v = verses.find(vv => vv.verse === vn);
+      if (!v) continue;
+
+      // Toggle: same color = remove
+      if (highlights[vn] === color) {
+        await supabase.from('bible_highlights').delete()
+          .eq('user_id', user.id).eq('book_id', bookId)
+          .eq('chapter_number', chapter).eq('start_verse_number', vn);
+        setHighlights(p => {
+          const copy = { ...p };
+          delete copy[vn];
+          return copy;
+        });
+        continue;
+      }
+
       await supabase.from('bible_highlights').delete()
         .eq('user_id', user.id).eq('book_id', bookId)
-        .eq('chapter_number', chapter).eq('start_verse_number', selectedVerse);
-      setHighlights(p => {
-        const copy = { ...p };
-        delete copy[selectedVerse];
-        return copy;
+        .eq('chapter_number', chapter).eq('start_verse_number', vn);
+      await supabase.from('bible_highlights').insert({
+        user_id: user.id, book_id: bookId, chapter_number: chapter,
+        start_verse_number: vn, end_verse_number: vn,
+        selected_text: v.text.trim(), color_key: color,
+        language: lang, translation_code: translation,
       });
-      return;
+      setHighlights(p => ({ ...p, [vn]: color }));
     }
+  };
 
-    await supabase.from('bible_highlights').delete()
-      .eq('user_id', user.id).eq('book_id', bookId)
-      .eq('chapter_number', chapter).eq('start_verse_number', selectedVerse);
-    await supabase.from('bible_highlights').insert({
-      user_id: user.id, book_id: bookId, chapter_number: chapter,
-      start_verse_number: selectedVerse, end_verse_number: selectedVerse,
-      selected_text: v.text.trim(), color_key: color,
-      language: lang, translation_code: translation,
+  const toggleVerseSelection = (verseNum: number) => {
+    setSelectedVerses(prev => {
+      const next = new Set(prev);
+      if (next.has(verseNum)) next.delete(verseNum); else next.add(verseNum);
+      return next;
     });
-    setHighlights(p => ({ ...p, [selectedVerse]: color }));
   };
 
   const chapterNumbers = Array.from({ length: totalChapters }, (_, i) => i + 1);
