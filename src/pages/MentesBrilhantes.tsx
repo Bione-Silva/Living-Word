@@ -107,6 +107,8 @@ export default function MentesBrilhantes() {
               <div>
                 <p className="text-lg font-bold text-emerald-600 font-mono">{visibleMinds.length}</p>
                 <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Active Agents' : 'Agentes Ativos'}</p>
+              </div>
+            </div>
             {visibleMinds.length >= 2 && (
               <>
                 <div className="w-px h-8 bg-[hsl(30,15%,88%)]" />
