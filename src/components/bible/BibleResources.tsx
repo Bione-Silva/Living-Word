@@ -190,7 +190,7 @@ export function BibleResources() {
   };
 
   const handleStudy = (passage: string) => {
-    navigate('/estudo-biblico', { state: { prefillPassage: passage } });
+    navigate('/estudos/novo', { state: { prefillPassage: passage } });
   };
 
   const getBookContext = (bookId: string): BookContextData | null => {
