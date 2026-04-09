@@ -114,6 +114,9 @@ function buildProfileSummary(data: { axis: string; value: number }[], lang: L): 
 }
 
 export function TheologyDNAChart({ data, lang }: Props) {
+  const [animated, setAnimated] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
   const chartData = data.map(d => ({
     axis: d.axis[lang],
     short: shortLabel(d.axis[lang]),
@@ -122,6 +125,17 @@ export function TheologyDNAChart({ data, lang }: Props) {
 
   const sorted = [...chartData].sort((a, b) => b.value - a.value);
   const summary = buildProfileSummary(chartData, lang);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setAnimated(true); observer.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-7 md:p-10">
