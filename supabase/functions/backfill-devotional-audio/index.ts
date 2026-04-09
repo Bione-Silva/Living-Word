@@ -59,51 +59,65 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     )
 
-    // Find devotionals without audio (limit to 1 at a time to avoid timeout)
-    const { data: devs } = await supabaseAdmin
+    // Accept optional voice parameter (default: generate only 'nova' to avoid timeout)
+    let voice: 'nova' | 'alloy' | 'onyx' = 'nova'
+    let targetId: string | null = null
+    try {
+      const body = await req.json()
+      if (body.voice) voice = body.voice
+      if (body.id) targetId = body.id
+    } catch { /* no body */ }
+
+    // Build query for devotionals missing the requested voice
+    const voiceCol = `audio_url_${voice}` as const
+    let query = supabaseAdmin
       .from('devotionals')
       .select('id, title, body_text, anchor_verse_text, closing_prayer, scheduled_date, language')
-      .is('audio_url_nova', null)
+
+    if (targetId) {
+      query = query.eq('id', targetId)
+    } else {
+      query = query.is(voiceCol, null)
+    }
+
+    const { data: devs } = await query
       .order('scheduled_date', { ascending: false })
       .limit(1)
 
     if (!devs || devs.length === 0) {
-      return new Response(JSON.stringify({ message: 'All devotionals have audio' }), {
+      return new Response(JSON.stringify({ message: `All devotionals have ${voice} audio` }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
     const dev = devs[0]
     const fullText = `${dev.title}.\n\n${dev.anchor_verse_text}\n\n${dev.body_text}\n\n${dev.closing_prayer || ''}`
-    console.log(`Generating audio for ${dev.language} ${dev.scheduled_date}: ${dev.title}`)
+    console.log(`Generating ${voice} audio for ${dev.language} ${dev.scheduled_date}: ${dev.title}`)
 
-    const [novaData, alloyData, onyxData] = await Promise.all([
-      generateAudio(openaiKey, fullText, 'nova'),
-      generateAudio(openaiKey, fullText, 'alloy'),
-      generateAudio(openaiKey, fullText, 'onyx'),
-    ])
+    const audioData = await generateAudio(openaiKey, fullText, voice)
+    if (!audioData) {
+      return new Response(JSON.stringify({ error: `Failed to generate ${voice} audio` }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
 
     const prefix = `audio/${dev.scheduled_date}-${dev.language}`
-    const novaUrl = novaData ? await uploadToStorage(supabaseAdmin, `${prefix}-nova.mp3`, novaData, 'audio/mpeg') : null
-    const alloyUrl = alloyData ? await uploadToStorage(supabaseAdmin, `${prefix}-alloy.mp3`, alloyData, 'audio/mpeg') : null
-    const onyxUrl = onyxData ? await uploadToStorage(supabaseAdmin, `${prefix}-onyx.mp3`, onyxData, 'audio/mpeg') : null
+    const audioUrl = await uploadToStorage(supabaseAdmin, `${prefix}-${voice}.mp3`, audioData, 'audio/mpeg')
 
     await supabaseAdmin.from('devotionals').update({
-      audio_url_nova: novaUrl,
-      audio_url_alloy: alloyUrl,
-      audio_url_onyx: onyxUrl,
+      [`audio_url_${voice}`]: audioUrl,
     }).eq('id', dev.id)
 
-    console.log(`✅ Audio generated for ${dev.language} ${dev.scheduled_date}`)
+    console.log(`✅ ${voice} audio generated for ${dev.language} ${dev.scheduled_date}`)
 
     return new Response(JSON.stringify({
       id: dev.id,
       title: dev.title,
       language: dev.language,
       date: dev.scheduled_date,
-      has_nova: !!novaUrl,
-      has_alloy: !!alloyUrl,
-      has_onyx: !!onyxUrl,
+      voice,
+      url: audioUrl,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
