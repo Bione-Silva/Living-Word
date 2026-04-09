@@ -239,8 +239,6 @@ Deno.serve(async (req) => {
           scheduled_date: targetDate,
           language: lang,
           cover_image_url: coverUrl,
-          audio_url_nova: audioNovaUrl,
-          audio_url_alloy: audioAlloyUrl,
           audio_url_onyx: audioOnyxUrl,
         })
 
