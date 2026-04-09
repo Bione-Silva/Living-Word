@@ -38,11 +38,13 @@ interface DevotionalData {
 interface PastDevotional {
   id: string;
   title: string;
-  type: string;
-  passage: string | null;
-  created_at: string;
-  content: string;
+  anchor_verse: string;
+  scheduled_date: string;
+  body_text: string;
   cover_image_url?: string | null;
+  audio_url_nova?: string | null;
+  audio_url_alloy?: string | null;
+  audio_url_onyx?: string | null;
 }
 
 const labels = {
@@ -393,18 +395,23 @@ export default function Devocional() {
   useEffect(() => {
     if (!user) return;
     const load = async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('language')
+        .eq('id', user.id)
+        .single();
+      const userLang = profile?.language || lang;
       const { data } = await supabase
-        .from('materials')
-        .select('id, title, type, passage, created_at, content, cover_image_url')
-        .eq('user_id', user.id)
-        .eq('type', 'devotional')
-        .order('created_at', { ascending: false })
+        .from('devotionals')
+        .select('id, title, anchor_verse, scheduled_date, body_text, cover_image_url, audio_url_nova, audio_url_alloy, audio_url_onyx')
+        .eq('language', userLang)
+        .order('scheduled_date', { ascending: false })
         .limit(30);
-      setPastItems((data as any) || []);
+      setPastItems((data as PastDevotional[]) || []);
       setPastLoading(false);
     };
     load();
-  }, [user]);
+  }, [user, lang]);
 
   // Load existing note for today's devotional
   useEffect(() => {
@@ -473,7 +480,7 @@ export default function Devocional() {
   const handleCopy = () => {
     if (!data) return;
     const text = viewingPast
-      ? `*${viewingPast.title}*\n\n${viewingPast.content}`
+      ? `*${viewingPast.title}*\n\n${viewingPast.body_text}`
       : `*${data.title}*\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${data.body_text}\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
     navigator.clipboard.writeText(text);
     toast.success(labels.copied[lang]);
@@ -482,7 +489,7 @@ export default function Devocional() {
   const handleWhatsApp = () => {
     if (!data) return;
     const text = viewingPast
-      ? `*${viewingPast.title}*\n\n${viewingPast.content.slice(0, 500)}...`
+      ? `*${viewingPast.title}*\n\n${viewingPast.body_text.slice(0, 500)}...`
       : `*${data.title}*\n\n_"${data.anchor_verse_text}"_\n— ${data.anchor_verse}\n\n${data.body_text.slice(0, 500)}...\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -542,11 +549,11 @@ export default function Devocional() {
 
   const isViewingPast = !!viewingPast;
   const displayTitle = isViewingPast ? viewingPast.title : data.title;
-  const displayBody = isViewingPast ? viewingPast.content : data.body_text;
-  const displayVerse = isViewingPast ? (viewingPast.passage || '') : data.anchor_verse;
+  const displayBody = isViewingPast ? viewingPast.body_text : data.body_text;
+  const displayVerse = isViewingPast ? (viewingPast.anchor_verse || '') : data.anchor_verse;
   const displayVerseText = isViewingPast ? '' : data.anchor_verse_text;
   const displayCategory = isViewingPast ? '' : data.category;
-  const displayDate = isViewingPast ? viewingPast.created_at : data.scheduled_date;
+  const displayDate = isViewingPast ? viewingPast.scheduled_date : data.scheduled_date;
   const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
   /* ─── Body text renderer ─── */
@@ -697,8 +704,8 @@ export default function Devocional() {
                         {item.title}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        {item.passage && <span className="text-[10px] truncate" style={{ color: colors.textMuted }}>{item.passage}</span>}
-                        <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.created_at, lang)}</span>
+                        {item.anchor_verse && <span className="text-[10px] truncate" style={{ color: colors.textMuted }}>{item.anchor_verse}</span>}
+                        <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.scheduled_date, lang)}</span>
                       </div>
                     </div>
                     {isActive && <Check className="h-4 w-4 shrink-0 mt-1" style={{ color: colors.gold }} />}
@@ -1101,7 +1108,7 @@ export default function Devocional() {
                       <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: isActive ? colors.gold : colors.text }}>
                         {item.title}
                       </p>
-                      <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.created_at, lang)}</span>
+                      <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.scheduled_date, lang)}</span>
                     </div>
                     {isActive && <Check className="h-4 w-4 shrink-0 mt-1" style={{ color: colors.gold }} />}
                   </button>

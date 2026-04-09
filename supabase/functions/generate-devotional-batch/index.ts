@@ -109,6 +109,36 @@ async function generateCoverImage(apiKey: string, title: string, category: strin
   }
 }
 
+async function generateAudio(openaiKey: string, text: string, voice: 'nova' | 'alloy' | 'onyx'): Promise<Uint8Array | null> {
+  try {
+    // Trim text for TTS (max ~4000 chars)
+    const ttsText = text.length > 4000 ? text.slice(0, 4000) + '...' : text
+    const resp = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'tts-1',
+        input: ttsText,
+        voice,
+        response_format: 'mp3',
+        speed: 0.95,
+      }),
+    })
+    if (!resp.ok) {
+      console.error(`TTS error (${voice}):`, resp.status, await resp.text())
+      return null
+    }
+    const buf = await resp.arrayBuffer()
+    return new Uint8Array(buf)
+  } catch (e) {
+    console.error(`TTS failed (${voice}):`, e)
+    return null
+  }
+}
+
 async function uploadToStorage(supabase: any, path: string, data: Uint8Array, contentType: string): Promise<string | null> {
   const { error } = await supabase.storage
     .from('devotional-assets')
@@ -129,6 +159,7 @@ Deno.serve(async (req) => {
   try {
     const lovableKey = Deno.env.get('LOVABLE_API_KEY')
     if (!lovableKey) throw new Error('LOVABLE_API_KEY not configured')
+    const openaiKey = Deno.env.get('OPENAI_API_KEY') || ''
 
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -176,7 +207,35 @@ Deno.serve(async (req) => {
           console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
         }
 
-        // Audio URLs set to null — TTS will be handled externally in the future
+        // Generate TTS audio (3 voices in parallel)
+        let audioNovaUrl: string | null = null
+        let audioAlloyUrl: string | null = null
+        let audioOnyxUrl: string | null = null
+
+        if (openaiKey) {
+          const fullText = `${devotional.title}.\n\n${devotional.anchor_verse_text}\n\n${devotional.body_text}\n\n${devotional.closing_prayer || ''}`
+          console.log(`[${lang}] Generating TTS audio (3 voices)...`)
+          const [novaData, alloyData, onyxData] = await Promise.all([
+            generateAudio(openaiKey, fullText, 'nova'),
+            generateAudio(openaiKey, fullText, 'alloy'),
+            generateAudio(openaiKey, fullText, 'onyx'),
+          ])
+          if (novaData) {
+            audioNovaUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-nova.mp3`, novaData, 'audio/mpeg')
+            console.log(`[${lang}] Audio nova: ${audioNovaUrl ? 'OK' : 'FAILED'}`)
+          }
+          if (alloyData) {
+            audioAlloyUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-alloy.mp3`, alloyData, 'audio/mpeg')
+            console.log(`[${lang}] Audio alloy: ${audioAlloyUrl ? 'OK' : 'FAILED'}`)
+          }
+          if (onyxData) {
+            audioOnyxUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-onyx.mp3`, onyxData, 'audio/mpeg')
+            console.log(`[${lang}] Audio onyx: ${audioOnyxUrl ? 'OK' : 'FAILED'}`)
+          }
+        } else {
+          console.log(`[${lang}] Skipping TTS — OPENAI_API_KEY not set`)
+        }
+
         const { error: insertErr } = await supabaseAdmin.from('devotionals').insert({
           title: devotional.title,
           category: devotional.category,
@@ -189,9 +248,9 @@ Deno.serve(async (req) => {
           scheduled_date: targetDate,
           language: lang,
           cover_image_url: coverUrl,
-          audio_url_nova: null,
-          audio_url_alloy: null,
-          audio_url_onyx: null,
+          audio_url_nova: audioNovaUrl,
+          audio_url_alloy: audioAlloyUrl,
+          audio_url_onyx: audioOnyxUrl,
         })
 
         if (insertErr) {
