@@ -9,6 +9,84 @@ import { toast } from 'sonner';
 import { getBookName, type L } from '@/lib/bible-data';
 import ReactMarkdown from 'react-markdown';
 
+/** Convert structured study JSON to markdown */
+function studyToMarkdown(study: Record<string, any>): string {
+  const lines: string[] = [];
+  if (study.title) lines.push(`# ${study.title}\n`);
+  if (study.central_idea) lines.push(`> ${study.central_idea}\n`);
+  if (study.summary) lines.push(`## Resumo\n${study.summary}\n`);
+
+  if (study.historical_context?.text) {
+    lines.push(`## Contexto Histórico\n${study.historical_context.text}\n`);
+  }
+  if (study.literary_context) {
+    const lc = study.literary_context;
+    if (lc.genre) lines.push(`**Gênero literário:** ${lc.genre}\n`);
+    if (lc.position_in_book) lines.push(`${lc.position_in_book}\n`);
+  }
+
+  if (study.bible_text?.length) {
+    lines.push(`## Texto Bíblico\n`);
+    for (const v of study.bible_text) {
+      lines.push(`**${v.reference || ''}** — ${v.text || ''}\n`);
+    }
+  }
+
+  if (study.text_structure?.length) {
+    lines.push(`## Estrutura do Texto\n`);
+    for (const s of study.text_structure) {
+      lines.push(`- **${s.section || ''}** (${s.verses || ''}): ${s.description || ''}`);
+    }
+    lines.push('');
+  }
+
+  if (study.exegesis?.length) {
+    lines.push(`## Exegese\n`);
+    for (const e of study.exegesis) {
+      lines.push(`### ${e.verse_ref || e.verse || ''}\n`);
+      if (e.linguistic_note) lines.push(`${e.linguistic_note}\n`);
+      if (e.theological_insight) lines.push(`*${e.theological_insight}*\n`);
+    }
+  }
+
+  if (study.theological_interpretation?.length) {
+    lines.push(`## Interpretação Teológica\n`);
+    for (const t of study.theological_interpretation) {
+      lines.push(`- **${t.theme || ''}**: ${t.interpretation || ''}`);
+    }
+    lines.push('');
+  }
+
+  if (study.biblical_connections?.length) {
+    lines.push(`## Conexões Bíblicas\n`);
+    for (const c of study.biblical_connections) {
+      lines.push(`- **${c.reference || ''}**: ${c.note || ''}`);
+    }
+    lines.push('');
+  }
+
+  if (study.application?.length) {
+    lines.push(`## Aplicação\n`);
+    for (const a of study.application) {
+      lines.push(`- **${a.application || ''}** → ${a.practical_action || ''}`);
+    }
+    lines.push('');
+  }
+
+  if (study.reflection_questions?.length) {
+    lines.push(`## Perguntas para Reflexão\n`);
+    for (const q of study.reflection_questions) {
+      lines.push(`- ${q.question || q}`);
+    }
+    lines.push('');
+  }
+
+  if (study.conclusion) lines.push(`## Conclusão\n${study.conclusion}\n`);
+  if (study.pastoral_warning) lines.push(`> ⚠️ ${study.pastoral_warning}\n`);
+
+  return lines.join('\n');
+}
+
 const labels = {
   title: { PT: 'Estudo Rápido', EN: 'Quick Study', ES: 'Estudio Rápido' },
   generating: { PT: 'Gerando estudo...', EN: 'Generating study...', ES: 'Generando estudio...' },
