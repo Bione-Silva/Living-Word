@@ -68,7 +68,7 @@ export function BibleReadingView({
   const [loading, setLoading] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [error, setError] = useState('');
-  const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
+  const [selectedVerses, setSelectedVerses] = useState<Set<number>>(new Set());
   const [favoritedVerses, setFavoritedVerses] = useState<Set<number>>(new Set());
   const [highlights, setHighlights] = useState<Record<number, string>>({});
   const [chapterPickerOpen, setChapterPickerOpen] = useState(false);
