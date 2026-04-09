@@ -26,7 +26,7 @@ const labels = {
   section: { PT: '☕ CAFÉ COM A PALAVRA VIVA DE DEUS', EN: '☕ COFFEE WITH THE LIVING WORD OF GOD', ES: '☕ CAFÉ CON LA PALABRA VIVA DE DIOS' },
   header: { PT: 'SUA LEITURA DIÁRIA', EN: 'YOUR DAILY READING', ES: 'TU LECTURA DIARIA' },
   listen: { PT: 'Escutar', EN: 'Listen', ES: 'Escuchar' },
-  cta: { PT: 'Abrir leitura completa', EN: 'Open full reading', ES: 'Abrir lectura completa' },
+  cta: { PT: 'Ouvir / Ler completo', EN: 'Listen / Read full', ES: 'Escuchar / Leer completo' },
   loading: { PT: 'Preparando sua palavra...', EN: 'Preparing your word...', ES: 'Preparando tu palabra...' },
   error: { PT: 'Não conseguimos carregar a palavra de hoje.', EN: 'We couldn\'t load today\'s word.', ES: 'No pudimos cargar la palabra de hoy.' },
   shared: { PT: 'Link copiado!', EN: 'Link copied!', ES: '¡Enlace copiado!' },
