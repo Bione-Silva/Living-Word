@@ -43,54 +43,47 @@ Deno.serve(async (req) => {
 
     const sortedThemes = Object.entries(themeScores).sort((a, b) => b[1] - a[1])
     const topThemes = sortedThemes.slice(0, 5).map(([t, s]) => ({ theme: t, score: Math.round(s * 10) / 10 }))
+    const recentSentiments = (engagements || []).slice(0, 5).map(e => e.reflection_sentiment).filter(Boolean)
 
-    // Ask AI for recommendation
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
+    // Ask Gemini directly for recommendation
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')
     let nextTheme = topThemes[0]?.theme || 'esperança'
     let reasoning = 'Baseado em seu histórico de leitura'
 
-    if (LOVABLE_API_KEY && topThemes.length > 0) {
+    if (GEMINI_API_KEY && topThemes.length > 0) {
       try {
-        const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'google/gemini-3-flash-preview',
-            messages: [
-              { role: 'system', content: 'You recommend the next devotional theme based on user engagement history. Respond in the same language as the themes.' },
-              { role: 'user', content: `User engagement themes (sorted by preference): ${JSON.stringify(topThemes)}. Recent sentiments: ${JSON.stringify((engagements || []).slice(0, 5).map(e => e.reflection_sentiment).filter(Boolean))}. Recommend the next theme and explain why in 1 sentence.` },
-            ],
-            tools: [{
-              type: 'function',
-              function: {
-                name: 'recommend_theme',
-                description: 'Recommend next devotional theme',
-                parameters: {
-                  type: 'object',
-                  properties: {
-                    nextTheme: { type: 'string' },
-                    reasoning: { type: 'string' },
-                  },
-                  required: ['nextTheme', 'reasoning'],
-                  additionalProperties: false,
-                },
-              },
-            }],
-            tool_choice: { type: 'function', function: { name: 'recommend_theme' } },
-          }),
-        })
+        const geminiResp = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `You recommend the next devotional theme based on user engagement.
+User top themes: ${JSON.stringify(topThemes)}
+Recent sentiments: ${JSON.stringify(recentSentiments)}
 
-        if (aiResp.ok) {
-          const aiData = await aiResp.json()
-          const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0]
-          if (toolCall?.function?.arguments) {
-            const result = JSON.parse(toolCall.function.arguments)
+Respond ONLY with valid JSON: {"nextTheme": "theme name", "reasoning": "one sentence explanation in Portuguese"}`
+                }]
+              }],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 200 },
+            }),
+          }
+        )
+
+        if (geminiResp.ok) {
+          const geminiData = await geminiResp.json()
+          const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || ''
+          const jsonMatch = rawText.match(/\{[^}]+\}/)
+          if (jsonMatch) {
+            const result = JSON.parse(jsonMatch[0])
             nextTheme = result.nextTheme || nextTheme
             reasoning = result.reasoning || reasoning
           }
         }
       } catch (e) {
-        console.error('AI recommendation error:', e)
+        console.error('Gemini recommendation error:', e)
       }
     }
 

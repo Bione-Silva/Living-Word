@@ -12,57 +12,57 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'text is required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: 'AI not configured' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')
+
+    if (!GEMINI_API_KEY) {
+      // Fallback local simples
+      const lower = text.toLowerCase()
+      const positiveWords = ['alegria', 'grato', 'paz', 'amor', 'esperança', 'bênção', 'graça', 'fé', 'fortaleceu', 'impactou', 'tocou', 'maravilha', 'joy', 'grateful', 'peace', 'love', 'hope', 'blessed', 'faith']
+      const negativeWords = ['triste', 'difícil', 'sofrimento', 'dor', 'medo', 'angústia', 'perdido', 'duvido', 'desânimo', 'sad', 'fear', 'pain', 'doubt', 'lost']
+      const posScore = positiveWords.filter(w => lower.includes(w)).length
+      const negScore = negativeWords.filter(w => lower.includes(w)).length
+      const sentiment = posScore > negScore ? 'positive' : negScore > posScore ? 'negative' : 'mixed'
+      const score = Math.min(0.5 + Math.abs(posScore - negScore) * 0.1, 1.0)
+      return new Response(JSON.stringify({ sentiment, score }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
-        messages: [
-          { role: 'system', content: 'You are a sentiment analysis assistant. Analyze the sentiment of the given text and respond ONLY with a JSON object: {"sentiment": "positive"|"negative"|"mixed", "score": 0.0-1.0}. No other text.' },
-          { role: 'user', content: text.slice(0, 2000) },
-        ],
-        tools: [{
-          type: 'function',
-          function: {
-            name: 'classify_sentiment',
-            description: 'Classify text sentiment',
-            parameters: {
-              type: 'object',
-              properties: {
-                sentiment: { type: 'string', enum: ['positive', 'negative', 'mixed'] },
-                score: { type: 'number', minimum: 0, maximum: 1 },
-              },
-              required: ['sentiment', 'score'],
-              additionalProperties: false,
-            },
-          },
-        }],
-        tool_choice: { type: 'function', function: { name: 'classify_sentiment' } },
-      }),
-    })
+    // Chamar Gemini diretamente
+    const geminiResp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Analyze the sentiment of this text and respond ONLY with valid JSON in this exact format: {"sentiment": "positive" or "negative" or "mixed", "score": number between 0 and 1}\n\nText: "${text.slice(0, 1000)}"`
+            }]
+          }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 100 },
+        }),
+      }
+    )
 
-    if (!aiResp.ok) {
-      const status = aiResp.status
-      if (status === 429) return new Response(JSON.stringify({ error: 'Rate limited, try again later' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-      if (status === 402) return new Response(JSON.stringify({ error: 'Credits exhausted' }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-      return new Response(JSON.stringify({ error: 'AI error' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    if (!geminiResp.ok) {
+      console.error('Gemini error:', geminiResp.status)
+      throw new Error(`Gemini error: ${geminiResp.status}`)
     }
 
-    const aiData = await aiResp.json()
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0]
-    if (toolCall?.function?.arguments) {
-      const result = JSON.parse(toolCall.function.arguments)
-      return new Response(JSON.stringify(result), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    const geminiData = await geminiResp.json()
+    const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || ''
+
+    const jsonMatch = rawText.match(/\{[^}]+\}/)
+    if (jsonMatch) {
+      const result = JSON.parse(jsonMatch[0])
+      return new Response(
+        JSON.stringify({ sentiment: result.sentiment || 'mixed', score: result.score || 0.5 }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     return new Response(JSON.stringify({ sentiment: 'mixed', score: 0.5 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   } catch (e) {
     console.error('Error:', e)
-    return new Response(JSON.stringify({ error: 'Internal error' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ sentiment: 'mixed', score: 0.5 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })
