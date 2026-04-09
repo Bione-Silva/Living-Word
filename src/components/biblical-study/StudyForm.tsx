@@ -11,6 +11,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface StudyFormProps {
   onSubmit: (data: BiblicalStudyFormData) => void;
   isLoading: boolean;
+  prefillPassage?: string;
 }
 
 const doctrineOptions = [
@@ -30,10 +31,10 @@ const languageOptions = [
   { value: 'ES', label: 'Español' },
 ];
 
-export function StudyForm({ onSubmit, isLoading }: StudyFormProps) {
+export function StudyForm({ onSubmit, isLoading, prefillPassage }: StudyFormProps) {
   const { lang, t } = useLanguage();
   const [formData, setFormData] = useState<BiblicalStudyFormData>({
-    bible_passage: '',
+    bible_passage: prefillPassage || '',
     theme: '',
     language: lang,
     bible_version: 'ARA',

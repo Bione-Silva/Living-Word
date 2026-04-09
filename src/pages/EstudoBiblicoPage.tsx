@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { BookOpen, ShieldAlert, Zap, Moon, Sun } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { StudyForm } from '@/components/biblical-study/StudyForm';
@@ -18,6 +19,8 @@ import { Button } from '@/components/ui/button';
 import { BibleDrawer } from '@/components/BibleDrawer';
 
 export default function EstudoBiblicoPage() {
+  const location = useLocation();
+  const prefillPassage = (location.state as { prefillPassage?: string })?.prefillPassage || '';
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<BiblicalStudyResponse | null>(null);
   const [generationMeta, setGenerationMeta] = useState<GenerationMeta | null>(null);
@@ -104,7 +107,7 @@ export default function EstudoBiblicoPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left sidebar - form */}
         <div className="w-full lg:w-[380px] shrink-0">
-          <StudyForm onSubmit={handleGenerate} isLoading={isLoading} />
+          <StudyForm onSubmit={handleGenerate} isLoading={isLoading} prefillPassage={prefillPassage} />
         </div>
 
         {/* Right main area */}
