@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw } from 'lucide-react';
 import { getBookName, getApiBookName, translationOptions, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
+import { StudySidebar } from './StudySidebar';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -72,6 +73,15 @@ export function BibleReadingView({
   const [favoritedVerses, setFavoritedVerses] = useState<Set<number>>(new Set());
   const [highlights, setHighlights] = useState<Record<number, string>>({});
   const [chapterPickerOpen, setChapterPickerOpen] = useState(false);
+  const [studyOpen, setStudyOpen] = useState(false);
+  const [studyPassage, setStudyPassage] = useState('');
+  const [studyVerseText, setStudyVerseText] = useState('');
+
+  const handleOpenStudy = (passage: string, verseText: string) => {
+    setStudyPassage(passage);
+    setStudyVerseText(verseText);
+    setStudyOpen(true);
+  };
 
   const name = getBookName(bookId, lang);
   const prev: Record<L, string> = { PT: 'Anterior', EN: 'Previous', ES: 'Anterior' };
@@ -316,6 +326,7 @@ export function BibleReadingView({
                         onHighlight={handleHighlight}
                         onNoteSaved={onTabsRefresh}
                         onClose={() => setSelectedVerses(new Set())}
+                        onStudySidebar={handleOpenStudy}
                       />
                     )}
                   </div>
@@ -344,6 +355,20 @@ export function BibleReadingView({
           {next[lang]} <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
+
+      {/* Study Sidebar */}
+      <StudySidebar
+        open={studyOpen}
+        onOpenChange={setStudyOpen}
+        passage={studyPassage}
+        verseText={studyVerseText}
+        bookId={bookId}
+        chapter={chapter}
+        onNavigate={(bId, ch) => {
+          onChapterChange(ch);
+          setStudyOpen(false);
+        }}
+      />
     </div>
   );
 }
