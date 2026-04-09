@@ -34,23 +34,23 @@ export function BibleBookGrid({ translation, onTranslationChange, onSelectBook }
     <div className="space-y-4">
       {/* Testament toggle + Translation pills */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-muted/60 rounded-lg p-1 border border-border/50">
           <button
             onClick={() => setTestament('OT')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-xs font-semibold transition-all ${
               testament === 'OT'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
             {labels.ot[lang]}
           </button>
           <button
             onClick={() => setTestament('NT')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-xs font-semibold transition-all ${
               testament === 'NT'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
             {labels.nt[lang]}
