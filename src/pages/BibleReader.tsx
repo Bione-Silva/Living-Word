@@ -289,6 +289,14 @@ export default function BibleReader() {
           <BibleTabs ref={tabsRef} refreshKey={tabsRefreshKey} onNavigate={handleNavigate} defaultTab={tabsDefaultTab} />
         </div>
       )}
+
+      {/* Favorites Sidebar */}
+      <FavoritesSidebar
+        open={favSidebarOpen}
+        onOpenChange={setFavSidebarOpen}
+        onNavigate={handleNavigate}
+        refreshKey={tabsRefreshKey}
+      />
     </div>
   );
 }
