@@ -1,4 +1,5 @@
 import { Brain } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import {
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   Radar, ResponsiveContainer, Tooltip,
