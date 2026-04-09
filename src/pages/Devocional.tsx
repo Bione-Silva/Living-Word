@@ -1106,7 +1106,7 @@ export default function Devocional() {
           <div className="flex items-center gap-2.5 mb-3">
             <MessageCircle className="h-4 w-4" style={{ color: colors.gold }} />
             <p className="text-sm font-bold" style={{ color: colors.text }}>
-              {lang === 'PT' ? '🧠 Análise Inteligente' : lang === 'ES' ? '🧠 Análisis Inteligente' : '🧠 Smart Analysis'}
+              {lang === 'PT' ? '✍️ Minha Reflexão' : lang === 'ES' ? '✍️ Mi Reflexión' : '✍️ My Reflection'}
             </p>
           </div>
           <ReflectionCapture
