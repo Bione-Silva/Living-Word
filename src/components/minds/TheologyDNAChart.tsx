@@ -138,7 +138,7 @@ export function TheologyDNAChart({ data, lang }: Props) {
   }, []);
 
   return (
-    <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-7 md:p-10">
+    <section ref={sectionRef} className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-7 md:p-10">
       <div className="flex items-center gap-3 mb-4 sm:mb-5">
         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
           <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(35,45%,45%)]" />
