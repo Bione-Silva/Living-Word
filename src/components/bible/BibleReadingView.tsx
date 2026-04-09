@@ -82,7 +82,8 @@ export function BibleReadingView({
     if (isRetry) setRetrying(true); else setLoading(true);
     setError(''); setVerses([]); setSelectedVerse(null);
     try {
-      const ref = `${bookId} ${chapter}`;
+      const apiBook = getApiBookName(bookId, translation);
+      const ref = `${apiBook} ${chapter}`;
       const baseUrl = `https://bible-api.com/${encodeURIComponent(ref)}`;
       let res = await fetchWithRetry(`${baseUrl}?translation=${translation}`);
       let data = res ? await res.json() : null;
