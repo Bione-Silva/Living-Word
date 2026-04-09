@@ -324,6 +324,7 @@ export default function Devocional() {
   const [noteSavedAt, setNoteSavedAt] = useState<string | null>(null);
   const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
   const [showAddReflection, setShowAddReflection] = useState(false);
+  const [readingModalOpen, setReadingModalOpen] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const coverCardRef = useRef<HTMLDivElement>(null);
 
