@@ -151,21 +151,6 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!progressRef.current || !audioRef.current) return;
-    const rect = progressRef.current.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const newTime = pct * (duration || 1);
-    audioRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
-
-  const handleVoiceChange = (v: VoiceKey) => {
-    const wasPlaying = playing;
-    if (audioRef.current) audioRef.current.pause();
-    setPlaying(false);
-    setVoice(v);
-    setCurrentTime(0);
-    setTimeout(() => {
       if (wasPlaying && audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.play();
