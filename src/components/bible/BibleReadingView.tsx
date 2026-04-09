@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw } from 'lucide-react';
-import { getBookName, translationOptions, type L } from '@/lib/bible-data';
+import { getBookName, getApiBookName, translationOptions, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -82,7 +82,8 @@ export function BibleReadingView({
     if (isRetry) setRetrying(true); else setLoading(true);
     setError(''); setVerses([]); setSelectedVerse(null);
     try {
-      const ref = `${bookId} ${chapter}`;
+      const apiBook = getApiBookName(bookId, translation);
+      const ref = `${apiBook} ${chapter}`;
       const baseUrl = `https://bible-api.com/${encodeURIComponent(ref)}`;
       let res = await fetchWithRetry(`${baseUrl}?translation=${translation}`);
       let data = res ? await res.json() : null;
@@ -90,7 +91,9 @@ export function BibleReadingView({
       // If API returned error/empty, try fallback translation
       if ((!data || (!data.verses && !data.text)) && translation !== fallbackTranslation[lang]) {
         const fb = fallbackTranslation[lang] || 'web';
-        res = await fetchWithRetry(`${baseUrl}?translation=${fb}`);
+        const fbBook = getApiBookName(bookId, fb);
+        const fbRef = `${fbBook} ${chapter}`;
+        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
         data = res ? await res.json() : null;
       }
 
