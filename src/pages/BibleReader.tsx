@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap } from 'lucide-react';
+import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { bibleBooks, getBookName, getTranslation, translationOptions, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
 import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
 import { BibleChapterGrid } from '@/components/bible/BibleChapterGrid';
 import { BibleReadingView } from '@/components/bible/BibleReadingView';
@@ -19,9 +19,9 @@ const pageSubtitle: Record<L, string> = {
   ES: 'Lee, estudia y crea arte de versículos',
 };
 const searchPlaceholder: Record<L, string> = {
-  PT: 'Buscar palavra-chave, livro, capítulo ou versículo...',
-  EN: 'Search keyword, book, chapter or verse...',
-  ES: 'Buscar palabra clave, libro, capítulo o versículo...',
+  PT: 'Buscar livro ou referência (ex: João 3:16)...',
+  EN: 'Search book or reference (e.g. John 3:16)...',
+  ES: 'Buscar libro o referencia (ej: Juan 3:16)...',
 };
 
 type MainTab = 'read' | 'plans' | 'progress' | 'resources';
@@ -34,6 +34,66 @@ const mainTabs: { key: MainTab; icon: React.ElementType; label: Record<L, string
   { key: 'resources', icon: GraduationCap, label: { PT: 'Recursos', EN: 'Resources', ES: 'Recursos' } },
 ];
 
+interface SearchResult {
+  bookId: string;
+  bookName: string;
+  chapter: number;
+  verse?: number;
+}
+
+/** Parse search like "João 3", "João 3:16", "Genesis 1:1", "Gn 3", etc. */
+function parseReference(query: string, lang: L): SearchResult | null {
+  const q = query.trim();
+  // Match patterns: "Book Chapter" or "Book Chapter:Verse"
+  const match = q.match(/^(.+?)\s+(\d+)(?::(\d+))?$/);
+  if (!match) return null;
+
+  const [, rawBook, chStr, vStr] = match;
+  const chapter = parseInt(chStr, 10);
+  const verse = vStr ? parseInt(vStr, 10) : undefined;
+  const bookQuery = rawBook.trim().toLowerCase();
+
+  // Search through all books
+  for (const book of bibleBooks) {
+    const names = [
+      book.id.toLowerCase(),
+      (ptNames[book.id] || '').toLowerCase(),
+      (esNames[book.id] || '').toLowerCase(),
+    ];
+    if (names.some(n => n && (n.startsWith(bookQuery) || bookQuery.startsWith(n.substring(0, 3))))) {
+      if (chapter >= 1 && chapter <= book.chapters) {
+        return {
+          bookId: book.id,
+          bookName: getBookName(book.id, lang),
+          chapter,
+          verse,
+        };
+      }
+    }
+  }
+  return null;
+}
+
+/** Search books by name */
+function searchBooks(query: string, lang: L): SearchResult[] {
+  const q = query.toLowerCase();
+  return bibleBooks
+    .filter(b => {
+      const names = [
+        b.id.toLowerCase(),
+        (ptNames[b.id] || '').toLowerCase(),
+        (esNames[b.id] || '').toLowerCase(),
+      ];
+      return names.some(n => n && n.includes(q));
+    })
+    .slice(0, 8)
+    .map(b => ({
+      bookId: b.id,
+      bookName: getBookName(b.id, lang),
+      chapter: 1,
+    }));
+}
+
 export default function BibleReader() {
   const { lang } = useLanguage();
   const { user } = useAuth();
@@ -42,8 +102,21 @@ export default function BibleReader() {
   const [readView, setReadView] = useState<ReadView>('books');
   const [selectedBook, setSelectedBook] = useState('');
   const [selectedChapter, setSelectedChapter] = useState(1);
-  const [translation, setTranslation] = useState(() => getTranslation(lang));
+  const [translation, setTranslation] = useState(() => {
+    const saved = localStorage.getItem('bible_translation_preference');
+    if (saved) {
+      const valid = translationOptions[lang].some(o => o.code === saved);
+      if (valid) return saved;
+    }
+    return getTranslation(lang);
+  });
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const currentBook = selectedBook ? bibleBooks.find(b => b.id === selectedBook) : null;
 
@@ -63,6 +136,52 @@ export default function BibleReader() {
     setReadView('reading');
     setActiveTab('read');
   }, []);
+
+  // Search with debounce
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      // Try reference parse first
+      const ref = parseReference(searchQuery, lang);
+      if (ref) {
+        setSearchResults([ref]);
+        setShowResults(true);
+        return;
+      }
+
+      // Fall back to book name search
+      const books = searchBooks(searchQuery, lang);
+      setSearchResults(books);
+      setShowResults(books.length > 0);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, lang]);
+
+  // Close search on click outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleSearchSelect = (result: SearchResult) => {
+    setSelectedBook(result.bookId);
+    setSelectedChapter(result.chapter);
+    setReadView('reading');
+    setActiveTab('read');
+    setSearchQuery('');
+    setShowResults(false);
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-5">
@@ -88,12 +207,48 @@ export default function BibleReader() {
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <div className="relative" ref={searchRef}>
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onFocus={() => searchResults.length > 0 && setShowResults(true)}
           placeholder={searchPlaceholder[lang]}
-          className="pl-10 bg-card border-border"
+          className="pl-10 pr-8 bg-card border-border"
         />
+        {searchQuery && (
+          <button
+            onClick={() => { setSearchQuery(''); setShowResults(false); }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted"
+          >
+            <X className="h-3.5 w-3.5 text-muted-foreground" />
+          </button>
+        )}
+
+        {/* Search results dropdown */}
+        {showResults && searchResults.length > 0 && (
+          <div className="absolute z-20 top-full mt-1 left-0 right-0 bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+            {searchResults.map((r, i) => (
+              <button
+                key={`${r.bookId}-${r.chapter}-${i}`}
+                onClick={() => handleSearchSelect(r)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/60 transition-colors border-b border-border last:border-b-0"
+              >
+                <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                </span>
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {r.bookName} {r.chapter}{r.verse ? `:${r.verse}` : ''}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {lang === 'PT' ? 'Ir para' : lang === 'EN' ? 'Go to' : 'Ir a'} {r.bookName} {lang === 'PT' ? 'capítulo' : lang === 'EN' ? 'chapter' : 'capítulo'} {r.chapter}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Main tabs */}
