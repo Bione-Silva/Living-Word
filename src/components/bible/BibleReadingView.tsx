@@ -43,17 +43,19 @@ const fallbackTranslation: Record<string, string> = {
   PT: 'almeida', EN: 'web', ES: 'almeida',
 };
 
-async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
+async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response | null> {
   for (let i = 0; i < maxRetries; i++) {
     try {
       const res = await fetch(url);
       if (res.ok) return res;
+      // Don't retry 404 — translation doesn't exist
+      if (res.status === 404) return null;
       if (i < maxRetries - 1) await new Promise(r => setTimeout(r, 1000 * (i + 1)));
     } catch {
       if (i < maxRetries - 1) await new Promise(r => setTimeout(r, 1000 * (i + 1)));
     }
   }
-  throw new Error('Failed after retries');
+  return null;
 }
 
 export function BibleReadingView({
@@ -81,20 +83,19 @@ export function BibleReadingView({
     setError(''); setVerses([]); setSelectedVerse(null);
     try {
       const ref = `${bookId} ${chapter}`;
-      let url = `https://bible-api.com/${encodeURIComponent(ref)}?translation=${translation}`;
-      let res = await fetchWithRetry(url);
-      let data = await res.json();
+      const baseUrl = `https://bible-api.com/${encodeURIComponent(ref)}`;
+      let res = await fetchWithRetry(`${baseUrl}?translation=${translation}`);
+      let data = res ? await res.json() : null;
 
       // If API returned error/empty, try fallback translation
-      if (!data.verses && !data.text && translation !== fallbackTranslation[lang]) {
+      if ((!data || (!data.verses && !data.text)) && translation !== fallbackTranslation[lang]) {
         const fb = fallbackTranslation[lang] || 'web';
-        url = `https://bible-api.com/${encodeURIComponent(ref)}?translation=${fb}`;
-        res = await fetchWithRetry(url);
-        data = await res.json();
+        res = await fetchWithRetry(`${baseUrl}?translation=${fb}`);
+        data = res ? await res.json() : null;
       }
 
-      if (data.verses) setVerses(data.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
-      else if (data.text) setVerses([{ verse: 1, text: data.text }]);
+      if (data?.verses) setVerses(data.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
+      else if (data?.text) setVerses([{ verse: 1, text: data.text }]);
       else setError(retryLabels[lang].failed);
     } catch {
       setError(retryLabels[lang].failed);
