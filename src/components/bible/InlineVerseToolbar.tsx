@@ -182,24 +182,24 @@ export function InlineVerseToolbar({
       {/* Study, Art & Blog buttons */}
       <button
         onClick={() => { navigate('/estudo-biblico', { state: { passage: verseRef } }); onClose(); }}
-        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors"
+        className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
       >
-        <BookOpen className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[11px] font-medium text-primary">{labels.study[lang]}</span>
+        <BookOpen className="h-3.5 w-3.5" />
+        <span className="text-[11px] font-semibold">{labels.study[lang]}</span>
       </button>
       <button
         onClick={() => { navigate('/social-studio', { state: { verseText: combinedText, passage: verseRef } }); onClose(); }}
-        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors"
+        className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
       >
-        <Palette className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[11px] font-medium text-primary">{labels.art[lang]}</span>
+        <Palette className="h-3.5 w-3.5" />
+        <span className="text-[11px] font-semibold">{labels.art[lang]}</span>
       </button>
       <button
         onClick={() => { navigate('/blog', { state: { passage: verseRef, verseText: combinedText } }); onClose(); }}
-        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors"
+        className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
       >
-        <FileText className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[11px] font-medium text-primary">{labels.blog[lang]}</span>
+        <FileText className="h-3.5 w-3.5" />
+        <span className="text-[11px] font-semibold">{labels.blog[lang]}</span>
       </button>
     </div>
   );
