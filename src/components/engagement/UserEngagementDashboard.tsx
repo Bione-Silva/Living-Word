@@ -141,17 +141,41 @@ export function UserEngagementDashboard() {
             <CardTitle className="text-sm font-bold">{labels.themes[lang]}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={themeStats} layout="vertical" margin={{ left: 0 }}>
-                <XAxis type="number" hide />
-                <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={themeStats}
+                  cx="50%"
+                  cy="45%"
+                  innerRadius={50}
+                  outerRadius={80}
+                  paddingAngle={4}
+                  dataKey="count"
+                  nameKey="name"
+                  animationDuration={1000}
+                  animationEasing="ease-out"
+                >
                   {themeStats.map((_, i) => (
                     <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                   ))}
-                </Bar>
-              </BarChart>
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                  }}
+                />
+                <Legend
+                  verticalAlign="bottom"
+                  align="center"
+                  iconType="circle"
+                  iconSize={8}
+                  wrapperStyle={{ fontSize: '11px', paddingTop: '4px' }}
+                  formatter={(value: string) => <span style={{ color: 'hsl(var(--muted-foreground))' }}>{value}</span>}
+                />
+              </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
