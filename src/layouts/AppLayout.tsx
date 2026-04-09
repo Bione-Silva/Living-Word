@@ -25,7 +25,7 @@ import {
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
-  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal
+  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal, ChevronUp
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -739,7 +739,7 @@ export default function AppLayout() {
                   className="text-sidebar-foreground/50 hover:text-sidebar-foreground shrink-0 p-1 rounded hover:bg-sidebar-accent/50 transition-colors"
                   title={lang === 'PT' ? 'Menu de conta' : 'Account menu'}
                 >
-                  <MoreHorizontal className="h-4 w-4" />
+                  <ChevronUp className={`h-4 w-4 transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
                 </button>
               )}
             </div>
