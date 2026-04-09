@@ -75,19 +75,18 @@ export default function Quiz() {
 
   // Timer countdown
   useEffect(() => {
-    if (!timerActive || timer <= 0) return;
+    if (!timerActive || timer <= 0 || selected !== null) return;
     const interval = setInterval(() => {
       setTimer(prev => {
         if (prev <= 1) {
           setTimerActive(false);
-          handleAnswer(-1); // time's up
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [timerActive, timer]);
+  }, [timerActive, timer, selected]);
 
   const generateQuestions = async () => {
     setPhase('loading');
