@@ -15,6 +15,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
+import { useEngagementTracker } from '@/components/engagement/EngagementTracker';
+import { ReflectionCapture } from '@/components/engagement/ReflectionCapture';
 
 type L = 'PT' | 'EN' | 'ES';
 
