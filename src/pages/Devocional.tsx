@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'; 
+import { toPng } from 'html-to-image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
