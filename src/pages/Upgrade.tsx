@@ -343,7 +343,7 @@ export default function Upgrade() {
                   <CreditPotentialTooltip planSlug={plan.id as PlanSlug} lang={lang} />
                 </div>
 
-                <ul className="space-y-2 mb-5 flex-1">
+                <ul className="space-y-2 mb-4 flex-1">
                   {plan.features[lang].map((f, j) => (
                     <li key={j} className="flex items-start gap-2 text-sm">
                       <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -351,6 +351,12 @@ export default function Upgrade() {
                     </li>
                   ))}
                 </ul>
+
+                {plan.id === 'igreja' && (
+                  <div className="mb-4">
+                    <TeamSeatsSelector lang={lang} isBRL={pricing.currency === 'BRL'} />
+                  </div>
+                )}
 
                 <Button
                   className="w-full gap-1.5 min-h-[48px]"
