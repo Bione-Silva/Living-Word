@@ -773,7 +773,7 @@ export default function Devocional() {
               </div>
             </div>
             <div className="flex justify-center">
-              <div className="relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm aspect-[3/4]">
+              <div ref={coverCardRef} className="relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm aspect-[3/4]">
                 {/* Background image */}
                 <img src={displayCover} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
 
