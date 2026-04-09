@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'; 
+import { toPng } from 'html-to-image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -323,6 +324,7 @@ export default function Devocional() {
   const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
   const [showAddReflection, setShowAddReflection] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const coverCardRef = useRef<HTMLDivElement>(null);
 
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
@@ -772,7 +774,7 @@ export default function Devocional() {
               </div>
             </div>
             <div className="flex justify-center">
-              <div className="relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm aspect-[3/4]">
+              <div ref={coverCardRef} className="relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm aspect-[3/4]">
                 {/* Background image */}
                 <img src={displayCover} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
 
@@ -831,16 +833,18 @@ export default function Devocional() {
               <button
                 onClick={async () => {
                   try {
-                    const resp = await fetch(displayCover!, { mode: 'cors' });
-                    const blob = await resp.blob();
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
+                    if (coverCardRef.current) {
+                      const dataUrl = await toPng(coverCardRef.current, {
+                        pixelRatio: 3,
+                        cacheBust: true,
+                      });
+                      const a = document.createElement('a');
+                      a.href = dataUrl;
+                      a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }
                   } catch {
                     window.open(displayCover!, '_blank');
                   }
