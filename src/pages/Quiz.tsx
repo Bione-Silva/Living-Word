@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Trophy, Zap, Timer, CheckCircle2, XCircle, Loader2, Star } from 'lucide-react';
+import { ArrowLeft, Trophy, Zap, CheckCircle2, XCircle, Loader2, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { Leaderboard } from '@/components/quiz/Leaderboard';
 import { DailyBonusCard } from '@/components/quiz/DailyBonusCard';
@@ -61,8 +61,6 @@ export default function Quiz() {
   const [correctCount, setCorrectCount] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
-  const [timer, setTimer] = useState(15);
-  const [timerActive, setTimerActive] = useState(false);
   const [scoreData, setScoreData] = useState<ScoreData | null>(null);
   const [startTime] = useState(Date.now());
 
@@ -72,21 +70,6 @@ export default function Quiz() {
     supabase.from('quiz_scores').select('*').eq('user_id', user.id).maybeSingle()
       .then(({ data }) => { if (data) setScoreData(data as ScoreData); });
   }, [user]);
-
-  // Timer countdown
-  useEffect(() => {
-    if (!timerActive || timer <= 0 || selected !== null) return;
-    const interval = setInterval(() => {
-      setTimer(prev => {
-        if (prev <= 1) {
-          setTimerActive(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timerActive, timer, selected]);
 
   const generateQuestions = async () => {
     setPhase('loading');
@@ -116,8 +99,6 @@ Return ONLY valid JSON array: [{"question":"...","options":["A","B","C","D"],"co
         setStreak(0);
         setBestStreak(0);
         setSelected(null);
-        setTimer(15);
-        setTimerActive(true);
         setPhase('playing');
       }
     } catch {
@@ -129,7 +110,6 @@ Return ONLY valid JSON array: [{"question":"...","options":["A","B","C","D"],"co
   const handleAnswer = useCallback((idx: number) => {
     if (selected !== null) return;
     setSelected(idx);
-    setTimerActive(false);
     const q = questions[currentQ];
     if (q && idx === q.correct) {
       setCorrectCount(prev => prev + 1);
@@ -149,8 +129,6 @@ Return ONLY valid JSON array: [{"question":"...","options":["A","B","C","D"],"co
     } else {
       setCurrentQ(prev => prev + 1);
       setSelected(null);
-      setTimer(15);
-      setTimerActive(true);
     }
   };
 
@@ -273,11 +251,6 @@ Return ONLY valid JSON array: [{"question":"...","options":["A","B","C","D"],"co
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Zap className="h-3 w-3 text-primary" /> {streak}🔥
-              </div>
-              <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold ${
-                timer <= 5 ? 'bg-destructive/15 text-destructive' : 'bg-muted text-foreground'
-              }`}>
-                <Timer className="h-3 w-3" /> {timer}s
               </div>
             </div>
           </div>
