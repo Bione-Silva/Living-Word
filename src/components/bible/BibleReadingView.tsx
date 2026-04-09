@@ -80,7 +80,7 @@ export function BibleReadingView({
 
   const fetchChapter = useCallback(async (isRetry = false) => {
     if (isRetry) setRetrying(true); else setLoading(true);
-    setError(''); setVerses([]); setSelectedVerse(null);
+    setError(''); setVerses([]); setSelectedVerses(new Set());
     try {
       const apiBook = getApiBookName(bookId, translation);
       const ref = `${apiBook} ${chapter}`;
