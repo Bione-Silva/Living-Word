@@ -1,0 +1,1 @@
+UPDATE public.profiles SET plan = 'ministry', generations_limit = 999999, generations_used = 0 WHERE id = 'b368f7c8-ff05-46af-be04-381832f7e7e3';

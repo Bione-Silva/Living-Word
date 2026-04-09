@@ -1,0 +1,342 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Landing (warm dark) */
+    --background: 24 30% 7%;
+    --foreground: 36 25% 93%;
+
+    --card: 24 20% 10%;
+    --card-foreground: 36 25% 93%;
+
+    --popover: 24 20% 10%;
+    --popover-foreground: 36 25% 93%;
+
+    --primary: 28 30% 32%;
+    --primary-foreground: 36 25% 93%;
+
+    --secondary: 24 15% 14%;
+    --secondary-foreground: 36 25% 93%;
+
+    --muted: 24 15% 14%;
+    --muted-foreground: 24 20% 50%;
+
+    --accent: 28 42% 59%;
+    --accent-foreground: 24 30% 12%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 24 20% 18%;
+    --input: 24 20% 18%;
+    --ring: 28 42% 59%;
+
+    --radius: 0.75rem;
+
+    /* LP-specific tokens */
+    --lw-dark: 24 30% 12%;
+    --lw-primary: 28 30% 32%;
+    --lw-amber: 28 42% 59%;
+    --lw-amber-light: 30 40% 89%;
+    --lw-bg: 36 30% 93%;
+    --lw-linen: 25 42% 85%;
+    --lw-text: 24 30% 12%;
+    --lw-muted: 20 25% 43%;
+
+    /* Sidebar: light warm */
+    --sidebar-background: 36 30% 95%;
+    --sidebar-foreground: 24 30% 18%;
+    --sidebar-primary: 28 42% 42%;
+    --sidebar-primary-foreground: 36 30% 97%;
+    --sidebar-accent: 30 20% 88%;
+    --sidebar-accent-foreground: 24 30% 15%;
+    --sidebar-border: 30 15% 85%;
+    --sidebar-ring: 28 42% 42%;
+  }
+
+  /* Warm parchment theme for authenticated app + public blog */
+  .theme-app,
+  .theme-blog {
+    --background: 36 30% 95%;
+    --foreground: 24 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 24 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 30% 15%;
+
+    --primary: 28 42% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 36 20% 90%;
+    --secondary-foreground: 24 30% 15%;
+
+    --muted: 36 15% 90%;
+    --muted-foreground: 24 18% 38%;
+
+    --accent: 28 42% 55%;
+    --accent-foreground: 24 30% 12%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 15% 85%;
+    --input: 30 15% 85%;
+    --ring: 28 42% 42%;
+
+    --blog-heading: 24 30% 15%;
+    --blog-body: 24 22% 24%;
+    --blog-meta: 24 18% 40%;
+    --blog-quote: 24 18% 32%;
+
+    /* Sidebar: warm beige, slightly distinct from main bg */
+    --sidebar-background: 33 25% 92%;
+    --sidebar-foreground: 24 30% 18%;
+    --sidebar-primary: 28 42% 38%;
+    --sidebar-primary-foreground: 36 30% 97%;
+    --sidebar-accent: 32 18% 86%;
+    --sidebar-accent-foreground: 24 30% 15%;
+    --sidebar-border: 30 12% 82%;
+    --sidebar-ring: 28 42% 38%;
+  }
+
+  /* Dark mode for authenticated app */
+  .theme-app.dark,
+  .dark .theme-app {
+    --background: 24 20% 10%;
+    --foreground: 36 25% 90%;
+
+    --card: 24 18% 14%;
+    --card-foreground: 36 25% 90%;
+
+    --popover: 24 18% 14%;
+    --popover-foreground: 36 25% 90%;
+
+    --primary: 28 42% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 24 15% 18%;
+    --secondary-foreground: 36 25% 88%;
+
+    --muted: 24 12% 18%;
+    --muted-foreground: 24 18% 55%;
+
+    --accent: 28 42% 55%;
+    --accent-foreground: 36 25% 95%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 24 15% 22%;
+    --input: 24 15% 22%;
+    --ring: 28 42% 55%;
+
+    --sidebar-background: 24 20% 12%;
+    --sidebar-foreground: 36 25% 88%;
+    --sidebar-primary: 28 42% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 24 15% 20%;
+    --sidebar-accent-foreground: 36 25% 88%;
+    --sidebar-border: 24 15% 20%;
+    --sidebar-ring: 28 42% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .font-body {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+  }
+}
+
+@layer utilities {
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-border/50;
+  }
+
+  .glow-amber {
+    box-shadow: 0 0 60px -12px hsl(38 52% 58% / 0.3);
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(38,52%,58%)] to-[hsl(45,60%,70%)];
+  }
+
+  .blog-prose {
+    color: hsl(var(--blog-body));
+  }
+
+  .blog-prose :where(h1, h2, h3, h4, h5, h6, strong) {
+    color: hsl(var(--blog-heading));
+  }
+
+  .blog-prose :where(p, li, em) {
+    color: hsl(var(--blog-body));
+  }
+
+  .blog-prose :where(a) {
+    color: hsl(var(--primary));
+  }
+
+  .blog-prose :where(blockquote) {
+    color: hsl(var(--blog-quote));
+    border-left-color: hsl(var(--accent));
+  }
+
+  /* ── High-contrast prose for all generated content in theme-app ── */
+  .theme-app .prose,
+  .theme-blog .prose {
+    --tw-prose-body: hsl(24 30% 15%);
+    --tw-prose-headings: hsl(24 30% 10%);
+    --tw-prose-bold: hsl(24 30% 10%);
+    --tw-prose-links: hsl(28 42% 32%);
+    --tw-prose-counters: hsl(24 20% 35%);
+    --tw-prose-bullets: hsl(24 20% 35%);
+    --tw-prose-hr: hsl(30 15% 78%);
+    --tw-prose-quotes: hsl(24 25% 20%);
+    --tw-prose-quote-borders: hsl(28 42% 55%);
+    --tw-prose-code: hsl(24 30% 15%);
+    --tw-prose-th-borders: hsl(30 15% 78%);
+    --tw-prose-td-borders: hsl(30 15% 85%);
+  }
+
+  /* ── Premium pastoral prose for rich AI-generated markdown ── */
+  .pastoral-prose {
+    @apply leading-relaxed break-words;
+    color: hsl(var(--foreground));
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .pastoral-prose :where(h1) {
+    @apply text-2xl font-bold mt-6 mb-3 pb-2 border-b border-border/40 text-foreground;
+  }
+  .pastoral-prose :where(h2) {
+    @apply text-xl font-semibold mt-6 mb-2 text-foreground;
+  }
+  .pastoral-prose :where(h3) {
+    @apply text-lg font-semibold mt-4 mb-2 text-foreground;
+  }
+  .pastoral-prose :where(h4) {
+    @apply text-base font-semibold mt-3 mb-1 text-foreground;
+  }
+  .pastoral-prose :where(p) {
+    @apply mb-3 leading-relaxed text-foreground;
+  }
+  .pastoral-prose :where(ul, ol) {
+    @apply mb-3 pl-5 space-y-1.5;
+  }
+  .pastoral-prose :where(li) {
+    @apply leading-relaxed text-foreground;
+  }
+  .pastoral-prose :where(blockquote) {
+    @apply my-4 pl-4 border-l-4 border-primary/30 italic text-foreground/80;
+  }
+  .pastoral-prose :where(hr) {
+    @apply my-6 border-border/50;
+  }
+  .pastoral-prose :where(strong) {
+    @apply font-bold text-foreground;
+  }
+  .pastoral-prose :where(em) {
+    @apply italic;
+  }
+  .pastoral-prose :where(table) {
+    @apply w-full text-sm my-4 border-collapse;
+  }
+  .pastoral-prose :where(th) {
+    @apply text-left font-semibold p-2 border-b-2 border-border;
+  }
+  .pastoral-prose :where(td) {
+    @apply p-2 border-b border-border/50;
+  }
+
+  .watermark-free {
+    @apply relative;
+  }
+  .watermark-free::after {
+    content: '⚠️ Rascunho gerado com IA. Revise, ore e pregue com sua voz.';
+    @apply absolute bottom-0 left-0 right-0 text-center text-xs py-2 text-muted-foreground bg-muted/80;
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Admin Dashboard Dark Theme */
+  .admin-dark .admin-card {
+    background: hsl(230 15% 12%);
+    color: hsl(0 0% 95%);
+  }
+  .admin-dark .admin-text { color: hsl(0 0% 95%); }
+  .admin-dark .admin-muted { color: hsl(230 10% 55%); }
+  .admin-dark .admin-input {
+    background: hsl(230 15% 15%);
+    border-color: hsl(230 12% 22%);
+    color: hsl(0 0% 95%);
+  }
+  .admin-dark .admin-bg { background: hsl(230 15% 8%); }
+
+  /* Admin Dashboard Light Theme (default) */
+  .admin-card {
+    background: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  }
+  .admin-text { color: hsl(var(--foreground)); }
+  .admin-muted { color: hsl(var(--muted-foreground)); }
+  .admin-input {
+    background: hsl(var(--background));
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+  .admin-bg { background: hsl(var(--background)); }
+
+  /* Sound wave animation for audio player */
+  @keyframes sound-wave {
+    0%, 100% { height: 4px; }
+    25% { height: 14px; }
+    50% { height: 8px; }
+    75% { height: 18px; }
+  }
+
+  .animate-sound-wave {
+    animation: sound-wave 1.2s ease-in-out infinite;
+  }
+}
