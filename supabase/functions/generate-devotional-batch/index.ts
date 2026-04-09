@@ -14,14 +14,6 @@ const CATEGORIES: Record<Lang, string[]> = {
   ES: ['Fe', 'Esperanza', 'Amor', 'Paz Interior', 'Gratitud', 'Perdón', 'Sabiduría', 'Coraje', 'Propósito', 'Restauración', 'Confianza', 'Perseverancia', 'Humildad', 'Alegría', 'Provisión'],
 }
 
-const LANG_CODE_MAP: Record<Lang, string> = { PT: 'pt-BR', EN: 'en-US', ES: 'es-ES' }
-
-const VOICE_MAP: Record<string, Record<Lang, string>> = {
-  nova: { PT: 'pt-BR-Wavenet-A', EN: 'en-US-Wavenet-F', ES: 'es-ES-Wavenet-A' },
-  alloy: { PT: 'pt-BR-Wavenet-B', EN: 'en-US-Wavenet-D', ES: 'es-ES-Wavenet-B' },
-  onyx: { PT: 'pt-BR-Wavenet-D', EN: 'en-US-Wavenet-B', ES: 'es-ES-Wavenet-C' },
-}
-
 function getSystemPrompt(lang: Lang): string {
   const langName = lang === 'PT' ? 'Portuguese (Brazil)' : lang === 'EN' ? 'English' : 'Spanish'
   return `You are an expert Christian devotional writer. Write in ${langName}.
@@ -88,67 +80,31 @@ async function generateCoverImage(apiKey: string, title: string, category: strin
     }
     const data = await resp.json()
     const msgContent = data.choices?.[0]?.message?.content
-    console.log('Image response type:', typeof msgContent, Array.isArray(msgContent) ? 'array' : '')
-    
-    // Try array format (multimodal response)
+
     if (Array.isArray(msgContent)) {
       for (const part of msgContent) {
-        // Format 1: { type: 'image_url', image_url: { url: 'data:...' } }
         if (part.type === 'image_url' && part.image_url?.url) {
           const b64 = part.image_url.url.replace(/^data:image\/[^;]+;base64,/, '')
           return Uint8Array.from(atob(b64), c => c.charCodeAt(0))
         }
-        // Format 2: { type: 'image', source: { data: '...' } }
         if (part.type === 'image' && part.source?.data) {
           return Uint8Array.from(atob(part.source.data), c => c.charCodeAt(0))
         }
-        // Format 3: inline_data
         if (part.inline_data?.data) {
           return Uint8Array.from(atob(part.inline_data.data), c => c.charCodeAt(0))
         }
       }
-      console.error('No image found in array parts. Keys:', JSON.stringify(msgContent.map((p: any) => ({ type: p.type, keys: Object.keys(p) }))))
     }
-    
-    // Try string format with base64
+
     if (typeof msgContent === 'string' && msgContent.startsWith('data:image')) {
       const b64 = msgContent.replace(/^data:image\/[^;]+;base64,/, '')
       return Uint8Array.from(atob(b64), c => c.charCodeAt(0))
     }
-    
-    console.error('No image in response. Content preview:', JSON.stringify(msgContent)?.slice(0, 300))
+
+    console.error('No image in response')
     return null
   } catch (e) {
     console.error('Image gen failed:', e)
-    return null
-  }
-}
-
-async function generateTTS(gcpApiKey: string, text: string, lang: Lang, voiceKey: string): Promise<Uint8Array | null> {
-  try {
-    const voiceName = VOICE_MAP[voiceKey][lang]
-    const langCode = LANG_CODE_MAP[lang]
-    // Truncate text for TTS (max ~5000 chars)
-    const truncated = text.slice(0, 4800)
-    
-    const resp = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${gcpApiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        input: { text: truncated },
-        voice: { languageCode: langCode, name: voiceName },
-        audioConfig: { audioEncoding: 'MP3', speakingRate: 0.95, pitch: 0 },
-      }),
-    })
-    if (!resp.ok) {
-      console.error(`TTS error (${voiceKey}/${lang}):`, resp.status, await resp.text())
-      return null
-    }
-    const data = await resp.json()
-    if (!data.audioContent) return null
-    return Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
-  } catch (e) {
-    console.error(`TTS failed (${voiceKey}/${lang}):`, e)
     return null
   }
 }
@@ -165,10 +121,6 @@ async function uploadToStorage(supabase: any, path: string, data: Uint8Array, co
   return urlData?.publicUrl || null
 }
 
-function buildAudioScript(d: Record<string, string>): string {
-  return `${d.title}.\n\n${d.anchor_verse_text}\n${d.anchor_verse}.\n\n${d.body_text}\n\n${d.daily_practice}\n\n${d.reflection_question}\n\n${d.closing_prayer}`
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -177,8 +129,6 @@ Deno.serve(async (req) => {
   try {
     const lovableKey = Deno.env.get('LOVABLE_API_KEY')
     if (!lovableKey) throw new Error('LOVABLE_API_KEY not configured')
-    const gcpKey = Deno.env.get('GOOGLE_CLOUD_API_KEY')
-    if (!gcpKey) throw new Error('GOOGLE_CLOUD_API_KEY not configured')
 
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -210,7 +160,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const results: { lang: string; success: boolean; error?: string; has_image?: boolean; voices?: string[] }[] = []
+    const results: { lang: string; success: boolean; error?: string; has_image?: boolean }[] = []
 
     for (const lang of missingLangs) {
       try {
@@ -226,29 +176,7 @@ Deno.serve(async (req) => {
           console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
         }
 
-        // Generate TTS for 3 voices in parallel
-        const audioScript = buildAudioScript(devotional)
-        console.log(`[${lang}] Generating TTS (3 voices)...`)
-        const voiceKeys = ['nova', 'alloy', 'onyx'] as const
-        const audioResults = await Promise.all(
-          voiceKeys.map(async (vk) => {
-            const audioData = await generateTTS(gcpKey, audioScript, lang, vk)
-            if (!audioData) return null
-            const url = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-${vk}.mp3`, audioData, 'audio/mpeg')
-            return url ? { voice: vk, url } : null
-          })
-        )
-
-        const audioUrls: Record<string, string | null> = { nova: null, alloy: null, onyx: null }
-        const successVoices: string[] = []
-        for (const r of audioResults) {
-          if (r) {
-            audioUrls[r.voice] = r.url
-            successVoices.push(r.voice)
-          }
-        }
-        console.log(`[${lang}] TTS voices ready: ${successVoices.join(', ') || 'none'}`)
-
+        // Audio URLs set to null — TTS will be handled externally in the future
         const { error: insertErr } = await supabaseAdmin.from('devotionals').insert({
           title: devotional.title,
           category: devotional.category,
@@ -261,9 +189,9 @@ Deno.serve(async (req) => {
           scheduled_date: targetDate,
           language: lang,
           cover_image_url: coverUrl,
-          audio_url_nova: audioUrls.nova,
-          audio_url_alloy: audioUrls.alloy,
-          audio_url_onyx: audioUrls.onyx,
+          audio_url_nova: null,
+          audio_url_alloy: null,
+          audio_url_onyx: null,
         })
 
         if (insertErr) {
@@ -271,7 +199,7 @@ Deno.serve(async (req) => {
           results.push({ lang, success: false, error: insertErr.message })
         } else {
           console.log(`✅ ${lang} devotional inserted for ${targetDate}`)
-          results.push({ lang, success: true, has_image: !!coverUrl, voices: successVoices })
+          results.push({ lang, success: true, has_image: !!coverUrl })
         }
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e)
