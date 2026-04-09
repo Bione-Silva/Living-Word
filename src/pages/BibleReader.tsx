@@ -117,6 +117,17 @@ export default function BibleReader() {
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  const [favCount, setFavCount] = useState(0);
+  const [noteCount, setNoteCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('bible_favorites').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      .then(({ count }) => { if (count != null) setFavCount(count); });
+    supabase.from('bible_notes').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      .then(({ count }) => { if (count != null) setNoteCount(count); });
+  }, [user, tabsRefreshKey]);
+
   const currentBook = selectedBook ? bibleBooks.find(b => b.id === selectedBook) : null;
 
   const handleSelectBook = (bookId: string) => { setSelectedBook(bookId); setReadView('chapters'); };
