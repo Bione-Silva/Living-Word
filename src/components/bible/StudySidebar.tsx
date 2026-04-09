@@ -53,7 +53,7 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
     try {
       const { data, error: fnErr } = await supabase.functions.invoke('generate-biblical-study', {
         body: {
-          passage,
+          bible_passage: passage,
           depth: 'basic',
           language: lang === 'PT' ? 'Português' : lang === 'EN' ? 'English' : 'Español',
         },
