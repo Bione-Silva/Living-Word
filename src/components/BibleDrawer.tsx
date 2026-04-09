@@ -31,7 +31,8 @@ export function BibleDrawer({ open, onOpenChange }: Props) {
     setLoading(true);
     setVerses([]);
     try {
-      const ref = `${book} ${chapter}`;
+      const apiBook = getApiBookName(book, translation);
+      const ref = `${apiBook} ${chapter}`;
       const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${translation}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
