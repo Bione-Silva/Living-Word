@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw } from 'lucide-react';
 import { getBookName, translationOptions, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import {
@@ -27,11 +27,30 @@ interface Props {
 }
 
 const highlightClassMap: Record<string, string> = {
-  yellow: 'bg-yellow-200/40',
-  green: 'bg-green-200/40',
-  blue: 'bg-blue-200/40',
-  pink: 'bg-pink-200/40',
+  yellow: 'bg-yellow-100/60 border-l-2 border-yellow-400',
+  green: 'bg-green-50/60 border-l-2 border-green-400',
+  blue: 'bg-blue-50/60 border-l-2 border-blue-400',
+  pink: 'bg-pink-50/60 border-l-2 border-pink-400',
 };
+
+const retryLabels: Record<L, { retrying: string; failed: string; retry: string }> = {
+  PT: { retrying: 'Tentando novamente...', failed: 'Não foi possível carregar este capítulo.', retry: 'Tentar novamente' },
+  EN: { retrying: 'Retrying...', failed: 'Could not load this chapter.', retry: 'Try again' },
+  ES: { retrying: 'Reintentando...', failed: 'No se pudo cargar este capítulo.', retry: 'Intentar de nuevo' },
+};
+
+async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return res;
+      if (i < maxRetries - 1) await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+    } catch {
+      if (i < maxRetries - 1) await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+    }
+  }
+  throw new Error('Failed after retries');
+}
 
 export function BibleReadingView({
   bookId, chapter, totalChapters, translation,
@@ -41,6 +60,7 @@ export function BibleReadingView({
   const { user } = useAuth();
   const [verses, setVerses] = useState<Verse[]>([]);
   const [loading, setLoading] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const [error, setError] = useState('');
   const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
   const [favoritedVerses, setFavoritedVerses] = useState<Set<number>>(new Set());
@@ -52,21 +72,32 @@ export function BibleReadingView({
   const next: Record<L, string> = { PT: 'Próximo', EN: 'Next', ES: 'Siguiente' };
   const options = translationOptions[lang];
 
-  const fetchChapter = useCallback(async () => {
-    setLoading(true); setError(''); setVerses([]); setSelectedVerse(null);
+  const fetchChapter = useCallback(async (isRetry = false) => {
+    if (isRetry) setRetrying(true); else setLoading(true);
+    setError(''); setVerses([]); setSelectedVerse(null);
     try {
       const ref = `${bookId} ${chapter}`;
-      const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${translation}`);
-      if (!res.ok) throw new Error();
+      const res = await fetchWithRetry(
+        `https://bible-api.com/${encodeURIComponent(ref)}?translation=${translation}`
+      );
       const data = await res.json();
       if (data.verses) setVerses(data.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
       else if (data.text) setVerses([{ verse: 1, text: data.text }]);
+      else setError(retryLabels[lang].failed);
     } catch {
-      setError(lang === 'PT' ? 'Não foi possível carregar.' : 'Could not load text.');
-    } finally { setLoading(false); }
+      setError(retryLabels[lang].failed);
+    } finally {
+      setLoading(false);
+      setRetrying(false);
+    }
   }, [bookId, chapter, translation, lang]);
 
   useEffect(() => { fetchChapter(); }, [fetchChapter]);
+
+  // Persist translation preference
+  useEffect(() => {
+    localStorage.setItem('bible_translation_preference', translation);
+  }, [translation]);
 
   useEffect(() => {
     if (!user) return;
@@ -88,6 +119,20 @@ export function BibleReadingView({
     if (!user || selectedVerse === null) return;
     const v = verses.find(vv => vv.verse === selectedVerse);
     if (!v) return;
+
+    // Toggle: same color = remove
+    if (highlights[selectedVerse] === color) {
+      await supabase.from('bible_highlights').delete()
+        .eq('user_id', user.id).eq('book_id', bookId)
+        .eq('chapter_number', chapter).eq('start_verse_number', selectedVerse);
+      setHighlights(p => {
+        const copy = { ...p };
+        delete copy[selectedVerse];
+        return copy;
+      });
+      return;
+    }
+
     await supabase.from('bible_highlights').delete()
       .eq('user_id', user.id).eq('book_id', bookId)
       .eq('chapter_number', chapter).eq('start_verse_number', selectedVerse);
@@ -176,51 +221,75 @@ export function BibleReadingView({
 
       {/* Verses */}
       <div className="min-h-[400px]">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
+        {(loading || retrying) ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-2">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            {retrying && <p className="text-xs text-muted-foreground">{retryLabels[lang].retrying}</p>}
           </div>
         ) : error ? (
-          <p className="text-center text-destructive py-10 text-sm">{error}</p>
+          <div className="flex flex-col items-center justify-center py-16 gap-4">
+            <p className="text-center text-muted-foreground text-sm">{error}</p>
+            <button
+              onClick={() => fetchChapter(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+            >
+              <RefreshCw className="h-4 w-4" />
+              {retryLabels[lang].retry}
+            </button>
+          </div>
         ) : (
-          <div className="space-y-1 leading-[1.95] text-[16px] md:text-[17px] font-serif text-foreground/90">
+          <div className="space-y-0">
             {verses.map(v => {
               const isSelected = selectedVerse === v.verse;
               const hlClass = highlights[v.verse] ? highlightClassMap[highlights[v.verse]] || '' : '';
 
               return (
-                <div key={v.verse}>
-                  <span
+                <div key={v.verse} className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
+                  isSelected
+                    ? 'bg-primary/8 ring-1 ring-primary/20'
+                    : hlClass || 'hover:bg-muted/40'
+                }`}>
+                  {/* Verse number badge */}
+                  <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVerse(isSelected ? null : v.verse); }}
-                    className={`cursor-pointer rounded-lg px-1 py-0.5 transition-all ${
+                    className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors ${
                       isSelected
-                        ? 'bg-primary/10 ring-1 ring-primary/30'
-                        : hlClass || 'hover:bg-primary/5'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted/60 text-muted-foreground hover:bg-primary/20 hover:text-primary'
                     }`}
                   >
-                    <sup className="text-primary/60 font-sans text-[11px] font-bold mr-1 select-none">{v.verse}</sup>
-                    {v.text.trim()}{' '}
-                  </span>
-                  {isSelected && (
-                    <InlineVerseToolbar
-                      verse={v}
-                      bookId={bookId}
-                      chapter={chapter}
-                      translationCode={translation}
-                      isFavorited={favoritedVerses.has(v.verse)}
-                      onFavoriteToggle={() => {
-                        setFavoritedVerses(p => {
-                          const n = new Set(p);
-                          if (n.has(v.verse)) n.delete(v.verse); else n.add(v.verse);
-                          return n;
-                        });
-                        onTabsRefresh();
-                      }}
-                      onHighlight={handleHighlight}
-                      onNoteSaved={onTabsRefresh}
-                      onClose={() => setSelectedVerse(null)}
-                    />
-                  )}
+                    {v.verse}
+                  </button>
+
+                  {/* Verse text + inline toolbar */}
+                  <div className="flex-1 min-w-0">
+                    <span
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVerse(isSelected ? null : v.verse); }}
+                      className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90"
+                    >
+                      {v.text.trim()}
+                    </span>
+                    {isSelected && (
+                      <InlineVerseToolbar
+                        verse={v}
+                        bookId={bookId}
+                        chapter={chapter}
+                        translationCode={translation}
+                        isFavorited={favoritedVerses.has(v.verse)}
+                        onFavoriteToggle={() => {
+                          setFavoritedVerses(p => {
+                            const n = new Set(p);
+                            if (n.has(v.verse)) n.delete(v.verse); else n.add(v.verse);
+                            return n;
+                          });
+                          onTabsRefresh();
+                        }}
+                        onHighlight={handleHighlight}
+                        onNoteSaved={onTabsRefresh}
+                        onClose={() => setSelectedVerse(null)}
+                      />
+                    )}
+                  </div>
                 </div>
               );
             })}
