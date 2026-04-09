@@ -70,14 +70,14 @@
     --popover: 0 0% 100%;
     --popover-foreground: 24 30% 15%;
 
-    --primary: 28 42% 42%;
+    --primary: 28 42% 36%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 36 20% 90%;
     --secondary-foreground: 24 30% 15%;
 
     --muted: 36 15% 90%;
-    --muted-foreground: 24 20% 28%;
+    --muted-foreground: 24 20% 35%;
 
     --accent: 28 42% 55%;
     --accent-foreground: 24 30% 12%;
@@ -87,7 +87,7 @@
 
     --border: 30 18% 76%;
     --input: 30 18% 76%;
-    --ring: 28 42% 42%;
+    --ring: 28 42% 36%;
 
     --blog-heading: 24 30% 15%;
     --blog-body: 24 22% 24%;
@@ -97,12 +97,12 @@
     /* Sidebar: warm beige, slightly distinct from main bg */
     --sidebar-background: 33 25% 92%;
     --sidebar-foreground: 24 30% 18%;
-    --sidebar-primary: 28 42% 38%;
+    --sidebar-primary: 28 42% 34%;
     --sidebar-primary-foreground: 36 30% 97%;
     --sidebar-accent: 32 18% 86%;
     --sidebar-accent-foreground: 24 30% 15%;
     --sidebar-border: 30 12% 82%;
-    --sidebar-ring: 28 42% 38%;
+    --sidebar-ring: 28 42% 34%;
   }
 
   /* Dark mode for authenticated app */
