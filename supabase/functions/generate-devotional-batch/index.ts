@@ -167,9 +167,15 @@ Deno.serve(async (req) => {
     )
 
     let targetDate: string
+    let requestedLangs: Lang[] | null = null
+    let skipImage = false
     try {
       const body = await req.json()
       targetDate = body?.date || ''
+      if (body?.languages && Array.isArray(body.languages)) {
+        requestedLangs = body.languages.filter((l: string) => LANGUAGES.includes(l as Lang)) as Lang[]
+      }
+      if (body?.skip_image) skipImage = true
     } catch { targetDate = '' }
 
     if (!targetDate) {
@@ -183,7 +189,8 @@ Deno.serve(async (req) => {
     const { data: existing } = await supabaseAdmin
       .from('devotionals').select('language').eq('scheduled_date', targetDate)
     const existingLangs = new Set((existing || []).map((r: any) => r.language))
-    const missingLangs = LANGUAGES.filter(l => !existingLangs.has(l))
+    const langsToCheck = requestedLangs || LANGUAGES.slice()
+    const missingLangs = langsToCheck.filter(l => !existingLangs.has(l))
 
     if (missingLangs.length === 0) {
       return new Response(JSON.stringify({ message: 'Already generated', date: targetDate }), {
@@ -198,36 +205,24 @@ Deno.serve(async (req) => {
         console.log(`[${lang}] Generating text...`)
         const devotional = await generateDevotionalText(lovableKey, lang, targetDate)
 
-        // Generate cover image
-        console.log(`[${lang}] Generating cover image...`)
-        const imgData = await generateCoverImage(lovableKey, devotional.title, devotional.category)
+        // Generate cover image (skip if requested for speed)
         let coverUrl: string | null = null
-        if (imgData) {
-          coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
-          console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
+        if (!skipImage) {
+          console.log(`[${lang}] Generating cover image...`)
+          const imgData = await generateCoverImage(lovableKey, devotional.title, devotional.category)
+          if (imgData) {
+            coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
+            console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
+          }
         }
 
         // Generate TTS audio (3 voices in parallel)
-        let audioNovaUrl: string | null = null
-        let audioAlloyUrl: string | null = null
         let audioOnyxUrl: string | null = null
 
         if (openaiKey) {
           const fullText = `${devotional.title}.\n\n${devotional.anchor_verse_text}\n\n${devotional.body_text}\n\n${devotional.closing_prayer || ''}`
-          console.log(`[${lang}] Generating TTS audio (3 voices)...`)
-          const [novaData, alloyData, onyxData] = await Promise.all([
-            generateAudio(openaiKey, fullText, 'nova'),
-            generateAudio(openaiKey, fullText, 'alloy'),
-            generateAudio(openaiKey, fullText, 'onyx'),
-          ])
-          if (novaData) {
-            audioNovaUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-nova.mp3`, novaData, 'audio/mpeg')
-            console.log(`[${lang}] Audio nova: ${audioNovaUrl ? 'OK' : 'FAILED'}`)
-          }
-          if (alloyData) {
-            audioAlloyUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-alloy.mp3`, alloyData, 'audio/mpeg')
-            console.log(`[${lang}] Audio alloy: ${audioAlloyUrl ? 'OK' : 'FAILED'}`)
-          }
+          console.log(`[${lang}] Generating TTS audio (onyx)...`)
+          const onyxData = await generateAudio(openaiKey, fullText, 'onyx')
           if (onyxData) {
             audioOnyxUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-onyx.mp3`, onyxData, 'audio/mpeg')
             console.log(`[${lang}] Audio onyx: ${audioOnyxUrl ? 'OK' : 'FAILED'}`)
@@ -248,8 +243,6 @@ Deno.serve(async (req) => {
           scheduled_date: targetDate,
           language: lang,
           cover_image_url: coverUrl,
-          audio_url_nova: audioNovaUrl,
-          audio_url_alloy: audioAlloyUrl,
           audio_url_onyx: audioOnyxUrl,
         })
 
