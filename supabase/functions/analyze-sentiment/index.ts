@@ -3,6 +3,53 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function getGeminiKey(): string | null {
+  return Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY') || null
+}
+
+async function tryGeminiCall(apiKey: string, text: string): Promise<{ sentiment: string; score: number } | null> {
+  // Try multiple model names in order
+  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro']
+  const versions = ['v1beta', 'v1']
+
+  for (const version of versions) {
+    for (const model of models) {
+      try {
+        const resp = await fetch(
+          `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `Analyze the sentiment of this text and respond ONLY with valid JSON: {"sentiment": "positive" or "negative" or "mixed", "score": number 0-1}\n\nText: "${text.slice(0, 1000)}"`
+                }]
+              }],
+              generationConfig: { temperature: 0.1, maxOutputTokens: 100 },
+            }),
+          }
+        )
+        if (resp.ok) {
+          const data = await resp.json()
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
+          const jsonMatch = rawText.match(/\{[^}]+\}/)
+          if (jsonMatch) {
+            const result = JSON.parse(jsonMatch[0])
+            console.log(`Gemini success with ${version}/${model}`)
+            return { sentiment: result.sentiment || 'mixed', score: result.score || 0.5 }
+          }
+          return { sentiment: 'mixed', score: 0.5 }
+        }
+        console.log(`Model ${version}/${model} returned ${resp.status}`)
+      } catch (e) {
+        console.log(`Model ${version}/${model} failed:`, e)
+      }
+    }
+  }
+  return null
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -12,57 +59,27 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'text is required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: 'AI not configured' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    const apiKey = getGeminiKey()
+
+    if (apiKey) {
+      const result = await tryGeminiCall(apiKey, text)
+      if (result) {
+        return new Response(JSON.stringify(result), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      }
+      console.error('All Gemini models failed, using local fallback')
     }
 
-    const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
-        messages: [
-          { role: 'system', content: 'You are a sentiment analysis assistant. Analyze the sentiment of the given text and respond ONLY with a JSON object: {"sentiment": "positive"|"negative"|"mixed", "score": 0.0-1.0}. No other text.' },
-          { role: 'user', content: text.slice(0, 2000) },
-        ],
-        tools: [{
-          type: 'function',
-          function: {
-            name: 'classify_sentiment',
-            description: 'Classify text sentiment',
-            parameters: {
-              type: 'object',
-              properties: {
-                sentiment: { type: 'string', enum: ['positive', 'negative', 'mixed'] },
-                score: { type: 'number', minimum: 0, maximum: 1 },
-              },
-              required: ['sentiment', 'score'],
-              additionalProperties: false,
-            },
-          },
-        }],
-        tool_choice: { type: 'function', function: { name: 'classify_sentiment' } },
-      }),
-    })
-
-    if (!aiResp.ok) {
-      const status = aiResp.status
-      if (status === 429) return new Response(JSON.stringify({ error: 'Rate limited, try again later' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-      if (status === 402) return new Response(JSON.stringify({ error: 'Credits exhausted' }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-      return new Response(JSON.stringify({ error: 'AI error' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-    }
-
-    const aiData = await aiResp.json()
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0]
-    if (toolCall?.function?.arguments) {
-      const result = JSON.parse(toolCall.function.arguments)
-      return new Response(JSON.stringify(result), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-    }
-
-    return new Response(JSON.stringify({ sentiment: 'mixed', score: 0.5 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    // Fallback local
+    const lower = text.toLowerCase()
+    const positiveWords = ['alegria', 'grato', 'paz', 'amor', 'esperança', 'bênção', 'graça', 'fé', 'fortaleceu', 'impactou', 'tocou', 'maravilha', 'joy', 'grateful', 'peace', 'love', 'hope', 'blessed', 'faith']
+    const negativeWords = ['triste', 'difícil', 'sofrimento', 'dor', 'medo', 'angústia', 'perdido', 'duvido', 'desânimo', 'sad', 'fear', 'pain', 'doubt', 'lost']
+    const posScore = positiveWords.filter(w => lower.includes(w)).length
+    const negScore = negativeWords.filter(w => lower.includes(w)).length
+    const sentiment = posScore > negScore ? 'positive' : negScore > posScore ? 'negative' : 'mixed'
+    const score = Math.min(0.5 + Math.abs(posScore - negScore) * 0.1, 1.0)
+    return new Response(JSON.stringify({ sentiment, score }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   } catch (e) {
     console.error('Error:', e)
-    return new Response(JSON.stringify({ error: 'Internal error' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ sentiment: 'mixed', score: 0.5 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })
