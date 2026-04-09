@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { TheologyDNAChart } from '@/components/minds/TheologyDNAChart';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
@@ -145,6 +146,9 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
                 ))}
               </div>
             </section>
+
+            {/* DNA Teológico Radar */}
+            <TheologyDNAChart data={mind.theologyDNA} lang={lang} />
 
             {/* Signatures */}
             <section className="rounded-xl border border-[hsl(30,15%,88%)] bg-white p-5">
