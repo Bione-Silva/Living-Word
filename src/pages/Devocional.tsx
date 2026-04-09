@@ -360,6 +360,7 @@ export default function Devocional() {
         .from('devotionals')
         .select('id, title, anchor_verse, scheduled_date, body_text, cover_image_url, audio_url_nova, audio_url_alloy, audio_url_onyx')
         .eq('language', userLang)
+        .not('audio_url_onyx', 'is', null)
         .order('scheduled_date', { ascending: false })
         .limit(30);
       setPastItems((data as PastDevotional[]) || []);
