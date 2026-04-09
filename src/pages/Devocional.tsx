@@ -332,22 +332,35 @@ export default function Devocional() {
   const [viewingPast, setViewingPast] = useState<PastDevotional | null>(null);
   const [transitioning, setTransitioning] = useState(false);
 
+  // Admin debug date picker
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [debugDate, setDebugDate] = useState('');
+
   useEffect(() => {
     if (!user) return;
-    const load = async () => {
-      try {
-        const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today');
-        if (err || !result) throw err;
-        setData(result);
-        // Edge function now handles caching & persistence — no client-side insert needed
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    supabase.rpc('is_admin').then(({ data }) => { if (data === true) setIsAdmin(true); });
   }, [user]);
+
+  const loadDevotional = useCallback(async (dateOverride?: string) => {
+    setLoading(true);
+    setError(false);
+    try {
+      const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today', {
+        body: dateOverride ? { date: dateOverride } : undefined,
+      });
+      if (err || !result) throw err;
+      setData(result);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    loadDevotional();
+  }, [user, loadDevotional]);
 
   useEffect(() => {
     if (!user) return;
