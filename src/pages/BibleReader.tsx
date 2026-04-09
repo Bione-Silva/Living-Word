@@ -110,6 +110,17 @@ export default function BibleReader() {
     }
     return getTranslation(lang);
   });
+
+  // Re-validate translation when language changes or on mount
+  useEffect(() => {
+    const valid = translationOptions[lang].some(o => o.code === translation);
+    if (!valid) {
+      const fallback = getTranslation(lang);
+      setTranslation(fallback);
+      localStorage.setItem('bible_translation_preference', fallback);
+    }
+  }, [lang, translation]);
+
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
 
   // Search state
