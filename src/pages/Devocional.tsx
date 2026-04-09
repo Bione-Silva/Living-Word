@@ -833,16 +833,18 @@ export default function Devocional() {
               <button
                 onClick={async () => {
                   try {
-                    const resp = await fetch(displayCover!, { mode: 'cors' });
-                    const blob = await resp.blob();
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
+                    if (coverCardRef.current) {
+                      const dataUrl = await toPng(coverCardRef.current, {
+                        pixelRatio: 3,
+                        cacheBust: true,
+                      });
+                      const a = document.createElement('a');
+                      a.href = dataUrl;
+                      a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }
                   } catch {
                     window.open(displayCover!, '_blank');
                   }
