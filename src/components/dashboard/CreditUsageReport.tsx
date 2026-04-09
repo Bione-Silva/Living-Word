@@ -48,8 +48,10 @@ const FEATURE_LABELS: Record<string, Record<L, string>> = {
   'mind-chat': { PT: 'Mentes Brilhantes', EN: 'Brilliant Minds', ES: 'Mentes Brillantes' },
   'deep-search': { PT: 'Pesquisa Profunda', EN: 'Deep Search', ES: 'Búsqueda Profunda' },
   'social-studio': { PT: 'Estúdio Social', EN: 'Social Studio', ES: 'Estudio Social' },
+  'social-carousel': { PT: 'Carrossel Social', EN: 'Social Carousel', ES: 'Carrusel Social' },
   'pastoral-material': { PT: 'Material Pastoral', EN: 'Pastoral Material', ES: 'Material Pastoral' },
   'devotional': { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' },
+  'devotional-today': { PT: 'Devocional do Dia', EN: 'Daily Devotional', ES: 'Devocional del Día' },
   'outline': { PT: 'Esboço de Sermão', EN: 'Sermon Outline', ES: 'Esquema de Sermón' },
   'sermon': { PT: 'Sermão Completo', EN: 'Full Sermon', ES: 'Sermón Completo' },
   'Blog Creator': { PT: 'Criador de Blog', EN: 'Blog Creator', ES: 'Creador de Blog' },
@@ -63,7 +65,8 @@ const FEATURE_ICONS: Record<string, string> = {
   'cell-group': '👥', 'social-caption': '📱', 'newsletter': '📧', 'announcements': '📢',
   'trivia': '🎮', 'poetry': '🪶', 'kids-story': '👶', 'deep-translation': '🌐',
   'mind-chat': '🧠', 'deep-search': '🔎', 'social-studio': '🎨', 'pastoral-material': '⛪',
-  'devotional': '🙏', 'outline': '📋', 'sermon': '🎤', 'Blog Creator': '✍️',
+  'devotional': '🙏', 'devotional-today': '🌅', 'outline': '📋', 'sermon': '🎤', 'Blog Creator': '✍️',
+  'social-carousel': '🎠',
 };
 
 const filterAllLabel = { PT: 'Todas as ferramentas', EN: 'All tools', ES: 'Todas las herramientas' } as Record<L, string>;
