@@ -167,9 +167,13 @@ Deno.serve(async (req) => {
     )
 
     let targetDate: string
+    let requestedLangs: Lang[] | null = null
     try {
       const body = await req.json()
       targetDate = body?.date || ''
+      if (body?.languages && Array.isArray(body.languages)) {
+        requestedLangs = body.languages.filter((l: string) => LANGUAGES.includes(l as Lang)) as Lang[]
+      }
     } catch { targetDate = '' }
 
     if (!targetDate) {
