@@ -22,9 +22,9 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
   const [enriching, setEnriching] = useState(false);
   const t = (k: string) => sl(k, lang);
 
-  const studyTitle = study.verdade_central.frase_central || study.passagem.referencia;
-  const studyPassage = study.passagem.referencia;
-  const studyLanguage = study.metadata.tipo_uso || 'PT';
+  const studyTitle = study?.verdade_central?.frase_central || study?.passagem?.referencia || '';
+  const studyPassage = study?.passagem?.referencia || '';
+  const studyLanguage = study?.metadata?.tipo_uso || 'PT';
 
   const handleExportPDF = async () => {
     if (exporting) return;
