@@ -187,7 +187,8 @@ Deno.serve(async (req) => {
     const { data: existing } = await supabaseAdmin
       .from('devotionals').select('language').eq('scheduled_date', targetDate)
     const existingLangs = new Set((existing || []).map((r: any) => r.language))
-    const missingLangs = LANGUAGES.filter(l => !existingLangs.has(l))
+    const langsToCheck = requestedLangs || LANGUAGES.slice()
+    const missingLangs = langsToCheck.filter(l => !existingLangs.has(l))
 
     if (missingLangs.length === 0) {
       return new Response(JSON.stringify({ message: 'Already generated', date: targetDate }), {
