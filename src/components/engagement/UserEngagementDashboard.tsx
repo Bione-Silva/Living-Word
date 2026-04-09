@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { TrendingUp, Brain, Flame, Clock } from 'lucide-react';
+import { Brain, Flame, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,36 +9,26 @@ import { useLanguage } from '@/contexts/LanguageContext';
 type L = 'PT' | 'EN' | 'ES';
 
 const labels = {
-  title: { PT: 'Seu Dashboard de Engajamento', EN: 'Your Engagement Dashboard', ES: 'Tu Panel de Engagement' },
-  themes: { PT: 'Seus Temas de 2025', EN: 'Your 2025 Themes', ES: 'Tus Temas de 2025' },
-  insights: { PT: 'Como a IA te conhece', EN: 'How AI knows you', ES: 'Cómo la IA te conoce' },
-  streak: { PT: 'Dias consecutivos', EN: 'Consecutive days', ES: 'Días consecutivos' },
-  avgTime: { PT: 'Tempo médio', EN: 'Average time', ES: 'Tiempo promedio' },
-  minutes: { PT: 'min', EN: 'min', ES: 'min' },
-  trending: { PT: 'Tendências', EN: 'Trending', ES: 'Tendencias' },
+  title: { PT: 'Seus Temas Favoritos', EN: 'Your Top Themes', ES: 'Tus Temas Favoritos' },
+  streak: { PT: 'Sequência', EN: 'Streak', ES: 'Racha' },
+  avgTime: { PT: 'Média', EN: 'Avg', ES: 'Media' },
+  min: { PT: 'min', EN: 'min', ES: 'min' },
+  days: { PT: 'dias', EN: 'days', ES: 'días' },
   noData: { PT: 'Comece a ler devocionais para ver insights!', EN: 'Start reading devotionals to see insights!', ES: '¡Empieza a leer devocionales para ver insights!' },
-} satisfies Record<string, Record<L, string>>;
+};
 
-const CHART_COLORS = [
-  'hsl(38, 70%, 55%)',
-  'hsl(38, 60%, 65%)',
-  'hsl(38, 50%, 72%)',
-  'hsl(38, 40%, 78%)',
-  'hsl(38, 30%, 82%)',
+const THEME_COLORS = [
+  'bg-primary/15 text-primary',
+  'bg-accent/20 text-accent-foreground',
+  'bg-muted text-muted-foreground',
+  'bg-secondary text-secondary-foreground',
+  'bg-primary/10 text-primary/80',
 ];
 
 interface ProfileData {
   favorite_themes: string[];
   consecutive_days_engaged: number;
   average_time_spent: number;
-  last_devotional_theme: string | null;
-}
-
-interface TrendingData {
-  topics: string[];
-  reason: string;
-  sentimentCounts: { positive: number; negative: number; mixed: number };
-  totalEngagements: number;
 }
 
 export function UserEngagementDashboard() {
@@ -47,14 +36,11 @@ export function UserEngagementDashboard() {
   const { lang: currentLang } = useLanguage();
   const lang = (currentLang || 'PT') as L;
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [trending, setTrending] = useState<TrendingData | null>(null);
-  const [themeStats, setThemeStats] = useState<{ name: string; count: number }[]>([]);
+  const [topThemes, setTopThemes] = useState<{ name: string; count: number }[]>([]);
 
   useEffect(() => {
     if (!user) return;
-
     const load = async () => {
-      // Load profile
       const { data: p } = await supabase
         .from('devotional_user_profiles')
         .select('*')
@@ -62,13 +48,6 @@ export function UserEngagementDashboard() {
         .maybeSingle();
       if (p) setProfile(p as ProfileData);
 
-      // Load trending
-      try {
-        const { data: t } = await supabase.functions.invoke('trending-topics', { body: {} });
-        if (t && !t.error) setTrending(t);
-      } catch { /* silent */ }
-
-      // Load theme stats from engagements
       const { data: engagements } = await supabase
         .from('devotional_engagements')
         .select('theme')
@@ -80,153 +59,75 @@ export function UserEngagementDashboard() {
         for (const e of engagements) {
           if (e.theme) counts[e.theme] = (counts[e.theme] || 0) + 1;
         }
-        const sorted = Object.entries(counts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 5)
-          .map(([name, count]) => ({ name, count }));
-        setThemeStats(sorted);
+        setTopThemes(
+          Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([name, count]) => ({ name, count }))
+        );
       }
     };
-
     load();
   }, [user]);
 
   if (!user) return null;
 
-  const hasData = profile || themeStats.length > 0;
-
+  const hasData = profile || topThemes.length > 0;
   if (!hasData) {
     return (
       <Card className="border-muted">
-        <CardContent className="py-6 text-center text-sm text-muted-foreground">
-          <Brain className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+        <CardContent className="py-5 text-center text-sm text-muted-foreground">
+          <Brain className="h-6 w-6 mx-auto mb-1.5 text-muted-foreground/50" />
           {labels.noData[lang]}
         </CardContent>
       </Card>
     );
   }
 
+  const streakDays = profile?.consecutive_days_engaged || 0;
+  const avgMin = Math.round((profile?.average_time_spent || 0) / 60);
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-        <Brain className="h-5 w-5 text-primary" />
-        {labels.title[lang]}
-      </h2>
+    <Card className="border-muted">
+      <CardContent className="py-4 space-y-3">
+        {/* Header row: title + compact stats */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+            <Brain className="h-4 w-4 text-primary" />
+            {labels.title[lang]}
+          </h3>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            {streakDays > 0 && (
+              <span className="flex items-center gap-1">
+                <Flame className="h-3.5 w-3.5 text-orange-500" />
+                {streakDays} {labels.days[lang]}
+              </span>
+            )}
+            {avgMin > 0 && (
+              <span className="flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5 text-blue-500" />
+                {avgMin} {labels.min[lang]}
+              </span>
+            )}
+          </div>
+        </div>
 
-      {/* Stats cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <Card className="border-muted">
-          <CardContent className="py-4 text-center">
-            <Flame className="h-5 w-5 mx-auto mb-1 text-orange-500" />
-            <p className="text-2xl font-bold text-foreground">{profile?.consecutive_days_engaged || 0}</p>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{labels.streak[lang]}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-muted">
-          <CardContent className="py-4 text-center">
-            <Clock className="h-5 w-5 mx-auto mb-1 text-blue-500" />
-            <p className="text-2xl font-bold text-foreground">
-              {Math.round((profile?.average_time_spent || 0) / 60)}
-              <span className="text-sm font-normal text-muted-foreground ml-1">{labels.minutes[lang]}</span>
-            </p>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{labels.avgTime[lang]}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Theme chart */}
-      {themeStats.length > 0 && (
-        <Card className="border-muted">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold">{labels.themes[lang]}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={themeStats}
-                  cx="50%"
-                  cy="45%"
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={4}
-                  dataKey="count"
-                  nameKey="name"
-                  animationDuration={1000}
-                  animationEasing="ease-out"
-                >
-                  {themeStats.map((_, i) => (
-                    <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                  }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  align="center"
-                  iconType="circle"
-                  iconSize={8}
-                  wrapperStyle={{ fontSize: '11px', paddingTop: '4px' }}
-                  formatter={(value: string) => <span style={{ color: 'hsl(var(--muted-foreground))' }}>{value}</span>}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Trending topics */}
-      {trending && trending.topics.length > 0 && (
-        <Card className="border-muted">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-primary" />
-              {labels.trending[lang]}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex flex-wrap gap-1.5">
-              {trending.topics.map((t) => (
-                <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground">{trending.reason}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* AI insights */}
-      {profile && profile.favorite_themes.length > 0 && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <Sparkle className="h-4 w-4" />
-              {labels.insights[lang]}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-1.5">
-              {profile.favorite_themes.slice(0, 8).map((t) => (
-                <Badge key={t} variant="outline" className="text-[10px]">{t}</Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}
-
-function Sparkle({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2L14.09 8.26L20 9.27L15.55 13.97L16.91 20L12 16.9L7.09 20L8.45 13.97L4 9.27L9.91 8.26L12 2Z" />
-    </svg>
+        {/* Theme badges */}
+        {topThemes.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {topThemes.map((t, i) => (
+              <Badge
+                key={t.name}
+                variant="secondary"
+                className={`text-xs font-medium px-2.5 py-1 ${THEME_COLORS[i % THEME_COLORS.length]}`}
+              >
+                {t.name}
+                <span className="ml-1 opacity-60">×{t.count}</span>
+              </Badge>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
