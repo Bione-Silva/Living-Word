@@ -266,9 +266,11 @@ export function BibleReadingView({
           </div>
         ) : (
           <div className="space-y-0">
-            {verses.map(v => {
-              const isSelected = selectedVerse === v.verse;
+            {verses.map((v, idx) => {
+              const isSelected = selectedVerses.has(v.verse);
               const hlClass = highlights[v.verse] ? highlightClassMap[highlights[v.verse]] || '' : '';
+              // Show toolbar on the LAST selected verse in sequence
+              const isLastSelected = isSelected && !selectedVerses.has(verses[idx + 1]?.verse);
 
               return (
                 <div key={v.verse} className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
@@ -278,7 +280,7 @@ export function BibleReadingView({
                 }`}>
                   {/* Verse number badge */}
                   <button
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVerse(isSelected ? null : v.verse); }}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors ${
                       isSelected
                         ? 'bg-primary text-primary-foreground'
@@ -291,29 +293,29 @@ export function BibleReadingView({
                   {/* Verse text + inline toolbar */}
                   <div className="flex-1 min-w-0">
                     <span
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVerse(isSelected ? null : v.verse); }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}
                       className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90"
                     >
                       {v.text.trim()}
                     </span>
-                    {isSelected && (
+                    {isLastSelected && selectedVerses.size > 0 && (
                       <InlineVerseToolbar
-                        verse={v}
+                        selectedVerses={verses.filter(vv => selectedVerses.has(vv.verse))}
                         bookId={bookId}
                         chapter={chapter}
                         translationCode={translation}
-                        isFavorited={favoritedVerses.has(v.verse)}
-                        onFavoriteToggle={() => {
+                        favoritedVerses={favoritedVerses}
+                        onFavoriteToggle={(vn) => {
                           setFavoritedVerses(p => {
                             const n = new Set(p);
-                            if (n.has(v.verse)) n.delete(v.verse); else n.add(v.verse);
+                            if (n.has(vn)) n.delete(vn); else n.add(vn);
                             return n;
                           });
                           onTabsRefresh();
                         }}
                         onHighlight={handleHighlight}
                         onNoteSaved={onTabsRefresh}
-                        onClose={() => setSelectedVerse(null)}
+                        onClose={() => setSelectedVerses(new Set())}
                       />
                     )}
                   </div>
