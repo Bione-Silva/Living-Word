@@ -42,9 +42,15 @@ Deno.serve(async (req) => {
 
     const language = profile?.language || 'PT'
 
-    // Optional ?date= query param for testing specific dates
+    // Accept date from query string (?date=YYYY-MM-DD) or JSON body ({ date: "YYYY-MM-DD" })
     const url = new URL(req.url)
-    const dateParam = url.searchParams.get('date')
+    let dateParam = url.searchParams.get('date')
+    if (!dateParam) {
+      try {
+        const body = await req.json()
+        if (body?.date) dateParam = body.date
+      } catch { /* no body */ }
+    }
     const today = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)
       ? dateParam
       : new Date().toISOString().slice(0, 10)
