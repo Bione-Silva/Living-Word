@@ -326,6 +326,7 @@ export function BibleReadingView({
                         onHighlight={handleHighlight}
                         onNoteSaved={onTabsRefresh}
                         onClose={() => setSelectedVerses(new Set())}
+                        onStudySidebar={handleOpenStudy}
                       />
                     )}
                   </div>
