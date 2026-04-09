@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Check, Crown, Sparkles, Brain, BookOpen, Zap, BarChart3, Loader2, Building2, HelpCircle } from 'lucide-react';
+import { Check, Crown, Sparkles, Brain, BookOpen, Zap, BarChart3, Loader2, Building2, HelpCircle, Minus, Plus, Users } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
@@ -40,6 +40,9 @@ const labels = {
   outlines: { PT: 'Esboços Médios', EN: 'Medium Outlines', ES: 'Esquemas Medios' } as Record<L, string>,
   sermons: { PT: 'Sermões Completos', EN: 'Full Sermons', ES: 'Sermones Completos' } as Record<L, string>,
   studies: { PT: 'Estudos Aprofundados', EN: 'Deep Studies', ES: 'Estudios Profundos' } as Record<L, string>,
+  teamExtras: { PT: 'Membros da equipe extras', EN: 'Extra team members', ES: 'Miembros del equipo extras' } as Record<L, string>,
+  included: { PT: 'incluídos', EN: 'included', ES: 'incluidos' } as Record<L, string>,
+  perSeat: { PT: 'por membro extra/mês', EN: 'per extra member/month', ES: 'por miembro extra/mes' } as Record<L, string>,
 };
 
 interface PlanData {
