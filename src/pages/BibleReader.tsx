@@ -168,9 +168,13 @@ export default function BibleReader() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+          <button
+            onClick={() => { setReadView('books'); setActiveTab('read'); setSelectedBook(''); }}
+            className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 hover:bg-primary/25 transition-colors"
+            title={lang === 'PT' ? 'Menu principal' : lang === 'EN' ? 'Main menu' : 'Menú principal'}
+          >
             <BookOpen className="h-6 w-6 text-primary" />
-          </div>
+          </button>
           <div>
             <h1 className="font-display text-xl font-bold text-foreground">{pageTitle[lang]}</h1>
             <p className="text-sm text-muted-foreground">{pageSubtitle[lang]}</p>
