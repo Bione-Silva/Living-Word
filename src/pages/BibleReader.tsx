@@ -184,7 +184,7 @@ export default function BibleReader() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => scrollToTabs('favorites')}
+            onClick={() => setFavSidebarOpen(true)}
             className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
             title={lang === 'PT' ? 'Favoritos' : lang === 'EN' ? 'Favorites' : 'Favoritos'}
           >
