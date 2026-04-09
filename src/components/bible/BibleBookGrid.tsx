@@ -65,8 +65,8 @@ export function BibleBookGrid({ translation, onTranslationChange, onSelectBook }
                 onClick={() => onTranslationChange(t.code)}
                 className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                   translation === t.code
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground border border-border'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground bg-muted/60 border border-border'
                 }`}
               >
                 {t.label}
