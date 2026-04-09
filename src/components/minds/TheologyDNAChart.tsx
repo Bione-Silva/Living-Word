@@ -31,7 +31,6 @@ const axisDescriptions: Record<string, Record<L, string>> = {
   Soberania: { PT: 'Ênfase na soberania de Deus e eleição divina', EN: 'Emphasis on God\'s sovereignty and divine election', ES: 'Énfasis en la soberanía de Dios y elección divina' },
 };
 
-// Map EN/ES axis names back to PT key for legend lookup
 const axisKeyMap: Record<string, string> = {
   Evangelism: 'Evangelismo', Evangelismo: 'Evangelismo',
   Prophecy: 'Profecia', Profecía: 'Profecia', Profecia: 'Profecia',
@@ -53,28 +52,48 @@ function CustomTooltip({ active, payload }: any) {
   );
 }
 
+// Abbreviate long axis labels on mobile
+function shortLabel(label: string): string {
+  const map: Record<string, string> = {
+    'Teologia Sistemática': 'Teol. Sist.',
+    'Systematic Theology': 'Syst. Theo.',
+    'Teología Sistemática': 'Teol. Sist.',
+    'Apelo Emocional': 'Apelo Emoc.',
+    'Emotional Appeal': 'Emot. Appeal',
+    'Apelación Emocional': 'Apel. Emoc.',
+    Aconselhamento: 'Aconselh.',
+    Counseling: 'Counseling',
+    Consejería: 'Consejería',
+  };
+  return map[label] || label;
+}
+
 export function TheologyDNAChart({ data, lang }: Props) {
-  const chartData = data.map(d => ({ axis: d.axis[lang], value: d.value }));
+  const chartData = data.map(d => ({
+    axis: d.axis[lang],
+    short: shortLabel(d.axis[lang]),
+    value: d.value,
+  }));
 
   return (
-    <section className="mt-5 rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-7 sm:p-10">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-          <Brain className="h-5 w-5 text-[hsl(35,45%,45%)]" />
+    <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-7 md:p-10">
+      <div className="flex items-center gap-3 mb-4 sm:mb-5">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
+          <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(35,45%,45%)]" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[hsl(220,15%,20%)]">{labels.title[lang]}</h2>
-          <p className="text-xs text-[hsl(220,10%,55%)]">{labels.subtitle[lang]}</p>
+          <h2 className="text-base sm:text-lg font-bold text-[hsl(220,15%,20%)]">{labels.title[lang]}</h2>
+          <p className="text-[11px] sm:text-xs text-[hsl(220,10%,55%)]">{labels.subtitle[lang]}</p>
         </div>
       </div>
 
-      <div className="w-full flex justify-center">
-        <ResponsiveContainer width="100%" height={280} maxHeight={280}>
-          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
+      <div className="w-full flex justify-center -mx-2 sm:mx-0">
+        <ResponsiveContainer width="100%" height={250} minWidth={260}>
+          <RadarChart cx="50%" cy="50%" outerRadius="65%" data={chartData}>
             <PolarGrid stroke="hsl(30,15%,85%)" />
             <PolarAngleAxis
-              dataKey="axis"
-              tick={{ fill: 'hsl(220,10%,35%)', fontSize: 11, fontWeight: 600 }}
+              dataKey="short"
+              tick={{ fill: 'hsl(220,10%,35%)', fontSize: 10, fontWeight: 600 }}
             />
             <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
             <Radar
@@ -91,14 +110,14 @@ export function TheologyDNAChart({ data, lang }: Props) {
       </div>
 
       {/* Legend */}
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 pl-0 sm:pl-2">
+      <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
         {chartData.map((d, i) => {
           const key = axisKeyMap[d.axis] || d.axis;
           const desc = axisDescriptions[key];
           return (
             <div key={i} className="flex items-start gap-2">
-              <span className="mt-1 w-2 h-2 rounded-full bg-[hsl(270,40%,55%)] shrink-0" />
-              <div>
+              <span className="mt-1.5 w-2 h-2 rounded-full bg-[hsl(270,40%,55%)] shrink-0" />
+              <div className="min-w-0">
                 <p className="text-xs font-semibold text-[hsl(220,15%,20%)]">{d.axis}</p>
                 {desc && <p className="text-[11px] text-[hsl(220,10%,50%)] leading-snug">{desc[lang]}</p>}
               </div>

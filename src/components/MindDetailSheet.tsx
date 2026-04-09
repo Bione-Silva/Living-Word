@@ -146,11 +146,12 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
                 ))}
               </div>
             </section>
+          </div>
 
-            {/* DNA Teológico Radar */}
-            <TheologyDNAChart data={mind.theologyDNA} lang={lang} />
+          {/* ── DNA Teológico Radar ── */}
+          <TheologyDNAChart data={mind.theologyDNA} lang={lang} />
 
-            {/* Signatures */}
+          <div className="grid grid-cols-1 gap-5">
             <section className="rounded-xl border border-[hsl(30,15%,88%)] bg-white p-5">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-[hsl(35,35%,92%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
