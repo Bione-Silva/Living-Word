@@ -25,7 +25,7 @@ import {
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
-  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal
+  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal, ChevronUp
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
