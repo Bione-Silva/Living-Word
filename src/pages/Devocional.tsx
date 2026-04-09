@@ -723,6 +723,37 @@ export default function Devocional() {
         </button>
       )}
 
+      {/* Admin debug date picker */}
+      {isAdmin && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-dashed p-2.5" style={{ borderColor: colors.gold + '60', backgroundColor: colors.goldLight + '40' }}>
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: colors.gold }}>🛠 Debug</span>
+          <input
+            type="date"
+            value={debugDate}
+            onChange={(e) => setDebugDate(e.target.value)}
+            className="text-xs rounded border px-2 py-1 bg-white/80"
+            style={{ borderColor: colors.border, color: colors.text }}
+          />
+          <button
+            onClick={() => { if (debugDate) { setViewingPast(null); setActiveItemId(null); loadDevotional(debugDate); } }}
+            disabled={!debugDate}
+            className="text-[11px] font-semibold px-3 py-1 rounded-md disabled:opacity-40"
+            style={{ backgroundColor: colors.gold, color: '#fff' }}
+          >
+            Carregar
+          </button>
+          {debugDate && (
+            <button
+              onClick={() => { setDebugDate(''); setViewingPast(null); setActiveItemId(null); loadDevotional(); }}
+              className="text-[11px] px-2 py-1 rounded-md hover:opacity-80"
+              style={{ color: colors.gold }}
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      )}
+
       {/* ═══ EDITORIAL CARD ═══ */}
       <div
         className={`rounded-2xl border overflow-hidden shadow-sm transition-all duration-200 ${transitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}
