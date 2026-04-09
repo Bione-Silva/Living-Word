@@ -107,8 +107,20 @@ export default function MentesBrilhantes() {
               <div>
                 <p className="text-lg font-bold text-emerald-600 font-mono">{visibleMinds.length}</p>
                 <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Active Agents' : 'Agentes Ativos'}</p>
-              </div>
-            </div>
+            {visibleMinds.length >= 2 && (
+              <>
+                <div className="w-px h-8 bg-[hsl(30,15%,88%)]" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCompare(true)}
+                  className="gap-2 border-[hsl(35,30%,80%)] text-[hsl(35,45%,40%)] hover:bg-[hsl(35,40%,95%)]"
+                >
+                  <ArrowLeftRight className="h-4 w-4" />
+                  {lang === 'EN' ? 'Compare Minds' : lang === 'ES' ? 'Comparar Mentes' : 'Comparar Mentes'}
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
