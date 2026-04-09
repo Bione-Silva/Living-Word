@@ -159,6 +159,36 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
     setCurrentTime(newTime);
   };
 
+  const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  if (!audioSrc) return <AudioPlaceholder title={data.title} lang={lang} />;
+
+  return (
+    <div className="rounded-2xl border p-5 sm:p-6 space-y-5" style={{ borderColor: 'hsl(38, 40%, 80%)', background: 'linear-gradient(135deg, hsl(38, 40%, 96%), hsl(36, 30%, 94%))' }}>
+      <audio
+        ref={audioRef}
+        src={audioSrc}
+        muted={muted}
+        onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
+        onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
+        onEnded={() => setPlaying(false)}
+      />
+
+      {/* Header with waves */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(38, 52%, 58%, 0.15)' }}>
+            <SoundWaves active={playing} />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ color: 'hsl(38, 52%, 48%)' }}>
+              {labels.listenLabel[lang]}
+            </p>
+            <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: 'hsl(24, 30%, 15%)' }}>{data.title}</p>
+          </div>
+        </div>
+      </div>
+
       {/* Progress bar */}
       <div className="space-y-1.5">
         <div
