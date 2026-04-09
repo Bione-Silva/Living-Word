@@ -100,6 +100,7 @@ export default function BibleReader() {
   };
 
   const handleVerseClick = (e: React.MouseEvent, verse: Verse) => {
+    e.preventDefault();
     e.stopPropagation();
     setSelectedVerse(verse);
   };
