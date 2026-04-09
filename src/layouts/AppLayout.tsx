@@ -190,6 +190,11 @@ export default function AppLayout() {
       setMobileToolsOpen(false);
       return;
     }
+    if (tool.id === 'free-article') {
+      navigate('/blog');
+      setMobileToolsOpen(false);
+      return;
+    }
     setMobileToolsOpen(false);
     setActiveTool({ id: tool.id, title: tool.label[lang] });
   };
