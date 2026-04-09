@@ -74,7 +74,10 @@ export function getBookName(id: string, lang: L): string {
 /** Available translations per language with their bible-api.com codes */
 export const translationOptions: Record<L, { code: string; label: string }[]> = {
   PT: [
-    { code: 'almeida', label: 'ARC' },
+    { code: 'nvi', label: 'NVI' },
+    { code: 'almeida', label: 'ARA' },
+    { code: 'acf', label: 'ACF' },
+    { code: 'ntlh', label: 'NTLH' },
   ],
   EN: [
     { code: 'web', label: 'WEB' },
