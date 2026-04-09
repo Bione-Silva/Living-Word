@@ -168,12 +168,14 @@ Deno.serve(async (req) => {
 
     let targetDate: string
     let requestedLangs: Lang[] | null = null
+    let skipImage = false
     try {
       const body = await req.json()
       targetDate = body?.date || ''
       if (body?.languages && Array.isArray(body.languages)) {
         requestedLangs = body.languages.filter((l: string) => LANGUAGES.includes(l as Lang)) as Lang[]
       }
+      if (body?.skip_image) skipImage = true
     } catch { targetDate = '' }
 
     if (!targetDate) {
