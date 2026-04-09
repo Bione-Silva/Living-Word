@@ -68,7 +68,7 @@ export function BibleReadingView({
   const [loading, setLoading] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [error, setError] = useState('');
-  const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
+  const [selectedVerses, setSelectedVerses] = useState<Set<number>>(new Set());
   const [favoritedVerses, setFavoritedVerses] = useState<Set<number>>(new Set());
   const [highlights, setHighlights] = useState<Record<number, string>>({});
   const [chapterPickerOpen, setChapterPickerOpen] = useState(false);
@@ -80,7 +80,7 @@ export function BibleReadingView({
 
   const fetchChapter = useCallback(async (isRetry = false) => {
     if (isRetry) setRetrying(true); else setLoading(true);
-    setError(''); setVerses([]); setSelectedVerse(null);
+    setError(''); setVerses([]); setSelectedVerses(new Set());
     try {
       const apiBook = getApiBookName(bookId, translation);
       const ref = `${apiBook} ${chapter}`;
@@ -131,34 +131,45 @@ export function BibleReadingView({
       });
   }, [user, bookId, chapter]);
 
-  const handleHighlight = async (color: string) => {
-    if (!user || selectedVerse === null) return;
-    const v = verses.find(vv => vv.verse === selectedVerse);
-    if (!v) return;
+  const handleHighlight = async (color: string, verseNums: number[]) => {
+    if (!user || verseNums.length === 0) return;
 
-    // Toggle: same color = remove
-    if (highlights[selectedVerse] === color) {
+    for (const vn of verseNums) {
+      const v = verses.find(vv => vv.verse === vn);
+      if (!v) continue;
+
+      // Toggle: same color = remove
+      if (highlights[vn] === color) {
+        await supabase.from('bible_highlights').delete()
+          .eq('user_id', user.id).eq('book_id', bookId)
+          .eq('chapter_number', chapter).eq('start_verse_number', vn);
+        setHighlights(p => {
+          const copy = { ...p };
+          delete copy[vn];
+          return copy;
+        });
+        continue;
+      }
+
       await supabase.from('bible_highlights').delete()
         .eq('user_id', user.id).eq('book_id', bookId)
-        .eq('chapter_number', chapter).eq('start_verse_number', selectedVerse);
-      setHighlights(p => {
-        const copy = { ...p };
-        delete copy[selectedVerse];
-        return copy;
+        .eq('chapter_number', chapter).eq('start_verse_number', vn);
+      await supabase.from('bible_highlights').insert({
+        user_id: user.id, book_id: bookId, chapter_number: chapter,
+        start_verse_number: vn, end_verse_number: vn,
+        selected_text: v.text.trim(), color_key: color,
+        language: lang, translation_code: translation,
       });
-      return;
+      setHighlights(p => ({ ...p, [vn]: color }));
     }
+  };
 
-    await supabase.from('bible_highlights').delete()
-      .eq('user_id', user.id).eq('book_id', bookId)
-      .eq('chapter_number', chapter).eq('start_verse_number', selectedVerse);
-    await supabase.from('bible_highlights').insert({
-      user_id: user.id, book_id: bookId, chapter_number: chapter,
-      start_verse_number: selectedVerse, end_verse_number: selectedVerse,
-      selected_text: v.text.trim(), color_key: color,
-      language: lang, translation_code: translation,
+  const toggleVerseSelection = (verseNum: number) => {
+    setSelectedVerses(prev => {
+      const next = new Set(prev);
+      if (next.has(verseNum)) next.delete(verseNum); else next.add(verseNum);
+      return next;
     });
-    setHighlights(p => ({ ...p, [selectedVerse]: color }));
   };
 
   const chapterNumbers = Array.from({ length: totalChapters }, (_, i) => i + 1);
@@ -255,9 +266,11 @@ export function BibleReadingView({
           </div>
         ) : (
           <div className="space-y-0">
-            {verses.map(v => {
-              const isSelected = selectedVerse === v.verse;
+            {verses.map((v, idx) => {
+              const isSelected = selectedVerses.has(v.verse);
               const hlClass = highlights[v.verse] ? highlightClassMap[highlights[v.verse]] || '' : '';
+              // Show toolbar on the LAST selected verse in sequence
+              const isLastSelected = isSelected && !selectedVerses.has(verses[idx + 1]?.verse);
 
               return (
                 <div key={v.verse} className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
@@ -267,7 +280,7 @@ export function BibleReadingView({
                 }`}>
                   {/* Verse number badge */}
                   <button
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVerse(isSelected ? null : v.verse); }}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors ${
                       isSelected
                         ? 'bg-primary text-primary-foreground'
@@ -280,29 +293,29 @@ export function BibleReadingView({
                   {/* Verse text + inline toolbar */}
                   <div className="flex-1 min-w-0">
                     <span
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVerse(isSelected ? null : v.verse); }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}
                       className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90"
                     >
                       {v.text.trim()}
                     </span>
-                    {isSelected && (
+                    {isLastSelected && selectedVerses.size > 0 && (
                       <InlineVerseToolbar
-                        verse={v}
+                        selectedVerses={verses.filter(vv => selectedVerses.has(vv.verse))}
                         bookId={bookId}
                         chapter={chapter}
                         translationCode={translation}
-                        isFavorited={favoritedVerses.has(v.verse)}
-                        onFavoriteToggle={() => {
+                        favoritedVerses={favoritedVerses}
+                        onFavoriteToggle={(vn) => {
                           setFavoritedVerses(p => {
                             const n = new Set(p);
-                            if (n.has(v.verse)) n.delete(v.verse); else n.add(v.verse);
+                            if (n.has(vn)) n.delete(vn); else n.add(vn);
                             return n;
                           });
                           onTabsRefresh();
                         }}
                         onHighlight={handleHighlight}
                         onNoteSaved={onTabsRefresh}
-                        onClose={() => setSelectedVerse(null)}
+                        onClose={() => setSelectedVerses(new Set())}
                       />
                     )}
                   </div>
