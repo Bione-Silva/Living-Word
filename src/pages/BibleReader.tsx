@@ -44,7 +44,6 @@ interface SearchResult {
 /** Parse search like "João 3", "João 3:16", "Genesis 1:1", "Gn 3", etc. */
 function parseReference(query: string, lang: L): SearchResult | null {
   const q = query.trim();
-  // Match patterns: "Book Chapter" or "Book Chapter:Verse"
   const match = q.match(/^(.+?)\s+(\d+)(?::(\d+))?$/);
   if (!match) return null;
 
@@ -53,7 +52,6 @@ function parseReference(query: string, lang: L): SearchResult | null {
   const verse = vStr ? parseInt(vStr, 10) : undefined;
   const bookQuery = rawBook.trim().toLowerCase();
 
-  // Search through all books
   for (const book of bibleBooks) {
     const names = [
       book.id.toLowerCase(),
@@ -62,36 +60,22 @@ function parseReference(query: string, lang: L): SearchResult | null {
     ];
     if (names.some(n => n && (n.startsWith(bookQuery) || bookQuery.startsWith(n.substring(0, 3))))) {
       if (chapter >= 1 && chapter <= book.chapters) {
-        return {
-          bookId: book.id,
-          bookName: getBookName(book.id, lang),
-          chapter,
-          verse,
-        };
+        return { bookId: book.id, bookName: getBookName(book.id, lang), chapter, verse };
       }
     }
   }
   return null;
 }
 
-/** Search books by name */
 function searchBooks(query: string, lang: L): SearchResult[] {
   const q = query.toLowerCase();
   return bibleBooks
     .filter(b => {
-      const names = [
-        b.id.toLowerCase(),
-        (ptNames[b.id] || '').toLowerCase(),
-        (esNames[b.id] || '').toLowerCase(),
-      ];
+      const names = [b.id.toLowerCase(), (ptNames[b.id] || '').toLowerCase(), (esNames[b.id] || '').toLowerCase()];
       return names.some(n => n && n.includes(q));
     })
     .slice(0, 8)
-    .map(b => ({
-      bookId: b.id,
-      bookName: getBookName(b.id, lang),
-      chapter: 1,
-    }));
+    .map(b => ({ bookId: b.id, bookName: getBookName(b.id, lang), chapter: 1 }));
 }
 
 export default function BibleReader() {
@@ -111,7 +95,6 @@ export default function BibleReader() {
     return getTranslation(lang);
   });
 
-  // Re-validate translation when language changes or on mount
   useEffect(() => {
     const valid = translationOptions[lang].some(o => o.code === translation);
     if (!valid) {
@@ -122,8 +105,9 @@ export default function BibleReader() {
   }, [lang, translation]);
 
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
+  const [tabsDefaultTab, setTabsDefaultTab] = useState<'favorites' | 'notes'>('favorites');
+  const tabsRef = useRef<HTMLDivElement>(null);
 
-  // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -131,15 +115,8 @@ export default function BibleReader() {
 
   const currentBook = selectedBook ? bibleBooks.find(b => b.id === selectedBook) : null;
 
-  const handleSelectBook = (bookId: string) => {
-    setSelectedBook(bookId);
-    setReadView('chapters');
-  };
-
-  const handleSelectChapter = (ch: number) => {
-    setSelectedChapter(ch);
-    setReadView('reading');
-  };
+  const handleSelectBook = (bookId: string) => { setSelectedBook(bookId); setReadView('chapters'); };
+  const handleSelectChapter = (ch: number) => { setSelectedChapter(ch); setReadView('reading'); };
 
   const handleNavigate = useCallback((bookId: string, chapter: number) => {
     setSelectedBook(bookId);
@@ -148,38 +125,30 @@ export default function BibleReader() {
     setActiveTab('read');
   }, []);
 
-  // Search with debounce
+  const scrollToTabs = (tab: 'favorites' | 'notes') => {
+    setActiveTab('read');
+    setTabsDefaultTab(tab);
+    setTabsRefreshKey(k => k + 1);
+    setTimeout(() => {
+      tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   useEffect(() => {
-    if (searchQuery.length < 2) {
-      setSearchResults([]);
-      setShowResults(false);
-      return;
-    }
-
+    if (searchQuery.length < 2) { setSearchResults([]); setShowResults(false); return; }
     const timer = setTimeout(() => {
-      // Try reference parse first
       const ref = parseReference(searchQuery, lang);
-      if (ref) {
-        setSearchResults([ref]);
-        setShowResults(true);
-        return;
-      }
-
-      // Fall back to book name search
+      if (ref) { setSearchResults([ref]); setShowResults(true); return; }
       const books = searchBooks(searchQuery, lang);
       setSearchResults(books);
       setShowResults(books.length > 0);
     }, 300);
-
     return () => clearTimeout(timer);
   }, [searchQuery, lang]);
 
-  // Close search on click outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowResults(false);
-      }
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowResults(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -208,11 +177,19 @@ export default function BibleReader() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-2 rounded-lg border border-border hover:bg-muted transition-colors">
-            <Star className="h-4 w-4 text-muted-foreground" />
+          <button
+            onClick={() => scrollToTabs('favorites')}
+            className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            title={lang === 'PT' ? 'Favoritos' : lang === 'EN' ? 'Favorites' : 'Favoritos'}
+          >
+            <Star className="h-4 w-4 text-foreground" />
           </button>
-          <button className="p-2 rounded-lg border border-border hover:bg-muted transition-colors">
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          <button
+            onClick={() => scrollToTabs('notes')}
+            className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            title={lang === 'PT' ? 'Notas' : lang === 'EN' ? 'Notes' : 'Notas'}
+          >
+            <MessageSquare className="h-4 w-4 text-foreground" />
           </button>
         </div>
       </div>
@@ -228,15 +205,10 @@ export default function BibleReader() {
           className="pl-10 pr-8 bg-card border-border"
         />
         {searchQuery && (
-          <button
-            onClick={() => { setSearchQuery(''); setShowResults(false); }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted"
-          >
+          <button onClick={() => { setSearchQuery(''); setShowResults(false); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted">
             <X className="h-3.5 w-3.5 text-muted-foreground" />
           </button>
         )}
-
-        {/* Search results dropdown */}
         {showResults && searchResults.length > 0 && (
           <div className="absolute z-20 top-full mt-1 left-0 right-0 bg-card border border-border rounded-xl shadow-lg overflow-hidden">
             {searchResults.map((r, i) => (
@@ -285,52 +257,30 @@ export default function BibleReader() {
         {activeTab === 'read' && (
           <>
             {readView === 'books' && (
-              <BibleBookGrid
-                translation={translation}
-                onTranslationChange={setTranslation}
-                onSelectBook={handleSelectBook}
-              />
+              <BibleBookGrid translation={translation} onTranslationChange={setTranslation} onSelectBook={handleSelectBook} />
             )}
             {readView === 'chapters' && selectedBook && (
-              <BibleChapterGrid
-                bookId={selectedBook}
-                onBack={() => setReadView('books')}
-                onSelectChapter={handleSelectChapter}
-              />
+              <BibleChapterGrid bookId={selectedBook} onBack={() => setReadView('books')} onSelectChapter={handleSelectChapter} />
             )}
             {readView === 'reading' && selectedBook && currentBook && (
               <BibleReadingView
-                bookId={selectedBook}
-                chapter={selectedChapter}
-                totalChapters={currentBook.chapters}
-                translation={translation}
-                onBack={() => setReadView('chapters')}
-                onHome={() => setReadView('books')}
-                onChapterChange={setSelectedChapter}
-                onTabsRefresh={() => setTabsRefreshKey(k => k + 1)}
+                bookId={selectedBook} chapter={selectedChapter} totalChapters={currentBook.chapters}
+                translation={translation} onBack={() => setReadView('chapters')} onHome={() => setReadView('books')}
+                onChapterChange={setSelectedChapter} onTabsRefresh={() => setTabsRefreshKey(k => k + 1)}
                 onTranslationChange={setTranslation}
               />
             )}
           </>
         )}
-
-        {activeTab === 'plans' && (
-          <ReadingPlans onNavigate={handleNavigate} />
-        )}
-
-        {activeTab === 'progress' && (
-          <BibleProgress />
-        )}
-
-        {activeTab === 'resources' && (
-          <BibleResources />
-        )}
+        {activeTab === 'plans' && <ReadingPlans onNavigate={handleNavigate} />}
+        {activeTab === 'progress' && <BibleProgress />}
+        {activeTab === 'resources' && <BibleResources />}
       </div>
 
-      {/* Favorites & Notes (always visible below) */}
+      {/* Favorites & Notes */}
       {activeTab === 'read' && (
         <div className="rounded-xl border border-border bg-card p-4">
-          <BibleTabs refreshKey={tabsRefreshKey} onNavigate={handleNavigate} />
+          <BibleTabs ref={tabsRef} refreshKey={tabsRefreshKey} onNavigate={handleNavigate} defaultTab={tabsDefaultTab} />
         </div>
       )}
     </div>
