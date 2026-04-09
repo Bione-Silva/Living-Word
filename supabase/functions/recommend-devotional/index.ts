@@ -5,6 +5,39 @@ const corsHeaders = {
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+function getGeminiKey(): string | null {
+  return Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY') || null
+}
+
+async function callGemini(apiKey: string, prompt: string): Promise<string | null> {
+  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro']
+  const versions = ['v1beta', 'v1']
+
+  for (const version of versions) {
+    for (const model of models) {
+      try {
+        const resp = await fetch(
+          `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 200 },
+            }),
+          }
+        )
+        if (resp.ok) {
+          const data = await resp.json()
+          console.log(`Gemini success with ${version}/${model}`)
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || null
+        }
+      } catch (_) { /* try next */ }
+    }
+  }
+  return null
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -23,7 +56,6 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    // Fetch last 30 engagements
     const { data: engagements } = await supabase
       .from('devotional_engagements')
       .select('action, duration_seconds, emotional_response, reflection_sentiment, theme, series_number, created_at')
@@ -31,7 +63,6 @@ Deno.serve(async (req) => {
       .order('created_at', { ascending: false })
       .limit(30)
 
-    // Calculate theme scores
     const themeScores: Record<string, number> = {}
     for (const e of engagements || []) {
       if (!e.theme) continue
@@ -45,49 +76,30 @@ Deno.serve(async (req) => {
     const topThemes = sortedThemes.slice(0, 5).map(([t, s]) => ({ theme: t, score: Math.round(s * 10) / 10 }))
     const recentSentiments = (engagements || []).slice(0, 5).map(e => e.reflection_sentiment).filter(Boolean)
 
-    // Ask Gemini directly for recommendation
-    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')
+    const apiKey = getGeminiKey()
     let nextTheme = topThemes[0]?.theme || 'esperança'
     let reasoning = 'Baseado em seu histórico de leitura'
 
-    if (GEMINI_API_KEY && topThemes.length > 0) {
-      try {
-        const geminiResp = await fetch(
-          `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{
-                  text: `You recommend the next devotional theme based on user engagement.
+    if (apiKey && topThemes.length > 0) {
+      const prompt = `You recommend the next devotional theme based on user engagement.
 User top themes: ${JSON.stringify(topThemes)}
 Recent sentiments: ${JSON.stringify(recentSentiments)}
 
 Respond ONLY with valid JSON: {"nextTheme": "theme name", "reasoning": "one sentence explanation in Portuguese"}`
-                }]
-              }],
-              generationConfig: { temperature: 0.7, maxOutputTokens: 200 },
-            }),
-          }
-        )
 
-        if (geminiResp.ok) {
-          const geminiData = await geminiResp.json()
-          const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || ''
-          const jsonMatch = rawText.match(/\{[^}]+\}/)
-          if (jsonMatch) {
+      const rawText = await callGemini(apiKey, prompt)
+      if (rawText) {
+        const jsonMatch = rawText.match(/\{[^}]+\}/)
+        if (jsonMatch) {
+          try {
             const result = JSON.parse(jsonMatch[0])
             nextTheme = result.nextTheme || nextTheme
             reasoning = result.reasoning || reasoning
-          }
+          } catch (_) { /* use defaults */ }
         }
-      } catch (e) {
-        console.error('Gemini recommendation error:', e)
       }
     }
 
-    // Find a devotional with the recommended theme
     const { data: devotional } = await supabase
       .from('devotionals')
       .select('id, title, category, series_number, series_id, scheduled_date')
