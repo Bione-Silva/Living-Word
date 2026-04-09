@@ -60,8 +60,14 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
       });
 
       if (fnErr) throw fnErr;
-      const md = data?.content || data?.markdown || '';
-      setContent(md);
+      // The edge function returns { study: { title, summary, exegesis, ... } }
+      const study = data?.study;
+      if (study) {
+        const md = studyToMarkdown(study);
+        setContent(md);
+      } else {
+        setError(labels.error[lang]);
+      }
     } catch {
       setError(labels.error[lang]);
     } finally {
