@@ -77,7 +77,7 @@
     --secondary-foreground: 24 30% 15%;
 
     --muted: 36 15% 90%;
-    --muted-foreground: 24 18% 38%;
+    --muted-foreground: 24 20% 28%;
 
     --accent: 28 42% 55%;
     --accent-foreground: 24 30% 12%;
@@ -85,8 +85,8 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 85%;
-    --input: 30 15% 85%;
+    --border: 30 18% 76%;
+    --input: 30 18% 76%;
     --ring: 28 42% 42%;
 
     --blog-heading: 24 30% 15%;
