@@ -19,19 +19,20 @@ export function StudyViewer({ study }: StudyViewerProps) {
       {/* ── Passagem Hero ── */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <Badge className="bg-primary/10 text-primary border-primary/20">{study.passagem.referencia}</Badge>
-          <Badge variant="secondary">{study.passagem.versao}</Badge>
-          <Badge variant="secondary">{study.passagem.genero}</Badge>
-          {study.metadata.duracao_estimada_min && (
+          <Badge className="bg-primary/10 text-primary border-primary/20">{study?.passagem?.referencia}</Badge>
+          <Badge variant="secondary">{study?.passagem?.versao}</Badge>
+          <Badge variant="secondary">{study?.passagem?.genero}</Badge>
+          {study?.metadata?.duracao_estimada_min && (
             <Badge variant="outline" className="text-xs">~{study.metadata.duracao_estimada_min} min</Badge>
           )}
         </div>
         <blockquote className="border-l-4 border-primary/40 pl-4 italic text-foreground/80 text-base leading-relaxed">
-          {study.passagem.texto}
+          {study?.passagem?.texto}
         </blockquote>
       </div>
 
       {/* ── VERDADE CENTRAL — Destaque Premium ── */}
+      {study?.verdade_central && (
       <Card className="border-2 border-primary/30 bg-primary/5 shadow-md">
         <CardContent className="pt-5 pb-5 space-y-2">
           <div className="flex items-center gap-2">
@@ -46,6 +47,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
           )}
         </CardContent>
       </Card>
+      )
 
       {/* ── Âncora Espiritual ── */}
       {study.ancora_espiritual?.oracao_abertura && (
