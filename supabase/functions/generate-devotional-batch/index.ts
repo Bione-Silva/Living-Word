@@ -42,33 +42,34 @@ Include a daily practice, a reflection question, and a closing prayer.
 Return ONLY the JSON object.`
 }
 
-async function generateDevotional(openaiKey: string, lang: Lang, dateStr: string): Promise<Record<string, string>> {
-  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+async function generateDevotional(apiKey: string, lang: Lang, dateStr: string): Promise<Record<string, string>> {
+  const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${openaiKey}`,
+      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'google/gemini-3-flash-preview',
       messages: [
         { role: 'system', content: getSystemPrompt(lang) },
         { role: 'user', content: getUserPrompt(lang, dateStr) },
       ],
-      temperature: 0.85,
-      response_format: { type: 'json_object' },
     }),
   })
 
   if (!resp.ok) {
     const errText = await resp.text()
-    console.error(`OpenAI error for ${lang}:`, resp.status, errText)
-    throw new Error(`OpenAI ${resp.status}: ${errText}`)
+    console.error(`AI error for ${lang}:`, resp.status, errText)
+    throw new Error(`AI ${resp.status}: ${errText}`)
   }
 
   const data = await resp.json()
-  const content = data.choices?.[0]?.message?.content
+  let content = data.choices?.[0]?.message?.content || ''
   if (!content) throw new Error('Empty AI response')
+
+  // Strip markdown fences if present
+  content = content.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
 
   return JSON.parse(content)
 }
@@ -79,8 +80,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const openaiKey = Deno.env.get('OPENAI_API_KEY')
-    if (!openaiKey) throw new Error('OPENAI_API_KEY not configured')
+    const apiKey = Deno.env.get('LOVABLE_API_KEY')
+    if (!apiKey) throw new Error('LOVABLE_API_KEY not configured')
 
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -124,7 +125,7 @@ Deno.serve(async (req) => {
 
     for (const lang of missingLangs) {
       try {
-        const devotional = await generateDevotional(openaiKey, lang, targetDate)
+        const devotional = await generateDevotional(apiKey, lang, targetDate)
 
         const { error: insertErr } = await supabaseAdmin.from('devotionals').insert({
           title: devotional.title,
