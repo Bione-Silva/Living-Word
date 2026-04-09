@@ -107,6 +107,7 @@ export default function BibleReader() {
 
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
   const [tabsDefaultTab, setTabsDefaultTab] = useState<'favorites' | 'notes'>('favorites');
+  const [favSidebarOpen, setFavSidebarOpen] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
