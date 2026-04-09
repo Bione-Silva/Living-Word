@@ -109,6 +109,36 @@ async function generateCoverImage(apiKey: string, title: string, category: strin
   }
 }
 
+async function generateAudio(openaiKey: string, text: string, voice: 'nova' | 'alloy' | 'onyx'): Promise<Uint8Array | null> {
+  try {
+    // Trim text for TTS (max ~4000 chars)
+    const ttsText = text.length > 4000 ? text.slice(0, 4000) + '...' : text
+    const resp = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'tts-1',
+        input: ttsText,
+        voice,
+        response_format: 'mp3',
+        speed: 0.95,
+      }),
+    })
+    if (!resp.ok) {
+      console.error(`TTS error (${voice}):`, resp.status, await resp.text())
+      return null
+    }
+    const buf = await resp.arrayBuffer()
+    return new Uint8Array(buf)
+  } catch (e) {
+    console.error(`TTS failed (${voice}):`, e)
+    return null
+  }
+}
+
 async function uploadToStorage(supabase: any, path: string, data: Uint8Array, contentType: string): Promise<string | null> {
   const { error } = await supabase.storage
     .from('devotional-assets')
