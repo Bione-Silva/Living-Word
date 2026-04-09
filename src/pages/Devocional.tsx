@@ -38,11 +38,13 @@ interface DevotionalData {
 interface PastDevotional {
   id: string;
   title: string;
-  type: string;
-  passage: string | null;
-  created_at: string;
-  content: string;
+  anchor_verse: string;
+  scheduled_date: string;
+  body_text: string;
   cover_image_url?: string | null;
+  audio_url_nova?: string | null;
+  audio_url_alloy?: string | null;
+  audio_url_onyx?: string | null;
 }
 
 const labels = {
