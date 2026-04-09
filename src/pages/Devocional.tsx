@@ -124,10 +124,7 @@ function SoundWaves({ active }: { active: boolean }) {
   );
 }
 
-/* ─── Voice type ─── */
-type VoiceKey = 'nova' | 'alloy' | 'onyx';
-
-/* ─── Audio Player with Voice Selector ─── */
+/* ─── Audio Player (Onyx voice only) ─── */
 function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -136,17 +133,8 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   const [duration, setDuration] = useState(0);
   const [muted, setMuted] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const [voice, setVoice] = useState<VoiceKey>('nova');
 
-  const voiceOptions: { key: VoiceKey; label: string; icon: React.ReactNode }[] = [
-    { key: 'nova', label: labels.voiceFemale[lang], icon: <UserRound className="h-3.5 w-3.5" /> },
-    { key: 'alloy', label: labels.voiceSoftMale[lang], icon: <User className="h-3.5 w-3.5" /> },
-    { key: 'onyx', label: labels.voiceDeepMale[lang], icon: <Mic className="h-3.5 w-3.5" /> },
-  ];
-
-  const audioSrc = voice === 'alloy' ? (data.audio_url_alloy || data.audio_url)
-    : voice === 'onyx' ? (data.audio_url_onyx || data.audio_url)
-    : (data.audio_url_nova || data.audio_url);
+  const audioSrc = data.audio_url_onyx || data.audio_url;
 
   const togglePlay = () => {
     if (!audioRef.current) return;
