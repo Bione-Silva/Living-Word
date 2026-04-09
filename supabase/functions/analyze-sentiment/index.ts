@@ -3,53 +3,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-function getGeminiKey(): string | null {
-  return Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY') || null
-}
-
-async function tryGeminiCall(apiKey: string, text: string): Promise<{ sentiment: string; score: number } | null> {
-  // Try multiple model names in order
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro']
-  const versions = ['v1beta', 'v1']
-
-  for (const version of versions) {
-    for (const model of models) {
-      try {
-        const resp = await fetch(
-          `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{
-                  text: `Analyze the sentiment of this text and respond ONLY with valid JSON: {"sentiment": "positive" or "negative" or "mixed", "score": number 0-1}\n\nText: "${text.slice(0, 1000)}"`
-                }]
-              }],
-              generationConfig: { temperature: 0.1, maxOutputTokens: 100 },
-            }),
-          }
-        )
-        if (resp.ok) {
-          const data = await resp.json()
-          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
-          const jsonMatch = rawText.match(/\{[^}]+\}/)
-          if (jsonMatch) {
-            const result = JSON.parse(jsonMatch[0])
-            console.log(`Gemini success with ${version}/${model}`)
-            return { sentiment: result.sentiment || 'mixed', score: result.score || 0.5 }
-          }
-          return { sentiment: 'mixed', score: 0.5 }
-        }
-        console.log(`Model ${version}/${model} returned ${resp.status}`)
-      } catch (e) {
-        console.log(`Model ${version}/${model} failed:`, e)
-      }
-    }
-  }
-  return null
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -59,14 +12,41 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'text is required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    const apiKey = getGeminiKey()
+    const apiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
 
     if (apiKey) {
-      const result = await tryGeminiCall(apiKey, text)
-      if (result) {
-        return new Response(JSON.stringify(result), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      try {
+        const aiResp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'gemini-2.5-flash',
+            messages: [
+              { role: 'system', content: 'You are a sentiment analysis assistant. Analyze the sentiment of the given text and respond ONLY with a JSON object: {"sentiment": "positive"|"negative"|"mixed", "score": 0.0-1.0}. No other text.' },
+              { role: 'user', content: text.slice(0, 2000) },
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 0.1,
+            max_tokens: 100,
+          }),
+        })
+
+        if (aiResp.ok) {
+          const aiData = await aiResp.json()
+          const content = aiData.choices?.[0]?.message?.content || ''
+          try {
+            const result = JSON.parse(content)
+            console.log('Gemini sentiment success')
+            return new Response(JSON.stringify({ sentiment: result.sentiment || 'mixed', score: result.score || 0.5 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+          } catch {
+            console.error('Failed to parse Gemini response:', content)
+          }
+        } else {
+          console.error('Gemini error:', aiResp.status, await aiResp.text().catch(() => ''))
+        }
+      } catch (e) {
+        console.error('Gemini call failed:', e)
       }
-      console.error('All Gemini models failed, using local fallback')
     }
 
     // Fallback local
