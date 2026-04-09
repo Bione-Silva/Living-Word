@@ -39,6 +39,10 @@ const retryLabels: Record<L, { retrying: string; failed: string; retry: string }
   ES: { retrying: 'Reintentando...', failed: 'No se pudo cargar este capítulo.', retry: 'Intentar de nuevo' },
 };
 
+const fallbackTranslation: Record<string, string> = {
+  PT: 'almeida', EN: 'web', ES: 'almeida',
+};
+
 async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
   for (let i = 0; i < maxRetries; i++) {
     try {
@@ -77,10 +81,18 @@ export function BibleReadingView({
     setError(''); setVerses([]); setSelectedVerse(null);
     try {
       const ref = `${bookId} ${chapter}`;
-      const res = await fetchWithRetry(
-        `https://bible-api.com/${encodeURIComponent(ref)}?translation=${translation}`
-      );
-      const data = await res.json();
+      let url = `https://bible-api.com/${encodeURIComponent(ref)}?translation=${translation}`;
+      let res = await fetchWithRetry(url);
+      let data = await res.json();
+
+      // If API returned error/empty, try fallback translation
+      if (!data.verses && !data.text && translation !== fallbackTranslation[lang]) {
+        const fb = fallbackTranslation[lang] || 'web';
+        url = `https://bible-api.com/${encodeURIComponent(ref)}?translation=${fb}`;
+        res = await fetchWithRetry(url);
+        data = await res.json();
+      }
+
       if (data.verses) setVerses(data.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
       else if (data.text) setVerses([{ verse: 1, text: data.text }]);
       else setError(retryLabels[lang].failed);
