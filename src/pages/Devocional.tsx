@@ -379,7 +379,7 @@ export default function Devocional() {
       try {
         const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today');
         if (err || !result) throw err;
-        setData(result);
+        setData(result.devotional || result);
         // Edge function now handles caching & persistence — no client-side insert needed
       } catch {
         setError(true);
