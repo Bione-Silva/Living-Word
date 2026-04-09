@@ -22,12 +22,11 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             model: 'gemini-2.5-flash',
             messages: [
-              { role: 'system', content: 'You are a sentiment analysis assistant. Analyze the sentiment of the given text and respond ONLY with a JSON object: {"sentiment": "positive"|"negative"|"mixed", "score": 0.0-1.0}. No other text.' },
+              { role: 'system', content: 'Analyze sentiment. Reply with ONLY raw JSON, no markdown: {"sentiment":"positive"|"negative"|"mixed","score":0.0-1.0}' },
               { role: 'user', content: text.slice(0, 2000) },
             ],
-            response_format: { type: 'json_object' },
             temperature: 0.1,
-            max_tokens: 100,
+            max_tokens: 50,
           }),
         })
 
