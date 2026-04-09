@@ -91,7 +91,9 @@ export function BibleReadingView({
       // If API returned error/empty, try fallback translation
       if ((!data || (!data.verses && !data.text)) && translation !== fallbackTranslation[lang]) {
         const fb = fallbackTranslation[lang] || 'web';
-        res = await fetchWithRetry(`${baseUrl}?translation=${fb}`);
+        const fbBook = getApiBookName(bookId, fb);
+        const fbRef = `${fbBook} ${chapter}`;
+        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
         data = res ? await res.json() : null;
       }
 
