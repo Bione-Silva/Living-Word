@@ -336,6 +336,12 @@ export default function Devocional() {
   const [viewingPast, setViewingPast] = useState<PastDevotional | null>(null);
   const [transitioning, setTransitioning] = useState(false);
 
+  // Engagement tracking
+  const { trackAction } = useEngagementTracker({
+    devotionalId: data?.id,
+    theme: data?.category,
+  });
+
   // Admin debug date picker
   const [isAdmin, setIsAdmin] = useState(false);
   const [debugDate, setDebugDate] = useState('');
