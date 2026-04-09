@@ -213,26 +213,12 @@ Deno.serve(async (req) => {
         }
 
         // Generate TTS audio (3 voices in parallel)
-        let audioNovaUrl: string | null = null
-        let audioAlloyUrl: string | null = null
         let audioOnyxUrl: string | null = null
 
         if (openaiKey) {
           const fullText = `${devotional.title}.\n\n${devotional.anchor_verse_text}\n\n${devotional.body_text}\n\n${devotional.closing_prayer || ''}`
-          console.log(`[${lang}] Generating TTS audio (3 voices)...`)
-          const [novaData, alloyData, onyxData] = await Promise.all([
-            generateAudio(openaiKey, fullText, 'nova'),
-            generateAudio(openaiKey, fullText, 'alloy'),
-            generateAudio(openaiKey, fullText, 'onyx'),
-          ])
-          if (novaData) {
-            audioNovaUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-nova.mp3`, novaData, 'audio/mpeg')
-            console.log(`[${lang}] Audio nova: ${audioNovaUrl ? 'OK' : 'FAILED'}`)
-          }
-          if (alloyData) {
-            audioAlloyUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-alloy.mp3`, alloyData, 'audio/mpeg')
-            console.log(`[${lang}] Audio alloy: ${audioAlloyUrl ? 'OK' : 'FAILED'}`)
-          }
+          console.log(`[${lang}] Generating TTS audio (onyx)...`)
+          const onyxData = await generateAudio(openaiKey, fullText, 'onyx')
           if (onyxData) {
             audioOnyxUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-onyx.mp3`, onyxData, 'audio/mpeg')
             console.log(`[${lang}] Audio onyx: ${audioOnyxUrl ? 'OK' : 'FAILED'}`)
