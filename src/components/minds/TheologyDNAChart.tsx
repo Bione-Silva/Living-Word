@@ -194,8 +194,11 @@ export function TheologyDNAChart({ data, lang }: Props) {
               <div className="flex-1 flex items-center gap-2">
                 <div className="flex-1 h-2.5 rounded-full bg-[hsl(30,15%,92%)] overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${getStrengthColor(d.value)}`}
-                    style={{ width: `${d.value}%` }}
+                    className={`h-full rounded-full transition-all duration-700 ease-out ${getStrengthColor(d.value)}`}
+                    style={{
+                      width: animated ? `${d.value}%` : '0%',
+                      transitionDelay: `${i * 80}ms`,
+                    }}
                   />
                 </div>
                 <span className="text-xs font-mono font-bold text-[hsl(220,10%,30%)] w-8 text-right">{d.value}</span>
