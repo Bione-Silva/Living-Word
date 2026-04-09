@@ -8,6 +8,7 @@ import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
 import { BibleChapterGrid } from '@/components/bible/BibleChapterGrid';
 import { BibleReadingView } from '@/components/bible/BibleReadingView';
 import { BibleTabs } from '@/components/bible/BibleTabs';
+import { FavoritesSidebar } from '@/components/bible/FavoritesSidebar';
 import { ReadingPlans } from '@/components/bible/ReadingPlans';
 import { BibleProgress } from '@/components/bible/BibleProgress';
 import { BibleResources } from '@/components/bible/BibleResources';
