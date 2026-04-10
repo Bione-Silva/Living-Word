@@ -145,7 +145,7 @@ async function requestStudyGeneration({
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 7000,
+      max_tokens: 16000,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -165,6 +165,7 @@ async function requestStudyGeneration({
   }
 
   const aiData = await aiResponse.json();
+  const finishReason = aiData.choices?.[0]?.finish_reason || "";
   const rawContent = (aiData.choices?.[0]?.message?.content || "")
     .replace(/^```(?:json)?\s*\n?/i, "")
     .replace(/\n?```\s*$/i, "")
@@ -173,6 +174,7 @@ async function requestStudyGeneration({
   return {
     rawContent,
     usage: aiData.usage || null,
+    truncated: finishReason === "length",
   };
 }
 
