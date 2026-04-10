@@ -125,7 +125,7 @@ export function getBibleVersion(code: string): BibleVersion | undefined {
 /** Get the default version for a language */
 export function getDefaultVersionCode(lang: L): string {
   const v = bibleVersions.find(v => v.language === lang && v.isDefault);
-  return v?.code || (lang === 'PT' ? 'ara' : lang === 'ES' ? 'rvr60' : 'kjv');
+  return v?.code || (lang === 'PT' ? 'ara' : 'kjv');
 }
 
 /** Get the API translation code for a version code */
