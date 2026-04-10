@@ -1029,6 +1029,11 @@ export default function Landing() {
               ))
             )}
           </div>
+          <p className="text-[12px] text-center mt-6 leading-6" style={{ color: '#8B7355' }}>
+            {lang === 'PT' && <>Todos os planos incluem <strong style={{ color: '#6B4F3A' }}>PT · EN · ES</strong> nativos · 7 dias grátis no Starter e Pro, sem cartão · <strong style={{ color: '#6B4F3A' }}>Domínio próprio</strong> a partir do Pro</>}
+            {lang === 'EN' && <>All plans include native <strong style={{ color: '#6B4F3A' }}>PT · EN · ES</strong> · 7 days free on Starter & Pro, no card · <strong style={{ color: '#6B4F3A' }}>Custom domain</strong> from Pro plan</>}
+            {lang === 'ES' && <>Todos los planes incluyen <strong style={{ color: '#6B4F3A' }}>PT · EN · ES</strong> nativos · 7 días gratis en Starter y Pro, sin tarjeta · <strong style={{ color: '#6B4F3A' }}>Dominio propio</strong> desde el Pro</>}
+          </p>
         </div>
       </section>
 
