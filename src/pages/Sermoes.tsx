@@ -860,6 +860,7 @@ export default function Sermoes() {
         initialChapter={bibleRef?.chapter}
         initialVerse={bibleRef?.verseStart}
         initialVerseEnd={bibleRef?.verseEnd}
+        initialTranslation={bibleTranslationCode}
       />
     </div>
   );
