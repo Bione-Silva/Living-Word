@@ -61,7 +61,7 @@ const aliases: Record<string, string> = {
   'hebreus': 'Hebrews', 'tiago': 'James', 'judas': 'Jude', 'apocalipse': 'Revelation',
   'genesis': 'Genesis', 'exodo': 'Exodus', 'levitico': 'Leviticus', 'numeros': 'Numbers',
   'deuteronomio': 'Deuteronomy', 'josue': 'Joshua', 'juizes': 'Judges', 'rute': 'Ruth',
-  'esdras': 'Ezra', 'neemias': 'Nehemiah', 'ester': 'Esther', 'jo': 'Job',
+  'esdras': 'Ezra', 'neemias': 'Nehemiah', 'ester': 'Esther', 'job': 'Job',
   'salmos': 'Psalms', 'proverbios': 'Proverbs', 'eclesiastes': 'Ecclesiastes',
   'canticos': 'Song of Solomon', 'isaias': 'Isaiah', 'jeremias': 'Jeremiah',
   'lamentacoes': 'Lamentations', 'ezequiel': 'Ezekiel', 'oseias': 'Hosea',
