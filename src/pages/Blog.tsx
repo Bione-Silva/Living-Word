@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import {
   FileText, Plus, Search, Globe, Pencil, BookOpen, MoreHorizontal,
-  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload, Loader2,
+  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload, Loader2, ImagePlus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
@@ -59,6 +59,7 @@ export default function Blog() {
   const [deleting, setDeleting] = useState(false);
   const [publishing, setPublishing] = useState<string | null>(null);
   const [publishStep, setPublishStep] = useState<'cover' | 'publishing' | null>(null);
+  const [generatingCover, setGeneratingCover] = useState<Set<string>>(new Set());
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['my-blog-articles', user?.id],
