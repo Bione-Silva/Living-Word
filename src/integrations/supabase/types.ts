@@ -1027,6 +1027,47 @@ export type Database = {
         }
         Relationships: []
       }
+      sermon_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          material_id: string | null
+          session_id: string | null
+          text_color: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          material_id?: string | null
+          session_id?: string | null
+          text_color?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          material_id?: string | null
+          session_id?: string | null
+          text_color?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sermon_notes_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_arts: {
         Row: {
           aspect_ratio: string
