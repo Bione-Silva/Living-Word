@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useSearchParams } from 'react-router-dom';
 import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -83,12 +84,14 @@ function searchBooks(query: string, lang: L): SearchResult[] {
 
 export default function BibleReader() {
   const { lang } = useLanguage();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [activeTab, setActiveTab] = useState<MainTab>('read');
   const [readView, setReadView] = useState<ReadView>('books');
   const [selectedBook, setSelectedBook] = useState('');
   const [selectedChapter, setSelectedChapter] = useState(1);
+  const [highlightVerse, setHighlightVerse] = useState<string | null>(null);
   const [translation, setTranslation] = useState(() => {
     const saved = localStorage.getItem('bible_translation_preference');
     if (saved) {
@@ -97,6 +100,54 @@ export default function BibleReader() {
     }
     return getTranslation(lang);
   });
+
+  // Handle URL params: ?book=genesis&chapter=1&verse=1-3&translation=nvi
+  useEffect(() => {
+    const bookParam = searchParams.get('book');
+    const chapterParam = searchParams.get('chapter');
+    const verseParam = searchParams.get('verse');
+    const translationParam = searchParams.get('translation');
+
+    if (bookParam && chapterParam) {
+      // Find the book by matching ID or name
+      const bookId = bookParam.toLowerCase();
+      const found = bibleBooks.find(b => {
+        const names = [
+          b.id.toLowerCase(),
+          (ptNames[b.id] || '').toLowerCase(),
+          (esNames[b.id] || '').toLowerCase(),
+        ];
+        return names.some(n => n && (n === bookId || n.startsWith(bookId) || bookId.startsWith(n.substring(0, 3))));
+      });
+
+      if (found) {
+        const ch = parseInt(chapterParam, 10);
+        if (ch >= 1 && ch <= found.chapters) {
+          setSelectedBook(found.id);
+          setSelectedChapter(ch);
+          setReadView('reading');
+          setActiveTab('read');
+
+          if (verseParam) {
+            setHighlightVerse(verseParam);
+          }
+
+          if (translationParam) {
+            // Use profile's preferred translation if param is generic, or respect the param
+            const prefTranslation = profile?.bible_version?.toLowerCase() || translationParam;
+            const validT = translationOptions[lang].some(o => o.code === prefTranslation);
+            if (validT) {
+              setTranslation(prefTranslation);
+              localStorage.setItem('bible_translation_preference', prefTranslation);
+            }
+          }
+
+          // Clear URL params after consuming them
+          setSearchParams({}, { replace: true });
+        }
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const valid = translationOptions[lang].some(o => o.code === translation);
@@ -297,6 +348,8 @@ export default function BibleReader() {
                 translation={translation} onBack={() => setReadView('chapters')} onHome={() => setReadView('books')}
                 onChapterChange={setSelectedChapter} onTabsRefresh={() => setTabsRefreshKey(k => k + 1)}
                 onTranslationChange={setTranslation}
+                highlightVerse={highlightVerse}
+                onHighlightClear={() => setHighlightVerse(null)}
               />
             )}
           </>

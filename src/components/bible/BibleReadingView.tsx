@@ -25,6 +25,8 @@ interface Props {
   onChapterChange: (ch: number) => void;
   onTabsRefresh: () => void;
   onTranslationChange?: (code: string) => void;
+  highlightVerse?: string | null;
+  onHighlightClear?: () => void;
 }
 
 const highlightClassMap: Record<string, string> = {
@@ -62,6 +64,7 @@ async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response | n
 export function BibleReadingView({
   bookId, chapter, totalChapters, translation,
   onBack, onHome, onChapterChange, onTabsRefresh, onTranslationChange,
+  highlightVerse, onHighlightClear,
 }: Props) {
   const { lang } = useLanguage();
   const { user } = useAuth();
@@ -76,6 +79,38 @@ export function BibleReadingView({
   const [studyOpen, setStudyOpen] = useState(false);
   const [studyPassage, setStudyPassage] = useState('');
   const [studyVerseText, setStudyVerseText] = useState('');
+  const [activeHighlightVerses, setActiveHighlightVerses] = useState<Set<number>>(new Set());
+
+  // Parse highlightVerse param (e.g. "22", "22-23") into a set of verse numbers
+  useEffect(() => {
+    if (!highlightVerse || verses.length === 0) {
+      setActiveHighlightVerses(new Set());
+      return;
+    }
+    const parts = highlightVerse.split('-').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n));
+    const verseSet = new Set<number>();
+    if (parts.length === 2) {
+      for (let i = parts[0]; i <= parts[1]; i++) verseSet.add(i);
+    } else if (parts.length === 1) {
+      verseSet.add(parts[0]);
+    }
+    setActiveHighlightVerses(verseSet);
+
+    // Scroll to the first highlighted verse after a tick
+    if (verseSet.size > 0) {
+      const firstVerse = Math.min(...verseSet);
+      setTimeout(() => {
+        const el = document.getElementById(`verse-${firstVerse}`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 400);
+      // Auto-clear after 8s
+      const timer = setTimeout(() => {
+        setActiveHighlightVerses(new Set());
+        onHighlightClear?.();
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightVerse, verses]);
 
   const handleOpenStudy = (passage: string, verseText: string) => {
     setStudyPassage(passage);
@@ -279,15 +314,22 @@ export function BibleReadingView({
             {verses.map((v, idx) => {
               const isSelected = selectedVerses.has(v.verse);
               const hlClass = highlights[v.verse] ? highlightClassMap[highlights[v.verse]] || '' : '';
+              const isUrlHighlight = activeHighlightVerses.has(v.verse);
               // Show toolbar on the LAST selected verse in sequence
               const isLastSelected = isSelected && !selectedVerses.has(verses[idx + 1]?.verse);
 
               return (
-                <div key={v.verse} className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
-                  isSelected
-                    ? 'bg-primary/8 ring-1 ring-primary/20'
-                    : hlClass || 'hover:bg-muted/40'
-                }`}>
+                <div
+                  key={v.verse}
+                  id={`verse-${v.verse}`}
+                  className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
+                    isUrlHighlight
+                      ? 'bg-primary/15 ring-2 ring-primary/40 animate-pulse'
+                      : isSelected
+                        ? 'bg-primary/8 ring-1 ring-primary/20'
+                        : hlClass || 'hover:bg-muted/40'
+                  }`}
+                >
                   {/* Verse number badge */}
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}

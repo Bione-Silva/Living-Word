@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Download, Share2, RefreshCw, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { toPng } from 'html-to-image';
@@ -21,6 +22,7 @@ interface SermonSlidesModalProps {
   onOpenChange: (open: boolean) => void;
   sermonMarkdown: string;
   sermonTitle: string;
+  materialId?: string | null;
 }
 
 const labels = {
@@ -62,11 +64,13 @@ function BrandFooter({ size = 'normal' }: { size?: 'small' | 'normal' }) {
   );
 }
 
-export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTitle }: SermonSlidesModalProps) {
+export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTitle, materialId }: SermonSlidesModalProps) {
   const { lang } = useLanguage();
+  const { user } = useAuth();
   const [slides, setSlides] = useState<Slide[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [variationCount, setVariationCount] = useState(1);
 
   const slideW = 1920;
   const slideH = 1080;
@@ -83,8 +87,23 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
         body: { sermon: sermonMarkdown, language: lang, mode: 'slides' },
       });
       if (error) throw error;
-      setSlides(data?.slides || []);
+      const newSlides = data?.slides || [];
+      setSlides(newSlides);
       setActiveSlide(0);
+      setVariationCount(prev => prev + 1);
+
+      // Persist to visual_outputs
+      if (user && newSlides.length > 0) {
+        await supabase.from('visual_outputs' as any).insert({
+          user_id: user.id,
+          material_id: materialId || null,
+          output_type: 'slides',
+          format: '16:9',
+          language: lang,
+          slides_data: newSlides,
+          variation_number: variationCount,
+        });
+      }
     } catch (e) {
       console.error('slides error', e);
     } finally {
