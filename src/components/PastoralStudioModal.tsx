@@ -45,7 +45,7 @@ interface PastoralStudioFormData {
   mind_id?: string;
 }
 
-const bibleVersions = ['ARA', 'NVI', 'NAA', 'KJV', 'ESV', 'NKJV', 'NIV', 'ARC'];
+const bibleVersions = ['ARA', 'KJV', 'WEB', 'ASV', 'BBE', 'OEB'];
 
 const audienceOptions = {
   PT: [
