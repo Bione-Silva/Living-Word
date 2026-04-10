@@ -16,7 +16,7 @@ import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
 import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/bible-ref-parser';
-import { versionToApiCode } from '@/lib/bible-data';
+import { versionToApiCode, versionAbbrToCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -434,12 +434,12 @@ export default function Sermoes() {
     if (linkText) {
       const versionMatch = linkText.match(/\(([A-Z]{2,6})\)\s*$/);
       if (versionMatch) {
-        translationCode = versionToApiCode(versionMatch[1]) || undefined;
+        translationCode = versionAbbrToCode(versionMatch[1]) || versionToApiCode(versionMatch[1]) || undefined;
       }
     }
     // Also check if parsed ref has a version from the URI itself
     if (!translationCode && parsed?.version) {
-      translationCode = versionToApiCode(parsed.version) || undefined;
+      translationCode = versionAbbrToCode(parsed.version) || versionToApiCode(parsed.version) || undefined;
     }
     setBibleTranslationCode(translationCode);
     setBibleDrawerOpen(true);
@@ -478,7 +478,7 @@ export default function Sermoes() {
             const parsed = parseBibleRefString(linkText);
             if (parsed) {
               setBibleRef(parsed);
-              const tc = parsed.version ? versionToApiCode(parsed.version) || undefined : undefined;
+              const tc = parsed.version ? versionAbbrToCode(parsed.version) || versionToApiCode(parsed.version) || undefined : undefined;
               setBibleTranslationCode(tc);
             } else {
               setBibleRef(null);
