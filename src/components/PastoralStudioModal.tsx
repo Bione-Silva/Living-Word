@@ -313,7 +313,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
       const modeLabel = outputLabels[activeTab][lang];
       const title = `${modeLabel} — ${formData.bible_passage}`;
 
-      const { error } = await supabase.from('materials').insert({
+      const { data: insertData, error } = await supabase.from('materials').insert({
         user_id: user.id,
         title,
         content: currentContent,
@@ -321,9 +321,10 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
         passage: formData.bible_passage,
         language: formData.language,
         bible_version: formData.bible_version,
-      });
+      }).select('id').single();
 
       if (error) throw error;
+      if (insertData) setSavedMaterialId(insertData.id);
       toast.success(text.saved);
     } catch {
       toast.error(text.saveError);
