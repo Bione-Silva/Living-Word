@@ -181,13 +181,25 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0 gap-0 bg-background">
         {/* Header */}
-        <DialogHeader className="px-6 py-4 border-b border-border flex flex-row items-center justify-between">
+        <DialogHeader className="px-6 py-4 border-b border-border flex flex-row items-center justify-between pr-14">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm">🎨</div>
             <div>
               <DialogTitle className="text-base font-bold">{labels.title[lang]}</DialogTitle>
               <p className="text-xs text-muted-foreground">{loading ? labels.generating[lang] : `${slides.length} slides`}</p>
             </div>
+          </div>
+        </DialogHeader>
+
+        {/* Toolbar */}
+        <div className="flex items-center justify-between gap-2 px-6 py-3 border-b border-border">
+          <div className="flex items-center gap-2">
+            {!loading && slides.length > 0 && (
+              <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={generateSlides}>
+                <RefreshCw className="h-3.5 w-3.5" />
+                {labels.newVariation[lang]}
+              </Button>
+            )}
           </div>
           <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
             <button
@@ -199,17 +211,7 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
               className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${aspect === '16:9' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
             >16:9</button>
           </div>
-        </DialogHeader>
-
-        {/* Toolbar */}
-        {!loading && slides.length > 0 && (
-          <div className="flex items-center gap-2 px-6 py-3 border-b border-border">
-            <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={generateSlides}>
-              <RefreshCw className="h-3.5 w-3.5" />
-              {labels.newVariation[lang]}
-            </Button>
-          </div>
-        )}
+        </div>
 
         {/* Content */}
         <div className="p-6">
