@@ -57,6 +57,8 @@ export default function Blog() {
   const [previewMode, setPreviewMode] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<ArticleRow | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [publishing, setPublishing] = useState<string | null>(null);
+  const [publishStep, setPublishStep] = useState<'cover' | 'publishing' | null>(null);
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['my-blog-articles', user?.id],
@@ -155,7 +157,30 @@ export default function Blog() {
   };
 
   const handlePublish = async (article: ArticleRow) => {
+    setPublishing(article.id);
     try {
+      // Step 1: Generate cover image if none exists
+      if (!article.cover_image_url) {
+        setPublishStep('cover');
+        try {
+          const { data: coverData, error: coverError } = await supabase.functions.invoke(
+            'generate-article-cover',
+            { body: { article_id: article.id, title: article.title, content: article.content } }
+          );
+          if (coverError) {
+            console.warn('[Blog] Cover generation failed:', coverError);
+            toast.warning('Artigo será publicado sem imagem de capa.');
+          } else if (coverData?.cover_image_url) {
+            article.cover_image_url = coverData.cover_image_url;
+          }
+        } catch (e) {
+          console.warn('[Blog] Cover generation error:', e);
+          toast.warning('Artigo será publicado sem imagem de capa.');
+        }
+      }
+
+      // Step 2: Publish
+      setPublishStep('publishing');
       if (article.queue_id) {
         const { error } = await supabase
           .from('editorial_queue')
@@ -171,10 +196,13 @@ export default function Blog() {
         });
         if (error) throw error;
       }
-      toast.success(t('blog.published_ok') || 'Artigo publicado!');
+      toast.success(t('blog.published_ok') || 'Artigo publicado com sucesso!');
       queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
     } catch {
       toast.error(t('blog.status_error'));
+    } finally {
+      setPublishing(null);
+      setPublishStep(null);
     }
   };
 
