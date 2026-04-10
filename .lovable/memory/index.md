@@ -10,11 +10,11 @@ Fonts: Cormorant Garamond display, DM Sans body, JetBrains Mono mono.
 Edge functions: generate-pastoral-material, generate-blog-article, fetch-bible-verse.
 Conversão: 7 gatilhos, nunca bloquear geração, 1 modal/sessão, tom pastoral.
 Free: 5 gerações/mês, 3 formatos, 1 blog article, watermark. Trial 7d sem cartão.
-All exports branded: Living Word header + footer + www.livingwordgo.com.
+Agente de apoio emocional = "Palavra Amiga" (nunca "Bom Amigo").
 
 ## Memories
 - [Design System](mem://design/system) — Full palette, typography, glass-card utilities
 - [DB Schema](mem://features/schema) — Tables: users, materials, editorial_queue, etc.
 - [Conversion Strategy](mem://features/conversion) — 7 upgrade triggers, rules
 - [Edge Functions](mem://features/edge-functions) — API endpoints and payloads
-- [Document Branding](mem://constraints/document-branding) — All PDF/DOCX exports must carry Living Word identity
+- [Agent Name](mem://constraints/agent-name-palavra-amiga) — "Palavra Amiga" only, never "Bom Amigo"

@@ -21,7 +21,7 @@ const tools: CircleTool[] = [
   { id: 'bible-reader', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' }, action: 'navigate:/bible' },
   { id: 'blog', icon: PenLine, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' }, action: 'tool:free-article' },
   { id: 'research', icon: Search, label: { PT: 'Pesquisa', EN: 'Research', ES: 'Investigación' }, action: 'tool:topic-explorer' },
-  { id: 'bom-amigo', icon: Heart, label: { PT: 'O Bom Amigo', EN: 'Good Friend', ES: 'El Buen Amigo' }, action: 'navigate:/bom-amigo' },
+  { id: 'palavra-amiga', icon: Heart, label: { PT: 'Palavra Amiga', EN: 'Friendly Word', ES: 'Palabra Amiga' }, action: 'navigate:/bom-amigo' },
   { id: 'kids', icon: Baby, label: { PT: 'Kids', EN: 'Kids', ES: 'Niños' }, action: 'tool:kids_story' },
 ];
 
