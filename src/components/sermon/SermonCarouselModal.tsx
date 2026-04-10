@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { openWhatsAppShare } from '@/lib/whatsapp';
-import html2canvas from 'html-to-image';
+import { toPng } from 'html-to-image';
 
 type L = 'PT' | 'EN' | 'ES';
 
