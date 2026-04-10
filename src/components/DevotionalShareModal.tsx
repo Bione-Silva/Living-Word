@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Copy, Check, Send, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
+import { openWhatsAppShare } from '@/lib/whatsapp';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -118,7 +119,7 @@ export function DevotionalShareModal({ open, onOpenChange, devotionalTitle, devo
 
   const handleWhatsApp = () => {
     const text = `✨ *${devotionalTitle}*\n📖 ${devotionalVerse}\n\nLeia o devocional de hoje:\n${shareUrl}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    openWhatsAppShare(text);
   };
 
   const handleTelegram = () => {
