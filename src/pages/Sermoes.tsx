@@ -357,7 +357,15 @@ export default function Sermoes() {
           <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-sm font-bold text-foreground">{labels.title[lang]}</h1>
+          <h1 className="text-sm font-bold text-foreground flex-1">{labels.title[lang]}</h1>
+          {isMobile && (
+            <button
+              onClick={() => setMobileHistoryOpen(true)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <History className="h-5 w-5" />
+            </button>
+          )}
         </div>
 
         {/* Messages / Empty state */}
