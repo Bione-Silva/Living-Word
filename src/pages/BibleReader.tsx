@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { bibleBooks, getBookName, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getDefaultVersionCode, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
 import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
 import { BibleChapterGrid } from '@/components/bible/BibleChapterGrid';
 import { BibleReadingView } from '@/components/bible/BibleReadingView';
@@ -93,12 +93,17 @@ export default function BibleReader() {
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [highlightVerse, setHighlightVerse] = useState<string | null>(null);
   const [translation, setTranslation] = useState(() => {
+    // Priority: profile > localStorage > default
+    if (profile?.bible_version) {
+      const allCodes = translationOptions[lang].map(o => o.code);
+      if (allCodes.includes(profile.bible_version)) return profile.bible_version;
+    }
     const saved = localStorage.getItem('bible_translation_preference');
     if (saved) {
       const valid = translationOptions[lang].some(o => o.code === saved);
       if (valid) return saved;
     }
-    return getTranslation(lang);
+    return getDefaultVersionCode(lang);
   });
 
   // Handle URL params: ?book=genesis&chapter=1&verse=1-3&translation=nvi
@@ -157,6 +162,15 @@ export default function BibleReader() {
       localStorage.setItem('bible_translation_preference', fallback);
     }
   }, [lang, translation]);
+
+  // Persist translation preference to localStorage + Supabase profile
+  const handleTranslationChange = useCallback((code: string) => {
+    setTranslation(code);
+    localStorage.setItem('bible_translation_preference', code);
+    if (user) {
+      supabase.from('profiles').update({ bible_version: code }).eq('id', user.id).then(() => {});
+    }
+  }, [user]);
 
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
   const [tabsDefaultTab, setTabsDefaultTab] = useState<'favorites' | 'notes'>('favorites');
@@ -337,7 +351,7 @@ export default function BibleReader() {
         {activeTab === 'read' && (
           <>
             {readView === 'books' && (
-              <BibleBookGrid translation={translation} onTranslationChange={setTranslation} onSelectBook={handleSelectBook} />
+              <BibleBookGrid translation={translation} onTranslationChange={handleTranslationChange} onSelectBook={handleSelectBook} />
             )}
             {readView === 'chapters' && selectedBook && (
               <BibleChapterGrid bookId={selectedBook} onBack={() => setReadView('books')} onSelectChapter={handleSelectChapter} />
@@ -347,7 +361,7 @@ export default function BibleReader() {
                 bookId={selectedBook} chapter={selectedChapter} totalChapters={currentBook.chapters}
                 translation={translation} onBack={() => setReadView('chapters')} onHome={() => setReadView('books')}
                 onChapterChange={setSelectedChapter} onTabsRefresh={() => setTabsRefreshKey(k => k + 1)}
-                onTranslationChange={setTranslation}
+                onTranslationChange={handleTranslationChange}
                 highlightVerse={highlightVerse}
                 onHighlightClear={() => setHighlightVerse(null)}
               />

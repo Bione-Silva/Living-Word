@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw } from 'lucide-react';
-import { getBookName, getApiBookName, translationOptions, type L } from '@/lib/bible-data';
+import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen } from 'lucide-react';
+import { getBookName, getApiBookName, getApiCodeForVersion, getTranslationLabelByCode, translationOptions, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
 import {
@@ -127,18 +127,18 @@ export function BibleReadingView({
     if (isRetry) setRetrying(true); else setLoading(true);
     setError(''); setVerses([]); setSelectedVerses(new Set());
     try {
+      const apiTranslation = getApiCodeForVersion(translation);
       const apiBook = getApiBookName(bookId, translation);
       const ref = `${apiBook} ${chapter}`;
       const baseUrl = `https://bible-api.com/${encodeURIComponent(ref)}`;
-      let res = await fetchWithRetry(`${baseUrl}?translation=${translation}`);
+      let res = await fetchWithRetry(`${baseUrl}?translation=${apiTranslation}`);
       let data = res ? await res.json() : null;
 
       // If API returned error/empty, try fallback translation
-      if ((!data || (!data.verses && !data.text)) && translation !== fallbackTranslation[lang]) {
-        const fb = fallbackTranslation[lang] || 'web';
-        const fbBook = getApiBookName(bookId, fb);
+      if ((!data || (!data.verses && !data.text)) && apiTranslation !== 'web') {
+        const fbBook = getApiBookName(bookId, 'web');
         const fbRef = `${fbBook} ${chapter}`;
-        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
+        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=web`);
         data = res ? await res.json() : null;
       }
 
@@ -221,55 +221,64 @@ export function BibleReadingView({
 
   return (
     <div className="space-y-4">
-      {/* Breadcrumb: Home > Book > Cap N ▾  ... NVI  ☆ */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-sm">
-          <button onClick={onHome} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-            <Home className="h-4 w-4 text-muted-foreground" />
-          </button>
-          <button onClick={onBack} className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted/60 text-foreground text-xs font-medium hover:bg-muted">
-            📖 {name} <ChevronRight className="h-3 w-3 text-muted-foreground" />
-          </button>
+      {/* Breadcrumb: Home > Book > Cap N ▾  ... Version  */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-sm">
+            <button onClick={onHome} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+              <Home className="h-4 w-4 text-muted-foreground" />
+            </button>
+            <button onClick={onBack} className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted/60 text-foreground text-xs font-medium hover:bg-muted">
+              📖 {name} <ChevronRight className="h-3 w-3 text-muted-foreground" />
+            </button>
 
-          {/* Chapter dropdown picker */}
-          <Popover open={chapterPickerOpen} onOpenChange={setChapterPickerOpen}>
-            <PopoverTrigger asChild>
-              <button className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted/60 text-foreground text-xs font-medium hover:bg-muted">
-                Cap {chapter} <ChevronDown className="h-3 w-3 text-muted-foreground" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56 p-3" align="start">
-              <div className="grid grid-cols-6 gap-1.5">
-                {chapterNumbers.map(n => (
-                  <button
-                    key={n}
-                    onClick={() => { onChapterChange(n); setChapterPickerOpen(false); }}
-                    className={`h-8 w-8 rounded-md text-xs font-medium transition-colors ${
-                      n === chapter
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-muted text-foreground'
-                    }`}
-                  >
-                    {n}
-                  </button>
+            {/* Chapter dropdown picker */}
+            <Popover open={chapterPickerOpen} onOpenChange={setChapterPickerOpen}>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted/60 text-foreground text-xs font-medium hover:bg-muted">
+                  Cap {chapter} <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-3" align="start">
+                <div className="grid grid-cols-6 gap-1.5">
+                  {chapterNumbers.map(n => (
+                    <button
+                      key={n}
+                      onClick={() => { onChapterChange(n); setChapterPickerOpen(false); }}
+                      className={`h-8 w-8 rounded-md text-xs font-medium transition-colors ${
+                        n === chapter
+                          ? 'bg-primary text-primary-foreground'
+                          : 'hover:bg-muted text-foreground'
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Select value={translation} onValueChange={(v) => onTranslationChange?.(v)}>
+              <SelectTrigger className="w-auto h-7 px-2.5 gap-1 text-xs font-medium border-border bg-muted/60 rounded-md">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map(o => (
+                  <SelectItem key={o.code} value={o.code}>{o.label}</SelectItem>
                 ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Select value={translation} onValueChange={(v) => onTranslationChange?.(v)}>
-            <SelectTrigger className="w-auto h-7 px-2.5 gap-1 text-xs font-medium border-border bg-muted/60 rounded-md">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map(o => (
-                <SelectItem key={o.code} value={o.code}>{o.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Star className="h-4 w-4 text-muted-foreground" />
+        {/* Version indicator bar */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
+          <BookOpen className="h-3.5 w-3.5 text-primary/60 shrink-0" />
+          <span className="text-[11px] text-primary/80 font-medium truncate">
+            {name} {chapter} — {getTranslationLabelByCode(translation)}
+          </span>
         </div>
       </div>
 
