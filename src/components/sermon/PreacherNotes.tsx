@@ -242,6 +242,31 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     return BLOCK_STYLES[3].label[lang];
   };
 
+  const handleAnalyze = async () => {
+    const html = editorRef.current?.innerHTML || '';
+    const plainText = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!plainText || plainText.length < 20) {
+      toast.warning(lang === 'PT' ? 'Escreva mais conteúdo para analisar.' : lang === 'ES' ? 'Escriba más contenido para analizar.' : 'Write more content to analyze.');
+      return;
+    }
+    setIsAnalyzing(true);
+    setShowAnalysis(true);
+    setAnalysisResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-notes', {
+        body: { notes_text: plainText, language: lang },
+      });
+      if (error) throw error;
+      if (data?.error === 'rate_limit') { toast.error(lang === 'PT' ? 'Limite de requisições. Tente novamente.' : 'Rate limited. Try again.'); return; }
+      if (data?.error === 'payment_required') { toast.error(lang === 'PT' ? 'Créditos insuficientes.' : 'Insufficient credits.'); return; }
+      setAnalysisResult(data?.analysis || '');
+    } catch {
+      toast.error(lang === 'PT' ? 'Erro ao analisar.' : lang === 'ES' ? 'Error al analizar.' : 'Analysis error.');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   if (!materialId) {
     return (
       <div className="flex items-center justify-center py-8">
