@@ -931,7 +931,6 @@ export default function Devocional() {
                 category={displayCategory}
                 verseText={displayVerseText}
                 verseReference={displayVerse}
-                bibleVersion={preferredBibleVersion}
                 formattedDate={formattedDisplayDate}
               />
             </div>
@@ -968,7 +967,6 @@ export default function Devocional() {
                 category={displayCategory}
                 verseText={displayVerseText}
                 verseReference={displayVerse}
-                bibleVersion={preferredBibleVersion}
                 formattedDate={formattedDisplayDate}
               />
             </div>
