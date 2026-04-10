@@ -207,6 +207,8 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     setBlockedFormats([]);
     setLoading(false);
     setGenMeta(null);
+    setSavedMaterialId(null);
+    setNotesOpen(false);
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
