@@ -1,42 +1,42 @@
 
 
-# Diagnóstico: Devocional "Sendo Preparado"
+## Bug: Imagens Duplicadas em `generate-article-images`
 
-## Causa Raiz
-A tabela `devotionals` está **completamente vazia** — 0 registros. O cron job `generate-devotional-batch` nunca populou a tabela (ou não existe/não está configurado).
+### Causa Raiz
+A função `generate-article-images` analisa os headings H2/H3 do markdown e insere imagens após cada um. Porém, o gerador de artigos (`generate-blog-article`) já insere imagens `![Ilustração N](url)` no conteúdo. A função não verifica se já existe uma imagem próxima ao heading, resultando em 2 imagens seguidas por seção.
 
-A edge function `get-devotional-today` funciona corretamente — ela faz `SELECT * FROM devotionals WHERE scheduled_date = today` e retorna o fallback "está sendo preparado" quando não encontra dados.
+### Correção
 
-## Solução Imediata (sem alterar frontend)
+**Arquivo:** `supabase/functions/generate-article-images/index.ts`
 
-### Passo 1 — Inserir devocionais de teste para hoje (2026-04-08)
-Inserir 3 registros na tabela `devotionals` (PT, EN, ES) usando `psql`:
+1. **Na função `analyzeSections`**: após encontrar um heading, verificar se as linhas seguintes (até 4 linhas abaixo) já contêm um padrão `![...](...)`. Se sim, pular esse heading — ele já tem imagem.
 
-```sql
-INSERT INTO devotionals (title, category, anchor_verse, anchor_verse_text, body_text, daily_practice, reflection_question, closing_prayer, scheduled_date, language)
-VALUES
-(
-  'A Paz que Excede Todo Entendimento',
-  'Paz Interior',
-  'Filipenses 4:6-7',
-  'Não andem ansiosos por coisa alguma, mas em tudo, pela oração e súplicas, e com ação de graças, apresentem seus pedidos a Deus. E a paz de Deus, que excede todo o entendimento, guardará o coração e a mente de vocês em Cristo Jesus.',
-  'Vivemos em um mundo que nos convida à ansiedade...[corpo completo do devocional]',
-  'Hoje, quando sentir ansiedade, pare por 60 segundos e entregue a situação a Deus em oração.',
-  'Em que áreas da sua vida você tem lutado para confiar plenamente em Deus?',
-  'Senhor, entrego nas Tuas mãos tudo aquilo que me causa ansiedade...',
-  '2026-04-08',
-  'PT'
-),
--- EN and ES versions with same structure
-(...);
+2. **Lógica adicional de segurança**: antes de inserir no markdown (linha ~141), re-verificar que não existe `![` nas 3 linhas após o ponto de inserção.
+
+Isso garante que a função é idempotente — pode ser chamada múltiplas vezes sem duplicar imagens, e respeita imagens já inseridas por outros geradores.
+
+### Mudança concreta
+
+```typescript
+// analyzeSections: skip headings that already have an image nearby
+function analyzeSections(markdown: string): Section[] {
+  const lines = markdown.split("\n");
+  const sections: Section[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^#{2,3}\s+(.+)/);
+    if (m) {
+      // Check if next 4 lines already contain an image
+      const nearby = lines.slice(i + 1, i + 5).join("\n");
+      if (/!\[.*?\]\(.*?\)/.test(nearby)) continue; // skip — already has image
+      
+      const snippet = lines.slice(i + 1, i + 6).join(" ")
+        .replace(/[#*_\[\]()>`~]/g, " ").trim().slice(0, 120);
+      sections.push({ heading: m[1], lineIndex: i, snippet });
+    }
+  }
+  return sections;
+}
 ```
 
-### Passo 2 — Verificar via edge function
-Chamar `get-devotional-today` para confirmar que retorna o devocional inserido.
-
-### Passo 3 — Solução permanente (próximo passo)
-Criar ou configurar o cron job `generate-devotional-batch` para rodar diariamente de madrugada e popular a tabela automaticamente. Sem isso, o problema se repetirá amanhã.
-
-## Nenhuma alteração de frontend
-Conforme solicitado, zero mudanças em componentes. Apenas dados no banco.
+Nenhuma alteração no frontend — apenas a Edge Function precisa ser corrigida e re-deployada.
 
