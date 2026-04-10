@@ -149,10 +149,15 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
 
         {/* Reference */}
         {slide.reference && (
-          <div className={`mt-auto pt-1 ${typeSize} text-primary/80 flex items-center gap-1`}>
+          <div className={`pt-1 ${typeSize} text-primary/80 flex items-center gap-1`}>
             📖 {slide.reference}
           </div>
         )}
+
+        {/* Branding footer */}
+        <div className={`mt-auto pt-1 flex items-center justify-end`}>
+          <span className={`${typeSize} font-semibold text-primary/40 tracking-wider`}>Living Word</span>
+        </div>
       </div>
     );
   };

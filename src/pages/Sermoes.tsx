@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -13,6 +13,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
+import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 
 type L = 'PT' | 'EN' | 'ES';
 
