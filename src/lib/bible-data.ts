@@ -83,19 +83,17 @@ export function getApiBookName(id: string, translationCode: string): string {
 /** Available translations per language with their bible-api.com codes */
 export const translationOptions: Record<L, { code: string; label: string }[]> = {
   PT: [
-    { code: 'almeida', label: 'ARA' },
-    { code: 'web', label: 'WEB' },
-    { code: 'kjv', label: 'KJV' },
+    { code: 'almeida', label: 'Almeida (ARA)' },
   ],
   EN: [
     { code: 'web', label: 'WEB' },
     { code: 'kjv', label: 'KJV' },
-    { code: 'almeida', label: 'ARA' },
+    { code: 'asv', label: 'ASV' },
+    { code: 'bbe', label: 'BBE' },
   ],
   ES: [
-    { code: 'web', label: 'WEB' },
-    { code: 'kjv', label: 'KJV' },
-    { code: 'almeida', label: 'ARA' },
+    { code: 'almeida', label: 'Almeida (PT)' },
+    { code: 'web', label: 'WEB (EN)' },
   ],
 };
 
@@ -104,20 +102,20 @@ export function getTranslation(lang: L): string {
 }
 
 export function getTranslationLabel(lang: L): string {
-  if (lang === 'PT') return 'Nova Versão Internacional';
-  if (lang === 'ES') return 'Reina Valera';
+  if (lang === 'PT') return 'João Ferreira de Almeida (ARA)';
+  if (lang === 'ES') return 'João Ferreira de Almeida';
   return 'World English Bible (WEB)';
 }
 
 export function getTranslationLabelByCode(code: string): string {
   const map: Record<string, string> = {
-    nvi: 'Nova Versão Internacional (NVI)',
-    almeida: 'Almeida Revista e Atualizada (ARA)',
-    acf: 'Almeida Corrigida Fiel (ACF)',
-    ntlh: 'Nova Tradução na Linguagem de Hoje (NTLH)',
+    almeida: 'João Ferreira de Almeida (ARA)',
     web: 'World English Bible (WEB)',
     kjv: 'King James Version (KJV)',
-    valera: 'Reina Valera',
+    asv: 'American Standard Version (ASV)',
+    bbe: 'Bible in Basic English (BBE)',
+    darby: 'Darby Bible',
+    dra: 'Douay-Rheims',
   };
   return map[code] || code;
 }
