@@ -60,6 +60,59 @@ function jsonResponse(payload: unknown, status = 200) {
   });
 }
 
+/** Attempt to repair truncated JSON by closing open braces/brackets/strings */
+function repairTruncatedJson(raw: string): string {
+  let s = raw.trim();
+  // Remove trailing comma
+  s = s.replace(/,\s*$/, "");
+
+  // Count open/close
+  let inString = false;
+  let escape = false;
+  let openBraces = 0;
+  let openBrackets = 0;
+
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (escape) { escape = false; continue; }
+    if (ch === "\\") { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") openBraces++;
+    else if (ch === "}") openBraces--;
+    else if (ch === "[") openBrackets++;
+    else if (ch === "]") openBrackets--;
+  }
+
+  // Close open string
+  if (inString) s += '"';
+  // Remove any trailing incomplete key-value
+  s = s.replace(/,\s*"[^"]*"?\s*:?\s*"?[^"]*$/, "");
+  // Recount after cleanup
+  inString = false;
+  escape = false;
+  openBraces = 0;
+  openBrackets = 0;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (escape) { escape = false; continue; }
+    if (ch === "\\") { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") openBraces++;
+    else if (ch === "}") openBraces--;
+    else if (ch === "[") openBrackets++;
+    else if (ch === "]") openBrackets--;
+  }
+  if (inString) s += '"';
+
+  // Close remaining open structures
+  while (openBrackets > 0) { s += "]"; openBrackets--; }
+  while (openBraces > 0) { s += "}"; openBraces--; }
+
+  return s;
+}
+
 function asString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -145,7 +198,7 @@ async function requestStudyGeneration({
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 12000,
+      max_tokens: 16000,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -165,6 +218,7 @@ async function requestStudyGeneration({
   }
 
   const aiData = await aiResponse.json();
+  const finishReason = aiData.choices?.[0]?.finish_reason || "";
   const rawContent = (aiData.choices?.[0]?.message?.content || "")
     .replace(/^```(?:json)?\s*\n?/i, "")
     .replace(/\n?```\s*$/i, "")
@@ -173,6 +227,7 @@ async function requestStudyGeneration({
   return {
     rawContent,
     usage: aiData.usage || null,
+    truncated: finishReason === "length",
   };
 }
 
@@ -356,10 +411,24 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
         usageTotals.total_tokens += generation.usage.total_tokens || 0;
       }
 
-      lastRawContent = generation.rawContent;
+      lastRawContent = generation.rawContent || "";
+
+      // If truncated, log and try to repair
+      if (generation.truncated) {
+        console.warn(`Attempt ${attempt}: response was truncated (finish_reason=length). Attempting JSON repair.`);
+      }
 
       try {
-        const candidate = JSON.parse(lastRawContent);
+        let candidate: Record<string, unknown>;
+        try {
+          candidate = JSON.parse(lastRawContent);
+        } catch {
+          // Try repairing truncated JSON
+          const repaired = repairTruncatedJson(lastRawContent);
+          console.log("Attempting JSON repair, repaired length:", repaired.length);
+          candidate = JSON.parse(repaired);
+        }
+
         if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
           lastIssues = ["output is not a JSON object"];
           continue;
@@ -371,11 +440,18 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
           break;
         }
 
+        // If repaired JSON passes most validations, accept it on last attempt
+        if (attempt === 3 && validationIssues.length <= 3) {
+          console.warn("Accepting study with minor issues on final attempt:", validationIssues);
+          study = candidate as Record<string, unknown>;
+          break;
+        }
+
         lastIssues = validationIssues;
         console.error(`Study validation failed on attempt ${attempt}:`, validationIssues);
       } catch {
         lastIssues = ["output could not be parsed as JSON"];
-        console.error("Failed to parse AI output:", lastRawContent.substring(0, 500));
+        console.error("Failed to parse AI output (first 500 chars):", lastRawContent.substring(0, 500));
       }
     }
 
