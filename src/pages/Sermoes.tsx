@@ -748,7 +748,14 @@ export default function Sermoes() {
         sermonTitle={sermonTitle}
         materialId={activeSessionId}
       />
-      <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
+      <BibleDrawer
+        open={bibleDrawerOpen}
+        onOpenChange={setBibleDrawerOpen}
+        initialBook={bibleRef?.bookId}
+        initialChapter={bibleRef?.chapter}
+        initialVerse={bibleRef?.verseStart}
+        initialVerseEnd={bibleRef?.verseEnd}
+      />
     </div>
   );
 }
