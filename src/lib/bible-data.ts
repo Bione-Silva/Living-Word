@@ -171,27 +171,16 @@ export function getTranslationLabelByCode(code: string): string {
  */
 export function versionToApiCode(version: string): string | null {
   const upper = version.toUpperCase().trim();
-  // Try direct match to shortLabel
   const direct = bibleVersions.find(v => v.shortLabel === upper);
   if (direct) return direct.apiCode;
-  // Fallback map
   const map: Record<string, string> = {
     'ARA': 'almeida',
     'ARC': 'almeida',
-    'NVI': 'almeida',
-    'NVT': 'almeida',
-    'NAA': 'almeida',
-    'ACF': 'almeida',
     'KJV': 'kjv',
-    'ESV': 'web',
-    'NIV': 'web',
-    'NASB': 'asv',
     'WEB': 'web',
     'ASV': 'asv',
     'BBE': 'bbe',
-    'RVR': 'web',
-    'RVR60': 'web',
-    'NBLA': 'web',
+    'OEB': 'oeb',
   };
   return map[upper] || null;
 }
