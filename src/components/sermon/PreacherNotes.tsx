@@ -423,8 +423,6 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
             [&_.checklist-item_input:checked+label]:line-through [&_.checklist-item_input:checked+label]:text-muted-foreground"
           style={{ color: textColor }}
         />
-      </div>
-      </div>
     </div>
   );
 }
