@@ -60,6 +60,7 @@ export default function Blog() {
   const [publishing, setPublishing] = useState<string | null>(null);
   const [publishStep, setPublishStep] = useState<'cover' | 'publishing' | null>(null);
   const [generatingCover, setGeneratingCover] = useState<Set<string>>(new Set());
+  const [generatingImages, setGeneratingImages] = useState<Set<string>>(new Set());
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['my-blog-articles', user?.id],
@@ -270,6 +271,30 @@ export default function Blog() {
     }
   };
 
+  const handleGenerateImages = async (article: ArticleRow) => {
+    setGeneratingImages(prev => new Set(prev).add(article.id));
+    try {
+      // Generate cover if missing
+      if (!article.cover_image_url) {
+        supabase.functions.invoke('generate-article-cover', {
+          body: { article_id: article.id, title: article.title, content: article.content },
+        }).catch(e => console.warn('[Blog] Cover gen failed:', e));
+      }
+      // Generate internal images
+      const { data, error } = await supabase.functions.invoke('generate-article-images', {
+        body: { article_id: article.id, title: article.title, content: article.content },
+      });
+      if (error) throw error;
+      toast.success(`${data?.images_added || 0} imagens geradas!`);
+      queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
+    } catch (e) {
+      console.warn('[Blog] Image generation failed:', e);
+      toast.error('Falha ao gerar imagens.');
+    } finally {
+      setGeneratingImages(prev => { const n = new Set(prev); n.delete(article.id); return n; });
+    }
+  };
+
   const statusLabel = (status: string) => {
     if (status === 'published') return t('blog.status_published');
     if (status === 'archived') return t('blog.status_archived');
@@ -442,6 +467,16 @@ export default function Blog() {
                           openWhatsAppShare(`${article.title} ${window.location.origin}/blog/${profile?.blog_handle}/${article.id}`);
                         }}>
                           {t('blog.share_whatsapp')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          disabled={generatingImages.has(article.id)}
+                          onClick={() => handleGenerateImages(article)}
+                        >
+                          {generatingImages.has(article.id) ? (
+                            <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> Gerando imagens...</>
+                          ) : (
+                            <><ImagePlus className="w-3.5 h-3.5 mr-2" /> Gerar imagens</>
+                          )}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleToggleArchive(article)}>

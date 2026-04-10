@@ -243,15 +243,29 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           queue_id: null,
           language: data.language || generationLang,
         });
-        // Auto-generate cover image in background
-        if (data.material_id && !data.cover_image_url) {
-          supabase.functions.invoke('generate-article-cover', {
-            body: { article_id: data.material_id, title: data.title || '', content: data.content || '' },
-          }).then(({ data: coverData }) => {
-            if (coverData?.cover_image_url) {
-              setBlogArticle(prev => prev ? { ...prev, cover_image_url: coverData.cover_image_url } : prev);
+        // Auto-generate cover + internal images in background
+        if (data.material_id) {
+          const articleId = data.material_id;
+          const articleTitle = data.title || '';
+          const articleContent = data.content || '';
+          // Cover image
+          if (!data.cover_image_url) {
+            supabase.functions.invoke('generate-article-cover', {
+              body: { article_id: articleId, title: articleTitle, content: articleContent },
+            }).then(({ data: coverData }) => {
+              if (coverData?.cover_image_url) {
+                setBlogArticle(prev => prev ? { ...prev, cover_image_url: coverData.cover_image_url } : prev);
+              }
+            }).catch(e => console.warn('[ToolSheet] Background cover gen failed:', e));
+          }
+          // Internal images
+          supabase.functions.invoke('generate-article-images', {
+            body: { article_id: articleId, title: articleTitle, content: articleContent },
+          }).then(({ data: imgData }) => {
+            if (imgData?.images_added > 0) {
+              console.log(`[ToolSheet] ${imgData.images_added} internal images added`);
             }
-          }).catch(e => console.warn('[ToolSheet] Background cover gen failed:', e));
+          }).catch(e => console.warn('[ToolSheet] Background images gen failed:', e));
         }
       } else {
         const { data, error } = await supabase.functions.invoke('ai-tool', {
