@@ -224,14 +224,17 @@ export default function Biblioteca() {
           <p className="text-sm">{emptyLabel}</p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {allItems.map((item: any, i: number) => {
             const typeInfo = typeLabels[item.type];
             const Icon = typeInfo?.icon || FileText;
             const isLocked = isFree && i >= 10;
+            const excerpt = item.content
+              ? item.content.replace(/[#*_\[\]>`~]/g, '').slice(0, 140).trim() + (item.content.length > 140 ? '…' : '')
+              : '';
 
             return (
-              <Card key={item.id} className={`relative ${isLocked ? 'overflow-hidden' : ''}`}>
+              <Card key={item.id} className={`relative group overflow-hidden hover:shadow-lg transition-shadow ${isLocked ? '' : 'cursor-pointer'}`}>
                 {isLocked && (
                   <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
                     <div className="text-center">
@@ -243,80 +246,63 @@ export default function Biblioteca() {
                     </div>
                   </div>
                 )}
-                <CardContent className="p-3 sm:p-4">
-                  {/* Desktop: single row */}
-                  <div className="hidden sm:flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center shrink-0">
-                      <Icon className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate text-foreground">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.passage && `${item.passage} · `}
-                        {new Date(item.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Badge variant="secondary" className="text-[10px] shrink-0 text-secondary-foreground">{typeLabels[item.type]?.[lang] || item.type}</Badge>
-                    <div className="flex gap-1 shrink-0">
-                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => toggleFavMutation.mutate({ id: item.id, favorite: item.favorite })}>
-                        <Star className={`h-3 w-3 ${item.favorite ? 'fill-primary text-primary' : ''}`} />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setViewItem(item)}>
-                        <Eye className="h-3 w-3" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleCopy(item.content)}>
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSaveToWsItem(item.id)} title={t('workspaces.save_to')}>
-                        <FolderOpen className="h-3 w-3" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => deleteMutation.mutate(item.id)}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
 
-                  {/* Mobile: stacked layout */}
-                  <div className="flex sm:hidden flex-col gap-2">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center shrink-0 mt-0.5">
-                        <Icon className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground line-clamp-2 leading-snug">{item.title}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {item.passage && `${item.passage} · `}
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between pl-12">
-                      <Badge variant="secondary" className="text-[10px] text-secondary-foreground">{typeLabels[item.type]?.[lang] || item.type}</Badge>
-                      <div className="flex gap-0.5">
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => toggleFavMutation.mutate({ id: item.id, favorite: item.favorite })}>
-                          <Star className={`h-3.5 w-3.5 ${item.favorite ? 'fill-primary text-primary' : ''}`} />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setViewItem(item)}>
-                          <Eye className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleCopy(item.content)}>
-                          <Copy className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSaveToWsItem(item.id)}>
-                          <FolderOpen className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => deleteMutation.mutate(item.id)}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </div>
+                {/* Cover image area */}
+                <div
+                  className="w-full aspect-[16/9] bg-secondary/40 flex items-center justify-center overflow-hidden"
+                  onClick={() => !isLocked && setViewItem(item)}
+                >
+                  {item.cover_image_url ? (
+                    <img
+                      src={item.cover_image_url}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <Icon className="h-10 w-10 text-muted-foreground/30" />
+                  )}
+                </div>
+
+                {/* Content */}
+                <CardContent className="p-4 space-y-2" onClick={() => !isLocked && setViewItem(item)}>
+                  <p className="font-display text-sm font-bold text-foreground line-clamp-2 leading-snug">
+                    {item.title}
+                  </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge variant="secondary" className="text-[10px] text-secondary-foreground">
+                      {typeLabels[item.type]?.[lang] || item.type}
+                    </Badge>
+                    <span className="text-[11px] text-muted-foreground">
+                      {new Date(item.created_at).toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </span>
                   </div>
+                  {excerpt && (
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{excerpt}</p>
+                  )}
                 </CardContent>
+
+                {/* Actions row */}
+                <div className="flex items-center justify-between px-4 pb-3 pt-0">
+                  <div className="flex gap-0.5">
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); toggleFavMutation.mutate({ id: item.id, favorite: item.favorite }); }}>
+                      <Star className={`h-3.5 w-3.5 ${item.favorite ? 'fill-primary text-primary' : ''}`} />
+                    </Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleCopy(item.content); }}>
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); setSaveToWsItem(item.id); }}>
+                      <FolderOpen className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(item.id); }}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </Card>
             );
           })}
 
-          <div ref={sentinelRef} className="py-4 flex justify-center">
+          <div ref={sentinelRef} className="col-span-full py-4 flex justify-center">
             {isFetchingNextPage && (
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             )}
