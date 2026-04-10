@@ -203,6 +203,7 @@ export function versionToApiCode(version: string): string | null {
     'NBLA': 'web',
   };
   return map[upper] || null;
+}
 
 /** Map a version abbreviation to the internal version code */
 export function versionAbbrToCode(abbr: string): string | null {
