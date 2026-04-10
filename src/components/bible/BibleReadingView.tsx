@@ -269,9 +269,24 @@ export function BibleReadingView({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {options.map(o => (
-                  <SelectItem key={o.code} value={o.code}>{o.label}</SelectItem>
-                ))}
+                <SelectGroup>
+                  <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
+                    {lang === 'PT' ? 'Recomendadas' : lang === 'ES' ? 'Recomendadas' : 'Recommended'}
+                  </SelectLabel>
+                  {primaryVersions.filter(v => v.isAvailable).map(v => (
+                    <SelectItem key={v.code} value={v.code} className="text-xs">{v.shortLabel} — {v.name}</SelectItem>
+                  ))}
+                </SelectGroup>
+                {secondaryVersions.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
+                      {lang === 'PT' ? 'Outras' : lang === 'ES' ? 'Otras' : 'Others'}
+                    </SelectLabel>
+                    {secondaryVersions.filter(v => v.isAvailable).map(v => (
+                      <SelectItem key={v.code} value={v.code} className="text-xs">{v.shortLabel} — {v.name} ({v.language})</SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
               </SelectContent>
             </Select>
           </div>
