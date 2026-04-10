@@ -26,6 +26,7 @@ import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFoot
 import { GenerationMeta } from '@/types/generation-meta';
 import { loadingHints, pastoralLoadingMessages } from '@/lib/generation-ui';
 import { BibleDrawer } from '@/components/BibleDrawer';
+import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
 interface PastoralStudioModalProps {
