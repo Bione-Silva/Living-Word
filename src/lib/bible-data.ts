@@ -211,4 +211,3 @@ export function versionAbbrToCode(abbr: string): string | null {
   const found = bibleVersions.find(v => v.shortLabel === upper);
   return found?.code || null;
 }
-}
