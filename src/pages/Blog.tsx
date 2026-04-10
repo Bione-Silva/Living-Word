@@ -355,12 +355,29 @@ export default function Blog() {
               <Card key={article.id} className="overflow-hidden bg-card border hover:shadow-md transition-shadow flex flex-col">
                 <div className="relative h-44 overflow-hidden bg-muted">
                   {(() => {
+                    const isCoverLoading = generatingCover.has(article.id);
                     const thumb = article.cover_image_url || article.content?.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/)?.[1];
+                    if (isCoverLoading) {
+                      return (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                          <span className="text-xs text-muted-foreground">Gerando capa...</span>
+                        </div>
+                      );
+                    }
                     return thumb ? (
                       <img src={thumb} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                         <BookOpen className="w-10 h-10 text-muted-foreground/30" />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="gap-1.5 text-xs text-muted-foreground hover:text-primary"
+                          onClick={(e) => { e.stopPropagation(); handleGenerateCover(article); }}
+                        >
+                          <ImagePlus className="w-3.5 h-3.5" /> Gerar capa
+                        </Button>
                       </div>
                     );
                   })()}
