@@ -136,15 +136,6 @@ serve(async (req) => {
 
     // ── Deduct credits AFTER successful generation ──
     if (userId && toolId) {
-      await supabaseAdmin.rpc("deduct_credits", { p_user_id: userId, p_amount: creditCost }).catch(() => {
-        // Fallback: direct update
-        supabaseAdmin
-          .from("profiles")
-          .update({ generations_used: (data as any).__used + creditCost })
-          .eq("id", userId);
-      });
-
-      // Simple direct increment as primary method
       const { data: currentProfile } = await supabaseAdmin
         .from("profiles")
         .select("generations_used")
