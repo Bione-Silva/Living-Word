@@ -97,6 +97,7 @@ function SyncLanguageWithProfile() {
    A full remount was destructive: it wiped form inputs, open modals, scroll position,
    sermon content, and any local state the user was working with. */
 
+// eslint-disable-next-line react-refresh/only-export-components
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
