@@ -784,6 +784,22 @@ export default function Sermoes() {
         </SheetContent>
       </Sheet>
 
+      {/* ─── Mobile notes drawer ─── */}
+      <Sheet open={mobileNotesOpen} onOpenChange={setMobileNotesOpen}>
+        <SheetContent side="bottom" className="theme-app max-h-[70vh] rounded-t-2xl">
+          <SheetHeader className="pb-2">
+            <SheetTitle className="text-sm font-bold flex items-center gap-2">
+              <PenLine className="h-4 w-4 text-primary" />
+              {lang === 'PT' ? 'Anotações do Pregador' : lang === 'ES' ? 'Notas del Predicador' : 'Preacher Notes'}
+            </SheetTitle>
+            <SheetDescription className="sr-only">Preacher notes</SheetDescription>
+          </SheetHeader>
+          <div className="mt-2 overflow-y-auto max-h-[50vh]">
+            <PreacherNotes materialId={activeSessionId} />
+          </div>
+        </SheetContent>
+      </Sheet>
+
       {/* ─── Carousel modal ─── */}
       <SermonCarouselModal
         open={carouselOpen}
