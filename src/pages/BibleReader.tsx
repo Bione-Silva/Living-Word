@@ -348,6 +348,8 @@ export default function BibleReader() {
                 translation={translation} onBack={() => setReadView('chapters')} onHome={() => setReadView('books')}
                 onChapterChange={setSelectedChapter} onTabsRefresh={() => setTabsRefreshKey(k => k + 1)}
                 onTranslationChange={setTranslation}
+                highlightVerse={highlightVerse}
+                onHighlightClear={() => setHighlightVerse(null)}
               />
             )}
           </>

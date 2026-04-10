@@ -25,6 +25,8 @@ interface Props {
   onChapterChange: (ch: number) => void;
   onTabsRefresh: () => void;
   onTranslationChange?: (code: string) => void;
+  highlightVerse?: string | null;
+  onHighlightClear?: () => void;
 }
 
 const highlightClassMap: Record<string, string> = {
