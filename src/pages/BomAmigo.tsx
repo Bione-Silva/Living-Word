@@ -3,9 +3,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Heart, Loader2, Copy, Share2, Send } from 'lucide-react';
-import { toast } from 'sonner';
+import { ArrowLeft, Heart, Loader2, Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -13,6 +13,8 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
+
+const AGENT_ID = 'palavra_amiga';
 
 const labels = {
   back: { PT: 'Voltar', EN: 'Back', ES: 'Volver' },
@@ -27,9 +29,6 @@ const labels = {
     EN: 'Share more about how you are feeling...',
     ES: 'Comparte más sobre cómo te sientes...',
   },
-  copied: { PT: 'Texto copiado!', EN: 'Text copied!', ES: '¡Texto copiado!' },
-  copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
-  share: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
   thinking: {
     PT: 'Buscando uma palavra para você...',
     EN: 'Finding a word for you...',
@@ -44,6 +43,11 @@ const labels = {
     PT: 'Escolha um sentimento ou digite o que está no seu coração. Eu vou buscar uma palavra para você.',
     EN: "Pick a feeling or type what\u2019s in your heart. I\u2019ll find a word for you.",
     ES: 'Elige un sentimiento o escribe lo que hay en tu corazón. Buscaré una palabra para ti.',
+  },
+  loading: {
+    PT: 'Carregando histórico...',
+    EN: 'Loading history...',
+    ES: 'Cargando historial...',
   },
 } satisfies Record<string, Record<L, string>>;
 
@@ -99,20 +103,36 @@ export default function BomAmigo() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load persisted history on mount
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const history = await loadHistory(user.id, AGENT_ID);
+      if (!cancelled) {
+        setMessages(history);
+        setHistoryLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
 
+  // Handle feeling param from redirect
   useEffect(() => {
     const feeling = searchParams.get('feeling');
-    if (feeling && messages.length === 0 && user) {
+    if (feeling && historyLoaded && user) {
       setSearchParams({}, { replace: true });
       sendMessage(feeling);
     }
-  }, [user]);
+  }, [historyLoaded, user]);
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || !user || loading) return;
@@ -123,32 +143,34 @@ export default function BomAmigo() {
     setInput('');
     setLoading(true);
 
+    // Persist user message
+    await saveMessage(user.id, AGENT_ID, 'user', text.trim());
+
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
           systemPrompt: SYSTEM_PROMPT(lang, profile?.full_name?.split(' ')[0]),
           userPrompt: text.trim(),
           toolId: 'palavra-amiga',
-          history: newMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
+          history: newMessages.slice(-30).map(m => ({ role: m.role, content: m.content })),
         },
       });
 
       if (error) throw error;
       const content = data?.content || 'Desculpe, não consegui gerar uma resposta.';
       setMessages(prev => [...prev, { role: 'assistant', content }]);
+      // Persist assistant message
+      await saveMessage(user.id, AGENT_ID, 'assistant', content);
     } catch {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.'
-          : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.'
-          : 'Sorry, an error occurred. Please try again.',
-      }]);
+      const errContent = lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.'
+        : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.'
+        : 'Sorry, an error occurred. Please try again.';
+      setMessages(prev => [...prev, { role: 'assistant', content: errContent }]);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
     }
   };
-
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
     toast.success(labels.copied[lang]);
