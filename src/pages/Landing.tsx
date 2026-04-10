@@ -419,9 +419,9 @@ export default function Landing() {
         price: fmt(pricing.plans.starter.amount),
         period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' } as Record<L, string>,
         features: {
-          PT: ['4.000 créditos/mês', '~200 sermões ou 400 artigos', 'Todos os 6 formatos pastorais', 'Artigos de blog ilimitados', 'Fila editorial básica', 'Sem watermark', 'Blog no livingword.app'],
-          EN: ['4,000 credits/month', '~200 sermons or 400 articles', 'All 6 pastoral formats', 'Unlimited blog articles', 'Basic editorial queue', 'No watermark', 'Blog on livingword.app'],
-          ES: ['4.000 créditos/mes', '~200 sermones o 400 artículos', 'Los 6 formatos pastorales', 'Artículos de blog ilimitados', 'Fila editorial básica', 'Sin marca de agua', 'Blog en livingword.app'],
+          PT: ['4.000 créditos/mês', '~200 sermões ou 400 artigos', 'Todos os 6 formatos pastorais', 'Fila editorial básica', 'Sem watermark', 'Blog no livingword.app'],
+          EN: ['4,000 credits/month', '~200 sermons or 400 articles', 'All 6 pastoral formats', 'Basic editorial queue', 'No watermark', 'Blog on livingword.app'],
+          ES: ['4.000 créditos/mes', '~200 sermones o 400 artículos', 'Los 6 formatos pastorales', 'Fila editorial básica', 'Sin marca de agua', 'Blog en livingword.app'],
         } as Record<L, string[]>,
         cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' } as Record<L, string>,
         featured: false,

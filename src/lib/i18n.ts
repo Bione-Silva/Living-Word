@@ -163,7 +163,7 @@ const translations: Record<string, Record<Language, string>> = {
   'blog.no_results_hint': { PT: 'Tente buscar com outros termos.', EN: 'Try searching with other terms.', ES: 'Intenta buscar con otros términos.' },
   'blog.no_articles_hint': { PT: 'Crie seu primeiro artigo no Estúdio Pastoral.', EN: 'Create your first article in the Pastoral Studio.', ES: 'Crea tu primer artículo en el Estudio Pastoral.' },
   'blog.create_first': { PT: 'Criar Primeiro Artigo', EN: 'Create First Article', ES: 'Crear Primer Artículo' },
-  'blog.free_notice': { PT: 'Faça upgrade para geração ilimitada e modelos avançados', EN: 'Upgrade for unlimited generation and advanced models', ES: 'Haz upgrade para generación ilimitada y modelos avanzados' },
+  'blog.free_notice': { PT: 'Faça upgrade para mais créditos e modelos avançados', EN: 'Upgrade for more credits and advanced models', ES: 'Haz upgrade para más créditos y modelos avanzados' },
   'blog.free_hint': { PT: 'Desbloqueie todo o potencial do Living Word', EN: 'Unlock the full potential of Living Word', ES: 'Desbloquea todo el potencial de Living Word' },
   'blog.edit_title': { PT: 'Editar Artigo', EN: 'Edit Article', ES: 'Editar Artículo' },
   'blog.field_title': { PT: 'Título', EN: 'Title', ES: 'Título' },
