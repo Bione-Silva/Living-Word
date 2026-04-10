@@ -15,7 +15,8 @@ import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
-import { parseBibleUri, type ParsedBibleRef } from '@/lib/bible-ref-parser';
+import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/bible-ref-parser';
+import { versionToApiCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -234,6 +235,7 @@ export default function Sermoes() {
   const [sermonTopic, setSermonTopic] = useState('');
   const [bibleDrawerOpen, setBibleDrawerOpen] = useState(false);
   const [bibleRef, setBibleRef] = useState<ParsedBibleRef | null>(null);
+  const [bibleTranslationCode, setBibleTranslationCode] = useState<string | undefined>(undefined);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
@@ -419,42 +421,76 @@ export default function Sermoes() {
   };
 
   /* ═══ Bible reference click handler — parses URI and opens drawer with correct ref ═══ */
-  const handleBibleClick = (uriPath: string) => {
+  const handleBibleClick = (uriPath: string, linkText?: string) => {
     const parsed = parseBibleUri(uriPath);
     if (parsed) {
       setBibleRef(parsed);
     } else {
       setBibleRef(null);
     }
+
+    // Extract version from link text like "Gálatas 5:22-23 (ARA)" → "ARA"
+    let translationCode: string | undefined;
+    if (linkText) {
+      const versionMatch = linkText.match(/\(([A-Z]{2,6})\)\s*$/);
+      if (versionMatch) {
+        translationCode = versionToApiCode(versionMatch[1]) || undefined;
+      }
+    }
+    // Also check if parsed ref has a version from the URI itself
+    if (!translationCode && parsed?.version) {
+      translationCode = versionToApiCode(parsed.version) || undefined;
+    }
+    setBibleTranslationCode(translationCode);
     setBibleDrawerOpen(true);
   };
 
   /* ═══ Custom markdown components ═══ */
   const markdownComponents = {
     a: ({ href, children, ...props }: any) => {
+      // Extract plain text from children for version parsing
+      const extractText = (node: any): string => {
+        if (typeof node === 'string') return node;
+        if (Array.isArray(node)) return node.map(extractText).join('');
+        if (node?.props?.children) return extractText(node.props.children);
+        return '';
+      };
+      const linkText = extractText(children);
+
       if (href?.startsWith('bible://')) {
         const ref = href.replace('bible://', '');
         return (
           <button
-            onClick={() => handleBibleClick(ref)}
+            onClick={() => handleBibleClick(ref, linkText)}
             className="font-bold inline-flex items-center gap-0.5 cursor-pointer hover:underline"
             style={{ color: '#D4A853' }}
-            title={ref.replace(/\//g, ' ')}
+            title={linkText || ref.replace(/\//g, ' ')}
             {...props}
           >
             📖 {children}
           </button>
         );
       }
-      // Non-bible links also open internally — prevent external navigation
+      // Non-bible links — try to parse the text as a Bible reference
       return (
         <button
-          onClick={() => setBibleDrawerOpen(true)}
+          onClick={() => {
+            const parsed = parseBibleRefString(linkText);
+            if (parsed) {
+              setBibleRef(parsed);
+              const tc = parsed.version ? versionToApiCode(parsed.version) || undefined : undefined;
+              setBibleTranslationCode(tc);
+            } else {
+              setBibleRef(null);
+              setBibleTranslationCode(undefined);
+            }
+            setBibleDrawerOpen(true);
+          }}
           className="font-bold inline-flex items-center gap-0.5 cursor-pointer hover:underline"
           style={{ color: '#D4A853' }}
           {...props}
         >
-          {children}
+          📖 {children}
         </button>
       );
     },
@@ -824,6 +860,7 @@ export default function Sermoes() {
         initialChapter={bibleRef?.chapter}
         initialVerse={bibleRef?.verseStart}
         initialVerseEnd={bibleRef?.verseEnd}
+        initialTranslation={bibleTranslationCode}
       />
     </div>
   );

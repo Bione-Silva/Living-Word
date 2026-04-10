@@ -119,3 +119,28 @@ export function getTranslationLabelByCode(code: string): string {
   };
   return map[code] || code;
 }
+
+/**
+ * Map a Bible version abbreviation (from sermon text) to the bible-api.com translation code.
+ * E.g. "ARA" → "almeida", "NVI" → "almeida", "KJV" → "kjv"
+ */
+export function versionToApiCode(version: string): string | null {
+  const map: Record<string, string> = {
+    'ARA': 'almeida',
+    'ARC': 'almeida',
+    'NVI': 'almeida',   // bible-api.com only has almeida for PT
+    'NVT': 'almeida',
+    'NAA': 'almeida',
+    'ACF': 'almeida',
+    'KJV': 'kjv',
+    'ESV': 'web',       // ESV not on bible-api.com, fallback to WEB
+    'NIV': 'web',       // NIV not available, fallback
+    'NASB': 'asv',
+    'WEB': 'web',
+    'ASV': 'asv',
+    'BBE': 'bbe',
+    'RVR': 'web',       // Reina-Valera not available, fallback
+    'RVR60': 'web',
+  };
+  return map[version.toUpperCase().trim()] || null;
+}
