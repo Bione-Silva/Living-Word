@@ -109,6 +109,7 @@ const labels = {
   copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
   sendWpp: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   carousel: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
+  slides: { PT: 'Slides', EN: 'Slides', ES: 'Diapositivas' },
   pdf: { PT: 'PDF', EN: 'PDF', ES: 'PDF' },
   regenerate: { PT: 'Regenerar', EN: 'Regenerate', ES: 'Regenerar' },
   save: { PT: 'Salvar', EN: 'Save', ES: 'Guardar' },
@@ -322,13 +323,22 @@ export default function Sermoes() {
     if (!lastSermonContent) return;
     const html2pdf = (await import('html2pdf.js')).default;
     const el = document.createElement('div');
-    el.innerHTML = `<div style="font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#333;">
+    el.innerHTML = `<div style="font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#333;position:relative;min-height:100%;">
       <h1 style="font-size:24px;margin-bottom:8px;">${lastSermonTitle}</h1>
       <div style="font-size:14px;line-height:1.8;">${lastSermonContent.replace(/\n/g, '<br/>')}</div>
-      <div style="margin-top:32px;text-align:center;font-size:10px;color:#999;">Living Word • ${new Date().toLocaleDateString()}</div>
+      <div style="margin-top:40px;padding-top:16px;border-top:1px solid #e5e5e5;text-align:center;">
+        <span style="font-size:11px;color:#999;letter-spacing:1px;font-weight:600;">Living Word</span>
+        <span style="font-size:10px;color:#bbb;margin-left:8px;">• ${new Date().toLocaleDateString()}</span>
+      </div>
     </div>`;
     document.body.appendChild(el);
-    await html2pdf().from(el).set({ margin: [10, 10], filename: `${lastSermonTitle.slice(0, 40)}.pdf`, html2canvas: { scale: 2 }, jsPDF: { format: 'a4' } }).save();
+    await html2pdf().from(el).set({
+      margin: [10, 10],
+      filename: `${lastSermonTitle.slice(0, 40)}.pdf`,
+      html2canvas: { scale: 2 },
+      jsPDF: { format: 'a4' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+    }).save();
     document.body.removeChild(el);
     toast.success('PDF!');
   };
