@@ -60,6 +60,7 @@ export default function Blog() {
   const [publishing, setPublishing] = useState<string | null>(null);
   const [publishStep, setPublishStep] = useState<'cover' | 'publishing' | null>(null);
   const [generatingCover, setGeneratingCover] = useState<Set<string>>(new Set());
+  const [generatingImages, setGeneratingImages] = useState<Set<string>>(new Set());
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['my-blog-articles', user?.id],
