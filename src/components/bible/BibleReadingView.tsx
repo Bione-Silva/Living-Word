@@ -45,6 +45,9 @@ const retryLabels: Record<L, { retrying: string; failed: string; retry: string }
 const fallbackTranslation: Record<string, string> = {
   PT: 'almeida', EN: 'web', ES: 'almeida',
 };
+const fallbackBookLang: Record<string, string> = {
+  PT: 'almeida', EN: 'web', ES: 'almeida',
+};
 
 async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response | null> {
   for (let i = 0; i < maxRetries; i++) {
