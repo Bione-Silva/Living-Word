@@ -34,13 +34,13 @@ export function BibleBookGrid({ translation, onTranslationChange, onSelectBook }
     <div className="space-y-4">
       {/* Testament toggle + Translation pills */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 bg-muted/60 rounded-lg p-1 border border-border/50">
+        <div className="flex items-center gap-1 bg-muted rounded-lg p-1 border border-border">
           <button
             onClick={() => setTestament('OT')}
             className={`px-4 py-2 rounded-md text-xs font-semibold transition-all ${
               testament === 'OT'
                 ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                : 'text-foreground/70 hover:text-foreground hover:bg-muted-foreground/10'
             }`}
           >
             {labels.ot[lang]}
@@ -50,7 +50,7 @@ export function BibleBookGrid({ translation, onTranslationChange, onSelectBook }
             className={`px-4 py-2 rounded-md text-xs font-semibold transition-all ${
               testament === 'NT'
                 ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                : 'text-foreground/70 hover:text-foreground hover:bg-muted-foreground/10'
             }`}
           >
             {labels.nt[lang]}
@@ -66,7 +66,7 @@ export function BibleBookGrid({ translation, onTranslationChange, onSelectBook }
                 className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                   translation === t.code
                     ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground bg-muted/60 border border-border'
+                    : 'text-foreground/70 hover:text-foreground bg-muted border border-border'
                 }`}
               >
                 {t.label}
