@@ -93,6 +93,12 @@ function SyncLanguageWithProfile() {
   return null;
 }
 
+/** Wraps children with a key that changes on language switch, forcing full remount */
+function LangKeyedApp({ children }: { children: React.ReactNode }) {
+  const { langVersion } = useLanguage();
+  return <React.Fragment key={langVersion}>{children}</React.Fragment>;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
@@ -102,50 +108,52 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              {/* Subdomain detection: pastorjoao.livingwordgo.com → /blog/pastorjoao */}
-              <Route path="/" element={<><SubdomainRedirect /><Landing /></>} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/cadastro" element={<Cadastro />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/blog/:handle" element={<BlogPublic />} />
-              <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
-              <Route path="/invite/:token" element={<AcceptInvite />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/lp" element={<Landing />} />
-              <Route path="/devocional/publico/:shareToken" element={<DevocionalPublico />} />
+            <LangKeyedApp>
+              <Routes>
+                {/* Subdomain detection: pastorjoao.livingwordgo.com → /blog/pastorjoao */}
+                <Route path="/" element={<><SubdomainRedirect /><Landing /></>} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/blog/:handle" element={<BlogPublic />} />
+                <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
+                <Route path="/invite/:token" element={<AcceptInvite />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/lp" element={<Landing />} />
+                <Route path="/devocional/publico/:shareToken" element={<DevocionalPublico />} />
 
-              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/blog-onboarding" element={<BlogOnboarding />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/devocional" element={<Devocional />} />
-                <Route path="/bom-amigo" element={<BomAmigo />} />
-                <Route path="/sermoes" element={<Sermoes />} />
-                <Route path="/quiz" element={<Quiz />} />
-                <Route path="/kids" element={<Kids />} />
-                <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
-                <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
-                <Route path="/expos" element={<ExposStudioPage />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/biblioteca" element={<Biblioteca />} />
-                <Route path="/workspaces" element={<Workspaces />} />
-                <Route path="/social-studio" element={<SocialStudio />} />
-                <Route path="/bible" element={<BibleReader />} />
-                <Route path="/calendario" element={<Calendario />} />
-                <Route path="/configuracoes" element={<Configuracoes />} />
-                <Route path="/upgrade" element={<Upgrade />} />
-                <Route path="/dashboard/mentes" element={<MentesBrilhantes />} />
-                <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
-              <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/ai-billing" element={<AIBillingDashboard />} />
-              <Route path="/ajuda" element={<HelpCenter />} />
-              <Route path="/ajuda/:toolId" element={<HelpArticlePage />} />
-              </Route>
+                <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/blog-onboarding" element={<BlogOnboarding />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/devocional" element={<Devocional />} />
+                  <Route path="/bom-amigo" element={<BomAmigo />} />
+                  <Route path="/sermoes" element={<Sermoes />} />
+                  <Route path="/quiz" element={<Quiz />} />
+                  <Route path="/kids" element={<Kids />} />
+                  <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
+                  <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
+                  <Route path="/expos" element={<ExposStudioPage />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/biblioteca" element={<Biblioteca />} />
+                  <Route path="/workspaces" element={<Workspaces />} />
+                  <Route path="/social-studio" element={<SocialStudio />} />
+                  <Route path="/bible" element={<BibleReader />} />
+                  <Route path="/calendario" element={<Calendario />} />
+                  <Route path="/configuracoes" element={<Configuracoes />} />
+                  <Route path="/upgrade" element={<Upgrade />} />
+                  <Route path="/dashboard/mentes" element={<MentesBrilhantes />} />
+                  <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
+                  <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/ai-billing" element={<AIBillingDashboard />} />
+                  <Route path="/ajuda" element={<HelpCenter />} />
+                  <Route path="/ajuda/:toolId" element={<HelpArticlePage />} />
+                </Route>
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </LangKeyedApp>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
