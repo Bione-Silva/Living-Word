@@ -314,6 +314,7 @@ export default function Configuracoes() {
 
         <TabsContent value="plan">
           <div className="space-y-6">
+            <PlanOverviewCard />
             <Card>
               <CardHeader><CardTitle className="font-display">{t('settings.plan')}</CardTitle></CardHeader>
               <CardContent className="space-y-4">
