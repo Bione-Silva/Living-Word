@@ -95,8 +95,8 @@ serve(async (req) => {
           upgrade_hint: language === "PT"
             ? "Você atingiu o limite de gerações deste mês. Desbloqueie gerações ilimitadas no plano Pastoral."
             : language === "ES"
-            ? "Has alcanzado el límite de generaciones este mes. Desbloquea generaciones ilimitadas en el plan Pastoral."
-            : "You've reached your generation limit this month. Unlock unlimited generations on the Pastoral plan.",
+            ? "Has alcanzado el límite de generaciones este mes. Obtén más créditos en el plan Pastoral."
+            : "You've reached your generation limit this month. Get more credits on the Pastoral plan.",
           generations_remaining: 0,
         }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }

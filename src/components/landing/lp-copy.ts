@@ -270,7 +270,7 @@ export const pricing = {
       },
       {
         name: 'Ministry', price: null, features: [
-          'Gerações ilimitadas', 'Tudo do Church', 'Assentos ilimitados', 'API de conteúdo',
+          '500 gerações/mês', 'Tudo do Church', 'Assentos para toda equipe', 'API de conteúdo',
           'White-label disponível', 'Suporte dedicado', 'Onboarding personalizado', 'SLA garantido',
         ],
       },
@@ -296,7 +296,7 @@ export const pricing = {
       },
       {
         name: 'Ministry', price: null, features: [
-          'Unlimited generations', 'Everything in Church', 'Unlimited seats', 'Content API',
+          '500 generations/month', 'Everything in Church', 'Full team seats', 'Content API',
           'White-label available', 'Dedicated support', 'Custom onboarding', 'Guaranteed SLA',
         ],
       },
@@ -322,7 +322,7 @@ export const pricing = {
       },
       {
         name: 'Ministry', price: null, features: [
-          'Generaciones ilimitadas', 'Todo lo de Church', 'Asientos ilimitados', 'API de contenido',
+          '500 generaciones/mes', 'Todo lo de Church', 'Asientos para todo el equipo', 'API de contenido',
           'White-label disponible', 'Soporte dedicado', 'Onboarding personalizado', 'SLA garantizado',
         ],
       },
