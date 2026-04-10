@@ -18,6 +18,7 @@ import { useEngagementTracker } from '@/components/engagement/EngagementTracker'
 import { ReflectionCapture } from '@/components/engagement/ReflectionCapture';
 import { captureNodeAsPng } from '@/components/social-studio/export-utils';
 import { DevotionalShareArt } from '@/components/DevotionalShareArt';
+import { openWhatsAppShare } from '@/lib/whatsapp';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -565,12 +566,10 @@ export default function Devocional() {
           return;
         }
 
-        // Desktop fallback: download image then open WhatsApp Web with text
+        // Desktop fallback: download image then open the official WhatsApp share URL with text
         downloadFile(file);
         const waText = `✨ *${displayTitle}*\n📖 ${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}\n\n${formattedDisplayDate}\n\n_Anexe a imagem que foi baixada_ 👆`;
-        setTimeout(() => {
-          window.open(`https://web.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
-        }, 600);
+        openWhatsAppShare(waText);
         toast.success(labels.whatsappFallback[lang]);
         return;
       }

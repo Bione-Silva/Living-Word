@@ -25,6 +25,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import ReactMarkdown from 'react-markdown';
+import { openWhatsAppShare } from '@/lib/whatsapp';
 
 type TabFilter = 'all' | 'published' | 'draft' | 'archived';
 
@@ -356,7 +357,7 @@ export default function Blog() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleCopyLink(article.id)}>{t('blog.copy_link')}</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
-                          window.open(`https://wa.me/?text=${encodeURIComponent(article.title + ' ' + window.location.origin + '/blog/' + profile?.blog_handle + '/' + article.id)}`, '_blank');
+                          openWhatsAppShare(`${article.title} ${window.location.origin}/blog/${profile?.blog_handle}/${article.id}`);
                         }}>
                           {t('blog.share_whatsapp')}
                         </DropdownMenuItem>

@@ -7,6 +7,7 @@ import { ArrowLeft, BookOpen, Calendar, Share2, Copy, MessageCircle, Clock, Glob
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { openWhatsAppShare } from '@/lib/whatsapp';
 
 type Lang = 'PT' | 'EN' | 'ES';
 
@@ -211,7 +212,7 @@ export default function BlogArticle() {
   };
 
   const handleShareWhatsApp = () => {
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareTitle}\n\n${articleUrl}`)}`, '_blank', 'noopener,noreferrer');
+    openWhatsAppShare(`${shareTitle}\n\n${articleUrl}`);
     setShareOpen(false);
   };
   const handleShareX = () => {
