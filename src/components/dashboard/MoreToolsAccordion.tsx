@@ -77,7 +77,7 @@ export function MoreToolsAccordion({ onToolClick }: MoreToolsAccordionProps) {
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isLocked ? 'bg-muted/50' : 'bg-primary/10'}`}>
                   <Icon className={`h-4 w-4 ${isLocked ? 'text-muted-foreground' : 'text-primary'}`} />
                 </div>
-                <span className="text-[10px] leading-tight font-medium line-clamp-2 text-foreground">
+                <span className="text-xs leading-tight font-semibold line-clamp-2 text-foreground">
                   {tool.title[lang]}
                 </span>
               </button>
