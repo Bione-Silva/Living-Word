@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
+import { BibleDrawer } from '@/components/BibleDrawer';
 
 type L = 'PT' | 'EN' | 'ES';
 
