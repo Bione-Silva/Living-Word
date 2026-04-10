@@ -16,6 +16,7 @@ import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
 import { parseBibleUri, type ParsedBibleRef } from '@/lib/bible-ref-parser';
+import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 
 type L = 'PT' | 'EN' | 'ES';
 
