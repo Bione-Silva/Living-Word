@@ -195,11 +195,13 @@ function ChipGroup({
 export default function Sermoes() {
   const { lang } = useLanguage();
   const { user, profile } = useAuth();
+  const isMobile = useIsMobile();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
 
   // Filter selections
   const [preachingType, setPreachingType] = useState<string | null>(null);
