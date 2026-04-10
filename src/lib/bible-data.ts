@@ -149,10 +149,20 @@ export const translationOptions: Record<L, { code: string; label: string }[]> = 
   ES: bibleVersions.filter(v => v.language === 'ES').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
 };
 
+/** LEGACY — get default translation code for a language */
+export function getTranslation(lang: L): string {
+  return getDefaultVersionCode(lang);
+}
+
+/** LEGACY — get default translation label */
+export function getTranslationLabel(lang: L): string {
+  const code = getDefaultVersionCode(lang);
+  return getTranslationLabelByCode(code);
+}
+
 export function getTranslationLabelByCode(code: string): string {
   const v = getBibleVersion(code);
   if (v) return `${v.name} (${v.shortLabel})`;
-  // Legacy fallback
   const map: Record<string, string> = {
     almeida: 'Almeida Revista e Atualizada (ARA)',
     web: 'World English Bible (WEB)',
