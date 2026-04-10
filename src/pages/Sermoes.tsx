@@ -532,37 +532,40 @@ export default function Sermoes() {
               </div>
 
               {/* Options */}
-              <div className="space-y-5">
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground mb-2">{labels.preachingType[lang]}</p>
+              <div className="space-y-4">
+                {/* Tipo de Pregação — full width */}
+                <div className="rounded-xl border border-border bg-card/60 p-4">
+                  <p className="text-xs font-bold text-muted-foreground mb-3 tracking-wide">{labels.preachingType[lang]}</p>
                   <ChipGroup items={preachingTypes} selected={preachingType} onSelect={setPreachingType} lang={lang} />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground mb-2">{labels.audience[lang]}</p>
+                {/* Público-Alvo + Duração — side by side */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-border bg-card/60 p-4">
+                    <p className="text-xs font-bold text-muted-foreground mb-3 tracking-wide">{labels.audience[lang]}</p>
                     <ChipGroup items={audiences} selected={audience} onSelect={setAudience} lang={lang} />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground mb-2">{labels.duration[lang]}</p>
+                  <div className="rounded-xl border border-border bg-card/60 p-4">
+                    <p className="text-xs font-bold text-muted-foreground mb-3 tracking-wide">{labels.duration[lang]}</p>
                     <ChipGroup items={durations} selected={duration} onSelect={setDuration} lang={lang} />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground mb-2">{labels.style[lang]}</p>
+                {/* Estilo + Tom — side by side */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-border bg-card/60 p-4">
+                    <p className="text-xs font-bold text-muted-foreground mb-3 tracking-wide">{labels.style[lang]}</p>
                     <ChipGroup items={preachingStyles} selected={style} onSelect={setStyle} lang={lang} />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground mb-2">{labels.tone[lang]}</p>
+                  <div className="rounded-xl border border-border bg-card/60 p-4">
+                    <p className="text-xs font-bold text-muted-foreground mb-3 tracking-wide">{labels.tone[lang]}</p>
                     <ChipGroup items={tones} selected={tone} onSelect={setTone} lang={lang} />
                   </div>
                 </div>
 
                 {/* Topic suggestions */}
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground mb-2">{labels.suggestions[lang]}</p>
+                <div className="rounded-xl border border-border bg-card/60 p-4">
+                  <p className="text-xs font-bold text-muted-foreground mb-3 tracking-wide">{labels.suggestions[lang]}</p>
                   <div className="flex flex-wrap gap-2">
                     {topicSuggestions[lang].map((t) => (
                       <button
@@ -576,7 +579,7 @@ export default function Sermoes() {
                   </div>
                 </div>
 
-                {/* Topic input + Generate button */}
+                {/* Topic input + Prompt preview + Generate button */}
                 <div className="pt-2 space-y-3">
                   <textarea
                     value={topic}
@@ -585,6 +588,24 @@ export default function Sermoes() {
                     rows={2}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
                   />
+
+                  {/* Prompt preview — shows what will be sent to AI */}
+                  {topic.trim() && (
+                    <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 space-y-1">
+                      <p className="text-[10px] font-bold text-primary/70 uppercase tracking-wider">
+                        {lang === 'PT' ? '🧠 Prompt que será enviado à IA' : lang === 'ES' ? '🧠 Prompt que se enviará a la IA' : '🧠 Prompt that will be sent to AI'}
+                      </p>
+                      <p className="text-xs text-foreground/80 leading-relaxed">
+                        <span className="font-semibold">{lang === 'PT' ? 'Tema:' : lang === 'ES' ? 'Tema:' : 'Topic:'}</span> {topic.trim()}
+                        {preachingType && <><br /><span className="font-semibold">{lang === 'PT' ? 'Tipo:' : lang === 'ES' ? 'Tipo:' : 'Type:'}</span> {preachingType}</>}
+                        {audience && <><br /><span className="font-semibold">{lang === 'PT' ? 'Público:' : lang === 'ES' ? 'Público:' : 'Audience:'}</span> {audience}</>}
+                        {duration && <><br /><span className="font-semibold">{lang === 'PT' ? 'Duração:' : lang === 'ES' ? 'Duración:' : 'Duration:'}</span> {duration}</>}
+                        {style && <><br /><span className="font-semibold">{lang === 'PT' ? 'Estilo:' : lang === 'ES' ? 'Estilo:' : 'Style:'}</span> {style}</>}
+                        {tone && <><br /><span className="font-semibold">{lang === 'PT' ? 'Tom:' : lang === 'ES' ? 'Tono:' : 'Tone:'}</span> {tone}</>}
+                      </p>
+                    </div>
+                  )}
+
                   <button
                     onClick={() => handleGenerate(topic)}
                     disabled={!topic.trim() || loading}
