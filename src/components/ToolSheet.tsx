@@ -243,6 +243,16 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           queue_id: null,
           language: data.language || generationLang,
         });
+        // Auto-generate cover image in background
+        if (data.material_id && !data.cover_image_url) {
+          supabase.functions.invoke('generate-article-cover', {
+            body: { article_id: data.material_id, title: data.title || '', content: data.content || '' },
+          }).then(({ data: coverData }) => {
+            if (coverData?.cover_image_url) {
+              setBlogArticle(prev => prev ? { ...prev, cover_image_url: coverData.cover_image_url } : prev);
+            }
+          }).catch(e => console.warn('[ToolSheet] Background cover gen failed:', e));
+        }
       } else {
         const { data, error } = await supabase.functions.invoke('ai-tool', {
           body: {

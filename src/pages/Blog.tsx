@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import {
   FileText, Plus, Search, Globe, Pencil, BookOpen, MoreHorizontal,
-  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload, Loader2,
+  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload, Loader2, ImagePlus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
@@ -59,6 +59,7 @@ export default function Blog() {
   const [deleting, setDeleting] = useState(false);
   const [publishing, setPublishing] = useState<string | null>(null);
   const [publishStep, setPublishStep] = useState<'cover' | 'publishing' | null>(null);
+  const [generatingCover, setGeneratingCover] = useState<Set<string>>(new Set());
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['my-blog-articles', user?.id],
@@ -250,6 +251,25 @@ export default function Blog() {
     }
   };
 
+  const handleGenerateCover = async (article: ArticleRow) => {
+    setGeneratingCover(prev => new Set(prev).add(article.id));
+    try {
+      const { data: coverData, error } = await supabase.functions.invoke('generate-article-cover', {
+        body: { article_id: article.id, title: article.title, content: article.content },
+      });
+      if (error) throw error;
+      if (coverData?.cover_image_url) {
+        toast.success('Capa gerada com sucesso!');
+        queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
+      }
+    } catch (e) {
+      console.warn('[Blog] Cover generation failed:', e);
+      toast.error('Falha ao gerar capa.');
+    } finally {
+      setGeneratingCover(prev => { const n = new Set(prev); n.delete(article.id); return n; });
+    }
+  };
+
   const statusLabel = (status: string) => {
     if (status === 'published') return t('blog.status_published');
     if (status === 'archived') return t('blog.status_archived');
@@ -335,12 +355,29 @@ export default function Blog() {
               <Card key={article.id} className="overflow-hidden bg-card border hover:shadow-md transition-shadow flex flex-col">
                 <div className="relative h-44 overflow-hidden bg-muted">
                   {(() => {
+                    const isCoverLoading = generatingCover.has(article.id);
                     const thumb = article.cover_image_url || article.content?.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/)?.[1];
+                    if (isCoverLoading) {
+                      return (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                          <span className="text-xs text-muted-foreground">Gerando capa...</span>
+                        </div>
+                      );
+                    }
                     return thumb ? (
                       <img src={thumb} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                         <BookOpen className="w-10 h-10 text-muted-foreground/30" />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="gap-1.5 text-xs text-muted-foreground hover:text-primary"
+                          onClick={(e) => { e.stopPropagation(); handleGenerateCover(article); }}
+                        >
+                          <ImagePlus className="w-3.5 h-3.5" /> Gerar capa
+                        </Button>
                       </div>
                     );
                   })()}

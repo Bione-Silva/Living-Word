@@ -128,8 +128,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const snippet = (content || "").replace(/[#*_\[\]()]/g, "").slice(0, 200);
-    const prompt = `Beautiful inspirational Christian article cover image about "${title}". ${snippet ? `Context: ${snippet}.` : ""} Soft warm golden light, peaceful atmosphere, photorealistic, high quality, 16:9 aspect ratio, no text or letters on the image.`;
+    const snippet = (content || "").replace(/[#*_\[\]()]/g, "").slice(0, 150);
+    const prompt = `Biblical historical illustration about "${title}", ${snippet ? `context: ${snippet},` : ""} ancient Middle East setting, warm golden tones, oil painting style, cinematic lighting, Jesus or biblical figures, highly detailed, no text or letters, 16:9 aspect ratio`;
 
     console.log(`[generate-article-cover] Generating cover for article ${article_id}`);
 
