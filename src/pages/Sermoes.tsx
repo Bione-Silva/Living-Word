@@ -241,6 +241,8 @@ export default function Sermoes() {
   // History
   const [sessions, setSessions] = useState<SermonSession[]>([]);
   const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
+  const [mobileNotesOpen, setMobileNotesOpen] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<'history' | 'notes'>('history');
 
   // Modals
   const [carouselOpen, setCarouselOpen] = useState(false);
