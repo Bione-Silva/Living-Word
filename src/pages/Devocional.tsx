@@ -836,7 +836,7 @@ export default function Devocional() {
 
                 {/* Gradient overlays for text readability */}
                 <div className="absolute inset-0" style={{
-                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 20%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.55) 85%, rgba(0,0,0,0.75) 100%)',
+                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.2) 65%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0.85) 100%)',
                 }} />
 
                 {/* Top: Brand */}
@@ -849,38 +849,38 @@ export default function Devocional() {
                   </span>
                 </div>
 
-                {/* Center: Title + Category */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+                {/* Center: Title + Category — smaller on mobile to avoid overlap */}
+                <div className="absolute inset-x-0 top-[30%] flex flex-col items-center justify-start px-6 sm:px-8 text-center">
                   <h3
-                    className="font-playfair text-3xl sm:text-4xl font-black leading-tight text-white drop-shadow-lg"
+                    className="font-playfair text-xl sm:text-3xl font-black leading-tight text-white drop-shadow-lg"
                     style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}
                   >
                     {displayTitle}
                   </h3>
                   {displayCategory && (
                     <>
-                      <div className="flex items-center gap-3 mt-4 mb-1">
+                      <div className="flex items-center gap-3 mt-3 mb-1">
                         <span className="h-px w-6" style={{ backgroundColor: 'rgba(255,255,255,0.4)' }} />
                         <span className="text-white/50 text-xs">✦</span>
                         <span className="h-px w-6" style={{ backgroundColor: 'rgba(255,255,255,0.4)' }} />
                       </div>
-                      <span className="text-sm tracking-wider text-white/80 font-medium">{displayCategory}</span>
+                      <span className="text-xs sm:text-sm tracking-wider text-white/80 font-medium">{displayCategory}</span>
                     </>
                   )}
                 </div>
 
-                {/* Bottom: Verse */}
-                <div className="absolute bottom-0 left-0 right-0 p-5 pt-10">
+                {/* Bottom: Verse — truncated on mobile to prevent overlap */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 pt-8">
                   {displayVerseText && (
                     <p
-                      className="text-white/90 text-xs sm:text-sm italic leading-relaxed mb-1"
+                      className="text-white/90 text-[11px] sm:text-sm italic leading-relaxed mb-1 line-clamp-3 sm:line-clamp-none"
                       style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
                     >
                       {displayVerseText}
                     </p>
                   )}
                   {displayVerse && (
-                    <p className="text-white/60 text-[11px] font-medium">&mdash; {displayVerse}</p>
+                    <p className="text-white/60 text-[10px] sm:text-[11px] font-medium">&mdash; {displayVerse}</p>
                   )}
                 </div>
               </div>
@@ -894,15 +894,30 @@ export default function Devocional() {
                         pixelRatio: 3,
                         cacheBust: true,
                       });
-                      const a = document.createElement('a');
-                      a.href = dataUrl;
-                      a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
+                      const blob = await (await fetch(dataUrl)).blob();
+                      const file = new File([blob], `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`, { type: 'image/png' });
+
+                      // Use Web Share API (saves to gallery on mobile)
+                      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                        await navigator.share({
+                          title: displayTitle,
+                          text: `${displayTitle}\n📖 ${displayVerse}`,
+                          files: [file],
+                        });
+                      } else {
+                        // Desktop fallback: normal download
+                        const a = document.createElement('a');
+                        a.href = dataUrl;
+                        a.download = file.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                      }
                     }
-                  } catch {
-                    window.open(displayCover!, '_blank');
+                  } catch (err: any) {
+                    if (err?.name !== 'AbortError') {
+                      window.open(displayCover!, '_blank');
+                    }
                   }
                 }}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
