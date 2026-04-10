@@ -15,6 +15,7 @@ import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
+import { parseBibleUri, type ParsedBibleRef } from '@/lib/bible-ref-parser';
 
 type L = 'PT' | 'EN' | 'ES';
 
