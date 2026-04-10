@@ -204,6 +204,24 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     triggerSave();
   };
 
+  const insertChecklist = () => {
+    editorRef.current?.focus();
+    const id = `chk-${Date.now()}`;
+    const html = `<div class="checklist-item" style="display:flex;align-items:center;gap:6px;margin:4px 0;"><input type="checkbox" id="${id}" style="width:16px;height:16px;accent-color:#D4A853;cursor:pointer;" /><label for="${id}" contenteditable="true" style="flex:1;outline:none;"></label></div>`;
+    execCmd('insertHTML', html);
+    // Focus the label
+    const label = editorRef.current?.querySelector(`label[for="${id}"]`) as HTMLElement | null;
+    if (label) {
+      const range = document.createRange();
+      range.selectNodeContents(label);
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
+    triggerSave();
+  };
+
   // Current block style label
   const getCurrentBlockLabel = (): string => {
     const sel = window.getSelection();
