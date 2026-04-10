@@ -137,11 +137,12 @@ export function BibleReadingView({
       let res = await fetchWithRetry(`${baseUrl}?translation=${apiTranslation}`);
       let data = res ? await res.json() : null;
 
-      // If API returned error/empty, try fallback translation
-      if ((!data || (!data.verses && !data.text)) && apiTranslation !== 'web') {
-        const fbBook = getApiBookName(bookId, 'web');
+      // If API returned error/empty, try language-appropriate fallback
+      const fb = fallbackTranslation[lang] || 'almeida';
+      if ((!data || (!data.verses && !data.text)) && apiTranslation !== fb) {
+        const fbBook = getApiBookName(bookId, fb === 'almeida' ? 'ara' : 'web');
         const fbRef = `${fbBook} ${chapter}`;
-        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=web`);
+        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
         data = res ? await res.json() : null;
       }
 
