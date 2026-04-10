@@ -3,11 +3,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen } from 'lucide-react';
-import { getBookName, getApiBookName, getApiCodeForVersion, getTranslationLabelByCode, translationOptions, type L } from '@/lib/bible-data';
+import { getBookName, getApiBookName, getApiCodeForVersion, getTranslationLabelByCode, getVersionsForUserLanguage, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -43,6 +43,9 @@ const retryLabels: Record<L, { retrying: string; failed: string; retry: string }
 };
 
 const fallbackTranslation: Record<string, string> = {
+  PT: 'almeida', EN: 'web', ES: 'almeida',
+};
+const fallbackBookLang: Record<string, string> = {
   PT: 'almeida', EN: 'web', ES: 'almeida',
 };
 
@@ -121,7 +124,7 @@ export function BibleReadingView({
   const name = getBookName(bookId, lang);
   const prev: Record<L, string> = { PT: 'Anterior', EN: 'Previous', ES: 'Anterior' };
   const next: Record<L, string> = { PT: 'Próximo', EN: 'Next', ES: 'Siguiente' };
-  const options = translationOptions[lang];
+  const { primary: primaryVersions, secondary: secondaryVersions } = getVersionsForUserLanguage(lang);
 
   const fetchChapter = useCallback(async (isRetry = false) => {
     if (isRetry) setRetrying(true); else setLoading(true);
@@ -134,11 +137,12 @@ export function BibleReadingView({
       let res = await fetchWithRetry(`${baseUrl}?translation=${apiTranslation}`);
       let data = res ? await res.json() : null;
 
-      // If API returned error/empty, try fallback translation
-      if ((!data || (!data.verses && !data.text)) && apiTranslation !== 'web') {
-        const fbBook = getApiBookName(bookId, 'web');
+      // If API returned error/empty, try language-appropriate fallback
+      const fb = fallbackTranslation[lang] || 'almeida';
+      if ((!data || (!data.verses && !data.text)) && apiTranslation !== fb) {
+        const fbBook = getApiBookName(bookId, fb === 'almeida' ? 'ara' : 'web');
         const fbRef = `${fbBook} ${chapter}`;
-        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=web`);
+        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
         data = res ? await res.json() : null;
       }
 
@@ -265,9 +269,24 @@ export function BibleReadingView({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {options.map(o => (
-                  <SelectItem key={o.code} value={o.code}>{o.label}</SelectItem>
-                ))}
+                <SelectGroup>
+                  <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
+                    {lang === 'PT' ? 'Recomendadas' : lang === 'ES' ? 'Recomendadas' : 'Recommended'}
+                  </SelectLabel>
+                  {primaryVersions.filter(v => v.isAvailable).map(v => (
+                    <SelectItem key={v.code} value={v.code} className="text-xs">{v.shortLabel} — {v.name}</SelectItem>
+                  ))}
+                </SelectGroup>
+                {secondaryVersions.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
+                      {lang === 'PT' ? 'Outras' : lang === 'ES' ? 'Otras' : 'Others'}
+                    </SelectLabel>
+                    {secondaryVersions.filter(v => v.isAvailable).map(v => (
+                      <SelectItem key={v.code} value={v.code} className="text-xs">{v.shortLabel} — {v.name} ({v.language})</SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
               </SelectContent>
             </Select>
           </div>

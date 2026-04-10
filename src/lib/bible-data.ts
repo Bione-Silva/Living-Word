@@ -117,6 +117,19 @@ export function getVersionsByLanguage(): Record<string, BibleVersion[]> {
   return groups;
 }
 
+/** Get versions filtered for the user's language (prioritise same-language, include others as secondary) */
+export function getVersionsForUserLanguage(userLang: L): { primary: BibleVersion[]; secondary: BibleVersion[] } {
+  const primary = bibleVersions.filter(v => v.language === userLang);
+  const secondary = bibleVersions.filter(v => v.language !== userLang);
+  // If user lang has no versions (e.g. ES), show PT as primary
+  if (primary.length === 0) {
+    const ptVersions = bibleVersions.filter(v => v.language === 'PT');
+    const rest = bibleVersions.filter(v => v.language !== 'PT');
+    return { primary: ptVersions, secondary: rest };
+  }
+  return { primary, secondary };
+}
+
 /** Get a BibleVersion by code */
 export function getBibleVersion(code: string): BibleVersion | undefined {
   return bibleVersions.find(v => v.code === code);

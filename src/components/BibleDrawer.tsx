@@ -7,7 +7,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, getVersionsByLanguage, getBibleVersion, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, getVersionsByLanguage, getVersionsForUserLanguage, getBibleVersion, type L } from '@/lib/bible-data';
 
 interface Props {
   open: boolean;
@@ -58,9 +58,20 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
       const apiBook = getApiBookName(book, translation);
       const ref = `${apiBook} ${chapter}`;
       const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${apiTranslation}`);
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      if (data.verses) {
+      let data = res.ok ? await res.json() : null;
+      
+      // If failed, fallback to language-appropriate version
+      if ((!data || (!data.verses && !data.text))) {
+        const fb = lang === 'EN' ? 'web' : 'almeida';
+        if (apiTranslation !== fb) {
+          const fbBook = getApiBookName(book, fb === 'almeida' ? 'ara' : 'web');
+          const fbRef = `${fbBook} ${chapter}`;
+          const fbRes = await fetch(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
+          data = fbRes.ok ? await fbRes.json() : null;
+        }
+      }
+      
+      if (data?.verses) {
         setVerses(data.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
       }
     } catch {
@@ -68,7 +79,7 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     } finally {
       setLoading(false);
     }
-  }, [book, chapter, translation]);
+  }, [book, chapter, translation, lang]);
 
   useEffect(() => {
     if (open) fetchChapter();
@@ -103,14 +114,13 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     return verseNum >= highlightRange.start && verseNum <= end;
   };
 
-  const versionGroups = useMemo(() => getVersionsByLanguage(), []);
+  const { primary: primaryVersions, secondary: secondaryVersions } = useMemo(() => getVersionsForUserLanguage(lang), [lang]);
   const currentVersion = getBibleVersion(translation);
   const currentTranslationLabel = currentVersion ? `${currentVersion.name} (${currentVersion.shortLabel})` : translation;
 
   const langGroupLabels: Record<string, Record<L, string>> = {
-    'Português': { PT: 'Português', EN: 'Portuguese', ES: 'Portugués' },
-    'English': { PT: 'Inglês', EN: 'English', ES: 'Inglés' },
-    'Español': { PT: 'Espanhol', EN: 'Spanish', ES: 'Español' },
+    'primary': { PT: 'Recomendadas', EN: 'Recommended', ES: 'Recomendadas' },
+    'secondary': { PT: 'Outras versões', EN: 'Other versions', ES: 'Otras versiones' },
   };
 
   const renderVersionSelector = (compact = false) => (
@@ -120,12 +130,12 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
         <SelectValue placeholder={currentVersion?.shortLabel || translation} />
       </SelectTrigger>
       <SelectContent className="max-h-[340px]">
-        {Object.entries(versionGroups).map(([groupName, versions]) => (
-          <SelectGroup key={groupName}>
+        {primaryVersions.length > 0 && (
+          <SelectGroup>
             <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1.5">
-              {langGroupLabels[groupName]?.[lang] || groupName}
+              {langGroupLabels['primary'][lang]}
             </SelectLabel>
-            {versions.filter(v => v.isAvailable).map(v => (
+            {primaryVersions.filter(v => v.isAvailable).map(v => (
               <SelectItem key={v.code} value={v.code} className="text-xs">
                 <span className="flex items-center gap-2">
                   <span className="font-semibold text-foreground">{v.shortLabel}</span>
@@ -134,7 +144,22 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
               </SelectItem>
             ))}
           </SelectGroup>
-        ))}
+        )}
+        {secondaryVersions.length > 0 && (
+          <SelectGroup>
+            <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1.5">
+              {langGroupLabels['secondary'][lang]}
+            </SelectLabel>
+            {secondaryVersions.filter(v => v.isAvailable).map(v => (
+              <SelectItem key={v.code} value={v.code} className="text-xs">
+                <span className="flex items-center gap-2">
+                  <span className="font-semibold text-foreground">{v.shortLabel}</span>
+                  <span className="text-muted-foreground text-[10px]">{v.name} ({v.language})</span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        )}
       </SelectContent>
     </Select>
   );
