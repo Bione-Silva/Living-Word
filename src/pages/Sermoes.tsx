@@ -524,9 +524,16 @@ export default function Sermoes() {
             <p className="text-[10px] text-muted-foreground">{labels.breadcrumb[lang]} / <span className="font-medium text-foreground">{labels.title[lang]}</span></p>
           </div>
           {isMobile && (
-            <button onClick={() => setMobileHistoryOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
-              <History className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {showResult && activeSessionId && (
+                <button onClick={() => setMobileNotesOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <PenLine className="h-5 w-5" />
+                </button>
+              )}
+              <button onClick={() => setMobileHistoryOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <History className="h-5 w-5" />
+              </button>
+            </div>
           )}
         </div>
 
