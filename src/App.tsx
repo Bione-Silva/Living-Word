@@ -93,11 +93,9 @@ function SyncLanguageWithProfile() {
   return null;
 }
 
-/** Wraps children with a key that changes on language switch, forcing full remount */
-function LangKeyedApp({ children }: { children: React.ReactNode }) {
-  const { langVersion } = useLanguage();
-  return <React.Fragment key={langVersion}>{children}</React.Fragment>;
-}
+/* LangKeyedApp removed — components react to lang changes via useLanguage() context.
+   A full remount was destructive: it wiped form inputs, open modals, scroll position,
+   sermon content, and any local state the user was working with. */
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -108,7 +106,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <LangKeyedApp>
+            <>
               <Routes>
                 {/* Subdomain detection: pastorjoao.livingwordgo.com → /blog/pastorjoao */}
                 <Route path="/" element={<><SubdomainRedirect /><Landing /></>} />
@@ -153,7 +151,7 @@ const App = () => (
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </LangKeyedApp>
+            </>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
