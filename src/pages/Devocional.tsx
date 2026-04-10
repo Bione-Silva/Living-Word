@@ -1144,25 +1144,6 @@ export default function Devocional() {
         </div>
       )}
 
-      {/* AI-powered Reflection Analysis */}
-      {!isViewingPast && data && (
-        <div className="mt-4 rounded-2xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
-          <div className="flex items-center gap-2.5 mb-3">
-            <MessageCircle className="h-4 w-4" style={{ color: colors.gold }} />
-            <p className="text-sm font-bold" style={{ color: colors.text }}>
-              {lang === 'PT' ? '✍️ Minha Reflexão' : lang === 'ES' ? '✍️ Mi Reflexión' : '✍️ My Reflection'}
-            </p>
-          </div>
-          <ReflectionCapture
-            devotionalId={data.id}
-            theme={data.category}
-            onSaved={(sentiment) => {
-              trackAction('complete_reflection', { reflectionSentiment: sentiment });
-            }}
-          />
-        </div>
-      )}
-
       {/* Mobile: reading history */}
       {isMobile && user && (
         <div className="mt-6 rounded-2xl border overflow-hidden" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
