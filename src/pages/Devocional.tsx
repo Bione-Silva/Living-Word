@@ -17,6 +17,7 @@ import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
 import { useEngagementTracker } from '@/components/engagement/EngagementTracker';
 import { ReflectionCapture } from '@/components/engagement/ReflectionCapture';
 import { captureNodeAsPng } from '@/components/social-studio/export-utils';
+import { compressToJpeg } from '@/components/social-studio/export-utils';
 import { DevotionalShareArt } from '@/components/DevotionalShareArt';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 
@@ -521,7 +522,7 @@ export default function Devocional() {
     }
 
     const dataUrl = await captureNodeAsPng(shareArtRef.current);
-    const blob = await (await fetch(dataUrl)).blob();
+    const blob = await compressToJpeg(dataUrl, 250_000);
     const safeTitle = displayTitle
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -530,8 +531,8 @@ export default function Devocional() {
       .slice(0, 48)
       .toLowerCase();
 
-    return new File([blob], `living-word-${displayDate}-${safeTitle || 'devocional'}.png`, {
-      type: 'image/png',
+    return new File([blob], `living-word-${displayDate}-${safeTitle || 'devocional'}.jpg`, {
+      type: 'image/jpeg',
     });
   }, [displayDate, displayTitle]);
 
