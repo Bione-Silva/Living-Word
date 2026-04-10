@@ -19,7 +19,7 @@ import {
   SheetDescription,
 } from '@/components/ui/sheet';
 import {
-  LayoutDashboard, Wand2, BookOpen, Library, CalendarDays,
+  LayoutDashboard, Wand2, BookOpen, Library, CalendarDays, Mic,
   Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain,
   Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon, Type,
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
@@ -62,6 +62,7 @@ const sidebarGroups: SidebarToolGroup[] = [
     label: { PT: 'Criar', EN: 'Create', ES: 'Crear' },
     icon: Sparkles,
     tools: [
+      { id: 'sermon-generator', icon: Mic, label: { PT: 'Sermões', EN: 'Sermons', ES: 'Sermones' } },
       { id: 'studio', icon: Wand2, label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' } },
       { id: 'biblical-study', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' } },
       { id: 'free-article', icon: PenTool, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' } },
@@ -177,6 +178,11 @@ export default function AppLayout() {
         toolId: tool.id,
         requiredPlan: getMinPlanForTool(tool.id),
       });
+      return;
+    }
+    if (tool.id === 'sermon-generator') {
+      navigate('/sermoes');
+      setMobileToolsOpen(false);
       return;
     }
     if (tool.id === 'biblical-study') {
