@@ -343,6 +343,12 @@ export default function Devocional() {
   const shareArtRef = useRef<HTMLDivElement>(null);
   const [preferredBibleVersion, setPreferredBibleVersion] = useState('NVI');
 
+  // Register global callback for BibleRichText links
+  useEffect(() => {
+    (window as any).__openBibleDrawer = () => setBibleDrawerOpen(true);
+    return () => { delete (window as any).__openBibleDrawer; };
+  }, []);
+
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
