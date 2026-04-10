@@ -235,6 +235,7 @@ export default function Sermoes() {
   const [sermonTopic, setSermonTopic] = useState('');
   const [bibleDrawerOpen, setBibleDrawerOpen] = useState(false);
   const [bibleRef, setBibleRef] = useState<ParsedBibleRef | null>(null);
+  const [bibleTranslationCode, setBibleTranslationCode] = useState<string | undefined>(undefined);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
