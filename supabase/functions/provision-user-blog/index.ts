@@ -23,7 +23,6 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY');
 
     // Auth client to get user
     const supabaseAuth = createClient(supabaseUrl, anonKey, {
@@ -71,7 +70,7 @@ Deno.serve(async (req) => {
       })
       .eq("id", user.id);
 
-    // 2. Generate 3 devotional articles server-side
+    // 2. Generate 3 devotional articles using the full generate-blog-article function
     const articleTopics: Record<string, { passage: string; title: string }[]> = {
       PT: [
         { passage: "Salmo 23", title: "O Senhor é meu pastor: encontrando paz em tempos difíceis" },
@@ -93,70 +92,58 @@ Deno.serve(async (req) => {
     const topics = articleTopics[language] || articleTopics["PT"];
     const results: { title: string; material_id: string }[] = [];
 
+    // Call generate-blog-article for each topic SEQUENTIALLY to avoid rate limits
     for (const topic of topics) {
       try {
-        // Generate article content via AI
-        let articleContent = "";
-        if (geminiApiKey) {
-          const aiResp = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${geminiApiKey}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                model: "gemini-2.5-flash",
-                messages: [
-                  {
-                    role: "system",
-                    content: `You are a pastoral writer. Write a devotional blog article in ${language === "PT" ? "Portuguese" : language === "ES" ? "Spanish" : "English"}. Tone: ${tone}. Doctrine: ${doctrine_line}. Format in markdown with a clear H1 title. About 600 words.`,
-                  },
-                  {
-                    role: "user",
-                    content: `Write a devotional article about ${topic.passage} titled "${topic.title}"`,
-                  },
-                ],
-              }),
-            }
-          );
-          if (aiResp.ok) {
-            const aiData = await aiResp.json();
-            articleContent = aiData.choices?.[0]?.message?.content || "";
-          }
-        }
+        console.log(`[Provision] Generating full article: "${topic.title}"...`);
 
-        if (!articleContent) {
-          articleContent = `# ${topic.title}\n\n> ${topic.passage}\n\nContent coming soon...`;
-        }
-
-        // Insert material
-        const { data: material, error: matError } = await supabaseAdmin
-          .from("materials")
-          .insert({
-            user_id: user.id,
-            title: topic.title,
-            content: articleContent,
-            type: "blog_article",
+        const articleResp = await fetch(`${supabaseUrl}/functions/v1/generate-blog-article`, {
+          method: "POST",
+          headers: {
+            Authorization: authHeader,
+            "Content-Type": "application/json",
+            apikey: anonKey,
+          },
+          body: JSON.stringify({
             passage: topic.passage,
+            title: topic.title,
             language,
-          })
-          .select("id")
-          .single();
+            image_style: "oil",
+          }),
+        });
 
-        if (material && !matError) {
-          // Insert to editorial queue as published
-          await supabaseAdmin.from("editorial_queue").insert({
-            user_id: user.id,
-            material_id: material.id,
-            status: "published",
-            published_at: new Date().toISOString(),
-          });
-          results.push({ title: topic.title, material_id: material.id });
+        if (!articleResp.ok) {
+          const errText = await articleResp.text().catch(() => "");
+          console.error(`[Provision] Article generation failed (${articleResp.status}): ${errText}`);
+          continue;
         }
+
+        const articleData = await articleResp.json();
+
+        if (!articleData?.success || !articleData?.material_id) {
+          console.error(`[Provision] Article not successful:`, articleData?.error);
+          continue;
+        }
+
+        // Publish the article to editorial queue
+        await supabaseAdmin.from("editorial_queue").insert({
+          user_id: user.id,
+          material_id: articleData.material_id,
+          status: "published",
+          published_at: new Date().toISOString(),
+        });
+
+        results.push({
+          title: articleData.title || topic.title,
+          material_id: articleData.material_id,
+        });
+
+        console.log(`[Provision] Article created: "${topic.title}" with ${articleData.article_images?.length || 0} images`);
+
+        // Delay between articles to avoid rate limiting
+        await new Promise(r => setTimeout(r, 3000));
       } catch (e) {
-        console.error("Article generation failed:", e);
+        console.error("[Provision] Article generation failed:", e);
       }
     }
 
