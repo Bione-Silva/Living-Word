@@ -7,6 +7,23 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
 
+/** Map version codes to their native language */
+const VERSION_LANGUAGE: Record<string, string> = {
+  ARA: 'PT', ara: 'PT', almeida: 'PT',
+  KJV: 'EN', kjv: 'EN',
+  WEB: 'EN', web: 'EN',
+  ASV: 'EN', asv: 'EN',
+  BBE: 'EN', bbe: 'EN',
+  OEB: 'EN', oeb: 'EN',
+}
+
+/** Default version per language */
+const DEFAULT_VERSION: Record<string, string> = {
+  PT: 'ARA',
+  EN: 'KJV',
+  ES: 'ARA', // closest available
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -52,17 +69,28 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Use AI to fetch the exact verse text — the model has biblical text memorized
-    // and we instruct it to return ONLY the canonical text, no commentary
-    const langLabel = language === 'EN' ? 'English' : language === 'ES' ? 'Spanish' : 'Portuguese'
+    // Determine effective version: if version language doesn't match user language, use default for user language
+    const versionLang = VERSION_LANGUAGE[version] || 'EN'
+    const userLang = (language || 'PT').toUpperCase()
+    let effectiveVersion = version.toUpperCase()
+    let versionMismatch = false
+
+    if (versionLang !== userLang) {
+      effectiveVersion = DEFAULT_VERSION[userLang] || 'ARA'
+      versionMismatch = true
+    }
+
+    const langLabel = userLang === 'EN' ? 'English' : userLang === 'ES' ? 'Spanish' : 'Portuguese'
+
     const systemPrompt = `You are a precise Bible reference tool. Your ONLY job is to return the exact text of a Bible verse.
 Rules:
-- Return ONLY valid JSON with these fields: "text" (the verse text), "book" (the canonical reference)
-- Use the ${version} version in ${langLabel}
+- Return ONLY valid JSON with these fields: "text" (the verse text), "book" (the canonical reference in ${langLabel})
+- Use the ${effectiveVersion} version/translation
+- The text MUST be in ${langLabel}
 - If the passage spans multiple verses, concatenate them with spaces
 - Do NOT add commentary, devotional thoughts, or explanations
 - Do NOT hallucinate — if you are unsure of the exact wording, return your best known canonical text
-- Return the verse text EXACTLY as it appears in the ${version} translation`
+- Return the verse text EXACTLY as it appears in the ${effectiveVersion} translation`
 
     const aiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
@@ -122,6 +150,8 @@ Rules:
         text: parsed.text,
         book: parsed.book,
         topic_image: topicImage,
+        effective_version: effectiveVersion,
+        version_mismatch: versionMismatch,
       }),
       {
         status: 200,
