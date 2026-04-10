@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { sermon, language = "PT" } = await req.json();
+    const { sermon, language = "PT", mode = "carousel" } = await req.json();
     if (!sermon) {
       return new Response(JSON.stringify({ error: "Missing sermon content" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -38,7 +38,34 @@ Deno.serve(async (req) => {
 
     const langLabel = language === "EN" ? "English" : language === "ES" ? "Spanish" : "Portuguese";
 
-    const systemPrompt = `You are a carousel slide designer for church sermons. Given a sermon in Markdown, extract and summarize into exactly 6-8 slides for a social media carousel. Reply ONLY with valid JSON.
+    let systemPrompt: string;
+
+    if (mode === "slides") {
+      systemPrompt = `You are a presentation slide designer for church sermons. Given a sermon in Markdown, create a presentation deck of 8-10 slides optimized for projection on screens/TVs (16:9 format). Reply ONLY with valid JSON.
+
+Output format:
+{
+  "slides": [
+    { "type": "cover", "title": "Sermon Title", "body": "Base text / theme", "reference": "Main verse" },
+    { "type": "verse", "title": "Key Verse", "body": "Full verse text quoted", "reference": "Book Chapter:Verse" },
+    { "type": "intro", "title": "Introduction", "body": "Opening hook — one key sentence" },
+    { "type": "point", "title": "Point 1 Title", "body": "Key phrase or bullet (max 20 words)" },
+    { "type": "point", "title": "Point 2 Title", "body": "Key phrase or bullet (max 20 words)" },
+    { "type": "point", "title": "Point 3 Title", "body": "Key phrase or bullet (max 20 words)" },
+    { "type": "application", "title": "Practical Applications", "body": "2-3 short action items" },
+    { "type": "conclusion", "title": "Conclusion", "body": "Closing thought" },
+    { "type": "prayer", "title": "Final Prayer / Appeal", "body": "Closing call to action or prayer" }
+  ]
+}
+
+Rules:
+- All text in ${langLabel}
+- Slides must be projectable: VERY concise text, max 20 words per body
+- Use impactful titles that work on a big screen
+- Include original sermon Bible references
+- Make it presentation-ready, not a text dump`;
+    } else {
+      systemPrompt = `You are a carousel slide designer for church sermons. Given a sermon in Markdown, extract and summarize into exactly 6-8 slides for a social media carousel. Reply ONLY with valid JSON.
 
 Output format:
 {
@@ -58,6 +85,7 @@ Rules:
 - Keep slide text concise (max 40 words per body)
 - Use the original sermon references
 - Make titles impactful and memorable`;
+    }
 
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -95,16 +123,14 @@ Rules:
 
     const aiData = await aiRes.json();
     let content = aiData.choices?.[0]?.message?.content || "";
-    
-    // Strip markdown code fences if present
     content = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
 
     let parsed;
     try {
       parsed = JSON.parse(content);
     } catch {
-      console.error("Failed to parse carousel JSON:", content);
-      return new Response(JSON.stringify({ error: "Failed to parse carousel data" }), {
+      console.error("Failed to parse JSON:", content);
+      return new Response(JSON.stringify({ error: "Failed to parse data" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
