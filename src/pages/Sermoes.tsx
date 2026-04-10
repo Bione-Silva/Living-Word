@@ -519,6 +519,48 @@ export default function Sermoes() {
           </button>
         </div>
       </aside>
+
+      {/* ─── Mobile history sheet ─── */}
+      <Sheet open={mobileHistoryOpen} onOpenChange={setMobileHistoryOpen}>
+        <SheetContent side="bottom" className="theme-app max-h-[70vh] rounded-t-2xl">
+          <SheetHeader className="pb-2">
+            <SheetTitle className="text-sm font-bold">{labels.history[lang]}</SheetTitle>
+            <SheetDescription className="sr-only">{labels.history[lang]}</SheetDescription>
+          </SheetHeader>
+
+          <div className="space-y-1 mt-2 overflow-y-auto max-h-[50vh]">
+            {sessions.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-6">
+                {lang === 'PT' ? 'Nenhum sermão criado ainda.' : lang === 'ES' ? 'Ningún sermón creado aún.' : 'No sermons created yet.'}
+              </p>
+            )}
+            {sessions.map((s) => (
+              <div key={s.id} className="flex items-start gap-2 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-foreground line-clamp-2 leading-snug">{s.title}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.date}</p>
+                </div>
+                <button
+                  onClick={() => handleDeleteSession(s.id)}
+                  className="shrink-0 text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-3 pt-2 border-t border-border">
+            <button
+              onClick={() => { handleNewChat(); setMobileHistoryOpen(false); }}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {labels.newChat[lang]}
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
