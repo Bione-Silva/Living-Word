@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen } from 'lucide-react';
-import { getBookName, getApiBookName, getApiCodeForVersion, getTranslationLabelByCode, translationOptions, type L } from '@/lib/bible-data';
+import { getBookName, getApiBookName, getApiCodeForVersion, getTranslationLabelByCode, getVersionsForUserLanguage, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
 import {
