@@ -173,7 +173,7 @@ export default function BomAmigo() {
   const isEmpty = messages.length === 0 && !loading;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] pb-16 md:pb-0 max-w-3xl mx-auto">
+    <div className="flex flex-col h-[calc(100vh-4rem)] pb-28 md:pb-0 max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border shrink-0">
         <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -202,14 +202,14 @@ export default function BomAmigo() {
             </p>
 
             {/* Emotion chips grid */}
-            <div className="flex flex-wrap justify-center gap-2 mt-6 max-w-md">
+            <div className="grid grid-cols-2 gap-2 mt-6 max-w-xs mx-auto">
               {emotionChips.map((chip) => (
                 <button
                   key={chip.EN}
                   onClick={() => sendMessage(chip[lang])}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-border bg-card text-sm text-foreground hover:border-primary hover:bg-primary/10 hover:shadow-sm active:scale-95 transition-all"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-card text-xs text-foreground hover:border-primary hover:bg-primary/10 hover:shadow-sm active:scale-95 transition-all"
                 >
-                  <span className="text-base">{chip.emoji}</span>
+                  <span className="text-sm">{chip.emoji}</span>
                   {chip[lang]}
                 </button>
               ))}
