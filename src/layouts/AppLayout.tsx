@@ -180,6 +180,11 @@ export default function AppLayout() {
       });
       return;
     }
+    if (tool.id === 'sermon-generator') {
+      navigate('/sermoes');
+      setMobileToolsOpen(false);
+      return;
+    }
     if (tool.id === 'biblical-study') {
       navigate('/estudos/novo');
       setMobileToolsOpen(false);
