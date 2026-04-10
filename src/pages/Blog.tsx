@@ -468,6 +468,16 @@ export default function Blog() {
                         }}>
                           {t('blog.share_whatsapp')}
                         </DropdownMenuItem>
+                        <DropdownMenuItem
+                          disabled={generatingImages.has(article.id)}
+                          onClick={() => handleGenerateImages(article)}
+                        >
+                          {generatingImages.has(article.id) ? (
+                            <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> Gerando imagens...</>
+                          ) : (
+                            <><ImagePlus className="w-3.5 h-3.5 mr-2" /> Gerar imagens</>
+                          )}
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleToggleArchive(article)}>
                           {isArchived ? (
