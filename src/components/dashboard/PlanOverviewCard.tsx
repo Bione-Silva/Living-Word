@@ -7,8 +7,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import {
   PLAN_CREDITS,
   PLAN_DISPLAY_NAMES,
-  TOOL_CREDITS,
-  PLAN_GENERATION_POTENTIAL,
   type PlanSlug,
 } from '@/lib/plans';
 import {
