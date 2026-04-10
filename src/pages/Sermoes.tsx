@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -13,6 +13,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
+import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -108,6 +109,7 @@ const labels = {
   copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
   sendWpp: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   carousel: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
+  slides: { PT: 'Slides', EN: 'Slides', ES: 'Diapositivas' },
   pdf: { PT: 'PDF', EN: 'PDF', ES: 'PDF' },
   regenerate: { PT: 'Regenerar', EN: 'Regenerate', ES: 'Regenerar' },
   save: { PT: 'Salvar', EN: 'Save', ES: 'Guardar' },
@@ -210,6 +212,7 @@ export default function Sermoes() {
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
   const [carouselOpen, setCarouselOpen] = useState(false);
+  const [slidesOpen, setSlidesOpen] = useState(false);
   const [lastSermonContent, setLastSermonContent] = useState('');
   const [lastSermonTitle, setLastSermonTitle] = useState('');
   const [lastUserPrompt, setLastUserPrompt] = useState('');
@@ -320,13 +323,22 @@ export default function Sermoes() {
     if (!lastSermonContent) return;
     const html2pdf = (await import('html2pdf.js')).default;
     const el = document.createElement('div');
-    el.innerHTML = `<div style="font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#333;">
+    el.innerHTML = `<div style="font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#333;position:relative;min-height:100%;">
       <h1 style="font-size:24px;margin-bottom:8px;">${lastSermonTitle}</h1>
       <div style="font-size:14px;line-height:1.8;">${lastSermonContent.replace(/\n/g, '<br/>')}</div>
-      <div style="margin-top:32px;text-align:center;font-size:10px;color:#999;">Living Word • ${new Date().toLocaleDateString()}</div>
+      <div style="margin-top:40px;padding-top:16px;border-top:1px solid #e5e5e5;text-align:center;">
+        <span style="font-size:11px;color:#999;letter-spacing:1px;font-weight:600;">Living Word</span>
+        <span style="font-size:10px;color:#bbb;margin-left:8px;">• ${new Date().toLocaleDateString()}</span>
+      </div>
     </div>`;
     document.body.appendChild(el);
-    await html2pdf().from(el).set({ margin: [10, 10], filename: `${lastSermonTitle.slice(0, 40)}.pdf`, html2canvas: { scale: 2 }, jsPDF: { format: 'a4' } }).save();
+    await html2pdf().from(el).set({
+      margin: [10, 10],
+      filename: `${lastSermonTitle.slice(0, 40)}.pdf`,
+      html2canvas: { scale: 2 },
+      jsPDF: { format: 'a4' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+    }).save();
     document.body.removeChild(el);
     toast.success('PDF!');
   };
@@ -412,6 +424,9 @@ export default function Sermoes() {
         </button>
         <button onClick={() => setCarouselOpen(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
           <Image className="h-3.5 w-3.5" /> {labels.carousel[lang]}
+        </button>
+        <button onClick={() => setSlidesOpen(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+          <Presentation className="h-3.5 w-3.5" /> {labels.slides[lang]}
         </button>
         <button onClick={handlePdf} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
           <FileText className="h-3.5 w-3.5" /> {labels.pdf[lang]}
@@ -621,6 +636,14 @@ export default function Sermoes() {
       <SermonCarouselModal
         open={carouselOpen}
         onOpenChange={setCarouselOpen}
+        sermonMarkdown={lastSermonContent}
+        sermonTitle={lastSermonTitle}
+      />
+
+      {/* ─── Slides modal ─── */}
+      <SermonSlidesModal
+        open={slidesOpen}
+        onOpenChange={setSlidesOpen}
         sermonMarkdown={lastSermonContent}
         sermonTitle={lastSermonTitle}
       />
