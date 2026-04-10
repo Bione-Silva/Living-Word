@@ -47,6 +47,11 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
+    let body: { language?: string } = {}
+    try { body = await req.json() } catch (_) { /* empty body ok */ }
+    const userLang = body.language || 'PT'
+    const langLabel = userLang === 'ES' ? 'Spanish' : userLang === 'EN' ? 'English' : 'Portuguese'
+
     const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
       global: { headers: { Authorization: authHeader } },
     })
@@ -76,25 +81,38 @@ Deno.serve(async (req) => {
     const topThemes = sortedThemes.slice(0, 5).map(([t, s]) => ({ theme: t, score: Math.round(s * 10) / 10 }))
     const recentSentiments = (engagements || []).slice(0, 5).map(e => e.reflection_sentiment).filter(Boolean)
 
+    const defaultReasoning = userLang === 'ES' ? 'Basado en tu historial de lectura' : userLang === 'EN' ? 'Based on your reading history' : 'Baseado em seu histórico de leitura'
+    const defaultTheme = userLang === 'ES' ? 'Esperanza' : userLang === 'EN' ? 'Hope' : 'Esperança'
+
     const apiKey = getGeminiKey()
-    let nextTheme = topThemes[0]?.theme || 'esperança'
-    let reasoning = 'Baseado em seu histórico de leitura'
+    let nextTheme = topThemes[0]?.theme || defaultTheme
+    let reasoning = defaultReasoning
+    let translatedTopThemes = topThemes
 
     if (apiKey && topThemes.length > 0) {
       const prompt = `You recommend the next devotional theme based on user engagement.
 User top themes: ${JSON.stringify(topThemes)}
 Recent sentiments: ${JSON.stringify(recentSentiments)}
 
-Respond ONLY with valid JSON: {"nextTheme": "theme name", "reasoning": "one sentence explanation in Portuguese"}`
+IMPORTANT: ALL text in the response MUST be in ${langLabel}. Translate theme names to ${langLabel}.
+
+Respond ONLY with valid JSON:
+{"nextTheme": "theme name in ${langLabel}", "reasoning": "one sentence explanation in ${langLabel}", "translatedThemes": ["theme1 in ${langLabel}", "theme2 in ${langLabel}", ...]}`
 
       const rawText = await callGemini(apiKey, prompt)
       if (rawText) {
-        const jsonMatch = rawText.match(/\{[^}]+\}/)
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/)
         if (jsonMatch) {
           try {
             const result = JSON.parse(jsonMatch[0])
             nextTheme = result.nextTheme || nextTheme
             reasoning = result.reasoning || reasoning
+            if (Array.isArray(result.translatedThemes) && result.translatedThemes.length > 0) {
+              translatedTopThemes = topThemes.map((t, i) => ({
+                ...t,
+                theme: result.translatedThemes[i] || t.theme,
+              }))
+            }
           } catch (_) { /* use defaults */ }
         }
       }
@@ -148,7 +166,7 @@ Respond ONLY with valid JSON: {"nextTheme": "theme name", "reasoning": "one sent
       theme: nextTheme,
       reasoning,
       seriesInfo,
-      topThemes,
+      topThemes: translatedTopThemes,
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   } catch (e) {
     console.error('Error:', e)
