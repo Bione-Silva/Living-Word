@@ -223,7 +223,7 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
   if (!materialId) {
     return (
       <div className="flex items-center justify-center py-8">
-        <p className="text-xs text-muted-foreground text-center px-4">{labels.noSermon[lang]}</p>
+        <p className="text-xs text-muted-foreground text-center px-4">{labels.noMaterial[lang]}</p>
       </div>
     );
   }
