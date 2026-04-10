@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -16,6 +16,7 @@ import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
 import { parseBibleUri, type ParsedBibleRef } from '@/lib/bible-ref-parser';
+import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -240,6 +241,8 @@ export default function Sermoes() {
   // History
   const [sessions, setSessions] = useState<SermonSession[]>([]);
   const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
+  const [mobileNotesOpen, setMobileNotesOpen] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<'history' | 'notes'>('history');
 
   // Modals
   const [carouselOpen, setCarouselOpen] = useState(false);
@@ -521,9 +524,16 @@ export default function Sermoes() {
             <p className="text-[10px] text-muted-foreground">{labels.breadcrumb[lang]} / <span className="font-medium text-foreground">{labels.title[lang]}</span></p>
           </div>
           {isMobile && (
-            <button onClick={() => setMobileHistoryOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
-              <History className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {showResult && activeSessionId && (
+                <button onClick={() => setMobileNotesOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <PenLine className="h-5 w-5" />
+                </button>
+              )}
+              <button onClick={() => setMobileHistoryOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <History className="h-5 w-5" />
+              </button>
+            </div>
           )}
         </div>
 
@@ -701,21 +711,43 @@ export default function Sermoes() {
 
       {/* ─── Right sidebar: history (desktop) ─── */}
       <aside className="hidden lg:flex flex-col w-72 border-l border-border bg-background shrink-0">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <span className="text-xs font-bold text-muted-foreground tracking-wide">{labels.history[lang]}</span>
-          <button onClick={handleNewSermon} className="text-xs font-bold text-primary hover:underline">{labels.newSermon[lang]}</button>
-        </div>
-        <ScrollArea className="flex-1">
-          <div className="p-2 space-y-1">
-            {sessions.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">{labels.noSermons[lang]}</p>}
-            {sessions.map((s) => renderSessionItem(s))}
-          </div>
-        </ScrollArea>
-        <div className="p-2 border-t border-border">
-          <button onClick={handleNewSermon} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
-            <Plus className="h-3.5 w-3.5" /> {labels.newSermon[lang]}
+        {/* Tab bar */}
+        <div className="flex border-b border-border">
+          <button
+            onClick={() => setSidebarTab('history')}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-3 text-xs font-bold tracking-wide transition-colors ${sidebarTab === 'history' ? 'text-foreground border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <History className="h-3.5 w-3.5" />
+            {labels.history[lang]}
+          </button>
+          <button
+            onClick={() => setSidebarTab('notes')}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-3 text-xs font-bold tracking-wide transition-colors ${sidebarTab === 'notes' ? 'text-foreground border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <PenLine className="h-3.5 w-3.5" />
+            {lang === 'PT' ? 'ANOTAÇÕES' : lang === 'ES' ? 'NOTAS' : 'NOTES'}
           </button>
         </div>
+
+        {sidebarTab === 'history' ? (
+          <>
+            <ScrollArea className="flex-1">
+              <div className="p-2 space-y-1">
+                {sessions.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">{labels.noSermons[lang]}</p>}
+                {sessions.map((s) => renderSessionItem(s))}
+              </div>
+            </ScrollArea>
+            <div className="p-2 border-t border-border">
+              <button onClick={handleNewSermon} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+                <Plus className="h-3.5 w-3.5" /> {labels.newSermon[lang]}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col min-h-0">
+            <PreacherNotes materialId={activeSessionId} />
+          </div>
+        )}
       </aside>
 
       {/* ─── Mobile history sheet ─── */}
@@ -748,6 +780,22 @@ export default function Sermoes() {
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
               <Plus className="h-3.5 w-3.5" /> {labels.newSermon[lang]}
             </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* ─── Mobile notes drawer ─── */}
+      <Sheet open={mobileNotesOpen} onOpenChange={setMobileNotesOpen}>
+        <SheetContent side="bottom" className="theme-app max-h-[70vh] rounded-t-2xl">
+          <SheetHeader className="pb-2">
+            <SheetTitle className="text-sm font-bold flex items-center gap-2">
+              <PenLine className="h-4 w-4 text-primary" />
+              {lang === 'PT' ? 'Anotações do Pregador' : lang === 'ES' ? 'Notas del Predicador' : 'Preacher Notes'}
+            </SheetTitle>
+            <SheetDescription className="sr-only">Preacher notes</SheetDescription>
+          </SheetHeader>
+          <div className="mt-2 overflow-y-auto max-h-[50vh]">
+            <PreacherNotes materialId={activeSessionId} />
           </div>
         </SheetContent>
       </Sheet>
