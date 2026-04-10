@@ -722,6 +722,7 @@ export default function Sermoes() {
         onOpenChange={setCarouselOpen}
         sermonMarkdown={sermonContent}
         sermonTitle={sermonTitle}
+        materialId={activeSessionId}
       />
 
       {/* ─── Slides modal ─── */}
@@ -730,6 +731,7 @@ export default function Sermoes() {
         onOpenChange={setSlidesOpen}
         sermonMarkdown={sermonContent}
         sermonTitle={sermonTitle}
+        materialId={activeSessionId}
       />
     </div>
   );
