@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { bibleBooks, getBookName, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getDefaultVersionCode, translationOptions, type L } from '@/lib/bible-data';
 import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
 import { BibleChapterGrid } from '@/components/bible/BibleChapterGrid';
 import { BibleReadingView } from '@/components/bible/BibleReadingView';
@@ -93,12 +93,17 @@ export default function BibleReader() {
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [highlightVerse, setHighlightVerse] = useState<string | null>(null);
   const [translation, setTranslation] = useState(() => {
+    // Priority: profile > localStorage > default
+    if (profile?.bible_version) {
+      const allCodes = translationOptions[lang].map(o => o.code);
+      if (allCodes.includes(profile.bible_version)) return profile.bible_version;
+    }
     const saved = localStorage.getItem('bible_translation_preference');
     if (saved) {
       const valid = translationOptions[lang].some(o => o.code === saved);
       if (valid) return saved;
     }
-    return getTranslation(lang);
+    return getDefaultVersionCode(lang);
   });
 
   // Handle URL params: ?book=genesis&chapter=1&verse=1-3&translation=nvi
