@@ -112,10 +112,30 @@ Deno.serve(async (req) => {
 
     console.log(`[article-images] Generating ${targets.length} internal images for article ${article_id} (${wordCount} words)`);
 
+    // Visual variety: each image gets a unique art style, perspective, and palette
+    const artStyles = [
+      "watercolor painting style, soft washes, muted earth tones",
+      "oil painting style, rich impasto texture, warm golden light",
+      "ink and wash illustration, dramatic contrast, sepia tones",
+      "fresco style, matte finish, terracotta and ochre palette",
+      "woodcut engraving style, fine cross-hatching, monochrome",
+      "mosaic art style, tessellated tiles, vibrant jewel tones",
+    ];
+    const perspectives = [
+      "wide establishing shot, sweeping landscape",
+      "intimate close-up portrait, emotional expression",
+      "bird's-eye view from above, showing the full scene",
+      "low angle looking upward, dramatic and imposing",
+      "medium shot, people interacting in a group",
+      "atmospheric silhouette against dramatic sky",
+    ];
+
     // Generate all images in parallel
     const results = await Promise.allSettled(
       targets.map(async (section, idx) => {
-        const prompt = `Biblical historical illustration about "${section.heading}", ${section.snippet ? `context: ${section.snippet},` : ""} ancient Middle East setting, warm golden tones, oil painting style, cinematic lighting, highly detailed, no text or letters`;
+        const style = artStyles[idx % artStyles.length];
+        const perspective = perspectives[idx % perspectives.length];
+        const prompt = `Biblical historical illustration about "${section.heading}", ${section.snippet ? `context: ${section.snippet},` : ""} ancient Middle East setting, ${perspective}, ${style}, highly detailed, no text or letters, unique composition`;
         const bytes = await generateImage(prompt, hfToken, lovableKey);
         if (!bytes) return null;
 
