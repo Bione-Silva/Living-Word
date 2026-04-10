@@ -123,69 +123,9 @@ export function DashboardGreeting() {
 
   return (
     <div className="px-1">
-      {verse && (
-        <div className="flex items-start gap-2 mb-1.5">
-          <p className="text-sm md:text-base text-foreground font-bold italic leading-snug flex-1">
-            {verse.text} — <span className="font-extrabold not-italic text-primary">{verse.ref}</span>
-          </p>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-primary mt-0.5"
-            onClick={handleShare}
-            disabled={sharing}
-            aria-label={shareLabels[lang].share}
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
       <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground leading-tight">
         {getTimeGreeting(lang)}, <span className="text-primary">{name}</span>! 👋
       </h1>
-
-      {/* Hidden share card rendered off-screen for image capture */}
-      {verse && (
-        <div
-          ref={shareCardRef}
-          style={{
-            display: 'none',
-            width: 1080,
-            height: 1080,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-            padding: 80,
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            color: '#FFF8E7',
-            textAlign: 'center',
-            position: 'fixed',
-            left: -9999,
-            top: 0,
-          }}
-        >
-          <div style={{ fontSize: 28, letterSpacing: 6, textTransform: 'uppercase' as const, color: 'rgba(212,168,83,0.6)', marginBottom: 40, fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>
-            {shareLabels[lang].verseOfDay}
-          </div>
-          <div style={{ fontSize: 56, fontWeight: 700, lineHeight: 1.3, marginBottom: 48, maxWidth: 900 }}>
-            {verse.text}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-            <div style={{ width: 40, height: 1, backgroundColor: 'rgba(212,168,83,0.5)' }} />
-            <div style={{ fontSize: 24, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase' as const, color: 'rgba(212,168,83,0.85)', fontFamily: "'DM Sans', sans-serif" }}>
-              {verse.ref}
-            </div>
-            <div style={{ width: 40, height: 1, backgroundColor: 'rgba(212,168,83,0.5)' }} />
-          </div>
-          <div style={{ fontSize: 18, color: 'rgba(255,255,255,0.4)', fontFamily: "'DM Sans', sans-serif", marginTop: 20 }}>
-            {formatDate(lang)}
-          </div>
-          <div style={{ fontSize: 14, letterSpacing: 8, textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.2)', fontFamily: "'DM Sans', sans-serif", fontWeight: 500, marginTop: 60 }}>
-            Living Word
-          </div>
-        </div>
-      )}
     </div>
   );
 }
