@@ -72,11 +72,12 @@ export function getBookName(id: string, lang: L): string {
 }
 
 /**
- * Returns the book name to use with bible-api.com based on translation code.
- * The 'almeida' translation requires Portuguese book names.
+ * Returns the book name to use with bible-api.com based on version code.
+ * The 'almeida' API translation requires Portuguese book names.
  */
-export function getApiBookName(id: string, translationCode: string): string {
-  if (translationCode === 'almeida') return ptNames[id] || id;
+export function getApiBookName(id: string, versionCode: string): string {
+  const apiCode = getApiCodeForVersion(versionCode);
+  if (apiCode === 'almeida') return ptNames[id] || id;
   return id;
 }
 
