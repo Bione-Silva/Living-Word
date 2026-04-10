@@ -98,22 +98,13 @@ export interface BibleVersion {
 export const bibleVersions: BibleVersion[] = [
   // Português
   { code: 'ara', name: 'Almeida Revista e Atualizada', shortLabel: 'ARA', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false, isDefault: true },
-  { code: 'acf', name: 'Almeida Corrigida Fiel', shortLabel: 'ACF', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
-  { code: 'nvi-pt', name: 'Nova Versão Internacional', shortLabel: 'NVI', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
-  { code: 'nvt', name: 'Nova Versão Transformadora', shortLabel: 'NVT', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
-  { code: 'naa', name: 'Nova Almeida Atualizada', shortLabel: 'NAA', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
   // English
   { code: 'kjv', name: 'King James Version', shortLabel: 'KJV', language: 'EN', source: 'api', apiCode: 'kjv', isAvailable: true, isPremium: false, isDefault: true },
   { code: 'web', name: 'World English Bible', shortLabel: 'WEB', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
   { code: 'asv', name: 'American Standard Version', shortLabel: 'ASV', language: 'EN', source: 'api', apiCode: 'asv', isAvailable: true, isPremium: false },
   { code: 'bbe', name: 'Bible in Basic English', shortLabel: 'BBE', language: 'EN', source: 'api', apiCode: 'bbe', isAvailable: true, isPremium: false },
-  { code: 'esv', name: 'English Standard Version', shortLabel: 'ESV', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  { code: 'niv', name: 'New International Version', shortLabel: 'NIV', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  { code: 'nlt', name: 'New Living Translation', shortLabel: 'NLT', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  // Español
-  { code: 'rvr60', name: 'Reina-Valera 1960', shortLabel: 'RVR60', language: 'ES', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false, isDefault: true },
-  { code: 'nvi-es', name: 'Nueva Versión Internacional', shortLabel: 'NVI', language: 'ES', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  { code: 'nbla', name: 'Nueva Biblia de las Américas', shortLabel: 'NBLA', language: 'ES', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
+  // Español — bible-api.com has no Spanish translation; use 'web' as fallback
+  { code: 'oeb', name: 'Open English Bible', shortLabel: 'OEB', language: 'EN', source: 'api', apiCode: 'oeb', isAvailable: true, isPremium: false },
 ];
 
 /** Group versions by language */
