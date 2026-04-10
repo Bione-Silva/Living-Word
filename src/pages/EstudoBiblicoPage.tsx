@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { BookOpen, ShieldAlert, Zap, Moon, Sun } from 'lucide-react';
+import { BookOpen, ShieldAlert, Zap, Moon, Sun, PenLine, ChevronDown, ChevronUp } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { StudyForm } from '@/components/biblical-study/StudyForm';
 import { StudyActions } from '@/components/biblical-study/StudyActions';
@@ -17,6 +17,7 @@ import { RichLoadingState } from '@/components/generation/RichLoadingState';
 import { loadingHints, studyLoadingMessages } from '@/lib/generation-ui';
 import { Button } from '@/components/ui/button';
 import { BibleDrawer } from '@/components/BibleDrawer';
+import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 
 export default function EstudoBiblicoPage() {
   const location = useLocation();
