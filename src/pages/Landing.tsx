@@ -405,9 +405,9 @@ export default function Landing() {
         price: `${pricing.symbol}0`,
         period: { PT: 'Para sempre', EN: 'Forever', ES: 'Para siempre' } as Record<L, string>,
         features: {
-          PT: ['5 gerações/mês', 'Sermão + esboço básico', '1 artigo devocional/mês', 'Blog cristão no ar', 'PT, EN ou ES', 'Sem cartão necessário', 'Ideal para começar'],
-          EN: ['5 generations/month', 'Sermon + basic outline', '1 devotional article/month', 'Christian blog live', 'PT, EN or ES', 'No card needed', 'Ideal to start'],
-          ES: ['5 generaciones/mes', 'Sermón + bosquejo básico', '1 artículo devocional/mes', 'Blog cristiano en línea', 'PT, EN o ES', 'Sin tarjeta necesaria', 'Ideal para empezar'],
+          PT: ['500 créditos/mês', '~25 sermões ou 50 artigos', '4 formatos pastorais', '1 artigo de blog/mês', 'Blog no livingword.app', 'Watermark visível'],
+          EN: ['500 credits/month', '~25 sermons or 50 articles', '4 pastoral formats', '1 blog article/month', 'Blog on livingword.app', 'Visible watermark'],
+          ES: ['500 créditos/mes', '~25 sermones o 50 artículos', '4 formatos pastorales', '1 artículo de blog/mes', 'Blog en livingword.app', 'Marca de agua visible'],
         } as Record<L, string[]>,
         cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Empezar gratis' } as Record<L, string>,
         featured: false,
@@ -419,9 +419,9 @@ export default function Landing() {
         price: fmt(pricing.plans.starter.amount),
         period: { PT: '/mês · 7 dias grátis', EN: '/month · 7 days free', ES: '/mes · 7 días gratis' } as Record<L, string>,
         features: {
-          PT: ['Até 15 sermões/mês', 'Até 50 conteúdos totais', 'Todos os 7+ formatos', 'Blog com publicação automática', 'PT, EN e ES', 'Sem watermark', '7 dias grátis sem cartão'],
-          EN: ['Up to 15 sermons/month', 'Up to 50 total contents', 'All 7+ formats', 'Blog with auto-publishing', 'PT, EN & ES', 'No watermark', '7 days free, no card'],
-          ES: ['Hasta 15 sermones/mes', 'Hasta 50 contenidos totales', 'Los 7+ formatos', 'Blog con publicación automática', 'PT, EN y ES', 'Sin marca de agua', '7 días gratis sin tarjeta'],
+          PT: ['4.000 créditos/mês', '~200 sermões ou 400 artigos', 'Todos os 6 formatos pastorais', 'Artigos de blog ilimitados', 'Fila editorial básica', 'Sem watermark', 'Blog no livingword.app'],
+          EN: ['4,000 credits/month', '~200 sermons or 400 articles', 'All 6 pastoral formats', 'Unlimited blog articles', 'Basic editorial queue', 'No watermark', 'Blog on livingword.app'],
+          ES: ['4.000 créditos/mes', '~200 sermones o 400 artículos', 'Los 6 formatos pastorales', 'Artículos de blog ilimitados', 'Fila editorial básica', 'Sin marca de agua', 'Blog en livingword.app'],
         } as Record<L, string[]>,
         cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' } as Record<L, string>,
         featured: false,
@@ -433,23 +433,23 @@ export default function Landing() {
         price: fmt(pricing.plans.pro.amount),
         period: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
         features: {
-          PT: ['Até 60 sermões/mês', 'Produção completa semanal', 'Acesso a Mentes Brilhantes', 'Estudo bíblico profundo', 'Séries devocionais automáticas', 'Voz pastoral personalizada', 'Calendário editorial'],
-          EN: ['Up to 60 sermons/month', 'Full weekly production', 'Brilliant Minds access', 'Deep Bible study', 'Automatic devotional series', 'Custom pastoral voice', 'Editorial calendar'],
-          ES: ['Hasta 60 sermones/mes', 'Producción completa semanal', 'Acceso a Mentes Brillantes', 'Estudio bíblico profundo', 'Series devocionales automáticas', 'Voz pastoral personalizada', 'Calendario editorial'],
+          PT: ['8.000 créditos/mês', '~400 sermões ou 800 artigos', 'Mentes Pastorais (Billy Graham…)', 'Domínio próprio conectado', 'Calendário editorial cristão', 'Séries automatizadas', 'Analytics de publicação'],
+          EN: ['8,000 credits/month', '~400 sermons or 800 articles', 'Pastoral Minds (Billy Graham…)', 'Custom domain connected', 'Christian editorial calendar', 'Automated series', 'Publishing analytics'],
+          ES: ['8.000 créditos/mes', '~400 sermones o 800 artículos', 'Mentes Pastorales (Billy Graham…)', 'Dominio propio conectado', 'Calendario editorial cristiano', 'Series automatizadas', 'Analytics de publicación'],
         } as Record<L, string[]>,
         cta: { PT: 'Começar agora →', EN: 'Get started →', ES: 'Empezar ahora →' } as Record<L, string>,
         featured: true,
-        capacity: { PT: 'Produção completa', EN: 'Full production', ES: 'Producción completa' } as Record<L, string>,
+        capacity: { PT: 'Evangelista · Avançado', EN: 'Evangelist · Advanced', ES: 'Evangelista · Avanzado' } as Record<L, string>,
       },
       {
-        name: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' } as Record<L, string>,
+        name: { PT: 'Igreja', EN: 'Ministry', ES: 'Ministerio' } as Record<L, string>,
         planKey: 'igreja' as string | null,
         price: fmt(pricing.plans.igreja.amount),
         period: { PT: '/mês', EN: '/month', ES: '/mes' } as Record<L, string>,
         features: {
-          PT: ['Até 10 usuários incluídos', 'Produção compartilhada ilimitada', 'Fluxo editorial completo', 'Múltiplos blogs conectados', 'Analytics da equipe', 'Capacidade escala com a equipe'],
-          EN: ['Up to 10 users included', 'Unlimited shared production', 'Full editorial workflow', 'Multiple connected blogs', 'Team analytics', 'Capacity scales with team'],
-          ES: ['Hasta 10 usuarios incluidos', 'Producción compartida ilimitada', 'Flujo editorial completo', 'Múltiples blogs conectados', 'Analytics del equipo', 'Capacidad escala con el equipo'],
+          PT: ['20.000 créditos/mês', '10 usuários incluídos', 'Tudo do Pro', '10 domínios próprios', 'Workspaces ilimitados', 'Painel admin da equipe', 'Suporte prioritário'],
+          EN: ['20,000 credits/month', '10 users included', 'Everything in Pro', '10 custom domains', 'Unlimited workspaces', 'Team admin panel', 'Priority support'],
+          ES: ['20.000 créditos/mes', '10 usuarios incluidos', 'Todo del Pro', '10 dominios propios', 'Workspaces ilimitados', 'Panel admin del equipo', 'Soporte prioritario'],
         } as Record<L, string[]>,
         cta: { PT: 'Começar', EN: 'Get started', ES: 'Empezar' } as Record<L, string>,
         featured: false,
@@ -1029,6 +1029,11 @@ export default function Landing() {
               ))
             )}
           </div>
+          <p className="text-[12px] text-center mt-6 leading-6" style={{ color: '#8B7355' }}>
+            {lang === 'PT' && <>Todos os planos incluem <strong style={{ color: '#6B4F3A' }}>PT · EN · ES</strong> nativos · 7 dias grátis no Starter e Pro, sem cartão · <strong style={{ color: '#6B4F3A' }}>Domínio próprio</strong> a partir do Pro</>}
+            {lang === 'EN' && <>All plans include native <strong style={{ color: '#6B4F3A' }}>PT · EN · ES</strong> · 7 days free on Starter & Pro, no card · <strong style={{ color: '#6B4F3A' }}>Custom domain</strong> from Pro plan</>}
+            {lang === 'ES' && <>Todos los planes incluyen <strong style={{ color: '#6B4F3A' }}>PT · EN · ES</strong> nativos · 7 días gratis en Starter y Pro, sin tarjeta · <strong style={{ color: '#6B4F3A' }}>Dominio propio</strong> desde el Pro</>}
+          </p>
         </div>
       </section>
 

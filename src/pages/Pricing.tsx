@@ -46,9 +46,9 @@ const plans = [
     cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Comenzar gratis' },
     href: '/cadastro',
     features: {
-      PT: ['500 créditos/mês', 'Todas as ferramentas básicas', '14 ferramentas', 'Blog cristão básico'],
-      EN: ['500 credits/month', 'All basic tools', '14 tools', 'Basic Christian blog'],
-      ES: ['500 créditos/mes', 'Todas las herramientas básicas', '14 herramientas', 'Blog cristiano básico'],
+      PT: ['500 créditos/mês', '~25 sermões ou 50 artigos', '4 formatos pastorais', 'Blog no livingword.app', 'Watermark visível'],
+      EN: ['500 credits/month', '~25 sermons or 50 articles', '4 pastoral formats', 'Blog on livingword.app', 'Visible watermark'],
+      ES: ['500 créditos/mes', '~25 sermones o 50 artículos', '4 formatos pastorales', 'Blog en livingword.app', 'Marca de agua visible'],
     },
   },
   {
@@ -57,9 +57,9 @@ const plans = [
     cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' },
     href: '/cadastro',
     features: {
-      PT: ['4.000 créditos/mês', 'Todas as ferramentas core + extras', 'Liberdade total de uso', 'Sem watermark'],
-      EN: ['4,000 credits/month', 'All core + extra tools', 'Total freedom of use', 'No watermark'],
-      ES: ['4.000 créditos/mes', 'Todas las herramientas core + extras', 'Libertad total de uso', 'Sin marca de agua'],
+      PT: ['4.000 créditos/mês', '~200 sermões ou 400 artigos', 'Todos os 6 formatos', 'Sem watermark', 'Blog no livingword.app'],
+      EN: ['4,000 credits/month', '~200 sermons or 400 articles', 'All 6 formats', 'No watermark', 'Blog on livingword.app'],
+      ES: ['4.000 créditos/mes', '~200 sermones o 400 artículos', 'Los 6 formatos', 'Sin marca de agua', 'Blog en livingword.app'],
     },
   },
   {
@@ -68,9 +68,9 @@ const plans = [
     cta: { PT: 'Começar agora →', EN: 'Start now →', ES: 'Comenzar ahora →' },
     href: '/cadastro',
     features: {
-      PT: ['8.000 créditos/mês', '🧠 Mentes Brilhantes', 'Ilustrações + Calendário', 'YouTube → Blog', 'Até 3 workspaces'],
-      EN: ['8,000 credits/month', '🧠 Brilliant Minds', 'Illustrations + Calendar', 'YouTube → Blog', 'Up to 3 workspaces'],
-      ES: ['8.000 créditos/mes', '🧠 Mentes Brillantes', 'Ilustraciones + Calendario', 'YouTube → Blog', 'Hasta 3 workspaces'],
+      PT: ['8.000 créditos/mês', '🧠 Mentes Pastorais', 'Domínio próprio conectado', 'Calendário editorial', 'Séries automatizadas', 'Analytics de publicação'],
+      EN: ['8,000 credits/month', '🧠 Pastoral Minds', 'Custom domain connected', 'Editorial calendar', 'Automated series', 'Publishing analytics'],
+      ES: ['8.000 créditos/mes', '🧠 Mentes Pastorales', 'Dominio propio conectado', 'Calendario editorial', 'Series automatizadas', 'Analytics de publicación'],
     },
   },
   {
@@ -79,9 +79,9 @@ const plans = [
     cta: { PT: 'Começar', EN: 'Get started', ES: 'Comenzar' },
     href: '/cadastro',
     features: {
-      PT: ['20.000 créditos/mês', 'Até 10 usuários', 'Workspaces ilimitados', 'Multiportal', 'Suporte VIP'],
-      EN: ['20,000 credits/month', 'Up to 10 users', 'Unlimited workspaces', 'Multi-portal', 'VIP Support'],
-      ES: ['20.000 créditos/mes', 'Hasta 10 usuarios', 'Workspaces ilimitados', 'Multiportal', 'Soporte VIP'],
+      PT: ['20.000 créditos/mês', '10 usuários incluídos', 'Tudo do Pro', '10 domínios próprios', 'Painel admin da equipe', 'Suporte prioritário'],
+      EN: ['20,000 credits/month', '10 users included', 'Everything in Pro', '10 custom domains', 'Team admin panel', 'Priority support'],
+      ES: ['20.000 créditos/mes', '10 usuarios incluidos', 'Todo del Pro', '10 dominios propios', 'Panel admin del equipo', 'Soporte prioritario'],
     },
   },
 ];
