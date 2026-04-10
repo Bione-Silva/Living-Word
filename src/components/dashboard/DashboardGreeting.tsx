@@ -57,8 +57,8 @@ export function DashboardGreeting() {
   return (
     <div className="px-1">
       {verse && (
-        <p className="text-xs text-primary/80 italic mb-1">
-          {verse.text} — {verse.ref}
+        <p className="text-sm md:text-base text-primary font-semibold italic mb-1.5 leading-snug">
+          {verse.text} — <span className="font-bold not-italic">{verse.ref}</span>
         </p>
       )}
       <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground leading-tight">
