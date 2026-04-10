@@ -342,31 +342,52 @@ export default function Sermoes() {
     if (!sermonContent) return;
     const html2pdf = (await import('html2pdf.js')).default;
     const dateStr = new Date().toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' });
+    const platformLabel = lang === 'PT' ? 'Plataforma Pastoral com IA' : lang === 'ES' ? 'Plataforma Pastoral con IA' : 'AI Pastoral Platform';
     const el = document.createElement('div');
     el.innerHTML = `
-<div style="font-family:'Georgia','Palatino Linotype',serif;max-width:680px;margin:0 auto;padding:48px 40px 32px;color:#333;">
-  <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #D4A853;padding-bottom:12px;margin-bottom:28px;">
+<style>
+  @page { margin: 20mm 15mm 25mm 15mm; }
+  .pdf-page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid #D4A853; padding-bottom: 10px; margin-bottom: 24px;
+  }
+  .pdf-body h1 { font-size: 22px; font-weight: 700; margin: 0 0 6px; color: #111; page-break-after: avoid; }
+  .pdf-body h2 { font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: #222; border-left: 3px solid #8B6914; padding-left: 10px; page-break-after: avoid; }
+  .pdf-body h3 { font-size: 15px; font-weight: 700; margin: 18px 0 8px; color: #333; page-break-after: avoid; }
+  .pdf-body blockquote { border-left: 3px solid #D4A853; padding: 10px 16px; margin: 16px 0; background: #FFFDF5; font-style: italic; color: #555; border-radius: 0 6px 6px 0; page-break-inside: avoid; }
+  .pdf-body p { margin: 8px 0; line-height: 1.8; font-size: 13px; }
+  .pdf-body ul { margin: 10px 0; padding-left: 20px; list-style: disc; }
+  .pdf-body li { margin: 4px 0; padding-left: 4px; font-size: 13px; line-height: 1.7; }
+  .pdf-body strong { font-weight: 700; }
+  .pdf-body em { font-style: italic; }
+  .pdf-divider { text-align: center; margin: 24px 0; color: #D4A853; font-size: 14px; page-break-after: avoid; }
+  .pdf-footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid #E8E0D0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+</style>
+<div style="font-family:'Georgia','Palatino Linotype',serif;max-width:680px;margin:0 auto;padding:0;color:#333;">
+  <div class="pdf-page-header">
     <div>
       <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8B6914;font-weight:700;">Living Word</span>
       <span style="font-size:10px;color:#999;margin-left:8px;">✝</span>
     </div>
     <span style="font-size:9px;color:#999;">${dateStr}</span>
   </div>
-  ${markdownToHtml(sermonContent)}
-  <div style="margin-top:40px;padding-top:14px;border-top:1px solid #E8E0D0;display:flex;align-items:center;justify-content:center;gap:8px;">
+  <div class="pdf-body">
+    ${markdownToHtml(sermonContent)}
+  </div>
+  <div class="pdf-footer">
     <span style="font-size:12px;color:#D4A853;font-weight:700;">✝</span>
     <span style="font-size:10px;color:#999;letter-spacing:1.5px;font-weight:600;">LIVING WORD</span>
     <span style="font-size:10px;color:#ccc;">•</span>
-    <span style="font-size:9px;color:#bbb;">${lang === 'PT' ? 'Plataforma Pastoral com IA' : lang === 'ES' ? 'Plataforma Pastoral con IA' : 'AI Pastoral Platform'}</span>
+    <span style="font-size:9px;color:#bbb;">${platformLabel}</span>
   </div>
 </div>`;
     document.body.appendChild(el);
     await html2pdf().from(el).set({
-      margin: [12, 8, 20, 8],
+      margin: [18, 12, 22, 12],
       filename: `${sermonTitle.slice(0, 40)}.pdf`,
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { format: 'a4' },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['h1', 'h2', 'h3', 'blockquote', '.pdf-divider'] },
     }).save();
     document.body.removeChild(el);
     toast.success('PDF!');
