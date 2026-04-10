@@ -66,7 +66,7 @@ export function PlanOverviewCard() {
   const usedCredits = profile?.generations_used || 0;
   const remaining = Math.max(totalCredits - usedCredits, 0);
   const pct = Math.min(Math.round((usedCredits / totalCredits) * 100), 100);
-  const potential = PLAN_GENERATION_POTENTIAL[userPlan];
+  
 
   const planName = PLAN_DISPLAY_NAMES[userPlan]?.[l] || userPlan;
 
