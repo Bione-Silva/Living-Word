@@ -125,24 +125,27 @@ export function PlanOverviewCard() {
           </div>
         </div>
 
-        {/* Generation potential cards */}
+        {/* Generation potential cards — dynamic based on remaining credits */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { key: 'sermons', value: potential.sermons, icon: Mic, color: 'text-violet-600 bg-violet-50' },
-            { key: 'studies', value: potential.studies, icon: BookOpen, color: 'text-blue-600 bg-blue-50' },
-            { key: 'outlines', value: potential.outlines, icon: FileText, color: 'text-emerald-600 bg-emerald-50' },
-            { key: 'titles', value: potential.titles, icon: Lightbulb, color: 'text-amber-600 bg-amber-50' },
-          ].map(({ key, value, icon: Icon, color }) => (
-            <div key={key} className="rounded-xl border border-border/50 p-3 text-center space-y-1">
-              <div className={`mx-auto w-8 h-8 rounded-lg flex items-center justify-center ${color}`}>
-                <Icon className="h-4 w-4" />
+            { key: 'sermons', cost: 20, icon: Mic, color: 'text-violet-600 bg-violet-50' },
+            { key: 'studies', cost: 30, icon: BookOpen, color: 'text-blue-600 bg-blue-50' },
+            { key: 'outlines', cost: 15, icon: FileText, color: 'text-emerald-600 bg-emerald-50' },
+            { key: 'titles', cost: 3, icon: Lightbulb, color: 'text-amber-600 bg-amber-50' },
+          ].map(({ key, cost, icon: Icon, color }) => {
+            const value = remaining > 0 ? Math.floor(remaining / cost) : 0;
+            return (
+              <div key={key} className="rounded-xl border border-border/50 p-3 text-center space-y-1">
+                <div className={`mx-auto w-8 h-8 rounded-lg flex items-center justify-center ${color}`}>
+                  <Icon className="h-4 w-4" />
+                </div>
+                <p className="text-xl font-bold font-mono">{value.toLocaleString()}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  {labels[key as keyof typeof labels]?.[l] || key}
+                </p>
               </div>
-              <p className="text-xl font-bold font-mono">{value.toLocaleString()}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                {labels[key as keyof typeof labels]?.[l] || key}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <p className="text-xs text-muted-foreground text-center italic">{labels.potential[l]}</p>
 
