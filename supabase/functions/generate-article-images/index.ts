@@ -17,16 +17,22 @@ function respond(body: Record<string, unknown>, status = 200) {
 async function generateImage(prompt: string, hfToken: string, lovableKey: string): Promise<Uint8Array | null> {
   if (hfToken) {
     try {
-      const r = await fetch(
-        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
-        { method: "POST", headers: { Authorization: `Bearer ${hfToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ inputs: prompt }) },
-      );
+      const r = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${hfToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ inputs: prompt }),
+      });
       if (r.ok) {
         const ab = await r.arrayBuffer();
-        if (ab.byteLength > 1000) { console.log("[article-images] ✅ HF ok"); return new Uint8Array(ab); }
+        if (ab.byteLength > 1000) {
+          console.log("[article-images] ✅ HF ok");
+          return new Uint8Array(ab);
+        }
       }
       console.warn(`[article-images] HF failed (${r.status})`);
-    } catch (e) { console.warn("[article-images] HF exception:", e); }
+    } catch (e) {
+      console.warn("[article-images] HF exception:", e);
+    }
   }
 
   // Gemini fallback
@@ -34,9 +40,16 @@ async function generateImage(prompt: string, hfToken: string, lovableKey: string
     const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${lovableKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "google/gemini-2.5-flash-image", messages: [{ role: "user", content: prompt }], modalities: ["image", "text"] }),
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [{ role: "user", content: prompt }],
+        modalities: ["image", "text"],
+      }),
     });
-    if (!r.ok) { console.warn(`[article-images] Gemini ${r.status}`); return null; }
+    if (!r.ok) {
+      console.warn(`[article-images] Gemini ${r.status}`);
+      return null;
+    }
     const d = await r.json();
     const url = d?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     if (!url?.startsWith("data:image")) return null;
@@ -45,12 +58,19 @@ async function generateImage(prompt: string, hfToken: string, lovableKey: string
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     console.log("[article-images] ✅ Gemini ok");
     return bytes;
-  } catch (e) { console.warn("[article-images] Gemini exception:", e); return null; }
+  } catch (e) {
+    console.warn("[article-images] Gemini exception:", e);
+    return null;
+  }
 }
 
 // ── content analysis ─────────────────────────────────────────────────
 
-interface Section { heading: string; lineIndex: number; snippet: string }
+interface Section {
+  heading: string;
+  lineIndex: number;
+  snippet: string;
+}
 
 function analyzeSections(markdown: string): Section[] {
   const lines = markdown.split("\n");
@@ -58,11 +78,15 @@ function analyzeSections(markdown: string): Section[] {
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(/^#{2,3}\s+(.+)/);
     if (m) {
-      // Skip headings that already have an image nearby (within 5 lines)
-      const nearby = lines.slice(i + 1, i + 6).join("\n");
-      if (/!\[.*?\]\(.*?\)/.test(nearby)) continue;
-
-      const snippet = lines.slice(i + 1, i + 6).join(" ").replace(/[#*_\[\]()>`~]/g, " ").trim().slice(0, 120);
+      // Skip headings that already have an image in the next 4 lines
+      const nearbyLines = lines.slice(i + 1, i + 5).join("\n");
+      if (/!\[.*?\]\(.*?\)/.test(nearbyLines)) continue; // already has image
+      const snippet = lines
+        .slice(i + 1, i + 6)
+        .join(" ")
+        .replace(/[#*_\[\]()>`~]/g, " ")
+        .trim()
+        .slice(0, 120);
       sections.push({ heading: m[1], lineIndex: i, snippet });
     }
   }
@@ -91,7 +115,10 @@ Deno.serve(async (req) => {
     const lovableKey = Deno.env.get("LOVABLE_API_KEY")!;
 
     const sbAuth = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
-    const { data: { user }, error: ue } = await sbAuth.auth.getUser();
+    const {
+      data: { user },
+      error: ue,
+    } = await sbAuth.auth.getUser();
     if (ue || !user) return respond({ error: "Unauthorized" }, 401);
 
     const { article_id, title, content } = await req.json();
@@ -110,44 +137,31 @@ Deno.serve(async (req) => {
       return respond({ success: true, images_added: 0 });
     }
 
-    console.log(`[article-images] Generating ${targets.length} internal images for article ${article_id} (${wordCount} words)`);
-
-    // Visual variety: each image gets a unique art style, perspective, and palette
-    const artStyles = [
-      "watercolor painting style, soft washes, muted earth tones",
-      "oil painting style, rich impasto texture, warm golden light",
-      "ink and wash illustration, dramatic contrast, sepia tones",
-      "fresco style, matte finish, terracotta and ochre palette",
-      "woodcut engraving style, fine cross-hatching, monochrome",
-      "mosaic art style, tessellated tiles, vibrant jewel tones",
-    ];
-    const perspectives = [
-      "wide establishing shot, sweeping landscape",
-      "intimate close-up portrait, emotional expression",
-      "bird's-eye view from above, showing the full scene",
-      "low angle looking upward, dramatic and imposing",
-      "medium shot, people interacting in a group",
-      "atmospheric silhouette against dramatic sky",
-    ];
+    console.log(
+      `[article-images] Generating ${targets.length} internal images for article ${article_id} (${wordCount} words)`,
+    );
 
     // Generate all images in parallel
     const results = await Promise.allSettled(
       targets.map(async (section, idx) => {
-        const style = artStyles[idx % artStyles.length];
-        const perspective = perspectives[idx % perspectives.length];
-        const prompt = `Biblical historical illustration about "${section.heading}", ${section.snippet ? `context: ${section.snippet},` : ""} ancient Middle East setting, ${perspective}, ${style}, highly detailed, no text or letters, unique composition`;
+        const prompt = `Biblical historical illustration about "${section.heading}", ${section.snippet ? `context: ${section.snippet},` : ""} ancient Middle East setting, warm golden tones, oil painting style, cinematic lighting, highly detailed, no text or letters`;
         const bytes = await generateImage(prompt, hfToken, lovableKey);
         if (!bytes) return null;
 
         // Upload to storage
         const admin = createClient(supabaseUrl, serviceKey);
         const filePath = `${user.id}/articles/${article_id}/image-${idx}.png`;
-        const { error: upErr } = await admin.storage.from("article-covers").upload(filePath, bytes, { contentType: "image/png", upsert: true });
-        if (upErr) { console.warn(`[article-images] Upload error image-${idx}:`, upErr); return null; }
+        const { error: upErr } = await admin.storage
+          .from("article-covers")
+          .upload(filePath, bytes, { contentType: "image/png", upsert: true });
+        if (upErr) {
+          console.warn(`[article-images] Upload error image-${idx}:`, upErr);
+          return null;
+        }
 
         const { data: pub } = admin.storage.from("article-covers").getPublicUrl(filePath);
         return { lineIndex: section.lineIndex, url: pub.publicUrl, heading: section.heading };
-      })
+      }),
     );
 
     // Collect successful images
@@ -166,28 +180,21 @@ Deno.serve(async (req) => {
     const sorted = [...images].sort((a, b) => b.lineIndex - a.lineIndex);
     for (const img of sorted) {
       const insertAt = Math.min(img.lineIndex + 2, lines.length);
-      // Check if an image already exists nearby — replace its URL instead of inserting
-      let replaced = false;
-      for (let k = insertAt; k < Math.min(insertAt + 5, lines.length); k++) {
-        if (/!\[.*?\]\(.*?\)/.test(lines[k])) {
-          lines[k] = `![${img.heading}](${img.url})`;
-          replaced = true;
-          break;
-        }
-      }
-      if (!replaced) {
-        lines.splice(insertAt, 0, "", `![${img.heading}](${img.url})`, "");
-      }
+      lines.splice(insertAt, 0, "", `![${img.heading}](${img.url})`, "");
     }
     const updatedContent = lines.join("\n");
 
     // Save article_images array and updated content
-    const imageUrls = images.map(i => i.url);
+    const imageUrls = images.map((i) => i.url);
     const admin = createClient(supabaseUrl, serviceKey);
 
     // Get existing article_images to merge
-    const { data: existing } = await admin.from("materials").select("article_images, cover_image_url").eq("id", article_id).single();
-    const existingImages = (existing?.article_images as string[] || []).filter(Boolean);
+    const { data: existing } = await admin
+      .from("materials")
+      .select("article_images, cover_image_url")
+      .eq("id", article_id)
+      .single();
+    const existingImages = ((existing?.article_images as string[]) || []).filter(Boolean);
     const coverUrl = existing?.cover_image_url;
     const allImages = coverUrl ? [coverUrl, ...imageUrls] : imageUrls;
     const mergedImages = [...new Set([...existingImages, ...allImages])];
