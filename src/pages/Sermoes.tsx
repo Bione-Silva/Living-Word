@@ -211,6 +211,7 @@ export default function Sermoes() {
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
   const [carouselOpen, setCarouselOpen] = useState(false);
+  const [slidesOpen, setSlidesOpen] = useState(false);
   const [lastSermonContent, setLastSermonContent] = useState('');
   const [lastSermonTitle, setLastSermonTitle] = useState('');
   const [lastUserPrompt, setLastUserPrompt] = useState('');
