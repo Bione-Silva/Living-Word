@@ -355,7 +355,7 @@ export default function AppLayout() {
                               }`}>
                                 <Icon className={`h-4 w-4 ${isLocked ? 'text-muted-foreground' : 'text-primary'}`} />
                               </div>
-                              <span className="text-[11px] leading-tight font-medium line-clamp-2">
+                              <span className="text-[11px] leading-tight font-medium line-clamp-2 text-foreground">
                                 {tool.label[lang]}
                               </span>
                             </button>
@@ -393,7 +393,7 @@ export default function AppLayout() {
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10">
                           <NavIcon className="h-4 w-4 text-primary" />
                         </div>
-                        <span className="text-[11px] leading-tight font-medium line-clamp-2">
+                        <span className="text-[11px] leading-tight font-medium line-clamp-2 text-foreground">
                           {nav.label[lang]}
                         </span>
                       </Link>
