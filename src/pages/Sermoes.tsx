@@ -425,6 +425,9 @@ export default function Sermoes() {
         <button onClick={() => setCarouselOpen(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
           <Image className="h-3.5 w-3.5" /> {labels.carousel[lang]}
         </button>
+        <button onClick={() => setSlidesOpen(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+          <Presentation className="h-3.5 w-3.5" /> {labels.slides[lang]}
+        </button>
         <button onClick={handlePdf} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
           <FileText className="h-3.5 w-3.5" /> {labels.pdf[lang]}
         </button>
