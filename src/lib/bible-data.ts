@@ -109,11 +109,11 @@ export const bibleVersions: BibleVersion[] = [
 
 /** Group versions by language */
 export function getVersionsByLanguage(): Record<string, BibleVersion[]> {
-  const groups: Record<string, BibleVersion[]> = {
-    'Português': bibleVersions.filter(v => v.language === 'PT'),
-    'English': bibleVersions.filter(v => v.language === 'EN'),
-    'Español': bibleVersions.filter(v => v.language === 'ES'),
-  };
+  const pt = bibleVersions.filter(v => v.language === 'PT');
+  const en = bibleVersions.filter(v => v.language === 'EN');
+  const groups: Record<string, BibleVersion[]> = {};
+  if (pt.length) groups['Português'] = pt;
+  if (en.length) groups['English'] = en;
   return groups;
 }
 
