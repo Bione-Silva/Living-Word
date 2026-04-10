@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { bibleBooks, getBookName, translationOptions, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, type L } from '@/lib/bible-data';
 import { bookDescriptions, ntBookIds } from '@/data/bible-book-descriptions';
+import { BibleVersionSelector } from './BibleVersionSelector';
 
 interface Props {
   translation: string;
@@ -12,7 +13,6 @@ interface Props {
 export function BibleBookGrid({ translation, onTranslationChange, onSelectBook }: Props) {
   const { lang } = useLanguage();
   const [testament, setTestament] = useState<'OT' | 'NT'>('OT');
-  const availableTranslations = translationOptions[lang];
 
   const filteredBooks = useMemo(() => {
     return bibleBooks.filter(b =>
@@ -25,55 +25,38 @@ export function BibleBookGrid({ translation, onTranslationChange, onSelectBook }
     nt: { PT: 'Novo Testamento', EN: 'New Testament', ES: 'Nuevo Testamento' },
     caps: { PT: 'caps', EN: 'ch', ES: 'cap' },
     cap: { PT: 'cap', EN: 'ch', ES: 'cap' },
+    versionLabel: { PT: 'Versão da Bíblia', EN: 'Bible Version', ES: 'Versión de la Biblia' },
   };
 
-  const otBooks = bibleBooks.filter(b => !ntBookIds.has(b.id));
   const globalIndex = (bookId: string) => bibleBooks.findIndex(b => b.id === bookId) + 1;
 
   return (
     <div className="space-y-4">
-      {/* Testament toggle + Translation pills */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 bg-muted rounded-lg p-1 border border-border">
-          <button
-            onClick={() => setTestament('OT')}
-            className={`px-4 py-2 rounded-md text-xs font-semibold transition-all ${
-              testament === 'OT'
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-foreground/70 hover:text-foreground hover:bg-muted-foreground/10'
-            }`}
-          >
-            {labels.ot[lang]}
-          </button>
-          <button
-            onClick={() => setTestament('NT')}
-            className={`px-4 py-2 rounded-md text-xs font-semibold transition-all ${
-              testament === 'NT'
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-foreground/70 hover:text-foreground hover:bg-muted-foreground/10'
-            }`}
-          >
-            {labels.nt[lang]}
-          </button>
-        </div>
+      {/* Bible Version Selector — prominent */}
+      <BibleVersionSelector value={translation} onChange={onTranslationChange} />
 
-        {availableTranslations.length > 1 && (
-          <div className="flex items-center gap-1">
-            {availableTranslations.map(t => (
-              <button
-                key={t.code}
-                onClick={() => onTranslationChange(t.code)}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                  translation === t.code
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-foreground/70 hover:text-foreground bg-muted border border-border'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        )}
+      {/* Testament toggle */}
+      <div className="flex items-center gap-1 bg-muted rounded-lg p-1 border border-border">
+        <button
+          onClick={() => setTestament('OT')}
+          className={`flex-1 px-4 py-2 rounded-md text-xs font-semibold transition-all ${
+            testament === 'OT'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-foreground/70 hover:text-foreground hover:bg-muted-foreground/10'
+          }`}
+        >
+          {labels.ot[lang]}
+        </button>
+        <button
+          onClick={() => setTestament('NT')}
+          className={`flex-1 px-4 py-2 rounded-md text-xs font-semibold transition-all ${
+            testament === 'NT'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-foreground/70 hover:text-foreground hover:bg-muted-foreground/10'
+          }`}
+        >
+          {labels.nt[lang]}
+        </button>
       </div>
 
       {/* Book grid */}
