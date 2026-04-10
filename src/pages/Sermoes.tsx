@@ -3,10 +3,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Mic, Send, Loader2, Trash2, Plus } from 'lucide-react';
+import { ArrowLeft, Mic, Send, Loader2, Trash2, Plus, History } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type L = 'PT' | 'EN' | 'ES';
 
