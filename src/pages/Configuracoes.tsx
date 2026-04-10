@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { Crown, Camera, Loader2 } from 'lucide-react';
 import { TrialCountdown } from '@/components/TrialCountdown';
+import { BlogThemeCustomizer } from '@/components/blog/BlogThemeCustomizer';
 import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
 import { PlanOverviewCard } from '@/components/dashboard/PlanOverviewCard';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
@@ -293,7 +294,7 @@ export default function Configuracoes() {
         <TabsContent value="blog">
           <Card>
             <CardHeader><CardTitle className="font-display">{t('settings.blog')}</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="space-y-2">
                 <Label>Handle</Label>
                 <div className="flex items-center gap-0 border border-input rounded-md overflow-hidden">
@@ -307,7 +308,9 @@ export default function Configuracoes() {
                   <Input placeholder="https://seu-site.com" />
                 </div>
               )}
-              <Button className="bg-primary text-primary-foreground">{t('settings.save')}</Button>
+              <div className="border-t border-border pt-6">
+                <BlogThemeCustomizer />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

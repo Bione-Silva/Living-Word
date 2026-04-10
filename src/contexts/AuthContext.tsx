@@ -29,6 +29,7 @@ interface UserProfile {
   font_family?: string;
   layout_style?: string;
   profile_completed?: boolean;
+  blog_name?: string;
 }
 
 interface AuthContextType {
