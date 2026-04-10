@@ -5,17 +5,9 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { BarChart3, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { PLAN_CREDITS, type PlanSlug } from '@/lib/plans';
 
 type L = 'PT' | 'EN' | 'ES';
-
-const planCapacity: Record<string, number> = {
-  free: 5,
-  starter: 50,
-  pastoral: 200,
-  pro: 300,
-  church: 500,
-  ministry: 1000,
-};
 
 const labels = {
   title: { PT: 'Capacidade de Produção', EN: 'Production Capacity', ES: 'Capacidad de Producción' } as Record<L, string>,
@@ -30,9 +22,9 @@ export function ProductionCapacityBar() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
 
-  const plan = profile?.plan || 'free';
+  const plan = (profile?.plan || 'free') as PlanSlug;
   const used = profile?.generations_used || 0;
-  const limit = planCapacity[plan] || profile?.generations_limit || 5;
+  const limit = PLAN_CREDITS[plan] || profile?.generations_limit || 500;
   const pct = Math.min((used / limit) * 100, 100);
   const isNearLimit = pct >= 80;
 

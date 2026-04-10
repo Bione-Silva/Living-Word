@@ -85,10 +85,11 @@ serve(async (req) => {
 
     const isFree = profile?.plan === "free";
     const generationsUsed = profile?.generations_used || 0;
-    const generationsLimit = profile?.generations_limit || 5;
+    const generationsLimit = profile?.generations_limit || 500;
+    const creditCostCheck = 20;
 
-    // Check generation limits
-    if (generationsUsed >= generationsLimit) {
+    // Check credit balance
+    if ((generationsLimit - generationsUsed) < creditCostCheck) {
       return new Response(
         JSON.stringify({
           error: "Generation limit reached",
@@ -281,13 +282,14 @@ Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
 
     const elapsedMs = Date.now() - startTime;
 
-    // Increment generations_used
+    // Deduct credit cost (20 credits for pastoral material)
+    const creditCost = 20;
     await supabase
       .from("profiles")
-      .update({ generations_used: generationsUsed + 1 })
+      .update({ generations_used: generationsUsed + creditCost })
       .eq("id", userId);
 
-    const generationsRemaining = generationsLimit - generationsUsed - 1;
+    const generationsRemaining = generationsLimit - generationsUsed - creditCost;
 
     // Build upgrade hint
     let upgradeHint: string | null = null;
