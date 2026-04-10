@@ -144,6 +144,12 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
         if (error) throw error;
         if (!data?.success) throw new Error(data?.error || 'Unknown error');
         setResult(data.content || '');
+        // Auto-generate cover image in background
+        if (data.material_id && !data.cover_image_url) {
+          supabase.functions.invoke('generate-article-cover', {
+            body: { article_id: data.material_id, title: data.title || '', content: data.content || '' },
+          }).catch(e => console.warn('[ToolModal] Background cover gen failed:', e));
+        }
       } else {
         const { data, error } = await supabase.functions.invoke('ai-tool', {
           body: {
