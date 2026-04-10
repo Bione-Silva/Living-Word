@@ -627,6 +627,26 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                       toolId="pastoral-studio"
                     />
 
+                    {savedMaterialId && (
+                      <div className="mt-3 border border-border rounded-xl overflow-hidden">
+                        <button
+                          onClick={() => setNotesOpen(!notesOpen)}
+                          className="w-full flex items-center justify-between px-4 py-3 bg-muted/30 hover:bg-muted/50 transition-colors"
+                        >
+                          <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+                            <PenLine className="h-4 w-4 text-primary" />
+                            {lang === 'PT' ? 'Minhas Anotações' : lang === 'EN' ? 'My Notes' : 'Mis Notas'}
+                          </span>
+                          {notesOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                        </button>
+                        {notesOpen && (
+                          <div className="h-[250px]">
+                            <PreacherNotes materialId={savedMaterialId} />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {genMeta && <GenerationMetaFooter lang={lang} meta={genMeta} />}
                   </CardContent>
                 </Card>
