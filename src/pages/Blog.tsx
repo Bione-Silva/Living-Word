@@ -251,6 +251,25 @@ export default function Blog() {
     }
   };
 
+  const handleGenerateCover = async (article: ArticleRow) => {
+    setGeneratingCover(prev => new Set(prev).add(article.id));
+    try {
+      const { data: coverData, error } = await supabase.functions.invoke('generate-article-cover', {
+        body: { article_id: article.id, title: article.title, content: article.content },
+      });
+      if (error) throw error;
+      if (coverData?.cover_image_url) {
+        toast.success('Capa gerada com sucesso!');
+        queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
+      }
+    } catch (e) {
+      console.warn('[Blog] Cover generation failed:', e);
+      toast.error('Falha ao gerar capa.');
+    } finally {
+      setGeneratingCover(prev => { const n = new Set(prev); n.delete(article.id); return n; });
+    }
+  };
+
   const statusLabel = (status: string) => {
     if (status === 'published') return t('blog.status_published');
     if (status === 'archived') return t('blog.status_archived');
