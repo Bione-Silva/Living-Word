@@ -74,14 +74,21 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
   const handlePdf = async () => {
     try {
       const html2pdf = (await import('html2pdf.js')).default;
+      const { pdfBrandHeader, pdfBrandFooter } = await import('@/lib/export-branding');
       const el = contentRef.current;
       if (!el) return;
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = pdfBrandHeader();
+      wrapper.appendChild(el.cloneNode(true));
+      wrapper.insertAdjacentHTML('beforeend', pdfBrandFooter());
+      document.body.appendChild(wrapper);
       await html2pdf().set({
         margin: [12, 12, 12, 12],
         filename: `devocional-${data.scheduled_date}.pdf`,
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      }).from(el).save();
+      }).from(wrapper).save();
+      document.body.removeChild(wrapper);
       toast.success(lang === 'PT' ? 'PDF salvo!' : lang === 'ES' ? '¡PDF guardado!' : 'PDF saved!');
     } catch {
       toast.error(lang === 'PT' ? 'Erro ao gerar PDF' : lang === 'ES' ? 'Error al generar PDF' : 'Error generating PDF');
