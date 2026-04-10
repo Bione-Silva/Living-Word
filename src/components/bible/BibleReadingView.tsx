@@ -7,7 +7,7 @@ import { getBookName, getApiBookName, getApiCodeForVersion, getTranslationLabelB
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
   Popover, PopoverContent, PopoverTrigger,
