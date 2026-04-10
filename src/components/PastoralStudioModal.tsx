@@ -189,7 +189,8 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [bibleOpen, setBibleOpen] = useState(false);
   const [expandedTab, setExpandedTab] = useState<OutputMode>('sermon');
   const [genMeta, setGenMeta] = useState<GenerationMeta | null>(null);
-
+  const [savedMaterialId, setSavedMaterialId] = useState<string | null>(null);
+  const [notesOpen, setNotesOpen] = useState(false);
   const availableTabs = useMemo(
     () => (['sermon', 'outline', 'devotional'] as OutputMode[]).filter((mode) => Boolean(outputs[mode])),
     [outputs]
