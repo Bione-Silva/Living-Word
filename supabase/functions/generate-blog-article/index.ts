@@ -168,9 +168,20 @@ serve(async (req) => {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, doctrine, pastoral_voice, bible_version, language")
+      .select("full_name, doctrine, pastoral_voice, bible_version, language, plan, generations_used, generations_limit")
       .eq("id", userId)
       .maybeSingle();
+
+    // Credit check (15 credits for blog article)
+    const creditCost = 15;
+    const generationsUsed = profile?.generations_used || 0;
+    const generationsLimit = profile?.generations_limit || 500;
+    if ((generationsLimit - generationsUsed) < creditCost) {
+      return new Response(
+        JSON.stringify({ error: "insufficient_credits", remaining: generationsLimit - generationsUsed, cost: creditCost }),
+        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     const langMap: Record<string, string> = {
       PT: "Portuguese (Brazilian)",
@@ -307,6 +318,12 @@ The article MUST have between 500 and 800 words. Structure it like a well-organi
     const coverImageUrl = coverImage || null;
 
     console.log(`[Article] Images generated: ${allImages.length}/${1 + bodyPrompts.length} successful`);
+
+    // Deduct credits (15 for blog article)
+    await supabase
+      .from("profiles")
+      .update({ generations_used: generationsUsed + creditCost })
+      .eq("id", userId);
 
     // Save to materials table
     const { data: material, error: matErr } = await supabase
