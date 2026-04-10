@@ -40,6 +40,7 @@ import Onboarding from "./pages/Onboarding";
 import Devocional from "./pages/Devocional";
 import DevocionalPublico from "./pages/DevocionalPublico";
 import BomAmigo from "./pages/BomAmigo";
+import Sermoes from "./pages/Sermoes";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
 import { SubdomainRedirect } from "./components/SubdomainRedirect";
@@ -119,6 +120,7 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/devocional" element={<Devocional />} />
                 <Route path="/bom-amigo" element={<BomAmigo />} />
+                <Route path="/sermoes" element={<Sermoes />} />
                 <Route path="/quiz" element={<Quiz />} />
                 <Route path="/kids" element={<Kids />} />
                 <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
