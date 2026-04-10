@@ -1202,12 +1202,20 @@ export default function Devocional() {
 
   if (!isMobile && user) {
     return (
-      <div className="flex gap-5 items-start w-full">
-        {mainContent}
-        {sidebar}
-      </div>
+      <>
+        <div className="flex gap-5 items-start w-full">
+          {mainContent}
+          {sidebar}
+        </div>
+        <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
+      </>
     );
   }
 
-  return <>{mainContent}</>;
+  return (
+    <>
+      {mainContent}
+      <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
+    </>
+  );
 }
