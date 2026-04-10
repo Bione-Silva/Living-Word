@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { Crown, Camera, Loader2 } from 'lucide-react';
 import { TrialCountdown } from '@/components/TrialCountdown';
 import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
+import { PlanOverviewCard } from '@/components/dashboard/PlanOverviewCard';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
 import type { Language } from '@/lib/i18n';
@@ -313,6 +314,7 @@ export default function Configuracoes() {
 
         <TabsContent value="plan">
           <div className="space-y-6">
+            <PlanOverviewCard />
             <Card>
               <CardHeader><CardTitle className="font-display">{t('settings.plan')}</CardTitle></CardHeader>
               <CardContent className="space-y-4">
