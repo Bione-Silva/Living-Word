@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown } from 'lucide-react';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, getVersionsByLanguage, getBibleVersion, type L } from '@/lib/bible-data';
 
 interface Props {
   open: boolean;
@@ -103,8 +103,41 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     return verseNum >= highlightRange.start && verseNum <= end;
   };
 
-  const availableTranslations = translationOptions[lang] || translationOptions['EN'];
-  const currentTranslationLabel = availableTranslations.find(t => t.code === translation)?.label || translation;
+  const versionGroups = useMemo(() => getVersionsByLanguage(), []);
+  const currentVersion = getBibleVersion(translation);
+  const currentTranslationLabel = currentVersion ? `${currentVersion.name} (${currentVersion.shortLabel})` : translation;
+
+  const langGroupLabels: Record<string, Record<L, string>> = {
+    'Português': { PT: 'Português', EN: 'Portuguese', ES: 'Portugués' },
+    'English': { PT: 'Inglês', EN: 'English', ES: 'Inglés' },
+    'Español': { PT: 'Espanhol', EN: 'Spanish', ES: 'Español' },
+  };
+
+  const renderVersionSelector = (compact = false) => (
+    <Select value={translation} onValueChange={setTranslation}>
+      <SelectTrigger className={compact ? "w-auto h-8 px-3 gap-1.5 text-xs font-medium border-border bg-muted/60 rounded-lg" : "flex-1 h-8 text-xs text-foreground"}>
+        {compact && <Globe className="h-3 w-3 text-primary/60" />}
+        <SelectValue placeholder={currentVersion?.shortLabel || translation} />
+      </SelectTrigger>
+      <SelectContent className="max-h-[340px]">
+        {Object.entries(versionGroups).map(([groupName, versions]) => (
+          <SelectGroup key={groupName}>
+            <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1.5">
+              {langGroupLabels[groupName]?.[lang] || groupName}
+            </SelectLabel>
+            {versions.filter(v => v.isAvailable).map(v => (
+              <SelectItem key={v.code} value={v.code} className="text-xs">
+                <span className="flex items-center gap-2">
+                  <span className="font-semibold text-foreground">{v.shortLabel}</span>
+                  <span className="text-muted-foreground">{v.name}</span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 
   // Filter verses: show only highlighted range when in focused mode
   const displayVerses = useMemo(() => {
@@ -134,9 +167,12 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
         <div className="mt-4 space-y-4">
           {/* Focused reference badge */}
           {highlightRange && (
-            <div className="px-4 py-3 rounded-xl bg-primary/10 border border-primary/20">
-              <p className="text-sm font-bold text-primary">{focusedLabel}</p>
-              <p className="text-[10px] text-primary/60 mt-0.5">{currentTranslationLabel}</p>
+            <div className="px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-primary">{focusedLabel}</p>
+                <p className="text-[10px] text-primary/60 mt-0.5">{currentTranslationLabel}</p>
+              </div>
+              {renderVersionSelector(true)}
             </div>
           )}
 
@@ -222,16 +258,7 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
               </div>
 
               <div className="flex items-center gap-2">
-                <Select value={translation} onValueChange={setTranslation}>
-                  <SelectTrigger className="flex-1 h-8 text-xs text-foreground">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableTranslations.map((t) => (
-                      <SelectItem key={t.code} value={t.code}>{t.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {renderVersionSelector()}
               </div>
 
               <div className="flex items-center gap-2">
