@@ -30,16 +30,16 @@ function getTitleSize(title: string, exportMode: boolean) {
 
 function getVerseSize(verseText: string, exportMode: boolean) {
   if (exportMode) {
-    if (verseText.length > 260) return 38;
-    if (verseText.length > 190) return 44;
-    if (verseText.length > 130) return 50;
-    return 58;
+    if (verseText.length > 260) return 34;
+    if (verseText.length > 190) return 40;
+    if (verseText.length > 130) return 46;
+    return 54;
   }
 
-  if (verseText.length > 260) return '1.2rem';
-  if (verseText.length > 190) return '1.35rem';
-  if (verseText.length > 130) return '1.5rem';
-  return '1.7rem';
+  if (verseText.length > 260) return '1.05rem';
+  if (verseText.length > 190) return '1.18rem';
+  if (verseText.length > 130) return '1.35rem';
+  return '1.55rem';
 }
 
 export const DevotionalShareArt = forwardRef<HTMLDivElement, DevotionalShareArtProps>(function DevotionalShareArt(
@@ -96,7 +96,7 @@ export const DevotionalShareArt = forwardRef<HTMLDivElement, DevotionalShareArtP
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(180deg, hsla(0, 0%, 0%, 0.28) 0%, hsla(0, 0%, 0%, 0.18) 24%, hsla(0, 0%, 0%, 0.22) 52%, hsla(0, 0%, 0%, 0.52) 76%, hsla(0, 0%, 0%, 0.72) 100%)',
+            'linear-gradient(180deg, hsla(0, 0%, 0%, 0.18) 0%, hsla(0, 0%, 0%, 0.12) 22%, hsla(0, 0%, 0%, 0.22) 48%, hsla(0, 0%, 0%, 0.58) 74%, hsla(0, 0%, 0%, 0.9) 100%)',
         }}
       />
 
@@ -144,28 +144,27 @@ export const DevotionalShareArt = forwardRef<HTMLDivElement, DevotionalShareArtP
       </div>
 
       <div
-        className="absolute inset-x-5 bottom-5 rounded-[30px] border px-5 py-5"
+        className="absolute inset-x-0 bottom-0 px-6 pb-7 pt-24"
         style={{
-          backgroundColor: 'hsla(41, 46%, 95%, 0.94)',
-          borderColor: 'hsla(35, 26%, 62%, 0.6)',
-          boxShadow: '0 20px 60px hsla(0, 0%, 0%, 0.18)',
-          backdropFilter: 'blur(14px)',
+          background:
+            'linear-gradient(180deg, hsla(0, 0%, 0%, 0) 0%, hsla(0, 0%, 0%, 0.18) 18%, hsla(0, 0%, 0%, 0.72) 68%, hsla(0, 0%, 0%, 0.9) 100%)',
         }}
       >
         <p
           className="text-[10px] font-bold uppercase tracking-[0.18em]"
-          style={{ color: 'hsl(34 39% 44%)' }}
+          style={{ color: 'hsla(41, 72%, 82%, 0.96)' }}
         >
           {verseLabel}
         </p>
 
         {verseText && (
           <blockquote
-            className="mt-3 font-serif font-semibold tracking-[-0.02em]"
+            className="mt-3 max-w-[92%] font-serif font-semibold tracking-[-0.02em]"
             style={{
-              color: 'hsl(24 30% 16%)',
+              color: 'hsla(40, 60%, 97%, 0.98)',
               fontSize: verseSize,
-              lineHeight: exportMode ? 1.08 : 1.12,
+              lineHeight: exportMode ? 1.12 : 1.16,
+              textShadow: '0 10px 28px hsla(0, 0%, 0%, 0.46)',
             }}
           >
             {verseText}
@@ -175,11 +174,11 @@ export const DevotionalShareArt = forwardRef<HTMLDivElement, DevotionalShareArtP
         <div className="mt-5 flex items-end justify-between gap-4">
           <div>
             {verseReference && (
-              <p className="text-sm font-bold" style={{ color: 'hsl(24 30% 18%)' }}>
+              <p className="text-sm font-bold" style={{ color: 'hsla(0, 0%, 100%, 0.96)' }}>
                 {verseReference}
               </p>
             )}
-            <p className="mt-1 text-[11px]" style={{ color: 'hsl(24 18% 38%)' }}>
+            <p className="mt-1 text-[11px]" style={{ color: 'hsla(0, 0%, 100%, 0.7)' }}>
               livingwordgo.com
             </p>
           </div>
@@ -188,9 +187,10 @@ export const DevotionalShareArt = forwardRef<HTMLDivElement, DevotionalShareArtP
             <span
               className="inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em]"
               style={{
-                color: 'hsl(24 30% 18%)',
-                backgroundColor: 'hsla(41, 58%, 84%, 0.72)',
-                border: '1px solid hsla(35, 28%, 58%, 0.45)',
+                color: 'hsla(41, 72%, 90%, 0.98)',
+                backgroundColor: 'hsla(0, 0%, 0%, 0.22)',
+                border: '1px solid hsla(41, 54%, 69%, 0.46)',
+                backdropFilter: 'blur(10px)',
               }}
             >
               {bibleVersion}
