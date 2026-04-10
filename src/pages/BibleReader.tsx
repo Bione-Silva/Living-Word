@@ -163,6 +163,15 @@ export default function BibleReader() {
     }
   }, [lang, translation]);
 
+  // Persist translation preference to localStorage + Supabase profile
+  const handleTranslationChange = useCallback((code: string) => {
+    setTranslation(code);
+    localStorage.setItem('bible_translation_preference', code);
+    if (user) {
+      supabase.from('profiles').update({ bible_version: code }).eq('id', user.id).then(() => {});
+    }
+  }, [user]);
+
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
   const [tabsDefaultTab, setTabsDefaultTab] = useState<'favorites' | 'notes'>('favorites');
   const [favSidebarOpen, setFavSidebarOpen] = useState(false);
