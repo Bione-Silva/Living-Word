@@ -302,7 +302,12 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
 
         <div className="w-px h-4 bg-border mx-1" />
 
-        {/* Block style dropdown */}
+        {/* Checklist button */}
+        <button onClick={insertChecklist} className="p-1.5 rounded hover:bg-accent transition-colors" title={labels.checklist[lang]}>
+          <CheckSquare className="h-3.5 w-3.5" />
+        </button>
+
+        <div className="w-px h-4 bg-border mx-1" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-1 px-2 py-1 rounded hover:bg-accent transition-colors text-xs font-medium text-muted-foreground">
