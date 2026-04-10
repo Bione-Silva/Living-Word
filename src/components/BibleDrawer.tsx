@@ -7,7 +7,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { bibleBooks, getBookName, getApiBookName, getTranslation, getTranslationLabel, translationOptions, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, type L } from '@/lib/bible-data';
 
 interface Props {
   open: boolean;
@@ -54,9 +54,10 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     setLoading(true);
     setVerses([]);
     try {
+      const apiTranslation = getApiCodeForVersion(translation);
       const apiBook = getApiBookName(book, translation);
       const ref = `${apiBook} ${chapter}`;
-      const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${translation}`);
+      const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${apiTranslation}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       if (data.verses) {
