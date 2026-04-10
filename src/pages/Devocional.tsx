@@ -490,55 +490,15 @@ export default function Devocional() {
     setNoteSavedSuccess(false);
   };
 
-  /* ─── Styles ─── */
-  const colors = {
-    bg: '#F5F0E8',
-    text: '#2C2416',
-    textMuted: 'hsl(24, 18%, 45%)',
-    gold: '#C9A84C',
-    goldLight: 'hsl(38, 52%, 92%)',
-    goldMuted: 'hsl(38, 40%, 75%)',
-    cardBg: '#FFFDF9',
-    verseBg: '#FEFCF5',
-    prayerBg: '#F0EBE1',
-    border: 'hsl(30, 20%, 85%)',
-  };
-
-  if (loading) {
-    return (
-      <div className="w-full max-w-3xl mx-auto space-y-5 py-4" style={{ backgroundColor: colors.bg }}>
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-5 w-64" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
-        <Skeleton className="h-48 w-full rounded-2xl" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
-      </div>
-    );
-  }
-
-  if (error || !data) {
-    return (
-      <div className="w-full max-w-3xl mx-auto py-8" style={{ backgroundColor: colors.bg }}>
-        <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm hover:opacity-80 mb-6" style={{ color: colors.textMuted }}>
-          <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
-        </Link>
-        <div className="rounded-2xl border p-8 text-center" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
-          <BookOpen className="h-10 w-10 mx-auto mb-3" style={{ color: colors.textMuted }} />
-          <p style={{ color: colors.textMuted }}>{labels.error[lang]}</p>
-        </div>
-      </div>
-    );
-  }
-
   const isViewingPast = !!viewingPast;
-  const displayTitle = isViewingPast ? viewingPast.title : data.title;
-  const displayBody = isViewingPast ? viewingPast.body_text : data.body_text;
-  const displayVerse = isViewingPast ? (viewingPast.anchor_verse || '') : data.anchor_verse;
-  const displayVerseText = isViewingPast ? (viewingPast.anchor_verse_text || '') : data.anchor_verse_text;
-  const displayCategory = isViewingPast ? (viewingPast.category || '') : data.category;
-  const displayDate = isViewingPast ? viewingPast.scheduled_date : data.scheduled_date;
-  const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
-  const formattedDisplayDate = formatDateFull(displayDate.slice(0, 10), lang);
+  const displayTitle = isViewingPast ? (viewingPast?.title || '') : (data?.title || '');
+  const displayBody = isViewingPast ? (viewingPast?.body_text || '') : (data?.body_text || '');
+  const displayVerse = isViewingPast ? (viewingPast?.anchor_verse || '') : (data?.anchor_verse || '');
+  const displayVerseText = isViewingPast ? (viewingPast?.anchor_verse_text || '') : (data?.anchor_verse_text || '');
+  const displayCategory = isViewingPast ? (viewingPast?.category || '') : (data?.category || '');
+  const displayDate = isViewingPast ? (viewingPast?.scheduled_date || '') : (data?.scheduled_date || '');
+  const displayCover = isViewingPast ? viewingPast?.cover_image_url : data?.cover_image_url;
+  const formattedDisplayDate = displayDate ? formatDateFull(displayDate.slice(0, 10), lang) : '';
   const shareCaption = [displayTitle, formattedDisplayDate, displayVerse ? `📖 ${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}` : '']
     .filter(Boolean)
     .join('\n');
@@ -615,6 +575,46 @@ export default function Devocional() {
       }
     }
   }, [createShareImageFile, displayTitle, downloadFile, isMobile, lang, shareCaption]);
+
+  /* ─── Styles ─── */
+  const colors = {
+    bg: '#F5F0E8',
+    text: '#2C2416',
+    textMuted: 'hsl(24, 18%, 45%)',
+    gold: '#C9A84C',
+    goldLight: 'hsl(38, 52%, 92%)',
+    goldMuted: 'hsl(38, 40%, 75%)',
+    cardBg: '#FFFDF9',
+    verseBg: '#FEFCF5',
+    prayerBg: '#F0EBE1',
+    border: 'hsl(30, 20%, 85%)',
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-3xl mx-auto space-y-5 py-4" style={{ backgroundColor: colors.bg }}>
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-5 w-64" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+        <Skeleton className="h-48 w-full rounded-2xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="w-full max-w-3xl mx-auto py-8" style={{ backgroundColor: colors.bg }}>
+        <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm hover:opacity-80 mb-6" style={{ color: colors.textMuted }}>
+          <ArrowLeft className="h-4 w-4" /> {labels.back[lang]}
+        </Link>
+        <div className="rounded-2xl border p-8 text-center" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
+          <BookOpen className="h-10 w-10 mx-auto mb-3" style={{ color: colors.textMuted }} />
+          <p style={{ color: colors.textMuted }}>{labels.error[lang]}</p>
+        </div>
+      </div>
+    );
+  }
 
   /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
