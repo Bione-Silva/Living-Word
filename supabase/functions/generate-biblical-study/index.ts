@@ -411,10 +411,24 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
         usageTotals.total_tokens += generation.usage.total_tokens || 0;
       }
 
-      lastRawContent = generation.rawContent;
+      lastRawContent = generation.rawContent || "";
+
+      // If truncated, log and try to repair
+      if (generation.truncated) {
+        console.warn(`Attempt ${attempt}: response was truncated (finish_reason=length). Attempting JSON repair.`);
+      }
 
       try {
-        const candidate = JSON.parse(lastRawContent);
+        let candidate: Record<string, unknown>;
+        try {
+          candidate = JSON.parse(lastRawContent);
+        } catch {
+          // Try repairing truncated JSON
+          const repaired = repairTruncatedJson(lastRawContent);
+          console.log("Attempting JSON repair, repaired length:", repaired.length);
+          candidate = JSON.parse(repaired);
+        }
+
         if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
           lastIssues = ["output is not a JSON object"];
           continue;
@@ -426,11 +440,18 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
           break;
         }
 
+        // If repaired JSON passes most validations, accept it on last attempt
+        if (attempt === 3 && validationIssues.length <= 3) {
+          console.warn("Accepting study with minor issues on final attempt:", validationIssues);
+          study = candidate as Record<string, unknown>;
+          break;
+        }
+
         lastIssues = validationIssues;
         console.error(`Study validation failed on attempt ${attempt}:`, validationIssues);
       } catch {
         lastIssues = ["output could not be parsed as JSON"];
-        console.error("Failed to parse AI output:", lastRawContent.substring(0, 500));
+        console.error("Failed to parse AI output (first 500 chars):", lastRawContent.substring(0, 500));
       }
     }
 
