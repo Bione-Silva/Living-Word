@@ -186,7 +186,7 @@ function ChipGroup({ items, selected, onSelect, lang }: { items: Record<L, strin
           <button
             key={i}
             onClick={() => onSelect(isActive ? null : label)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${isActive ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-foreground hover:border-primary/40 hover:bg-primary/5'}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${isActive ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5'}`}
           >
             {label}
           </button>
@@ -591,7 +591,7 @@ export default function Sermoes() {
                       <button
                         key={t}
                         onClick={() => setTopic(t)}
-                        className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${topic === t ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-card text-foreground hover:border-primary/40 hover:bg-primary/5'}`}
+                        className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${topic === t ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-card text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5'}`}
                       >
                         {t}
                       </button>
