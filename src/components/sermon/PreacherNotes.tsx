@@ -386,6 +386,28 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
           suppressContentEditableWarning
           onInput={triggerSave}
           onBlur={triggerSave}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox') {
+              // Let checkbox toggle naturally, then save
+              setTimeout(triggerSave, 50);
+            }
+          }}
+          onKeyDown={(e) => {
+            // When pressing Enter inside a checklist item label, insert a new checklist item
+            if (e.key === 'Enter') {
+              const sel = window.getSelection();
+              let node = sel?.anchorNode as HTMLElement | null;
+              while (node && node !== editorRef.current) {
+                if (node.classList?.contains('checklist-item')) {
+                  e.preventDefault();
+                  insertChecklist();
+                  return;
+                }
+                node = node.parentElement;
+              }
+            }
+          }}
           data-placeholder={labels.placeholder[lang]}
           className="min-h-[200px] outline-none text-sm leading-relaxed
             [&:empty]:before:content-[attr(data-placeholder)] [&:empty]:before:text-muted-foreground/50 [&:empty]:before:pointer-events-none
@@ -396,9 +418,12 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
             [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-3 [&_blockquote]:py-1 [&_blockquote]:my-2 [&_blockquote]:text-muted-foreground [&_blockquote]:italic
             [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1
             [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1
-            [&_li]:my-0.5"
+            [&_li]:my-0.5
+            [&_.checklist-item]:flex [&_.checklist-item]:items-center [&_.checklist-item]:gap-1.5 [&_.checklist-item]:my-1
+            [&_.checklist-item_input:checked+label]:line-through [&_.checklist-item_input:checked+label]:text-muted-foreground"
           style={{ color: textColor }}
         />
+      </div>
       </div>
     </div>
   );
