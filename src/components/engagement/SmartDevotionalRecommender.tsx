@@ -39,7 +39,7 @@ export function SmartDevotionalRecommender() {
     const fetchRec = async () => {
       try {
         const { data: resp } = await supabase.functions.invoke('recommend-devotional', {
-          body: {},
+          body: { language: lang },
         });
         if (resp && !resp.error) setData(resp);
       } catch {
