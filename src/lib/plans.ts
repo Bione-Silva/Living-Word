@@ -165,7 +165,7 @@ export const PLAN_DISPLAY_NAMES: Record<PlanSlug, Record<L, string>> = {
   free: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
   starter: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
   pro: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
-  igreja: { PT: 'Igreja', EN: 'Church', ES: 'Iglesia' },
+  igreja: { PT: 'Igreja', EN: 'Ministry', ES: 'Ministerio' },
 };
 
 // ── Plan prices (USD) ──
