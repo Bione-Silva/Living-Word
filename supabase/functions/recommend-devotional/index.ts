@@ -166,7 +166,7 @@ Respond ONLY with valid JSON:
       theme: nextTheme,
       reasoning,
       seriesInfo,
-      topThemes,
+      topThemes: translatedTopThemes,
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   } catch (e) {
     console.error('Error:', e)
