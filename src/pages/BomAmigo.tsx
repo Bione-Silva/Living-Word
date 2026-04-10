@@ -276,7 +276,7 @@ export default function BomAmigo() {
             onKeyDown={handleKeyDown}
             placeholder={labels.placeholder[lang]}
             rows={1}
-            className="flex-1 min-h-[44px] max-h-32 px-4 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+            className="flex-1 min-h-[44px] max-h-32 px-3 py-3 rounded-xl border border-border bg-card text-xs leading-snug text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
           />
           <button
             onClick={() => sendMessage(input)}
