@@ -106,7 +106,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <LangKeyedApp>
+            <>
               <Routes>
                 {/* Subdomain detection: pastorjoao.livingwordgo.com → /blog/pastorjoao */}
                 <Route path="/" element={<><SubdomainRedirect /><Landing /></>} />
@@ -151,7 +151,7 @@ const App = () => (
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </LangKeyedApp>
+            </>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
