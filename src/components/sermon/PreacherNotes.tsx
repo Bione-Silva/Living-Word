@@ -389,13 +389,24 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
         {/* Spacer + status */}
         <div className="flex-1" />
         <div className="flex items-center gap-2 shrink-0">
+          {hasContent && (
+            <button
+              onClick={handleAnalyze}
+              disabled={isAnalyzing}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 hover:bg-primary/20 text-primary text-[10px] font-medium transition-colors disabled:opacity-50"
+              title={lang === 'PT' ? 'Analisar com IA' : lang === 'ES' ? 'Analizar con IA' : 'Analyze with AI'}
+            >
+              {isAnalyzing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+              {lang === 'PT' ? 'Analisar' : lang === 'ES' ? 'Analizar' : 'Analyze'}
+            </button>
+          )}
           {saveStatus === 'saving' && (
             <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
               <Loader2 className="h-3 w-3 animate-spin" /> {labels.saving[lang]}
             </span>
           )}
           {saveStatus === 'saved' && (
-            <span className="flex items-center gap-1 text-[10px] text-green-600">
+            <span className="flex items-center gap-1 text-[10px] text-primary">
               <Check className="h-3 w-3" /> {labels.saved[lang]}
             </span>
           )}
