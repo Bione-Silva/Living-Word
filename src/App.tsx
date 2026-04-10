@@ -93,6 +93,12 @@ function SyncLanguageWithProfile() {
   return null;
 }
 
+/** Wraps children with a key that changes on language switch, forcing full remount */
+function LangKeyedApp({ children }: { children: React.ReactNode }) {
+  const { langVersion } = useLanguage();
+  return <React.Fragment key={langVersion}>{children}</React.Fragment>;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
