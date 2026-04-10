@@ -64,6 +64,7 @@ async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response | n
 export function BibleReadingView({
   bookId, chapter, totalChapters, translation,
   onBack, onHome, onChapterChange, onTabsRefresh, onTranslationChange,
+  highlightVerse, onHighlightClear,
 }: Props) {
   const { lang } = useLanguage();
   const { user } = useAuth();
@@ -78,6 +79,38 @@ export function BibleReadingView({
   const [studyOpen, setStudyOpen] = useState(false);
   const [studyPassage, setStudyPassage] = useState('');
   const [studyVerseText, setStudyVerseText] = useState('');
+  const [activeHighlightVerses, setActiveHighlightVerses] = useState<Set<number>>(new Set());
+
+  // Parse highlightVerse param (e.g. "22", "22-23") into a set of verse numbers
+  useEffect(() => {
+    if (!highlightVerse || verses.length === 0) {
+      setActiveHighlightVerses(new Set());
+      return;
+    }
+    const parts = highlightVerse.split('-').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n));
+    const verseSet = new Set<number>();
+    if (parts.length === 2) {
+      for (let i = parts[0]; i <= parts[1]; i++) verseSet.add(i);
+    } else if (parts.length === 1) {
+      verseSet.add(parts[0]);
+    }
+    setActiveHighlightVerses(verseSet);
+
+    // Scroll to the first highlighted verse after a tick
+    if (verseSet.size > 0) {
+      const firstVerse = Math.min(...verseSet);
+      setTimeout(() => {
+        const el = document.getElementById(`verse-${firstVerse}`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 400);
+      // Auto-clear after 8s
+      const timer = setTimeout(() => {
+        setActiveHighlightVerses(new Set());
+        onHighlightClear?.();
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightVerse, verses]);
 
   const handleOpenStudy = (passage: string, verseText: string) => {
     setStudyPassage(passage);
