@@ -934,25 +934,25 @@ export default function Devocional() {
                 formattedDate={formattedDisplayDate}
               />
             </div>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
+            <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => shareDevotionalImage('download')}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Download className="h-4 w-4" /> {labels.saveImage[lang]}
               </button>
               <button
                 onClick={() => shareDevotionalImage('share')}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Share2 className="h-4 w-4" /> {labels.share[lang]}
               </button>
               <button
                 onClick={() => shareDevotionalImage('whatsapp')}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
-                style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <WhatsAppIcon /> {labels.shareWa[lang]}
               </button>
@@ -1027,7 +1027,7 @@ export default function Devocional() {
           <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
-          <button onClick={() => shareDevotionalImage('whatsapp')} disabled={!displayCover} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}>
+          <button onClick={() => shareDevotionalImage('whatsapp')} disabled={!displayCover} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <WhatsAppIcon /> {labels.shareWa[lang]}
           </button>
           <button
