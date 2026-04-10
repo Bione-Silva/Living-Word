@@ -124,7 +124,7 @@ export function BibleReadingView({
   const name = getBookName(bookId, lang);
   const prev: Record<L, string> = { PT: 'Anterior', EN: 'Previous', ES: 'Anterior' };
   const next: Record<L, string> = { PT: 'Próximo', EN: 'Next', ES: 'Siguiente' };
-  const options = translationOptions[lang];
+  const { primary: primaryVersions, secondary: secondaryVersions } = getVersionsForUserLanguage(lang);
 
   const fetchChapter = useCallback(async (isRetry = false) => {
     if (isRetry) setRetrying(true); else setLoading(true);
