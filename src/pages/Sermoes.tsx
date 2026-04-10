@@ -84,7 +84,7 @@ const topicSuggestions: Record<L, string[]> = {
 };
 
 const labels = {
-  title: { PT: 'Gerador de Pregação', EN: 'Sermon Generator', ES: 'Generador de Predicación' },
+  title: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón' },
   breadcrumb: { PT: 'Ferramentas', EN: 'Tools', ES: 'Herramientas' },
   subtitle: {
     PT: 'Crie esboços completos de sermões, estruture suas mensagens com introdução, desenvolvimento e aplicação prática. IA especializada em homilética.',
