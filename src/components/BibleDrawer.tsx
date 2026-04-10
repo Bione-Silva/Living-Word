@@ -114,14 +114,13 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     return verseNum >= highlightRange.start && verseNum <= end;
   };
 
-  const versionGroups = useMemo(() => getVersionsByLanguage(), []);
+  const { primary: primaryVersions, secondary: secondaryVersions } = useMemo(() => getVersionsForUserLanguage(lang), [lang]);
   const currentVersion = getBibleVersion(translation);
   const currentTranslationLabel = currentVersion ? `${currentVersion.name} (${currentVersion.shortLabel})` : translation;
 
   const langGroupLabels: Record<string, Record<L, string>> = {
-    'Português': { PT: 'Português', EN: 'Portuguese', ES: 'Portugués' },
-    'English': { PT: 'Inglês', EN: 'English', ES: 'Inglés' },
-    'Español': { PT: 'Espanhol', EN: 'Spanish', ES: 'Español' },
+    'primary': { PT: 'Recomendadas', EN: 'Recommended', ES: 'Recomendadas' },
+    'secondary': { PT: 'Outras versões', EN: 'Other versions', ES: 'Otras versiones' },
   };
 
   const renderVersionSelector = (compact = false) => (
@@ -131,12 +130,12 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
         <SelectValue placeholder={currentVersion?.shortLabel || translation} />
       </SelectTrigger>
       <SelectContent className="max-h-[340px]">
-        {Object.entries(versionGroups).map(([groupName, versions]) => (
-          <SelectGroup key={groupName}>
+        {primaryVersions.length > 0 && (
+          <SelectGroup>
             <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1.5">
-              {langGroupLabels[groupName]?.[lang] || groupName}
+              {langGroupLabels['primary'][lang]}
             </SelectLabel>
-            {versions.filter(v => v.isAvailable).map(v => (
+            {primaryVersions.filter(v => v.isAvailable).map(v => (
               <SelectItem key={v.code} value={v.code} className="text-xs">
                 <span className="flex items-center gap-2">
                   <span className="font-semibold text-foreground">{v.shortLabel}</span>
@@ -145,7 +144,22 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
               </SelectItem>
             ))}
           </SelectGroup>
-        ))}
+        )}
+        {secondaryVersions.length > 0 && (
+          <SelectGroup>
+            <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1.5">
+              {langGroupLabels['secondary'][lang]}
+            </SelectLabel>
+            {secondaryVersions.filter(v => v.isAvailable).map(v => (
+              <SelectItem key={v.code} value={v.code} className="text-xs">
+                <span className="flex items-center gap-2">
+                  <span className="font-semibold text-foreground">{v.shortLabel}</span>
+                  <span className="text-muted-foreground text-[10px]">{v.name} ({v.language})</span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        )}
       </SelectContent>
     </Select>
   );
