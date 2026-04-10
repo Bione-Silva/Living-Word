@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react'; 
-import { toPng } from 'html-to-image';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,7 +16,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
 import { useEngagementTracker } from '@/components/engagement/EngagementTracker';
 import { ReflectionCapture } from '@/components/engagement/ReflectionCapture';
-import { DevotionalShareModal } from '@/components/DevotionalShareModal';
+import { captureNodeAsPng } from '@/components/social-studio/export-utils';
+import { DevotionalShareArt } from '@/components/DevotionalShareArt';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -43,7 +43,9 @@ interface DevotionalData {
 interface PastDevotional {
   id: string;
   title: string;
+  category?: string;
   anchor_verse: string;
+  anchor_verse_text?: string;
   scheduled_date: string;
   body_text: string;
   cover_image_url?: string | null;
@@ -81,6 +83,11 @@ const labels = {
   saveNote: { PT: 'Salvar Reflexão', EN: 'Save Reflection', ES: 'Guardar Reflexión' },
   saved: { PT: 'Reflexão salva!', EN: 'Reflection saved!', ES: '¡Reflexión guardada!' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
+  downloaded: { PT: 'Imagem pronta!', EN: 'Image ready!', ES: '¡Imagen lista!' },
+  shareImageError: { PT: 'Não foi possível gerar a imagem agora.', EN: 'Could not generate the image right now.', ES: 'No fue posible generar la imagen ahora.' },
+  shareFallback: { PT: 'Seu navegador baixou a imagem para você compartilhar.', EN: 'Your browser downloaded the image for you to share.', ES: 'Tu navegador descargó la imagen para que la compartas.' },
+  whatsappHint: { PT: 'Na próxima tela, escolha o WhatsApp para enviar a imagem.', EN: 'On the next screen, choose WhatsApp to send the image.', ES: 'En la siguiente pantalla, elige WhatsApp para enviar la imagen.' },
+  whatsappFallback: { PT: 'Imagem baixada. Agora anexe no WhatsApp.', EN: 'Image downloaded. Now attach it in WhatsApp.', ES: 'Imagen descargada. Ahora adjúntala en WhatsApp.' },
   error: { PT: 'Ops, não conseguimos carregar a palavra de hoje. Tente novamente.', EN: "Oops, we couldn't load today's word. Please try again.", ES: 'Ups, no pudimos cargar la palabra de hoy. Inténtalo de nuevo.' },
   history: { PT: 'Histórico de Leituras', EN: 'Reading History', ES: 'Historial de Lecturas' },
   historySub: { PT: 'Releia as palavras que marcaram sua semana', EN: 'Revisit the words that marked your week', ES: 'Relee las palabras que marcaron tu semana' },
@@ -328,9 +335,9 @@ export default function Devocional() {
   const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
   const [showAddReflection, setShowAddReflection] = useState(false);
   const [readingModalOpen, setReadingModalOpen] = useState(false);
-  const [shareModalOpen, setShareModalOpen] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const coverCardRef = useRef<HTMLDivElement>(null);
+  const shareArtRef = useRef<HTMLDivElement>(null);
+  const [preferredBibleVersion, setPreferredBibleVersion] = useState('NVI');
 
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
@@ -379,13 +386,14 @@ export default function Devocional() {
     const load = async () => {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('language')
+        .select('language, bible_version')
         .eq('id', user.id)
         .single();
       const userLang = profile?.language || lang;
+      setPreferredBibleVersion(profile?.bible_version || 'NVI');
       const { data } = await supabase
         .from('devotionals')
-        .select('id, title, anchor_verse, scheduled_date, body_text, cover_image_url, audio_url_nova, audio_url_alloy, audio_url_onyx')
+        .select('id, title, category, anchor_verse, anchor_verse_text, scheduled_date, body_text, cover_image_url, audio_url_nova, audio_url_alloy, audio_url_onyx')
         .eq('language', userLang)
         .not('audio_url_onyx', 'is', null)
         .order('scheduled_date', { ascending: false })
@@ -469,14 +477,6 @@ export default function Devocional() {
     toast.success(labels.copied[lang]);
   };
 
-  const handleWhatsApp = () => {
-    if (!data) return;
-    const text = viewingPast
-      ? `*${viewingPast.title}*\n\n${viewingPast.body_text.slice(0, 500)}...`
-      : `*${data.title}*\n\n_"${data.anchor_verse_text}"_\n— ${data.anchor_verse}\n\n${data.body_text.slice(0, 500)}...\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-  };
-
   const handleSaveNote = async () => {
     if (!personalNote.trim() || !user || !data) return;
     await autoSaveNote(personalNote);
@@ -489,6 +489,92 @@ export default function Devocional() {
     setShowAddReflection(true);
     setNoteSavedSuccess(false);
   };
+
+  const isViewingPast = !!viewingPast;
+  const displayTitle = isViewingPast ? (viewingPast?.title || '') : (data?.title || '');
+  const displayBody = isViewingPast ? (viewingPast?.body_text || '') : (data?.body_text || '');
+  const displayVerse = isViewingPast ? (viewingPast?.anchor_verse || '') : (data?.anchor_verse || '');
+  const displayVerseText = isViewingPast ? (viewingPast?.anchor_verse_text || '') : (data?.anchor_verse_text || '');
+  const displayCategory = isViewingPast ? (viewingPast?.category || '') : (data?.category || '');
+  const displayDate = isViewingPast ? (viewingPast?.scheduled_date || '') : (data?.scheduled_date || '');
+  const displayCover = isViewingPast ? viewingPast?.cover_image_url : data?.cover_image_url;
+  const formattedDisplayDate = displayDate ? formatDateFull(displayDate.slice(0, 10), lang) : '';
+  const shareCaption = [displayTitle, formattedDisplayDate, displayVerse ? `📖 ${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}` : '']
+    .filter(Boolean)
+    .join('\n');
+
+  const downloadFile = useCallback((file: File) => {
+    const fileUrl = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = fileUrl;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(fileUrl);
+  }, []);
+
+  const createShareImageFile = useCallback(async () => {
+    if (!shareArtRef.current) {
+      throw new Error('share-art-unavailable');
+    }
+
+    const dataUrl = await captureNodeAsPng(shareArtRef.current);
+    const blob = await (await fetch(dataUrl)).blob();
+    const safeTitle = displayTitle
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 48)
+      .toLowerCase();
+
+    return new File([blob], `living-word-${displayDate}-${safeTitle || 'devocional'}.png`, {
+      type: 'image/png',
+    });
+  }, [displayDate, displayTitle]);
+
+  const shareDevotionalImage = useCallback(async (mode: 'download' | 'share' | 'whatsapp') => {
+    try {
+      const file = await createShareImageFile();
+      const canShareFiles = typeof navigator.share === 'function'
+        && (typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] }));
+
+      if (mode === 'download') {
+        if (isMobile && canShareFiles) {
+          await navigator.share({
+            title: displayTitle,
+            files: [file],
+          });
+          return;
+        }
+
+        downloadFile(file);
+        toast.success(labels.downloaded[lang]);
+        return;
+      }
+
+      if (canShareFiles) {
+        if (mode === 'whatsapp') {
+          toast.success(labels.whatsappHint[lang]);
+        }
+
+        await navigator.share({
+          title: displayTitle,
+          text: shareCaption,
+          files: [file],
+        });
+        return;
+      }
+
+      downloadFile(file);
+      toast.success(mode === 'whatsapp' ? labels.whatsappFallback[lang] : labels.shareFallback[lang]);
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        toast.error(labels.shareImageError[lang]);
+      }
+    }
+  }, [createShareImageFile, displayTitle, downloadFile, isMobile, lang, shareCaption]);
 
   /* ─── Styles ─── */
   const colors = {
@@ -529,15 +615,6 @@ export default function Devocional() {
       </div>
     );
   }
-
-  const isViewingPast = !!viewingPast;
-  const displayTitle = isViewingPast ? viewingPast.title : data.title;
-  const displayBody = isViewingPast ? viewingPast.body_text : data.body_text;
-  const displayVerse = isViewingPast ? (viewingPast.anchor_verse || '') : data.anchor_verse;
-  const displayVerseText = isViewingPast ? '' : data.anchor_verse_text;
-  const displayCategory = isViewingPast ? '' : data.category;
-  const displayDate = isViewingPast ? viewingPast.scheduled_date : data.scheduled_date;
-  const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
   /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
@@ -830,121 +907,53 @@ export default function Devocional() {
               </div>
             </div>
             <div className="flex justify-center">
-              <div ref={coverCardRef} className="relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm aspect-[3/4]">
-                {/* Background image */}
-                <img src={displayCover} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-
-                {/* Gradient overlays for text readability */}
-                <div className="absolute inset-0" style={{
-                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.2) 65%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0.85) 100%)',
-                }} />
-
-                {/* Top: Brand */}
-                <div className="absolute top-5 left-0 right-0 flex items-center justify-center">
-                  <span
-                    className="text-[10px] font-bold uppercase tracking-[0.25em] px-4 py-1"
-                    style={{ color: 'rgba(255,255,255,0.7)', borderTop: '1px solid rgba(255,255,255,0.25)', borderBottom: '1px solid rgba(255,255,255,0.25)' }}
-                  >
-                    Living Word
-                  </span>
-                </div>
-
-                {/* Center: Title + Category — smaller on mobile to avoid overlap */}
-                <div className="absolute inset-x-0 top-[30%] flex flex-col items-center justify-start px-6 sm:px-8 text-center">
-                  <h3
-                    className="font-playfair text-xl sm:text-3xl font-black leading-tight text-white drop-shadow-lg"
-                    style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}
-                  >
-                    {displayTitle}
-                  </h3>
-                  {displayCategory && (
-                    <>
-                      <div className="flex items-center gap-3 mt-3 mb-1">
-                        <span className="h-px w-6" style={{ backgroundColor: 'rgba(255,255,255,0.4)' }} />
-                        <span className="text-white/50 text-xs">✦</span>
-                        <span className="h-px w-6" style={{ backgroundColor: 'rgba(255,255,255,0.4)' }} />
-                      </div>
-                      <span className="text-xs sm:text-sm tracking-wider text-white/80 font-medium">{displayCategory}</span>
-                    </>
-                  )}
-                </div>
-
-                {/* Bottom: Verse — truncated on mobile to prevent overlap */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 pt-8">
-                  {displayVerseText && (
-                    <p
-                      className="text-white/90 text-[11px] sm:text-sm italic leading-relaxed mb-1 line-clamp-3 sm:line-clamp-none"
-                      style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
-                    >
-                      {displayVerseText}
-                    </p>
-                  )}
-                  {displayVerse && (
-                    <p className="text-white/60 text-[10px] sm:text-[11px] font-medium">&mdash; {displayVerse}</p>
-                  )}
-                </div>
-              </div>
+              <DevotionalShareArt
+                lang={lang}
+                imageUrl={displayCover}
+                title={displayTitle}
+                category={displayCategory}
+                verseText={displayVerseText}
+                verseReference={displayVerse}
+                bibleVersion={preferredBibleVersion}
+                formattedDate={formattedDisplayDate}
+              />
             </div>
             <div className="flex items-center justify-center gap-2 flex-wrap">
               <button
-                onClick={async () => {
-                  try {
-                    if (coverCardRef.current) {
-                      const dataUrl = await toPng(coverCardRef.current, {
-                        pixelRatio: 3,
-                        cacheBust: true,
-                      });
-                      const blob = await (await fetch(dataUrl)).blob();
-                      const file = new File([blob], `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`, { type: 'image/png' });
-
-                      // Use Web Share API (saves to gallery on mobile)
-                      if (navigator.share && navigator.canShare?.({ files: [file] })) {
-                        await navigator.share({
-                          title: displayTitle,
-                          text: `${displayTitle}\n📖 ${displayVerse}`,
-                          files: [file],
-                        });
-                      } else {
-                        // Desktop fallback: normal download
-                        const a = document.createElement('a');
-                        a.href = dataUrl;
-                        a.download = file.name;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                      }
-                    }
-                  } catch (err: any) {
-                    if (err?.name !== 'AbortError') {
-                      window.open(displayCover!, '_blank');
-                    }
-                  }
-                }}
+                onClick={() => shareDevotionalImage('download')}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Download className="h-4 w-4" /> {labels.saveImage[lang]}
               </button>
               <button
-                onClick={() => {
-                  if (navigator.share) navigator.share({ title: displayTitle, url: displayCover! });
-                  else { navigator.clipboard.writeText(displayCover!); toast.success(labels.copied[lang]); }
-                }}
+                onClick={() => shareDevotionalImage('share')}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Share2 className="h-4 w-4" /> {labels.share[lang]}
               </button>
               <button
-                onClick={() => {
-                  const text = `*${displayTitle}*\n📖 ${displayVerse}\n\n${displayCover}`;
-                  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-                }}
+                onClick={() => shareDevotionalImage('whatsapp')}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}
               >
                 <WhatsAppIcon /> {labels.shareWa[lang]}
               </button>
+            </div>
+            <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-0" aria-hidden="true">
+              <DevotionalShareArt
+                ref={shareArtRef}
+                exportMode
+                lang={lang}
+                imageUrl={displayCover}
+                title={displayTitle}
+                category={displayCategory}
+                verseText={displayVerseText}
+                verseReference={displayVerse}
+                bibleVersion={preferredBibleVersion}
+                formattedDate={formattedDisplayDate}
+              />
             </div>
           </div>
         )}
@@ -1003,12 +1012,13 @@ export default function Devocional() {
           <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
-          <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}>
+          <button onClick={() => shareDevotionalImage('whatsapp')} disabled={!displayCover} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}>
             <WhatsAppIcon /> {labels.shareWa[lang]}
           </button>
           <button
-            onClick={() => setShareModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80"
+            onClick={() => shareDevotionalImage('share')}
+            disabled={!displayCover}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50"
             style={{ borderColor: colors.gold + '50', color: '#fff', backgroundColor: colors.gold }}
           >
             <Send className="h-3.5 w-3.5" /> {labels.share[lang]}
@@ -1186,25 +1196,14 @@ export default function Devocional() {
     </div>
   );
 
-  const shareModal = data ? (
-    <DevotionalShareModal
-      open={shareModalOpen}
-      onOpenChange={setShareModalOpen}
-      devotionalTitle={data.title}
-      devotionalVerse={`${data.anchor_verse} — ${data.anchor_verse_text}`}
-      devotionalDate={data.scheduled_date}
-    />
-  ) : null;
-
   if (!isMobile && user) {
     return (
       <div className="flex gap-5 items-start w-full">
         {mainContent}
         {sidebar}
-        {shareModal}
       </div>
     );
   }
 
-  return <>{mainContent}{shareModal}</>;
+  return <>{mainContent}</>;
 }
