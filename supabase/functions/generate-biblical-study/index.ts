@@ -145,7 +145,7 @@ async function requestStudyGeneration({
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 7000,
+      max_tokens: 12000,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
