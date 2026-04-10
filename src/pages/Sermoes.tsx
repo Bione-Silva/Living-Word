@@ -639,6 +639,14 @@ export default function Sermoes() {
         sermonMarkdown={lastSermonContent}
         sermonTitle={lastSermonTitle}
       />
+
+      {/* ─── Slides modal ─── */}
+      <SermonSlidesModal
+        open={slidesOpen}
+        onOpenChange={setSlidesOpen}
+        sermonMarkdown={lastSermonContent}
+        sermonTitle={lastSermonTitle}
+      />
     </div>
   );
 }
