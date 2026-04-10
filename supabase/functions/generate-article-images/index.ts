@@ -180,7 +180,18 @@ Deno.serve(async (req) => {
     const sorted = [...images].sort((a, b) => b.lineIndex - a.lineIndex);
     for (const img of sorted) {
       const insertAt = Math.min(img.lineIndex + 2, lines.length);
-      lines.splice(insertAt, 0, "", `![${img.heading}](${img.url})`, "");
+      // Check if there's already an image in the next 5 lines — replace its URL instead of inserting
+      let replaced = false;
+      for (let k = insertAt; k < Math.min(insertAt + 5, lines.length); k++) {
+        if (/^\s*!\[.*?\]\(.*?\)\s*$/.test(lines[k])) {
+          lines[k] = `![${img.heading}](${img.url})`;
+          replaced = true;
+          break;
+        }
+      }
+      if (!replaced) {
+        lines.splice(insertAt, 0, "", `![${img.heading}](${img.url})`, "");
+      }
     }
     const updatedContent = lines.join("\n");
 
