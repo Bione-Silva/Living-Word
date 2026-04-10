@@ -58,9 +58,20 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
       const apiBook = getApiBookName(book, translation);
       const ref = `${apiBook} ${chapter}`;
       const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${apiTranslation}`);
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      if (data.verses) {
+      let data = res.ok ? await res.json() : null;
+      
+      // If failed, fallback to language-appropriate version
+      if ((!data || (!data.verses && !data.text))) {
+        const fb = lang === 'EN' ? 'web' : 'almeida';
+        if (apiTranslation !== fb) {
+          const fbBook = getApiBookName(book, fb === 'almeida' ? 'ara' : 'web');
+          const fbRef = `${fbBook} ${chapter}`;
+          const fbRes = await fetch(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
+          data = fbRes.ok ? await fbRes.json() : null;
+        }
+      }
+      
+      if (data?.verses) {
         setVerses(data.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
       }
     } catch {
@@ -68,7 +79,7 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     } finally {
       setLoading(false);
     }
-  }, [book, chapter, translation]);
+  }, [book, chapter, translation, lang]);
 
   useEffect(() => {
     if (open) fetchChapter();
