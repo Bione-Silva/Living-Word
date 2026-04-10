@@ -711,21 +711,43 @@ export default function Sermoes() {
 
       {/* ─── Right sidebar: history (desktop) ─── */}
       <aside className="hidden lg:flex flex-col w-72 border-l border-border bg-background shrink-0">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <span className="text-xs font-bold text-muted-foreground tracking-wide">{labels.history[lang]}</span>
-          <button onClick={handleNewSermon} className="text-xs font-bold text-primary hover:underline">{labels.newSermon[lang]}</button>
-        </div>
-        <ScrollArea className="flex-1">
-          <div className="p-2 space-y-1">
-            {sessions.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">{labels.noSermons[lang]}</p>}
-            {sessions.map((s) => renderSessionItem(s))}
-          </div>
-        </ScrollArea>
-        <div className="p-2 border-t border-border">
-          <button onClick={handleNewSermon} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
-            <Plus className="h-3.5 w-3.5" /> {labels.newSermon[lang]}
+        {/* Tab bar */}
+        <div className="flex border-b border-border">
+          <button
+            onClick={() => setSidebarTab('history')}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-3 text-xs font-bold tracking-wide transition-colors ${sidebarTab === 'history' ? 'text-foreground border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <History className="h-3.5 w-3.5" />
+            {labels.history[lang]}
+          </button>
+          <button
+            onClick={() => setSidebarTab('notes')}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-3 text-xs font-bold tracking-wide transition-colors ${sidebarTab === 'notes' ? 'text-foreground border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <PenLine className="h-3.5 w-3.5" />
+            {lang === 'PT' ? 'ANOTAÇÕES' : lang === 'ES' ? 'NOTAS' : 'NOTES'}
           </button>
         </div>
+
+        {sidebarTab === 'history' ? (
+          <>
+            <ScrollArea className="flex-1">
+              <div className="p-2 space-y-1">
+                {sessions.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">{labels.noSermons[lang]}</p>}
+                {sessions.map((s) => renderSessionItem(s))}
+              </div>
+            </ScrollArea>
+            <div className="p-2 border-t border-border">
+              <button onClick={handleNewSermon} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+                <Plus className="h-3.5 w-3.5" /> {labels.newSermon[lang]}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col min-h-0">
+            <PreacherNotes materialId={activeSessionId} />
+          </div>
+        )}
       </aside>
 
       {/* ─── Mobile history sheet ─── */}
