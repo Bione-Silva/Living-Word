@@ -366,6 +366,23 @@ export default function Blog() {
                   </div>
 
                   <div className="flex items-center gap-2 mt-auto pt-2">
+                    {!isPublished && !isArchived && (
+                      <Button
+                        size="sm"
+                        className="gap-1.5 text-xs h-8"
+                        disabled={publishing === article.id}
+                        onClick={() => handlePublish(article)}
+                      >
+                        {publishing === article.id ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            {publishStep === 'cover' ? 'Gerando capa...' : 'Publicando...'}
+                          </>
+                        ) : (
+                          <><Upload className="w-3 h-3" /> {t('blog.publish') || 'Publicar'}</>
+                        )}
+                      </Button>
+                    )}
                     {isPublished && profile?.blog_handle && (
                       <Link to={`/blog/${profile.blog_handle}/${article.id}`} target="_blank">
                         <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8">
@@ -373,7 +390,7 @@ export default function Blog() {
                         </Button>
                       </Link>
                     )}
-                    <Button size="sm" variant={isPublished ? 'outline' : 'default'} className="gap-1.5 text-xs h-8" onClick={() => openEditor(article)}>
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8" onClick={() => openEditor(article)}>
                       <Pencil className="w-3 h-3" /> {t('blog.edit')}
                     </Button>
                     <DropdownMenu>
