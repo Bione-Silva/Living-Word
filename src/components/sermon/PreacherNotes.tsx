@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Check, Trash2, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Minus, Quote, ChevronDown, Highlighter, CheckSquare } from 'lucide-react';
+import { Loader2, Check, Trash2, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Minus, Quote, ChevronDown, Highlighter, CheckSquare, Sparkles, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
+import ReactMarkdown from 'react-markdown';
 import {
   DropdownMenu,
   DropdownMenuContent,
