@@ -70,6 +70,9 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [noteId, setNoteId] = useState<string | null>(null);
   const [hasContent, setHasContent] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const lastSavedRef = useRef({ content: '', textColor: '#374151' });
