@@ -255,16 +255,7 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
               </div>
 
               <div className="flex items-center gap-2">
-                <Select value={translation} onValueChange={setTranslation}>
-                  <SelectTrigger className="flex-1 h-8 text-xs text-foreground">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableTranslations.map((t) => (
-                      <SelectItem key={t.code} value={t.code}>{t.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {renderVersionSelector()}
               </div>
 
               <div className="flex items-center gap-2">
