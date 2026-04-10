@@ -1114,6 +1114,50 @@ export type Database = {
         }
         Relationships: []
       }
+      visual_outputs: {
+        Row: {
+          created_at: string
+          format: string
+          id: string
+          language: string
+          material_id: string | null
+          output_type: string
+          slides_data: Json
+          user_id: string
+          variation_number: number
+        }
+        Insert: {
+          created_at?: string
+          format?: string
+          id?: string
+          language?: string
+          material_id?: string | null
+          output_type?: string
+          slides_data?: Json
+          user_id: string
+          variation_number?: number
+        }
+        Update: {
+          created_at?: string
+          format?: string
+          id?: string
+          language?: string
+          material_id?: string | null
+          output_type?: string
+          slides_data?: Json
+          user_id?: string
+          variation_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visual_outputs_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspaces: {
         Row: {
           brand_color: string | null
