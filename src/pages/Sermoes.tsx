@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -16,11 +16,6 @@ import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 
 type L = 'PT' | 'EN' | 'ES';
-
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
 
 const AGENT_ID = 'sermon_generator';
 
@@ -90,9 +85,9 @@ const labels = {
   title: { PT: 'Gerador de Pregação', EN: 'Sermon Generator', ES: 'Generador de Predicación' },
   breadcrumb: { PT: 'Ferramentas', EN: 'Tools', ES: 'Herramientas' },
   subtitle: {
-    PT: 'Crie pregações completas com estrutura profunda, referências bíblicas e aplicações práticas.',
-    EN: 'Create complete sermons with deep structure, biblical references and practical applications.',
-    ES: 'Cree predicaciones completas con estructura profunda, referencias bíblicas y aplicaciones prácticas.',
+    PT: 'Crie esboços completos de sermões, estruture suas mensagens com introdução, desenvolvimento e aplicação prática. IA especializada em homilética.',
+    EN: 'Create complete sermon outlines, structure your messages with introduction, development and practical application. AI specialized in homiletics.',
+    ES: 'Cree bosquejos completos de sermones, estructure sus mensajes con introducción, desarrollo y aplicación práctica. IA especializada en homilética.',
   },
   preachingType: { PT: '📋 TIPO DE PREGAÇÃO', EN: '📋 PREACHING TYPE', ES: '📋 TIPO DE PREDICACIÓN' },
   audience: { PT: '👥 PÚBLICO-ALVO', EN: '👥 AUDIENCE', ES: '👥 PÚBLICO OBJETIVO' },
@@ -100,12 +95,11 @@ const labels = {
   style: { PT: 'ESTILO DE PREGAÇÃO', EN: 'PREACHING STYLE', ES: 'ESTILO DE PREDICACIÓN' },
   tone: { PT: 'TOM DA MENSAGEM', EN: 'MESSAGE TONE', ES: 'TONO DEL MENSAJE' },
   suggestions: { PT: '✨ SUGESTÕES DE TEMA', EN: '✨ TOPIC SUGGESTIONS', ES: '✨ SUGERENCIAS DE TEMA' },
-  placeholder: { PT: 'Digite sua mensagem...', EN: 'Type your message...', ES: 'Escribe tu mensaje...' },
-  send: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
-  enterHint: { PT: 'Enter para enviar • Shift+Enter para nova linha', EN: 'Enter to send • Shift+Enter for new line', ES: 'Enter para enviar • Shift+Enter para nueva línea' },
-  thinking: { PT: 'Gerando sermão...', EN: 'Generating sermon...', ES: 'Generando sermón...' },
+  topicPlaceholder: { PT: 'Digite o tema ou passagem bíblica...', EN: 'Enter topic or Bible passage...', ES: 'Escriba el tema o pasaje bíblico...' },
+  generate: { PT: 'Gerar Sermão', EN: 'Generate Sermon', ES: 'Generar Sermón' },
+  generating: { PT: 'Gerando sermão...', EN: 'Generating sermon...', ES: 'Generando sermón...' },
   history: { PT: 'HISTÓRICO RECENTE', EN: 'RECENT HISTORY', ES: 'HISTORIAL RECIENTE' },
-  newChat: { PT: 'NOVO CHAT', EN: 'NEW CHAT', ES: 'NUEVO CHAT' },
+  newSermon: { PT: 'NOVO SERMÃO', EN: 'NEW SERMON', ES: 'NUEVO SERMÓN' },
   copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
   sendWpp: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   carousel: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
@@ -115,9 +109,8 @@ const labels = {
   save: { PT: 'Salvar', EN: 'Save', ES: 'Guardar' },
   saved: { PT: 'Salvo!', EN: 'Saved!', ES: '¡Guardado!' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
-  messages: { PT: 'mensagens', EN: 'messages', ES: 'mensajes' },
   noSermons: { PT: 'Nenhum sermão criado ainda.', EN: 'No sermons created yet.', ES: 'Ningún sermón creado aún.' },
-  loadingSession: { PT: 'Carregando...', EN: 'Loading...', ES: 'Cargando...' },
+  backToForm: { PT: '← Novo Sermão', EN: '← New Sermon', ES: '← Nuevo Sermón' },
 } satisfies Record<string, Record<L, string>>;
 
 function buildSystemPrompt(
@@ -165,7 +158,6 @@ function buildSystemPrompt(
   parts.push(`- Use blockquotes (>) for the main text citation.`);
   parts.push(`- Use horizontal dividers or cross symbols (†) between major sections.`);
   parts.push(`- Bold key phrases for emphasis and scannability.`);
-  parts.push(`- Remember context from previous messages.`);
   parts.push(`- Respond in ${langFull}.`);
 
   return parts.join('\n');
@@ -202,24 +194,16 @@ function ChipGroup({ items, selected, onSelect, lang }: { items: Record<L, strin
 /* ═══ Markdown → clean HTML for PDF ═══ */
 function markdownToHtml(md: string): string {
   let html = md;
-  // Remove bible:// links but keep text
   html = html.replace(/\[([^\]]+)\]\(bible:\/\/[^)]+\)/g, '<strong style="color:#8B6914;">$1</strong>');
-  // Headers
   html = html.replace(/^### (.+)$/gm, '<h3 style="font-size:15px;font-weight:700;margin:18px 0 8px;color:#333;">$1</h3>');
   html = html.replace(/^## (.+)$/gm, '<h2 style="font-size:17px;font-weight:700;margin:24px 0 10px;color:#222;border-left:3px solid #8B6914;padding-left:10px;">$1</h2>');
   html = html.replace(/^# (.+)$/gm, '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;color:#111;">$1</h1>');
-  // Blockquotes
   html = html.replace(/^> (.+)$/gm, '<blockquote style="border-left:3px solid #D4A853;padding:10px 16px;margin:16px 0;background:#FFFDF5;font-style:italic;color:#555;border-radius:0 6px 6px 0;">$1</blockquote>');
-  // Bold
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  // Italic
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  // Bullet lists
   html = html.replace(/^- (.+)$/gm, '<li style="margin:4px 0;padding-left:4px;">$1</li>');
   html = html.replace(/(<li[^>]*>.*<\/li>\n?)+/g, (m) => `<ul style="margin:10px 0;padding-left:20px;list-style:disc;">${m}</ul>`);
-  // Horizontal rules / cross dividers
   html = html.replace(/^---$/gm, '<div style="text-align:center;margin:20px 0;color:#D4A853;font-size:14px;">✝</div>');
-  // Paragraphs
   html = html.replace(/\n\n/g, '</p><p style="margin:8px 0;line-height:1.75;">');
   html = html.replace(/\n/g, '<br/>');
   return `<p style="margin:8px 0;line-height:1.75;">${html}</p>`;
@@ -231,37 +215,31 @@ export default function Sermoes() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [historyLoaded, setHistoryLoaded] = useState(false);
-  const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
-  const [carouselOpen, setCarouselOpen] = useState(false);
-  const [slidesOpen, setSlidesOpen] = useState(false);
-  const [lastSermonContent, setLastSermonContent] = useState('');
-  const [lastSermonTitle, setLastSermonTitle] = useState('');
-  const [lastUserPrompt, setLastUserPrompt] = useState('');
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
-
+  // Form state
+  const [topic, setTopic] = useState('');
   const [preachingType, setPreachingType] = useState<string | null>(null);
   const [audience, setAudience] = useState<string | null>(null);
   const [duration, setDuration] = useState<string | null>('30 min');
   const [style, setStyle] = useState<string | null>(null);
   const [tone, setTone] = useState<string | null>(null);
 
-  const [sessions, setSessions] = useState<SermonSession[]>([]);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Result state
+  const [sermonContent, setSermonContent] = useState('');
+  const [sermonTitle, setSermonTitle] = useState('');
+  const [sermonTopic, setSermonTopic] = useState('');
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    (async () => {
-      const history = await loadHistory(user.id, AGENT_ID);
-      if (!cancelled) { setMessages(history); setHistoryLoaded(true); }
-    })();
-    return () => { cancelled = true; };
-  }, [user]);
+  // History
+  const [sessions, setSessions] = useState<SermonSession[]>([]);
+  const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
+
+  // Modals
+  const [carouselOpen, setCarouselOpen] = useState(false);
+  const [slidesOpen, setSlidesOpen] = useState(false);
+
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const refreshSessions = useCallback(async () => {
     if (!user) return;
@@ -276,97 +254,97 @@ export default function Sermoes() {
 
   useEffect(() => { refreshSessions(); }, [refreshSessions]);
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, loading]);
-
-  /* ═══ Restore a saved session ═══ */
-  const handleRestoreSession = (session: SermonSession) => {
-    setMessages([
-      { role: 'user', content: session.passage },
-      { role: 'assistant', content: session.content },
-    ]);
-    setLastSermonContent(session.content);
-    setLastSermonTitle(session.title);
-    setLastUserPrompt(session.passage);
-    setActiveSessionId(session.id);
-    setMobileHistoryOpen(false);
-  };
-
-  const sendMessage = async (text: string) => {
-    if (!text.trim() || !user || loading) return;
-    const userMsg: ChatMessage = { role: 'user', content: text.trim() };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
-    setInput('');
+  /* ═══ Generate sermon ═══ */
+  const handleGenerate = async (topicText: string) => {
+    if (!topicText.trim() || !user || loading) return;
     setLoading(true);
-    setLastUserPrompt(text.trim());
-
-    await saveMessage(user.id, AGENT_ID, 'user', text.trim());
+    setShowResult(true);
+    setSermonContent('');
+    setSermonTopic(topicText.trim());
 
     try {
       const systemPrompt = buildSystemPrompt(lang, profile?.full_name?.split(' ')[0], { preachingType, audience, duration, style, tone });
       const { data, error } = await supabase.functions.invoke('ai-tool', {
-        body: { systemPrompt, userPrompt: text.trim(), toolId: 'sermon-generator', history: newMessages.slice(-20).map(m => ({ role: m.role, content: m.content })) },
+        body: { systemPrompt, userPrompt: topicText.trim(), toolId: 'sermon-generator' },
       });
       if (error) throw error;
       const content = data?.content || (lang === 'PT' ? 'Desculpe, não consegui gerar o sermão.' : 'Sorry, could not generate the sermon.');
-      setMessages(prev => [...prev, { role: 'assistant', content }]);
+      setSermonContent(content);
+
+      const titleMatch = content.match(/^#+\s*(.+)/m);
+      const title = titleMatch?.[1]?.replace(/\*+/g, '').trim() || topicText.trim().slice(0, 60);
+      setSermonTitle(title);
+
+      // Save to DB
+      const { data: insertedData } = await supabase.from('materials').insert({
+        user_id: user.id, type: 'sermon', title, content, language: lang, passage: topicText.trim(),
+      }).select('id').single();
+      if (insertedData) setActiveSessionId(insertedData.id);
+
+      // Also save to chat history for continuity
+      await saveMessage(user.id, AGENT_ID, 'user', topicText.trim());
       await saveMessage(user.id, AGENT_ID, 'assistant', content);
 
-      setLastSermonContent(content);
-      const titleMatch = content.match(/^#+\s*(.+)/m);
-      const sermonTitle = titleMatch?.[1]?.replace(/\*+/g, '').trim() || text.trim().slice(0, 60);
-      setLastSermonTitle(sermonTitle);
-
-      const { data: insertedData } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content, language: lang, passage: text.trim() }).select('id').single();
-      if (insertedData) setActiveSessionId(insertedData.id);
       await refreshSessions();
     } catch {
       const errContent = lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.' : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.' : 'Sorry, an error occurred. Please try again.';
-      setMessages(prev => [...prev, { role: 'assistant', content: errContent }]);
+      setSermonContent(errContent);
+      setSermonTitle('Erro');
     } finally {
       setLoading(false);
-      inputRef.current?.focus();
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
+  /* ═══ Restore a saved session ═══ */
+  const handleRestoreSession = (session: SermonSession) => {
+    setSermonContent(session.content);
+    setSermonTitle(session.title);
+    setSermonTopic(session.passage);
+    setActiveSessionId(session.id);
+    setShowResult(true);
+    setMobileHistoryOpen(false);
   };
 
-  const handleNewChat = () => {
-    setMessages([]); setPreachingType(null); setAudience(null); setDuration('30 min'); setStyle(null); setTone(null);
-    setLastSermonContent(''); setLastSermonTitle(''); setActiveSessionId(null);
+  const handleNewSermon = () => {
+    setShowResult(false);
+    setSermonContent('');
+    setSermonTitle('');
+    setSermonTopic('');
+    setActiveSessionId(null);
+    setTopic('');
+    setPreachingType(null);
+    setAudience(null);
+    setDuration('30 min');
+    setStyle(null);
+    setTone(null);
   };
 
   const handleDeleteSession = async (id: string) => {
     await supabase.from('materials').delete().eq('id', id);
     setSessions(prev => prev.filter(s => s.id !== id));
-    if (activeSessionId === id) handleNewChat();
+    if (activeSessionId === id) handleNewSermon();
   };
 
   /* ═══ Action handlers ═══ */
   const handleCopy = async () => {
-    if (!lastSermonContent) return;
-    await navigator.clipboard.writeText(lastSermonContent);
+    if (!sermonContent) return;
+    await navigator.clipboard.writeText(sermonContent);
     toast.success(labels.copied[lang]);
   };
 
   const handleSendWpp = () => {
-    if (!lastSermonContent) return;
-    const short = lastSermonContent.replace(/[#*_>`~\[\]()]/g, '').slice(0, 3000);
+    if (!sermonContent) return;
+    const short = sermonContent.replace(/[#*_>`~\[\]()]/g, '').slice(0, 3000);
     openWhatsAppShare(short);
   };
 
   const handlePdf = async () => {
-    if (!lastSermonContent) return;
+    if (!sermonContent) return;
     const html2pdf = (await import('html2pdf.js')).default;
     const dateStr = new Date().toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' });
     const el = document.createElement('div');
     el.innerHTML = `
 <div style="font-family:'Georgia','Palatino Linotype',serif;max-width:680px;margin:0 auto;padding:48px 40px 32px;color:#333;">
-  <!-- Header bar -->
   <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #D4A853;padding-bottom:12px;margin-bottom:28px;">
     <div>
       <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8B6914;font-weight:700;">Living Word</span>
@@ -374,11 +352,7 @@ export default function Sermoes() {
     </div>
     <span style="font-size:9px;color:#999;">${dateStr}</span>
   </div>
-
-  <!-- Content -->
-  ${markdownToHtml(lastSermonContent)}
-
-  <!-- Footer -->
+  ${markdownToHtml(sermonContent)}
   <div style="margin-top:40px;padding-top:14px;border-top:1px solid #E8E0D0;display:flex;align-items:center;justify-content:center;gap:8px;">
     <span style="font-size:12px;color:#D4A853;font-weight:700;">✝</span>
     <span style="font-size:10px;color:#999;letter-spacing:1.5px;font-weight:600;">LIVING WORD</span>
@@ -389,7 +363,7 @@ export default function Sermoes() {
     document.body.appendChild(el);
     await html2pdf().from(el).set({
       margin: [12, 8, 20, 8],
-      filename: `${lastSermonTitle.slice(0, 40)}.pdf`,
+      filename: `${sermonTitle.slice(0, 40)}.pdf`,
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { format: 'a4' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
@@ -399,11 +373,11 @@ export default function Sermoes() {
   };
 
   const handleSave = async () => {
-    if (!lastSermonContent || !user) return;
+    if (!sermonContent || !user) return;
     if (activeSessionId) {
-      await supabase.from('materials').update({ content: lastSermonContent, title: lastSermonTitle }).eq('id', activeSessionId);
+      await supabase.from('materials').update({ content: sermonContent, title: sermonTitle }).eq('id', activeSessionId);
     } else {
-      const { data } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: lastSermonTitle, content: lastSermonContent, language: lang, passage: lastUserPrompt }).select('id').single();
+      const { data } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content: sermonContent, language: lang, passage: sermonTopic }).select('id').single();
       if (data) setActiveSessionId(data.id);
     }
     toast.success(labels.saved[lang]);
@@ -411,12 +385,11 @@ export default function Sermoes() {
   };
 
   const handleRegenerate = () => {
-    if (lastUserPrompt) sendMessage(lastUserPrompt);
+    if (sermonTopic) handleGenerate(sermonTopic);
   };
 
-  /* ═══ Bible reference click handler — now with verse ═══ */
+  /* ═══ Bible reference click handler ═══ */
   const handleBibleClick = (ref: string) => {
-    // ref like "Galatas/5/22-23"
     const parts = ref.split('/');
     if (parts.length >= 2) {
       const bookId = parts[0].toLowerCase();
@@ -424,14 +397,11 @@ export default function Sermoes() {
       const verse = parts[2] || '';
       const verseParam = verse ? `&verse=${verse}` : '';
       const translation = profile?.bible_version || 'nvi';
-      navigate(`/biblia?book=${bookId}&chapter=${chapter}${verseParam}&translation=${translation.toLowerCase()}`);
+      navigate(`/bible?book=${bookId}&chapter=${chapter}${verseParam}&translation=${translation.toLowerCase()}`);
     }
   };
 
-  const isEmpty = messages.length === 0 && !loading && historyLoaded;
-  const hasSermon = messages.some(m => m.role === 'assistant');
-
-  /* ═══ Custom markdown components for clickable Bible refs ═══ */
+  /* ═══ Custom markdown components ═══ */
   const markdownComponents = {
     a: ({ href, children, ...props }: any) => {
       if (href?.startsWith('bible://')) {
@@ -478,40 +448,9 @@ export default function Sermoes() {
     ),
   };
 
-  /* ═══ Action button style ═══ */
   const actionBtn = "flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors";
 
-  /* ═══ Render action buttons ═══ */
-  const renderActionButtons = () => {
-    if (!hasSermon || loading) return null;
-    return (
-      <div className="flex flex-wrap gap-2 mt-4 mb-2 justify-start animate-in fade-in duration-300">
-        <button onClick={handleSave} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
-          <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
-        </button>
-        <button onClick={handleCopy} className={actionBtn}>
-          <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
-        </button>
-        <button onClick={handleSendWpp} className={actionBtn}>
-          <Share2 className="h-3.5 w-3.5" /> {labels.sendWpp[lang]}
-        </button>
-        <button onClick={() => setCarouselOpen(true)} className={actionBtn}>
-          <Image className="h-3.5 w-3.5" /> {labels.carousel[lang]}
-        </button>
-        <button onClick={() => setSlidesOpen(true)} className={actionBtn}>
-          <Presentation className="h-3.5 w-3.5" /> {labels.slides[lang]}
-        </button>
-        <button onClick={handlePdf} className={actionBtn}>
-          <FileText className="h-3.5 w-3.5" /> {labels.pdf[lang]}
-        </button>
-        <button onClick={handleRegenerate} className={actionBtn}>
-          <RefreshCw className="h-3.5 w-3.5" /> {labels.regenerate[lang]}
-        </button>
-      </div>
-    );
-  };
-
-  /* ═══ Session item renderer (shared between desktop & mobile) ═══ */
+  /* ═══ Session item renderer ═══ */
   const renderSessionItem = (s: SermonSession, showDelete = true) => (
     <div
       key={s.id}
@@ -530,9 +469,12 @@ export default function Sermoes() {
     </div>
   );
 
+  /* ═══════════════════════════════════════════════════════════════
+     RENDER
+     ═══════════════════════════════════════════════════════════════ */
   return (
     <div className="flex h-[calc(100vh-4rem)] pb-28 md:pb-0">
-      {/* ─── Main chat area ─── */}
+      {/* ─── Main content area ─── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border shrink-0">
@@ -549,21 +491,27 @@ export default function Sermoes() {
           )}
         </div>
 
-        {/* Messages / Empty state */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4">
-          {isEmpty && (
-            <div className="flex flex-col items-center text-center px-4 animate-in fade-in duration-500 max-w-2xl mx-auto">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <BookOpen className="h-7 w-7 text-primary" />
+        {/* Content: Form or Result */}
+        <div ref={resultRef} className="flex-1 overflow-y-auto px-4 py-6">
+          {!showResult ? (
+            /* ═══ FORM VIEW ═══ */
+            <div className="max-w-2xl mx-auto animate-in fade-in duration-500">
+              {/* Hero */}
+              <div className="text-center mb-8">
+                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Mic className="h-7 w-7 text-primary" />
+                </div>
+                <h1 className="text-xl md:text-2xl font-bold text-foreground font-display">{labels.title[lang]}</h1>
+                <p className="text-sm text-muted-foreground mt-2 max-w-lg mx-auto leading-relaxed">{labels.subtitle[lang]}</p>
               </div>
-              <h2 className="text-xl font-bold text-foreground font-display">{labels.title[lang]}</h2>
-              <p className="text-sm text-muted-foreground mt-2 max-w-lg leading-relaxed">{labels.subtitle[lang]}</p>
 
-              <div className="w-full text-left mt-8 space-y-5">
+              {/* Options */}
+              <div className="space-y-5">
                 <div>
                   <p className="text-xs font-bold text-muted-foreground mb-2">{labels.preachingType[lang]}</p>
                   <ChipGroup items={preachingTypes} selected={preachingType} onSelect={setPreachingType} lang={lang} />
                 </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <p className="text-xs font-bold text-muted-foreground mb-2">{labels.audience[lang]}</p>
@@ -574,6 +522,7 @@ export default function Sermoes() {
                     <ChipGroup items={durations} selected={duration} onSelect={setDuration} lang={lang} />
                   </div>
                 </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <p className="text-xs font-bold text-muted-foreground mb-2">{labels.style[lang]}</p>
@@ -584,89 +533,120 @@ export default function Sermoes() {
                     <ChipGroup items={tones} selected={tone} onSelect={setTone} lang={lang} />
                   </div>
                 </div>
+
+                {/* Topic suggestions */}
                 <div>
                   <p className="text-xs font-bold text-muted-foreground mb-2">{labels.suggestions[lang]}</p>
                   <div className="flex flex-wrap gap-2">
-                    {topicSuggestions[lang].map((topic) => (
-                      <button key={topic} onClick={() => sendMessage(topic)}
-                        className="px-3 py-1.5 rounded-lg text-xs border border-border bg-card text-foreground hover:border-primary/40 hover:bg-primary/5 transition-all"
-                      >{topic}</button>
+                    {topicSuggestions[lang].map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setTopic(t)}
+                        className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${topic === t ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-card text-foreground hover:border-primary/40 hover:bg-primary/5'}`}
+                      >
+                        {t}
+                      </button>
                     ))}
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
 
-          <div className="max-w-3xl mx-auto space-y-4">
-            {messages.map((msg, i) => (
-              <div key={i} className={`animate-in slide-in-from-bottom-2 duration-300 ${msg.role === 'user' ? 'flex justify-end' : ''}`}>
-                {msg.role === 'user' ? (
-                  <div className="max-w-[85%] bg-primary/10 border border-primary/20 rounded-2xl rounded-br-md px-4 py-2.5 flex items-start gap-3">
-                    <p className="text-sm text-foreground flex-1">{msg.content}</p>
-                    {profile?.avatar_url && <img src={profile.avatar_url} className="h-8 w-8 rounded-full shrink-0" alt="" />}
-                  </div>
-                ) : (
-                  <div className="w-full">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">✝</div>
-                    </div>
-                    <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed
-                      [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-4 [&_blockquote]:bg-primary/5 [&_blockquote]:rounded-r-lg [&_blockquote]:italic
-                      [&_h1]:text-xl [&_h1]:md:text-2xl [&_h1]:font-bold [&_h1]:border-b [&_h1]:border-border [&_h1]:pb-2
-                      [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:border-l-3 [&_h2]:border-primary [&_h2]:pl-3
-                      [&_ul]:space-y-2 [&_li]:text-sm">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                        {msg.content}
-                      </ReactMarkdown>
-                    </div>
-                    {i === messages.length - 1 && msg.role === 'assistant' && renderActionButtons()}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {loading && (
-              <div className="flex justify-start animate-in fade-in duration-300">
-                <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:0ms]" />
-                      <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:150ms]" />
-                      <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:300ms]" />
-                    </div>
-                    <span className="text-xs">{labels.thinking[lang]}</span>
-                  </div>
+                {/* Topic input + Generate button */}
+                <div className="pt-2 space-y-3">
+                  <textarea
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    placeholder={labels.topicPlaceholder[lang]}
+                    rows={2}
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+                  />
+                  <button
+                    onClick={() => handleGenerate(topic)}
+                    disabled={!topic.trim() || loading}
+                    className="w-full h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center gap-2.5 hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors font-semibold text-sm shadow-sm"
+                  >
+                    {loading ? (
+                      <><Loader2 className="h-4 w-4 animate-spin" /> {labels.generating[lang]}</>
+                    ) : (
+                      <><Sparkles className="h-4 w-4" /> {labels.generate[lang]}</>
+                    )}
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          ) : (
+            /* ═══ RESULT VIEW ═══ */
+            <div className="max-w-3xl mx-auto animate-in fade-in duration-300">
+              {/* Back to form */}
+              <button
+                onClick={handleNewSermon}
+                className="text-xs text-primary hover:underline font-medium mb-4 inline-flex items-center gap-1"
+              >
+                {labels.backToForm[lang]}
+              </button>
 
-        {/* Input area */}
-        <div className="shrink-0 border-t border-border px-4 py-3 bg-background">
-          <div className="flex items-end gap-2 max-w-2xl mx-auto">
-            <textarea
-              ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-              placeholder={labels.placeholder[lang]} rows={1}
-              className="flex-1 min-h-[44px] max-h-32 px-4 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
-            />
-            <button onClick={() => sendMessage(input)} disabled={!input.trim() || loading}
-              className="h-11 px-5 shrink-0 rounded-xl bg-primary text-primary-foreground flex items-center justify-center gap-2 hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors font-medium text-sm"
-            >
-              <Send className="h-4 w-4" />
-              {labels.send[lang]}
-            </button>
-          </div>
-          <p className="text-[10px] text-muted-foreground/50 text-center mt-1.5">{labels.enterHint[lang]}</p>
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Loader2 className="h-7 w-7 text-primary animate-spin" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">{labels.generating[lang]}</p>
+                  <div className="flex gap-1 mt-3">
+                    <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:0ms]" />
+                    <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:150ms]" />
+                    <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:300ms]" />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Sermon document */}
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed
+                    [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-4 [&_blockquote]:bg-primary/5 [&_blockquote]:rounded-r-lg [&_blockquote]:italic
+                    [&_h1]:text-xl [&_h1]:md:text-2xl [&_h1]:font-bold [&_h1]:border-b [&_h1]:border-border [&_h1]:pb-2
+                    [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:border-l-3 [&_h2]:border-primary [&_h2]:pl-3
+                    [&_ul]:space-y-2 [&_li]:text-sm">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                      {sermonContent}
+                    </ReactMarkdown>
+                  </div>
+
+                  {/* Action buttons */}
+                  {sermonContent && (
+                    <div className="flex flex-wrap gap-2 mt-6 mb-4 pt-4 border-t border-border justify-start animate-in fade-in duration-300">
+                      <button onClick={handleSave} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
+                        <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+                      </button>
+                      <button onClick={handleCopy} className={actionBtn}>
+                        <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
+                      </button>
+                      <button onClick={handleSendWpp} className={actionBtn}>
+                        <Share2 className="h-3.5 w-3.5" /> {labels.sendWpp[lang]}
+                      </button>
+                      <button onClick={() => setCarouselOpen(true)} className={actionBtn}>
+                        <Image className="h-3.5 w-3.5" /> {labels.carousel[lang]}
+                      </button>
+                      <button onClick={() => setSlidesOpen(true)} className={actionBtn}>
+                        <Presentation className="h-3.5 w-3.5" /> {labels.slides[lang]}
+                      </button>
+                      <button onClick={handlePdf} className={actionBtn}>
+                        <FileText className="h-3.5 w-3.5" /> {labels.pdf[lang]}
+                      </button>
+                      <button onClick={handleRegenerate} className={actionBtn}>
+                        <RefreshCw className="h-3.5 w-3.5" /> {labels.regenerate[lang]}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* ─── Right sidebar: history ─── */}
+      {/* ─── Right sidebar: history (desktop) ─── */}
       <aside className="hidden lg:flex flex-col w-72 border-l border-border bg-background shrink-0">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <span className="text-xs font-bold text-muted-foreground tracking-wide">{labels.history[lang]}</span>
-          <button onClick={handleNewChat} className="text-xs font-bold text-primary hover:underline">{labels.newChat[lang]}</button>
+          <button onClick={handleNewSermon} className="text-xs font-bold text-primary hover:underline">{labels.newSermon[lang]}</button>
         </div>
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
@@ -675,8 +655,8 @@ export default function Sermoes() {
           </div>
         </ScrollArea>
         <div className="p-2 border-t border-border">
-          <button onClick={handleNewChat} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
-            <Plus className="h-3.5 w-3.5" /> {labels.newChat[lang]}
+          <button onClick={handleNewSermon} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+            <Plus className="h-3.5 w-3.5" /> {labels.newSermon[lang]}
           </button>
         </div>
       </aside>
@@ -707,9 +687,9 @@ export default function Sermoes() {
             ))}
           </div>
           <div className="mt-3 pt-2 border-t border-border">
-            <button onClick={() => { handleNewChat(); setMobileHistoryOpen(false); }}
+            <button onClick={() => { handleNewSermon(); setMobileHistoryOpen(false); }}
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
-              <Plus className="h-3.5 w-3.5" /> {labels.newChat[lang]}
+              <Plus className="h-3.5 w-3.5" /> {labels.newSermon[lang]}
             </button>
           </div>
         </SheetContent>
@@ -719,16 +699,16 @@ export default function Sermoes() {
       <SermonCarouselModal
         open={carouselOpen}
         onOpenChange={setCarouselOpen}
-        sermonMarkdown={lastSermonContent}
-        sermonTitle={lastSermonTitle}
+        sermonMarkdown={sermonContent}
+        sermonTitle={sermonTitle}
       />
 
       {/* ─── Slides modal ─── */}
       <SermonSlidesModal
         open={slidesOpen}
         onOpenChange={setSlidesOpen}
-        sermonMarkdown={lastSermonContent}
-        sermonTitle={lastSermonTitle}
+        sermonMarkdown={sermonContent}
+        sermonTitle={sermonTitle}
       />
     </div>
   );
