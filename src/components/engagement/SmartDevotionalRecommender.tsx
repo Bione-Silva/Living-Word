@@ -49,7 +49,7 @@ export function SmartDevotionalRecommender() {
       }
     };
     fetchRec();
-  }, [user]);
+  }, [user, lang]);
 
   if (!user) return null;
 
