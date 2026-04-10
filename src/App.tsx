@@ -47,6 +47,8 @@ import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
 const queryClient = new QueryClient();
 
+const MASTER_EMAIL = 'bionicaosilva@gmail.com';
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
   const location = useLocation();
@@ -66,9 +68,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   if (!user) return <Navigate to="/login" replace />;
 
-  // Redirect to onboarding if profile not completed (except if already on onboarding/upgrade)
+  // Master email skips onboarding redirect
+  const isMaster = user.email === MASTER_EMAIL;
+
+  // Redirect to onboarding if profile not completed (except if already on onboarding/upgrade or master)
   const skipRedirectPaths = ['/onboarding', '/upgrade', '/blog-onboarding'];
   if (
+    !isMaster &&
     profile &&
     !profile.profile_completed &&
     !skipRedirectPaths.some(p => location.pathname.startsWith(p))
