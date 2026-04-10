@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Check, Trash2, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Minus, Quote, ChevronDown, Highlighter } from 'lucide-react';
+import { Loader2, Check, Trash2, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Minus, Quote, ChevronDown, Highlighter, CheckSquare } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import {
@@ -42,15 +42,16 @@ const BLOCK_STYLES = [
 ];
 
 const labels = {
-  placeholder: { PT: 'Escreva suas anotações pessoais para este sermão...', EN: 'Write your personal notes for this sermon...', ES: 'Escriba sus notas personales para este sermón...' },
+  placeholder: { PT: 'Escreva suas anotações pessoais...', EN: 'Write your personal notes...', ES: 'Escriba sus notas personales...' },
   saving: { PT: 'Salvando...', EN: 'Saving...', ES: 'Guardando...' },
   saved: { PT: 'Salvo', EN: 'Saved', ES: 'Guardado' },
-  clear: { PT: 'Limpar', EN: 'Clear', ES: 'Clear' },
-  noSermon: { PT: 'Selecione ou gere um sermão para anotar.', EN: 'Select or generate a sermon to take notes.', ES: 'Seleccione o genere un sermón para anotar.' },
+  clear: { PT: 'Limpar', EN: 'Clear', ES: 'Limpiar' },
+  noMaterial: { PT: 'Selecione ou gere um material para anotar.', EN: 'Select or generate content to take notes.', ES: 'Seleccione o genere un material para anotar.' },
   bulletList: { PT: 'Lista com Marcadores', EN: 'Bullet List', ES: 'Lista con Viñetas' },
   dashList: { PT: 'Lista com Travessões', EN: 'Dash List', ES: 'Lista con Guiones' },
   numberedList: { PT: 'Lista Numerada', EN: 'Numbered List', ES: 'Lista Numerada' },
   blockquote: { PT: 'Citação em Bloco', EN: 'Block Quote', ES: 'Cita en Bloque' },
+  checklist: { PT: 'Lista de Tarefas', EN: 'Checklist', ES: 'Lista de Tareas' },
 } satisfies Record<string, Record<L, string>>;
 
 interface PreacherNotesProps {
@@ -203,6 +204,24 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     triggerSave();
   };
 
+  const insertChecklist = () => {
+    editorRef.current?.focus();
+    const id = `chk-${Date.now()}`;
+    const html = `<div class="checklist-item" style="display:flex;align-items:center;gap:6px;margin:4px 0;"><input type="checkbox" id="${id}" style="width:16px;height:16px;accent-color:#D4A853;cursor:pointer;" /><label for="${id}" contenteditable="true" style="flex:1;outline:none;"></label></div>`;
+    execCmd('insertHTML', html);
+    // Focus the label
+    const label = editorRef.current?.querySelector(`label[for="${id}"]`) as HTMLElement | null;
+    if (label) {
+      const range = document.createRange();
+      range.selectNodeContents(label);
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
+    triggerSave();
+  };
+
   // Current block style label
   const getCurrentBlockLabel = (): string => {
     const sel = window.getSelection();
@@ -222,7 +241,7 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
   if (!materialId) {
     return (
       <div className="flex items-center justify-center py-8">
-        <p className="text-xs text-muted-foreground text-center px-4">{labels.noSermon[lang]}</p>
+        <p className="text-xs text-muted-foreground text-center px-4">{labels.noMaterial[lang]}</p>
       </div>
     );
   }
@@ -283,7 +302,12 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
 
         <div className="w-px h-4 bg-border mx-1" />
 
-        {/* Block style dropdown */}
+        {/* Checklist button */}
+        <button onClick={insertChecklist} className="p-1.5 rounded hover:bg-accent transition-colors" title={labels.checklist[lang]}>
+          <CheckSquare className="h-3.5 w-3.5" />
+        </button>
+
+        <div className="w-px h-4 bg-border mx-1" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-1 px-2 py-1 rounded hover:bg-accent transition-colors text-xs font-medium text-muted-foreground">
@@ -327,6 +351,9 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
             <DropdownMenuItem onClick={insertBlockquote} className="gap-2 text-xs">
               <Quote className="h-3.5 w-3.5" /> {labels.blockquote[lang]}
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={insertChecklist} className="gap-2 text-xs">
+              <CheckSquare className="h-3.5 w-3.5" /> {labels.checklist[lang]}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -359,6 +386,28 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
           suppressContentEditableWarning
           onInput={triggerSave}
           onBlur={triggerSave}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox') {
+              // Let checkbox toggle naturally, then save
+              setTimeout(triggerSave, 50);
+            }
+          }}
+          onKeyDown={(e) => {
+            // When pressing Enter inside a checklist item label, insert a new checklist item
+            if (e.key === 'Enter') {
+              const sel = window.getSelection();
+              let node = sel?.anchorNode as HTMLElement | null;
+              while (node && node !== editorRef.current) {
+                if (node.classList?.contains('checklist-item')) {
+                  e.preventDefault();
+                  insertChecklist();
+                  return;
+                }
+                node = node.parentElement;
+              }
+            }
+          }}
           data-placeholder={labels.placeholder[lang]}
           className="min-h-[200px] outline-none text-sm leading-relaxed
             [&:empty]:before:content-[attr(data-placeholder)] [&:empty]:before:text-muted-foreground/50 [&:empty]:before:pointer-events-none
@@ -369,7 +418,9 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
             [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-3 [&_blockquote]:py-1 [&_blockquote]:my-2 [&_blockquote]:text-muted-foreground [&_blockquote]:italic
             [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1
             [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1
-            [&_li]:my-0.5"
+            [&_li]:my-0.5
+            [&_.checklist-item]:flex [&_.checklist-item]:items-center [&_.checklist-item]:gap-1.5 [&_.checklist-item]:my-1
+            [&_.checklist-item_input:checked+label]:line-through [&_.checklist-item_input:checked+label]:text-muted-foreground"
           style={{ color: textColor }}
         />
       </div>

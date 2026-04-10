@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap, LayoutGrid } from 'lucide-react';
+import { BookOpen, Copy, Loader2, Save, Sparkles, Maximize2, Minimize2, Zap, LayoutGrid, PenLine, ChevronDown, ChevronUp } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,7 @@ import { GenerationMetaFooter } from '@/components/generation/GenerationMetaFoot
 import { GenerationMeta } from '@/types/generation-meta';
 import { loadingHints, pastoralLoadingMessages } from '@/lib/generation-ui';
 import { BibleDrawer } from '@/components/BibleDrawer';
+import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 type OutputMode = 'sermon' | 'outline' | 'devotional';
 
 interface PastoralStudioModalProps {
@@ -188,7 +189,8 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
   const [bibleOpen, setBibleOpen] = useState(false);
   const [expandedTab, setExpandedTab] = useState<OutputMode>('sermon');
   const [genMeta, setGenMeta] = useState<GenerationMeta | null>(null);
-
+  const [savedMaterialId, setSavedMaterialId] = useState<string | null>(null);
+  const [notesOpen, setNotesOpen] = useState(false);
   const availableTabs = useMemo(
     () => (['sermon', 'outline', 'devotional'] as OutputMode[]).filter((mode) => Boolean(outputs[mode])),
     [outputs]
@@ -205,6 +207,8 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     setBlockedFormats([]);
     setLoading(false);
     setGenMeta(null);
+    setSavedMaterialId(null);
+    setNotesOpen(false);
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -309,7 +313,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
       const modeLabel = outputLabels[activeTab][lang];
       const title = `${modeLabel} — ${formData.bible_passage}`;
 
-      const { error } = await supabase.from('materials').insert({
+      const { data: insertData, error } = await supabase.from('materials').insert({
         user_id: user.id,
         title,
         content: currentContent,
@@ -317,9 +321,10 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
         passage: formData.bible_passage,
         language: formData.language,
         bible_version: formData.bible_version,
-      });
+      }).select('id').single();
 
       if (error) throw error;
+      if (insertData) setSavedMaterialId(insertData.id);
       toast.success(text.saved);
     } catch {
       toast.error(text.saveError);
@@ -621,6 +626,26 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
                       materialTitle={`${outputLabels[activeTab][lang]} — ${formData.bible_passage}`}
                       toolId="pastoral-studio"
                     />
+
+                    {savedMaterialId && (
+                      <div className="mt-3 border border-border rounded-xl overflow-hidden">
+                        <button
+                          onClick={() => setNotesOpen(!notesOpen)}
+                          className="w-full flex items-center justify-between px-4 py-3 bg-muted/30 hover:bg-muted/50 transition-colors"
+                        >
+                          <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+                            <PenLine className="h-4 w-4 text-primary" />
+                            {lang === 'PT' ? 'Minhas Anotações' : lang === 'EN' ? 'My Notes' : 'Mis Notas'}
+                          </span>
+                          {notesOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                        </button>
+                        {notesOpen && (
+                          <div className="h-[250px]">
+                            <PreacherNotes materialId={savedMaterialId} />
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {genMeta && <GenerationMetaFooter lang={lang} meta={genMeta} />}
                   </CardContent>
