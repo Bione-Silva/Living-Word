@@ -314,15 +314,22 @@ export function BibleReadingView({
             {verses.map((v, idx) => {
               const isSelected = selectedVerses.has(v.verse);
               const hlClass = highlights[v.verse] ? highlightClassMap[highlights[v.verse]] || '' : '';
+              const isUrlHighlight = activeHighlightVerses.has(v.verse);
               // Show toolbar on the LAST selected verse in sequence
               const isLastSelected = isSelected && !selectedVerses.has(verses[idx + 1]?.verse);
 
               return (
-                <div key={v.verse} className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
-                  isSelected
-                    ? 'bg-primary/8 ring-1 ring-primary/20'
-                    : hlClass || 'hover:bg-muted/40'
-                }`}>
+                <div
+                  key={v.verse}
+                  id={`verse-${v.verse}`}
+                  className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
+                    isUrlHighlight
+                      ? 'bg-primary/15 ring-2 ring-primary/40 animate-pulse'
+                      : isSelected
+                        ? 'bg-primary/8 ring-1 ring-primary/20'
+                        : hlClass || 'hover:bg-muted/40'
+                  }`}
+                >
                   {/* Verse number badge */}
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}
