@@ -42,6 +42,7 @@ import DevocionalPublico from "./pages/DevocionalPublico";
 import BomAmigo from "./pages/BomAmigo";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
+import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
 const queryClient = new QueryClient();
 
@@ -101,7 +102,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Landing />} />
+              {/* Subdomain detection: pastorjoao.livingwordgo.com → /blog/pastorjoao */}
+              <Route path="/" element={<><SubdomainRedirect /><Landing /></>} />
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<Cadastro />} />
               <Route path="/reset-password" element={<ResetPassword />} />
