@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Check, Trash2, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Minus, Quote, ChevronDown, Highlighter, CheckSquare } from 'lucide-react';
+import { Loader2, Check, Trash2, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Minus, Quote, ChevronDown, Highlighter, CheckSquare, Sparkles, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
+import ReactMarkdown from 'react-markdown';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,6 +70,9 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [noteId, setNoteId] = useState<string | null>(null);
   const [hasContent, setHasContent] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const lastSavedRef = useRef({ content: '', textColor: '#374151' });
@@ -238,6 +242,31 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     return BLOCK_STYLES[3].label[lang];
   };
 
+  const handleAnalyze = async () => {
+    const html = editorRef.current?.innerHTML || '';
+    const plainText = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!plainText || plainText.length < 20) {
+      toast.warning(lang === 'PT' ? 'Escreva mais conteúdo para analisar.' : lang === 'ES' ? 'Escriba más contenido para analizar.' : 'Write more content to analyze.');
+      return;
+    }
+    setIsAnalyzing(true);
+    setShowAnalysis(true);
+    setAnalysisResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-notes', {
+        body: { notes_text: plainText, language: lang },
+      });
+      if (error) throw error;
+      if (data?.error === 'rate_limit') { toast.error(lang === 'PT' ? 'Limite de requisições. Tente novamente.' : 'Rate limited. Try again.'); return; }
+      if (data?.error === 'payment_required') { toast.error(lang === 'PT' ? 'Créditos insuficientes.' : 'Insufficient credits.'); return; }
+      setAnalysisResult(data?.analysis || '');
+    } catch {
+      toast.error(lang === 'PT' ? 'Erro ao analisar.' : lang === 'ES' ? 'Error al analizar.' : 'Analysis error.');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   if (!materialId) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -360,13 +389,24 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
         {/* Spacer + status */}
         <div className="flex-1" />
         <div className="flex items-center gap-2 shrink-0">
+          {hasContent && (
+            <button
+              onClick={handleAnalyze}
+              disabled={isAnalyzing}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 hover:bg-primary/20 text-primary text-[10px] font-medium transition-colors disabled:opacity-50"
+              title={lang === 'PT' ? 'Analisar com IA' : lang === 'ES' ? 'Analizar con IA' : 'Analyze with AI'}
+            >
+              {isAnalyzing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+              {lang === 'PT' ? 'Analisar' : lang === 'ES' ? 'Analizar' : 'Analyze'}
+            </button>
+          )}
           {saveStatus === 'saving' && (
             <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
               <Loader2 className="h-3 w-3 animate-spin" /> {labels.saving[lang]}
             </span>
           )}
           {saveStatus === 'saved' && (
-            <span className="flex items-center gap-1 text-[10px] text-green-600">
+            <span className="flex items-center gap-1 text-[10px] text-primary">
               <Check className="h-3 w-3" /> {labels.saved[lang]}
             </span>
           )}
@@ -424,6 +464,35 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
           style={{ color: textColor }}
         />
       </div>
+
+      {/* ── AI Analysis Panel ── */}
+      {showAnalysis && (
+        <div className="border-t border-border bg-muted/20">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+              {lang === 'PT' ? 'Análise IA' : lang === 'ES' ? 'Análisis IA' : 'AI Analysis'}
+            </span>
+            <button onClick={() => setShowAnalysis(false)} className="text-muted-foreground hover:text-foreground">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <div className="p-3 max-h-[300px] overflow-y-auto">
+            {isAnalyzing ? (
+              <div className="flex items-center justify-center py-8 gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                <span className="text-xs text-muted-foreground">
+                  {lang === 'PT' ? 'Analisando suas anotações...' : lang === 'ES' ? 'Analizando sus notas...' : 'Analyzing your notes...'}
+                </span>
+              </div>
+            ) : analysisResult ? (
+              <div className="prose prose-sm max-w-none text-foreground/90 [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-semibold [&_p]:text-xs [&_p]:leading-relaxed [&_li]:text-xs [&_blockquote]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-primary/30 [&_blockquote]:pl-2 [&_blockquote]:italic">
+                <ReactMarkdown>{analysisResult}</ReactMarkdown>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
