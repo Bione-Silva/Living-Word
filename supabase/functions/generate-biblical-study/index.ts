@@ -60,6 +60,59 @@ function jsonResponse(payload: unknown, status = 200) {
   });
 }
 
+/** Attempt to repair truncated JSON by closing open braces/brackets/strings */
+function repairTruncatedJson(raw: string): string {
+  let s = raw.trim();
+  // Remove trailing comma
+  s = s.replace(/,\s*$/, "");
+
+  // Count open/close
+  let inString = false;
+  let escape = false;
+  let openBraces = 0;
+  let openBrackets = 0;
+
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (escape) { escape = false; continue; }
+    if (ch === "\\") { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") openBraces++;
+    else if (ch === "}") openBraces--;
+    else if (ch === "[") openBrackets++;
+    else if (ch === "]") openBrackets--;
+  }
+
+  // Close open string
+  if (inString) s += '"';
+  // Remove any trailing incomplete key-value
+  s = s.replace(/,\s*"[^"]*"?\s*:?\s*"?[^"]*$/, "");
+  // Recount after cleanup
+  inString = false;
+  escape = false;
+  openBraces = 0;
+  openBrackets = 0;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (escape) { escape = false; continue; }
+    if (ch === "\\") { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") openBraces++;
+    else if (ch === "}") openBraces--;
+    else if (ch === "[") openBrackets++;
+    else if (ch === "]") openBrackets--;
+  }
+  if (inString) s += '"';
+
+  // Close remaining open structures
+  while (openBrackets > 0) { s += "]"; openBrackets--; }
+  while (openBraces > 0) { s += "}"; openBraces--; }
+
+  return s;
+}
+
 function asString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
