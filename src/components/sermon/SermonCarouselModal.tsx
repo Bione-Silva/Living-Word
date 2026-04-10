@@ -89,7 +89,7 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
     const el = document.getElementById(`carousel-slide-${index}`);
     if (!el) return;
     try {
-      const dataUrl = await html2canvas.toPng(el, { width: slideW, height: slideH, pixelRatio: 2 });
+      const dataUrl = await toPng(el, { width: slideW, height: slideH, pixelRatio: 2 });
       const a = document.createElement('a');
       a.href = dataUrl;
       a.download = `slide-${index + 1}.png`;
