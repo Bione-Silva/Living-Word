@@ -171,19 +171,6 @@ export default function BomAmigo() {
       inputRef.current?.focus();
     }
   };
-  const handleCopy = (content: string) => {
-    navigator.clipboard.writeText(content);
-    toast.success(labels.copied[lang]);
-  };
-
-  const handleShare = async (content: string) => {
-    if (navigator.share) {
-      try { await navigator.share({ title: labels.title[lang], text: content }); } catch { /* cancelled */ }
-    } else {
-      navigator.clipboard.writeText(content);
-      toast.success(labels.copied[lang]);
-    }
-  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -192,7 +179,7 @@ export default function BomAmigo() {
     }
   };
 
-  const isEmpty = messages.length === 0 && !loading;
+  const isEmpty = messages.length === 0 && !loading && historyLoaded;
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] pb-28 md:pb-0 max-w-3xl mx-auto">
