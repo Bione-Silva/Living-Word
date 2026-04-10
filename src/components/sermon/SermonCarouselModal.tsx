@@ -22,6 +22,7 @@ interface SermonCarouselModalProps {
   onOpenChange: (open: boolean) => void;
   sermonMarkdown: string;
   sermonTitle: string;
+  materialId?: string | null;
 }
 
 const labels = {
@@ -63,13 +64,14 @@ function BrandFooter({ size = 'normal' }: { size?: 'small' | 'normal' }) {
   );
 }
 
-export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermonTitle }: SermonCarouselModalProps) {
+export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermonTitle, materialId }: SermonCarouselModalProps) {
   const { lang } = useLanguage();
   const { user } = useAuth();
   const [slides, setSlides] = useState<Slide[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [aspect, setAspect] = useState<'4:5' | '16:9'>('4:5');
+  const [variationCount, setVariationCount] = useState(1);
 
   const slideW = aspect === '4:5' ? 1080 : 1920;
   const slideH = aspect === '4:5' ? 1350 : 1080;
@@ -86,8 +88,23 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
         body: { sermon: sermonMarkdown, language: lang },
       });
       if (error) throw error;
-      setSlides(data?.slides || []);
+      const newSlides = data?.slides || [];
+      setSlides(newSlides);
       setActiveSlide(0);
+      setVariationCount(prev => prev + 1);
+
+      // Persist to visual_outputs
+      if (user && newSlides.length > 0) {
+        await supabase.from('visual_outputs' as any).insert({
+          user_id: user.id,
+          material_id: materialId || null,
+          output_type: 'carousel',
+          format: aspect,
+          language: lang,
+          slides_data: newSlides,
+          variation_number: variationCount,
+        });
+      }
     } catch (e) {
       console.error('carousel error', e);
     } finally {
