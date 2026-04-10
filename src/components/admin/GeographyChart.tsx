@@ -15,7 +15,15 @@ const flagMap: Record<string, string> = {
   'Portugal': '🇵🇹',
   'Angola': '🇦🇴',
   'Mozambique': '🇲🇿', 'Moçambique': '🇲🇿',
+  'Mexico': '🇲🇽', 'México': '🇲🇽',
+  'Colombia': '🇨🇴', 'Colômbia': '🇨🇴',
+  'Argentina': '🇦🇷',
+  'Chile': '🇨🇱',
+  'Peru': '🇵🇪', 'Perú': '🇵🇪',
   'Spain': '🇪🇸', 'Espanha': '🇪🇸',
+  'Guatemala': '🇬🇹',
+  'Ecuador': '🇪🇨',
+  'Venezuela': '🇻🇪',
   'Unknown': '🌍',
 };
 
