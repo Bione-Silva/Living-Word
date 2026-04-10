@@ -31,13 +31,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [langVersion, setLangVersion] = useState(0);
 
   const setLang = useCallback((next: Language) => {
-    setLangInternal((prev) => {
-      if (prev !== next) {
-        setLangVersion((v) => v + 1);
-      }
-      return next;
-    });
-  }, []);
+    if (next !== lang) {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
+      window.location.reload();
+    }
+  }, [lang]);
 
   useEffect(() => {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
