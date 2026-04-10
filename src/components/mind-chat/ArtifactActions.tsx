@@ -57,17 +57,16 @@ export function ArtifactActions({ content, lang, userId, modalidade, mindName, b
     setLoadingAction('pdf');
     try {
       const html2pdf = (await import('html2pdf.js')).default;
+      const { wrapWithBrand } = await import('@/lib/export-branding');
       const container = document.createElement('div');
-      container.innerHTML = `
-        <div style="font-family: 'Georgia', serif; padding: 20px; color: #333; max-width: 700px; margin: 0 auto;">
-          <h1 style="font-size: 22px; color: #4a3728; border-bottom: 2px solid #D4A853; padding-bottom: 8px; margin-bottom: 16px;">${title}</h1>
+      container.innerHTML = wrapWithBrand(`
+          <h1 style="font-size: 22px; color: #4a3728; padding-bottom: 8px; margin-bottom: 16px;">${title}</h1>
           <div style="font-size: 13px; line-height: 1.8; color: #444;">
             ${markdownToHtml(content)}
           </div>
-          <div style="margin-top: 24px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 10px; color: #999; text-align: center;">
-            Gerado por Living Word • ${mindName}
-          </div>
-        </div>`;
+          <div style="margin-top: 16px; font-size: 10px; color: #999; text-align: center;">
+            ${mindName}
+          </div>`);
       
       await html2pdf().set({
         margin: [15, 15, 15, 15],
@@ -125,15 +124,13 @@ export function ArtifactActions({ content, lang, userId, modalidade, mindName, b
         }
       }
 
-      // Footer
-      children.push(new Paragraph({ children: [] }));
-      children.push(new Paragraph({
-        alignment: AlignmentType.CENTER,
-        children: [new TextRun({ text: `Gerado por Living Word • ${mindName}`, font: 'Georgia', size: 16, color: '999999', italics: true })]
-      }));
+      // Branded header/footer
+      const { docxBrandElements, fetchLogoBuffer } = await import('@/lib/export-branding');
+      const logoBuffer = await fetchLogoBuffer();
+      const brand = docxBrandElements({ Paragraph, TextRun, AlignmentType, Header: (await import('docx')).Header, Footer: (await import('docx')).Footer, ImageRun: (await import('docx')).ImageRun, BorderStyle: (await import('docx')).BorderStyle }, logoBuffer);
 
       const doc = new Document({
-        sections: [{ properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children }],
+        sections: [{ properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } }, ...brand }, children }],
       });
 
       const buffer = await Packer.toBlob(doc);

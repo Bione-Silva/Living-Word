@@ -185,14 +185,21 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
   const handlePdf = async () => {
     toast.info(labels.pdfDownloading[lang]);
     const { default: html2pdf } = await import('html2pdf.js');
+    const { pdfBrandHeader, pdfBrandFooter } = await import('@/lib/export-branding');
     const el = document.getElementById('study-sidebar-content');
     if (!el) return;
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = pdfBrandHeader();
+    wrapper.appendChild(el.cloneNode(true));
+    wrapper.insertAdjacentHTML('beforeend', pdfBrandFooter());
+    document.body.appendChild(wrapper);
     html2pdf().set({
       margin: [10, 10],
       filename: `${passage.replace(/\s+/g, '_')}.pdf`,
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    }).from(el).save();
+    }).from(wrapper).save();
+    document.body.removeChild(wrapper);
   };
 
   // Render markdown with clickable verse references
