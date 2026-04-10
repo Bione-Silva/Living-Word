@@ -351,7 +351,7 @@ export default function BibleReader() {
         {activeTab === 'read' && (
           <>
             {readView === 'books' && (
-              <BibleBookGrid translation={translation} onTranslationChange={setTranslation} onSelectBook={handleSelectBook} />
+              <BibleBookGrid translation={translation} onTranslationChange={handleTranslationChange} onSelectBook={handleSelectBook} />
             )}
             {readView === 'chapters' && selectedBook && (
               <BibleChapterGrid bookId={selectedBook} onBack={() => setReadView('books')} onSelectChapter={handleSelectChapter} />
@@ -361,7 +361,7 @@ export default function BibleReader() {
                 bookId={selectedBook} chapter={selectedChapter} totalChapters={currentBook.chapters}
                 translation={translation} onBack={() => setReadView('chapters')} onHome={() => setReadView('books')}
                 onChapterChange={setSelectedChapter} onTabsRefresh={() => setTabsRefreshKey(k => k + 1)}
-                onTranslationChange={setTranslation}
+                onTranslationChange={handleTranslationChange}
                 highlightVerse={highlightVerse}
                 onHighlightClear={() => setHighlightVerse(null)}
               />
