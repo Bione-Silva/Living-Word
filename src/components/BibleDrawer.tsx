@@ -167,9 +167,12 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
         <div className="mt-4 space-y-4">
           {/* Focused reference badge */}
           {highlightRange && (
-            <div className="px-4 py-3 rounded-xl bg-primary/10 border border-primary/20">
-              <p className="text-sm font-bold text-primary">{focusedLabel}</p>
-              <p className="text-[10px] text-primary/60 mt-0.5">{currentTranslationLabel}</p>
+            <div className="px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-primary">{focusedLabel}</p>
+                <p className="text-[10px] text-primary/60 mt-0.5">{currentTranslationLabel}</p>
+              </div>
+              {renderVersionSelector(true)}
             </div>
           )}
 
