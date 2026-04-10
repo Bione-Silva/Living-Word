@@ -464,6 +464,35 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
           style={{ color: textColor }}
         />
       </div>
+
+      {/* ── AI Analysis Panel ── */}
+      {showAnalysis && (
+        <div className="border-t border-border bg-muted/20">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+              {lang === 'PT' ? 'Análise IA' : lang === 'ES' ? 'Análisis IA' : 'AI Analysis'}
+            </span>
+            <button onClick={() => setShowAnalysis(false)} className="text-muted-foreground hover:text-foreground">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <div className="p-3 max-h-[300px] overflow-y-auto">
+            {isAnalyzing ? (
+              <div className="flex items-center justify-center py-8 gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                <span className="text-xs text-muted-foreground">
+                  {lang === 'PT' ? 'Analisando suas anotações...' : lang === 'ES' ? 'Analizando sus notas...' : 'Analyzing your notes...'}
+                </span>
+              </div>
+            ) : analysisResult ? (
+              <div className="prose prose-sm max-w-none text-foreground/90 [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-semibold [&_p]:text-xs [&_p]:leading-relaxed [&_li]:text-xs [&_blockquote]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-primary/30 [&_blockquote]:pl-2 [&_blockquote]:italic">
+                <ReactMarkdown>{analysisResult}</ReactMarkdown>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
