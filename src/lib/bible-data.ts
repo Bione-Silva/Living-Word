@@ -175,26 +175,39 @@ export function getTranslationLabelByCode(code: string): string {
 }
 
 /**
- * Map a Bible version abbreviation (from sermon text) to the bible-api.com translation code.
- * E.g. "ARA" → "almeida", "NVI" → "almeida", "KJV" → "kjv"
+ * Map a Bible version abbreviation (from sermon text) to a version code.
+ * Returns the internal version code (e.g. "ara", "kjv") to use with getApiCodeForVersion.
  */
 export function versionToApiCode(version: string): string | null {
+  const upper = version.toUpperCase().trim();
+  // Try direct match to shortLabel
+  const direct = bibleVersions.find(v => v.shortLabel === upper);
+  if (direct) return direct.apiCode;
+  // Fallback map
   const map: Record<string, string> = {
     'ARA': 'almeida',
     'ARC': 'almeida',
-    'NVI': 'almeida',   // bible-api.com only has almeida for PT
+    'NVI': 'almeida',
     'NVT': 'almeida',
     'NAA': 'almeida',
     'ACF': 'almeida',
     'KJV': 'kjv',
-    'ESV': 'web',       // ESV not on bible-api.com, fallback to WEB
-    'NIV': 'web',       // NIV not available, fallback
+    'ESV': 'web',
+    'NIV': 'web',
     'NASB': 'asv',
     'WEB': 'web',
     'ASV': 'asv',
     'BBE': 'bbe',
-    'RVR': 'web',       // Reina-Valera not available, fallback
+    'RVR': 'web',
     'RVR60': 'web',
+    'NBLA': 'web',
   };
-  return map[version.toUpperCase().trim()] || null;
+  return map[upper] || null;
+
+/** Map a version abbreviation to the internal version code */
+export function versionAbbrToCode(abbr: string): string | null {
+  const upper = abbr.toUpperCase().trim();
+  const found = bibleVersions.find(v => v.shortLabel === upper);
+  return found?.code || null;
+}
 }
