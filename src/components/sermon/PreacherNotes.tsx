@@ -346,6 +346,9 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
             <DropdownMenuItem onClick={insertBlockquote} className="gap-2 text-xs">
               <Quote className="h-3.5 w-3.5" /> {labels.blockquote[lang]}
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={insertChecklist} className="gap-2 text-xs">
+              <CheckSquare className="h-3.5 w-3.5" /> {labels.checklist[lang]}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
