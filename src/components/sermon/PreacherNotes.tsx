@@ -42,15 +42,16 @@ const BLOCK_STYLES = [
 ];
 
 const labels = {
-  placeholder: { PT: 'Escreva suas anotações pessoais para este sermão...', EN: 'Write your personal notes for this sermon...', ES: 'Escriba sus notas personales para este sermón...' },
+  placeholder: { PT: 'Escreva suas anotações pessoais...', EN: 'Write your personal notes...', ES: 'Escriba sus notas personales...' },
   saving: { PT: 'Salvando...', EN: 'Saving...', ES: 'Guardando...' },
   saved: { PT: 'Salvo', EN: 'Saved', ES: 'Guardado' },
-  clear: { PT: 'Limpar', EN: 'Clear', ES: 'Clear' },
-  noSermon: { PT: 'Selecione ou gere um sermão para anotar.', EN: 'Select or generate a sermon to take notes.', ES: 'Seleccione o genere un sermón para anotar.' },
+  clear: { PT: 'Limpar', EN: 'Clear', ES: 'Limpiar' },
+  noMaterial: { PT: 'Selecione ou gere um material para anotar.', EN: 'Select or generate content to take notes.', ES: 'Seleccione o genere un material para anotar.' },
   bulletList: { PT: 'Lista com Marcadores', EN: 'Bullet List', ES: 'Lista con Viñetas' },
   dashList: { PT: 'Lista com Travessões', EN: 'Dash List', ES: 'Lista con Guiones' },
   numberedList: { PT: 'Lista Numerada', EN: 'Numbered List', ES: 'Lista Numerada' },
   blockquote: { PT: 'Citação em Bloco', EN: 'Block Quote', ES: 'Cita en Bloque' },
+  checklist: { PT: 'Lista de Tarefas', EN: 'Checklist', ES: 'Lista de Tareas' },
 } satisfies Record<string, Record<L, string>>;
 
 interface PreacherNotesProps {
