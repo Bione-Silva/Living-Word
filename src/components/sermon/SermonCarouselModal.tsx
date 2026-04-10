@@ -8,6 +8,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { toPng } from 'html-to-image';
 import { toast } from 'sonner';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -192,14 +194,18 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
   const downloadAll = async () => {
     setDownloadingAll(true);
     try {
+      const zip = new JSZip();
       for (let i = 0; i < slides.length; i++) {
         const el = document.getElementById(`carousel-offscreen-${i}`);
         if (!el) continue;
         const blob = await captureSlideAsJpeg(el);
-        downloadBlob(blob, `carousel-${i + 1}.jpg`);
-        await new Promise(r => setTimeout(r, 200));
+        const name = `${String(i + 1).padStart(2, '0')}-${slides[i].type}.jpg`;
+        zip.file(name, blob);
       }
-      toast.success(lang === 'PT' ? `${slides.length} imagens baixadas` : `${slides.length} images downloaded`);
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const zipName = `carousel-${aspect.replace(':', 'x')}-${slides.length}slides.zip`;
+      saveAs(zipBlob, zipName);
+      toast.success(lang === 'PT' ? `ZIP com ${slides.length} imagens baixado` : `ZIP with ${slides.length} images downloaded`);
     } catch (e) {
       console.error(e);
       toast.error(lang === 'PT' ? 'Erro ao baixar' : 'Download error');
