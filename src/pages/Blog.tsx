@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import {
   FileText, Plus, Search, Globe, Pencil, BookOpen, MoreHorizontal,
-  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload,
+  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload, Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
@@ -57,6 +57,8 @@ export default function Blog() {
   const [previewMode, setPreviewMode] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<ArticleRow | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [publishing, setPublishing] = useState<string | null>(null);
+  const [publishStep, setPublishStep] = useState<'cover' | 'publishing' | null>(null);
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['my-blog-articles', user?.id],
@@ -155,7 +157,30 @@ export default function Blog() {
   };
 
   const handlePublish = async (article: ArticleRow) => {
+    setPublishing(article.id);
     try {
+      // Step 1: Generate cover image if none exists
+      if (!article.cover_image_url) {
+        setPublishStep('cover');
+        try {
+          const { data: coverData, error: coverError } = await supabase.functions.invoke(
+            'generate-article-cover',
+            { body: { article_id: article.id, title: article.title, content: article.content } }
+          );
+          if (coverError) {
+            console.warn('[Blog] Cover generation failed:', coverError);
+            toast.warning('Artigo será publicado sem imagem de capa.');
+          } else if (coverData?.cover_image_url) {
+            article.cover_image_url = coverData.cover_image_url;
+          }
+        } catch (e) {
+          console.warn('[Blog] Cover generation error:', e);
+          toast.warning('Artigo será publicado sem imagem de capa.');
+        }
+      }
+
+      // Step 2: Publish
+      setPublishStep('publishing');
       if (article.queue_id) {
         const { error } = await supabase
           .from('editorial_queue')
@@ -171,10 +196,13 @@ export default function Blog() {
         });
         if (error) throw error;
       }
-      toast.success(t('blog.published_ok') || 'Artigo publicado!');
+      toast.success(t('blog.published_ok') || 'Artigo publicado com sucesso!');
       queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
     } catch {
       toast.error(t('blog.status_error'));
+    } finally {
+      setPublishing(null);
+      setPublishStep(null);
     }
   };
 
@@ -338,6 +366,23 @@ export default function Blog() {
                   </div>
 
                   <div className="flex items-center gap-2 mt-auto pt-2">
+                    {!isPublished && !isArchived && (
+                      <Button
+                        size="sm"
+                        className="gap-1.5 text-xs h-8"
+                        disabled={publishing === article.id}
+                        onClick={() => handlePublish(article)}
+                      >
+                        {publishing === article.id ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            {publishStep === 'cover' ? 'Gerando capa...' : 'Publicando...'}
+                          </>
+                        ) : (
+                          <><Upload className="w-3 h-3" /> {t('blog.publish') || 'Publicar'}</>
+                        )}
+                      </Button>
+                    )}
                     {isPublished && profile?.blog_handle && (
                       <Link to={`/blog/${profile.blog_handle}/${article.id}`} target="_blank">
                         <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8">
@@ -345,7 +390,7 @@ export default function Blog() {
                         </Button>
                       </Link>
                     )}
-                    <Button size="sm" variant={isPublished ? 'outline' : 'default'} className="gap-1.5 text-xs h-8" onClick={() => openEditor(article)}>
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8" onClick={() => openEditor(article)}>
                       <Pencil className="w-3 h-3" /> {t('blog.edit')}
                     </Button>
                     <DropdownMenu>
