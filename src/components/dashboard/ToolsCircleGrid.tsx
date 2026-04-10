@@ -18,7 +18,7 @@ const tools: CircleTool[] = [
   { id: 'studio', icon: Mic, label: { PT: 'Gerador de Pregação', EN: 'Sermon Generator', ES: 'Generador de Sermón' }, action: 'tool:studio' },
   { id: 'biblical-study', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' }, action: 'navigate:/estudos/novo' },
   { id: 'social-studio', icon: ImageIcon, label: { PT: 'Artes Bíblicas', EN: 'Biblical Art', ES: 'Artes Bíblicas' }, action: 'navigate:/social-studio' },
-  { id: 'bible-reader', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' }, action: 'navigate:/biblia' },
+  { id: 'bible-reader', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' }, action: 'navigate:/bible' },
   { id: 'blog', icon: PenLine, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' }, action: 'tool:free-article' },
   { id: 'research', icon: Search, label: { PT: 'Pesquisa', EN: 'Research', ES: 'Investigación' }, action: 'tool:topic-explorer' },
   { id: 'bom-amigo', icon: Heart, label: { PT: 'O Bom Amigo', EN: 'Good Friend', ES: 'El Buen Amigo' }, action: 'navigate:/bom-amigo' },
