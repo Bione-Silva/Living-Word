@@ -108,11 +108,46 @@ Respond ONLY with valid JSON: {"nextTheme": "theme name", "reasoning": "one sent
       .limit(1)
       .maybeSingle()
 
+    let seriesInfo: { day: number; totalDays: number } | null = null
+
+    if (devotional?.series_id) {
+      // Count how many devotionals exist in this series
+      const { count: totalInSeries } = await supabase
+        .from('devotionals')
+        .select('id', { count: 'exact', head: true })
+        .eq('series_id', devotional.series_id)
+
+      // Count how many the user has already engaged with in this series
+      const { data: seriesDevotionals } = await supabase
+        .from('devotionals')
+        .select('id')
+        .eq('series_id', devotional.series_id)
+
+      const seriesIds = (seriesDevotionals || []).map(d => d.id)
+
+      let completedDays = 0
+      if (seriesIds.length > 0) {
+        const { count: engagedCount } = await supabase
+          .from('devotional_engagements')
+          .select('devotional_id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .in('devotional_id', seriesIds)
+          .in('action', ['read', 'complete_reflection', 'like'])
+        completedDays = engagedCount || 0
+      }
+
+      const total = totalInSeries || 7
+      // User's current day = completed + 1 (capped at total)
+      const currentDay = Math.min(completedDays + 1, total)
+
+      seriesInfo = { day: currentDay, totalDays: total }
+    }
+
     return new Response(JSON.stringify({
       devotionalId: devotional?.id || null,
       theme: nextTheme,
       reasoning,
-      seriesInfo: devotional ? { day: devotional.series_number || 1, totalDays: 7 } : null,
+      seriesInfo,
       topThemes,
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   } catch (e) {
