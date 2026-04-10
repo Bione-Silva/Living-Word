@@ -295,10 +295,11 @@ serve(async (req) => {
       .maybeSingle();
 
     const generationsUsed = profile?.generations_used || 0;
-    const generationsLimit = profile?.generations_limit || 5;
+    const generationsLimit = profile?.generations_limit || 500;
+    const creditCost = 30; // biblical study = 30 credits
 
-    if (generationsUsed >= generationsLimit) {
-      return jsonResponse({ error: "generation_limit_reached" }, 429);
+    if ((generationsLimit - generationsUsed) < creditCost) {
+      return jsonResponse({ error: "insufficient_credits", remaining: generationsLimit - generationsUsed, cost: creditCost }, 402);
     }
 
     const langMap: Record<string, string> = {
@@ -487,10 +488,10 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
       .select("id")
       .single();
 
-    // Increment generations_used
+    // Deduct credit cost (30 credits for biblical study)
     await supabase
       .from("profiles")
-      .update({ generations_used: generationsUsed + 1 })
+      .update({ generations_used: generationsUsed + creditCost })
       .eq("id", userId);
 
     return jsonResponse({

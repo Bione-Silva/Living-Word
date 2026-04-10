@@ -7,6 +7,34 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Credit cost per tool (mirrors src/lib/plans.ts TOOL_CREDITS)
+const TOOL_CREDITS: Record<string, number> = {
+  'topic-explorer': 5,
+  'verse-finder': 3,
+  'historical-context': 5,
+  'quote-finder': 4,
+  'original-text': 4,
+  'lexical': 5,
+  'studio': 20,
+  'biblical-study': 30,
+  'free-article': 15,
+  'free-article-universal': 10,
+  'title-gen': 3,
+  'metaphor-creator': 4,
+  'bible-modernizer': 6,
+  'illustrations': 10,
+  'youtube-blog': 0,
+  'reels-script': 15,
+  'cell-group': 15,
+  'social-caption': 10,
+  'newsletter': 30,
+  'announcements': 10,
+  'trivia': 20,
+  'poetry': 15,
+  'kids-story': 20,
+  'deep-translation': 15,
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -30,15 +58,13 @@ serve(async (req) => {
       });
     }
 
-    // ── Free plan usage tracking ──
+    // ── Credit wallet enforcement ──
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
     let userId: string | undefined;
-    let isFreeUser = false;
-
     const authHeader = req.headers.get("authorization") || "";
     const token = authHeader.replace("Bearer ", "");
     if (token) {
@@ -46,28 +72,24 @@ serve(async (req) => {
       userId = user?.id;
     }
 
+    const creditCost = TOOL_CREDITS[toolId] || 5; // default 5 if unknown tool
+
     if (userId && toolId) {
       const { data: profile } = await supabaseAdmin
         .from("profiles")
-        .select("plan")
+        .select("plan, generations_used, generations_limit")
         .eq("id", userId)
         .single();
 
-      if (profile?.plan === "free") {
-        isFreeUser = true;
-        const monthKey = new Date().toISOString().slice(0, 7);
-        const { data: existing } = await supabaseAdmin
-          .from("free_tool_usage")
-          .select("id")
-          .eq("user_id", userId)
-          .eq("tool_id", toolId)
-          .eq("month_key", monthKey)
-          .maybeSingle();
+      if (profile) {
+        const used = profile.generations_used || 0;
+        const limit = profile.generations_limit || 500;
+        const remaining = limit - used;
 
-        if (existing) {
+        if (remaining < creditCost) {
           return new Response(
-            JSON.stringify({ error: "already_used_this_month" }),
-            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            JSON.stringify({ error: "insufficient_credits", remaining, cost: creditCost }),
+            { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
           );
         }
       }
@@ -112,14 +134,29 @@ serve(async (req) => {
     const data = await aiResponse.json();
     const content = data.choices?.[0]?.message?.content || "";
 
-    // ── Record usage for free users AFTER successful generation ──
-    if (userId && toolId && isFreeUser) {
-      const monthKey = new Date().toISOString().slice(0, 7);
-      await supabaseAdmin.from("free_tool_usage").insert({
-        user_id: userId,
-        tool_id: toolId,
-        month_key: monthKey,
+    // ── Deduct credits AFTER successful generation ──
+    if (userId && toolId) {
+      await supabaseAdmin.rpc("deduct_credits", { p_user_id: userId, p_amount: creditCost }).catch(() => {
+        // Fallback: direct update
+        supabaseAdmin
+          .from("profiles")
+          .update({ generations_used: (data as any).__used + creditCost })
+          .eq("id", userId);
       });
+
+      // Simple direct increment as primary method
+      const { data: currentProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("generations_used")
+        .eq("id", userId)
+        .single();
+
+      if (currentProfile) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ generations_used: currentProfile.generations_used + creditCost })
+          .eq("id", userId);
+      }
     }
 
     return new Response(JSON.stringify({ content }), {
