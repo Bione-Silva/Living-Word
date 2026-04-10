@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
+import { BibleDrawer } from '@/components/BibleDrawer';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -227,6 +228,7 @@ export default function Sermoes() {
   const [sermonContent, setSermonContent] = useState('');
   const [sermonTitle, setSermonTitle] = useState('');
   const [sermonTopic, setSermonTopic] = useState('');
+  const [bibleDrawerOpen, setBibleDrawerOpen] = useState(false);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
@@ -409,17 +411,9 @@ export default function Sermoes() {
     if (sermonTopic) handleGenerate(sermonTopic);
   };
 
-  /* ═══ Bible reference click handler ═══ */
+  /* ═══ Bible reference click handler — opens internal drawer ═══ */
   const handleBibleClick = (ref: string) => {
-    const parts = ref.split('/');
-    if (parts.length >= 2) {
-      const bookId = parts[0].toLowerCase();
-      const chapter = parts[1];
-      const verse = parts[2] || '';
-      const verseParam = verse ? `&verse=${verse}` : '';
-      const translation = profile?.bible_version || 'nvi';
-      navigate(`/bible?book=${bookId}&chapter=${chapter}${verseParam}&translation=${translation.toLowerCase()}`);
-    }
+    setBibleDrawerOpen(true);
   };
 
   /* ═══ Custom markdown components ═══ */
@@ -430,7 +424,8 @@ export default function Sermoes() {
         return (
           <button
             onClick={() => handleBibleClick(ref)}
-            className="text-primary hover:underline font-medium inline-flex items-center gap-0.5 cursor-pointer"
+            className="font-bold inline-flex items-center gap-0.5 cursor-pointer hover:underline"
+            style={{ color: '#D4A853' }}
             title={ref.replace(/\//g, ' ')}
             {...props}
           >
@@ -438,7 +433,17 @@ export default function Sermoes() {
           </button>
         );
       }
-      return <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline" {...props}>{children}</a>;
+      // Non-bible links also open internally — prevent external navigation
+      return (
+        <button
+          onClick={() => setBibleDrawerOpen(true)}
+          className="font-bold inline-flex items-center gap-0.5 cursor-pointer hover:underline"
+          style={{ color: '#D4A853' }}
+          {...props}
+        >
+          {children}
+        </button>
+      );
     },
     blockquote: ({ children, ...props }: any) => (
       <blockquote className="border-l-4 border-primary/40 pl-4 py-2 my-4 bg-primary/5 rounded-r-lg italic text-muted-foreground" {...props}>
@@ -733,6 +738,7 @@ export default function Sermoes() {
         sermonTitle={sermonTitle}
         materialId={activeSessionId}
       />
+      <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
     </div>
   );
 }

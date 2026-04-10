@@ -20,6 +20,7 @@ import { captureNodeAsPng } from '@/components/social-studio/export-utils';
 import { compressToJpeg } from '@/components/social-studio/export-utils';
 import { DevotionalShareArt } from '@/components/DevotionalShareArt';
 import { openWhatsAppShare } from '@/lib/whatsapp';
+import { BibleDrawer } from '@/components/BibleDrawer';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -311,10 +312,10 @@ function BibleRichText({ text, className }: { text: string; className?: string }
         const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
         if (linkMatch) {
           const [, label, href] = linkMatch;
-          if (href.startsWith('/biblia')) {
-            return <Link key={i} to={href} className="underline decoration-1 underline-offset-2 font-medium transition-colors hover:opacity-80" style={{ color: 'hsl(38, 52%, 42%)' }}>{label}</Link>;
+          if (href.startsWith('/biblia') || href.startsWith('/bible')) {
+            return <button key={i} onClick={() => (window as any).__openBibleDrawer?.()} className="underline decoration-1 underline-offset-2 font-bold transition-colors hover:opacity-80 cursor-pointer" style={{ color: '#D4A853' }}>{label}</button>;
           }
-          return <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="underline decoration-1 underline-offset-2 font-medium transition-colors hover:opacity-80" style={{ color: 'hsl(38, 52%, 42%)' }}>{label}</a>;
+          return <button key={i} onClick={() => (window as any).__openBibleDrawer?.()} className="underline decoration-1 underline-offset-2 font-bold transition-colors hover:opacity-80 cursor-pointer" style={{ color: '#D4A853' }}>{label}</button>;
         }
         return <span key={i}>{part}</span>;
       })}
@@ -338,8 +339,15 @@ export default function Devocional() {
   const [showAddReflection, setShowAddReflection] = useState(false);
   const [readingModalOpen, setReadingModalOpen] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [bibleDrawerOpen, setBibleDrawerOpen] = useState(false);
   const shareArtRef = useRef<HTMLDivElement>(null);
   const [preferredBibleVersion, setPreferredBibleVersion] = useState('NVI');
+
+  // Register global callback for BibleRichText links
+  useEffect(() => {
+    (window as any).__openBibleDrawer = () => setBibleDrawerOpen(true);
+    return () => { delete (window as any).__openBibleDrawer; };
+  }, []);
 
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
@@ -1194,12 +1202,20 @@ export default function Devocional() {
 
   if (!isMobile && user) {
     return (
-      <div className="flex gap-5 items-start w-full">
-        {mainContent}
-        {sidebar}
-      </div>
+      <>
+        <div className="flex gap-5 items-start w-full">
+          {mainContent}
+          {sidebar}
+        </div>
+        <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
+      </>
     );
   }
 
-  return <>{mainContent}</>;
+  return (
+    <>
+      {mainContent}
+      <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
+    </>
+  );
 }
