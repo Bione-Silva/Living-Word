@@ -11,7 +11,7 @@ import { toPng } from 'html-to-image';
 type L = 'PT' | 'EN' | 'ES';
 
 interface Slide {
-  type: 'cover' | 'verse' | 'point' | 'application' | 'conclusion';
+  type: string;
   title: string;
   body: string;
   reference?: string;
@@ -26,23 +26,20 @@ interface SermonCarouselModalProps {
 
 const labels = {
   title: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
-  generating: { PT: 'Gerando...', EN: 'Generating...', ES: 'Generando...' },
-  analyzing: { PT: 'Analisando pregação...', EN: 'Analyzing sermon...', ES: 'Analizando predicación...' },
+  generating: { PT: 'Gerando carrossel...', EN: 'Generating carousel...', ES: 'Generando carrusel...' },
   creating: { PT: 'Resumindo com IA...', EN: 'Summarizing with AI...', ES: 'Resumiendo con IA...' },
-  creatingSlides: { PT: 'Criando slides', EN: 'Creating slides', ES: 'Creando slides' },
   slidesOf: { PT: 'Slides do Carrossel', EN: 'Carousel Slides', ES: 'Slides del Carrusel' },
   slideLabel: { PT: 'Slide', EN: 'Slide', ES: 'Slide' },
   of: { PT: 'de', EN: 'of', ES: 'de' },
-  downloadSlide: { PT: 'Slide', EN: 'Slide', ES: 'Slide' },
+  downloadSlide: { PT: 'Baixar Slide', EN: 'Download Slide', ES: 'Descargar Slide' },
   downloadAll: { PT: 'Baixar Todos', EN: 'Download All', ES: 'Descargar Todo' },
   send: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   newVariation: { PT: 'Nova Variação', EN: 'New Variation', ES: 'Nueva Variación' },
-  background: { PT: 'Background', EN: 'Background', ES: 'Fondo' },
   sermon: { PT: 'PREGAÇÃO', EN: 'SERMON', ES: 'PREDICACIÓN' },
   instagram: { PT: 'Instagram 4:5', EN: 'Instagram 4:5', ES: 'Instagram 4:5' },
   widescreen: { PT: 'Widescreen 16:9', EN: 'Widescreen 16:9', ES: 'Widescreen 16:9' },
-  instagramRes: { PT: '1080x1350px PNG', EN: '1080x1350px PNG', ES: '1080x1350px PNG' },
-  widescreenRes: { PT: '1920x1080px PNG', EN: '1920x1080px PNG', ES: '1920x1080px PNG' },
+  instagramRes: { PT: '1080×1350px PNG', EN: '1080×1350px PNG', ES: '1080×1350px PNG' },
+  widescreenRes: { PT: '1920×1080px PNG', EN: '1920×1080px PNG', ES: '1920×1080px PNG' },
 } satisfies Record<string, Record<L, string>>;
 
 const typeLabels: Record<string, Record<L, string>> = {
@@ -52,6 +49,19 @@ const typeLabels: Record<string, Record<L, string>> = {
   application: { PT: 'APLICAÇÃO', EN: 'APPLICATION', ES: 'APLICACIÓN' },
   conclusion: { PT: 'CONCLUSÃO', EN: 'CONCLUSION', ES: 'CONCLUSIÓN' },
 };
+
+/* ═══ Unified branding footer component ═══ */
+function BrandFooter({ size = 'normal' }: { size?: 'small' | 'normal' }) {
+  const s = size === 'small';
+  return (
+    <div className={`flex items-center gap-1 ${s ? 'gap-0.5' : 'gap-1.5'}`}>
+      <span className={`${s ? 'text-[5px]' : 'text-[9px]'} text-primary/50`}>✝</span>
+      <span className={`${s ? 'text-[5px]' : 'text-[9px]'} font-semibold tracking-[0.15em] text-primary/40 uppercase`}>
+        Living Word
+      </span>
+    </div>
+  );
+}
 
 export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermonTitle }: SermonCarouselModalProps) {
   const { lang } = useLanguage();
@@ -92,7 +102,7 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
       const dataUrl = await toPng(el, { width: slideW, height: slideH, pixelRatio: 2 });
       const a = document.createElement('a');
       a.href = dataUrl;
-      a.download = `slide-${index + 1}.png`;
+      a.download = `carousel-${index + 1}.png`;
       a.click();
     } catch (e) { console.error(e); }
   };
@@ -110,53 +120,58 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
   };
 
   const renderSlide = (slide: Slide, index: number, preview = false) => {
-    const w = preview ? (aspect === '4:5' ? 120 : 160) : (aspect === '4:5' ? 400 : 500);
-    const h = preview ? (aspect === '4:5' ? 150 : 90) : (aspect === '4:5' ? 500 : 281);
-    const fontSize = preview ? 'text-[8px]' : 'text-sm';
-    const titleSize = preview ? 'text-[9px]' : 'text-base';
-    const typeSize = preview ? 'text-[6px]' : 'text-xs';
+    const w = preview ? (aspect === '4:5' ? 110 : 150) : (aspect === '4:5' ? 380 : 500);
+    const h = preview ? (aspect === '4:5' ? 138 : 84) : (aspect === '4:5' ? 475 : 281);
+    const isCover = slide.type === 'cover';
+    const isPreviewSmall = preview;
 
     return (
       <div
         id={preview ? undefined : `carousel-slide-${index}`}
         key={index}
         style={{ width: w, height: h }}
-        className={`relative flex flex-col justify-between overflow-hidden rounded-lg bg-gradient-to-br from-[hsl(var(--primary)/0.15)] to-[hsl(var(--background))] border border-border/40 p-${preview ? '2' : '6'} shrink-0 ${preview ? 'cursor-pointer' : ''}`}
+        className={`relative flex flex-col overflow-hidden rounded-lg shrink-0
+          ${isCover
+            ? 'bg-gradient-to-br from-primary/25 via-primary/10 to-background justify-center items-center text-center'
+            : 'bg-gradient-to-br from-[hsl(var(--primary)/0.08)] to-background justify-between'
+          }
+          border border-border/40
+          ${isPreviewSmall ? 'p-2 cursor-pointer' : 'p-6'}
+        `}
         onClick={preview ? () => setActiveSlide(index) : undefined}
       >
-        {/* Brand watermark */}
-        <div className={`${typeSize} font-bold text-primary/60 tracking-wider`}>Living Word</div>
-        
         {/* Slide number */}
-        <div className={`absolute top-${preview ? '1' : '3'} right-${preview ? '1' : '3'} ${typeSize} text-muted-foreground`}>
+        <div className={`absolute ${isPreviewSmall ? 'top-1 right-1 text-[5px]' : 'top-3 right-3 text-[10px]'} text-muted-foreground/40 font-medium`}>
           {index + 1}/{slides.length}
         </div>
 
         {/* Type badge */}
-        <div className={`${typeSize} font-bold tracking-widest text-primary mt-auto`}>
-          {typeLabels[slide.type]?.[lang] || slide.type.toUpperCase()}
-        </div>
-
-        {/* Title */}
-        <h3 className={`${titleSize} font-bold text-foreground leading-tight mt-1 line-clamp-${preview ? '2' : '3'}`}>
-          {slide.title}
-        </h3>
-
-        {/* Body */}
-        {!preview && (
-          <p className={`${fontSize} text-muted-foreground mt-2 leading-relaxed line-clamp-6`}>{slide.body}</p>
+        {!isCover && (
+          <div className={`${isPreviewSmall ? 'text-[5px]' : 'text-[10px]'} font-bold tracking-widest text-primary/60 uppercase`}>
+            {typeLabels[slide.type]?.[lang] || slide.type.toUpperCase()}
+          </div>
         )}
 
+        {/* Content */}
+        <div className={isCover ? 'px-2' : 'flex-1 flex flex-col justify-center mt-1'}>
+          <h3 className={`${isPreviewSmall ? 'text-[8px]' : 'text-base'} font-bold text-foreground leading-tight ${isPreviewSmall ? 'line-clamp-2' : 'line-clamp-3'}`}>
+            {slide.title}
+          </h3>
+          {!preview && (
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed line-clamp-5">{slide.body}</p>
+          )}
+        </div>
+
         {/* Reference */}
-        {slide.reference && (
-          <div className={`pt-1 ${typeSize} text-primary/80 flex items-center gap-1`}>
+        {slide.reference && !isPreviewSmall && (
+          <div className="text-[10px] text-primary/70 flex items-center gap-1 mt-2">
             📖 {slide.reference}
           </div>
         )}
 
         {/* Branding footer */}
-        <div className={`mt-auto pt-1 flex items-center justify-end`}>
-          <span className={`${typeSize} font-semibold text-primary/40 tracking-wider`}>Living Word</span>
+        <div className={`${isPreviewSmall ? 'mt-auto' : 'mt-3'} flex items-center justify-end`}>
+          <BrandFooter size={isPreviewSmall ? 'small' : 'normal'} />
         </div>
       </div>
     );
@@ -168,20 +183,20 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b border-border flex flex-row items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">C</div>
+            <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm">🎨</div>
             <div>
               <DialogTitle className="text-base font-bold">{labels.title[lang]}</DialogTitle>
               <p className="text-xs text-muted-foreground">{loading ? labels.generating[lang] : `${slides.length} slides`}</p>
             </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
             <button
               onClick={() => setAspect('4:5')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${aspect === '4:5' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${aspect === '4:5' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
             >4:5</button>
             <button
               onClick={() => setAspect('16:9')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${aspect === '16:9' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${aspect === '16:9' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
             >16:9</button>
           </div>
         </DialogHeader>
@@ -189,9 +204,6 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
         {/* Toolbar */}
         {!loading && slides.length > 0 && (
           <div className="flex items-center gap-2 px-6 py-3 border-b border-border">
-            <Button variant="outline" size="sm" className="text-xs gap-1.5">
-              🖼️ {labels.background[lang]}
-            </Button>
             <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={generateSlides}>
               <RefreshCw className="h-3.5 w-3.5" />
               {labels.newVariation[lang]}
@@ -202,33 +214,21 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
         {/* Content */}
         <div className="p-6">
           {loading ? (
-            <div className="flex gap-6">
-              {/* Preview placeholder */}
-              <div className="flex-1 flex items-center justify-center" style={{ minHeight: 400 }}>
-                <div className="flex flex-col items-center gap-3">
-                  <Loader2 className="h-10 w-10 animate-spin text-primary/40" />
-                  <p className="text-sm text-primary/80">{labels.creating[lang]}</p>
-                  <p className="text-xs text-muted-foreground">{labels.creatingSlides[lang]}</p>
-                </div>
-              </div>
-              {/* Right placeholder */}
-              <div className="w-80 hidden md:flex flex-col items-center gap-3">
-                <h3 className="text-sm font-bold text-foreground w-full">{labels.slidesOf[lang]}</h3>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-xs">{labels.analyzing[lang]}</span>
-                </div>
+            <div className="flex items-center justify-center" style={{ minHeight: 400 }}>
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="h-10 w-10 animate-spin text-primary/40" />
+                <p className="text-sm text-primary/80">{labels.creating[lang]}</p>
               </div>
             </div>
           ) : slides.length > 0 ? (
             <div className="flex gap-6">
               {/* Main slide preview */}
               <div className="flex-1 flex flex-col items-center">
-                <div className="relative w-full flex items-center justify-center" style={{ minHeight: aspect === '4:5' ? 500 : 300 }}>
+                <div className="relative w-full flex items-center justify-center" style={{ minHeight: aspect === '4:5' ? 480 : 290 }}>
                   <button
                     onClick={() => setActiveSlide(Math.max(0, activeSlide - 1))}
                     disabled={activeSlide === 0}
-                    className="absolute left-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30"
+                    className="absolute left-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30 hover:bg-muted/50 transition-colors"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
@@ -238,7 +238,7 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
                   <button
                     onClick={() => setActiveSlide(Math.min(slides.length - 1, activeSlide + 1))}
                     disabled={activeSlide === slides.length - 1}
-                    className="absolute right-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30"
+                    className="absolute right-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30 hover:bg-muted/50 transition-colors"
                   >
                     <ChevronRight className="h-5 w-5" />
                   </button>
@@ -250,7 +250,7 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
                     <button
                       key={i}
                       onClick={() => setActiveSlide(i)}
-                      className={`w-2.5 h-2.5 rounded-full transition-colors ${i === activeSlide ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                      className={`w-2 h-2 rounded-full transition-all ${i === activeSlide ? 'bg-primary w-5' : 'bg-muted-foreground/30'}`}
                     />
                   ))}
                 </div>
@@ -273,18 +273,12 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
               </div>
 
               {/* Thumbnails grid */}
-              <div className="w-80 hidden md:block">
-                <h3 className="text-sm font-bold text-foreground mb-3">{labels.slidesOf[lang]}</h3>
-                <div className="grid grid-cols-3 gap-2">
+              <div className="w-72 hidden md:block">
+                <h3 className="text-xs font-bold text-muted-foreground tracking-wide mb-3">{labels.slidesOf[lang]}</h3>
+                <div className="grid grid-cols-3 gap-1.5">
                   {slides.map((s, i) => (
-                    <div key={i} className={`relative ${activeSlide === i ? 'ring-2 ring-primary rounded-lg' : ''}`}>
-                      {activeSlide === i && (
-                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[8px] font-bold z-10">
-                          {i + 1}
-                        </div>
-                      )}
+                    <div key={i} className={`relative ${activeSlide === i ? 'ring-2 ring-primary ring-offset-1 ring-offset-background rounded-lg' : ''}`}>
                       {renderSlide(s, i, true)}
-                      <p className="text-[8px] text-muted-foreground mt-1 text-center line-clamp-1">{s.title}</p>
                     </div>
                   ))}
                 </div>
@@ -302,7 +296,7 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
                 </div>
 
                 {/* Format info */}
-                <div className="mt-2 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                <div className="mt-2 p-3 rounded-lg border border-primary/20 bg-primary/5">
                   <p className="text-xs text-primary font-medium">
                     {aspect === '4:5' ? labels.instagram[lang] : labels.widescreen[lang]}
                   </p>

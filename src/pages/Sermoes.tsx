@@ -117,6 +117,7 @@ const labels = {
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
   messages: { PT: 'mensagens', EN: 'messages', ES: 'mensajes' },
   noSermons: { PT: 'Nenhum sermão criado ainda.', EN: 'No sermons created yet.', ES: 'Ningún sermón creado aún.' },
+  loadingSession: { PT: 'Carregando...', EN: 'Loading...', ES: 'Cargando...' },
 } satisfies Record<string, Record<L, string>>;
 
 function buildSystemPrompt(
@@ -173,8 +174,9 @@ function buildSystemPrompt(
 interface SermonSession {
   id: string;
   title: string;
+  content: string;
+  passage: string;
   date: string;
-  messageCount: number;
 }
 
 function ChipGroup({ items, selected, onSelect, lang }: { items: Record<L, string>[] | string[]; selected: string | null; onSelect: (val: string | null) => void; lang: L }) {
@@ -197,8 +199,31 @@ function ChipGroup({ items, selected, onSelect, lang }: { items: Record<L, strin
   );
 }
 
-/* ═══════════════ Bible reference regex ═══════════════ */
-const BIBLE_LINK_RE = /\[([^\]]+)\]\(bible:\/\/([^)]+)\)/g;
+/* ═══ Markdown → clean HTML for PDF ═══ */
+function markdownToHtml(md: string): string {
+  let html = md;
+  // Remove bible:// links but keep text
+  html = html.replace(/\[([^\]]+)\]\(bible:\/\/[^)]+\)/g, '<strong style="color:#8B6914;">$1</strong>');
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h3 style="font-size:15px;font-weight:700;margin:18px 0 8px;color:#333;">$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2 style="font-size:17px;font-weight:700;margin:24px 0 10px;color:#222;border-left:3px solid #8B6914;padding-left:10px;">$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;color:#111;">$1</h1>');
+  // Blockquotes
+  html = html.replace(/^> (.+)$/gm, '<blockquote style="border-left:3px solid #D4A853;padding:10px 16px;margin:16px 0;background:#FFFDF5;font-style:italic;color:#555;border-radius:0 6px 6px 0;">$1</blockquote>');
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  // Bullet lists
+  html = html.replace(/^- (.+)$/gm, '<li style="margin:4px 0;padding-left:4px;">$1</li>');
+  html = html.replace(/(<li[^>]*>.*<\/li>\n?)+/g, (m) => `<ul style="margin:10px 0;padding-left:20px;list-style:disc;">${m}</ul>`);
+  // Horizontal rules / cross dividers
+  html = html.replace(/^---$/gm, '<div style="text-align:center;margin:20px 0;color:#D4A853;font-size:14px;">✝</div>');
+  // Paragraphs
+  html = html.replace(/\n\n/g, '</p><p style="margin:8px 0;line-height:1.75;">');
+  html = html.replace(/\n/g, '<br/>');
+  return `<p style="margin:8px 0;line-height:1.75;">${html}</p>`;
+}
 
 export default function Sermoes() {
   const { lang } = useLanguage();
@@ -216,6 +241,7 @@ export default function Sermoes() {
   const [lastSermonContent, setLastSermonContent] = useState('');
   const [lastSermonTitle, setLastSermonTitle] = useState('');
   const [lastUserPrompt, setLastUserPrompt] = useState('');
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
 
   const [preachingType, setPreachingType] = useState<string | null>(null);
   const [audience, setAudience] = useState<string | null>(null);
@@ -239,12 +265,11 @@ export default function Sermoes() {
 
   const refreshSessions = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase.from('materials').select('id, title, created_at').eq('user_id', user.id).eq('type', 'sermon').order('created_at', { ascending: false }).limit(20);
+    const { data } = await supabase.from('materials').select('id, title, content, passage, created_at').eq('user_id', user.id).eq('type', 'sermon').order('created_at', { ascending: false }).limit(20);
     if (data) {
       setSessions(data.map(d => ({
-        id: d.id, title: d.title,
+        id: d.id, title: d.title, content: d.content, passage: d.passage || '',
         date: new Date(d.created_at).toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
-        messageCount: 2,
       })));
     }
   }, [user, lang]);
@@ -254,6 +279,19 @@ export default function Sermoes() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
+
+  /* ═══ Restore a saved session ═══ */
+  const handleRestoreSession = (session: SermonSession) => {
+    setMessages([
+      { role: 'user', content: session.passage },
+      { role: 'assistant', content: session.content },
+    ]);
+    setLastSermonContent(session.content);
+    setLastSermonTitle(session.title);
+    setLastUserPrompt(session.passage);
+    setActiveSessionId(session.id);
+    setMobileHistoryOpen(false);
+  };
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || !user || loading) return;
@@ -281,7 +319,8 @@ export default function Sermoes() {
       const sermonTitle = titleMatch?.[1]?.replace(/\*+/g, '').trim() || text.trim().slice(0, 60);
       setLastSermonTitle(sermonTitle);
 
-      await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content, language: lang, passage: text.trim() });
+      const { data: insertedData } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content, language: lang, passage: text.trim() }).select('id').single();
+      if (insertedData) setActiveSessionId(insertedData.id);
       await refreshSessions();
     } catch {
       const errContent = lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.' : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.' : 'Sorry, an error occurred. Please try again.';
@@ -298,12 +337,13 @@ export default function Sermoes() {
 
   const handleNewChat = () => {
     setMessages([]); setPreachingType(null); setAudience(null); setDuration('30 min'); setStyle(null); setTone(null);
-    setLastSermonContent(''); setLastSermonTitle('');
+    setLastSermonContent(''); setLastSermonTitle(''); setActiveSessionId(null);
   };
 
   const handleDeleteSession = async (id: string) => {
     await supabase.from('materials').delete().eq('id', id);
     setSessions(prev => prev.filter(s => s.id !== id));
+    if (activeSessionId === id) handleNewChat();
   };
 
   /* ═══ Action handlers ═══ */
@@ -313,7 +353,7 @@ export default function Sermoes() {
     toast.success(labels.copied[lang]);
   };
 
-  const handleSend = () => {
+  const handleSendWpp = () => {
     if (!lastSermonContent) return;
     const short = lastSermonContent.replace(/[#*_>`~\[\]()]/g, '').slice(0, 3000);
     openWhatsAppShare(short);
@@ -322,20 +362,35 @@ export default function Sermoes() {
   const handlePdf = async () => {
     if (!lastSermonContent) return;
     const html2pdf = (await import('html2pdf.js')).default;
+    const dateStr = new Date().toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' });
     const el = document.createElement('div');
-    el.innerHTML = `<div style="font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#333;position:relative;min-height:100%;">
-      <h1 style="font-size:24px;margin-bottom:8px;">${lastSermonTitle}</h1>
-      <div style="font-size:14px;line-height:1.8;">${lastSermonContent.replace(/\n/g, '<br/>')}</div>
-      <div style="margin-top:40px;padding-top:16px;border-top:1px solid #e5e5e5;text-align:center;">
-        <span style="font-size:11px;color:#999;letter-spacing:1px;font-weight:600;">Living Word</span>
-        <span style="font-size:10px;color:#bbb;margin-left:8px;">• ${new Date().toLocaleDateString()}</span>
-      </div>
-    </div>`;
+    el.innerHTML = `
+<div style="font-family:'Georgia','Palatino Linotype',serif;max-width:680px;margin:0 auto;padding:48px 40px 32px;color:#333;">
+  <!-- Header bar -->
+  <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #D4A853;padding-bottom:12px;margin-bottom:28px;">
+    <div>
+      <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8B6914;font-weight:700;">Living Word</span>
+      <span style="font-size:10px;color:#999;margin-left:8px;">✝</span>
+    </div>
+    <span style="font-size:9px;color:#999;">${dateStr}</span>
+  </div>
+
+  <!-- Content -->
+  ${markdownToHtml(lastSermonContent)}
+
+  <!-- Footer -->
+  <div style="margin-top:40px;padding-top:14px;border-top:1px solid #E8E0D0;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <span style="font-size:12px;color:#D4A853;font-weight:700;">✝</span>
+    <span style="font-size:10px;color:#999;letter-spacing:1.5px;font-weight:600;">LIVING WORD</span>
+    <span style="font-size:10px;color:#ccc;">•</span>
+    <span style="font-size:9px;color:#bbb;">${lang === 'PT' ? 'Plataforma Pastoral com IA' : lang === 'ES' ? 'Plataforma Pastoral con IA' : 'AI Pastoral Platform'}</span>
+  </div>
+</div>`;
     document.body.appendChild(el);
     await html2pdf().from(el).set({
-      margin: [10, 10],
+      margin: [12, 8, 20, 8],
       filename: `${lastSermonTitle.slice(0, 40)}.pdf`,
-      html2canvas: { scale: 2 },
+      html2canvas: { scale: 2, useCORS: true },
       jsPDF: { format: 'a4' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
     }).save();
@@ -343,22 +398,33 @@ export default function Sermoes() {
     toast.success('PDF!');
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!lastSermonContent || !user) return;
+    if (activeSessionId) {
+      await supabase.from('materials').update({ content: lastSermonContent, title: lastSermonTitle }).eq('id', activeSessionId);
+    } else {
+      const { data } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: lastSermonTitle, content: lastSermonContent, language: lang, passage: lastUserPrompt }).select('id').single();
+      if (data) setActiveSessionId(data.id);
+    }
     toast.success(labels.saved[lang]);
+    await refreshSessions();
   };
 
   const handleRegenerate = () => {
     if (lastUserPrompt) sendMessage(lastUserPrompt);
   };
 
-  /* ═══ Bible reference click handler ═══ */
+  /* ═══ Bible reference click handler — now with verse ═══ */
   const handleBibleClick = (ref: string) => {
-    // ref like "Galatas/5/22-23" → navigate to Bible reader
+    // ref like "Galatas/5/22-23"
     const parts = ref.split('/');
     if (parts.length >= 2) {
       const bookId = parts[0].toLowerCase();
       const chapter = parts[1];
-      navigate(`/biblia?book=${bookId}&chapter=${chapter}`);
+      const verse = parts[2] || '';
+      const verseParam = verse ? `&verse=${verse}` : '';
+      const translation = profile?.bible_version || 'nvi';
+      navigate(`/biblia?book=${bookId}&chapter=${chapter}${verseParam}&translation=${translation.toLowerCase()}`);
     }
   };
 
@@ -374,9 +440,10 @@ export default function Sermoes() {
           <button
             onClick={() => handleBibleClick(ref)}
             className="text-primary hover:underline font-medium inline-flex items-center gap-0.5 cursor-pointer"
+            title={ref.replace(/\//g, ' ')}
             {...props}
           >
-            {children}
+            📖 {children}
           </button>
         );
       }
@@ -411,32 +478,57 @@ export default function Sermoes() {
     ),
   };
 
+  /* ═══ Action button style ═══ */
+  const actionBtn = "flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors";
+
   /* ═══ Render action buttons ═══ */
   const renderActionButtons = () => {
     if (!hasSermon || loading) return null;
     return (
       <div className="flex flex-wrap gap-2 mt-4 mb-2 justify-start animate-in fade-in duration-300">
-        <button onClick={handleCopy} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+        <button onClick={handleSave} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
+          <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+        </button>
+        <button onClick={handleCopy} className={actionBtn}>
           <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
         </button>
-        <button onClick={handleSend} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+        <button onClick={handleSendWpp} className={actionBtn}>
           <Share2 className="h-3.5 w-3.5" /> {labels.sendWpp[lang]}
         </button>
-        <button onClick={() => setCarouselOpen(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+        <button onClick={() => setCarouselOpen(true)} className={actionBtn}>
           <Image className="h-3.5 w-3.5" /> {labels.carousel[lang]}
         </button>
-        <button onClick={() => setSlidesOpen(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+        <button onClick={() => setSlidesOpen(true)} className={actionBtn}>
           <Presentation className="h-3.5 w-3.5" /> {labels.slides[lang]}
         </button>
-        <button onClick={handlePdf} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+        <button onClick={handlePdf} className={actionBtn}>
           <FileText className="h-3.5 w-3.5" /> {labels.pdf[lang]}
         </button>
-        <button onClick={handleRegenerate} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+        <button onClick={handleRegenerate} className={actionBtn}>
           <RefreshCw className="h-3.5 w-3.5" /> {labels.regenerate[lang]}
         </button>
       </div>
     );
   };
+
+  /* ═══ Session item renderer (shared between desktop & mobile) ═══ */
+  const renderSessionItem = (s: SermonSession, showDelete = true) => (
+    <div
+      key={s.id}
+      className={`group flex items-start gap-2 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer ${activeSessionId === s.id ? 'bg-primary/5 border border-primary/20' : ''}`}
+      onClick={() => handleRestoreSession(s)}
+    >
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-medium text-foreground line-clamp-2 leading-snug">{s.title}</p>
+        <p className="text-[10px] text-muted-foreground mt-0.5">{s.date}</p>
+      </div>
+      {showDelete && (
+        <button onClick={(e) => { e.stopPropagation(); handleDeleteSession(s.id); }} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive">
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <div className="flex h-[calc(100vh-4rem)] pb-28 md:pb-0">
@@ -516,11 +608,9 @@ export default function Sermoes() {
                   </div>
                 ) : (
                   <div className="w-full">
-                    {/* Logo icon */}
                     <div className="flex items-center gap-2 mb-3">
                       <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">✝</div>
                     </div>
-                    {/* Sermon content with rich markdown */}
                     <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed
                       [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-4 [&_blockquote]:bg-primary/5 [&_blockquote]:rounded-r-lg [&_blockquote]:italic
                       [&_h1]:text-xl [&_h1]:md:text-2xl [&_h1]:font-bold [&_h1]:border-b [&_h1]:border-border [&_h1]:pb-2
@@ -530,8 +620,6 @@ export default function Sermoes() {
                         {msg.content}
                       </ReactMarkdown>
                     </div>
-
-                    {/* Action buttons after last assistant message */}
                     {i === messages.length - 1 && msg.role === 'assistant' && renderActionButtons()}
                   </div>
                 )}
@@ -582,17 +670,8 @@ export default function Sermoes() {
         </div>
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
-            {sessions.map((s) => (
-              <div key={s.id} className="group flex items-start gap-2 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground line-clamp-2 leading-snug">{s.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.date} • {s.messageCount} {labels.messages[lang]}</p>
-                </div>
-                <button onClick={() => handleDeleteSession(s.id)} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            ))}
+            {sessions.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">{labels.noSermons[lang]}</p>}
+            {sessions.map((s) => renderSessionItem(s))}
           </div>
         </ScrollArea>
         <div className="p-2 border-t border-border">
@@ -612,12 +691,16 @@ export default function Sermoes() {
           <div className="space-y-1 mt-2 overflow-y-auto max-h-[50vh]">
             {sessions.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">{labels.noSermons[lang]}</p>}
             {sessions.map((s) => (
-              <div key={s.id} className="flex items-start gap-2 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors">
+              <div
+                key={s.id}
+                className={`flex items-start gap-2 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer ${activeSessionId === s.id ? 'bg-primary/5' : ''}`}
+                onClick={() => handleRestoreSession(s)}
+              >
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-foreground line-clamp-2 leading-snug">{s.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.date} • {s.messageCount} {labels.messages[lang]}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.date}</p>
                 </div>
-                <button onClick={() => handleDeleteSession(s.id)} className="shrink-0 text-muted-foreground hover:text-destructive">
+                <button onClick={(e) => { e.stopPropagation(); handleDeleteSession(s.id); }} className="shrink-0 text-muted-foreground hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>

@@ -34,19 +34,33 @@ const labels = {
   downloadAll: { PT: 'Baixar Todos', EN: 'Download All', ES: 'Descargar Todo' },
   send: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   newVariation: { PT: 'Nova Variação', EN: 'New Variation', ES: 'Nueva Variación' },
-  format: { PT: 'Widescreen 16:9', EN: 'Widescreen 16:9', ES: 'Widescreen 16:9' },
+  format: { PT: 'Apresentação 16:9', EN: 'Presentation 16:9', ES: 'Presentación 16:9' },
   resolution: { PT: '1920×1080px PNG', EN: '1920×1080px PNG', ES: '1920×1080px PNG' },
+  projectable: { PT: 'Otimizado para telão', EN: 'Optimized for projection', ES: 'Optimizado para pantalla' },
 } satisfies Record<string, Record<L, string>>;
 
 const typeLabels: Record<string, Record<L, string>> = {
   cover: { PT: 'CAPA', EN: 'COVER', ES: 'PORTADA' },
-  verse: { PT: 'VERSÍCULO', EN: 'VERSE', ES: 'VERSÍCULO' },
+  verse: { PT: 'VERSÍCULO-CHAVE', EN: 'KEY VERSE', ES: 'VERSÍCULO CLAVE' },
   intro: { PT: 'INTRODUÇÃO', EN: 'INTRODUCTION', ES: 'INTRODUCCIÓN' },
   point: { PT: 'PONTO', EN: 'POINT', ES: 'PUNTO' },
-  application: { PT: 'APLICAÇÃO', EN: 'APPLICATION', ES: 'APLICACIÓN' },
+  application: { PT: 'APLICAÇÕES', EN: 'APPLICATIONS', ES: 'APLICACIONES' },
   conclusion: { PT: 'CONCLUSÃO', EN: 'CONCLUSION', ES: 'CONCLUSIÓN' },
-  prayer: { PT: 'ORAÇÃO', EN: 'PRAYER', ES: 'ORACIÓN' },
+  prayer: { PT: 'ORAÇÃO FINAL', EN: 'CLOSING PRAYER', ES: 'ORACIÓN FINAL' },
 };
+
+/* ═══ Unified branding footer ═══ */
+function BrandFooter({ size = 'normal' }: { size?: 'small' | 'normal' }) {
+  const s = size === 'small';
+  return (
+    <div className={`flex items-center ${s ? 'gap-0.5' : 'gap-1.5'}`}>
+      <span className={`${s ? 'text-[4px]' : 'text-[9px]'} text-primary/50`}>✝</span>
+      <span className={`${s ? 'text-[4px]' : 'text-[9px]'} font-semibold tracking-[0.15em] text-primary/40 uppercase`}>
+        Living Word
+      </span>
+    </div>
+  );
+}
 
 export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTitle }: SermonSlidesModalProps) {
   const { lang } = useLanguage();
@@ -103,61 +117,78 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
   };
 
   const renderSlide = (slide: Slide, index: number, preview = false) => {
-    const w = preview ? 160 : 560;
-    const h = preview ? 90 : 315;
-    const fontSize = preview ? 'text-[7px]' : 'text-sm';
-    const titleSize = preview ? 'text-[9px]' : 'text-lg';
-    const typeSize = preview ? 'text-[5px]' : 'text-xs';
+    const w = preview ? 160 : 580;
+    const h = preview ? 90 : 326;
     const isCover = slide.type === 'cover';
+    const isVerse = slide.type === 'verse';
+    const isPrayer = slide.type === 'prayer';
+    const isPreview = preview;
+
+    // Different visual treatment for cover vs content slides
+    let bgClass = 'bg-gradient-to-br from-card via-background to-muted/20';
+    if (isCover) bgClass = 'bg-gradient-to-br from-primary/20 via-primary/8 to-background';
+    if (isVerse) bgClass = 'bg-gradient-to-br from-primary/10 via-background to-primary/5';
+    if (isPrayer) bgClass = 'bg-gradient-to-br from-muted/30 via-background to-primary/10';
 
     return (
       <div
         id={preview ? undefined : `presentation-slide-${index}`}
         key={index}
         style={{ width: w, height: h }}
-        className={`relative flex flex-col overflow-hidden rounded-lg shrink-0 ${
-          isCover
-            ? 'bg-gradient-to-br from-primary/30 via-primary/10 to-background justify-center items-center text-center'
-            : 'bg-gradient-to-br from-background via-card to-muted/30 justify-between'
-        } border border-border/40 ${preview ? 'p-2 cursor-pointer' : 'p-8'}`}
+        className={`relative flex flex-col overflow-hidden rounded-lg shrink-0 border border-border/30
+          ${bgClass}
+          ${isCover ? 'justify-center items-center text-center' : 'justify-between'}
+          ${isPreview ? 'p-2 cursor-pointer' : 'p-10'}
+        `}
         onClick={preview ? () => setActiveSlide(index) : undefined}
       >
-        {/* Type badge top-left */}
-        {!isCover && (
-          <div className={`${typeSize} font-bold tracking-widest text-primary/70`}>
+        {/* Slide number — top right, subtle */}
+        <div className={`absolute ${isPreview ? 'top-1 right-1 text-[4px]' : 'top-5 right-6 text-[10px]'} text-muted-foreground/30 font-mono`}>
+          {index + 1}/{slides.length}
+        </div>
+
+        {/* Top: Type badge (not on cover) */}
+        {!isCover && !isPreview && (
+          <div className="text-[10px] font-bold tracking-[0.2em] text-primary/50 uppercase mb-2">
+            {typeLabels[slide.type]?.[lang] || slide.type.toUpperCase()}
+          </div>
+        )}
+        {!isCover && isPreview && (
+          <div className="text-[4px] font-bold tracking-widest text-primary/50 uppercase">
             {typeLabels[slide.type]?.[lang] || slide.type.toUpperCase()}
           </div>
         )}
 
-        {/* Slide number top-right */}
-        <div className={`absolute top-${preview ? '1' : '4'} right-${preview ? '1' : '4'} ${typeSize} text-muted-foreground/50`}>
-          {index + 1}/{slides.length}
-        </div>
-
-        {/* Content */}
-        <div className={isCover ? '' : 'flex-1 flex flex-col justify-center'}>
-          <h3 className={`${titleSize} font-bold text-foreground leading-tight ${isCover ? '' : 'mb-2'}`}>
+        {/* Content — centered for projection readability */}
+        <div className={`${isCover ? '' : 'flex-1 flex flex-col justify-center'}`}>
+          <h3 className={`font-bold text-foreground leading-tight ${
+            isPreview
+              ? (isCover ? 'text-[9px]' : 'text-[7px]')
+              : (isCover ? 'text-2xl' : 'text-xl')
+          } ${isPreview ? 'line-clamp-2' : 'line-clamp-3'}`}>
             {slide.title}
           </h3>
-          {!preview && (
-            <p className={`${fontSize} text-muted-foreground leading-relaxed ${isCover ? 'mt-2' : ''} line-clamp-4`}>
+
+          {!isPreview && (
+            <p className={`text-muted-foreground leading-relaxed mt-3 ${
+              isCover ? 'text-sm' : isVerse ? 'text-base italic' : 'text-sm'
+            } line-clamp-4`}>
               {slide.body}
             </p>
           )}
-          {slide.reference && !preview && (
-            <div className={`mt-auto pt-2 ${typeSize} text-primary/80 flex items-center gap-1`}>
+
+          {slide.reference && !isPreview && (
+            <div className="mt-4 text-xs text-primary/70 flex items-center gap-1.5 font-medium">
               📖 {slide.reference}
             </div>
           )}
         </div>
 
-        {/* Branding footer */}
-        <div className={`${preview ? 'mt-auto' : ''} flex items-center justify-between`}>
-          <div className={`${typeSize} font-semibold text-primary/40 tracking-wider`}>
-            Living Word
-          </div>
-          {slide.reference && preview && (
-            <div className={`${typeSize} text-primary/60`}>📖</div>
+        {/* Bottom: Branding footer */}
+        <div className={`flex items-center justify-between ${isPreview ? 'mt-auto' : 'mt-4'}`}>
+          <BrandFooter size={isPreview ? 'small' : 'normal'} />
+          {slide.reference && isPreview && (
+            <span className="text-[4px] text-primary/50">📖</span>
           )}
         </div>
       </div>
@@ -169,11 +200,14 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0 gap-0 bg-background">
         <DialogHeader className="px-6 py-4 border-b border-border flex flex-row items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">📽️</div>
+            <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm">📽️</div>
             <div>
               <DialogTitle className="text-base font-bold">{labels.title[lang]}</DialogTitle>
               <p className="text-xs text-muted-foreground">{loading ? labels.generating[lang] : `${slides.length} slides • 16:9`}</p>
             </div>
+          </div>
+          <div className="hidden sm:flex items-center gap-2 bg-primary/5 rounded-lg px-3 py-1.5 border border-primary/20">
+            <span className="text-[10px] text-primary font-medium">{labels.projectable[lang]}</span>
           </div>
         </DialogHeader>
 
@@ -199,11 +233,11 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
             <div className="flex gap-6">
               {/* Main slide */}
               <div className="flex-1 flex flex-col items-center">
-                <div className="relative w-full flex items-center justify-center" style={{ minHeight: 320 }}>
+                <div className="relative w-full flex items-center justify-center" style={{ minHeight: 330 }}>
                   <button
                     onClick={() => setActiveSlide(Math.max(0, activeSlide - 1))}
                     disabled={activeSlide === 0}
-                    className="absolute left-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30"
+                    className="absolute left-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30 hover:bg-muted/50 transition-colors"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
@@ -211,17 +245,17 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
                   <button
                     onClick={() => setActiveSlide(Math.min(slides.length - 1, activeSlide + 1))}
                     disabled={activeSlide === slides.length - 1}
-                    className="absolute right-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30"
+                    className="absolute right-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30 hover:bg-muted/50 transition-colors"
                   >
                     <ChevronRight className="h-5 w-5" />
                   </button>
                 </div>
 
-                {/* Dots */}
+                {/* Dots — pill style */}
                 <div className="flex gap-1.5 mt-4">
                   {slides.map((_, i) => (
                     <button key={i} onClick={() => setActiveSlide(i)}
-                      className={`w-2.5 h-2.5 rounded-full transition-colors ${i === activeSlide ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                      className={`w-2 h-2 rounded-full transition-all ${i === activeSlide ? 'bg-primary w-5' : 'bg-muted-foreground/30'}`}
                     />
                   ))}
                 </div>
@@ -244,16 +278,11 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
               </div>
 
               {/* Thumbnails */}
-              <div className="w-80 hidden md:block">
-                <h3 className="text-sm font-bold text-foreground mb-3">{labels.slidesOf[lang]}</h3>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="w-72 hidden md:block">
+                <h3 className="text-xs font-bold text-muted-foreground tracking-wide mb-3">{labels.slidesOf[lang]}</h3>
+                <div className="grid grid-cols-2 gap-1.5">
                   {slides.map((s, i) => (
-                    <div key={i} className={`relative ${activeSlide === i ? 'ring-2 ring-primary rounded-lg' : ''}`}>
-                      {activeSlide === i && (
-                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[8px] font-bold z-10">
-                          {i + 1}
-                        </div>
-                      )}
+                    <div key={i} className={`relative ${activeSlide === i ? 'ring-2 ring-primary ring-offset-1 ring-offset-background rounded-lg' : ''}`}>
                       {renderSlide(s, i, true)}
                     </div>
                   ))}
@@ -264,7 +293,7 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
                   <p className="text-xs font-medium text-foreground mt-1 line-clamp-2">{slides[activeSlide]?.title}</p>
                 </div>
 
-                <div className="mt-2 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                <div className="mt-2 p-3 rounded-lg border border-primary/20 bg-primary/5">
                   <p className="text-xs text-primary font-medium">{labels.format[lang]}</p>
                   <p className="text-[10px] text-muted-foreground">{labels.resolution[lang]}</p>
                 </div>
