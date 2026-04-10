@@ -15,7 +15,7 @@ interface CircleTool {
 }
 
 const tools: CircleTool[] = [
-  { id: 'studio', icon: Mic, label: { PT: 'Gerador de Pregação', EN: 'Sermon Generator', ES: 'Generador de Sermón' }, action: 'tool:studio' },
+  { id: 'studio', icon: Mic, label: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón' }, action: 'tool:studio' },
   { id: 'biblical-study', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' }, action: 'navigate:/estudos/novo' },
   { id: 'social-studio', icon: ImageIcon, label: { PT: 'Artes Bíblicas', EN: 'Biblical Art', ES: 'Artes Bíblicas' }, action: 'navigate:/social-studio' },
   { id: 'bible-reader', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' }, action: 'navigate:/bible' },
