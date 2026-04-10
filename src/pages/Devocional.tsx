@@ -554,11 +554,28 @@ export default function Devocional() {
         return;
       }
 
-      if (canShareFiles) {
-        if (mode === 'whatsapp') {
+      if (mode === 'whatsapp') {
+        if (canShareFiles) {
           toast.success(labels.whatsappHint[lang]);
+          await navigator.share({
+            title: displayTitle,
+            text: shareCaption,
+            files: [file],
+          });
+          return;
         }
 
+        // Desktop fallback: download image then open WhatsApp Web with text
+        downloadFile(file);
+        const waText = `✨ *${displayTitle}*\n📖 ${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}\n\n${formattedDisplayDate}\n\n_Anexe a imagem que foi baixada_ 👆`;
+        setTimeout(() => {
+          window.open(`https://web.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
+        }, 600);
+        toast.success(labels.whatsappFallback[lang]);
+        return;
+      }
+
+      if (canShareFiles) {
         await navigator.share({
           title: displayTitle,
           text: shareCaption,
@@ -568,13 +585,13 @@ export default function Devocional() {
       }
 
       downloadFile(file);
-      toast.success(mode === 'whatsapp' ? labels.whatsappFallback[lang] : labels.shareFallback[lang]);
+      toast.success(labels.shareFallback[lang]);
     } catch (err: any) {
       if (err?.name !== 'AbortError') {
         toast.error(labels.shareImageError[lang]);
       }
     }
-  }, [createShareImageFile, displayTitle, downloadFile, isMobile, lang, shareCaption]);
+  }, [createShareImageFile, displayTitle, displayVerse, downloadFile, formattedDisplayDate, isMobile, lang, preferredBibleVersion, shareCaption]);
 
   /* ─── Styles ─── */
   const colors = {
