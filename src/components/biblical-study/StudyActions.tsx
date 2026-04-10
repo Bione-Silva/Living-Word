@@ -57,7 +57,7 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
     if (exporting) return;
     setExporting('docx');
     try {
-      const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle } = await import('docx');
+      const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle, Header, Footer, ImageRun, AlignmentType } = await import('docx');
       const { saveAs } = await import('file-saver');
 
       const children: any[] = [];
@@ -142,10 +142,15 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
         children.push(new Paragraph({ children: [new TextRun(study.rag_sources_used.join(' • '))] }));
       }
 
+      // Brand header/footer
+      const { docxBrandElements, fetchLogoBuffer } = await import('@/lib/export-branding');
+      const logoBuffer = await fetchLogoBuffer();
+      const brand = docxBrandElements({ Paragraph, TextRun, AlignmentType, Header, Footer, ImageRun, BorderStyle }, logoBuffer);
+
       const doc = new Document({
         styles: { default: { document: { run: { font: 'Arial', size: 24, color: '1A1A1A' } } } },
         sections: [{
-          properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } },
+          properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } }, ...brand },
           children,
         }],
       });
@@ -278,6 +283,13 @@ function buildHTMLContent(study: BiblicalStudyOutput, lang: 'PT' | 'EN' | 'ES'):
   const t = (k: string) => sl(k, lang);
   const baseStyle = 'color:#1a1a1a;';
   let html = `<div style="${baseStyle}font-family:Arial,sans-serif;">`;
+
+  // Brand header
+  html += `<div style="display:flex;align-items:center;gap:10px;padding-bottom:10px;margin-bottom:16px;border-bottom:2px solid #D4A853;">
+    <img src="/logo-livingword.png" style="height:36px;width:36px;object-fit:contain;" alt="Living Word" />
+    <span style="font-family:Georgia,serif;font-size:14px;font-weight:bold;color:#6B4F3A;">Living Word</span>
+  </div>`;
+
   html += `<h1 style="font-size:24px;margin-bottom:8px;color:#000;">${study.verdade_central.frase_central}</h1>`;
   html += `<p style="color:#3D2E1F;font-weight:bold;">${study.passagem.referencia}</p>`;
   html += `<blockquote style="border-left:3px solid #8B7355;padding-left:12px;font-style:italic;margin:16px 0;color:#1a1a1a;">${study.passagem.texto}</blockquote>`;
@@ -293,6 +305,12 @@ function buildHTMLContent(study: BiblicalStudyOutput, lang: 'PT' | 'EN' | 'ES'):
   html += `<p style="${baseStyle}"><strong>${t('act')}:</strong> ${study.aplicacao.agir}</p>`;
 
   html += `<h2 style="color:#000;">${t('closing')}</h2><p style="${baseStyle}">${study.encerramento.oracao_sugerida}</p>`;
+
+  // Brand footer
+  html += `<div style="margin-top:28px;padding-top:10px;border-top:1px solid #ddd;text-align:center;font-size:10px;color:#999;">
+    Living Word &bull; www.livingwordgo.com
+  </div>`;
+
   html += `</div>`;
   return html;
 }

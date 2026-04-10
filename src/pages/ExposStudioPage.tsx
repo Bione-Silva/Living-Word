@@ -129,10 +129,16 @@ export default function ExposStudioPage() {
 
   const handleExportPdf = useCallback(async () => {
     const html2pdf = (await import('html2pdf.js')).default;
+    const { pdfBrandHeader, pdfBrandFooter } = await import('@/lib/export-branding');
     const el = editorRef.current;
     if (!el) return;
 
     toast.info('Gerando PDF...');
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = pdfBrandHeader();
+    wrapper.appendChild(el.cloneNode(true));
+    wrapper.insertAdjacentHTML('beforeend', pdfBrandFooter());
+    document.body.appendChild(wrapper);
     const opt = {
       margin: [15, 15, 15, 15],
       filename: `expos-${formato}-${Date.now()}.pdf`,
@@ -140,7 +146,8 @@ export default function ExposStudioPage() {
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
     };
-    await html2pdf().set(opt).from(el).save();
+    await html2pdf().set(opt).from(wrapper).save();
+    document.body.removeChild(wrapper);
     toast.success('PDF exportado!');
   }, [formato]);
 
