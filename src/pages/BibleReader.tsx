@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { bibleBooks, getBookName, getDefaultVersionCode, translationOptions, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getDefaultVersionCode, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
 import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
 import { BibleChapterGrid } from '@/components/bible/BibleChapterGrid';
 import { BibleReadingView } from '@/components/bible/BibleReadingView';
