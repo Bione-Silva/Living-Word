@@ -98,31 +98,22 @@ export interface BibleVersion {
 export const bibleVersions: BibleVersion[] = [
   // Português
   { code: 'ara', name: 'Almeida Revista e Atualizada', shortLabel: 'ARA', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false, isDefault: true },
-  { code: 'acf', name: 'Almeida Corrigida Fiel', shortLabel: 'ACF', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
-  { code: 'nvi-pt', name: 'Nova Versão Internacional', shortLabel: 'NVI', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
-  { code: 'nvt', name: 'Nova Versão Transformadora', shortLabel: 'NVT', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
-  { code: 'naa', name: 'Nova Almeida Atualizada', shortLabel: 'NAA', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
   // English
   { code: 'kjv', name: 'King James Version', shortLabel: 'KJV', language: 'EN', source: 'api', apiCode: 'kjv', isAvailable: true, isPremium: false, isDefault: true },
   { code: 'web', name: 'World English Bible', shortLabel: 'WEB', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
   { code: 'asv', name: 'American Standard Version', shortLabel: 'ASV', language: 'EN', source: 'api', apiCode: 'asv', isAvailable: true, isPremium: false },
   { code: 'bbe', name: 'Bible in Basic English', shortLabel: 'BBE', language: 'EN', source: 'api', apiCode: 'bbe', isAvailable: true, isPremium: false },
-  { code: 'esv', name: 'English Standard Version', shortLabel: 'ESV', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  { code: 'niv', name: 'New International Version', shortLabel: 'NIV', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  { code: 'nlt', name: 'New Living Translation', shortLabel: 'NLT', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  // Español
-  { code: 'rvr60', name: 'Reina-Valera 1960', shortLabel: 'RVR60', language: 'ES', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false, isDefault: true },
-  { code: 'nvi-es', name: 'Nueva Versión Internacional', shortLabel: 'NVI', language: 'ES', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  { code: 'nbla', name: 'Nueva Biblia de las Américas', shortLabel: 'NBLA', language: 'ES', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
+  // Español — bible-api.com has no Spanish translation; use 'web' as fallback
+  { code: 'oeb', name: 'Open English Bible', shortLabel: 'OEB', language: 'EN', source: 'api', apiCode: 'oeb', isAvailable: true, isPremium: false },
 ];
 
 /** Group versions by language */
 export function getVersionsByLanguage(): Record<string, BibleVersion[]> {
-  const groups: Record<string, BibleVersion[]> = {
-    'Português': bibleVersions.filter(v => v.language === 'PT'),
-    'English': bibleVersions.filter(v => v.language === 'EN'),
-    'Español': bibleVersions.filter(v => v.language === 'ES'),
-  };
+  const pt = bibleVersions.filter(v => v.language === 'PT');
+  const en = bibleVersions.filter(v => v.language === 'EN');
+  const groups: Record<string, BibleVersion[]> = {};
+  if (pt.length) groups['Português'] = pt;
+  if (en.length) groups['English'] = en;
   return groups;
 }
 
@@ -134,7 +125,7 @@ export function getBibleVersion(code: string): BibleVersion | undefined {
 /** Get the default version for a language */
 export function getDefaultVersionCode(lang: L): string {
   const v = bibleVersions.find(v => v.language === lang && v.isDefault);
-  return v?.code || (lang === 'PT' ? 'ara' : lang === 'ES' ? 'rvr60' : 'kjv');
+  return v?.code || (lang === 'PT' ? 'ara' : 'kjv');
 }
 
 /** Get the API translation code for a version code */
@@ -147,7 +138,7 @@ export function getApiCodeForVersion(code: string): string {
 export const translationOptions: Record<L, { code: string; label: string }[]> = {
   PT: bibleVersions.filter(v => v.language === 'PT').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
   EN: bibleVersions.filter(v => v.language === 'EN').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
-  ES: bibleVersions.filter(v => v.language === 'ES').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
+  ES: bibleVersions.filter(v => v.language === 'EN').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
 };
 
 /** LEGACY — get default translation code for a language */
@@ -180,27 +171,16 @@ export function getTranslationLabelByCode(code: string): string {
  */
 export function versionToApiCode(version: string): string | null {
   const upper = version.toUpperCase().trim();
-  // Try direct match to shortLabel
   const direct = bibleVersions.find(v => v.shortLabel === upper);
   if (direct) return direct.apiCode;
-  // Fallback map
   const map: Record<string, string> = {
     'ARA': 'almeida',
     'ARC': 'almeida',
-    'NVI': 'almeida',
-    'NVT': 'almeida',
-    'NAA': 'almeida',
-    'ACF': 'almeida',
     'KJV': 'kjv',
-    'ESV': 'web',
-    'NIV': 'web',
-    'NASB': 'asv',
     'WEB': 'web',
     'ASV': 'asv',
     'BBE': 'bbe',
-    'RVR': 'web',
-    'RVR60': 'web',
-    'NBLA': 'web',
+    'OEB': 'oeb',
   };
   return map[upper] || null;
 }
