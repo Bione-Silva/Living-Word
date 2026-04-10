@@ -8,6 +8,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { toPng } from 'html-to-image';
 import { toast } from 'sonner';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -34,9 +36,9 @@ const labels = {
   slideLabel: { PT: 'Slide', EN: 'Slide', ES: 'Slide' },
   of: { PT: 'de', EN: 'of', ES: 'de' },
   downloadSlide: { PT: 'Baixar Slide', EN: 'Download Slide', ES: 'Descargar Slide' },
-  downloadAll: { PT: 'Baixar Todos (JPG)', EN: 'Download All (JPG)', ES: 'Descargar Todo (JPG)' },
+  downloadAll: { PT: 'Baixar Todos (ZIP)', EN: 'Download All (ZIP)', ES: 'Descargar Todo (ZIP)' },
   downloadPptx: { PT: 'Baixar PowerPoint', EN: 'Download PowerPoint', ES: 'Descargar PowerPoint' },
-  downloading: { PT: 'Baixando...', EN: 'Downloading...', ES: 'Descargando...' },
+  downloading: { PT: 'Preparando...', EN: 'Preparing...', ES: 'Preparando...' },
   send: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   newVariation: { PT: 'Nova Variação', EN: 'New Variation', ES: 'Nueva Variación' },
   format: { PT: 'Apresentação 16:9', EN: 'Presentation 16:9', ES: 'Presentación 16:9' },
@@ -191,14 +193,23 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
   const downloadAll = async () => {
     setDownloadingAll(true);
     try {
+      const zip = new JSZip();
+      const typeSlugMap: Record<string, string> = {
+        cover: 'capa', verse: 'versiculo', intro: 'introducao', point: 'ponto',
+        application: 'aplicacao', conclusion: 'conclusao', prayer: 'oracao',
+      };
       for (let i = 0; i < slides.length; i++) {
         const el = document.getElementById(`slides-offscreen-${i}`);
         if (!el) continue;
         const blob = await captureSlideAsJpeg(el);
-        downloadBlob(blob, `slide-${String(i + 1).padStart(2, '0')}.jpg`);
-        await new Promise(r => setTimeout(r, 200));
+        const slug = typeSlugMap[slides[i].type] || slides[i].type;
+        const name = `${String(i + 1).padStart(2, '0')}-${slug}.jpg`;
+        zip.file(name, blob);
       }
-      toast.success(lang === 'PT' ? `${slides.length} slides baixados` : `${slides.length} slides downloaded`);
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const zipName = `slides-16x9-${slides.length}slides.zip`;
+      saveAs(zipBlob, zipName);
+      toast.success(lang === 'PT' ? `ZIP com ${slides.length} slides baixado` : `ZIP with ${slides.length} slides downloaded`);
     } catch (e) {
       console.error(e);
       toast.error(lang === 'PT' ? 'Erro ao baixar' : 'Download error');

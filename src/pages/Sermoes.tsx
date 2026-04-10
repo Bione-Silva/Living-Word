@@ -15,6 +15,7 @@ import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
+import { parseBibleUri, type ParsedBibleRef } from '@/lib/bible-ref-parser';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -147,10 +148,12 @@ function buildSystemPrompt(
   parts.push(`7. **## 🌹 Conclusion** — summary, appeal, closing prayer`);
 
   parts.push(`\nBIBLE REFERENCES — CRITICAL RULES:`);
-  parts.push(`- Write ALL Bible references as Markdown links: [Book Chapter:Verse](bible://Book/Chapter/Verse)`);
-  parts.push(`- Examples: [Gálatas 5:22-23](bible://Galatas/5/22-23), [John 14:27](bible://John/14/27), [Tiago 1:2-4](bible://Tiago/1/2-4)`);
+  parts.push(`- Write ALL Bible references as Markdown links: [Book Chapter:Verse (VERSION)](bible://Book/Chapter/Verse)`);
+  parts.push(`- ALWAYS include the Bible version in parentheses: (ARA), (NVI), (ESV), (KJV), etc.`);
+  parts.push(`- Examples: [Gálatas 5:22-23 (ARA)](bible://Galatas/5/22-23), [John 14:27 (ESV)](bible://John/14/27), [Tiago 1:2-4 (ARA)](bible://Tiago/1/2-4)`);
   parts.push(`- Use the book names in ${langFull}`);
   parts.push(`- NEVER write a verse reference without making it a link`);
+  parts.push(`- NEVER write a verse reference without the Bible version in parentheses`);
 
   parts.push(`\nFORMATTING RULES:`);
   parts.push(`- Respond ALWAYS in rich Markdown`);
@@ -229,6 +232,7 @@ export default function Sermoes() {
   const [sermonTitle, setSermonTitle] = useState('');
   const [sermonTopic, setSermonTopic] = useState('');
   const [bibleDrawerOpen, setBibleDrawerOpen] = useState(false);
+  const [bibleRef, setBibleRef] = useState<ParsedBibleRef | null>(null);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
@@ -411,8 +415,14 @@ export default function Sermoes() {
     if (sermonTopic) handleGenerate(sermonTopic);
   };
 
-  /* ═══ Bible reference click handler — opens internal drawer ═══ */
-  const handleBibleClick = (ref: string) => {
+  /* ═══ Bible reference click handler — parses URI and opens drawer with correct ref ═══ */
+  const handleBibleClick = (uriPath: string) => {
+    const parsed = parseBibleUri(uriPath);
+    if (parsed) {
+      setBibleRef(parsed);
+    } else {
+      setBibleRef(null);
+    }
     setBibleDrawerOpen(true);
   };
 
@@ -759,7 +769,14 @@ export default function Sermoes() {
         sermonTitle={sermonTitle}
         materialId={activeSessionId}
       />
-      <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
+      <BibleDrawer
+        open={bibleDrawerOpen}
+        onOpenChange={setBibleDrawerOpen}
+        initialBook={bibleRef?.bookId}
+        initialChapter={bibleRef?.chapter}
+        initialVerse={bibleRef?.verseStart}
+        initialVerseEnd={bibleRef?.verseEnd}
+      />
     </div>
   );
 }
