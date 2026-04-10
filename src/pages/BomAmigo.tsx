@@ -224,24 +224,8 @@ export default function BomAmigo() {
               : 'bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3'
             }`}>
               {msg.role === 'assistant' ? (
-                <div className="space-y-3">
-                  <div className="prose prose-sm dark:prose-invert max-w-none text-foreground [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                  </div>
-                  <div className="flex items-center gap-2 pt-1 border-t border-border/50">
-                    <button
-                      onClick={() => handleCopy(msg.content)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                    >
-                      <Copy className="h-3 w-3" /> {labels.copy[lang]}
-                    </button>
-                    <button
-                      onClick={() => handleShare(msg.content)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                    >
-                      <Share2 className="h-3 w-3" /> {labels.share[lang]}
-                    </button>
-                  </div>
+                <div className="prose prose-sm dark:prose-invert max-w-none text-foreground [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
               ) : (
                 <p className="text-sm">{msg.content}</p>
