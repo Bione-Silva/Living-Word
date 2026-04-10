@@ -191,11 +191,11 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
           </div>
           <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
             <button
-              onClick={() => setAspect('4:5')}
+              onClick={(e) => { e.stopPropagation(); setAspect('4:5'); }}
               className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${aspect === '4:5' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
             >4:5</button>
             <button
-              onClick={() => setAspect('16:9')}
+              onClick={(e) => { e.stopPropagation(); setAspect('16:9'); }}
               className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${aspect === '16:9' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
             >16:9</button>
           </div>
