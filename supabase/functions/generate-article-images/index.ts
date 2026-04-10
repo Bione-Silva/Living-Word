@@ -58,6 +58,10 @@ function analyzeSections(markdown: string): Section[] {
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(/^#{2,3}\s+(.+)/);
     if (m) {
+      // Skip headings that already have an image nearby (within 5 lines)
+      const nearby = lines.slice(i + 1, i + 6).join("\n");
+      if (/!\[.*?\]\(.*?\)/.test(nearby)) continue;
+
       const snippet = lines.slice(i + 1, i + 6).join(" ").replace(/[#*_\[\]()>`~]/g, " ").trim().slice(0, 120);
       sections.push({ heading: m[1], lineIndex: i, snippet });
     }
@@ -142,7 +146,18 @@ Deno.serve(async (req) => {
     const sorted = [...images].sort((a, b) => b.lineIndex - a.lineIndex);
     for (const img of sorted) {
       const insertAt = Math.min(img.lineIndex + 2, lines.length);
-      lines.splice(insertAt, 0, "", `![${img.heading}](${img.url})`, "");
+      // Check if an image already exists nearby — replace its URL instead of inserting
+      let replaced = false;
+      for (let k = insertAt; k < Math.min(insertAt + 5, lines.length); k++) {
+        if (/!\[.*?\]\(.*?\)/.test(lines[k])) {
+          lines[k] = `![${img.heading}](${img.url})`;
+          replaced = true;
+          break;
+        }
+      }
+      if (!replaced) {
+        lines.splice(insertAt, 0, "", `![${img.heading}](${img.url})`, "");
+      }
     }
     const updatedContent = lines.join("\n");
 
