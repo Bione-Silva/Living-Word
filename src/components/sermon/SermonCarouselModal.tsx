@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Download, Share2, RefreshCw, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { toPng } from 'html-to-image';
+import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -34,13 +35,14 @@ const labels = {
   of: { PT: 'de', EN: 'of', ES: 'de' },
   downloadSlide: { PT: 'Baixar Slide', EN: 'Download Slide', ES: 'Descargar Slide' },
   downloadAll: { PT: 'Baixar Todos', EN: 'Download All', ES: 'Descargar Todo' },
+  downloading: { PT: 'Baixando...', EN: 'Downloading...', ES: 'Descargando...' },
   send: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   newVariation: { PT: 'Nova Variação', EN: 'New Variation', ES: 'Nueva Variación' },
   sermon: { PT: 'PREGAÇÃO', EN: 'SERMON', ES: 'PREDICACIÓN' },
   instagram: { PT: 'Instagram 4:5', EN: 'Instagram 4:5', ES: 'Instagram 4:5' },
   widescreen: { PT: 'Widescreen 16:9', EN: 'Widescreen 16:9', ES: 'Widescreen 16:9' },
-  instagramRes: { PT: '1080×1350px PNG', EN: '1080×1350px PNG', ES: '1080×1350px PNG' },
-  widescreenRes: { PT: '1920×1080px PNG', EN: '1920×1080px PNG', ES: '1920×1080px PNG' },
+  instagramRes: { PT: '1080×1350px JPEG', EN: '1080×1350px JPEG', ES: '1080×1350px JPEG' },
+  widescreenRes: { PT: '1920×1080px JPEG', EN: '1920×1080px JPEG', ES: '1920×1080px JPEG' },
 } satisfies Record<string, Record<L, string>>;
 
 const typeLabels: Record<string, Record<L, string>> = {
@@ -51,17 +53,77 @@ const typeLabels: Record<string, Record<L, string>> = {
   conclusion: { PT: 'CONCLUSÃO', EN: 'CONCLUSION', ES: 'CONCLUSIÓN' },
 };
 
-/* ═══ Unified branding footer component ═══ */
-function BrandFooter({ size = 'normal' }: { size?: 'small' | 'normal' }) {
+/* ═══ Color palette rotation for visual variety ═══ */
+const SLIDE_PALETTES = [
+  { bg: 'linear-gradient(135deg, hsl(38,35%,92%) 0%, hsl(30,25%,88%) 100%)', text: '#3D2E1F', accent: '#B8935A' },   // warm cream
+  { bg: 'linear-gradient(135deg, hsl(200,18%,18%) 0%, hsl(210,22%,14%) 100%)', text: '#E8DCC8', accent: '#D4A853' },   // dark petrol
+  { bg: 'linear-gradient(135deg, hsl(35,30%,95%) 0%, hsl(40,20%,90%) 100%)', text: '#4A3728', accent: '#9B7E4F' },     // off-white warm
+  { bg: 'linear-gradient(135deg, hsl(145,15%,18%) 0%, hsl(160,20%,14%) 100%)', text: '#D6CFC0', accent: '#8BAF7E' },   // forest dark
+  { bg: 'linear-gradient(135deg, hsl(30,20%,88%) 0%, hsl(25,15%,82%) 100%)', text: '#3D2E1F', accent: '#A6845A' },     // light tan
+  { bg: 'linear-gradient(135deg, hsl(220,20%,15%) 0%, hsl(230,25%,12%) 100%)', text: '#DDDAE0', accent: '#D4A853' },   // midnight blue
+  { bg: 'linear-gradient(135deg, hsl(38,25%,90%) 0%, hsl(42,18%,85%) 100%)', text: '#3B3124', accent: '#C4A05C' },     // parchment
+  { bg: 'linear-gradient(135deg, hsl(15,12%,16%) 0%, hsl(20,18%,12%) 100%)', text: '#E3D5C5', accent: '#C89B5E' },     // espresso dark
+];
+
+function getPalette(index: number) {
+  return SLIDE_PALETTES[index % SLIDE_PALETTES.length];
+}
+
+/* ═══ Branding footer ═══ */
+function BrandFooter({ size = 'normal', color }: { size?: 'small' | 'normal'; color?: string }) {
   const s = size === 'small';
+  const c = color || 'currentColor';
   return (
-    <div className={`flex items-center gap-1 ${s ? 'gap-0.5' : 'gap-1.5'}`}>
-      <span className={`${s ? 'text-[5px]' : 'text-[9px]'} text-primary/50`}>✝</span>
-      <span className={`${s ? 'text-[5px]' : 'text-[9px]'} font-semibold tracking-[0.15em] text-primary/40 uppercase`}>
+    <div className={`flex items-center ${s ? 'gap-0.5' : 'gap-1.5'}`}>
+      <span style={{ color: c, opacity: 0.5, fontSize: s ? 5 : 9 }}>✝</span>
+      <span style={{ color: c, opacity: 0.4, fontSize: s ? 5 : 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>
         Living Word
       </span>
     </div>
   );
+}
+
+/** Convert PNG data URL to JPEG blob with compression */
+async function toJpegBlob(pngDataUrl: string, maxBytes = 280_000): Promise<Blob> {
+  const img = new Image();
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = reject;
+    img.src = pngDataUrl;
+  });
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d')!;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+  let quality = 0.82;
+  let blob: Blob | null = null;
+  for (let i = 0; i < 6; i++) {
+    blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', quality));
+    if (blob && blob.size <= maxBytes) break;
+    quality *= 0.7;
+  }
+  if (blob && blob.size > maxBytes) {
+    const scale = Math.sqrt(maxBytes / blob.size) * 0.95;
+    canvas.width = Math.round(img.naturalWidth * scale);
+    canvas.height = Math.round(img.naturalHeight * scale);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', 0.80));
+  }
+  return blob || new Blob([], { type: 'image/jpeg' });
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
 export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermonTitle, materialId }: SermonCarouselModalProps) {
@@ -72,6 +134,8 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
   const [activeSlide, setActiveSlide] = useState(0);
   const [aspect, setAspect] = useState<'4:5' | '16:9'>('4:5');
   const [variationCount, setVariationCount] = useState(1);
+  const [downloadingAll, setDownloadingAll] = useState(false);
+  const offscreenRef = useRef<HTMLDivElement>(null);
 
   const slideW = aspect === '4:5' ? 1080 : 1920;
   const slideH = aspect === '4:5' ? 1350 : 1080;
@@ -92,8 +156,6 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
       setSlides(newSlides);
       setActiveSlide(0);
       setVariationCount(prev => prev + 1);
-
-      // Persist to visual_outputs
       if (user && newSlides.length > 0) {
         await supabase.from('visual_outputs' as any).insert({
           user_id: user.id,
@@ -112,22 +174,37 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
     }
   };
 
+  /** Capture a single slide element as compressed JPEG */
+  const captureSlideAsJpeg = async (el: HTMLElement): Promise<Blob> => {
+    const pngDataUrl = await toPng(el, { width: slideW, height: slideH, pixelRatio: 1 });
+    return toJpegBlob(pngDataUrl);
+  };
+
   const downloadSlide = async (index: number) => {
     const el = document.getElementById(`carousel-slide-${index}`);
     if (!el) return;
     try {
-      const dataUrl = await toPng(el, { width: slideW, height: slideH, pixelRatio: 2 });
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = `carousel-${index + 1}.png`;
-      a.click();
+      const blob = await captureSlideAsJpeg(el);
+      downloadBlob(blob, `carousel-${index + 1}.jpg`);
     } catch (e) { console.error(e); }
   };
 
   const downloadAll = async () => {
-    for (let i = 0; i < slides.length; i++) {
-      await downloadSlide(i);
-      await new Promise(r => setTimeout(r, 300));
+    setDownloadingAll(true);
+    try {
+      for (let i = 0; i < slides.length; i++) {
+        const el = document.getElementById(`carousel-offscreen-${i}`);
+        if (!el) continue;
+        const blob = await captureSlideAsJpeg(el);
+        downloadBlob(blob, `carousel-${i + 1}.jpg`);
+        await new Promise(r => setTimeout(r, 200));
+      }
+      toast.success(lang === 'PT' ? `${slides.length} imagens baixadas` : `${slides.length} images downloaded`);
+    } catch (e) {
+      console.error(e);
+      toast.error(lang === 'PT' ? 'Erro ao baixar' : 'Download error');
+    } finally {
+      setDownloadingAll(false);
     }
   };
 
@@ -136,59 +213,113 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
     openWhatsAppShare(text);
   };
 
-  const renderSlide = (slide: Slide, index: number, preview = false) => {
-    const w = preview ? (aspect === '4:5' ? 110 : 150) : (aspect === '4:5' ? 380 : 500);
-    const h = preview ? (aspect === '4:5' ? 138 : 84) : (aspect === '4:5' ? 475 : 281);
+  /** Render a slide with palette-based coloring */
+  const renderSlideContent = (slide: Slide, index: number, opts: { preview?: boolean; offscreen?: boolean } = {}) => {
+    const { preview = false, offscreen = false } = opts;
+    const palette = getPalette(index);
     const isCover = slide.type === 'cover';
+
+    const w = offscreen ? slideW : (preview ? (aspect === '4:5' ? 110 : 150) : (aspect === '4:5' ? 380 : 500));
+    const h = offscreen ? slideH : (preview ? (aspect === '4:5' ? 138 : 84) : (aspect === '4:5' ? 475 : 281));
     const isPreviewSmall = preview;
+
+    const padScale = offscreen ? (slideW / (aspect === '4:5' ? 380 : 500)) : 1;
+    const padding = isPreviewSmall ? 8 : Math.round(24 * padScale);
 
     return (
       <div
-        id={preview ? undefined : `carousel-slide-${index}`}
-        key={index}
-        style={{ width: w, height: h }}
-        className={`relative flex flex-col overflow-hidden rounded-lg shrink-0
-          ${isCover
-            ? 'bg-gradient-to-br from-primary/25 via-primary/10 to-background justify-center items-center text-center'
-            : 'bg-gradient-to-br from-[hsl(var(--primary)/0.08)] to-background justify-between'
-          }
-          border border-border/40
-          ${isPreviewSmall ? 'p-2 cursor-pointer' : 'p-6'}
-        `}
+        id={offscreen ? `carousel-offscreen-${index}` : (preview ? undefined : `carousel-slide-${index}`)}
+        key={`${offscreen ? 'off' : preview ? 'prev' : 'main'}-${index}`}
+        style={{
+          width: w,
+          height: h,
+          background: palette.bg,
+          color: palette.text,
+          padding,
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          borderRadius: offscreen ? 0 : 8,
+          flexShrink: 0,
+          cursor: preview ? 'pointer' : undefined,
+          ...(isCover ? { justifyContent: 'center', alignItems: 'center', textAlign: 'center' as const } : { justifyContent: 'space-between' }),
+        }}
         onClick={preview ? () => setActiveSlide(index) : undefined}
       >
         {/* Slide number */}
-        <div className={`absolute ${isPreviewSmall ? 'top-1 right-1 text-[5px]' : 'top-3 right-3 text-[10px]'} text-muted-foreground/40 font-medium`}>
+        <div style={{
+          position: 'absolute',
+          top: isPreviewSmall ? 4 : Math.round(12 * padScale),
+          right: isPreviewSmall ? 4 : Math.round(12 * padScale),
+          fontSize: isPreviewSmall ? 5 : Math.round(10 * padScale),
+          opacity: 0.3,
+          fontWeight: 500,
+        }}>
           {index + 1}/{slides.length}
         </div>
 
         {/* Type badge */}
         {!isCover && (
-          <div className={`${isPreviewSmall ? 'text-[5px]' : 'text-[10px]'} font-bold tracking-widest text-primary/60 uppercase`}>
+          <div style={{
+            fontSize: isPreviewSmall ? 5 : Math.round(10 * padScale),
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase' as const,
+            color: palette.accent,
+            opacity: 0.7,
+          }}>
             {typeLabels[slide.type]?.[lang] || slide.type.toUpperCase()}
           </div>
         )}
 
         {/* Content */}
-        <div className={isCover ? 'px-2' : 'flex-1 flex flex-col justify-center mt-1'}>
-          <h3 className={`${isPreviewSmall ? 'text-[8px]' : 'text-base'} font-bold text-foreground leading-tight ${isPreviewSmall ? 'line-clamp-2' : 'line-clamp-3'}`}>
+        <div style={isCover ? { padding: isPreviewSmall ? 4 : Math.round(8 * padScale) } : { flex: 1, display: 'flex', flexDirection: 'column' as const, justifyContent: 'center', marginTop: isPreviewSmall ? 2 : Math.round(4 * padScale) }}>
+          <h3 style={{
+            fontWeight: 700,
+            lineHeight: 1.2,
+            fontSize: isPreviewSmall ? 8 : Math.round(isCover ? 20 * padScale : 16 * padScale),
+            margin: 0,
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: isPreviewSmall ? 2 : 3,
+            WebkitBoxOrient: 'vertical' as any,
+          }}>
             {slide.title}
           </h3>
-          {!preview && (
-            <p className="text-sm text-muted-foreground mt-2 leading-relaxed line-clamp-5">{slide.body}</p>
+          {!isPreviewSmall && (
+            <p style={{
+              fontSize: Math.round(14 * padScale),
+              lineHeight: 1.6,
+              marginTop: Math.round(8 * padScale),
+              opacity: 0.8,
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 5,
+              WebkitBoxOrient: 'vertical' as any,
+            }}>
+              {slide.body}
+            </p>
           )}
         </div>
 
         {/* Reference */}
         {slide.reference && !isPreviewSmall && (
-          <div className="text-[10px] text-primary/70 flex items-center gap-1 mt-2">
+          <div style={{
+            fontSize: Math.round(10 * padScale),
+            color: palette.accent,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            marginTop: Math.round(8 * padScale),
+          }}>
             📖 {slide.reference}
           </div>
         )}
 
-        {/* Branding footer */}
-        <div className={`${isPreviewSmall ? 'mt-auto' : 'mt-3'} flex items-center justify-end`}>
-          <BrandFooter size={isPreviewSmall ? 'small' : 'normal'} />
+        {/* Branding */}
+        <div style={{ marginTop: isPreviewSmall ? 'auto' : Math.round(12 * padScale), display: 'flex', justifyContent: 'flex-end' }}>
+          <BrandFooter size={isPreviewSmall ? 'small' : 'normal'} color={palette.accent} />
         </div>
       </div>
     );
@@ -252,7 +383,7 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
                     <ChevronLeft className="h-5 w-5" />
                   </button>
 
-                  {renderSlide(slides[activeSlide], activeSlide)}
+                  {renderSlideContent(slides[activeSlide], activeSlide)}
 
                   <button
                     onClick={() => setActiveSlide(Math.min(slides.length - 1, activeSlide + 1))}
@@ -275,14 +406,14 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-2 mt-4 flex-wrap justify-center">
                   <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => downloadSlide(activeSlide)}>
                     <Download className="h-3.5 w-3.5" />
                     {labels.downloadSlide[lang]}
                   </Button>
-                  <Button size="sm" className="text-xs gap-1.5" onClick={downloadAll}>
-                    <Download className="h-3.5 w-3.5" />
-                    {labels.downloadAll[lang]}
+                  <Button size="sm" className="text-xs gap-1.5" onClick={downloadAll} disabled={downloadingAll}>
+                    {downloadingAll ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                    {downloadingAll ? labels.downloading[lang] : labels.downloadAll[lang]}
                   </Button>
                   <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={handleSend}>
                     <Share2 className="h-3.5 w-3.5" />
@@ -297,12 +428,11 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
                 <div className="grid grid-cols-3 gap-1.5">
                   {slides.map((s, i) => (
                     <div key={i} className={`relative ${activeSlide === i ? 'ring-2 ring-primary ring-offset-1 ring-offset-background rounded-lg' : ''}`}>
-                      {renderSlide(s, i, true)}
+                      {renderSlideContent(s, i, { preview: true })}
                     </div>
                   ))}
                 </div>
 
-                {/* Slide info */}
                 <div className="mt-4 p-3 rounded-lg border border-border bg-card">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-primary tracking-wider">{labels.sermon[lang]}</span>
@@ -314,7 +444,6 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
                   )}
                 </div>
 
-                {/* Format info */}
                 <div className="mt-2 p-3 rounded-lg border border-primary/20 bg-primary/5">
                   <p className="text-xs text-primary font-medium">
                     {aspect === '4:5' ? labels.instagram[lang] : labels.widescreen[lang]}
@@ -327,6 +456,13 @@ export function SermonCarouselModal({ open, onOpenChange, sermonMarkdown, sermon
             </div>
           ) : null}
         </div>
+
+        {/* Offscreen rendering area for download-all — all slides rendered at export resolution */}
+        {slides.length > 0 && (
+          <div ref={offscreenRef} style={{ position: 'fixed', left: -20000, top: 0, pointerEvents: 'none', zIndex: -1 }}>
+            {slides.map((s, i) => renderSlideContent(s, i, { offscreen: true }))}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
