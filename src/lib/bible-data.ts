@@ -84,12 +84,17 @@ export function getApiBookName(id: string, translationCode: string): string {
 export const translationOptions: Record<L, { code: string; label: string }[]> = {
   PT: [
     { code: 'almeida', label: 'ARA' },
+    { code: 'web', label: 'WEB' },
+    { code: 'kjv', label: 'KJV' },
   ],
   EN: [
     { code: 'web', label: 'WEB' },
     { code: 'kjv', label: 'KJV' },
+    { code: 'almeida', label: 'ARA' },
   ],
   ES: [
+    { code: 'web', label: 'WEB' },
+    { code: 'kjv', label: 'KJV' },
     { code: 'almeida', label: 'ARA' },
   ],
 };
