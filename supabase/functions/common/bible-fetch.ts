@@ -239,8 +239,9 @@ export async function fetchBibleVerse(
       break
     case "NVI-PT":
       is_official = false
-      source = "NVI-PT (estilo — sem licença comercial ativa)"
-      return { text: "", source, version, is_official }
+      text = await fetchGeminiFallback(passage, "NVI", "pt-BR")
+      source = "NVI-PT (Gemini)"
+      break
     case "ESV":
       text = await fetchFromESV(passage)
       break
