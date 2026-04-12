@@ -21,7 +21,7 @@ interface Props {
   languageFilter?: 'PT' | 'EN' | 'ES';
 }
 
-export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, initialVerse, initialVerseEnd, initialTranslation }: Props) {
+export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, initialVerse, initialVerseEnd, initialTranslation, languageFilter }: Props) {
   const { lang } = useLanguage();
   const [book, setBook] = useState(initialBook || 'John');
   const [chapter, setChapter] = useState(initialChapter || 3);
