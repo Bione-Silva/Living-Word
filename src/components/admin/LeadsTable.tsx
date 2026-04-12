@@ -35,13 +35,13 @@ export function LeadsTable() {
   }, []);
 
   const loadLeads = async () => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('profiles')
       .select('id, full_name, plan, country, city, church_name, favorite_preacher, created_at')
       .order('created_at', { ascending: false })
       .limit(50);
 
-    if (data) setLeads(data as Lead[]);
+    if (data) setLeads(data as unknown as Lead[]);
     setLoading(false);
   };
 
