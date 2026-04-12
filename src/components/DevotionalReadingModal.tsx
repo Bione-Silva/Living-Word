@@ -169,7 +169,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
             <section>
               <SectionHeader icon={<BookOpen className="h-4 w-4" />} label={labels.meditation[lang]} color={colors.gold} bg={colors.goldLight} />
               <div className="mt-3 space-y-4">
-                {data.body_text.split('\n\n').filter(p => p.trim()).map((p, i) => (
+                {(data.body_text || '').split('\n\n').filter(p => p.trim()).map((p, i) => (
                   <p key={i} className="font-serif text-[1.05rem] leading-[1.85]" style={{ color: 'hsl(24, 30%, 18%, 0.92)' }}>
                     {p.trim()}
                   </p>
