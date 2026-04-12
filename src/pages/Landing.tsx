@@ -6,6 +6,7 @@ import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { usePageviewTracker } from '@/hooks/use-pageview-tracker';
 import { formatPrice } from '@/utils/geoPricing';
 import { useGeoRegion } from '@/hooks/useGeoRegion';
+import { PodiumModePromoBlock } from '@/components/landing/PodiumModePromoBlock';
 
 import { minds } from '@/data/minds';
 import {
@@ -866,6 +867,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* ===== PODIUM MODE PROMO ===== */}
+      <PodiumModePromoBlock lang={lang} />
 
       {/* ===== 7. VS COMPETITORS ===== */}
       <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#3D2B1F' }}>
