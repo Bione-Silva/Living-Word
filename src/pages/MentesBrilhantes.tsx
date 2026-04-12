@@ -5,7 +5,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { MindCard } from '@/components/MindCard';
 import { MindDetailSheet } from '@/components/MindDetailSheet';
 import { minds, type MindFullData } from '@/data/minds';
-import { Brain, Sparkles, Lock, Crown, Database, Cpu } from 'lucide-react';
+import { Brain, Sparkles, Lock, Crown, Database, Cpu, ArrowLeftRight } from 'lucide-react';
+import { CompareMindsDialog } from '@/components/minds/CompareMindsDialog';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ export default function MentesBrilhantes() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedMind, setSelectedMind] = useState<MindFullData | null>(null);
   const [activeMinds, setActiveMinds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
   const [loadingMinds, setLoadingMinds] = useState(true);
 
   useEffect(() => {
@@ -41,7 +43,12 @@ export default function MentesBrilhantes() {
         .from('mind_settings')
         .select('mind_id')
         .eq('active', true);
-      if (data) setActiveMinds(data.map((d: any) => d.mind_id));
+      if (data && data.length > 0) {
+        setActiveMinds(data.map((d: any) => d.mind_id));
+      } else {
+        // Fallback for new projects before mind_settings is populated
+        setActiveMinds(minds.map(m => m.id));
+      }
       setLoadingMinds(false);
     };
     loadActiveMinds();
@@ -107,6 +114,20 @@ export default function MentesBrilhantes() {
                 <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Active Agents' : 'Agentes Ativos'}</p>
               </div>
             </div>
+            {visibleMinds.length >= 2 && (
+              <>
+                <div className="w-px h-8 bg-[hsl(30,15%,88%)]" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCompare(true)}
+                  className="gap-2 border-[hsl(35,30%,80%)] text-[hsl(35,45%,40%)] hover:bg-[hsl(35,40%,95%)]"
+                >
+                  <ArrowLeftRight className="h-4 w-4" />
+                  {lang === 'EN' ? 'Compare Minds' : lang === 'ES' ? 'Comparar Mentes' : 'Comparar Mentes'}
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -159,6 +180,14 @@ export default function MentesBrilhantes() {
           </Button>
         </DialogContent>
       </Dialog>
+
+      {/* ── Compare Dialog ── */}
+      <CompareMindsDialog
+        open={showCompare}
+        onOpenChange={setShowCompare}
+        minds={visibleMinds}
+        lang={lang}
+      />
     </div>
   );
 }

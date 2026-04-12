@@ -56,7 +56,7 @@ export function MoreToolsAccordion({ onToolClick }: MoreToolsAccordionProps) {
       </button>
 
       {open && (
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3">
+        <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 mt-3">
           {combined.map((tool) => {
             const Icon = tool.icon;
             const isLocked = tool.locked && isFree;
@@ -67,17 +67,17 @@ export function MoreToolsAccordion({ onToolClick }: MoreToolsAccordionProps) {
                   if (isLocked) return;
                   onToolClick(tool.id);
                 }}
-                className={`relative flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center transition-all ${
+                className={`relative flex flex-col items-center gap-1 p-2 rounded-lg border text-center transition-all ${
                   isLocked
                     ? 'border-border/40 opacity-40 cursor-not-allowed'
                     : 'border-border/60 hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm active:scale-[0.97]'
                 }`}
               >
                 {isLocked && <Crown className="absolute top-1.5 right-1.5 h-3 w-3 text-primary/50" />}
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isLocked ? 'bg-muted/50' : 'bg-primary/10'}`}>
-                  <Icon className={`h-4 w-4 ${isLocked ? 'text-muted-foreground' : 'text-primary'}`} />
+                <div className={`w-7 h-7 rounded-md flex items-center justify-center ${isLocked ? 'bg-muted/50' : 'bg-primary/10'}`}>
+                  <Icon className={`h-3.5 w-3.5 ${isLocked ? 'text-muted-foreground' : 'text-primary'}`} />
                 </div>
-                <span className="text-[10px] leading-tight font-medium line-clamp-2 text-foreground">
+                <span className="text-[10px] leading-tight font-semibold line-clamp-2 text-foreground">
                   {tool.title[lang]}
                 </span>
               </button>

@@ -16,6 +16,7 @@ import { TeamSection } from '@/components/admin/TeamSection';
 import { VaultSection } from '@/components/admin/VaultSection';
 import { FeedbackPanel } from '@/components/admin/FeedbackPanel';
 import { MindToggleSection } from '@/components/admin/MindToggleSection';
+import { ReflectionSentimentPanel } from '@/components/admin/ReflectionSentimentPanel';
 
 const MASTER_EMAIL = 'bionicaosilva@gmail.com';
 
@@ -210,6 +211,7 @@ export default function AdminDashboard() {
       <GeographyChart />
       <LeadsTable />
       <FeedbackPanel />
+      <ReflectionSentimentPanel />
       <MindToggleSection />
       <TeamSection />
 

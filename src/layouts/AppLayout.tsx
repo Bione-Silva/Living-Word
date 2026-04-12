@@ -19,13 +19,13 @@ import {
   SheetDescription,
 } from '@/components/ui/sheet';
 import {
-  LayoutDashboard, Wand2, BookOpen, Library, CalendarDays,
+  LayoutDashboard, Wand2, BookOpen, Library, CalendarDays, Mic,
   Settings, LogOut, Crown, ChevronDown, Search, PenTool, Send, Brain,
-  Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon,
+  Lightbulb, Quote, Film, FileText, Languages as LanguagesIcon, Type,
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
-  HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert,
+  HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert, ChevronUp,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
-  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal
+  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal,
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -56,47 +56,20 @@ interface SidebarToolGroup {
 }
 
 /* ─── NEW STRUCTURE: "Criar" merges old Criar + Extras + Estúdio Social ─── */
-const sidebarGroups: SidebarToolGroup[] = [
-  {
-    key: 'criar',
-    label: { PT: 'Criar', EN: 'Create', ES: 'Crear' },
-    icon: Sparkles,
-    tools: [
-      // from old "Criar"
-      { id: 'studio', icon: Wand2, label: { PT: 'Estúdio Pastoral', EN: 'Pastoral Studio', ES: 'Estudio Pastoral' } },
-      { id: 'biblical-study', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' } },
-      { id: 'free-article', icon: PenTool, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' } },
-      { id: 'title-gen', icon: Sparkles, label: { PT: 'Títulos', EN: 'Titles', ES: 'Títulos' } },
-      { id: 'metaphor-creator', icon: Palette, label: { PT: 'Metáforas', EN: 'Metaphors', ES: 'Metáforas' } },
-      { id: 'illustrations', icon: Film, label: { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones' } },
-      { id: 'bible-modernizer', icon: Repeat, label: { PT: 'Modernizador', EN: 'Modernizer', ES: 'Modernizador' } },
-      { id: 'youtube-blog', icon: Video, label: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' } },
-      // from old "Extras"
-      { id: 'reels-script', icon: Video, label: { PT: 'Roteiro Reels', EN: 'Reels Script', ES: 'Guión Reels' } },
-      { id: 'cell-group', icon: Users, label: { PT: 'Célula', EN: 'Cell Group', ES: 'Célula' } },
-      { id: 'social-caption', icon: MessageSquare, label: { PT: 'Legendas', EN: 'Captions', ES: 'Leyendas' } },
-      { id: 'newsletter', icon: Mail, label: { PT: 'Newsletter', EN: 'Newsletter', ES: 'Newsletter' } },
-      { id: 'announcements', icon: Megaphone, label: { PT: 'Avisos', EN: 'Announcements', ES: 'Avisos' } },
-      { id: 'trivia', icon: Gamepad2, label: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' } },
-      { id: 'poetry', icon: Feather, label: { PT: 'Poesia', EN: 'Poetry', ES: 'Poesía' } },
-      { id: 'kids-story', icon: Baby, label: { PT: 'Infantil', EN: 'Kids Story', ES: 'Infantil' } },
-      { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução', EN: 'Translation', ES: 'Traducción' } },
-      { id: 'social-content', icon: ImageIcon, label: { PT: 'Conteúdo Social', EN: 'Social Content', ES: 'Contenido Social' } },
-    ],
-  },
-  {
-    key: 'pesquisar',
-    label: { PT: 'Pesquisar', EN: 'Research', ES: 'Investigar' },
-    icon: Search,
-    tools: [
-      { id: 'topic-explorer', icon: Lightbulb, label: { PT: 'Explorador de Temas', EN: 'Topic Explorer', ES: 'Explorador de Temas' } },
-      { id: 'verse-finder', icon: Search, label: { PT: 'Versículos', EN: 'Verse Finder', ES: 'Versículos' } },
-      { id: 'historical-context', icon: BookOpen, label: { PT: 'Contexto Histórico', EN: 'Historical Context', ES: 'Contexto Histórico' } },
-      { id: 'quote-finder', icon: Quote, label: { PT: 'Citações', EN: 'Quotes', ES: 'Citas' } },
-      { id: 'original-text', icon: FileText, label: { PT: 'Texto Original', EN: 'Original Text', ES: 'Texto Original' } },
-      { id: 'lexical', icon: LanguagesIcon, label: { PT: 'Análise Lexical', EN: 'Lexical Analysis', ES: 'Análisis Léxico' } },
-    ],
-  },
+const forYouLinks = [
+  { id: 'dashboard', to: '/dashboard', icon: LayoutDashboard, label: { PT: 'Início', EN: 'Home', ES: 'Inicio' } },
+  { id: 'devocional', to: '/devocional', icon: BookOpen, label: { PT: 'Devocional Diário', EN: 'Daily Devotional', ES: 'Devocional Diario' }, badge: 'Novo' },
+  { id: 'bible', to: '/bible', icon: Library, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' } },
+  { id: 'bom-amigo', to: '/bom-amigo', icon: MessageSquare, label: { PT: 'Palavra Amiga', EN: 'Friendly Word', ES: 'Palabra Amiga' } },
+  { id: 'blog', to: '/blog', icon: PenTool, label: { PT: 'Meu Blog', EN: 'My Blog', ES: 'Mi Blog' }, pro: true },
+];
+
+const toolsLinks = [
+  { id: 'sermon', to: '/sermoes/editor', icon: Wand2, label: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón' } },
+  { id: 'bible-study', to: '/estudos/novo', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' } },
+  { id: 'articles', to: '/blog', icon: FileText, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog & Artículos' } },
+  { id: 'social', to: '/social-studio', icon: ImageIcon, label: { PT: 'Artes Bíblicas', EN: 'Biblical Arts', ES: 'Artes Bíblicas' } },
+  { id: 'minds', to: '/dashboard/mentes', icon: Brain, label: { PT: 'Mentes Brilhantes', EN: 'Brilliant Minds', ES: 'Mentes Brillantes' }, pro: true },
 ];
 
 function SidebarTooltipWrap({ collapsed, label, children }: { collapsed: boolean; label: string; children: React.ReactNode }) {
@@ -180,6 +153,11 @@ export default function AppLayout() {
       });
       return;
     }
+    if (tool.id === 'sermon-generator') {
+      navigate('/sermoes');
+      setMobileToolsOpen(false);
+      return;
+    }
     if (tool.id === 'biblical-study') {
       navigate('/estudos/novo');
       setMobileToolsOpen(false);
@@ -187,6 +165,11 @@ export default function AppLayout() {
     }
     if (tool.id === 'social-content') {
       navigate('/social-studio');
+      setMobileToolsOpen(false);
+      return;
+    }
+    if (tool.id === 'free-article') {
+      navigate('/blog');
       setMobileToolsOpen(false);
       return;
     }
@@ -345,7 +328,7 @@ export default function AppLayout() {
                               }`}>
                                 <Icon className={`h-4 w-4 ${isLocked ? 'text-muted-foreground' : 'text-primary'}`} />
                               </div>
-                              <span className="text-[11px] leading-tight font-medium line-clamp-2">
+                              <span className="text-[11px] leading-tight font-medium line-clamp-2 text-foreground">
                                 {tool.label[lang]}
                               </span>
                             </button>
@@ -383,7 +366,7 @@ export default function AppLayout() {
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10">
                           <NavIcon className="h-4 w-4 text-primary" />
                         </div>
-                        <span className="text-[11px] leading-tight font-medium line-clamp-2">
+                        <span className="text-[11px] leading-tight font-medium line-clamp-2 text-foreground">
                           {nav.label[lang]}
                         </span>
                       </Link>
@@ -508,162 +491,90 @@ export default function AppLayout() {
           </div>
         )}
 
-        {/* ─── SECTION 1: FERRAMENTAS ─── */}
+        {/* ─── SECTION 1: PARA VOCÊ ─── */}
         {!collapsed && (
-          <div className="px-5 pt-2 pb-1 shrink-0">
+          <div className="px-5 pt-2 pb-1 shrink-0 mt-2">
             <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
-              {t('nav.tools') || 'FERRAMENTAS'}
+              {lang === 'PT' ? 'PARA VOCÊ' : lang === 'ES' ? 'PARA TI' : 'FOR YOU'}
             </span>
           </div>
         )}
 
-        <nav className={`flex-1 ${collapsed ? 'px-1.5' : 'px-3'} space-y-0.5 overflow-y-auto min-h-0`}>
-          {/* 1.1 — Dashboard */}
-          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.dashboard') || 'Dashboard'}>
-            <Link
-              to="/dashboard"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/dashboard'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <LayoutDashboard className="h-4 w-4 shrink-0" />
-              {!collapsed && t('nav.dashboard')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          {/* 1.2 & 1.3 — Criar + Pesquisar (collapsible, only one open) */}
-          {sidebarGroups.map((group) => {
-            const isOpen = openGroup === group.key;
-            const GroupIcon = group.icon;
-
+        <nav className={`flex-1 ${collapsed ? 'px-1.5' : 'px-3'} space-y-0.5 min-h-[min-content]`}>
+          {forYouLinks.map(link => {
+            const Icon = link.icon;
+            const isPro = link.pro && isFree;
             return (
-              <div key={group.key}>
-                <SidebarTooltipWrap collapsed={collapsed} label={group.label[lang]}>
-                  <button
-                    onClick={() => !collapsed && toggleGroup(group.key)}
-                    className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isOpen
-                        ? 'text-sidebar-primary bg-sidebar-accent/30'
-                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-                    }`}
-                  >
-                    <GroupIcon className="h-4 w-4 shrink-0" />
-                    {!collapsed && (
-                      <>
-                        <span className="flex-1 text-left">{group.label[lang]}</span>
-                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'} ${isOpen ? 'text-sidebar-primary' : 'text-sidebar-foreground/40'}`} />
-                      </>
-                    )}
-                  </button>
-                </SidebarTooltipWrap>
-
-                {isOpen && !collapsed && (
-                  <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5 max-h-[280px] overflow-y-auto">
-                    {group.tools.map((tool) => {
-                      const Icon = tool.icon;
-                      const isLocked = isToolLockedForPlan(tool.id, userPlan);
-                      return (
-                        <button
-                          key={tool.id}
-                          onClick={() => handleToolClick(tool)}
-                          className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors text-left ${
-                            isLocked
-                              ? 'text-sidebar-foreground/40 hover:bg-sidebar-accent/30'
-                              : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground'
-                          }`}
-                        >
-                          <Icon className="h-3.5 w-3.5" />
-                          <span className="truncate">{tool.label[lang]}</span>
-                          {isLocked && <ToolLockBadge userPlan={userPlan} toolId={tool.id} />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+              <SidebarTooltipWrap key={link.id} collapsed={collapsed} label={link.label[lang]}>
+                <Link
+                  to={isPro ? '/upgrade' : link.to}
+                  className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    location.pathname === link.to
+                      ? 'bg-sidebar-accent text-sidebar-primary'
+                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  {!collapsed && (
+                    <div className="flex flex-1 items-center justify-between">
+                      <span>{link.label[lang]}</span>
+                      {link.badge && (
+                        <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-500 px-1.5 py-0 bg-emerald-500/10">
+                          {link.badge}
+                        </Badge>
+                      )}
+                      {link.pro && (
+                        <Badge variant="outline" className="text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
+                          Pro
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </Link>
+              </SidebarTooltipWrap>
             );
           })}
 
-          {/* 1.4 — Bíblia */}
-          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}>
-            <Link
-              to="/bible"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/bible'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <BookOpen className="h-4 w-4 shrink-0" />
-              {!collapsed && (lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia')}
-            </Link>
-          </SidebarTooltipWrap>
-
           {/* ─── Separator ─── */}
-          <div className={`${collapsed ? 'mx-1' : 'mx-0'} border-t border-sidebar-border my-2`} />
+          <div className={`${collapsed ? 'mx-1' : 'mx-0'} border-t border-sidebar-border my-3`} />
 
-          {/* ─── SECTION 2: RECURSOS ─── */}
+          {/* ─── SECTION 2: FERRAMENTAS ─── */}
           {!collapsed && (
-            <div className="px-3 pb-1">
+            <div className="px-5 pb-1 shrink-0">
               <span className="text-[10px] font-semibold tracking-widest uppercase text-sidebar-foreground/50">
-                {lang === 'PT' ? 'RECURSOS' : lang === 'EN' ? 'RESOURCES' : 'RECURSOS'}
+                {lang === 'PT' ? 'FERRAMENTAS' : lang === 'ES' ? 'HERRAMIENTAS' : 'TOOLS'}
               </span>
             </div>
           )}
 
-          {/* 2.1 — Mentes Brilhantes */}
-          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'EN' ? 'Brilliant Minds' : lang === 'ES' ? 'Mentes Brillantes' : 'Mentes Brilhantes'}>
-            <Link
-              to="/dashboard/mentes"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname.startsWith('/dashboard/mentes')
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <Brain className="h-4 w-4 shrink-0" />
-              {!collapsed && (
-                <>
-                  {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
-                  <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
-                    Premium
-                  </Badge>
-                </>
-              )}
-            </Link>
-          </SidebarTooltipWrap>
-
-          {/* 2.2 — Biblioteca */}
-          <SidebarTooltipWrap collapsed={collapsed} label={t('nav.library') || 'Biblioteca'}>
-            <Link
-              to="/biblioteca"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/biblioteca'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <Library className="h-4 w-4 shrink-0" />
-              {!collapsed && t('nav.library')}
-            </Link>
-          </SidebarTooltipWrap>
-
-          {/* 2.3 — Calendário */}
-          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario'}>
-            <Link
-              to="/calendario"
-              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === '/calendario'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-              }`}
-            >
-              <CalendarDays className="h-4 w-4 shrink-0" />
-              {!collapsed && (lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario')}
-            </Link>
-          </SidebarTooltipWrap>
+          {toolsLinks.map(link => {
+            const Icon = link.icon;
+            const isPro = link.pro && isFree;
+            return (
+              <SidebarTooltipWrap key={link.id} collapsed={collapsed} label={link.label[lang]}>
+                <Link
+                  to={isPro ? '/upgrade' : link.to}
+                  className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    location.pathname.startsWith(link.to)
+                      ? 'bg-sidebar-accent text-sidebar-primary'
+                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  {!collapsed && (
+                    <div className="flex flex-1 items-center justify-between">
+                      <span>{link.label[lang]}</span>
+                      {link.pro && (
+                        <Badge variant="outline" className="text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
+                          Pro
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </Link>
+              </SidebarTooltipWrap>
+            );
+          })}
         </nav>
 
         {/* ─── Bottom section: Credits + Account ─── */}
@@ -735,7 +646,7 @@ export default function AppLayout() {
                   className="text-sidebar-foreground/50 hover:text-sidebar-foreground shrink-0 p-1 rounded hover:bg-sidebar-accent/50 transition-colors"
                   title={lang === 'PT' ? 'Menu de conta' : 'Account menu'}
                 >
-                  <MoreHorizontal className="h-4 w-4" />
+                  <ChevronUp className={`h-4 w-4 transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
                 </button>
               )}
             </div>

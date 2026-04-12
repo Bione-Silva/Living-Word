@@ -1,6 +1,6 @@
 import { getFontEmbedCSS, toPng } from 'html-to-image';
 
-export const EXPORT_SCALE = 3;
+export const EXPORT_SCALE = 2;
 
 export const waitForNextPaint = () =>
   new Promise<void>((resolve) => {
@@ -109,8 +109,8 @@ export async function captureNodeAsPng(node: HTMLDivElement) {
       backgroundColor: '#000000',
       width,
       height,
-      canvasWidth: width * EXPORT_SCALE,
-      canvasHeight: height * EXPORT_SCALE,
+      canvasWidth: width,
+      canvasHeight: height,
       skipAutoScale: true,
       fontEmbedCSS,
       style: {
@@ -122,4 +122,46 @@ export async function captureNodeAsPng(node: HTMLDivElement) {
   } finally {
     sandbox.remove();
   }
+}
+
+/**
+ * Convert a PNG data-URL to a compressed JPEG Blob, ≤ maxBytes.
+ * Starts at quality 0.82 and halves the gap on each iteration.
+ */
+export async function compressToJpeg(
+  pngDataUrl: string,
+  maxBytes = 250_000,
+): Promise<Blob> {
+  const img = new Image();
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = reject;
+    img.src = pngDataUrl;
+  });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d')!;
+  ctx.drawImage(img, 0, 0);
+
+  let quality = 0.82;
+  let blob: Blob | null = null;
+
+  for (let i = 0; i < 6; i++) {
+    blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', quality));
+    if (blob && blob.size <= maxBytes) break;
+    quality *= 0.7;
+  }
+
+  // If still too large, scale down
+  if (blob && blob.size > maxBytes) {
+    const scale = Math.sqrt(maxBytes / blob.size) * 0.95;
+    canvas.width = Math.round(img.naturalWidth * scale);
+    canvas.height = Math.round(img.naturalHeight * scale);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', 0.80));
+  }
+
+  return blob || new Blob([], { type: 'image/jpeg' });
 }

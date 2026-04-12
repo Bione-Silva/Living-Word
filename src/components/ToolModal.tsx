@@ -144,6 +144,18 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
         if (error) throw error;
         if (!data?.success) throw new Error(data?.error || 'Unknown error');
         setResult(data.content || '');
+        // Auto-generate cover + internal images in background
+        if (data.material_id) {
+          const aid = data.material_id, atitle = data.title || '', acontent = data.content || '';
+          if (!data.cover_image_url) {
+            supabase.functions.invoke('generate-article-cover', {
+              body: { article_id: aid, title: atitle, content: acontent },
+            }).catch(e => console.warn('[ToolModal] Cover gen failed:', e));
+          }
+          supabase.functions.invoke('generate-article-images', {
+            body: { article_id: aid, title: atitle, content: acontent },
+          }).catch(e => console.warn('[ToolModal] Images gen failed:', e));
+        }
       } else {
         const { data, error } = await supabase.functions.invoke('ai-tool', {
           body: {
@@ -379,14 +391,14 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
 
           {/* Expanded reader dialog */}
           <Dialog open={expanded} onOpenChange={setExpanded}>
-            <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] flex flex-col bg-background text-foreground p-0">
-              <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
-                <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
-                <DialogDescription className="sr-only">
-                  {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex-1 min-h-0 overflow-y-auto px-6">
+             <DialogContent className="theme-app max-w-4xl w-[95vw] h-[95vh] flex flex-col bg-background text-foreground p-0">
+               <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+                 <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
+                 <DialogDescription className="sr-only">
+                   {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
+                 </DialogDescription>
+               </DialogHeader>
+               <div className="flex-1 min-h-0 overflow-y-auto px-6">
                 <div className="prose prose-base pastoral-prose max-w-none py-6">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
                 </div>

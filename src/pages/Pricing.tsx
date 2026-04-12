@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Check, Crown, Zap, Brain, BookOpen, Building2, Sparkles, HelpCircle } from 'lucide-react';
+import { Check, Crown, Zap, Brain, BookOpen, Building2, Sparkles, HelpCircle, Minus, Plus, Users } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useState } from 'react';
 import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_GENERATION_POTENTIAL, PLAN_PRICES, PLAN_PRICES_BRL, type PlanSlug } from '@/lib/plans';
@@ -29,7 +29,15 @@ const labels = {
   outlines: { PT: 'Esboços Médios', EN: 'Medium Outlines', ES: 'Esquemas Medios' } as Record<L, string>,
   sermons: { PT: 'Sermões Completos', EN: 'Full Sermons', ES: 'Sermones Completos' } as Record<L, string>,
   studies: { PT: 'Estudos Aprofundados', EN: 'Deep Studies', ES: 'Estudios Profundos' } as Record<L, string>,
+  teamExtras: { PT: 'Membros da equipe extras', EN: 'Extra team members', ES: 'Miembros del equipo extras' } as Record<L, string>,
+  included: { PT: 'incluídos', EN: 'included', ES: 'incluidos' } as Record<L, string>,
+  perSeat: { PT: 'por membro extra/mês', EN: 'per extra member/month', ES: 'por miembro extra/mes' } as Record<L, string>,
 };
+
+const IGREJA_BASE_SEATS = 10;
+const EXTRA_SEAT_PRICE_USD = 5.00;
+const EXTRA_SEAT_PRICE_BRL = 15.00;
+const EXTRA_SEAT_CREDITS = 2_000;
 
 const plans = [
   {
@@ -38,9 +46,9 @@ const plans = [
     cta: { PT: 'Começar grátis', EN: 'Start free', ES: 'Comenzar gratis' },
     href: '/cadastro',
     features: {
-      PT: ['500 créditos/mês', 'Todas as ferramentas básicas', '14 ferramentas', 'Blog cristão básico'],
-      EN: ['500 credits/month', 'All basic tools', '14 tools', 'Basic Christian blog'],
-      ES: ['500 créditos/mes', 'Todas las herramientas básicas', '14 herramientas', 'Blog cristiano básico'],
+      PT: ['500 créditos/mês', '~25 sermões ou 50 artigos', '4 formatos pastorais', 'Blog no livingword.app', 'Watermark visível'],
+      EN: ['500 credits/month', '~25 sermons or 50 articles', '4 pastoral formats', 'Blog on livingword.app', 'Visible watermark'],
+      ES: ['500 créditos/mes', '~25 sermones o 50 artículos', '4 formatos pastorales', 'Blog en livingword.app', 'Marca de agua visible'],
     },
   },
   {
@@ -49,9 +57,9 @@ const plans = [
     cta: { PT: '7 dias grátis →', EN: '7 days free →', ES: '7 días gratis →' },
     href: '/cadastro',
     features: {
-      PT: ['4.000 créditos/mês', 'Todas as ferramentas core + extras', 'Liberdade total de uso', 'Sem watermark'],
-      EN: ['4,000 credits/month', 'All core + extra tools', 'Total freedom of use', 'No watermark'],
-      ES: ['4.000 créditos/mes', 'Todas las herramientas core + extras', 'Libertad total de uso', 'Sin marca de agua'],
+      PT: ['4.000 créditos/mês', '~200 sermões ou 400 artigos', 'Todos os 6 formatos', 'Sem watermark', 'Blog no livingword.app'],
+      EN: ['4,000 credits/month', '~200 sermons or 400 articles', 'All 6 formats', 'No watermark', 'Blog on livingword.app'],
+      ES: ['4.000 créditos/mes', '~200 sermones o 400 artículos', 'Los 6 formatos', 'Sin marca de agua', 'Blog en livingword.app'],
     },
   },
   {
@@ -60,9 +68,9 @@ const plans = [
     cta: { PT: 'Começar agora →', EN: 'Start now →', ES: 'Comenzar ahora →' },
     href: '/cadastro',
     features: {
-      PT: ['8.000 créditos/mês', '🧠 Mentes Brilhantes', 'Ilustrações + Calendário', 'YouTube → Blog', 'Até 3 workspaces'],
-      EN: ['8,000 credits/month', '🧠 Brilliant Minds', 'Illustrations + Calendar', 'YouTube → Blog', 'Up to 3 workspaces'],
-      ES: ['8.000 créditos/mes', '🧠 Mentes Brillantes', 'Ilustraciones + Calendario', 'YouTube → Blog', 'Hasta 3 workspaces'],
+      PT: ['8.000 créditos/mês', '🧠 Mentes Pastorais', 'Domínio próprio conectado', 'Calendário editorial', 'Séries automatizadas', 'Analytics de publicação'],
+      EN: ['8,000 credits/month', '🧠 Pastoral Minds', 'Custom domain connected', 'Editorial calendar', 'Automated series', 'Publishing analytics'],
+      ES: ['8.000 créditos/mes', '🧠 Mentes Pastorales', 'Dominio propio conectado', 'Calendario editorial', 'Series automatizadas', 'Analytics de publicación'],
     },
   },
   {
@@ -71,9 +79,9 @@ const plans = [
     cta: { PT: 'Começar', EN: 'Get started', ES: 'Comenzar' },
     href: '/cadastro',
     features: {
-      PT: ['20.000 créditos/mês', 'Até 10 usuários', 'Workspaces ilimitados', 'Multiportal', 'Suporte VIP'],
-      EN: ['20,000 credits/month', 'Up to 10 users', 'Unlimited workspaces', 'Multi-portal', 'VIP Support'],
-      ES: ['20.000 créditos/mes', 'Hasta 10 usuarios', 'Workspaces ilimitados', 'Multiportal', 'Soporte VIP'],
+      PT: ['20.000 créditos/mês', '10 usuários incluídos', 'Tudo do Pro', '10 domínios próprios', 'Painel admin da equipe', 'Suporte prioritário'],
+      EN: ['20,000 credits/month', '10 users included', 'Everything in Pro', '10 custom domains', 'Team admin panel', 'Priority support'],
+      ES: ['20.000 créditos/mes', '10 usuarios incluidos', 'Todo del Pro', '10 dominios propios', 'Panel admin del equipo', 'Soporte prioritario'],
     },
   },
 ];
@@ -99,6 +107,51 @@ function CreditPotentialTooltip({ planSlug, lang }: { planSlug: PlanSlug; lang: 
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
+  );
+}
+
+function TeamSeatsSelector({ lang, isBRL }: { lang: L; isBRL: boolean }) {
+  const [extraSeats, setExtraSeats] = useState(0);
+  const seatPrice = isBRL ? EXTRA_SEAT_PRICE_BRL : EXTRA_SEAT_PRICE_USD;
+  const symbol = isBRL ? 'R$' : '$';
+  const currency = isBRL ? 'BRL' : 'USD';
+  const totalSeats = IGREJA_BASE_SEATS + extraSeats;
+  const extraCredits = extraSeats * EXTRA_SEAT_CREDITS;
+
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <Users className="h-3.5 w-3.5 text-primary" />
+        <span className="text-xs font-semibold">{labels.teamExtras[lang]}</span>
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setExtraSeats(Math.max(0, extraSeats - 1))}
+            disabled={extraSeats === 0}
+            className="w-7 h-7 rounded-lg border border-border bg-background flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors"
+          >
+            <Minus className="h-3 w-3" />
+          </button>
+          <span className="text-lg font-bold font-mono w-8 text-center">{totalSeats}</span>
+          <button
+            onClick={() => setExtraSeats(Math.min(40, extraSeats + 1))}
+            className="w-7 h-7 rounded-lg border border-border bg-background flex items-center justify-center hover:bg-muted transition-colors"
+          >
+            <Plus className="h-3 w-3" />
+          </button>
+        </div>
+        <span className="text-[10px] text-muted-foreground">
+          {IGREJA_BASE_SEATS} {labels.included[lang]}
+        </span>
+      </div>
+      {extraSeats > 0 && (
+        <div className="text-[10px] text-muted-foreground space-y-0.5 pt-1 border-t border-border/50">
+          <p>+{extraSeats} × {formatPrice(seatPrice, symbol, currency)} {labels.perSeat[lang]}</p>
+          <p className="text-primary font-semibold">+{extraCredits.toLocaleString()} {lang === 'PT' ? 'créditos extras' : lang === 'EN' ? 'extra credits' : 'créditos extras'}</p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -176,7 +229,7 @@ export default function Pricing() {
                     <CreditPotentialTooltip planSlug={plan.slug} lang={lang} />
                   </div>
 
-                  <ul className="space-y-2 mb-5 flex-1">
+                  <ul className="space-y-2 mb-4 flex-1">
                     {plan.features[lang].map((f, j) => (
                       <li key={j} className="flex items-start gap-2 text-sm">
                         <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -184,6 +237,13 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
+
+                  {/* Team seats selector — only for Igreja */}
+                  {plan.slug === 'igreja' && (
+                    <div className="mb-4">
+                      <TeamSeatsSelector lang={lang} isBRL={isBRL} />
+                    </div>
+                  )}
 
                   <Link to={plan.href}>
                     <Button className="w-full gap-1.5 min-h-[48px]" variant={plan.featured ? 'default' : 'secondary'}>

@@ -13,6 +13,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { DevotionalReadingModal } from '@/components/DevotionalReadingModal';
+import { useEngagementTracker } from '@/components/engagement/EngagementTracker';
+import { ReflectionCapture } from '@/components/engagement/ReflectionCapture';
+import { captureNodeAsPng } from '@/components/social-studio/export-utils';
+import { compressToJpeg } from '@/components/social-studio/export-utils';
+import { DevotionalShareArt } from '@/components/DevotionalShareArt';
+import { openWhatsAppShare } from '@/lib/whatsapp';
+import { BibleDrawer } from '@/components/BibleDrawer';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -38,11 +46,15 @@ interface DevotionalData {
 interface PastDevotional {
   id: string;
   title: string;
-  type: string;
-  passage: string | null;
-  created_at: string;
-  content: string;
+  category?: string;
+  anchor_verse: string;
+  anchor_verse_text?: string;
+  scheduled_date: string;
+  body_text: string;
   cover_image_url?: string | null;
+  audio_url_nova?: string | null;
+  audio_url_alloy?: string | null;
+  audio_url_onyx?: string | null;
 }
 
 const labels = {
@@ -74,6 +86,11 @@ const labels = {
   saveNote: { PT: 'Salvar Reflexão', EN: 'Save Reflection', ES: 'Guardar Reflexión' },
   saved: { PT: 'Reflexão salva!', EN: 'Reflection saved!', ES: '¡Reflexión guardada!' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
+  downloaded: { PT: 'Imagem pronta!', EN: 'Image ready!', ES: '¡Imagen lista!' },
+  shareImageError: { PT: 'Não foi possível gerar a imagem agora.', EN: 'Could not generate the image right now.', ES: 'No fue posible generar la imagen ahora.' },
+  shareFallback: { PT: 'Seu navegador baixou a imagem para você compartilhar.', EN: 'Your browser downloaded the image for you to share.', ES: 'Tu navegador descargó la imagen para que la compartas.' },
+  whatsappHint: { PT: 'Na próxima tela, escolha o WhatsApp para enviar a imagem.', EN: 'On the next screen, choose WhatsApp to send the image.', ES: 'En la siguiente pantalla, elige WhatsApp para enviar la imagen.' },
+  whatsappFallback: { PT: 'Imagem baixada. Agora anexe no WhatsApp.', EN: 'Image downloaded. Now attach it in WhatsApp.', ES: 'Imagen descargada. Ahora adjúntala en WhatsApp.' },
   error: { PT: 'Ops, não conseguimos carregar a palavra de hoje. Tente novamente.', EN: "Oops, we couldn't load today's word. Please try again.", ES: 'Ups, no pudimos cargar la palabra de hoy. Inténtalo de nuevo.' },
   history: { PT: 'Histórico de Leituras', EN: 'Reading History', ES: 'Historial de Lecturas' },
   historySub: { PT: 'Releia as palavras que marcaram sua semana', EN: 'Revisit the words that marked your week', ES: 'Relee las palabras que marcaron tu semana' },
@@ -122,10 +139,7 @@ function SoundWaves({ active }: { active: boolean }) {
   );
 }
 
-/* ─── Voice type ─── */
-type VoiceKey = 'nova' | 'alloy' | 'onyx';
-
-/* ─── Audio Player with Voice Selector ─── */
+/* ─── Audio Player (Onyx voice only) ─── */
 function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -134,17 +148,8 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   const [duration, setDuration] = useState(0);
   const [muted, setMuted] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const [voice, setVoice] = useState<VoiceKey>('nova');
 
-  const voiceOptions: { key: VoiceKey; label: string; icon: React.ReactNode }[] = [
-    { key: 'nova', label: labels.voiceFemale[lang], icon: <UserRound className="h-3.5 w-3.5" /> },
-    { key: 'alloy', label: labels.voiceSoftMale[lang], icon: <User className="h-3.5 w-3.5" /> },
-    { key: 'onyx', label: labels.voiceDeepMale[lang], icon: <Mic className="h-3.5 w-3.5" /> },
-  ];
-
-  const audioSrc = voice === 'alloy' ? (data.audio_url_alloy || data.audio_url)
-    : voice === 'onyx' ? (data.audio_url_onyx || data.audio_url)
-    : (data.audio_url_nova || data.audio_url);
+  const audioSrc = data.audio_url_onyx || data.audio_url;
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -167,21 +172,6 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
     const newTime = pct * (duration || 1);
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
-  };
-
-  const handleVoiceChange = (v: VoiceKey) => {
-    const wasPlaying = playing;
-    if (audioRef.current) audioRef.current.pause();
-    setPlaying(false);
-    setVoice(v);
-    setCurrentTime(0);
-    setTimeout(() => {
-      if (wasPlaying && audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-        setPlaying(true);
-      }
-    }, 100);
   };
 
   const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -212,24 +202,6 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
             <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: 'hsl(24, 30%, 15%)' }}>{data.title}</p>
           </div>
         </div>
-      </div>
-
-      {/* Voice Selector */}
-      <div className="flex items-center gap-2">
-        {voiceOptions.map(opt => (
-          <button
-            key={opt.key}
-            onClick={() => handleVoiceChange(opt.key)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all"
-            style={voice === opt.key
-              ? { backgroundColor: 'hsl(38, 52%, 48%)', color: '#fff', boxShadow: '0 2px 8px hsl(38, 52%, 48%, 0.3)' }
-              : { backgroundColor: 'hsl(36, 20%, 90%)', color: 'hsl(24, 18%, 45%)' }
-            }
-          >
-            {opt.icon}
-            <span className="hidden sm:inline">{opt.label}</span>
-          </button>
-        ))}
       </div>
 
       {/* Progress bar */}
@@ -340,10 +312,10 @@ function BibleRichText({ text, className }: { text: string; className?: string }
         const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
         if (linkMatch) {
           const [, label, href] = linkMatch;
-          if (href.startsWith('/biblia')) {
-            return <Link key={i} to={href} className="underline decoration-1 underline-offset-2 font-medium transition-colors hover:opacity-80" style={{ color: 'hsl(38, 52%, 42%)' }}>{label}</Link>;
+          if (href.startsWith('/biblia') || href.startsWith('/bible')) {
+            return <button key={i} onClick={() => (window as any).__openBibleDrawer?.()} className="underline decoration-1 underline-offset-2 font-bold transition-colors hover:opacity-80 cursor-pointer" style={{ color: '#D4A853' }}>{label}</button>;
           }
-          return <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="underline decoration-1 underline-offset-2 font-medium transition-colors hover:opacity-80" style={{ color: 'hsl(38, 52%, 42%)' }}>{label}</a>;
+          return <button key={i} onClick={() => (window as any).__openBibleDrawer?.()} className="underline decoration-1 underline-offset-2 font-bold transition-colors hover:opacity-80 cursor-pointer" style={{ color: '#D4A853' }}>{label}</button>;
         }
         return <span key={i}>{part}</span>;
       })}
@@ -365,7 +337,17 @@ export default function Devocional() {
   const [noteSavedAt, setNoteSavedAt] = useState<string | null>(null);
   const [noteSavedSuccess, setNoteSavedSuccess] = useState(false);
   const [showAddReflection, setShowAddReflection] = useState(false);
+  const [readingModalOpen, setReadingModalOpen] = useState(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [bibleDrawerOpen, setBibleDrawerOpen] = useState(false);
+  const shareArtRef = useRef<HTMLDivElement>(null);
+  const [preferredBibleVersion, setPreferredBibleVersion] = useState('NVI');
+
+  // Register global callback for BibleRichText links
+  useEffect(() => {
+    (window as any).__openBibleDrawer = () => setBibleDrawerOpen(true);
+    return () => { delete (window as any).__openBibleDrawer; };
+  }, []);
 
   const [pastItems, setPastItems] = useState<PastDevotional[]>([]);
   const [pastLoading, setPastLoading] = useState(true);
@@ -373,38 +355,64 @@ export default function Devocional() {
   const [viewingPast, setViewingPast] = useState<PastDevotional | null>(null);
   const [transitioning, setTransitioning] = useState(false);
 
+  // Engagement tracking
+  const { trackAction } = useEngagementTracker({
+    devotionalId: data?.id,
+    theme: data?.category,
+  });
+
+  // Admin debug date picker
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [debugDate, setDebugDate] = useState('');
+
   useEffect(() => {
     if (!user) return;
-    const load = async () => {
-      try {
-        const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today');
-        if (err || !result) throw err;
-        setData(result.devotional || result);
-        // Edge function now handles caching & persistence — no client-side insert needed
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    supabase.rpc('is_admin').then(({ data }) => { if (data === true) setIsAdmin(true); });
   }, [user]);
+
+  const loadDevotional = useCallback(async (dateOverride?: string) => {
+    setLoading(true);
+    setError(false);
+    try {
+      const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today', {
+        body: dateOverride ? { date: dateOverride } : undefined,
+      });
+      if (err || !result) throw err;
+      setData(result);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    loadDevotional();
+  }, [user, loadDevotional]);
 
   useEffect(() => {
     if (!user) return;
     const load = async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('language, bible_version')
+        .eq('id', user.id)
+        .single();
+      const userLang = profile?.language || lang;
+      setPreferredBibleVersion(profile?.bible_version || 'NVI');
       const { data } = await supabase
-        .from('materials')
-        .select('id, title, type, passage, created_at, content, cover_image_url')
-        .eq('user_id', user.id)
-        .eq('type', 'devotional')
-        .order('created_at', { ascending: false })
+        .from('devotionals')
+        .select('id, title, category, anchor_verse, anchor_verse_text, scheduled_date, body_text, cover_image_url, audio_url_nova, audio_url_alloy, audio_url_onyx')
+        .eq('language', userLang)
+        .not('audio_url_onyx', 'is', null)
+        .order('scheduled_date', { ascending: false })
         .limit(30);
-      setPastItems((data as any) || []);
+      setPastItems((data as PastDevotional[]) || []);
       setPastLoading(false);
     };
     load();
-  }, [user]);
+  }, [user, lang]);
 
   // Load existing note for today's devotional
   useEffect(() => {
@@ -473,18 +481,10 @@ export default function Devocional() {
   const handleCopy = () => {
     if (!data) return;
     const text = viewingPast
-      ? `*${viewingPast.title}*\n\n${viewingPast.content}`
+      ? `*${viewingPast.title}*\n\n${viewingPast.body_text}`
       : `*${data.title}*\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${data.body_text}\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
     navigator.clipboard.writeText(text);
     toast.success(labels.copied[lang]);
-  };
-
-  const handleWhatsApp = () => {
-    if (!data) return;
-    const text = viewingPast
-      ? `*${viewingPast.title}*\n\n${viewingPast.content.slice(0, 500)}...`
-      : `*${data.title}*\n\n_"${data.anchor_verse_text}"_\n— ${data.anchor_verse}\n\n${data.body_text.slice(0, 500)}...\n\n💡 ${data.daily_practice || ''}\n\n💭 ${data.reflection_question}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   const handleSaveNote = async () => {
@@ -499,6 +499,107 @@ export default function Devocional() {
     setShowAddReflection(true);
     setNoteSavedSuccess(false);
   };
+
+  const isViewingPast = !!viewingPast;
+  const displayTitle = isViewingPast ? (viewingPast?.title || '') : (data?.title || '');
+  const displayBody = isViewingPast ? (viewingPast?.body_text || '') : (data?.body_text || '');
+  const displayVerse = isViewingPast ? (viewingPast?.anchor_verse || '') : (data?.anchor_verse || '');
+  const displayVerseText = isViewingPast ? (viewingPast?.anchor_verse_text || '') : (data?.anchor_verse_text || '');
+  const displayCategory = isViewingPast ? (viewingPast?.category || '') : (data?.category || '');
+  const displayDate = isViewingPast ? (viewingPast?.scheduled_date || '') : (data?.scheduled_date || '');
+  const displayCover = isViewingPast ? viewingPast?.cover_image_url : data?.cover_image_url;
+  const formattedDisplayDate = displayDate ? formatDateFull(displayDate.slice(0, 10), lang) : '';
+  const shareCaption = [displayTitle, formattedDisplayDate, displayVerse ? `📖 ${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}` : '']
+    .filter(Boolean)
+    .join('\n');
+
+  const downloadFile = useCallback((file: File) => {
+    const fileUrl = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = fileUrl;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(fileUrl);
+  }, []);
+
+  const createShareImageFile = useCallback(async () => {
+    if (!shareArtRef.current) {
+      throw new Error('share-art-unavailable');
+    }
+
+    const dataUrl = await captureNodeAsPng(shareArtRef.current);
+    const blob = await compressToJpeg(dataUrl, 250_000);
+    const safeTitle = displayTitle
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 48)
+      .toLowerCase();
+
+    return new File([blob], `living-word-${displayDate}-${safeTitle || 'devocional'}.jpg`, {
+      type: 'image/jpeg',
+    });
+  }, [displayDate, displayTitle]);
+
+  const shareDevotionalImage = useCallback(async (mode: 'download' | 'share' | 'whatsapp') => {
+    try {
+      const file = await createShareImageFile();
+      const canShareFiles = typeof navigator.share === 'function'
+        && (typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] }));
+
+      if (mode === 'download') {
+        if (isMobile && canShareFiles) {
+          await navigator.share({
+            title: displayTitle,
+            files: [file],
+          });
+          return;
+        }
+
+        downloadFile(file);
+        toast.success(labels.downloaded[lang]);
+        return;
+      }
+
+      if (mode === 'whatsapp') {
+        if (canShareFiles) {
+          toast.success(labels.whatsappHint[lang]);
+          await navigator.share({
+            title: displayTitle,
+            text: shareCaption,
+            files: [file],
+          });
+          return;
+        }
+
+        // Desktop fallback: download image then open the official WhatsApp share URL with text
+        downloadFile(file);
+        const waText = `✨ *${displayTitle}*\n📖 ${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}\n\n${formattedDisplayDate}\n\n_Anexe a imagem que foi baixada_ 👆`;
+        openWhatsAppShare(waText);
+        toast.success(labels.whatsappFallback[lang]);
+        return;
+      }
+
+      if (canShareFiles) {
+        await navigator.share({
+          title: displayTitle,
+          text: shareCaption,
+          files: [file],
+        });
+        return;
+      }
+
+      downloadFile(file);
+      toast.success(labels.shareFallback[lang]);
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        toast.error(labels.shareImageError[lang]);
+      }
+    }
+  }, [createShareImageFile, displayTitle, displayVerse, downloadFile, formattedDisplayDate, isMobile, lang, preferredBibleVersion, shareCaption]);
 
   /* ─── Styles ─── */
   const colors = {
@@ -539,15 +640,6 @@ export default function Devocional() {
       </div>
     );
   }
-
-  const isViewingPast = !!viewingPast;
-  const displayTitle = isViewingPast ? viewingPast.title : data.title;
-  const displayBody = isViewingPast ? viewingPast.content : data.body_text;
-  const displayVerse = isViewingPast ? (viewingPast.passage || '') : data.anchor_verse;
-  const displayVerseText = isViewingPast ? '' : data.anchor_verse_text;
-  const displayCategory = isViewingPast ? '' : data.category;
-  const displayDate = isViewingPast ? viewingPast.created_at : data.scheduled_date;
-  const displayCover = isViewingPast ? viewingPast.cover_image_url : data.cover_image_url;
 
   /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
@@ -697,8 +789,8 @@ export default function Devocional() {
                         {item.title}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        {item.passage && <span className="text-[10px] truncate" style={{ color: colors.textMuted }}>{item.passage}</span>}
-                        <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.created_at, lang)}</span>
+                        {item.anchor_verse && <span className="text-[10px] truncate" style={{ color: colors.textMuted }}>{item.anchor_verse}</span>}
+                        <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.scheduled_date, lang)}</span>
                       </div>
                     </div>
                     {isActive && <Check className="h-4 w-4 shrink-0 mt-1" style={{ color: colors.gold }} />}
@@ -743,6 +835,37 @@ export default function Devocional() {
           <ArrowLeft className="h-3.5 w-3.5" />
           {labels.backToday[lang]}
         </button>
+      )}
+
+      {/* Admin debug date picker */}
+      {isAdmin && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-dashed p-2.5" style={{ borderColor: colors.gold + '60', backgroundColor: colors.goldLight + '40' }}>
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: colors.gold }}>🛠 Debug</span>
+          <input
+            type="date"
+            value={debugDate}
+            onChange={(e) => setDebugDate(e.target.value)}
+            className="text-xs rounded border px-2 py-1 bg-white/80"
+            style={{ borderColor: colors.border, color: colors.text }}
+          />
+          <button
+            onClick={() => { if (debugDate) { setViewingPast(null); setActiveItemId(null); loadDevotional(debugDate); } }}
+            disabled={!debugDate}
+            className="text-[11px] font-semibold px-3 py-1 rounded-md disabled:opacity-40"
+            style={{ backgroundColor: colors.gold, color: '#fff' }}
+          >
+            Carregar
+          </button>
+          {debugDate && (
+            <button
+              onClick={() => { setDebugDate(''); setViewingPast(null); setActiveItemId(null); loadDevotional(); }}
+              className="text-[11px] px-2 py-1 rounded-md hover:opacity-80"
+              style={{ color: colors.gold }}
+            >
+              Reset
+            </button>
+          )}
+        </div>
       )}
 
       {/* ═══ EDITORIAL CARD ═══ */}
@@ -796,7 +919,7 @@ export default function Devocional() {
           </div>
         )}
 
-        {/* ── 5. COVER IMAGE ── */}
+        {/* ── 5. IMAGEM DO DEVOCIONAL (portrait, competitor-style) ── */}
         {displayCover && (
           <div className="mx-5 sm:mx-8 mt-6 rounded-xl border p-5 space-y-4" style={{ borderColor: colors.border, backgroundColor: colors.cardBg }}>
             <div className="flex items-center gap-3">
@@ -809,70 +932,51 @@ export default function Devocional() {
               </div>
             </div>
             <div className="flex justify-center">
-              <div className="relative rounded-xl overflow-hidden shadow-lg w-full aspect-video max-w-lg">
-                <img src={displayCover} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.05) 55%, transparent 70%)' }} />
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                  {displayCategory && (
-                    <span className="inline-flex items-center gap-1 bg-white/15 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
-                      ✦ {displayCategory}
-                    </span>
-                  )}
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-wider">Living Word</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col gap-2">
-                  <h3 className="text-white text-lg font-playfair font-bold leading-snug drop-shadow-lg">{displayTitle}</h3>
-                  {displayVerse && (
-                    <p className="text-white/80 text-xs italic leading-relaxed line-clamp-2 drop-shadow-md">
-                      &ldquo;{displayVerseText || displayVerse}&rdquo;
-                    </p>
-                  )}
-                </div>
-              </div>
+              <DevotionalShareArt
+                lang={lang}
+                imageUrl={displayCover}
+                title={displayTitle}
+                category={displayCategory}
+                verseText={displayVerseText}
+                verseReference={displayVerse}
+                formattedDate={formattedDisplayDate}
+              />
             </div>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
+            <div className="grid grid-cols-3 gap-2">
               <button
-                onClick={async () => {
-                  try {
-                    const resp = await fetch(displayCover!, { mode: 'cors' });
-                    const blob = await resp.blob();
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `devocional-${displayTitle.slice(0, 20).replace(/\s+/g, '-')}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                  } catch {
-                    window.open(displayCover!, '_blank');
-                  }
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                onClick={() => shareDevotionalImage('download')}
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Download className="h-4 w-4" /> {labels.saveImage[lang]}
               </button>
               <button
-                onClick={() => {
-                  if (navigator.share) navigator.share({ title: displayTitle, url: displayCover! });
-                  else { navigator.clipboard.writeText(displayCover!); toast.success(labels.copied[lang]); }
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                onClick={() => shareDevotionalImage('share')}
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Share2 className="h-4 w-4" /> {labels.share[lang]}
               </button>
               <button
-                onClick={() => {
-                  const text = `*${displayTitle}*\n📖 ${displayVerse}\n\n${displayCover}`;
-                  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
-                style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}
+                onClick={() => shareDevotionalImage('whatsapp')}
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <WhatsAppIcon /> {labels.shareWa[lang]}
               </button>
+            </div>
+            <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-0" aria-hidden="true">
+              <DevotionalShareArt
+                ref={shareArtRef}
+                exportMode
+                lang={lang}
+                imageUrl={displayCover}
+                title={displayTitle}
+                category={displayCategory}
+                verseText={displayVerseText}
+                verseReference={displayVerse}
+                formattedDate={formattedDisplayDate}
+              />
             </div>
           </div>
         )}
@@ -923,18 +1027,24 @@ export default function Devocional() {
 
         {/* ── 8. ACTION BAR ── */}
         <div className="border-t px-5 sm:px-8 py-4 flex items-center gap-2 flex-wrap" style={{ borderColor: colors.border, backgroundColor: colors.goldLight + '60' }}>
+          {!isViewingPast && (
+            <button onClick={() => setReadingModalOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.gold + '50', color: '#fff', backgroundColor: colors.gold }}>
+              <BookOpen className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Versão Escrita' : lang === 'ES' ? 'Versión Escrita' : 'Written Version'}
+            </button>
+          )}
           <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
-          <button onClick={handleWhatsApp} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}>
+          <button onClick={() => shareDevotionalImage('whatsapp')} disabled={!displayCover} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <WhatsAppIcon /> {labels.shareWa[lang]}
           </button>
           <button
-            onClick={() => { if (navigator.share) navigator.share({ title: displayTitle, text: `${displayTitle} — ${displayVerse}` }); }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80"
-            style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
+            onClick={() => shareDevotionalImage('share')}
+            disabled={!displayCover}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50"
+            style={{ borderColor: colors.gold + '50', color: '#fff', backgroundColor: colors.gold }}
           >
-            <Share2 className="h-3.5 w-3.5" /> {labels.share[lang]}
+            <Send className="h-3.5 w-3.5" /> {labels.share[lang]}
           </button>
           <Link
             to="/mente-chat"
@@ -945,6 +1055,16 @@ export default function Devocional() {
           </Link>
         </div>
       </div>
+
+      {/* Devotional Reading Modal */}
+      {!isViewingPast && (
+        <DevotionalReadingModal
+          open={readingModalOpen}
+          onOpenChange={setReadingModalOpen}
+          data={data}
+          lang={lang}
+        />
+      )}
 
       {/* ── 9. JOURNALING ── */}
       {!isViewingPast && (
@@ -1067,7 +1187,7 @@ export default function Devocional() {
                       <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: isActive ? colors.gold : colors.text }}>
                         {item.title}
                       </p>
-                      <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.created_at, lang)}</span>
+                      <span className="text-[10px]" style={{ color: colors.textMuted }}>{formatShortDate(item.scheduled_date, lang)}</span>
                     </div>
                     {isActive && <Check className="h-4 w-4 shrink-0 mt-1" style={{ color: colors.gold }} />}
                   </button>
@@ -1082,12 +1202,20 @@ export default function Devocional() {
 
   if (!isMobile && user) {
     return (
-      <div className="flex gap-5 items-start w-full">
-        {mainContent}
-        {sidebar}
-      </div>
+      <>
+        <div className="flex gap-5 items-start w-full">
+          {mainContent}
+          {sidebar}
+        </div>
+        <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
+      </>
     );
   }
 
-  return mainContent;
+  return (
+    <>
+      {mainContent}
+      <BibleDrawer open={bibleDrawerOpen} onOpenChange={setBibleDrawerOpen} />
+    </>
+  );
 }

@@ -1,10 +1,13 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Language, detectLanguage, t as translate } from '@/lib/i18n';
 
 interface LanguageContextType {
   lang: Language;
   setLang: (lang: Language) => void;
   t: (key: string) => string;
+  /** Monotonically increasing counter that bumps on every language change.
+   *  Use as a React `key` on wrappers that need to fully remount. */
+  langVersion: number;
 }
 
 const LANGUAGE_STORAGE_KEY = 'living-word-language';
@@ -24,16 +27,26 @@ function getInitialLanguage(): Language {
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Language>(getInitialLanguage);
+  const [lang, setLangInternal] = useState<Language>(getInitialLanguage);
+  const [langVersion, setLangVersion] = useState(0);
+
+  const setLang = useCallback((next: Language) => {
+    if (next !== lang) {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
+      window.location.reload();
+    }
+  }, [lang]);
 
   useEffect(() => {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+    // Update the html lang attribute for accessibility / SEO
+    document.documentElement.lang = lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es' : 'en';
   }, [lang]);
 
-  const t = (key: string) => translate(key, lang);
+  const t = useCallback((key: string) => translate(key, lang), [lang]);
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
+    <LanguageContext.Provider value={{ lang, setLang, t, langVersion }}>
       {children}
     </LanguageContext.Provider>
   );

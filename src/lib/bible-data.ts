@@ -72,47 +72,135 @@ export function getBookName(id: string, lang: L): string {
 }
 
 /**
- * Returns the book name to use with bible-api.com based on translation code.
- * The 'almeida' translation requires Portuguese book names.
+ * Returns the book name to use with bible-api.com based on version code.
+ * The 'almeida' API translation requires Portuguese book names.
  */
-export function getApiBookName(id: string, translationCode: string): string {
-  if (translationCode === 'almeida') return ptNames[id] || id;
+export function getApiBookName(id: string, versionCode: string): string {
+  const apiCode = getApiCodeForVersion(versionCode);
+  if (apiCode === 'almeida') return ptNames[id] || id;
   return id;
 }
 
-/** Available translations per language with their bible-api.com codes */
-export const translationOptions: Record<L, { code: string; label: string }[]> = {
-  PT: [
-    { code: 'almeida', label: 'ARA' },
-  ],
-  EN: [
-    { code: 'web', label: 'WEB' },
-    { code: 'kjv', label: 'KJV' },
-  ],
-  ES: [
-    { code: 'almeida', label: 'ARA' },
-  ],
-};
+/* ── Bible Version System ── */
 
-export function getTranslation(lang: L): string {
-  return translationOptions[lang][0].code;
+export interface BibleVersion {
+  code: string;
+  name: string;
+  shortLabel: string;
+  language: 'PT' | 'EN' | 'ES';
+  source: 'api' | 'supabase' | 'both';
+  apiCode: string; // bible-api.com translation code
+  isAvailable: boolean;
+  isPremium: boolean;
+  isDefault?: boolean;
 }
 
+export const bibleVersions: BibleVersion[] = [
+  // Português
+  { code: 'ara', name: 'Almeida Revista e Atualizada', shortLabel: 'ARA', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false, isDefault: true },
+  // English
+  { code: 'kjv', name: 'King James Version', shortLabel: 'KJV', language: 'EN', source: 'api', apiCode: 'kjv', isAvailable: true, isPremium: false, isDefault: true },
+  { code: 'web', name: 'World English Bible', shortLabel: 'WEB', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
+  { code: 'asv', name: 'American Standard Version', shortLabel: 'ASV', language: 'EN', source: 'api', apiCode: 'asv', isAvailable: true, isPremium: false },
+  { code: 'bbe', name: 'Bible in Basic English', shortLabel: 'BBE', language: 'EN', source: 'api', apiCode: 'bbe', isAvailable: true, isPremium: false },
+  // Español — bible-api.com has no Spanish translation; use 'web' as fallback
+  { code: 'oeb', name: 'Open English Bible', shortLabel: 'OEB', language: 'EN', source: 'api', apiCode: 'oeb', isAvailable: true, isPremium: false },
+];
+
+/** Group versions by language */
+export function getVersionsByLanguage(): Record<string, BibleVersion[]> {
+  const pt = bibleVersions.filter(v => v.language === 'PT');
+  const en = bibleVersions.filter(v => v.language === 'EN');
+  const groups: Record<string, BibleVersion[]> = {};
+  if (pt.length) groups['Português'] = pt;
+  if (en.length) groups['English'] = en;
+  return groups;
+}
+
+/** Get versions filtered for the user's language (prioritise same-language, include others as secondary) */
+export function getVersionsForUserLanguage(userLang: L): { primary: BibleVersion[]; secondary: BibleVersion[] } {
+  const primary = bibleVersions.filter(v => v.language === userLang);
+  const secondary = bibleVersions.filter(v => v.language !== userLang);
+  // If user lang has no versions (e.g. ES), show PT as primary
+  if (primary.length === 0) {
+    const ptVersions = bibleVersions.filter(v => v.language === 'PT');
+    const rest = bibleVersions.filter(v => v.language !== 'PT');
+    return { primary: ptVersions, secondary: rest };
+  }
+  return { primary, secondary };
+}
+
+/** Get a BibleVersion by code */
+export function getBibleVersion(code: string): BibleVersion | undefined {
+  return bibleVersions.find(v => v.code === code);
+}
+
+/** Get the default version for a language */
+export function getDefaultVersionCode(lang: L): string {
+  const v = bibleVersions.find(v => v.language === lang && v.isDefault);
+  return v?.code || (lang === 'PT' ? 'ara' : 'kjv');
+}
+
+/** Get the API translation code for a version code */
+export function getApiCodeForVersion(code: string): string {
+  const v = getBibleVersion(code);
+  return v?.apiCode || 'web';
+}
+
+/** Available translations per language — LEGACY compat */
+export const translationOptions: Record<L, { code: string; label: string }[]> = {
+  PT: bibleVersions.filter(v => v.language === 'PT').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
+  EN: bibleVersions.filter(v => v.language === 'EN').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
+  ES: bibleVersions.filter(v => v.language === 'EN').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
+};
+
+/** LEGACY — get default translation code for a language */
+export function getTranslation(lang: L): string {
+  return getDefaultVersionCode(lang);
+}
+
+/** LEGACY — get default translation label */
 export function getTranslationLabel(lang: L): string {
-  if (lang === 'PT') return 'Nova Versão Internacional';
-  if (lang === 'ES') return 'Reina Valera';
-  return 'World English Bible (WEB)';
+  const code = getDefaultVersionCode(lang);
+  return getTranslationLabelByCode(code);
 }
 
 export function getTranslationLabelByCode(code: string): string {
+  const v = getBibleVersion(code);
+  if (v) return `${v.name} (${v.shortLabel})`;
   const map: Record<string, string> = {
-    nvi: 'Nova Versão Internacional (NVI)',
     almeida: 'Almeida Revista e Atualizada (ARA)',
-    acf: 'Almeida Corrigida Fiel (ACF)',
-    ntlh: 'Nova Tradução na Linguagem de Hoje (NTLH)',
     web: 'World English Bible (WEB)',
     kjv: 'King James Version (KJV)',
-    valera: 'Reina Valera',
+    asv: 'American Standard Version (ASV)',
+    bbe: 'Bible in Basic English (BBE)',
   };
   return map[code] || code;
+}
+
+/**
+ * Map a Bible version abbreviation (from sermon text) to a version code.
+ * Returns the internal version code (e.g. "ara", "kjv") to use with getApiCodeForVersion.
+ */
+export function versionToApiCode(version: string): string | null {
+  const upper = version.toUpperCase().trim();
+  const direct = bibleVersions.find(v => v.shortLabel === upper);
+  if (direct) return direct.apiCode;
+  const map: Record<string, string> = {
+    'ARA': 'almeida',
+    'ARC': 'almeida',
+    'KJV': 'kjv',
+    'WEB': 'web',
+    'ASV': 'asv',
+    'BBE': 'bbe',
+    'OEB': 'oeb',
+  };
+  return map[upper] || null;
+}
+
+/** Map a version abbreviation to the internal version code */
+export function versionAbbrToCode(abbr: string): string | null {
+  const upper = abbr.toUpperCase().trim();
+  const found = bibleVersions.find(v => v.shortLabel === upper);
+  return found?.code || null;
 }

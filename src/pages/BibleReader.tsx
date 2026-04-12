@@ -1,13 +1,17 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useSearchParams } from 'react-router-dom';
 import { BookOpen, Search, Star, MessageSquare, CalendarDays, BarChart3, GraduationCap, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { bibleBooks, getBookName, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getDefaultVersionCode, getTranslation, ptNames, esNames, translationOptions, type L } from '@/lib/bible-data';
 import { BibleBookGrid } from '@/components/bible/BibleBookGrid';
 import { BibleChapterGrid } from '@/components/bible/BibleChapterGrid';
 import { BibleReadingView } from '@/components/bible/BibleReadingView';
 import { BibleTabs } from '@/components/bible/BibleTabs';
+import { FavoritesSidebar } from '@/components/bible/FavoritesSidebar';
 import { ReadingPlans } from '@/components/bible/ReadingPlans';
 import { BibleProgress } from '@/components/bible/BibleProgress';
 import { BibleResources } from '@/components/bible/BibleResources';
@@ -80,20 +84,75 @@ function searchBooks(query: string, lang: L): SearchResult[] {
 
 export default function BibleReader() {
   const { lang } = useLanguage();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [activeTab, setActiveTab] = useState<MainTab>('read');
   const [readView, setReadView] = useState<ReadView>('books');
   const [selectedBook, setSelectedBook] = useState('');
   const [selectedChapter, setSelectedChapter] = useState(1);
+  const [highlightVerse, setHighlightVerse] = useState<string | null>(null);
   const [translation, setTranslation] = useState(() => {
+    // Priority: profile > localStorage > default
+    if (profile?.bible_version) {
+      const allCodes = translationOptions[lang].map(o => o.code);
+      if (allCodes.includes(profile.bible_version)) return profile.bible_version;
+    }
     const saved = localStorage.getItem('bible_translation_preference');
     if (saved) {
       const valid = translationOptions[lang].some(o => o.code === saved);
       if (valid) return saved;
     }
-    return getTranslation(lang);
+    return getDefaultVersionCode(lang);
   });
+
+  // Handle URL params: ?book=genesis&chapter=1&verse=1-3&translation=nvi
+  useEffect(() => {
+    const bookParam = searchParams.get('book');
+    const chapterParam = searchParams.get('chapter');
+    const verseParam = searchParams.get('verse');
+    const translationParam = searchParams.get('translation');
+
+    if (bookParam && chapterParam) {
+      // Find the book by matching ID or name
+      const bookId = bookParam.toLowerCase();
+      const found = bibleBooks.find(b => {
+        const names = [
+          b.id.toLowerCase(),
+          (ptNames[b.id] || '').toLowerCase(),
+          (esNames[b.id] || '').toLowerCase(),
+        ];
+        return names.some(n => n && (n === bookId || n.startsWith(bookId) || bookId.startsWith(n.substring(0, 3))));
+      });
+
+      if (found) {
+        const ch = parseInt(chapterParam, 10);
+        if (ch >= 1 && ch <= found.chapters) {
+          setSelectedBook(found.id);
+          setSelectedChapter(ch);
+          setReadView('reading');
+          setActiveTab('read');
+
+          if (verseParam) {
+            setHighlightVerse(verseParam);
+          }
+
+          if (translationParam) {
+            // Use profile's preferred translation if param is generic, or respect the param
+            const prefTranslation = profile?.bible_version?.toLowerCase() || translationParam;
+            const validT = translationOptions[lang].some(o => o.code === prefTranslation);
+            if (validT) {
+              setTranslation(prefTranslation);
+              localStorage.setItem('bible_translation_preference', prefTranslation);
+            }
+          }
+
+          // Clear URL params after consuming them
+          setSearchParams({}, { replace: true });
+        }
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const valid = translationOptions[lang].some(o => o.code === translation);
@@ -104,14 +163,35 @@ export default function BibleReader() {
     }
   }, [lang, translation]);
 
+  // Persist translation preference to localStorage + Supabase profile
+  const handleTranslationChange = useCallback((code: string) => {
+    setTranslation(code);
+    localStorage.setItem('bible_translation_preference', code);
+    if (user) {
+      supabase.from('profiles').update({ bible_version: code }).eq('id', user.id).then(() => {});
+    }
+  }, [user]);
+
   const [tabsRefreshKey, setTabsRefreshKey] = useState(0);
   const [tabsDefaultTab, setTabsDefaultTab] = useState<'favorites' | 'notes'>('favorites');
+  const [favSidebarOpen, setFavSidebarOpen] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  const [favCount, setFavCount] = useState(0);
+  const [noteCount, setNoteCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('bible_favorites').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      .then(({ count }) => { if (count != null) setFavCount(count); });
+    supabase.from('bible_notes').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      .then(({ count }) => { if (count != null) setNoteCount(count); });
+  }, [user, tabsRefreshKey]);
 
   const currentBook = selectedBook ? bibleBooks.find(b => b.id === selectedBook) : null;
 
@@ -168,9 +248,13 @@ export default function BibleReader() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+          <button
+            onClick={() => { setReadView('books'); setActiveTab('read'); setSelectedBook(''); }}
+            className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 hover:bg-primary/25 transition-colors"
+            title={lang === 'PT' ? 'Menu principal' : lang === 'EN' ? 'Main menu' : 'Menú principal'}
+          >
             <BookOpen className="h-6 w-6 text-primary" />
-          </div>
+          </button>
           <div>
             <h1 className="font-display text-xl font-bold text-foreground">{pageTitle[lang]}</h1>
             <p className="text-sm text-muted-foreground">{pageSubtitle[lang]}</p>
@@ -178,18 +262,28 @@ export default function BibleReader() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => scrollToTabs('favorites')}
-            className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            onClick={() => setFavSidebarOpen(true)}
+            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
             title={lang === 'PT' ? 'Favoritos' : lang === 'EN' ? 'Favorites' : 'Favoritos'}
           >
             <Star className="h-4 w-4 text-foreground" />
+            {favCount > 0 && (
+              <Badge className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center">
+                {favCount > 99 ? '99+' : favCount}
+              </Badge>
+            )}
           </button>
           <button
             onClick={() => scrollToTabs('notes')}
-            className="p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
             title={lang === 'PT' ? 'Notas' : lang === 'EN' ? 'Notes' : 'Notas'}
           >
             <MessageSquare className="h-4 w-4 text-foreground" />
+            {noteCount > 0 && (
+              <Badge className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center">
+                {noteCount > 99 ? '99+' : noteCount}
+              </Badge>
+            )}
           </button>
         </div>
       </div>
@@ -257,7 +351,7 @@ export default function BibleReader() {
         {activeTab === 'read' && (
           <>
             {readView === 'books' && (
-              <BibleBookGrid translation={translation} onTranslationChange={setTranslation} onSelectBook={handleSelectBook} />
+              <BibleBookGrid translation={translation} onTranslationChange={handleTranslationChange} onSelectBook={handleSelectBook} />
             )}
             {readView === 'chapters' && selectedBook && (
               <BibleChapterGrid bookId={selectedBook} onBack={() => setReadView('books')} onSelectChapter={handleSelectChapter} />
@@ -267,7 +361,9 @@ export default function BibleReader() {
                 bookId={selectedBook} chapter={selectedChapter} totalChapters={currentBook.chapters}
                 translation={translation} onBack={() => setReadView('chapters')} onHome={() => setReadView('books')}
                 onChapterChange={setSelectedChapter} onTabsRefresh={() => setTabsRefreshKey(k => k + 1)}
-                onTranslationChange={setTranslation}
+                onTranslationChange={handleTranslationChange}
+                highlightVerse={highlightVerse}
+                onHighlightClear={() => setHighlightVerse(null)}
               />
             )}
           </>
@@ -283,6 +379,14 @@ export default function BibleReader() {
           <BibleTabs ref={tabsRef} refreshKey={tabsRefreshKey} onNavigate={handleNavigate} defaultTab={tabsDefaultTab} />
         </div>
       )}
+
+      {/* Favorites Sidebar */}
+      <FavoritesSidebar
+        open={favSidebarOpen}
+        onOpenChange={setFavSidebarOpen}
+        onNavigate={handleNavigate}
+        refreshKey={tabsRefreshKey}
+      />
     </div>
   );
 }

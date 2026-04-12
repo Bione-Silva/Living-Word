@@ -122,31 +122,11 @@ Return ONLY valid JSON: {"title": "story title", "content": "full story with par
   const generateImage = async (characterName: string, storyTitle: string) => {
     setImageLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-tool', {
-        body: {
-          systemPrompt: `You are an illustration generator. Return ONLY a single URL of a placeholder illustration. Actually, generate a vivid text description for an illustration.
-Return ONLY valid JSON: {"description": "a warm, colorful children's book illustration of..."}`,
-          userPrompt: `Describe a children's book illustration for a Bible story about ${characterName}: "${storyTitle}"`,
-          toolId: 'kids-illustration',
-        },
+      const { data, error } = await supabase.functions.invoke('generate-kids-illustration', {
+        body: { character_name: characterName, story_title: storyTitle, type: 'illustration' },
       });
-      if (!error && data?.content) {
-        try {
-          const parsed = JSON.parse(data.content);
-          // Use the description as alt-text; generate image via Lovable AI
-          const imgRes = await supabase.functions.invoke('ai-tool', {
-            body: {
-              systemPrompt: 'Generate a children\'s book style illustration based on the description. Use warm colors, friendly characters, and a storybook feel. Return the image.',
-              userPrompt: parsed.description || `Children's Bible illustration of ${characterName}`,
-              toolId: 'kids-image',
-              model: 'google/gemini-2.5-flash',
-              modalities: ['image', 'text'],
-            },
-          });
-          if (imgRes.data?.images?.[0]?.image_url?.url) {
-            setStoryImage(imgRes.data.images[0].image_url.url);
-          }
-        } catch { /* ignore parse errors */ }
+      if (!error && data?.image_url) {
+        setStoryImage(data.image_url);
       }
     } catch { /* ignore image errors */ }
     setImageLoading(false);
@@ -159,27 +139,13 @@ Return ONLY valid JSON: {"description": "a warm, colorful children's book illust
     setDrawingLoading(true);
     setDrawingImage(null);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
-        body: {
-          verse_text: `Cena bíblica infantil: ${char.name.EN} - ${story?.title || ''}`,
-          style: 'ilustração infantil colorida, estilo cartoon cristão, cores vibrantes, personagens amigáveis',
-          format: '1:1',
-        },
+      const { data, error } = await supabase.functions.invoke('generate-kids-illustration', {
+        body: { character_name: char.name.EN, story_title: story?.title || '', type: 'drawing' },
       });
       if (!error && data?.image_url) {
         setDrawingImage(data.image_url);
       } else {
-        // Fallback: use ai-tool with image generation prompt
-        const imgRes = await supabase.functions.invoke('ai-tool', {
-          body: {
-            systemPrompt: 'You are a children\'s illustration artist. Describe a beautiful, colorful children\'s book illustration.',
-            userPrompt: `Create a warm, colorful children's Bible illustration of ${char.name[lang]} in the story "${story?.title}". Style: cartoon, friendly, vibrant colors, storybook feel.`,
-            toolId: 'kids-drawing',
-          },
-        });
-        if (imgRes.data?.content) {
-          toast.success(lang === 'PT' ? 'Descrição gerada! Em breve com imagem real.' : 'Description generated!');
-        }
+        toast.error(lang === 'PT' ? 'Erro ao gerar desenho' : 'Error generating drawing');
       }
     } catch {
       toast.error(lang === 'PT' ? 'Erro ao gerar desenho' : 'Error generating drawing');

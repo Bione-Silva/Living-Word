@@ -1,50 +1,63 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2, Check, Trash2, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Minus, Quote, ChevronDown, Highlighter, CheckSquare, Sparkles, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { 
-  Bold, Italic, Underline, Strikethrough, AlignLeft, 
-  AlignCenter, AlignRight, AlignJustify, List, ListOrdered, 
-  Quote, CheckSquare, Sparkles, Wand2, Type, Highlighter, Trash2, Heading1, Heading2, Heading3
-} from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+
+type L = 'PT' | 'EN' | 'ES';
+
+const TEXT_COLORS = [
+  { value: '#374151', label: 'Cinza' },
+  { value: '#1E40AF', label: 'Azul' },
+  { value: '#15803D', label: 'Verde' },
+  { value: '#DC2626', label: 'Vermelho' },
+  { value: '#92400E', label: 'Marrom' },
+  { value: '#D4A853', label: 'Dourado' },
+];
+
+const HIGHLIGHT_COLORS = [
+  { value: '', label: { PT: 'Nenhum', EN: 'None', ES: 'Ninguno' }, bg: 'transparent' },
+  { value: '#F3E8FF', label: { PT: 'Roxo', EN: 'Purple', ES: 'Púrpura' }, bg: '#F3E8FF', dot: '#A855F7' },
+  { value: '#FFE4E6', label: { PT: 'Rosa', EN: 'Pink', ES: 'Rosa' }, bg: '#FFE4E6', dot: '#F43F5E' },
+  { value: '#FFEDD5', label: { PT: 'Laranja', EN: 'Orange', ES: 'Naranja' }, bg: '#FFEDD5', dot: '#F97316' },
+  { value: '#D1FAE5', label: { PT: 'Menta', EN: 'Mint', ES: 'Menta' }, bg: '#D1FAE5', dot: '#34D399' },
+  { value: '#DBEAFE', label: { PT: 'Azul', EN: 'Blue', ES: 'Azul' }, bg: '#DBEAFE', dot: '#3B82F6' },
+  { value: '#FEF9C3', label: { PT: 'Amarelo', EN: 'Yellow', ES: 'Amarillo' }, bg: '#FEF9C3', dot: '#EAB308' },
+];
+
+const BLOCK_STYLES = [
+  { tag: 'h1', label: { PT: 'Título', EN: 'Title', ES: 'Título' }, className: 'text-2xl font-bold' },
+  { tag: 'h2', label: { PT: 'Cabeçalho', EN: 'Heading', ES: 'Encabezado' }, className: 'text-xl font-bold' },
+  { tag: 'h3', label: { PT: 'Subtítulo', EN: 'Subtitle', ES: 'Subtítulo' }, className: 'text-lg font-semibold text-muted-foreground' },
+  { tag: 'p', label: { PT: 'Corpo', EN: 'Body', ES: 'Cuerpo' }, className: 'text-sm' },
+  { tag: 'pre', label: { PT: 'Estilo Fixo', EN: 'Monospace', ES: 'Estilo Fijo' }, className: 'font-mono text-sm' },
+];
+
+const labels = {
+  placeholder: { PT: 'Escreva suas anotações pessoais...', EN: 'Write your personal notes...', ES: 'Escriba sus notas personales...' },
+  saving: { PT: 'Salvando...', EN: 'Saving...', ES: 'Guardando...' },
+  saved: { PT: 'Salvo', EN: 'Saved', ES: 'Guardado' },
+  clear: { PT: 'Limpar', EN: 'Clear', ES: 'Limpiar' },
+  noMaterial: { PT: 'Selecione ou gere um material para anotar.', EN: 'Select or generate content to take notes.', ES: 'Seleccione o genere un material para anotar.' },
+  bulletList: { PT: 'Lista com Marcadores', EN: 'Bullet List', ES: 'Lista con Viñetas' },
+  dashList: { PT: 'Lista com Travessões', EN: 'Dash List', ES: 'Lista con Guiones' },
+  numberedList: { PT: 'Lista Numerada', EN: 'Numbered List', ES: 'Lista Numerada' },
+  blockquote: { PT: 'Citação em Bloco', EN: 'Block Quote', ES: 'Cita en Bloque' },
+  checklist: { PT: 'Lista de Tarefas', EN: 'Checklist', ES: 'Lista de Tareas' },
+} satisfies Record<string, Record<L, string>>;
 
 interface PreacherNotesProps {
   materialId: string | null;
 }
-
-const labels = {
-  noMaterial: { PT: 'Nenhum material selecionado.', EN: 'No material selected.', ES: 'Ningún material seleccionado.' },
-  bulletList: { PT: 'Lista com marcadores', EN: 'Bullet list', ES: 'Lista con viñetas' },
-  dashList: { PT: 'Lista com traços', EN: 'Dash list', ES: 'Lista con guiones' },
-  numberedList: { PT: 'Lista numerada', EN: 'Numbered list', ES: 'Lista numerada' },
-  blockquote: { PT: 'Citação', EN: 'Blockquote', ES: 'Cita' },
-  checklist: { PT: 'Lista de verificação', EN: 'Checklist', ES: 'Lista de verificación' },
-  saving: { PT: 'Salvando...', EN: 'Saving...', ES: 'Guardando...' },
-  saved: { PT: 'Salvo', EN: 'Saved', ES: 'Guardado' },
-  placeholder: { PT: 'Escreva suas anotações aqui...', EN: 'Write your notes here...', ES: 'Escriba sus notas aquí...' },
-};
-
-const HIGHLIGHT_COLORS = [
-  { value: '', label: { PT: 'Nenhum', EN: 'None', ES: 'Ninguno' } },
-  { value: 'yellow', label: { PT: 'Amarelo', EN: 'Yellow', ES: 'Amarillo' } },
-  { value: 'cyan', label: { PT: 'Ciano', EN: 'Cyan', ES: 'Cian' } },
-  { value: '#00ff00', label: { PT: 'Verde', EN: 'Green', ES: 'Verde' } },
-];
-
-const TEXT_COLORS = [
-  { value: '#374151', label: 'Default' },
-  { value: '#ef4444', label: 'Red' },
-  { value: '#3b82f6', label: 'Blue' },
-  { value: '#10b981', label: 'Green' },
-];
-
-const BLOCK_STYLES = [
-  { tag: 'h1', label: { PT: 'Título 1', EN: 'Heading 1', ES: 'Título 1' } },
-  { tag: 'h2', label: { PT: 'Título 2', EN: 'Heading 2', ES: 'Título 2' } },
-  { tag: 'h3', label: { PT: 'Título 3', EN: 'Heading 3', ES: 'Título 3' } },
-  { tag: 'p', label: { PT: 'Parágrafo', EN: 'Paragraph', ES: 'Párrafo' } },
-] as const;
 
 function execCmd(command: string, value?: string) {
   document.execCommand(command, false, value);
@@ -61,10 +74,11 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const lastSavedRef = useRef({ content: '', textColor: '#374151' });
   const isLoadingRef = useRef(false);
 
+  // Load note
   useEffect(() => {
     if (!user || !materialId) {
       if (editorRef.current) editorRef.current.innerHTML = '';
@@ -79,7 +93,7 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     isLoadingRef.current = true;
     (async () => {
       const { data } = await supabase
-        .from('sermon_notes' as any)
+        .from('sermon_notes')
         .select('*')
         .eq('user_id', user.id)
         .eq('material_id', materialId)
@@ -113,10 +127,10 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     setSaveStatus('saving');
     try {
       if (noteId) {
-        await supabase.from('sermon_notes' as any).update({ content: html, text_color: color }).eq('id', noteId);
+        await supabase.from('sermon_notes').update({ content: html, text_color: color }).eq('id', noteId);
       } else {
         const { data } = await supabase
-          .from('sermon_notes' as any)
+          .from('sermon_notes')
           .insert({ user_id: user.id, material_id: materialId, content: html, text_color: color })
           .select('id')
           .single();
@@ -148,7 +162,7 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     if (editorRef.current) editorRef.current.innerHTML = '';
     setHasContent(false);
     if (noteId) {
-      await supabase.from('sermon_notes' as any).delete().eq('id', noteId);
+      await supabase.from('sermon_notes').delete().eq('id', noteId);
       setNoteId(null);
       lastSavedRef.current = { content: '', textColor };
       setSaveStatus('idle');
@@ -158,7 +172,11 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
 
   const applyBlockStyle = (tag: string) => {
     editorRef.current?.focus();
-    execCmd('formatBlock', tag);
+    if (tag === 'pre') {
+      execCmd('formatBlock', 'pre');
+    } else {
+      execCmd('formatBlock', tag);
+    }
     triggerSave();
   };
 
@@ -192,10 +210,11 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
 
   const insertChecklist = () => {
     editorRef.current?.focus();
-    const id = \`chk-\${Date.now()}\`;
-    const html = \`<div class="checklist-item"><input type="checkbox" id="\${id}" class="checklist-item_input"/><label for="\${id}"> </label></div>\`;
+    const id = `chk-${Date.now()}`;
+    const html = `<div class="checklist-item" style="display:flex;align-items:center;gap:6px;margin:4px 0;"><input type="checkbox" id="${id}" style="width:16px;height:16px;accent-color:#D4A853;cursor:pointer;" /><label for="${id}" contenteditable="true" style="flex:1;outline:none;"></label></div>`;
     execCmd('insertHTML', html);
-    const label = editorRef.current?.querySelector(\`label[for="\${id}"]\`) as HTMLElement | null;
+    // Focus the label
+    const label = editorRef.current?.querySelector(`label[for="${id}"]`) as HTMLElement | null;
     if (label) {
       const range = document.createRange();
       range.selectNodeContents(label);
@@ -207,9 +226,25 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     triggerSave();
   };
 
+  // Current block style label
+  const getCurrentBlockLabel = (): string => {
+    const sel = window.getSelection();
+    if (!sel?.rangeCount) return BLOCK_STYLES[3].label[lang]; // Body
+    let node: Node | null = sel.anchorNode;
+    while (node && node !== editorRef.current) {
+      if (node.nodeType === 1) {
+        const tag = (node as HTMLElement).tagName.toLowerCase();
+        const match = BLOCK_STYLES.find(s => s.tag === tag);
+        if (match) return match.label[lang];
+      }
+      node = node.parentNode;
+    }
+    return BLOCK_STYLES[3].label[lang];
+  };
+
   const handleAnalyze = async () => {
     const html = editorRef.current?.innerHTML || '';
-    const plainText = html.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim();
+    const plainText = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     if (!plainText || plainText.length < 20) {
       toast.warning(lang === 'PT' ? 'Escreva mais conteúdo para analisar.' : lang === 'ES' ? 'Escriba más contenido para analizar.' : 'Write more content to analyze.');
       return;
@@ -234,173 +269,225 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
 
   if (!materialId) {
     return (
-      <div className="p-8 text-center text-muted-foreground border border-dashed rounded-lg">
-        {labels.noMaterial[lang]}
+      <div className="flex items-center justify-center py-8">
+        <p className="text-xs text-muted-foreground text-center px-4">{labels.noMaterial[lang]}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-card rounded-lg border shadow-sm pb-10">
-      <div className="flex items-center gap-1 p-2 border-b bg-muted/20 flex-wrap sticky top-0 z-10">
+    <div className="flex flex-col h-full">
+      {/* ── Toolbar ── */}
+      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/30">
+        {/* Inline formatting */}
         <button onClick={() => toggleFormat('bold')} className="p-1.5 rounded hover:bg-accent transition-colors" title="Bold">
-          <Bold className="w-4 h-4" />
+          <Bold className="h-3.5 w-3.5" />
         </button>
         <button onClick={() => toggleFormat('italic')} className="p-1.5 rounded hover:bg-accent transition-colors" title="Italic">
-          <Italic className="w-4 h-4" />
+          <Italic className="h-3.5 w-3.5" />
         </button>
         <button onClick={() => toggleFormat('underline')} className="p-1.5 rounded hover:bg-accent transition-colors" title="Underline">
-          <Underline className="w-4 h-4" />
+          <Underline className="h-3.5 w-3.5" />
         </button>
         <button onClick={() => toggleFormat('strikeThrough')} className="p-1.5 rounded hover:bg-accent transition-colors" title="Strikethrough">
-          <Strikethrough className="w-4 h-4" />
+          <Strikethrough className="h-3.5 w-3.5" />
         </button>
 
         <div className="w-px h-4 bg-border mx-1" />
 
-        <div className="relative group">
-          <button className="p-1.5 rounded hover:bg-accent transition-colors flex items-center" title="Highlight">
-            <Highlighter className="w-4 h-4" />
-          </button>
-          <div className="absolute top-full left-0 mt-1 bg-popover border shadow-md rounded p-1 whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 flex flex-col gap-1">
+        {/* Highlight color */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-1.5 rounded hover:bg-accent transition-colors" title="Highlight">
+              <Highlighter className="h-3.5 w-3.5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="min-w-[140px]">
             {HIGHLIGHT_COLORS.map((c) => (
-              <button key={c.value} onClick={() => applyHighlight(c.value)} className="text-left px-2 py-1 text-xs hover:bg-accent rounded flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.value || "transparent" }}></span>
-                {c.label[lang as keyof typeof c.label] || c.label.EN}
-              </button>
+              <DropdownMenuItem key={c.value || 'none'} onClick={() => applyHighlight(c.value)} className="gap-2 text-xs">
+                <span className="w-3 h-3 rounded-full border border-border/50 shrink-0" style={{ backgroundColor: c.dot || 'transparent' }} />
+                {c.label[lang]}
+              </DropdownMenuItem>
             ))}
-          </div>
-        </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        <div className="w-px h-4 bg-border mx-1" />
-
-        <div className="relative group">
-          <button className="p-1.5 rounded hover:bg-accent transition-colors flex items-center gap-1" title="Color">
-            <div className="w-3 h-3 rounded-full border shadow-sm" style={{ backgroundColor: textColor }}></div>
-          </button>
-          <div className="absolute top-full left-0 mt-1 bg-popover border shadow-md rounded p-1 whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 flex flex-col gap-1">
+        {/* Text color */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-1.5 rounded hover:bg-accent transition-colors flex items-center gap-0.5">
+              <span className="w-3.5 h-3.5 rounded-full border border-border/50" style={{ backgroundColor: textColor }} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="min-w-[100px]">
             {TEXT_COLORS.map((c) => (
-              <button key={c.value} onClick={() => handleColorChange(c.value)} className="text-left px-2 py-1 text-xs hover:bg-accent rounded flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.value }}></span>
+              <DropdownMenuItem key={c.value} onClick={() => handleColorChange(c.value)} className="gap-2 text-xs">
+                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: c.value }} />
                 {c.label}
-              </button>
+              </DropdownMenuItem>
             ))}
-          </div>
-        </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <div className="w-px h-4 bg-border mx-1" />
 
-        <div className="relative group">
-          <button className="p-1.5 rounded hover:bg-accent transition-colors flex items-center" title="Typography">
-            <Type className="w-4 h-4" />
-          </button>
-          <div className="absolute top-full left-0 mt-1 bg-popover border shadow-md rounded p-1 whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 flex flex-col gap-1">
+        {/* Checklist button */}
+        <button onClick={insertChecklist} className="p-1.5 rounded hover:bg-accent transition-colors" title={labels.checklist[lang]}>
+          <CheckSquare className="h-3.5 w-3.5" />
+        </button>
+
+        <div className="w-px h-4 bg-border mx-1" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-1 px-2 py-1 rounded hover:bg-accent transition-colors text-xs font-medium text-muted-foreground">
+              Aa <ChevronDown className="h-3 w-3" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="min-w-[180px]">
             {BLOCK_STYLES.map((style) => (
-              <button key={style.tag} onClick={() => applyBlockStyle(style.tag)} className="text-left px-2 py-1 text-xs hover:bg-accent rounded">
-                <span className={\`\${style.tag === 'h1' ? 'font-bold text-base' : style.tag === 'h2' ? 'font-semibold text-sm' : ''}\`}>{style.label[lang as keyof typeof style.label] || style.label.EN}</span>
-              </button>
+              <DropdownMenuItem key={style.tag} onClick={() => applyBlockStyle(style.tag)} className="py-1.5">
+                <span className={style.className}>{style.label[lang]}</span>
+              </DropdownMenuItem>
             ))}
-          </div>
-        </div>
-        
-        <div className="w-px h-4 bg-border mx-1" />
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => insertList('ul')} className="gap-2 text-xs">
+              <List className="h-3.5 w-3.5" /> {labels.bulletList[lang]}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+              editorRef.current?.focus();
+              // Insert dash list as UL with custom style
+              execCmd('insertUnorderedList');
+              // Apply dash style via CSS class
+              const sel = window.getSelection();
+              if (sel?.anchorNode) {
+                let node: Node | null = sel.anchorNode;
+                while (node && node !== editorRef.current) {
+                  if (node.nodeType === 1 && (node as HTMLElement).tagName === 'UL') {
+                    (node as HTMLElement).style.listStyleType = '"– "';
+                    break;
+                  }
+                  node = node.parentNode;
+                }
+              }
+              triggerSave();
+            }} className="gap-2 text-xs">
+              <Minus className="h-3.5 w-3.5" /> {labels.dashList[lang]}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => insertList('ol')} className="gap-2 text-xs">
+              <ListOrdered className="h-3.5 w-3.5" /> {labels.numberedList[lang]}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={insertBlockquote} className="gap-2 text-xs">
+              <Quote className="h-3.5 w-3.5" /> {labels.blockquote[lang]}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={insertChecklist} className="gap-2 text-xs">
+              <CheckSquare className="h-3.5 w-3.5" /> {labels.checklist[lang]}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        <button onClick={() => insertList('ul')} className="p-1.5 rounded hover:bg-accent transition-colors" title={labels.bulletList[lang as keyof typeof labels.bulletList]}>
-          <List className="w-4 h-4" />
-        </button>
-        <button onClick={() => insertList('ol')} className="p-1.5 rounded hover:bg-accent transition-colors" title={labels.numberedList[lang as keyof typeof labels.numberedList]}>
-          <ListOrdered className="w-4 h-4" />
-        </button>
-        <button onClick={insertBlockquote} className="p-1.5 rounded hover:bg-accent transition-colors" title={labels.blockquote[lang as keyof typeof labels.blockquote]}>
-          <Quote className="w-4 h-4" />
-        </button>
-        <button onClick={insertChecklist} className="p-1.5 rounded hover:bg-accent transition-colors" title={labels.checklist[lang as keyof typeof labels.checklist]}>
-          <CheckSquare className="w-4 h-4" />
-        </button>
-
+        {/* Spacer + status */}
         <div className="flex-1" />
-
-        {hasContent && (
-          <button onClick={handleAnalyze} disabled={isAnalyzing} className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 rounded border border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
-            {isAnalyzing ? <Sparkles className="w-3.5 h-3.5 animate-pulse" /> : <Wand2 className="w-3.5 h-3.5" />}
-            {lang === 'PT' ? 'Analisar' : lang === 'ES' ? 'Analizar' : 'Analyze'}
-          </button>
-        )}
-        
-        {saveStatus === 'saving' && (
-          <span className="text-xs text-muted-foreground mr-2 animate-pulse">{labels.saving[lang as keyof typeof labels.saving]}</span>
-        )}
-        {saveStatus === 'saved' && (
-          <span className="text-xs text-emerald-600 dark:text-emerald-400 mr-2">{labels.saved[lang as keyof typeof labels.saved]}</span>
-        )}
-        
-        {hasContent && (
-          <button onClick={handleClear} className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors ml-1" title="Clear">
-             <Trash2 className="w-4 h-4" />
-          </button>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {hasContent && (
+            <button
+              onClick={handleAnalyze}
+              disabled={isAnalyzing}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 hover:bg-primary/20 text-primary text-[10px] font-medium transition-colors disabled:opacity-50"
+              title={lang === 'PT' ? 'Analisar com IA' : lang === 'ES' ? 'Analizar con IA' : 'Analyze with AI'}
+            >
+              {isAnalyzing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+              {lang === 'PT' ? 'Analisar' : lang === 'ES' ? 'Analizar' : 'Analyze'}
+            </button>
+          )}
+          {saveStatus === 'saving' && (
+            <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" /> {labels.saving[lang]}
+            </span>
+          )}
+          {saveStatus === 'saved' && (
+            <span className="flex items-center gap-1 text-[10px] text-primary">
+              <Check className="h-3 w-3" /> {labels.saved[lang]}
+            </span>
+          )}
+          {hasContent && (
+            <button onClick={handleClear} className="text-muted-foreground hover:text-destructive transition-colors" title={labels.clear[lang]}>
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
-      <div 
-        ref={editorRef}
-        contentEditable
-        onInput={(e) => {
-          const target = e.target as HTMLElement;
-          if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox') {
-            setTimeout(triggerSave, 50);
-          }
-          triggerSave();
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            const sel = window.getSelection();
-            let node = sel?.anchorNode as HTMLElement | null;
-            while (node && node !== editorRef.current) {
-              if (node.classList?.contains('checklist-item')) {
-                e.preventDefault();
-                insertChecklist();
-                return;
-              }
-              node = node.parentElement;
+      {/* ── Rich editor ── */}
+      <div className="flex-1 overflow-y-auto p-3">
+        <div
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={triggerSave}
+          onBlur={triggerSave}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox') {
+              // Let checkbox toggle naturally, then save
+              setTimeout(triggerSave, 50);
             }
-          }
-        }}
-        data-placeholder={labels.placeholder[lang as keyof typeof labels.placeholder]}
-        className="flex-1 p-4 outline-none text-sm leading-relaxed overflow-y-auto
-          [&:empty]:before:content-[attr(data-placeholder)] [&:empty]:before:text-muted-foreground/50 [&:empty]:before:pointer-events-none
-          [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-2
-          [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-2
-          [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-muted-foreground [&_h3]:my-1.5
-          [&_pre]:font-mono [&_pre]:text-sm [&_pre]:bg-muted/50 [&_pre]:rounded [&_pre]:p-2 [&_pre]:my-2
-          [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-3 [&_blockquote]:py-1 [&_blockquote]:my-2 [&_blockquote]:text-muted-foreground [&_blockquote]:italic
-          [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1
-          [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1
-          [&_li]:my-0.5
-          [&_.checklist-item]:flex [&_.checklist-item]:items-center [&_.checklist-item]:gap-1.5 [&_.checklist-item]:my-1
-          [&_.checklist-item_input:checked+label]:line-through [&_.checklist-item_input:checked+label]:text-muted-foreground"
-        style={{ color: textColor }}
-      />
+          }}
+          onKeyDown={(e) => {
+            // When pressing Enter inside a checklist item label, insert a new checklist item
+            if (e.key === 'Enter') {
+              const sel = window.getSelection();
+              let node = sel?.anchorNode as HTMLElement | null;
+              while (node && node !== editorRef.current) {
+                if (node.classList?.contains('checklist-item')) {
+                  e.preventDefault();
+                  insertChecklist();
+                  return;
+                }
+                node = node.parentElement;
+              }
+            }
+          }}
+          data-placeholder={labels.placeholder[lang]}
+          className="min-h-[200px] outline-none text-sm leading-relaxed
+            [&:empty]:before:content-[attr(data-placeholder)] [&:empty]:before:text-muted-foreground/50 [&:empty]:before:pointer-events-none
+            [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-2
+            [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-2
+            [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-muted-foreground [&_h3]:my-1.5
+            [&_pre]:font-mono [&_pre]:text-sm [&_pre]:bg-muted/50 [&_pre]:rounded [&_pre]:p-2 [&_pre]:my-2
+            [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-3 [&_blockquote]:py-1 [&_blockquote]:my-2 [&_blockquote]:text-muted-foreground [&_blockquote]:italic
+            [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1
+            [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1
+            [&_li]:my-0.5
+            [&_.checklist-item]:flex [&_.checklist-item]:items-center [&_.checklist-item]:gap-1.5 [&_.checklist-item]:my-1
+            [&_.checklist-item_input:checked+label]:line-through [&_.checklist-item_input:checked+label]:text-muted-foreground"
+          style={{ color: textColor }}
+        />
+      </div>
 
+      {/* ── AI Analysis Panel ── */}
       {showAnalysis && (
-        <div className="border-t bg-muted/10 p-4 relative animate-in slide-in-from-bottom-2">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-semibold flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-              <Sparkles className="w-4 h-4" />
+        <div className="border-t border-border bg-muted/20">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
               {lang === 'PT' ? 'Análise IA' : lang === 'ES' ? 'Análisis IA' : 'AI Analysis'}
-            </h4>
-            <button onClick={() => setShowAnalysis(false)} className="text-xs text-muted-foreground hover:text-foreground">
-              Fechar
+            </span>
+            <button onClick={() => setShowAnalysis(false)} className="text-muted-foreground hover:text-foreground">
+              <X className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed pr-6 max-h-[200px] overflow-y-auto custom-scrollbar">
+          <div className="p-3 max-h-[300px] overflow-y-auto">
             {isAnalyzing ? (
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <Wand2 className="w-3 h-3 animate-spin" />
-                {lang === 'PT' ? 'Analisando suas anotações...' : lang === 'ES' ? 'Analizando sus notas...' : 'Analyzing your notes...'}
-              </span>
+              <div className="flex items-center justify-center py-8 gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                <span className="text-xs text-muted-foreground">
+                  {lang === 'PT' ? 'Analisando suas anotações...' : lang === 'ES' ? 'Analizando sus notas...' : 'Analyzing your notes...'}
+                </span>
+              </div>
             ) : analysisResult ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                {analysisResult}
+              <div className="prose prose-sm max-w-none text-foreground/90 [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-semibold [&_p]:text-xs [&_p]:leading-relaxed [&_li]:text-xs [&_blockquote]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-primary/30 [&_blockquote]:pl-2 [&_blockquote]:italic">
+                <ReactMarkdown>{analysisResult}</ReactMarkdown>
               </div>
             ) : null}
           </div>

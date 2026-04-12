@@ -12,6 +12,9 @@ import { ToolsCircleGrid } from '@/components/dashboard/ToolsCircleGrid';
 import { StreakBar } from '@/components/dashboard/StreakBar';
 import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
+import { SmartDevotionalRecommender } from '@/components/engagement/SmartDevotionalRecommender';
+import { UserEngagementDashboard } from '@/components/engagement/UserEngagementDashboard';
+import { NotificationCenter } from '@/components/engagement/NotificationCenter';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
@@ -86,9 +89,12 @@ export default function Dashboard() {
         <BomAmigoCard />
       </div>
       <DevotionalCard />
+      <SmartDevotionalRecommender />
       <ToolsCircleGrid onToolClick={handleToolClick} />
       <StreakBar />
+      <NotificationCenter />
       <MoreToolsAccordion onToolClick={handleToolClick} />
+      <UserEngagementDashboard />
       <RecentGenerations />
 
       <ExtrasModal

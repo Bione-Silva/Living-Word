@@ -38,11 +38,16 @@ import BibleReader from "./pages/BibleReader";
 import Pricing from "./pages/Pricing";
 import Onboarding from "./pages/Onboarding";
 import Devocional from "./pages/Devocional";
+import DevocionalPublico from "./pages/DevocionalPublico";
 import BomAmigo from "./pages/BomAmigo";
+import Sermoes from "./pages/Sermoes";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
+import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
 const queryClient = new QueryClient();
+
+const MASTER_EMAIL = 'bionicaosilva@gmail.com';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
@@ -63,9 +68,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   if (!user) return <Navigate to="/login" replace />;
 
-  // Redirect to onboarding if profile not completed (except if already on onboarding/upgrade)
+  // Master email skips onboarding redirect
+  const isMaster = user.email === MASTER_EMAIL;
+
+  // Redirect to onboarding if profile not completed (except if already on onboarding/upgrade or master)
   const skipRedirectPaths = ['/onboarding', '/upgrade', '/blog-onboarding'];
   if (
+    !isMaster &&
     profile &&
     !profile.profile_completed &&
     !skipRedirectPaths.some(p => location.pathname.startsWith(p))
@@ -90,6 +99,11 @@ function SyncLanguageWithProfile() {
   return null;
 }
 
+/* LangKeyedApp removed — components react to lang changes via useLanguage() context.
+   A full remount was destructive: it wiped form inputs, open modals, scroll position,
+   sermon content, and any local state the user was working with. */
+
+// eslint-disable-next-line react-refresh/only-export-components
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
@@ -99,46 +113,53 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/cadastro" element={<Cadastro />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/blog/:handle" element={<BlogPublic />} />
-              <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
-              <Route path="/invite/:token" element={<AcceptInvite />} />
-              <Route path="/pricing" element={<Pricing />} />
+            <>
+              <Routes>
+                {/* Subdomain detection: pastorjoao.livingwordgo.com → /blog/pastorjoao */}
+                <Route path="/" element={<><SubdomainRedirect /><Landing /></>} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/blog/:handle" element={<BlogPublic />} />
+                <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />
+                <Route path="/invite/:token" element={<AcceptInvite />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/lp" element={<Landing />} />
+                <Route path="/devocional/publico/:shareToken" element={<DevocionalPublico />} />
 
-              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/blog-onboarding" element={<BlogOnboarding />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/devocional" element={<Devocional />} />
-                <Route path="/bom-amigo" element={<BomAmigo />} />
-                <Route path="/quiz" element={<Quiz />} />
-                <Route path="/kids" element={<Kids />} />
-                <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
-                <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
-                <Route path="/expos" element={<ExposStudioPage />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/biblioteca" element={<Biblioteca />} />
-                <Route path="/workspaces" element={<Workspaces />} />
-                <Route path="/social-studio" element={<SocialStudio />} />
-                <Route path="/bible" element={<BibleReader />} />
-                <Route path="/calendario" element={<Calendario />} />
-                <Route path="/configuracoes" element={<Configuracoes />} />
-                <Route path="/upgrade" element={<Upgrade />} />
-                <Route path="/dashboard/mentes" element={<MentesBrilhantes />} />
-                <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
-              <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/ai-billing" element={<AIBillingDashboard />} />
-              <Route path="/ajuda" element={<HelpCenter />} />
-              <Route path="/ajuda/:toolId" element={<HelpArticlePage />} />
-              </Route>
+                <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/blog-onboarding" element={<BlogOnboarding />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/devocional" element={<Devocional />} />
+                  <Route path="/bom-amigo" element={<BomAmigo />} />
+                  <Route path="/sermoes" element={<Sermoes />} />
+                  <Route path="/sermoes/editor" element={<Sermoes />} />
+                  <Route path="/quiz" element={<Quiz />} />
+                  <Route path="/kids" element={<Kids />} />
+                  <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
+                  <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
+                  <Route path="/expos" element={<ExposStudioPage />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/biblioteca" element={<Biblioteca />} />
+                  <Route path="/workspaces" element={<Workspaces />} />
+                  <Route path="/social-studio" element={<SocialStudio />} />
+                  <Route path="/bible" element={<BibleReader />} />
+                  <Route path="/calendario" element={<Calendario />} />
+                  <Route path="/configuracoes" element={<Configuracoes />} />
+                  <Route path="/upgrade" element={<Upgrade />} />
+                  <Route path="/dashboard/mentes" element={<MentesBrilhantes />} />
+                  <Route path="/dashboard/mentes/:id" element={<MindProfile />} />
+                  <Route path="/dashboard/mentes/chat" element={<MenteChat />} />
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/ai-billing" element={<AIBillingDashboard />} />
+                  <Route path="/ajuda" element={<HelpCenter />} />
+                  <Route path="/ajuda/:toolId" element={<HelpArticlePage />} />
+                </Route>
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

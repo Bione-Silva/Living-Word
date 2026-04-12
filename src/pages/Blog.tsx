@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import {
   FileText, Plus, Search, Globe, Pencil, BookOpen, MoreHorizontal,
-  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload,
+  Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload, Loader2, ImagePlus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
@@ -25,6 +25,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import ReactMarkdown from 'react-markdown';
+import { openWhatsAppShare } from '@/lib/whatsapp';
 
 type TabFilter = 'all' | 'published' | 'draft' | 'archived';
 
@@ -56,6 +57,10 @@ export default function Blog() {
   const [previewMode, setPreviewMode] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<ArticleRow | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [publishing, setPublishing] = useState<string | null>(null);
+  const [publishStep, setPublishStep] = useState<'cover' | 'publishing' | null>(null);
+  const [generatingCover, setGeneratingCover] = useState<Set<string>>(new Set());
+  const [generatingImages, setGeneratingImages] = useState<Set<string>>(new Set());
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['my-blog-articles', user?.id],
@@ -154,7 +159,30 @@ export default function Blog() {
   };
 
   const handlePublish = async (article: ArticleRow) => {
+    setPublishing(article.id);
     try {
+      // Step 1: Generate cover image if none exists
+      if (!article.cover_image_url) {
+        setPublishStep('cover');
+        try {
+          const { data: coverData, error: coverError } = await supabase.functions.invoke(
+            'generate-article-cover',
+            { body: { article_id: article.id, title: article.title, content: article.content } }
+          );
+          if (coverError) {
+            console.warn('[Blog] Cover generation failed:', coverError);
+            toast.warning('Artigo será publicado sem imagem de capa.');
+          } else if (coverData?.cover_image_url) {
+            article.cover_image_url = coverData.cover_image_url;
+          }
+        } catch (e) {
+          console.warn('[Blog] Cover generation error:', e);
+          toast.warning('Artigo será publicado sem imagem de capa.');
+        }
+      }
+
+      // Step 2: Publish
+      setPublishStep('publishing');
       if (article.queue_id) {
         const { error } = await supabase
           .from('editorial_queue')
@@ -170,10 +198,13 @@ export default function Blog() {
         });
         if (error) throw error;
       }
-      toast.success(t('blog.published_ok') || 'Artigo publicado!');
+      toast.success(t('blog.published_ok') || 'Artigo publicado com sucesso!');
       queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
     } catch {
       toast.error(t('blog.status_error'));
+    } finally {
+      setPublishing(null);
+      setPublishStep(null);
     }
   };
 
@@ -218,6 +249,49 @@ export default function Blog() {
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
+    }
+  };
+
+  const handleGenerateCover = async (article: ArticleRow) => {
+    setGeneratingCover(prev => new Set(prev).add(article.id));
+    try {
+      const { data: coverData, error } = await supabase.functions.invoke('generate-article-cover', {
+        body: { article_id: article.id, title: article.title, content: article.content },
+      });
+      if (error) throw error;
+      if (coverData?.cover_image_url) {
+        toast.success('Capa gerada com sucesso!');
+        queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
+      }
+    } catch (e) {
+      console.warn('[Blog] Cover generation failed:', e);
+      toast.error('Falha ao gerar capa.');
+    } finally {
+      setGeneratingCover(prev => { const n = new Set(prev); n.delete(article.id); return n; });
+    }
+  };
+
+  const handleGenerateImages = async (article: ArticleRow) => {
+    setGeneratingImages(prev => new Set(prev).add(article.id));
+    try {
+      // Generate cover if missing
+      if (!article.cover_image_url) {
+        supabase.functions.invoke('generate-article-cover', {
+          body: { article_id: article.id, title: article.title, content: article.content },
+        }).catch(e => console.warn('[Blog] Cover gen failed:', e));
+      }
+      // Generate internal images
+      const { data, error } = await supabase.functions.invoke('generate-article-images', {
+        body: { article_id: article.id, title: article.title, content: article.content },
+      });
+      if (error) throw error;
+      toast.success(`${data?.images_added || 0} imagens geradas!`);
+      queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });
+    } catch (e) {
+      console.warn('[Blog] Image generation failed:', e);
+      toast.error('Falha ao gerar imagens.');
+    } finally {
+      setGeneratingImages(prev => { const n = new Set(prev); n.delete(article.id); return n; });
     }
   };
 
@@ -306,12 +380,29 @@ export default function Blog() {
               <Card key={article.id} className="overflow-hidden bg-card border hover:shadow-md transition-shadow flex flex-col">
                 <div className="relative h-44 overflow-hidden bg-muted">
                   {(() => {
+                    const isCoverLoading = generatingCover.has(article.id);
                     const thumb = article.cover_image_url || article.content?.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/)?.[1];
+                    if (isCoverLoading) {
+                      return (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                          <span className="text-xs text-muted-foreground">Gerando capa...</span>
+                        </div>
+                      );
+                    }
                     return thumb ? (
                       <img src={thumb} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                         <BookOpen className="w-10 h-10 text-muted-foreground/30" />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="gap-1.5 text-xs text-muted-foreground hover:text-primary"
+                          onClick={(e) => { e.stopPropagation(); handleGenerateCover(article); }}
+                        >
+                          <ImagePlus className="w-3.5 h-3.5" /> Gerar capa
+                        </Button>
                       </div>
                     );
                   })()}
@@ -337,6 +428,23 @@ export default function Blog() {
                   </div>
 
                   <div className="flex items-center gap-2 mt-auto pt-2">
+                    {!isPublished && !isArchived && (
+                      <Button
+                        size="sm"
+                        className="gap-1.5 text-xs h-8"
+                        disabled={publishing === article.id}
+                        onClick={() => handlePublish(article)}
+                      >
+                        {publishing === article.id ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            {publishStep === 'cover' ? 'Gerando capa...' : 'Publicando...'}
+                          </>
+                        ) : (
+                          <><Upload className="w-3 h-3" /> {t('blog.publish') || 'Publicar'}</>
+                        )}
+                      </Button>
+                    )}
                     {isPublished && profile?.blog_handle && (
                       <Link to={`/blog/${profile.blog_handle}/${article.id}`} target="_blank">
                         <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8">
@@ -344,7 +452,7 @@ export default function Blog() {
                         </Button>
                       </Link>
                     )}
-                    <Button size="sm" variant={isPublished ? 'outline' : 'default'} className="gap-1.5 text-xs h-8" onClick={() => openEditor(article)}>
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8" onClick={() => openEditor(article)}>
                       <Pencil className="w-3 h-3" /> {t('blog.edit')}
                     </Button>
                     <DropdownMenu>
@@ -356,9 +464,19 @@ export default function Blog() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleCopyLink(article.id)}>{t('blog.copy_link')}</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
-                          window.open(`https://wa.me/?text=${encodeURIComponent(article.title + ' ' + window.location.origin + '/blog/' + profile?.blog_handle + '/' + article.id)}`, '_blank');
+                          openWhatsAppShare(`${article.title} ${window.location.origin}/blog/${profile?.blog_handle}/${article.id}`);
                         }}>
                           {t('blog.share_whatsapp')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          disabled={generatingImages.has(article.id)}
+                          onClick={() => handleGenerateImages(article)}
+                        >
+                          {generatingImages.has(article.id) ? (
+                            <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> Gerando imagens...</>
+                          ) : (
+                            <><ImagePlus className="w-3.5 h-3.5 mr-2" /> Gerar imagens</>
+                          )}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleToggleArchive(article)}>

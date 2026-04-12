@@ -1,19 +1,22 @@
-import { useState, useRef, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
-import { toPng } from 'html-to-image';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
+import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2, Download, Send, RefreshCw, ChevronLeft, ChevronRight, Projector, FileVideo } from 'lucide-react';
+import { Download, Share2, RefreshCw, Loader2, ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { openWhatsAppShare } from '@/lib/whatsapp';
+import { toPng } from 'html-to-image';
+import { toast } from 'sonner';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+
+type L = 'PT' | 'EN' | 'ES';
 
 interface Slide {
+  type: string;
   title: string;
   body: string;
-  type: string;
   reference?: string;
 }
 
@@ -41,9 +44,9 @@ const labels = {
   format: { PT: 'Apresentação 16:9', EN: 'Presentation 16:9', ES: 'Presentación 16:9' },
   resolution: { PT: '1920×1080px JPEG', EN: '1920×1080px JPEG', ES: '1920×1080px JPEG' },
   projectable: { PT: 'Otimizado para telão', EN: 'Optimized for projection', ES: 'Optimizado para pantalla' },
-} satisfies Record<string, Record<string, string>>;
+} satisfies Record<string, Record<L, string>>;
 
-const typeLabels: Record<string, Record<string, string>> = {
+const typeLabels: Record<string, Record<L, string>> = {
   cover: { PT: 'CAPA', EN: 'COVER', ES: 'PORTADA' },
   verse: { PT: 'VERSÍCULO-CHAVE', EN: 'KEY VERSE', ES: 'VERSÍCULO CLAVE' },
   intro: { PT: 'INTRODUÇÃO', EN: 'INTRODUCTION', ES: 'INTRODUCCIÓN' },
@@ -53,21 +56,37 @@ const typeLabels: Record<string, Record<string, string>> = {
   prayer: { PT: 'ORAÇÃO FINAL', EN: 'CLOSING PRAYER', ES: 'ORACIÓN FINAL' },
 };
 
+/* ═══ Color palette rotation ═══ */
 const SLIDE_PALETTES = [
-  { bg: '#1E2A3A', bgEnd: '#162030', text: '#E8DCC8', accent: '#D4A853' },
-  { bg: '#F5F0E8', bgEnd: '#EDE6DA', text: '#3D2E1F', accent: '#B8935A' },
-  { bg: '#1A2F26', bgEnd: '#142820', text: '#D6CFC0', accent: '#8BAF7E' },
-  { bg: '#FAF6F0', bgEnd: '#F0EBE2', text: '#4A3728', accent: '#9B7E4F' },
-  { bg: '#2C1F1A', bgEnd: '#201510', text: '#E3D5C5', accent: '#C89B5E' },
-  { bg: '#F2EDE5', bgEnd: '#E8E0D5', text: '#3B3124', accent: '#A6845A' },
-  { bg: '#1A2540', bgEnd: '#121B30', text: '#DDDAE0', accent: '#D4A853' },
-  { bg: '#EDE8DF', bgEnd: '#E0DAD0', text: '#3D2E1F', accent: '#C4A05C' },
+  { bg: '#1E2A3A', bgEnd: '#162030', text: '#E8DCC8', accent: '#D4A853' },       // dark navy
+  { bg: '#F5F0E8', bgEnd: '#EDE6DA', text: '#3D2E1F', accent: '#B8935A' },       // warm parchment
+  { bg: '#1A2F26', bgEnd: '#142820', text: '#D6CFC0', accent: '#8BAF7E' },       // forest dark
+  { bg: '#FAF6F0', bgEnd: '#F0EBE2', text: '#4A3728', accent: '#9B7E4F' },       // off-white
+  { bg: '#2C1F1A', bgEnd: '#201510', text: '#E3D5C5', accent: '#C89B5E' },       // espresso
+  { bg: '#F2EDE5', bgEnd: '#E8E0D5', text: '#3B3124', accent: '#A6845A' },       // light tan
+  { bg: '#1A2540', bgEnd: '#121B30', text: '#DDDAE0', accent: '#D4A853' },       // midnight blue
+  { bg: '#EDE8DF', bgEnd: '#E0DAD0', text: '#3D2E1F', accent: '#C4A05C' },       // cream
 ];
 
 function getPalette(index: number) {
   return SLIDE_PALETTES[index % SLIDE_PALETTES.length];
 }
 
+/* ═══ Branding footer ═══ */
+function BrandFooter({ size = 'normal', color }: { size?: 'small' | 'normal'; color?: string }) {
+  const s = size === 'small';
+  const c = color || 'currentColor';
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: s ? 2 : 6 }}>
+      <span style={{ color: c, opacity: 0.5, fontSize: s ? 4 : 9 }}>✝</span>
+      <span style={{ color: c, opacity: 0.4, fontSize: s ? 4 : 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>
+        Living Word
+      </span>
+    </div>
+  );
+}
+
+/** Convert PNG data URL to JPEG blob with compression */
 async function toJpegBlob(pngDataUrl: string, maxBytes = 280_000): Promise<Blob> {
   const img = new Image();
   await new Promise<void>((resolve, reject) => {
@@ -85,7 +104,7 @@ async function toJpegBlob(pngDataUrl: string, maxBytes = 280_000): Promise<Blob>
   let quality = 0.82;
   let blob: Blob | null = null;
   for (let i = 0; i < 6; i++) {
-    blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', quality));
+    blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', quality));
     if (blob && blob.size <= maxBytes) break;
     quality *= 0.7;
   }
@@ -96,7 +115,7 @@ async function toJpegBlob(pngDataUrl: string, maxBytes = 280_000): Promise<Blob>
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', 0.80));
+    blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', 0.80));
   }
   return blob || new Blob([], { type: 'image/jpeg' });
 }
@@ -152,7 +171,6 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
       }
     } catch (e) {
       console.error('slides error', e);
-      toast.error("Failed to generate slides.");
     } finally {
       setLoading(false);
     }
@@ -189,7 +207,8 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
         zip.file(name, blob);
       }
       const zipBlob = await zip.generateAsync({ type: 'blob' });
-      saveAs(zipBlob, `slides-16x9-${slides.length}slides.zip`);
+      const zipName = `slides-16x9-${slides.length}slides.zip`;
+      saveAs(zipBlob, zipName);
       toast.success(lang === 'PT' ? `ZIP com ${slides.length} slides baixado` : `ZIP with ${slides.length} slides downloaded`);
     } catch (e) {
       console.error(e);
@@ -199,12 +218,13 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
     }
   };
 
+  /** Generate and download a PPTX file */
   const downloadPptx = async () => {
     setDownloadingPptx(true);
     try {
       const PptxGenJS = (await import('pptxgenjs')).default;
       const pres = new PptxGenJS();
-      pres.layout = 'LAYOUT_WIDE';
+      pres.layout = 'LAYOUT_WIDE'; // 13.33 x 7.5 inches (16:9)
       pres.author = 'Living Word';
       pres.title = sermonTitle || 'Sermon Presentation';
 
@@ -212,63 +232,86 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
         const slide = slides[i];
         const palette = getPalette(i);
         const pptSlide = pres.addSlide();
+
         pptSlide.background = { color: palette.bg.replace('#', '') };
+
         const isCover = slide.type === 'cover';
         const typeLabel = typeLabels[slide.type]?.[lang] || slide.type.toUpperCase();
 
         if (!isCover) {
+          // Type badge
           pptSlide.addText(typeLabel, {
             x: 0.8, y: 0.5, w: 4, h: 0.4,
             fontSize: 10, bold: true, color: palette.accent.replace('#', ''),
-            fontFace: 'Arial', charSpacing: 3,
+            fontFace: 'Arial',
+            charSpacing: 3,
           });
         }
 
+        // Title
         pptSlide.addText(slide.title, {
-          x: isCover ? 1.5 : 0.8, y: isCover ? 2.0 : 1.2,
-          w: isCover ? 10 : 11, h: isCover ? 2 : 1.5,
-          fontSize: isCover ? 36 : 28, bold: true,
-          color: palette.text.replace('#', ''), fontFace: 'Arial',
-          align: isCover ? 'center' : 'left', valign: 'middle',
+          x: isCover ? 1.5 : 0.8,
+          y: isCover ? 2.0 : 1.2,
+          w: isCover ? 10 : 11,
+          h: isCover ? 2 : 1.5,
+          fontSize: isCover ? 36 : 28,
+          bold: true,
+          color: palette.text.replace('#', ''),
+          fontFace: 'Arial',
+          align: isCover ? 'center' : 'left',
+          valign: 'middle',
         });
 
+        // Body
         if (slide.body) {
           pptSlide.addText(slide.body, {
-            x: isCover ? 2 : 0.8, y: isCover ? 4.0 : 3.0,
-            w: isCover ? 9 : 11, h: isCover ? 1.5 : 3.0,
+            x: isCover ? 2 : 0.8,
+            y: isCover ? 4.0 : 3.0,
+            w: isCover ? 9 : 11,
+            h: isCover ? 1.5 : 3.0,
             fontSize: isCover ? 16 : 18,
-            color: palette.text.replace('#', ''), fontFace: 'Arial',
-            align: isCover ? 'center' : 'left', valign: 'top',
+            color: palette.text.replace('#', ''),
+            fontFace: 'Arial',
+            align: isCover ? 'center' : 'left',
+            valign: 'top',
             lineSpacingMultiple: 1.3,
           });
         }
 
+        // Reference
         if (slide.reference) {
           pptSlide.addText(`📖 ${slide.reference}`, {
             x: 0.8, y: 6.2, w: 8, h: 0.4,
-            fontSize: 12, color: palette.accent.replace('#', ''), fontFace: 'Arial',
+            fontSize: 12, color: palette.accent.replace('#', ''),
+            fontFace: 'Arial',
           });
         }
 
+        // Branding footer
         pptSlide.addText('✝ LIVING WORD', {
           x: 9.5, y: 6.8, w: 3, h: 0.4,
           fontSize: 8, color: palette.accent.replace('#', ''),
-          fontFace: 'Arial', align: 'right', charSpacing: 2,
+          fontFace: 'Arial',
+          align: 'right',
+          charSpacing: 2,
         });
 
+        // Slide number
         pptSlide.addText(`${i + 1}/${slides.length}`, {
           x: 12, y: 0.3, w: 0.8, h: 0.3,
           fontSize: 9, color: palette.text.replace('#', ''),
-          fontFace: 'Arial', align: 'right', transparency: 60,
+          fontFace: 'Arial',
+          align: 'right',
+          transparency: 60,
         });
       }
 
-      const filename = `${(sermonTitle || 'sermon').replace(/[^a-zA-Z0-9À-ÿ ]/g, '').trim().replace(/\\s+/g, '-').substring(0, 40)}.pptx`;
+      const filename = `${(sermonTitle || 'sermon').replace(/[^a-zA-Z0-9À-ÿ ]/g, '').trim().replace(/\s+/g, '-').substring(0, 40)}.pptx`;
       await pres.writeFile({ fileName: filename });
       toast.success(lang === 'PT' ? 'PowerPoint gerado!' : 'PowerPoint generated!');
     } catch (e) {
       console.error('PPTX error', e);
-      toast.error(lang === 'PT' ? 'Erro ao baixar PowerPoint. Isso ocorre porque o pacote "pptxgenjs" precia ser instalado. Tente no console de Dev.' : 'PowerPoint download error. Requires pptxgenjs package.');
+      toast.error(lang === 'PT' ? 'Erro ao gerar PowerPoint' : 'PowerPoint generation error');
     } finally {
       setDownloadingPptx(false);
     }
@@ -276,82 +319,119 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
 
   const handleSend = () => {
     const text = slides.map((s, i) => `Slide ${i + 1}: ${s.title}\n${s.body}`).join('\n\n');
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    openWhatsAppShare(text);
   };
 
   const renderSlideContent = (slide: Slide, index: number, opts: { preview?: boolean; offscreen?: boolean } = {}) => {
     const { preview = false, offscreen = false } = opts;
     const palette = getPalette(index);
     const isCover = slide.type === 'cover';
+    const isVerse = slide.type === 'verse';
+    const isPrayer = slide.type === 'prayer';
 
+    const w = offscreen ? slideW : (preview ? 160 : 580);
+    const h = offscreen ? slideH : (preview ? 90 : 326);
     const isPreview = preview;
-    const padding = isPreview ? 12 : (offscreen ? 80 : 40);
+    const padScale = offscreen ? (slideW / 580) : 1;
+    const padding = isPreview ? 8 : Math.round(40 * padScale);
 
     return (
-      <div 
+      <div
         id={offscreen ? `slides-offscreen-${index}` : (preview ? undefined : `presentation-slide-${index}`)}
-        className={`relative flex flex-col justify-center items-center text-center overflow-hidden transition-all
-          ${preview ? 'cursor-pointer hover:ring-2 hover:ring-primary' : ''}
-          ${(!offscreen && preview && activeSlide === index) ? 'ring-2 ring-primary ring-offset-2' : ''}
-        `}
-        style={{ 
+        key={`${offscreen ? 'off' : preview ? 'prev' : 'main'}-${index}`}
+        style={{
+          width: w,
+          height: h,
           background: `linear-gradient(135deg, ${palette.bg} 0%, ${palette.bgEnd} 100%)`,
           color: palette.text,
-          width: offscreen ? slideW : (preview ? 240 : '100%'),
-          height: offscreen ? slideH : (preview ? 135 : '100%'),
-          aspectRatio: offscreen ? undefined : '16/9',
-          padding: `${padding}px`,
-          position: offscreen ? 'absolute' : 'relative',
-          top: offscreen ? '-9999px' : 'auto',
-          left: offscreen ? '-9999px' : 'auto',
-          borderRadius: offscreen ? 0 : '0.5rem',
-          boxShadow: offscreen ? 'none' : 'inset 0 0 20px rgba(0,0,0,0.2)',
+          padding,
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          borderRadius: offscreen ? 0 : 8,
+          flexShrink: 0,
+          cursor: preview ? 'pointer' : undefined,
+          ...(isCover ? { justifyContent: 'center', alignItems: 'center', textAlign: 'center' as const } : { justifyContent: 'space-between' }),
         }}
-        onClick={() => preview ? setActiveSlide(index) : undefined}
+        onClick={preview ? () => setActiveSlide(index) : undefined}
       >
-        <div className="absolute top-4 left-4" style={{ fontSize: isPreview ? '8px' : '16px', opacity: 0.6 }}>
+        {/* Slide number */}
+        <div style={{
+          position: 'absolute',
+          top: isPreview ? 4 : Math.round(20 * padScale),
+          right: isPreview ? 4 : Math.round(24 * padScale),
+          fontSize: isPreview ? 4 : Math.round(10 * padScale),
+          opacity: 0.3,
+          fontFamily: 'monospace',
+        }}>
           {index + 1}/{slides.length}
         </div>
 
+        {/* Type badge */}
         {!isCover && (
-          <div className="absolute top-8 left-8 text-left max-w-full" style={{ color: palette.accent, fontWeight: 'bold', fontSize: isPreview ? '8px' : '16px', letterSpacing: '0.2em' }}>
+          <div style={{
+            fontSize: isPreview ? 4 : Math.round(10 * padScale),
+            fontWeight: 700,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase' as const,
+            color: palette.accent,
+            opacity: 0.6,
+            marginBottom: isPreview ? 2 : Math.round(8 * padScale),
+          }}>
             {typeLabels[slide.type]?.[lang] || slide.type.toUpperCase()}
           </div>
         )}
 
-        <h2 className="font-bold leading-tight z-10" style={{ 
-          fontSize: isCover ? (isPreview ? '18px' : (offscreen ? '90px' : '48px')) : (isPreview ? '14px' : (offscreen ? '64px' : '36px')),
-          marginBottom: slide.body ? '1.5rem' : '0',
-          marginTop: isCover ? '0' : '2rem'
-        }}>
-          {slide.title}
-        </h2>
-
-        {!isPreview && slide.body && (
-          <p className="z-10" style={{ 
-            fontSize: offscreen ? '36px' : '20px', 
-            opacity: 0.9, 
-            maxWidth: '90%',
-            lineHeight: 1.5
+        {/* Content */}
+        <div style={isCover ? {} : { flex: 1, display: 'flex', flexDirection: 'column' as const, justifyContent: 'center' }}>
+          <h3 style={{
+            fontWeight: 700,
+            lineHeight: 1.2,
+            fontSize: isPreview ? (isCover ? 9 : 7) : Math.round((isCover ? 28 : 22) * padScale),
+            margin: 0,
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: isPreview ? 2 : 3,
+            WebkitBoxOrient: 'vertical' as any,
           }}>
-            {slide.body}
-          </p>
-        )}
+            {slide.title}
+          </h3>
 
-        {slide.reference && !isPreview && (
-          <div className="absolute bottom-8 left-8" style={{ color: palette.accent, fontSize: offscreen ? '28px' : '16px', fontWeight: 'bold' }}>
-            📖 {slide.reference}
-          </div>
-        )}
+          {!isPreview && (
+            <p style={{
+              fontSize: Math.round((isVerse ? 18 : 16) * padScale),
+              lineHeight: 1.6,
+              marginTop: Math.round(12 * padScale),
+              opacity: 0.8,
+              fontStyle: isVerse ? 'italic' : 'normal',
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 4,
+              WebkitBoxOrient: 'vertical' as any,
+            }}>
+              {slide.body}
+            </p>
+          )}
 
-        {slide.reference && isPreview && (
-          <div className="absolute bottom-2 left-2" style={{ color: palette.accent, fontSize: '10px' }}>
-            📖
-          </div>
-        )}
-        
-        <div className="absolute bottom-6 right-6 font-bold" style={{ color: palette.accent, fontSize: isPreview ? '6px' : '12px', opacity: 0.8, letterSpacing: '2px' }}>
-          ✝ LIVING WORD
+          {slide.reference && !isPreview && (
+            <div style={{
+              marginTop: Math.round(16 * padScale),
+              fontSize: Math.round(12 * padScale),
+              color: palette.accent,
+              fontWeight: 500,
+            }}>
+              📖 {slide.reference}
+            </div>
+          )}
+        </div>
+
+        {/* Branding footer */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: isPreview ? 'auto' : Math.round(16 * padScale) }}>
+          <BrandFooter size={isPreview ? 'small' : 'normal'} color={palette.accent} />
+          {slide.reference && isPreview && (
+            <span style={{ fontSize: 4, color: palette.accent, opacity: 0.5 }}>📖</span>
+          )}
         </div>
       </div>
     );
@@ -359,127 +439,118 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[1100px] w-[95vw] max-h-[90vh] flex flex-col p-0 overflow-hidden bg-background">
-        <DialogHeader className="p-4 border-b bg-card">
-          <DialogTitle className="flex flex-wrap items-center gap-2 justify-between">
-            <div className="flex items-center gap-2">
-              <Projector className="w-5 h-5 text-primary" />
-              {labels.title[lang as keyof typeof labels.title]}
-              <span className="text-sm font-normal text-muted-foreground ml-2">
-                {loading ? labels.generating[lang as keyof typeof labels.generating] : `${slides.length} slides • 16:9`}
-              </span>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0 gap-0 bg-background">
+        <DialogHeader className="px-6 py-4 border-b border-border flex flex-row items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm">📽️</div>
+            <div>
+              <DialogTitle className="text-base font-bold">{labels.title[lang]}</DialogTitle>
+              <p className="text-xs text-muted-foreground">{loading ? labels.generating[lang] : `${slides.length} slides • 16:9`}</p>
             </div>
-            {!loading && slides.length > 0 && (
-              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
-                <Projector className="w-3 h-3" />
-                {labels.projectable[lang as keyof typeof labels.projectable]}
-              </span>
-            )}
-          </DialogTitle>
+          </div>
+          <div className="hidden sm:flex items-center gap-2 bg-primary/5 rounded-lg px-3 py-1.5 border border-primary/20">
+            <span className="text-[10px] text-primary font-medium">{labels.projectable[lang]}</span>
+          </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto bg-muted/20">
-          <div className="p-4">
-            <div className="flex justify-start mb-6">
-              {!loading && slides.length > 0 && (
-                <Button variant="outline" size="sm" onClick={generateSlides}>
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  {labels.newVariation[lang as keyof typeof labels.newVariation]}
-                </Button>
-              )}
-            </div>
-
-            {loading ? (
-              <div className="flex flex-col items-center justify-center p-20 text-muted-foreground h-[400px]">
-                <Loader2 className="w-12 h-12 animate-spin mb-4 text-primary" />
-                <p>{labels.creating[lang as keyof typeof labels.creating]}</p>
-              </div>
-            ) : slides.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                
-                {/* Main Slide Preview */}
-                <div className="lg:col-span-3 flex flex-col items-center">
-                  <div className="relative w-full flex items-center justify-center">
-                    <Button
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => setActiveSlide(Math.max(0, activeSlide - 1))}
-                      disabled={activeSlide === 0}
-                      className="absolute left-0 z-10 -ml-4 bg-background/80 shadow rounded-full hover:bg-background"
-                    >
-                      <ChevronLeft className="w-6 h-6" />
-                    </Button>
-
-                    <div className="w-full flex justify-center">
-                      {renderSlideContent(slides[activeSlide], activeSlide)}
-                    </div>
-
-                    <Button
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => setActiveSlide(Math.min(slides.length - 1, activeSlide + 1))}
-                      disabled={activeSlide === slides.length - 1}
-                      className="absolute right-0 z-10 -mr-4 bg-background/80 shadow rounded-full hover:bg-background"
-                    >
-                      <ChevronRight className="w-6 h-6" />
-                    </Button>
-                  </div>
-
-                  {/* Dots */}
-                  <div className="flex gap-2 mt-6">
-                    {slides.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setActiveSlide(i)}
-                        className={`w-2.5 h-2.5 rounded-full transition-all ${i === activeSlide ? 'bg-primary w-8' : 'bg-primary/30 hover:bg-primary/50'}`}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
-                    <Button variant="default" onClick={() => downloadSlide(activeSlide)}>
-                      <Download className="w-4 h-4 mr-2" />
-                      {labels.downloadSlide[lang as keyof typeof labels.downloadSlide]}
-                    </Button>
-                    <Button variant="secondary" onClick={downloadAll} disabled={downloadingAll}>
-                      {downloadingAll ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
-                      {downloadingAll ? labels.downloading[lang as keyof typeof labels.downloading] : labels.downloadAll[lang as keyof typeof labels.downloadAll]}
-                    </Button>
-                    <Button variant="outline" className="border-primary text-primary hover:bg-primary/10" onClick={downloadPptx} disabled={downloadingPptx}>
-                      {downloadingPptx ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileVideo className="w-4 h-4 mr-2" />}
-                      {downloadingPptx ? labels.downloading[lang as keyof typeof labels.downloading] : labels.downloadPptx[lang as keyof typeof labels.downloadPptx]}
-                    </Button>
-                    <Button variant="outline" onClick={handleSend}>
-                      <Send className="w-4 h-4 mr-2" />
-                      {labels.send[lang as keyof typeof labels.send]}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Thumbnails Sidebar */}
-                <div className="flex flex-col bg-card border rounded-lg overflow-hidden h-fit">
-                  <div className="bg-muted p-2 font-semibold text-sm border-b text-center sticky top-0 z-10">
-                    {labels.slidesOf[lang as keyof typeof labels.slidesOf]}
-                  </div>
-                  <div className="p-3 grid grid-cols-2 lg:grid-cols-1 gap-4 max-h-[600px] overflow-y-auto custom-scrollbar">
-                    {slides.map((s, i) => (
-                      <div key={i} className="flex flex-col items-center">
-                        {renderSlideContent(s, i, { preview: true })}
-                        <span className="text-[10px] text-muted-foreground mt-1 font-medium bg-muted/50 px-2 py-0.5 rounded">
-                          Slide {i + 1}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : null}
+        {/* Toolbar */}
+        {!loading && slides.length > 0 && (
+          <div className="flex items-center gap-2 px-6 py-3 border-b border-border">
+            <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={generateSlides}>
+              <RefreshCw className="h-3.5 w-3.5" />
+              {labels.newVariation[lang]}
+            </Button>
           </div>
+        )}
+
+        <div className="p-6">
+          {loading ? (
+            <div className="flex items-center justify-center" style={{ minHeight: 350 }}>
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="h-10 w-10 animate-spin text-primary/40" />
+                <p className="text-sm text-primary/80">{labels.creating[lang]}</p>
+              </div>
+            </div>
+          ) : slides.length > 0 ? (
+            <div className="flex gap-6">
+              {/* Main slide */}
+              <div className="flex-1 flex flex-col items-center">
+                <div className="relative w-full flex items-center justify-center" style={{ minHeight: 330 }}>
+                  <button
+                    onClick={() => setActiveSlide(Math.max(0, activeSlide - 1))}
+                    disabled={activeSlide === 0}
+                    className="absolute left-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30 hover:bg-muted/50 transition-colors"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  {renderSlideContent(slides[activeSlide], activeSlide)}
+                  <button
+                    onClick={() => setActiveSlide(Math.min(slides.length - 1, activeSlide + 1))}
+                    disabled={activeSlide === slides.length - 1}
+                    className="absolute right-0 z-10 p-2 rounded-full bg-background/80 border border-border disabled:opacity-30 hover:bg-muted/50 transition-colors"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Dots */}
+                <div className="flex gap-1.5 mt-4">
+                  {slides.map((_, i) => (
+                    <button key={i} onClick={() => setActiveSlide(i)}
+                      className={`w-2 h-2 rounded-full transition-all ${i === activeSlide ? 'bg-primary w-5' : 'bg-muted-foreground/30'}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 mt-4 flex-wrap justify-center">
+                  <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => downloadSlide(activeSlide)}>
+                    <Download className="h-3.5 w-3.5" />
+                    {labels.downloadSlide[lang]}
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={downloadAll} disabled={downloadingAll}>
+                    {downloadingAll ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                    {downloadingAll ? labels.downloading[lang] : labels.downloadAll[lang]}
+                  </Button>
+                  <Button size="sm" className="text-xs gap-1.5" onClick={downloadPptx} disabled={downloadingPptx}>
+                    {downloadingPptx ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+                    {downloadingPptx ? labels.downloading[lang] : labels.downloadPptx[lang]}
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={handleSend}>
+                    <Share2 className="h-3.5 w-3.5" />
+                    {labels.send[lang]}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Thumbnails */}
+              <div className="w-72 hidden md:block">
+                <h3 className="text-xs font-bold text-muted-foreground tracking-wide mb-3">{labels.slidesOf[lang]}</h3>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {slides.map((s, i) => (
+                    <div key={i} className={`relative ${activeSlide === i ? 'ring-2 ring-primary ring-offset-1 ring-offset-background rounded-lg' : ''}`}>
+                      {renderSlideContent(s, i, { preview: true })}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 p-3 rounded-lg border border-border bg-card">
+                  <p className="text-[10px] font-bold text-primary tracking-wider">{labels.slideLabel[lang]} {activeSlide + 1} {labels.of[lang]} {slides.length}</p>
+                  <p className="text-xs font-medium text-foreground mt-1 line-clamp-2">{slides[activeSlide]?.title}</p>
+                </div>
+
+                <div className="mt-2 p-3 rounded-lg border border-primary/20 bg-primary/5">
+                  <p className="text-xs text-primary font-medium">{labels.format[lang]}</p>
+                  <p className="text-[10px] text-muted-foreground">{labels.resolution[lang]}</p>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
 
-        {/* Offscreen rendering area */}
+        {/* Offscreen rendering area for download-all */}
         {slides.length > 0 && (
-          <div className="hidden">
+          <div style={{ position: 'fixed', left: -20000, top: 0, pointerEvents: 'none', zIndex: -1 }}>
             {slides.map((s, i) => renderSlideContent(s, i, { offscreen: true }))}
           </div>
         )}

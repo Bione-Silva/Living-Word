@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { BookOpen, ShieldAlert, Zap, Moon, Sun } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { BookOpen, ShieldAlert, Zap, Moon, Sun, PenLine, ChevronDown, ChevronUp } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { StudyForm } from '@/components/biblical-study/StudyForm';
 import { StudyActions } from '@/components/biblical-study/StudyActions';
@@ -16,8 +17,11 @@ import { RichLoadingState } from '@/components/generation/RichLoadingState';
 import { loadingHints, studyLoadingMessages } from '@/lib/generation-ui';
 import { Button } from '@/components/ui/button';
 import { BibleDrawer } from '@/components/BibleDrawer';
+import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 
 export default function EstudoBiblicoPage() {
+  const location = useLocation();
+  const prefillPassage = (location.state as { prefillPassage?: string })?.prefillPassage || '';
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<BiblicalStudyResponse | null>(null);
   const [generationMeta, setGenerationMeta] = useState<GenerationMeta | null>(null);
@@ -26,6 +30,7 @@ export default function EstudoBiblicoPage() {
   const isFree = profile?.plan === 'free';
   const [darkStudy, setDarkStudy] = useState(false);
   const [bibleOpen, setBibleOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
 
   const handleGenerate = async (formData: BiblicalStudyFormData) => {
     setIsLoading(true);
@@ -104,7 +109,7 @@ export default function EstudoBiblicoPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left sidebar - form */}
         <div className="w-full lg:w-[380px] shrink-0">
-          <StudyForm onSubmit={handleGenerate} isLoading={isLoading} />
+          <StudyForm onSubmit={handleGenerate} isLoading={isLoading} prefillPassage={prefillPassage} />
         </div>
 
         {/* Right main area */}
@@ -148,6 +153,27 @@ export default function EstudoBiblicoPage() {
               </div>
 
               <StudyViewer study={study} />
+
+              {/* ── Notes section ── */}
+              {result?.material_id && (
+                <div className="mt-4 border border-border rounded-xl overflow-hidden">
+                  <button
+                    onClick={() => setNotesOpen(!notesOpen)}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-muted/30 hover:bg-muted/50 transition-colors"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+                      <PenLine className="h-4 w-4 text-primary" />
+                      {lang === 'PT' ? 'Minhas Anotações' : lang === 'EN' ? 'My Notes' : 'Mis Notas'}
+                    </span>
+                    {notesOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                  </button>
+                  {notesOpen && (
+                    <div className="h-[300px]">
+                      <PreacherNotes materialId={result.material_id} />
+                    </div>
+                  )}
+                </div>
+              )}
 
               {generationMeta && (
                 <div className="mt-4">

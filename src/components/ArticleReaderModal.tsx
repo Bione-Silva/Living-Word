@@ -139,6 +139,12 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
     setExporting(true);
     try {
       const html2pdf = (await import('html2pdf.js')).default;
+      const { pdfBrandHeader, pdfBrandFooter } = await import('@/lib/export-branding');
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = pdfBrandHeader();
+      wrapper.appendChild(contentRef.current.cloneNode(true));
+      wrapper.insertAdjacentHTML('beforeend', pdfBrandFooter());
+      document.body.appendChild(wrapper);
       const opt = {
         margin: [10, 10, 10, 10],
         filename: `${item.title.replace(/[^a-zA-Z0-9À-ú ]/g, '').substring(0, 60)}.pdf`,
@@ -147,7 +153,8 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
       };
-      await html2pdf().set(opt).from(contentRef.current).save();
+      await html2pdf().set(opt).from(wrapper).save();
+      document.body.removeChild(wrapper);
     } catch (err) {
       console.error('PDF export error:', err);
     } finally {

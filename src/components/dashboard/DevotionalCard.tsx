@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { BookOpen, ChevronRight, Headphones, Calendar } from 'lucide-react';
+import { BookOpen, ChevronRight, Headphones, Calendar, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -25,9 +26,11 @@ const labels = {
   section: { PT: '☕ CAFÉ COM A PALAVRA VIVA DE DEUS', EN: '☕ COFFEE WITH THE LIVING WORD OF GOD', ES: '☕ CAFÉ CON LA PALABRA VIVA DE DIOS' },
   header: { PT: 'SUA LEITURA DIÁRIA', EN: 'YOUR DAILY READING', ES: 'TU LECTURA DIARIA' },
   listen: { PT: 'Escutar', EN: 'Listen', ES: 'Escuchar' },
-  cta: { PT: 'Abrir leitura completa', EN: 'Open full reading', ES: 'Abrir lectura completa' },
+  cta: { PT: 'Ouvir / Ler completo', EN: 'Listen / Read full', ES: 'Escuchar / Leer completo' },
   loading: { PT: 'Preparando sua palavra...', EN: 'Preparing your word...', ES: 'Preparando tu palabra...' },
   error: { PT: 'Não conseguimos carregar a palavra de hoje.', EN: 'We couldn\'t load today\'s word.', ES: 'No pudimos cargar la palabra de hoy.' },
+  shared: { PT: 'Link copiado!', EN: 'Link copied!', ES: '¡Enlace copiado!' },
+  commentPlaceholder: { PT: 'Escreva um comentário...', EN: 'Write a comment...', ES: 'Escribe un comentario...' },
 } satisfies Record<string, Record<L, string>>;
 
 function formatDate(dateStr: string, lang: L): string {
@@ -36,6 +39,152 @@ function formatDate(dateStr: string, lang: L): string {
   return d.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
 }
 
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' mi';
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + ' mil';
+  return String(n);
+}
+
+/* ─── Engagement bar sub-component ─── */
+function EngagementBar({ devotionalId, lang }: { devotionalId: string; lang: L }) {
+  const { user } = useAuth();
+  const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<{ id: string; text: string; created_at: string; user_id: string }[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const loadCounts = useCallback(async () => {
+    const [{ count: lc }, { count: cc }] = await Promise.all([
+      supabase.from('devotional_likes').select('*', { count: 'exact', head: true }).eq('devotional_id', devotionalId),
+      supabase.from('devotional_comments').select('*', { count: 'exact', head: true }).eq('devotional_id', devotionalId),
+    ]);
+    setLikesCount(lc ?? 0);
+    setCommentsCount(cc ?? 0);
+  }, [devotionalId]);
+
+  useEffect(() => {
+    if (!user) return;
+    loadCounts();
+    supabase
+      .from('devotional_likes')
+      .select('id')
+      .eq('devotional_id', devotionalId)
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => setLiked(!!data));
+  }, [user, devotionalId, loadCounts]);
+
+  const toggleLike = async () => {
+    if (!user) return;
+    if (liked) {
+      await supabase.from('devotional_likes').delete().eq('devotional_id', devotionalId).eq('user_id', user.id);
+      setLiked(false);
+      setLikesCount((c) => Math.max(0, c - 1));
+    } else {
+      await supabase.from('devotional_likes').insert({ devotional_id: devotionalId, user_id: user.id });
+      setLiked(true);
+      setLikesCount((c) => c + 1);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/devocional`;
+    if (navigator.share) {
+      await navigator.share({ url }).catch(() => {});
+    } else {
+      await navigator.clipboard.writeText(url);
+      toast.success(labels.shared[lang]);
+    }
+  };
+
+  const loadComments = async () => {
+    const { data } = await supabase
+      .from('devotional_comments')
+      .select('id, text, created_at, user_id')
+      .eq('devotional_id', devotionalId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (data) setComments(data);
+  };
+
+  const toggleComments = () => {
+    const next = !showComments;
+    setShowComments(next);
+    if (next) loadComments();
+  };
+
+  const submitComment = async () => {
+    if (!user || !newComment.trim()) return;
+    setSubmitting(true);
+    await supabase.from('devotional_comments').insert({
+      devotional_id: devotionalId,
+      user_id: user.id,
+      text: newComment.trim(),
+    });
+    setNewComment('');
+    setSubmitting(false);
+    setCommentsCount((c) => c + 1);
+    loadComments();
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Action row */}
+      <div className="flex items-center justify-between px-1">
+        <button onClick={toggleLike} className="flex items-center gap-1.5 text-sm transition-colors group">
+          <Heart
+            className={`h-5 w-5 transition-colors ${liked ? 'fill-red-500 text-red-500' : 'text-muted-foreground group-hover:text-red-400'}`}
+          />
+          <span className="text-xs text-muted-foreground">{formatCount(likesCount)}</span>
+        </button>
+
+        <button onClick={toggleComments} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors">
+          <MessageCircle className="h-5 w-5" />
+          <span className="text-xs">{formatCount(commentsCount)}</span>
+        </button>
+
+        <button onClick={handleShare} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors">
+          <Share2 className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Comments section */}
+      {showComments && (
+        <div className="space-y-2 border-t border-border pt-3">
+          {/* Input */}
+          <div className="flex gap-2">
+            <input
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && submitComment()}
+              placeholder={labels.commentPlaceholder[lang]}
+              className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40"
+              disabled={submitting}
+            />
+          </div>
+          {/* List */}
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {comments.map((c) => (
+              <div key={c.id} className="text-xs text-foreground/80 bg-muted/50 rounded-lg px-3 py-2">
+                {c.text}
+              </div>
+            ))}
+            {comments.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                {lang === 'PT' ? 'Seja o primeiro a comentar!' : lang === 'ES' ? '¡Sé el primero en comentar!' : 'Be the first to comment!'}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Main DevotionalCard ─── */
 export function DevotionalCard() {
   const { lang } = useLanguage();
   const { user } = useAuth();
@@ -138,6 +287,9 @@ export function DevotionalCard() {
             — {data.anchor_verse}
           </p>
         </div>
+
+        {/* Engagement bar */}
+        <EngagementBar devotionalId={data.id} lang={lang} />
 
         {/* CTA button */}
         <div className="flex justify-center">

@@ -19,19 +19,20 @@ export function StudyViewer({ study }: StudyViewerProps) {
       {/* ── Passagem Hero ── */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <Badge className="bg-primary/10 text-primary border-primary/20">{study.passagem.referencia}</Badge>
-          <Badge variant="secondary">{study.passagem.versao}</Badge>
-          <Badge variant="secondary">{study.passagem.genero}</Badge>
-          {study.metadata.duracao_estimada_min && (
+          <Badge className="bg-primary/10 text-primary border-primary/20">{study?.passagem?.referencia}</Badge>
+          <Badge variant="secondary">{study?.passagem?.versao}</Badge>
+          <Badge variant="secondary">{study?.passagem?.genero}</Badge>
+          {study?.metadata?.duracao_estimada_min && (
             <Badge variant="outline" className="text-xs">~{study.metadata.duracao_estimada_min} min</Badge>
           )}
         </div>
         <blockquote className="border-l-4 border-primary/40 pl-4 italic text-foreground/80 text-base leading-relaxed">
-          {study.passagem.texto}
+          {study?.passagem?.texto}
         </blockquote>
       </div>
 
       {/* ── VERDADE CENTRAL — Destaque Premium ── */}
+      {study?.verdade_central && (
       <Card className="border-2 border-primary/30 bg-primary/5 shadow-md">
         <CardContent className="pt-5 pb-5 space-y-2">
           <div className="flex items-center gap-2">
@@ -46,6 +47,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
           )}
         </CardContent>
       </Card>
+      )}
 
       {/* ── Âncora Espiritual ── */}
       {study.ancora_espiritual?.oracao_abertura && (
@@ -61,19 +63,24 @@ export function StudyViewer({ study }: StudyViewerProps) {
       <Accordion type="multiple" defaultValue={['contexto', 'observacao']} className="space-y-2">
 
         {/* Contexto */}
+        {study.contexto && (
         <AccordionItem value="contexto" className="border rounded-lg px-4">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline gap-2">
             <span className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary" /> {t('context')}</span>
           </AccordionTrigger>
           <AccordionContent className="space-y-4 pb-4">
+            {study.contexto.historico && (
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('historical')}</h4>
               <p className="text-sm leading-relaxed text-foreground/90">{study.contexto.historico}</p>
             </div>
+            )}
+            {study.contexto.literario && (
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('literary')}</h4>
               <p className="text-sm leading-relaxed text-foreground/90">{study.contexto.literario}</p>
             </div>
+            )}
             {study.contexto.canonico && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('canonical')}</h4>
@@ -82,8 +89,10 @@ export function StudyViewer({ study }: StudyViewerProps) {
             )}
           </AccordionContent>
         </AccordionItem>
+        )}
 
         {/* Observação */}
+        {study.observacao && (
         <AccordionItem value="observacao" className="border rounded-lg px-4">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline gap-2">
             <span className="flex items-center gap-2"><Eye className="h-4 w-4 text-primary" /> {t('observation')}</span>
@@ -123,17 +132,21 @@ export function StudyViewer({ study }: StudyViewerProps) {
             )}
           </AccordionContent>
         </AccordionItem>
+        )}
 
         {/* Interpretação */}
+        {study.interpretacao && (
         <AccordionItem value="interpretacao" className="border rounded-lg px-4">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline gap-2">
             <span className="flex items-center gap-2"><Lightbulb className="h-4 w-4 text-primary" /> {t('interpretation')}</span>
           </AccordionTrigger>
           <AccordionContent className="space-y-4 pb-4">
+            {study.interpretacao.significado_original && (
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('originalMeaning')}</h4>
               <p className="text-sm leading-relaxed text-foreground/90">{study.interpretacao.significado_original}</p>
             </div>
+            )}
             {study.interpretacao.estudo_palavras && study.interpretacao.estudo_palavras.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{t('wordStudy')}</h4>
@@ -168,6 +181,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             )}
           </AccordionContent>
         </AccordionItem>
+        )}
 
         {/* Conexão Cristológica */}
         {study.conexao_cristologica && (
@@ -185,6 +199,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
         )}
 
         {/* Aplicação */}
+        {study.aplicacao && (
         <AccordionItem value="aplicacao" className="border rounded-lg px-4">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline gap-2">
             <span className="flex items-center gap-2"><Heart className="h-4 w-4 text-primary" /> {t('application')}</span>
@@ -194,7 +209,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
               { label: t('believe'), value: study.aplicacao.crer, color: 'bg-blue-500' },
               { label: t('change'), value: study.aplicacao.mudar, color: 'bg-amber-500' },
               { label: t('act'), value: study.aplicacao.agir, color: 'bg-green-500' },
-            ].map((item) => (
+            ].filter(item => item.value).map((item) => (
               <div key={item.label} className="flex items-start gap-3">
                 <Badge className={`${item.color} text-white shrink-0 mt-0.5`}>{item.label}</Badge>
                 <p className="text-sm leading-relaxed text-foreground/90">{item.value}</p>
@@ -208,8 +223,10 @@ export function StudyViewer({ study }: StudyViewerProps) {
             )}
           </AccordionContent>
         </AccordionItem>
+        )}
 
         {/* Perguntas para Discussão */}
+        {study.perguntas_discussao && (
         <AccordionItem value="perguntas" className="border rounded-lg px-4">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline gap-2">
             <span className="flex items-center gap-2"><MessageCircleQuestion className="h-4 w-4 text-primary" /> {t('discussionQuestions')}</span>
@@ -219,7 +236,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
               { label: t('observation'), items: study.perguntas_discussao.observacao, color: 'bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700' },
               { label: t('interpretation'), items: study.perguntas_discussao.interpretacao, color: 'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-900/40 dark:text-violet-300 dark:border-violet-700' },
               { label: t('application'), items: study.perguntas_discussao.aplicacao, color: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700' },
-            ].map((group) => (
+            ].filter(group => group.items?.length > 0).map((group) => (
               <div key={group.label}>
                 <Badge variant="outline" className={`${group.color} mb-2`}>{group.label}</Badge>
                 <ul className="space-y-1.5 ml-1">
@@ -240,17 +257,21 @@ export function StudyViewer({ study }: StudyViewerProps) {
             )}
           </AccordionContent>
         </AccordionItem>
+        )}
 
         {/* Encerramento */}
+        {study.encerramento && (
         <AccordionItem value="encerramento" className="border rounded-lg px-4">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline gap-2">
             <span className="flex items-center gap-2"><Scroll className="h-4 w-4 text-primary" /> {t('closing')}</span>
           </AccordionTrigger>
           <AccordionContent className="space-y-3 pb-4">
+            {study.encerramento.oracao_sugerida && (
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('suggestedPrayer')}</h4>
               <p className="text-sm italic leading-relaxed text-foreground/90">{study.encerramento.oracao_sugerida}</p>
             </div>
+            )}
             {study.encerramento.instrucao_lider && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('leaderInstruction')}</h4>
@@ -259,6 +280,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
             )}
           </AccordionContent>
         </AccordionItem>
+        )}
 
         {/* Notas do Líder */}
         {study.notas_lider && (

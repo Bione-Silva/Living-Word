@@ -3,9 +3,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Heart, Loader2, Copy, Share2, Send } from 'lucide-react';
-import { toast } from 'sonner';
+import { ArrowLeft, Heart, Loader2, Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -13,6 +13,8 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
+
+const AGENT_ID = 'palavra_amiga';
 
 const labels = {
   back: { PT: 'Voltar', EN: 'Back', ES: 'Volver' },
@@ -27,9 +29,6 @@ const labels = {
     EN: 'Share more about how you are feeling...',
     ES: 'Comparte más sobre cómo te sientes...',
   },
-  copied: { PT: 'Texto copiado!', EN: 'Text copied!', ES: '¡Texto copiado!' },
-  copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
-  share: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
   thinking: {
     PT: 'Buscando uma palavra para você...',
     EN: 'Finding a word for you...',
@@ -44,6 +43,11 @@ const labels = {
     PT: 'Escolha um sentimento ou digite o que está no seu coração. Eu vou buscar uma palavra para você.',
     EN: "Pick a feeling or type what\u2019s in your heart. I\u2019ll find a word for you.",
     ES: 'Elige un sentimiento o escribe lo que hay en tu corazón. Buscaré una palabra para ti.',
+  },
+  loading: {
+    PT: 'Carregando histórico...',
+    EN: 'Loading history...',
+    ES: 'Cargando historial...',
   },
 } satisfies Record<string, Record<L, string>>;
 
@@ -99,20 +103,36 @@ export default function BomAmigo() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load persisted history on mount
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const history = await loadHistory(user.id, AGENT_ID);
+      if (!cancelled) {
+        setMessages(history);
+        setHistoryLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
 
+  // Handle feeling param from redirect
   useEffect(() => {
     const feeling = searchParams.get('feeling');
-    if (feeling && messages.length === 0 && user) {
+    if (feeling && historyLoaded && user) {
       setSearchParams({}, { replace: true });
       sendMessage(feeling);
     }
-  }, [user]);
+  }, [historyLoaded, user]);
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || !user || loading) return;
@@ -123,43 +143,32 @@ export default function BomAmigo() {
     setInput('');
     setLoading(true);
 
+    // Persist user message
+    await saveMessage(user.id, AGENT_ID, 'user', text.trim());
+
     try {
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
           systemPrompt: SYSTEM_PROMPT(lang, profile?.full_name?.split(' ')[0]),
           userPrompt: text.trim(),
           toolId: 'palavra-amiga',
-          history: newMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
+          history: newMessages.slice(-30).map(m => ({ role: m.role, content: m.content })),
         },
       });
 
       if (error) throw error;
       const content = data?.content || 'Desculpe, não consegui gerar uma resposta.';
       setMessages(prev => [...prev, { role: 'assistant', content }]);
+      // Persist assistant message
+      await saveMessage(user.id, AGENT_ID, 'assistant', content);
     } catch {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.'
-          : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.'
-          : 'Sorry, an error occurred. Please try again.',
-      }]);
+      const errContent = lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.'
+        : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.'
+        : 'Sorry, an error occurred. Please try again.';
+      setMessages(prev => [...prev, { role: 'assistant', content: errContent }]);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
-    }
-  };
-
-  const handleCopy = (content: string) => {
-    navigator.clipboard.writeText(content);
-    toast.success(labels.copied[lang]);
-  };
-
-  const handleShare = async (content: string) => {
-    if (navigator.share) {
-      try { await navigator.share({ title: labels.title[lang], text: content }); } catch { /* cancelled */ }
-    } else {
-      navigator.clipboard.writeText(content);
-      toast.success(labels.copied[lang]);
     }
   };
 
@@ -170,10 +179,10 @@ export default function BomAmigo() {
     }
   };
 
-  const isEmpty = messages.length === 0 && !loading;
+  const isEmpty = messages.length === 0 && !loading && historyLoaded;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] max-w-3xl mx-auto">
+    <div className="flex flex-col h-[calc(100vh-4rem)] pb-28 md:pb-0 max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border shrink-0">
         <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -202,14 +211,14 @@ export default function BomAmigo() {
             </p>
 
             {/* Emotion chips grid */}
-            <div className="flex flex-wrap justify-center gap-2 mt-6 max-w-md">
+            <div className="grid grid-cols-2 gap-2 mt-6 max-w-xs mx-auto">
               {emotionChips.map((chip) => (
                 <button
                   key={chip.EN}
                   onClick={() => sendMessage(chip[lang])}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-border bg-card text-sm text-foreground hover:border-primary hover:bg-primary/10 hover:shadow-sm active:scale-95 transition-all"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-card text-xs text-foreground hover:border-primary hover:bg-primary/10 hover:shadow-sm active:scale-95 transition-all"
                 >
-                  <span className="text-base">{chip.emoji}</span>
+                  <span className="text-sm">{chip.emoji}</span>
                   {chip[lang]}
                 </button>
               ))}
@@ -224,24 +233,8 @@ export default function BomAmigo() {
               : 'bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3'
             }`}>
               {msg.role === 'assistant' ? (
-                <div className="space-y-3">
-                  <div className="prose prose-sm dark:prose-invert max-w-none text-foreground [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                  </div>
-                  <div className="flex items-center gap-2 pt-1 border-t border-border/50">
-                    <button
-                      onClick={() => handleCopy(msg.content)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                    >
-                      <Copy className="h-3 w-3" /> {labels.copy[lang]}
-                    </button>
-                    <button
-                      onClick={() => handleShare(msg.content)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                    >
-                      <Share2 className="h-3 w-3" /> {labels.share[lang]}
-                    </button>
-                  </div>
+                <div className="prose prose-sm dark:prose-invert max-w-none text-foreground [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
               ) : (
                 <p className="text-sm">{msg.content}</p>
@@ -276,7 +269,7 @@ export default function BomAmigo() {
             onKeyDown={handleKeyDown}
             placeholder={labels.placeholder[lang]}
             rows={1}
-            className="flex-1 min-h-[44px] max-h-32 px-4 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+            className="flex-1 min-h-[44px] max-h-32 px-3 py-3 rounded-xl border border-border bg-card text-xs leading-snug text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
           />
           <button
             onClick={() => sendMessage(input)}

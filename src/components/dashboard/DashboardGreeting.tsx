@@ -1,6 +1,10 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Share2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { toPng } from 'html-to-image';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -34,6 +38,12 @@ const DAILY_VERSES: Record<L, { text: string; ref: string }[]> = {
   ],
 };
 
+const shareLabels: Record<L, { share: string; copied: string; verseOfDay: string }> = {
+  PT: { share: 'Compartilhar', copied: 'Imagem copiada! Cole no WhatsApp.', verseOfDay: 'Versículo do Dia' },
+  EN: { share: 'Share', copied: 'Image copied! Paste on WhatsApp.', verseOfDay: 'Verse of the Day' },
+  ES: { share: 'Compartir', copied: 'Imagen copiada! Pega en WhatsApp.', verseOfDay: 'Versículo del Día' },
+};
+
 function getTimeGreeting(lang: L): string {
   const h = new Date().getHours();
   if (h < 12) return lang === 'PT' ? 'Bom dia' : lang === 'EN' ? 'Good morning' : 'Buenos días';
@@ -41,10 +51,19 @@ function getTimeGreeting(lang: L): string {
   return lang === 'PT' ? 'Boa noite' : lang === 'EN' ? 'Good evening' : 'Buenas noches';
 }
 
+function formatDate(lang: L): string {
+  const now = new Date();
+  return now.toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  });
+}
+
 export function DashboardGreeting() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
   const name = profile?.full_name?.split(' ')[0] || (lang === 'PT' ? 'Amigo' : lang === 'EN' ? 'Friend' : 'Amigo');
+  const shareCardRef = useRef<HTMLDivElement>(null);
+  const [sharing, setSharing] = useState(false);
 
   const [verse, setVerse] = useState<{ text: string; ref: string } | null>(null);
 
@@ -54,13 +73,56 @@ export function DashboardGreeting() {
     setVerse(verses[dayIndex]);
   }, [lang]);
 
+  const handleShare = useCallback(async () => {
+    if (!verse || !shareCardRef.current) return;
+    setSharing(true);
+
+    try {
+      // Make the hidden card visible for capture
+      const el = shareCardRef.current;
+      el.style.position = 'fixed';
+      el.style.left = '-9999px';
+      el.style.top = '0';
+      el.style.display = 'flex';
+
+      const dataUrl = await toPng(el, { pixelRatio: 2, width: 1080, height: 1080 });
+
+      el.style.display = 'none';
+
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], 'versiculo-do-dia.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          title: shareLabels[lang].verseOfDay,
+          text: `${verse.text} — ${verse.ref}`,
+          files: [file],
+        });
+      } else {
+        // Fallback: copy image to clipboard
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob }),
+        ]);
+        toast.success(shareLabels[lang].copied);
+      }
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        // Final fallback: share as text
+        const text = `✝️ ${shareLabels[lang].verseOfDay}\n\n${verse.text}\n— ${verse.ref}\n\n${formatDate(lang)}\n\nLiving Word`;
+        if (navigator.share) {
+          await navigator.share({ text }).catch(() => {});
+        } else {
+          await navigator.clipboard.writeText(text).catch(() => {});
+          toast.success(shareLabels[lang].copied);
+        }
+      }
+    } finally {
+      setSharing(false);
+    }
+  }, [verse, lang]);
+
   return (
     <div className="px-1">
-      {verse && (
-        <p className="text-xs text-primary/80 italic mb-1">
-          {verse.text} — {verse.ref}
-        </p>
-      )}
       <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground leading-tight">
         {getTimeGreeting(lang)}, <span className="text-primary">{name}</span>! 👋
       </h1>

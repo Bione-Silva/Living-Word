@@ -50,19 +50,19 @@ export function BomAmigoCard() {
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="space-y-2">
         <input
           type="text"
           value={feeling}
           onChange={(e) => setFeeling(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           placeholder={labels.placeholder[lang]}
-          className="flex-1 h-11 px-4 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+          className="w-full h-11 px-4 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
         />
         <button
           onClick={handleSubmit}
           disabled={!feeling.trim()}
-          className="h-11 px-4 sm:px-5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors shrink-0 flex items-center gap-2"
+          className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center justify-center gap-2"
         >
           {labels.button[lang]}
         </button>

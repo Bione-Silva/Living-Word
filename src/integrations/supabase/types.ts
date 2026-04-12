@@ -148,6 +148,212 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          agent_id: string
+          content: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      devocional_compartilhamentos: {
+        Row: {
+          cliques: number
+          created_at: string
+          devocional_date: string
+          id: string
+          share_token: string
+          user_id: string
+        }
+        Insert: {
+          cliques?: number
+          created_at?: string
+          devocional_date: string
+          id?: string
+          share_token: string
+          user_id: string
+        }
+        Update: {
+          cliques?: number
+          created_at?: string
+          devocional_date?: string
+          id?: string
+          share_token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      devotional_comments: {
+        Row: {
+          created_at: string
+          devotional_id: string
+          id: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          devotional_id: string
+          id?: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          devotional_id?: string
+          id?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devotional_comments_devotional_id_fkey"
+            columns: ["devotional_id"]
+            isOneToOne: false
+            referencedRelation: "devotionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devotional_engagements: {
+        Row: {
+          action: string
+          created_at: string
+          devotional_id: string | null
+          duration_seconds: number | null
+          emotional_response: string | null
+          id: string
+          reflection_sentiment: string | null
+          reflection_text: string | null
+          series_number: number | null
+          theme: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          devotional_id?: string | null
+          duration_seconds?: number | null
+          emotional_response?: string | null
+          id?: string
+          reflection_sentiment?: string | null
+          reflection_text?: string | null
+          series_number?: number | null
+          theme?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          devotional_id?: string | null
+          duration_seconds?: number | null
+          emotional_response?: string | null
+          id?: string
+          reflection_sentiment?: string | null
+          reflection_text?: string | null
+          series_number?: number | null
+          theme?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devotional_engagements_devotional_id_fkey"
+            columns: ["devotional_id"]
+            isOneToOne: false
+            referencedRelation: "devotionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devotional_likes: {
+        Row: {
+          created_at: string
+          devotional_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          devotional_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          devotional_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devotional_likes_devotional_id_fkey"
+            columns: ["devotional_id"]
+            isOneToOne: false
+            referencedRelation: "devotionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devotional_user_profiles: {
+        Row: {
+          average_time_spent: number | null
+          consecutive_days_engaged: number | null
+          created_at: string
+          favorite_themes: Json | null
+          last_devotional_id: string | null
+          last_devotional_theme: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          average_time_spent?: number | null
+          consecutive_days_engaged?: number | null
+          created_at?: string
+          favorite_themes?: Json | null
+          last_devotional_id?: string | null
+          last_devotional_theme?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          average_time_spent?: number | null
+          consecutive_days_engaged?: number | null
+          created_at?: string
+          favorite_themes?: Json | null
+          last_devotional_id?: string | null
+          last_devotional_theme?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devotional_user_profiles_last_devotional_id_fkey"
+            columns: ["last_devotional_id"]
+            isOneToOne: false
+            referencedRelation: "devotionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       devotionals: {
         Row: {
           anchor_verse: string
@@ -165,6 +371,8 @@ export type Database = {
           language: string
           reflection_question: string | null
           scheduled_date: string
+          series_id: string | null
+          series_number: number | null
           title: string
           updated_at: string
         }
@@ -184,6 +392,8 @@ export type Database = {
           language?: string
           reflection_question?: string | null
           scheduled_date: string
+          series_id?: string | null
+          series_number?: number | null
           title: string
           updated_at?: string
         }
@@ -203,6 +413,8 @@ export type Database = {
           language?: string
           reflection_question?: string | null
           scheduled_date?: string
+          series_id?: string | null
+          series_number?: number | null
           title?: string
           updated_at?: string
         }
@@ -527,6 +739,36 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_queue: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          scheduled_for: string
+          sent: boolean
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          scheduled_for: string
+          sent?: boolean
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          scheduled_for?: string
+          sent?: boolean
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           browser: string | null
@@ -785,6 +1027,47 @@ export type Database = {
         }
         Relationships: []
       }
+      sermon_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          material_id: string | null
+          session_id: string | null
+          text_color: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          material_id?: string | null
+          session_id?: string | null
+          text_color?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          material_id?: string | null
+          session_id?: string | null
+          text_color?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sermon_notes_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_arts: {
         Row: {
           aspect_ratio: string
@@ -871,6 +1154,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      visual_outputs: {
+        Row: {
+          created_at: string
+          format: string
+          id: string
+          language: string
+          material_id: string | null
+          output_type: string
+          slides_data: Json
+          user_id: string
+          variation_number: number
+        }
+        Insert: {
+          created_at?: string
+          format?: string
+          id?: string
+          language?: string
+          material_id?: string | null
+          output_type?: string
+          slides_data?: Json
+          user_id: string
+          variation_number?: number
+        }
+        Update: {
+          created_at?: string
+          format?: string
+          id?: string
+          language?: string
+          material_id?: string | null
+          output_type?: string
+          slides_data?: Json
+          user_id?: string
+          variation_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visual_outputs_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workspaces: {
         Row: {
@@ -1076,6 +1403,7 @@ export type Database = {
         }[]
       }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      increment_share_click: { Args: { p_token: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {

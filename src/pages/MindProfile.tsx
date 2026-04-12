@@ -10,6 +10,7 @@ import {
   Lock, Crown, Fingerprint, ScrollText, Sparkles,
   Shield, ChevronRight, Database, Cpu, BookMarked
 } from 'lucide-react';
+import { TheologyDNAChart } from '@/components/minds/TheologyDNAChart';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -186,7 +187,10 @@ export default function MindProfile() {
         </section>
       </div>
 
-      {/* ── THEOLOGICAL MATRIX ── */}
+      {/* ── DNA TEOLÓGICO ── */}
+      <TheologyDNAChart data={mind.theologyDNA} lang={lang} />
+
+
       <section className="mt-5 rounded-2xl border border-[hsl(30,15%,88%)] bg-[hsl(35,30%,96%)] p-7 sm:p-10">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-10 h-10 rounded-xl bg-[hsl(35,35%,90%)] flex items-center justify-center border border-[hsl(35,25%,82%)]">

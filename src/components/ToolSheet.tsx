@@ -243,6 +243,30 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
           queue_id: null,
           language: data.language || generationLang,
         });
+        // Auto-generate cover + internal images in background
+        if (data.material_id) {
+          const articleId = data.material_id;
+          const articleTitle = data.title || '';
+          const articleContent = data.content || '';
+          // Cover image
+          if (!data.cover_image_url) {
+            supabase.functions.invoke('generate-article-cover', {
+              body: { article_id: articleId, title: articleTitle, content: articleContent },
+            }).then(({ data: coverData }) => {
+              if (coverData?.cover_image_url) {
+                setBlogArticle(prev => prev ? { ...prev, cover_image_url: coverData.cover_image_url } : prev);
+              }
+            }).catch(e => console.warn('[ToolSheet] Background cover gen failed:', e));
+          }
+          // Internal images
+          supabase.functions.invoke('generate-article-images', {
+            body: { article_id: articleId, title: articleTitle, content: articleContent },
+          }).then(({ data: imgData }) => {
+            if (imgData?.images_added > 0) {
+              console.log(`[ToolSheet] ${imgData.images_added} internal images added`);
+            }
+          }).catch(e => console.warn('[ToolSheet] Background images gen failed:', e));
+        }
       } else {
         const { data, error } = await supabase.functions.invoke('ai-tool', {
           body: {
@@ -725,19 +749,19 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
           {/* Expanded reader dialog */}
           <Dialog open={expanded} onOpenChange={setExpanded}>
-            <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0">
-              <DialogHeader>
-                <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
-                <DialogDescription className="sr-only">
-                  {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
-                </DialogDescription>
-              </DialogHeader>
-              <ScrollArea className="flex-1 min-h-0 bg-muted/20 rounded-lg">
-                <div className="prose prose-base pastoral-prose max-w-none p-6 lg:p-8">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
-                </div>
-              </ScrollArea>
-              <div className="flex flex-wrap gap-2 pt-3 border-t border-border shrink-0">
+             <DialogContent className="theme-app max-w-4xl w-[95vw] h-[95vh] flex flex-col bg-background text-foreground p-0">
+               <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+                 <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
+                 <DialogDescription className="sr-only">
+                   {lang === 'PT' ? 'Leitura expandida' : 'Expanded reading'}
+                 </DialogDescription>
+               </DialogHeader>
+               <div className="flex-1 min-h-0 overflow-y-auto px-6">
+                 <div className="prose prose-base pastoral-prose max-w-none py-6">
+                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
+                 </div>
+               </div>
+              <div className="flex flex-wrap gap-2 px-6 py-3 border-t border-border shrink-0">
                 <Button size="sm" variant="outline" className="gap-1" onClick={handleCopy}>
                   <Copy className="h-3 w-3" /> {lang === 'PT' ? 'Copiar' : lang === 'EN' ? 'Copy' : 'Copiar'}
                 </Button>
