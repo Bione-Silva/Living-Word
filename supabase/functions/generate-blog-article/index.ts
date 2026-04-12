@@ -26,7 +26,7 @@ import {
   estimateApiCostUsd,
   PLAN_CREDITS,
 } from "../common/credits.ts"
-import { fetchBibleVerse } from "../fetch-bible-verse/index.ts"
+import { fetchBibleVerse } from "../common/bible-fetch.ts"
 
 const openai = new OpenAI({ apiKey: Deno.env.get("OPENAI_API_KEY")! })
 
