@@ -110,9 +110,11 @@ function formatDateFull(dateStr: string, lang: L): string {
 }
 
 function formatShortDate(dateStr: string, lang: L): string {
-  const d = new Date(dateStr);
+  const parts = dateStr.slice(0, 10).split('-');
+  const d = new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]));
+  if (isNaN(d.getTime())) return dateStr;
   const locale = lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US';
-  return d.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' });
 }
 
 function formatTime(seconds: number): string {
