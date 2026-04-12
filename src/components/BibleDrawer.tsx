@@ -17,6 +17,8 @@ interface Props {
   initialVerse?: number;
   initialVerseEnd?: number;
   initialTranslation?: string;
+  /** When set, only versions matching this language are shown (e.g. 'PT' when opened from a PT sermon) */
+  languageFilter?: 'PT' | 'EN' | 'ES';
 }
 
 export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, initialVerse, initialVerseEnd, initialTranslation }: Props) {
