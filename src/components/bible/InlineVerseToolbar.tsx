@@ -133,17 +133,17 @@ export function InlineVerseToolbar({
           onChange={(e) => setNoteText(e.target.value)}
           placeholder={labels.notePlaceholder[lang]}
           rows={2}
-          className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="w-full px-3 py-2.5 rounded-lg border-2 border-border bg-card text-sm text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 placeholder:text-muted-foreground/60"
           autoFocus
         />
         <div className="flex gap-2">
-          <button onClick={() => setShowNote(false)} className="px-3 py-1 rounded-md border border-border text-xs text-muted-foreground hover:bg-muted">
+          <button onClick={() => setShowNote(false)} className="px-3.5 py-1.5 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors">
             ←
           </button>
           <button
             onClick={handleSaveNote}
             disabled={saving || !noteText.trim()}
-            className="px-3 py-1 rounded-md bg-primary text-primary-foreground text-xs font-medium disabled:opacity-40"
+            className="px-4 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-40 hover:bg-primary/90 transition-colors"
           >
             {labels.save[lang]}
           </button>
