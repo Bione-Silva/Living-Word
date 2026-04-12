@@ -19,7 +19,7 @@ import { FeedbackPanel } from '@/components/admin/FeedbackPanel';
 import { MindToggleSection } from '@/components/admin/MindToggleSection';
 import { ReflectionSentimentPanel } from '@/components/admin/ReflectionSentimentPanel';
 
-const MASTER_EMAIL = 'bionicaosilva@gmail.com';
+const MASTER_EMAIL = 'bx4usa@gmail.com';
 
 const PROVIDERS = [
   { id: 'openrouter', label: 'OpenRouter', desc: 'Claude + GPT no mesmo balance' },

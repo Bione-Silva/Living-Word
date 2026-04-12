@@ -12,7 +12,7 @@ import { TenantsUsageTable } from '@/components/admin/ai-billing/TenantsUsageTab
 import { MOCK_DATA } from '@/components/admin/ai-billing/mockData';
 import type { AIMetrics } from '@/components/admin/ai-billing/types';
 
-const MASTER_EMAIL = 'bionicaosilva@gmail.com';
+const MASTER_EMAIL = 'bx4usa@gmail.com';
 
 export default function AIBillingDashboard() {
   const { user } = useAuth();
