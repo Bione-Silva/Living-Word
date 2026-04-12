@@ -3,11 +3,115 @@ project_id = "livingword"
 [api]
 port = 54321
 
-[functions.multiply-sermon]
+[functions.accept-team-invite]
 enabled = true
 verify_jwt = false
 
-[functions.sermon-research]
+[functions.ai-tool]
+enabled = true
+verify_jwt = false
+
+[functions.anonymize-emotional-logs]
+enabled = true
+verify_jwt = false
+
+[functions.check-and-consume-credits]
+enabled = true
+verify_jwt = false
+
+[functions.check-inactive-minds]
+enabled = true
+verify_jwt = false
+
+[functions.create-checkout]
+enabled = true
+verify_jwt = false
+
+[functions.create-checkout-session]
+enabled = true
+verify_jwt = false
+
+[functions.create-customer-portal]
+enabled = true
+verify_jwt = false
+
+[functions.deep-search]
+enabled = true
+verify_jwt = false
+
+[functions.enrich-illustrations]
+enabled = true
+verify_jwt = false
+
+[functions.expos-celula]
+enabled = true
+verify_jwt = false
+
+[functions.expos-classe]
+enabled = true
+verify_jwt = false
+
+[functions.expos-discipulado]
+enabled = true
+verify_jwt = false
+
+[functions.expos-generate]
+enabled = true
+verify_jwt = false
+
+[functions.expos-individual]
+enabled = true
+verify_jwt = false
+
+[functions.expos-sermao]
+enabled = true
+verify_jwt = false
+
+[functions.fetch-bible-verse]
+enabled = true
+verify_jwt = false
+
+[functions.generate-admin-analytics]
+enabled = true
+verify_jwt = false
+
+[functions.generate-biblical-study]
+enabled = true
+verify_jwt = false
+
+[functions.generate-blog-article]
+enabled = true
+verify_jwt = false
+
+[functions.generate-devotional-batch]
+enabled = true
+verify_jwt = false
+
+[functions.generate-emotional-support]
+enabled = true
+verify_jwt = false
+
+[functions.generate-kids-story]
+enabled = true
+verify_jwt = false
+
+[functions.generate-pastoral-material]
+enabled = true
+verify_jwt = false
+
+[functions.generate-sermon]
+enabled = true
+verify_jwt = false
+
+[functions.generate-social-carousel]
+enabled = true
+verify_jwt = false
+
+[functions.generate-verse]
+enabled = true
+verify_jwt = false
+
+[functions.get-bible-verse]
 enabled = true
 verify_jwt = false
 
@@ -15,10 +119,82 @@ verify_jwt = false
 enabled = true
 verify_jwt = false
 
-[functions.track-pageview]
+[functions.import-bible]
+enabled = true
+verify_jwt = false
+
+[functions.mind-chat]
+enabled = true
+verify_jwt = false
+
+[functions.multiply-sermon]
+enabled = true
+verify_jwt = false
+
+[functions.og-blog-article]
+enabled = true
+verify_jwt = false
+
+[functions.process-youtube-audio]
+enabled = true
+verify_jwt = false
+
+[functions.provision-user-blog]
+enabled = true
+verify_jwt = false
+
+[functions.publish-social]
+enabled = true
+verify_jwt = false
+
+[functions.publish-to-wordpress]
 enabled = true
 verify_jwt = false
 
 [functions.recommend-devotional]
+enabled = true
+verify_jwt = false
+
+[functions.reset-free-credits]
+enabled = true
+verify_jwt = false
+
+[functions.schedule-publication]
+enabled = true
+verify_jwt = false
+
+[functions.search-pastoral-tools]
+enabled = true
+verify_jwt = false
+
+[functions.send-team-invite]
+enabled = true
+verify_jwt = false
+
+[functions.send-welcome-email]
+enabled = true
+verify_jwt = false
+
+[functions.sermon-research]
+enabled = true
+verify_jwt = false
+
+[functions.setup-webhook]
+enabled = true
+verify_jwt = false
+
+[functions.stripe-webhook]
+enabled = true
+verify_jwt = false
+
+[functions.support-agent]
+enabled = true
+verify_jwt = false
+
+[functions.track-pageview]
+enabled = true
+verify_jwt = false
+
+[functions.update-streak]
 enabled = true
 verify_jwt = false
