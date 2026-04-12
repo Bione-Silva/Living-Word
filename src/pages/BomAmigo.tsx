@@ -261,7 +261,7 @@ export default function BomAmigo() {
       </div>
 
       {/* Input area */}
-      <div className="shrink-0 border-t border-border px-4 py-3 bg-background">
+      <div className="shrink-0 border-t border-border px-4 py-3 pb-20 md:pb-3 bg-background">
         <div className="flex items-end gap-2">
           <textarea
             ref={inputRef}
