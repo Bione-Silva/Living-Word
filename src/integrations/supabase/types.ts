@@ -790,6 +790,48 @@ export type Database = {
           },
         ]
       }
+      page_views: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device: string | null
+          id: string
+          path: string
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          id?: string
+          path: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          id?: string
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
