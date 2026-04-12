@@ -94,6 +94,21 @@ export default function Login() {
 
         {/* Card */}
         <div className="rounded-2xl border border-[hsl(30,15%,82%)]/60 bg-white/80 backdrop-blur-sm shadow-[0_8px_40px_hsl(28,20%,50%,0.08)] p-8 sm:p-10">
+          {/* Dev-only Master Quick Access */}
+          {import.meta.env.DEV && (
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('bx4usa@gmail.com');
+                setForgotMode(false);
+                toast.info('Email master preenchido — digite a senha e clique Entrar.');
+              }}
+              className="w-full mb-6 py-4 text-lg font-bold rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:scale-[1.02] transition-transform"
+            >
+              🔥 Acesso Rápido Master (bx4usa@gmail.com)
+            </button>
+          )}
+
           <h2 className="font-display text-2xl font-bold text-center mb-7" style={{ color: 'hsl(24, 30%, 18%)' }}>
             {forgotMode ? (t('auth.forgot') || 'Recuperar senha') : (t('auth.login') || 'Entrar')}
           </h2>

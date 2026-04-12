@@ -142,7 +142,7 @@ export default function AppLayout() {
     setMobileOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const isAdmin = user?.email === 'bionicaosilva@gmail.com';
+  const isAdmin = user?.email === 'bx4usa@gmail.com';
 
   const handleToolClick = (tool: SidebarToolItem) => {
     if (isToolLockedForPlan(tool.id, userPlan)) {
