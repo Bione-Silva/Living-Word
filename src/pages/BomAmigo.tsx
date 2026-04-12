@@ -183,7 +183,7 @@ export default function BomAmigo() {
   const isEmpty = messages.length === 0 && !loading && historyLoaded;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] pb-28 md:pb-0 max-w-3xl mx-auto">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] pb-16 md:pb-0 max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border shrink-0">
         <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
