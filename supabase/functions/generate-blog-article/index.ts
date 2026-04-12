@@ -3,9 +3,6 @@
  *
  * Core da Frente B: Motor de Conteúdo
  * Gera artigos de blog cristão por categoria, com SEO otimizado.
- *
- * CONVERSÃO: Free = 1 artigo/mês. Pastoral = 20/mês.
- * Gatilho 4: ao gerar 2º artigo free, banner exibido.
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
@@ -29,14 +26,6 @@ import {
 import { fetchBibleVerse } from "../common/bible-fetch.ts"
 
 const openai = new OpenAI({ apiKey: Deno.env.get("OPENAI_API_KEY")! })
-
-// Limites de artigos de blog por plano
-const BLOG_LIMITS: Record<string, number> = {
-  free: 1,
-  pastoral: 20,
-  church: 100,
-  ministry: 999,
-}
 
 const TARGET_LENGTH: Record<string, { min: number; max: number }> = {
   short:  { min: 300, max: 500 },
@@ -115,23 +104,30 @@ serve(async (req: Request) => {
   const scopedClient = createScopedClient(authHeader)
   const adminClient = createAdminClient()
 
-  // 2. Parse body
+  // 2. Parse body — accept both "passage" (frontend) and "bible_passage" (legacy)
+  const body = await req.json()
   const {
-    bible_passage, audience = "", pain_point = "",
+    audience = "", pain_point = "",
     doctrine_line, language = "PT", pastoral_voice,
     bible_version, category = "devotional",
     target_length = "medium", article_goal = "encourage",
-    is_onboarding = false, is_conversion = false, source_document = ""
-  } = await req.json()
+    is_onboarding = false, is_conversion = false, source_document = "",
+    source_content, source_type, title: inputTitle,
+  } = body
+  
+  const bible_passage = body.bible_passage || body.passage || ""
 
-  if (!bible_passage || !category) {
-    return errorResponse("bible_passage and category required", 400)
+  if (!bible_passage && !source_content) {
+    return errorResponse("passage (tema do artigo) is required", 400)
   }
 
-  // 3. Dados do usuário (RLS via scoped client)
-  const { data: userData } = await scopedClient
-    .from("profiles")
-    .select("plan, credits_remaining, doctrine_preference, pastoral_voice, bible_version, language_preference, full_name")
+  // Use passage as pain_point if pain_point is empty (the modal sends the topic as "passage")
+  const resolvedPainPoint = pain_point || bible_passage
+
+  // 3. Dados do usuário — use "users" table (profiles only has id)
+  const { data: userData } = await adminClient
+    .from("users")
+    .select("plan, doctrine_preference, pastoral_voice, bible_version, language_preference, full_name, generation_count_month")
     .eq("id", user.id)
     .single()
 
@@ -146,7 +142,7 @@ serve(async (req: Request) => {
     })
   }
 
-  // 5. Verificar e debitar créditos (5 créditos por post)
+  // 5. Verificar e debitar créditos
   const postCost = getGenerationCost('post')
   const creditResult = await checkAndDebitCredits(adminClient, user.id, 'post', undefined, postCost)
   if (!creditResult.success) {
@@ -161,21 +157,26 @@ serve(async (req: Request) => {
     })
   }
 
-  // 5. Resolver preferências
+  // 6. Resolver preferências
   const resolvedLanguage = language ?? userData.language_preference ?? "PT"
   const resolvedVersion = bible_version ?? userData.bible_version ?? "ARA"
   const resolvedDoctrine = doctrine_line ?? userData.doctrine_preference ?? "evangelical_general"
   const resolvedVoice = pastoral_voice ?? userData.pastoral_voice ?? "welcoming"
   const authorName = userData.full_name ?? "Autor"
 
-  // 6. Detectar tópicos sensíveis
-  const sensitiveTopics = detectSensitiveTopics(`${pain_point} ${audience}`, resolvedLanguage)
+  // 7. Detectar tópicos sensíveis
+  const sensitiveTopics = detectSensitiveTopics(`${resolvedPainPoint} ${audience}`, resolvedLanguage)
 
-  // 7. Buscar versículo real
-  const verseResult = await fetchBibleVerse(bible_passage, resolvedVersion as any, resolvedLanguage)
-  const verseText = verseResult?.text ?? ""
+  // 8. Buscar versículo real (only if it looks like a Bible reference)
+  let verseText = ""
+  try {
+    const verseResult = await fetchBibleVerse(bible_passage, resolvedVersion as any, resolvedLanguage)
+    verseText = verseResult?.text ?? ""
+  } catch {
+    // Not a verse reference — that's fine, it's a topic
+  }
 
-  // 7.5 Buscar Comentários Históricos (Vector RAG)
+  // 8.5 Buscar Comentários Históricos (Vector RAG) — silently skip if RPC doesn't exist
   let historicalContext = ""
   try {
     const embeddingResponse = await fetch("https://api.openai.com/v1/embeddings", {
@@ -188,7 +189,7 @@ serve(async (req: Request) => {
       const embeddingJson = await embeddingResponse.json()
       const queryEmbedding = embeddingJson.data[0].embedding
       
-      const { data: commentaries } = await adminClient.rpc("match_commentaries", {
+      const { data: commentaries } = await adminClient.rpc("match_commentary", {
         query_embedding: queryEmbedding,
         match_threshold: 0.70,
         match_count: 3
@@ -197,29 +198,32 @@ serve(async (req: Request) => {
       if (commentaries && commentaries.length > 0) {
         historicalContext = "\nObrigatoriamente mencione e referencie estas visões clássicas no corpo do texto ('Conforme o historiador X...'):\n"
         commentaries.forEach((c: any) => {
-          historicalContext += `- Segundo ${c.author_name} (Sobre ${c.book_name}): "${c.commentary_text}"\n`
+          historicalContext += `- Segundo ${c.source} (Sobre ${c.book} ${c.chapter}:${c.verse_start}): "${c.commentary_text}"\n`
         })
       }
     }
   } catch (e) {
-    console.error("RAG Error:", e)
+    console.error("RAG Error (non-blocking):", e)
   }
 
-  // 8. Gerar artigo
+  // 9. Gerar artigo
+  const effectivePassage = source_content || bible_passage
   const prompt = buildBlogPrompt({
     language: resolvedLanguage,
     doctrine_line: resolvedDoctrine,
     pastoral_voice: resolvedVoice,
     bible_version: resolvedVersion,
-    audience, pain_point, bible_passage,
+    audience, 
+    pain_point: resolvedPainPoint,
+    bible_passage: effectivePassage,
     verse_text: verseText,
     category, target_length, article_goal,
     sensitive_topics: sensitiveTopics,
     author_name: authorName,
     historical_context: historicalContext,
-    is_onboarding: is_onboarding,
-    is_conversion: is_conversion,
-    source_document: source_document,
+    is_onboarding,
+    is_conversion,
+    source_document,
   })
 
   const start = Date.now()
@@ -229,7 +233,7 @@ serve(async (req: Request) => {
   const llmResponse = await openai.chat.completions.create({
     model: modelToUse,
     messages: [{ role: "user", content: prompt }],
-    max_tokens: 3000, // increased tokens to ensure it can output 800 words + 4 image prompts
+    max_tokens: 3000,
     temperature: 0.75,
   })
 
@@ -237,9 +241,7 @@ serve(async (req: Request) => {
   const rawOutput = llmResponse.choices[0].message.content ?? "{}"
   const inputTokens = llmResponse.usage?.prompt_tokens ?? 0
   const outputTokens = llmResponse.usage?.completion_tokens ?? 0
-  const costUsd = useProModel 
-    ? (inputTokens * 0.0000025) + (outputTokens * 0.00001) // GPT-4o pricing approx
-    : (inputTokens * 0.00000015) + (outputTokens * 0.0000006) // mini pricing
+  const costUsd = estimateApiCostUsd(modelToUse, inputTokens, outputTokens)
 
   let article: any
   try {
@@ -248,15 +250,14 @@ serve(async (req: Request) => {
     article = { title: "Artigo gerado", body: rawOutput, meta_description: "", seo_slug: "", tags: [], word_count: 0 }
   }
 
-  // NOVA LÓGICA: Extrair [IMAGE_PROMPT: ...] e gerar via Gemini Imagen 3
+  // 10. Extrair [IMAGE_PROMPT: ...] e gerar via Gemini Imagen 3
   const imagePromptRegex = /\[IMAGE_PROMPT:\s*(.+?)\]/g;
   let match;
   const imagePromises: Promise<{ placeholder: string, url: string }>[] = [];
 
-  const maxImages = is_onboarding ? 1 : 10; // Deixa o prompt LLM decidir de acordo com as palavras (3 ou 5)
+  const maxImages = is_onboarding ? 1 : 10;
   const geminiKey = Deno.env.get("GEMINI_API_KEY");
 
-  // Helper para base64 -> Uint8Array
   const decodeBase64 = (b64: string) => {
     const binString = atob(b64);
     const size = binString.length;
@@ -286,7 +287,6 @@ serve(async (req: Request) => {
         const b64 = data.predictions?.[0]?.bytesBase64Encoded;
         if (!b64) throw new Error("No image data returned from Gemini");
         
-        // Upload to Supabase Storage
         const fileName = `${crypto.randomUUID()}.jpg`;
         const filePath = `generated/${fileName}`;
         const { error: uploadErr } = await adminClient.storage
@@ -300,7 +300,7 @@ serve(async (req: Request) => {
       })
       .catch((err) => {
         console.error("Gemini Imagen Error:", err);
-        return { placeholder: fullTag, url: "https://via.placeholder.com/1024x576?text=Image+Generation+Failed" };
+        return { placeholder: fullTag, url: "" };
       });
       imagePromises.push(p);
     }
@@ -308,21 +308,25 @@ serve(async (req: Request) => {
 
   const generatedImages = await Promise.all(imagePromises);
 
-  // Substituir na string do corpo final
   generatedImages.forEach(({ placeholder, url }) => {
-    // Usamos um alt generico ou apagamos, o importante é substituir o placeholder
-    article.body = article.body.replace(placeholder, `\n\n![Ilustração editorial](${url})\n\n`);
+    if (url) {
+      article.body = article.body.replace(placeholder, `\n\n![Ilustração editorial](${url})\n\n`);
+    } else {
+      article.body = article.body.replace(placeholder, "");
+    }
   });
 
-  // Limpar qualquer sobressalente se gerou mais de 4
+  // Limpar sobressalentes
   article.body = article.body.replace(/\[IMAGE_PROMPT:.*?\]/g, "");
 
-  // 9. Salvar material (scoped client)
-  const { data: material } = await scopedClient.from("materials").insert({
+  // 11. Salvar material
+  const { data: material, error: materialErr } = await adminClient.from("materials").insert({
     user_id: user.id,
     mode: "blog",
     language: resolvedLanguage,
-    bible_passage, audience, pain_point,
+    bible_passage: bible_passage || null,
+    audience: audience || null,
+    pain_point: resolvedPainPoint || null,
     doctrine_line: resolvedDoctrine,
     pastoral_voice: resolvedVoice,
     bible_version: resolvedVersion,
@@ -337,14 +341,11 @@ serve(async (req: Request) => {
     generation_time_ms: generationMs,
   }).select().single()
 
-  // 10. Criar rascunho editorial
-  await scopedClient.from("editorial_queue").insert({
-    user_id: user.id,
-    material_id: material?.id,
-    status: "draft",
-  })
+  if (materialErr) {
+    console.error("Material save error:", materialErr)
+  }
 
-  // 11. Log de billing com créditos
+  // 12. Log de billing
   await adminClient.from("generation_logs").insert({
     user_id: user.id,
     material_id: material?.id,
@@ -353,37 +354,19 @@ serve(async (req: Request) => {
     input_tokens: inputTokens,
     output_tokens: outputTokens,
     generation_time_ms: generationMs,
-    llm_model: Deno.env.get("LLM_MODEL") ?? "gpt-4o-mini",
+    llm_model: modelToUse,
     cost_usd: costUsd,
-    credits_consumed: postCost,
-  })
+  }).then(({ error }) => { if (error) console.error("Log save error:", error) })
 
-  // 12. Gatilho de conversão: créditos baixos
-  const isFree = userData.plan === "free"
-  const planMax = PLAN_CREDITS[userData.plan] ?? 500
-
-  if (isFree && creditResult.remaining < planMax * 0.20) {
-    await adminClient.from("conversion_events").insert({
-      user_id: user.id,
-      event_type: "upgrade_cta_shown",
-      trigger_name: "blog_limit",
-      user_type: "influencer",
-    })
-  }
-
+  // 13. Resposta — match what frontend expects
   return jsonResponse({
+    success: true,
     material_id: material?.id,
-    editorial_queue_id: material?.id,
+    title: article.title,
+    content: article.body,
     article,
     generation_time_ms: generationMs,
     credits_consumed: postCost,
     credits_remaining: creditResult.remaining,
-    upgrade_hint: isFree && creditResult.remaining < planMax * 0.20
-      ? {
-          message: `Restam apenas ${creditResult.remaining} créditos dos seus ${planMax} mensais. Upgrade para continuar gerando.`,
-          cta: "upgrade",
-          trial_days: 7,
-        }
-      : null,
   })
 })
