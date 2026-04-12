@@ -167,16 +167,16 @@ export function InlineVerseToolbar({
 
       {/* Actions */}
       <button onClick={handleFavorite} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Star className={`h-4 w-4 ${allFavorited ? 'text-yellow-500 fill-yellow-500' : 'text-foreground/60'}`} />
+        <Star className={`h-4 w-4 ${allFavorited ? 'text-yellow-500 fill-yellow-500' : 'text-foreground/70'}`} />
       </button>
       <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Copy className="h-4 w-4 text-foreground/60" />
+        <Copy className="h-4 w-4 text-foreground/70" />
       </button>
       <button onClick={handleShare} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Share2 className="h-4 w-4 text-foreground/60" />
+        <Share2 className="h-4 w-4 text-foreground/70" />
       </button>
       <button onClick={() => setShowNote(true)} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Pencil className="h-4 w-4 text-foreground/60" />
+        <Pencil className="h-4 w-4 text-foreground/70" />
       </button>
 
       <div className="w-px h-4 bg-border mx-1" />
