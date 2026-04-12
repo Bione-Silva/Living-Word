@@ -116,7 +116,15 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     return verseNum >= highlightRange.start && verseNum <= end;
   };
 
-  const { primary: primaryVersions, secondary: secondaryVersions } = useMemo(() => getVersionsForUserLanguage(lang), [lang]);
+  const { primary: primaryVersions, secondary: secondaryVersions } = useMemo(() => {
+    const result = getVersionsForUserLanguage(lang);
+    if (languageFilter) {
+      // When a language filter is active (e.g. from a sermon), only show versions in that language
+      const filtered = [...result.primary, ...result.secondary].filter(v => v.language === languageFilter);
+      return { primary: filtered, secondary: [] as BibleVersion[] };
+    }
+    return result;
+  }, [lang, languageFilter]);
   const currentVersion = getBibleVersion(translation);
   const currentTranslationLabel = currentVersion ? `${currentVersion.name} (${currentVersion.shortLabel})` : translation;
 
