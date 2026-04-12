@@ -115,9 +115,11 @@ export const bibleVersions: BibleVersion[] = [
 export function getVersionsByLanguage(): Record<string, BibleVersion[]> {
   const pt = bibleVersions.filter(v => v.language === 'PT');
   const en = bibleVersions.filter(v => v.language === 'EN');
+  const es = bibleVersions.filter(v => v.language === 'ES');
   const groups: Record<string, BibleVersion[]> = {};
   if (pt.length) groups['Português'] = pt;
   if (en.length) groups['English'] = en;
+  if (es.length) groups['Español'] = es;
   return groups;
 }
 
