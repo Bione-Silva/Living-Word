@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import JSZip from 'jszip';

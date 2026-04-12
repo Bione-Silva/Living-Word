@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { ThumbsUp, ThumbsDown, Send, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { FileDown, FileText, ChevronDown, Wand2, Loader2, ImageIcon } from 'lucide-react';

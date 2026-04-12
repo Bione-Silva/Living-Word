@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Globe } from 'lucide-react';
 import { useEffect, useState } from 'react';

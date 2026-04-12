@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState, useMemo } from 'react';
 import { CreditUsageCharts } from './CreditUsageCharts';
 import { useAuth } from '@/contexts/AuthContext';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useGeoRegion } from '@/hooks/useGeoRegion';

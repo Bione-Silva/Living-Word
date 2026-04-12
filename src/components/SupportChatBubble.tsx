@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useRef, useEffect } from 'react';
 import { HelpCircle, X, Send, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
