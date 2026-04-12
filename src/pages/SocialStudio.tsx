@@ -206,7 +206,7 @@ export default function SocialStudio() {
         .upload(fileName, blob, { contentType: 'image/png' });
       if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from('social_arts').getPublicUrl(fileName);
-      await supabase.from('social_arts').insert({
+      await (supabase as any).from('social_arts').insert({
         user_id: user.id,
         file_path: fileName,
         file_url: urlData.publicUrl,

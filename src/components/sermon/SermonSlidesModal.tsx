@@ -159,7 +159,7 @@ export function SermonSlidesModal({ open, onOpenChange, sermonMarkdown, sermonTi
       setActiveSlide(0);
       setVariationCount(prev => prev + 1);
       if (user && newSlides.length > 0) {
-        await supabase.from('visual_outputs' as any).insert({
+        await (supabase as any).from('visual_outputs' as any).insert({
           user_id: user.id,
           material_id: materialId || null,
           output_type: 'slides',

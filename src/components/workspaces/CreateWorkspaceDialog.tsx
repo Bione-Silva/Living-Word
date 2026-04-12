@@ -26,7 +26,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange }: Props) {
   const createMutation = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error('Not authenticated');
-      const { error } = await supabase.from('workspaces').insert({
+      const { error } = await (supabase as any).from('workspaces').insert({
         user_id: user.id,
         name: name.trim(),
         description: description.trim() || null,

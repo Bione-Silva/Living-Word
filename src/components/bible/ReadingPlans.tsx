@@ -113,14 +113,14 @@ export function ReadingPlans({ onNavigate }: Props) {
     if (!user) return;
     const current = progress[planId] || new Set();
     if (current.has(dayNum)) {
-      await supabase.from('reading_plan_progress')
+      await (supabase as any).from('reading_plan_progress')
         .delete()
         .eq('user_id', user.id)
         .eq('plan_id', planId)
         .eq('day_number', dayNum);
       current.delete(dayNum);
     } else {
-      await supabase.from('reading_plan_progress').insert({
+      await (supabase as any).from('reading_plan_progress').insert({
         user_id: user.id,
         plan_id: planId,
         day_number: dayNum,

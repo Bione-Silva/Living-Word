@@ -67,7 +67,7 @@ export default function Quiz() {
   // Load user score
   useEffect(() => {
     if (!user) return;
-    supabase.from('quiz_scores').select('*').eq('user_id', user.id).maybeSingle()
+    (supabase as any).from('quiz_scores').select('*').eq('user_id', user.id).maybeSingle()
       .then(({ data }) => { if (data) setScoreData(data as ScoreData); });
   }, [user]);
 
@@ -140,7 +140,7 @@ Return ONLY valid JSON array: [{"question":"...","options":["A","B","C","D"],"co
     if (!user) return;
 
     // Save session
-    await supabase.from('quiz_sessions').insert({
+    await (supabase as any).from('quiz_sessions').insert({
       user_id: user.id,
       category,
       score: correctCount,
@@ -158,11 +158,11 @@ Return ONLY valid JSON array: [{"question":"...","options":["A","B","C","D"],"co
         best_streak: Math.max(scoreData.best_streak, bestStreak),
         level: Math.floor((scoreData.total_xp + xp) / 100) + 1,
       };
-      await supabase.from('quiz_scores').update(newData).eq('user_id', user.id);
+      await (supabase as any).from('quiz_scores').update(newData).eq('user_id', user.id);
       setScoreData({ ...scoreData, ...newData });
     } else {
       const newData = { user_id: user.id, total_xp: xp, games_played: 1, best_streak: bestStreak, level: Math.floor(xp / 100) + 1 };
-      await supabase.from('quiz_scores').insert(newData);
+      await (supabase as any).from('quiz_scores').insert(newData);
       setScoreData(newData as ScoreData);
     }
   };

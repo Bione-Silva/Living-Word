@@ -44,6 +44,6 @@ export async function saveMessage(
 
   if (excess && excess.length > 0) {
     const ids = excess.map((r) => r.id);
-    await supabase.from('chat_messages').delete().in('id', ids);
+    await (supabase as any).from('chat_messages').delete().in('id', ids);
   }
 }

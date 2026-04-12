@@ -196,7 +196,7 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
         const materialType = mode === 'lesson' ? 'outline' : outputMode;
         const label = mode === 'sermon' ? 'Sermão' : mode === 'devotional' ? 'Devocional' : 'Aula';
 
-        const { error: saveError } = await supabase.from('materials').insert({
+        const { error: saveError } = await (supabase as any).from('materials').insert({
           user_id: user.id,
           title: `${label} — ${studyTitle}`,
           type: materialType,

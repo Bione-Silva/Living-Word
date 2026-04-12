@@ -31,7 +31,7 @@ export default function AIBillingDashboard() {
   const loadMetrics = async () => {
     setLoading(true);
     try {
-      const { data: rpcData, error } = await supabase.rpc('get_admin_ai_metrics' as any);
+      const { data: rpcData, error } = await (supabase as any).rpc('get_admin_ai_metrics' as any);
       if (!error && rpcData) {
         const metrics = rpcData as unknown as AIMetrics;
         // Only use real data if there are actual generations

@@ -256,7 +256,7 @@ export default function Sermoes() {
 
   const refreshSessions = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase.from('materials').select('id, title, content, passage, created_at').eq('user_id', user.id).eq('type', 'sermon').order('created_at', { ascending: false }).limit(20);
+    const { data } = await (supabase as any).from('materials').select('id, title, content, passage, created_at').eq('user_id', user.id).eq('type', 'sermon').order('created_at', { ascending: false }).limit(20);
     if (data) {
       setSessions(data.map(d => ({
         id: d.id, title: d.title, content: d.content, passage: d.passage || '',
@@ -289,7 +289,7 @@ export default function Sermoes() {
       setSermonTitle(title);
 
       // Save to DB
-      const { data: insertedData } = await supabase.from('materials').insert({
+      const { data: insertedData } = await (supabase as any).from('materials').insert({
         user_id: user.id, type: 'sermon', title, content, language: lang, passage: topicText.trim(),
       }).select('id').single();
       if (insertedData) setActiveSessionId(insertedData.id);
@@ -333,7 +333,7 @@ export default function Sermoes() {
   };
 
   const handleDeleteSession = async (id: string) => {
-    await supabase.from('materials').delete().eq('id', id);
+    await (supabase as any).from('materials').delete().eq('id', id);
     setSessions(prev => prev.filter(s => s.id !== id));
     if (activeSessionId === id) handleNewSermon();
   };
@@ -409,9 +409,9 @@ export default function Sermoes() {
   const handleSave = async () => {
     if (!sermonContent || !user) return;
     if (activeSessionId) {
-      await supabase.from('materials').update({ content: sermonContent, title: sermonTitle }).eq('id', activeSessionId);
+      await (supabase as any).from('materials').update({ content: sermonContent, title: sermonTitle }).eq('id', activeSessionId);
     } else {
-      const { data } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content: sermonContent, language: lang, passage: sermonTopic }).select('id').single();
+      const { data } = await (supabase as any).from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content: sermonContent, language: lang, passage: sermonTopic }).select('id').single();
       if (data) setActiveSessionId(data.id);
     }
     toast.success(labels.saved[lang]);

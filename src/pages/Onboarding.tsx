@@ -116,7 +116,7 @@ export default function Onboarding() {
   const handleFinish = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.from('profiles').update({
+      const { error } = await (supabase as any).from('profiles').update({
         church_name: churchName || null,
         denomination: denomination || null,
         church_role: churchRole || null,
@@ -147,7 +147,7 @@ export default function Onboarding() {
 
   const handleSkip = async () => {
     try {
-      await supabase.from('profiles').update({ profile_completed: true }).eq('id', profile!.id);
+      await (supabase as any).from('profiles').update({ profile_completed: true }).eq('id', profile!.id);
       await refreshProfile();
       navigate('/dashboard');
     } catch {

@@ -163,7 +163,7 @@ export default function Calendario() {
   const scheduleMutation = useMutation({
     mutationFn: async ({ materialId, day, hour, minute }: { materialId: string; day: number; hour: number; minute: number }) => {
       const scheduledAt = new Date(year, month, day, hour, minute, 0).toISOString();
-      const { error } = await supabase.from('editorial_queue').insert({
+      const { error } = await (supabase as any).from('editorial_queue').insert({
         user_id: user!.id,
         material_id: materialId,
         status: 'scheduled',
@@ -184,7 +184,7 @@ export default function Calendario() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('editorial_queue').delete().eq('id', id);
+      const { error } = await (supabase as any).from('editorial_queue').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {

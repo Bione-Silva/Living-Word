@@ -496,7 +496,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
       if (blogArticle.queue_id) {
         await (supabase as any).from('editorial_queue').delete().eq('id', blogArticle.queue_id);
       }
-      const { error } = await supabase.from('materials').delete().eq('id', blogArticle.id);
+      const { error } = await (supabase as any).from('materials').delete().eq('id', blogArticle.id);
       if (error) throw error;
       setEditorOpen(false);
       setBlogArticle(null);

@@ -32,19 +32,19 @@ export const BibleTabs = forwardRef<HTMLDivElement, BibleTabsProps>(
 
     useEffect(() => {
       if (!user) return;
-      supabase.from('bible_favorites').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50)
+      (supabase as any).from('bible_favorites').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50)
         .then(({ data }) => { if (data) setFavorites(data as FavoriteRow[]); });
-      supabase.from('bible_notes').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50)
+      (supabase as any).from('bible_notes').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50)
         .then(({ data }) => { if (data) setNotes(data as NoteRow[]); });
     }, [user, refreshKey]);
 
     const removeFav = async (id: string) => {
-      await supabase.from('bible_favorites').delete().eq('id', id);
+      await (supabase as any).from('bible_favorites').delete().eq('id', id);
       setFavorites(prev => prev.filter(f => f.id !== id));
     };
 
     const removeNote = async (id: string) => {
-      await supabase.from('bible_notes').delete().eq('id', id);
+      await (supabase as any).from('bible_notes').delete().eq('id', id);
       setNotes(prev => prev.filter(n => n.id !== id));
     };
 

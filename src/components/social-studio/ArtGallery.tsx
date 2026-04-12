@@ -53,7 +53,7 @@ export function ArtGallery({ lang, refreshTrigger }: Props) {
 
   const handleDelete = async (art: ArtItem) => {
     await supabase.storage.from('social_arts').remove([art.file_path]);
-    await supabase.from('social_arts').delete().eq('id', art.id);
+    await (supabase as any).from('social_arts').delete().eq('id', art.id);
     setArts(prev => prev.filter(a => a.id !== art.id));
     setPreview(null);
     toast.success(l.deleted);

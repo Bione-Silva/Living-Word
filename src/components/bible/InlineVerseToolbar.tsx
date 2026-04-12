@@ -92,12 +92,12 @@ export function InlineVerseToolbar({
       const isFav = favoritedVerses.has(v.verse);
       if (allFavorited) {
         // Remove all
-        await supabase.from('bible_favorites')
+        await (supabase as any).from('bible_favorites')
           .delete().eq('user_id', user.id).eq('book_id', bookId)
           .eq('chapter_number', chapter).eq('verse_number', v.verse);
       } else if (!isFav) {
         // Add missing
-        await supabase.from('bible_favorites').insert({
+        await (supabase as any).from('bible_favorites').insert({
           user_id: user.id, book_id: bookId, chapter_number: chapter,
           verse_number: v.verse, verse_text: v.text.trim(),
           translation_code: translationCode, language: lang,
@@ -112,7 +112,7 @@ export function InlineVerseToolbar({
     if (!user || !noteText.trim()) return;
     setSaving(true);
     // Save note on first verse
-    await supabase.from('bible_notes').insert({
+    await (supabase as any).from('bible_notes').insert({
       user_id: user.id, book_id: bookId, chapter_number: chapter,
       verse_number: firstVerse.verse, note_text: noteText.trim(),
       translation_code: translationCode, language: lang,

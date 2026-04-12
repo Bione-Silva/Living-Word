@@ -71,7 +71,7 @@ export function WorkspaceDetail({ workspace, onBack }: Props) {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('workspaces').delete().eq('id', workspace.id);
+      const { error } = await (supabase as any).from('workspaces').delete().eq('id', workspace.id);
       if (error) throw error;
     },
     onSuccess: () => {

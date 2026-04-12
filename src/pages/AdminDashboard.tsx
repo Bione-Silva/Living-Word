@@ -75,7 +75,7 @@ export default function AdminDashboard() {
   const loadKpis = async () => {
     try {
       // Get SaaS metrics
-      const { data: metrics } = await supabase.rpc('get_admin_saas_metrics');
+      const { data: metrics } = await (supabase as any).rpc('get_admin_saas_metrics');
       const m = metrics?.[0];
 
       // Get page views in last 30 days
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
   };
 
   const loadVault = async () => {
-    const { data } = await supabase.from('master_api_vault').select('provider_id, api_key');
+    const { data } = await (supabase as any).from('master_api_vault').select('provider_id, api_key');
     if (data) {
       const keys: Record<string, string> = {};
       data.forEach((r: any) => { keys[r.provider_id] = r.api_key; });
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
   };
 
   const loadSettings = async () => {
-    const { data } = await supabase.from('global_settings').select('key, value');
+    const { data } = await (supabase as any).from('global_settings').select('key, value');
     if (data) {
       const s: Record<string, string> = {};
       data.forEach((r: any) => { s[r.key] = r.value; });
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
     const key = vaultKeys[providerId];
     if (!key?.trim()) return;
     setSavingKey(providerId);
-    const { error } = await supabase.from('master_api_vault').upsert(
+    const { error } = await (supabase as any).from('master_api_vault').upsert(
       { provider_id: providerId, api_key: key, updated_at: new Date().toISOString() },
       { onConflict: 'provider_id' }
     );
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
 
   const saveSetting = async (settingKey: string, value: string) => {
     setAiSettings((prev) => ({ ...prev, [settingKey]: value }));
-    const { error } = await supabase.from('global_settings').upsert(
+    const { error } = await (supabase as any).from('global_settings').upsert(
       { key: settingKey, value, updated_at: new Date().toISOString() },
       { onConflict: 'key' }
     );

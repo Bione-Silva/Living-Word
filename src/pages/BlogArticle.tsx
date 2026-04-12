@@ -101,7 +101,7 @@ export default function BlogArticle() {
   const { data: profile } = useQuery<PublicBlogProfile>({
     queryKey: ['blog-profile', handle],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_public_blog_profile', { p_handle: handle! });
+      const { data, error } = await (supabase as any).rpc('get_public_blog_profile', { p_handle: handle! });
       if (error) throw error;
       const row = Array.isArray(data) ? data[0] : data;
       if (!row) throw new Error('Profile not found');

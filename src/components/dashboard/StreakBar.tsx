@@ -75,7 +75,7 @@ function RankingPill({ lang, userId }: { lang: L; userId?: string }) {
   const [rank, setRank] = useState<number | null>(null);
   useEffect(() => {
     if (!userId) return;
-    supabase.from('quiz_scores').select('user_id').order('total_xp', { ascending: false }).limit(100)
+    (supabase as any).from('quiz_scores').select('user_id').order('total_xp', { ascending: false }).limit(100)
       .then(({ data }) => {
         if (!data) return;
         const idx = data.findIndex(d => d.user_id === userId);

@@ -190,7 +190,7 @@ export default function Blog() {
           .eq('id', article.queue_id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from('editorial_queue').insert({
+        const { error } = await (supabase as any).from('editorial_queue').insert({
           user_id: user!.id,
           material_id: article.id,
           status: 'published',
@@ -218,7 +218,7 @@ export default function Blog() {
           .eq('id', article.queue_id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from('editorial_queue').insert({
+        const { error } = await (supabase as any).from('editorial_queue').insert({
           user_id: user!.id,
           material_id: article.id,
           status: newStatus,
@@ -238,9 +238,9 @@ export default function Blog() {
     setDeleting(true);
     try {
       if (deleteTarget.queue_id) {
-        await supabase.from('editorial_queue').delete().eq('id', deleteTarget.queue_id);
+        await (supabase as any).from('editorial_queue').delete().eq('id', deleteTarget.queue_id);
       }
-      const { error } = await supabase.from('materials').delete().eq('id', deleteTarget.id);
+      const { error } = await (supabase as any).from('materials').delete().eq('id', deleteTarget.id);
       if (error) throw error;
       toast.success(t('blog.deleted_ok'));
       queryClient.invalidateQueries({ queryKey: ['my-blog-articles'] });

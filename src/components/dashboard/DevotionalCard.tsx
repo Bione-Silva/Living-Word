@@ -58,8 +58,8 @@ function EngagementBar({ devotionalId, lang }: { devotionalId: string; lang: L }
 
   const loadCounts = useCallback(async () => {
     const [{ count: lc }, { count: cc }] = await Promise.all([
-      supabase.from('devotional_likes').select('*', { count: 'exact', head: true }).eq('devotional_id', devotionalId),
-      supabase.from('devotional_comments').select('*', { count: 'exact', head: true }).eq('devotional_id', devotionalId),
+      (supabase as any).from('devotional_likes').select('*', { count: 'exact', head: true }).eq('devotional_id', devotionalId),
+      (supabase as any).from('devotional_comments').select('*', { count: 'exact', head: true }).eq('devotional_id', devotionalId),
     ]);
     setLikesCount(lc ?? 0);
     setCommentsCount(cc ?? 0);
@@ -80,11 +80,11 @@ function EngagementBar({ devotionalId, lang }: { devotionalId: string; lang: L }
   const toggleLike = async () => {
     if (!user) return;
     if (liked) {
-      await supabase.from('devotional_likes').delete().eq('devotional_id', devotionalId).eq('user_id', user.id);
+      await (supabase as any).from('devotional_likes').delete().eq('devotional_id', devotionalId).eq('user_id', user.id);
       setLiked(false);
       setLikesCount((c) => Math.max(0, c - 1));
     } else {
-      await supabase.from('devotional_likes').insert({ devotional_id: devotionalId, user_id: user.id });
+      await (supabase as any).from('devotional_likes').insert({ devotional_id: devotionalId, user_id: user.id });
       setLiked(true);
       setLikesCount((c) => c + 1);
     }
@@ -119,7 +119,7 @@ function EngagementBar({ devotionalId, lang }: { devotionalId: string; lang: L }
   const submitComment = async () => {
     if (!user || !newComment.trim()) return;
     setSubmitting(true);
-    await supabase.from('devotional_comments').insert({
+    await (supabase as any).from('devotional_comments').insert({
       devotional_id: devotionalId,
       user_id: user.id,
       text: newComment.trim(),

@@ -20,7 +20,7 @@ export function GenerationMetaFooter({ lang, meta }: GenerationMetaFooterProps) 
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    supabase.rpc('is_admin').then(({ data }) => {
+    (supabase as any).rpc('is_admin').then(({ data }) => {
       if (data === true) setIsAdmin(true);
     });
   }, []);
