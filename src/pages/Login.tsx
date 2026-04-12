@@ -99,19 +99,20 @@ export default function Login() {
             <button
               type="button"
               onClick={async () => {
-                const devPass = import.meta.env.VITE_DEV_MASTER_PASSWORD;
-                if (!devPass) {
-                  setEmail('bx4usa@gmail.com');
-                  setForgotMode(false);
-                  toast.error('Defina VITE_DEV_MASTER_PASSWORD no .env.local para login automático.');
-                  return;
+                const MASTER_EMAIL = 'bx4usa@gmail.com';
+                let cachedPass = localStorage.getItem('__dev_master_pass');
+                if (!cachedPass) {
+                  cachedPass = prompt('Digite a senha master (será salva para próximos acessos):');
+                  if (!cachedPass) return;
+                  localStorage.setItem('__dev_master_pass', cachedPass);
                 }
                 setLoading(true);
                 try {
-                  await signIn('bx4usa@gmail.com', devPass);
+                  await signIn(MASTER_EMAIL, cachedPass);
                   navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/dashboard');
                 } catch (err: any) {
-                  toast.error(err.message || 'Erro no login master');
+                  localStorage.removeItem('__dev_master_pass');
+                  toast.error(err.message || 'Erro no login master — senha removida, tente novamente.');
                 } finally {
                   setLoading(false);
                 }
