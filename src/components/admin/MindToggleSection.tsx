@@ -66,7 +66,7 @@ export function MindToggleSection() {
 
   const toggleMind = async (mindId: string, currentActive: boolean) => {
     setToggling(mindId);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('mind_settings')
       .update({ active: !currentActive, updated_at: new Date().toISOString() })
       .eq('mind_id', mindId);
