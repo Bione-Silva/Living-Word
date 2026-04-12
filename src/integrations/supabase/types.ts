@@ -14,342 +14,290 @@ export type Database = {
   }
   public: {
     Tables: {
-      bible_favorites: {
+      admin_cost_snapshot: {
         Row: {
-          book_id: string
-          chapter_number: number
+          conversion_rate_free_to_paid: number | null
           created_at: string
           id: string
-          language: string
-          translation_code: string
-          user_id: string
-          verse_number: number
-          verse_text: string
+          snapshot_date: string
+          tokens_input_total: number | null
+          tokens_output_total: number | null
+          total_api_cost: number | null
+          total_margin: number | null
+          total_mrr: number | null
+          users_church: number | null
+          users_free: number | null
+          users_ministry: number | null
+          users_pastoral: number | null
         }
         Insert: {
-          book_id: string
-          chapter_number: number
+          conversion_rate_free_to_paid?: number | null
           created_at?: string
           id?: string
-          language?: string
-          translation_code?: string
-          user_id: string
-          verse_number: number
-          verse_text?: string
+          snapshot_date: string
+          tokens_input_total?: number | null
+          tokens_output_total?: number | null
+          total_api_cost?: number | null
+          total_margin?: number | null
+          total_mrr?: number | null
+          users_church?: number | null
+          users_free?: number | null
+          users_ministry?: number | null
+          users_pastoral?: number | null
         }
         Update: {
-          book_id?: string
-          chapter_number?: number
+          conversion_rate_free_to_paid?: number | null
           created_at?: string
           id?: string
-          language?: string
-          translation_code?: string
-          user_id?: string
-          verse_number?: number
-          verse_text?: string
+          snapshot_date?: string
+          tokens_input_total?: number | null
+          tokens_output_total?: number | null
+          total_api_cost?: number | null
+          total_margin?: number | null
+          total_mrr?: number | null
+          users_church?: number | null
+          users_free?: number | null
+          users_ministry?: number | null
+          users_pastoral?: number | null
         }
         Relationships: []
       }
-      bible_highlights: {
+      bible_commentary_embeddings: {
         Row: {
-          book_id: string
-          chapter_number: number
-          color_key: string
+          book: string
+          chapter: number
+          commentary_text: string
           created_at: string
-          end_char_offset: number
-          end_verse_number: number
+          embedding: string | null
           id: string
           language: string
-          selected_text: string
-          start_char_offset: number
-          start_verse_number: number
-          translation_code: string
-          updated_at: string
-          user_id: string
+          source: string
+          verse_end: number | null
+          verse_start: number
         }
         Insert: {
-          book_id: string
-          chapter_number: number
-          color_key: string
+          book: string
+          chapter: number
+          commentary_text: string
           created_at?: string
-          end_char_offset?: number
-          end_verse_number: number
-          id?: string
-          language: string
-          selected_text: string
-          start_char_offset?: number
-          start_verse_number: number
-          translation_code: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          book_id?: string
-          chapter_number?: number
-          color_key?: string
-          created_at?: string
-          end_char_offset?: number
-          end_verse_number?: number
+          embedding?: string | null
           id?: string
           language?: string
-          selected_text?: string
-          start_char_offset?: number
-          start_verse_number?: number
-          translation_code?: string
-          updated_at?: string
-          user_id?: string
+          source: string
+          verse_end?: number | null
+          verse_start: number
+        }
+        Update: {
+          book?: string
+          chapter?: number
+          commentary_text?: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          language?: string
+          source?: string
+          verse_end?: number | null
+          verse_start?: number
+        }
+        Relationships: []
+      }
+      bible_streaks: {
+        Row: {
+          current_streak: number | null
+          id: string
+          last_activity_date: string | null
+          longest_streak: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          current_streak?: number | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          current_streak?: number | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "bible_highlights_user_id_fkey"
+            foreignKeyName: "bible_streaks_user_id_fkey"
             columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
+            isOneToOne: true
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
       }
-      bible_notes: {
+      bible_texts: {
         Row: {
-          book_id: string
-          chapter_number: number
-          created_at: string
-          id: string
-          language: string
-          note_text: string
-          translation_code: string
-          updated_at: string
-          user_id: string
-          verse_number: number
-        }
-        Insert: {
-          book_id: string
-          chapter_number: number
-          created_at?: string
-          id?: string
-          language?: string
-          note_text?: string
-          translation_code?: string
-          updated_at?: string
-          user_id: string
-          verse_number: number
-        }
-        Update: {
-          book_id?: string
-          chapter_number?: number
-          created_at?: string
-          id?: string
-          language?: string
-          note_text?: string
-          translation_code?: string
-          updated_at?: string
-          user_id?: string
-          verse_number?: number
-        }
-        Relationships: []
-      }
-      chat_messages: {
-        Row: {
-          agent_id: string
-          content: string
-          created_at: string
-          id: string
-          role: string
-          user_id: string
-        }
-        Insert: {
-          agent_id?: string
-          content: string
-          created_at?: string
-          id?: string
-          role: string
-          user_id: string
-        }
-        Update: {
-          agent_id?: string
-          content?: string
-          created_at?: string
-          id?: string
-          role?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      devocional_compartilhamentos: {
-        Row: {
-          cliques: number
-          created_at: string
-          devocional_date: string
-          id: string
-          share_token: string
-          user_id: string
-        }
-        Insert: {
-          cliques?: number
-          created_at?: string
-          devocional_date: string
-          id?: string
-          share_token: string
-          user_id: string
-        }
-        Update: {
-          cliques?: number
-          created_at?: string
-          devocional_date?: string
-          id?: string
-          share_token?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      devotional_comments: {
-        Row: {
-          created_at: string
-          devotional_id: string
+          book: string
+          chapter: number
           id: string
           text: string
-          user_id: string
+          translation: string
+          verse: number
         }
         Insert: {
-          created_at?: string
-          devotional_id: string
+          book: string
+          chapter: number
           id?: string
           text: string
-          user_id: string
+          translation: string
+          verse: number
         }
         Update: {
-          created_at?: string
-          devotional_id?: string
+          book?: string
+          chapter?: number
           id?: string
           text?: string
-          user_id?: string
+          translation?: string
+          verse?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "devotional_comments_devotional_id_fkey"
-            columns: ["devotional_id"]
-            isOneToOne: false
-            referencedRelation: "devotionals"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      devotional_engagements: {
+      content_library: {
         Row: {
-          action: string
+          author: string | null
+          category: string
           created_at: string
-          devotional_id: string | null
-          duration_seconds: number | null
-          emotional_response: string | null
           id: string
-          reflection_sentiment: string | null
-          reflection_text: string | null
-          series_number: number | null
-          theme: string | null
-          user_id: string
+          license_type: string
+          source_file: string | null
+          title: string
+          total_items: number | null
         }
         Insert: {
-          action: string
+          author?: string | null
+          category: string
           created_at?: string
-          devotional_id?: string | null
-          duration_seconds?: number | null
-          emotional_response?: string | null
           id?: string
-          reflection_sentiment?: string | null
-          reflection_text?: string | null
-          series_number?: number | null
-          theme?: string | null
-          user_id: string
+          license_type?: string
+          source_file?: string | null
+          title: string
+          total_items?: number | null
         }
         Update: {
-          action?: string
+          author?: string | null
+          category?: string
           created_at?: string
-          devotional_id?: string | null
-          duration_seconds?: number | null
-          emotional_response?: string | null
           id?: string
-          reflection_sentiment?: string | null
-          reflection_text?: string | null
-          series_number?: number | null
-          theme?: string | null
-          user_id?: string
+          license_type?: string
+          source_file?: string | null
+          title?: string
+          total_items?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "devotional_engagements_devotional_id_fkey"
-            columns: ["devotional_id"]
-            isOneToOne: false
-            referencedRelation: "devotionals"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      devotional_likes: {
+      content_sections: {
         Row: {
+          book: string | null
+          category: string
           created_at: string
-          devotional_id: string
+          historical_context: string | null
           id: string
-          user_id: string
+          library_id: string | null
+          metadata: Json | null
+          practical_application: string | null
+          reference: string | null
+          reflection_questions: Json | null
+          search_vector: unknown
+          summary: string | null
+          testament: string | null
+          theological_message: string | null
+          title: string
         }
         Insert: {
+          book?: string | null
+          category: string
           created_at?: string
-          devotional_id: string
+          historical_context?: string | null
           id?: string
-          user_id: string
+          library_id?: string | null
+          metadata?: Json | null
+          practical_application?: string | null
+          reference?: string | null
+          reflection_questions?: Json | null
+          search_vector?: unknown
+          summary?: string | null
+          testament?: string | null
+          theological_message?: string | null
+          title: string
         }
         Update: {
+          book?: string | null
+          category?: string
           created_at?: string
-          devotional_id?: string
+          historical_context?: string | null
           id?: string
-          user_id?: string
+          library_id?: string | null
+          metadata?: Json | null
+          practical_application?: string | null
+          reference?: string | null
+          reflection_questions?: Json | null
+          search_vector?: unknown
+          summary?: string | null
+          testament?: string | null
+          theological_message?: string | null
+          title?: string
         }
         Relationships: [
           {
-            foreignKeyName: "devotional_likes_devotional_id_fkey"
-            columns: ["devotional_id"]
+            foreignKeyName: "content_sections_library_id_fkey"
+            columns: ["library_id"]
             isOneToOne: false
-            referencedRelation: "devotionals"
+            referencedRelation: "content_library"
             referencedColumns: ["id"]
           },
         ]
       }
-      devotional_user_profiles: {
+      conversion_events: {
         Row: {
-          average_time_spent: number | null
-          consecutive_days_engaged: number | null
           created_at: string
-          favorite_themes: Json | null
-          last_devotional_id: string | null
-          last_devotional_theme: string | null
-          updated_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          plan_from: string | null
+          plan_to: string | null
+          trigger_name: string | null
           user_id: string
+          user_type: string | null
         }
         Insert: {
-          average_time_spent?: number | null
-          consecutive_days_engaged?: number | null
           created_at?: string
-          favorite_themes?: Json | null
-          last_devotional_id?: string | null
-          last_devotional_theme?: string | null
-          updated_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          plan_from?: string | null
+          plan_to?: string | null
+          trigger_name?: string | null
           user_id: string
+          user_type?: string | null
         }
         Update: {
-          average_time_spent?: number | null
-          consecutive_days_engaged?: number | null
           created_at?: string
-          favorite_themes?: Json | null
-          last_devotional_id?: string | null
-          last_devotional_theme?: string | null
-          updated_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          plan_from?: string | null
+          plan_to?: string | null
+          trigger_name?: string | null
           user_id?: string
+          user_type?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "devotional_user_profiles_last_devotional_id_fkey"
-            columns: ["last_devotional_id"]
+            foreignKeyName: "conversion_events_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "devotionals"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -358,6 +306,8 @@ export type Database = {
         Row: {
           anchor_verse: string
           anchor_verse_text: string
+          audio_duration_seconds: number | null
+          audio_url: string | null
           audio_url_alloy: string | null
           audio_url_nova: string | null
           audio_url_onyx: string | null
@@ -365,41 +315,49 @@ export type Database = {
           category: string
           closing_prayer: string | null
           cover_image_url: string | null
-          created_at: string
+          created_at: string | null
           daily_practice: string | null
           id: string
-          language: string
+          is_published: boolean | null
+          language: string | null
           reflection_question: string | null
           scheduled_date: string
-          series_id: string | null
-          series_number: number | null
+          supplementary_reading: string | null
           title: string
-          updated_at: string
+          today_action: string | null
+          tts_generated_at: string | null
+          tts_voice: string | null
         }
         Insert: {
-          anchor_verse?: string
-          anchor_verse_text?: string
+          anchor_verse: string
+          anchor_verse_text: string
+          audio_duration_seconds?: number | null
+          audio_url?: string | null
           audio_url_alloy?: string | null
           audio_url_nova?: string | null
           audio_url_onyx?: string | null
-          body_text?: string
-          category?: string
+          body_text: string
+          category: string
           closing_prayer?: string | null
           cover_image_url?: string | null
-          created_at?: string
+          created_at?: string | null
           daily_practice?: string | null
           id?: string
-          language?: string
+          is_published?: boolean | null
+          language?: string | null
           reflection_question?: string | null
           scheduled_date: string
-          series_id?: string | null
-          series_number?: number | null
+          supplementary_reading?: string | null
           title: string
-          updated_at?: string
+          today_action?: string | null
+          tts_generated_at?: string | null
+          tts_voice?: string | null
         }
         Update: {
           anchor_verse?: string
           anchor_verse_text?: string
+          audio_duration_seconds?: number | null
+          audio_url?: string | null
           audio_url_alloy?: string | null
           audio_url_nova?: string | null
           audio_url_onyx?: string | null
@@ -407,56 +365,110 @@ export type Database = {
           category?: string
           closing_prayer?: string | null
           cover_image_url?: string | null
-          created_at?: string
+          created_at?: string | null
           daily_practice?: string | null
           id?: string
-          language?: string
+          is_published?: boolean | null
+          language?: string | null
           reflection_question?: string | null
           scheduled_date?: string
-          series_id?: string | null
-          series_number?: number | null
+          supplementary_reading?: string | null
           title?: string
-          updated_at?: string
+          today_action?: string | null
+          tts_generated_at?: string | null
+          tts_voice?: string | null
         }
         Relationships: []
       }
-      editorial_queue: {
+      emotional_support_logs: {
         Row: {
-          created_at: string
+          anchor_verse: string | null
+          anchor_verse_text: string | null
+          audio_url: string | null
+          closing_prayer: string | null
+          comfort_text: string | null
+          created_at: string | null
+          detected_emotion: string | null
+          feedback_emoji: string | null
           id: string
-          material_id: string | null
-          published_at: string | null
-          scheduled_at: string | null
-          status: string
-          user_id: string
+          role: string | null
+          session_id: string | null
+          user_id: string | null
+          user_input: string
         }
         Insert: {
-          created_at?: string
+          anchor_verse?: string | null
+          anchor_verse_text?: string | null
+          audio_url?: string | null
+          closing_prayer?: string | null
+          comfort_text?: string | null
+          created_at?: string | null
+          detected_emotion?: string | null
+          feedback_emoji?: string | null
           id?: string
-          material_id?: string | null
-          published_at?: string | null
-          scheduled_at?: string | null
-          status?: string
-          user_id: string
+          role?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          user_input: string
         }
         Update: {
-          created_at?: string
+          anchor_verse?: string | null
+          anchor_verse_text?: string | null
+          audio_url?: string | null
+          closing_prayer?: string | null
+          comfort_text?: string | null
+          created_at?: string | null
+          detected_emotion?: string | null
+          feedback_emoji?: string | null
           id?: string
-          material_id?: string | null
-          published_at?: string | null
-          scheduled_at?: string | null
-          status?: string
-          user_id?: string
+          role?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          user_input?: string
         }
         Relationships: [
           {
-            foreignKeyName: "editorial_queue_material_id_fkey"
-            columns: ["material_id"]
+            foreignKeyName: "emotional_support_logs_session_id_fkey"
+            columns: ["session_id"]
             isOneToOne: false
-            referencedRelation: "materials"
+            referencedRelation: "emotional_support_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emotional_support_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
+      }
+      emotional_support_sessions: {
+        Row: {
+          created_at: string | null
+          id: string
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       expos_studies: {
         Row: {
@@ -464,18 +476,18 @@ export type Database = {
           created_at: string
           formato: string
           id: string
+          idioma: string | null
           passagem: string
-          titulo: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
-          conteudo_markdown?: string
+          conteudo_markdown: string
           created_at?: string
-          formato?: string
+          formato: string
           id?: string
+          idioma?: string | null
           passagem: string
-          titulo?: string | null
           updated_at?: string
           user_id: string
         }
@@ -484,525 +496,845 @@ export type Database = {
           created_at?: string
           formato?: string
           id?: string
+          idioma?: string | null
           passagem?: string
-          titulo?: string | null
           updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      free_tool_usage: {
-        Row: {
-          created_at: string
-          id: string
-          month_key: string
-          tool_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          month_key: string
-          tool_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          month_key?: string
-          tool_id?: string
           user_id?: string
         }
         Relationships: []
       }
       generation_logs: {
         Row: {
-          cost_usd: number
+          cost_usd: number | null
           created_at: string
-          feature: string
+          error_code: string | null
+          generation_time_ms: number | null
           id: string
-          input_tokens: number
-          model: string
-          output_tokens: number
-          total_tokens: number
-          user_id: string
-        }
-        Insert: {
-          cost_usd?: number
-          created_at?: string
-          feature: string
-          id?: string
-          input_tokens?: number
-          model: string
-          output_tokens?: number
-          total_tokens?: number
-          user_id: string
-        }
-        Update: {
-          cost_usd?: number
-          created_at?: string
-          feature?: string
-          id?: string
-          input_tokens?: number
-          model?: string
-          output_tokens?: number
-          total_tokens?: number
-          user_id?: string
-        }
-        Relationships: []
-      }
-      global_settings: {
-        Row: {
-          id: string
-          key: string
-          updated_at: string
-          value: string
-        }
-        Insert: {
-          id?: string
-          key: string
-          updated_at?: string
-          value: string
-        }
-        Update: {
-          id?: string
-          key?: string
-          updated_at?: string
-          value?: string
-        }
-        Relationships: []
-      }
-      master_api_vault: {
-        Row: {
-          api_key: string
-          id: string
-          provider_id: string
-          updated_at: string
-        }
-        Insert: {
-          api_key: string
-          id?: string
-          provider_id: string
-          updated_at?: string
-        }
-        Update: {
-          api_key?: string
-          id?: string
-          provider_id?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      material_feedback: {
-        Row: {
-          comment: string | null
-          created_at: string
-          id: string
-          material_title: string | null
-          material_type: string
-          rating: string
-          tool_id: string | null
-          user_id: string
-        }
-        Insert: {
-          comment?: string | null
-          created_at?: string
-          id?: string
-          material_title?: string | null
-          material_type: string
-          rating: string
-          tool_id?: string | null
-          user_id: string
-        }
-        Update: {
-          comment?: string | null
-          created_at?: string
-          id?: string
-          material_title?: string | null
-          material_type?: string
-          rating?: string
-          tool_id?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      materials: {
-        Row: {
-          article_images: Json | null
-          bible_version: string | null
-          content: string
-          cover_image_url: string | null
-          created_at: string
-          favorite: boolean | null
-          id: string
+          input_tokens: number | null
           language: string | null
-          notes: string | null
-          passage: string | null
-          title: string
-          type: string
-          updated_at: string
+          llm_model: string | null
+          material_id: string | null
+          mode: string | null
+          output_tokens: number | null
+          sensitive_topic_detected: string | null
+          theology_guardrails_triggered: boolean | null
           user_id: string
-          workspace_id: string | null
         }
         Insert: {
-          article_images?: Json | null
-          bible_version?: string | null
-          content?: string
-          cover_image_url?: string | null
+          cost_usd?: number | null
           created_at?: string
-          favorite?: boolean | null
+          error_code?: string | null
+          generation_time_ms?: number | null
           id?: string
+          input_tokens?: number | null
           language?: string | null
-          notes?: string | null
-          passage?: string | null
-          title: string
-          type?: string
-          updated_at?: string
+          llm_model?: string | null
+          material_id?: string | null
+          mode?: string | null
+          output_tokens?: number | null
+          sensitive_topic_detected?: string | null
+          theology_guardrails_triggered?: boolean | null
           user_id: string
-          workspace_id?: string | null
         }
         Update: {
-          article_images?: Json | null
-          bible_version?: string | null
-          content?: string
-          cover_image_url?: string | null
+          cost_usd?: number | null
           created_at?: string
-          favorite?: boolean | null
+          error_code?: string | null
+          generation_time_ms?: number | null
           id?: string
+          input_tokens?: number | null
           language?: string | null
-          notes?: string | null
-          passage?: string | null
-          title?: string
-          type?: string
-          updated_at?: string
+          llm_model?: string | null
+          material_id?: string | null
+          mode?: string | null
+          output_tokens?: number | null
+          sensitive_topic_detected?: string | null
+          theology_guardrails_triggered?: boolean | null
           user_id?: string
-          workspace_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "materials_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: "generation_logs_material_id_fkey"
+            columns: ["material_id"]
             isOneToOne: false
-            referencedRelation: "workspaces"
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generation_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
       }
-      mind_settings: {
+      illustrations: {
         Row: {
-          active: boolean
+          body: string
+          category: string | null
+          created_at: string
+          hook: string | null
           id: string
-          mind_id: string
-          updated_at: string
+          tags: string[] | null
+          title: string
         }
         Insert: {
-          active?: boolean
+          body: string
+          category?: string | null
+          created_at?: string
+          hook?: string | null
           id?: string
-          mind_id: string
-          updated_at?: string
+          tags?: string[] | null
+          title: string
         }
         Update: {
-          active?: boolean
+          body?: string
+          category?: string | null
+          created_at?: string
+          hook?: string | null
           id?: string
-          mind_id?: string
-          updated_at?: string
+          tags?: string[] | null
+          title?: string
         }
         Relationships: []
       }
-      monthly_financials: {
-        Row: {
-          created_at: string
-          expenses: number
-          id: string
-          month: string
-          notes: string | null
-          revenue: number
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          expenses?: number
-          id?: string
-          month: string
-          notes?: string | null
-          revenue?: number
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          expenses?: number
-          id?: string
-          month?: string
-          notes?: string | null
-          revenue?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      notification_queue: {
+      library_tags: {
         Row: {
           created_at: string
           id: string
-          message: string
-          scheduled_for: string
-          sent: boolean
-          type: string
+          is_favorite: boolean | null
+          material_id: string
+          tag: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          message: string
-          scheduled_for: string
-          sent?: boolean
-          type: string
+          is_favorite?: boolean | null
+          material_id: string
+          tag?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          message?: string
-          scheduled_for?: string
-          sent?: boolean
-          type?: string
+          is_favorite?: boolean | null
+          material_id?: string
+          tag?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "library_tags_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "library_tags_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      page_views: {
+      materials: {
         Row: {
-          browser: string | null
-          city: string | null
-          country: string | null
+          article_title: string | null
+          audience: string | null
+          bible_passage: string | null
+          bible_version: string | null
+          category: string | null
+          citation_audit: Json | null
           created_at: string
-          device: string | null
+          doctrine_line: string | null
+          generation_time_ms: number | null
           id: string
-          path: string
-          referrer: string | null
-          session_id: string | null
-          user_agent: string | null
-          user_id: string | null
+          is_published: boolean | null
+          language: string
+          meta_description: string | null
+          mode: string
+          output_bilingual: string | null
+          output_blog: string | null
+          output_cell: string | null
+          output_devotional: string | null
+          output_outline: string | null
+          output_reels: Json | null
+          output_sermon: string | null
+          pain_point: string | null
+          pastoral_voice: string | null
+          published_url: string | null
+          sensitive_topic_detected: string | null
+          seo_slug: string | null
+          tags: string[] | null
+          theology_layer_marked: boolean | null
+          user_id: string
+          word_count: number | null
         }
         Insert: {
-          browser?: string | null
-          city?: string | null
-          country?: string | null
+          article_title?: string | null
+          audience?: string | null
+          bible_passage?: string | null
+          bible_version?: string | null
+          category?: string | null
+          citation_audit?: Json | null
           created_at?: string
-          device?: string | null
+          doctrine_line?: string | null
+          generation_time_ms?: number | null
           id?: string
-          path: string
-          referrer?: string | null
-          session_id?: string | null
-          user_agent?: string | null
-          user_id?: string | null
+          is_published?: boolean | null
+          language: string
+          meta_description?: string | null
+          mode: string
+          output_bilingual?: string | null
+          output_blog?: string | null
+          output_cell?: string | null
+          output_devotional?: string | null
+          output_outline?: string | null
+          output_reels?: Json | null
+          output_sermon?: string | null
+          pain_point?: string | null
+          pastoral_voice?: string | null
+          published_url?: string | null
+          sensitive_topic_detected?: string | null
+          seo_slug?: string | null
+          tags?: string[] | null
+          theology_layer_marked?: boolean | null
+          user_id: string
+          word_count?: number | null
         }
         Update: {
-          browser?: string | null
-          city?: string | null
-          country?: string | null
+          article_title?: string | null
+          audience?: string | null
+          bible_passage?: string | null
+          bible_version?: string | null
+          category?: string | null
+          citation_audit?: Json | null
           created_at?: string
-          device?: string | null
+          doctrine_line?: string | null
+          generation_time_ms?: number | null
           id?: string
-          path?: string
-          referrer?: string | null
-          session_id?: string | null
-          user_agent?: string | null
-          user_id?: string | null
+          is_published?: boolean | null
+          language?: string
+          meta_description?: string | null
+          mode?: string
+          output_bilingual?: string | null
+          output_blog?: string | null
+          output_cell?: string | null
+          output_devotional?: string | null
+          output_outline?: string | null
+          output_reels?: Json | null
+          output_sermon?: string | null
+          pain_point?: string | null
+          pastoral_voice?: string | null
+          published_url?: string | null
+          sensitive_topic_detected?: string | null
+          seo_slug?: string | null
+          tags?: string[] | null
+          theology_layer_marked?: boolean | null
+          user_id?: string
+          word_count?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "materials_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      multiply_outputs: {
+        Row: {
+          content: string
+          generated_at: string
+          id: string
+          material_id: string | null
+          output_type: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          generated_at?: string
+          id?: string
+          material_id?: string | null
+          output_type: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          generated_at?: string
+          id?: string
+          material_id?: string | null
+          output_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "multiply_outputs_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "multiply_outputs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
-          audience: string | null
-          avatar_url: string | null
-          bible_version: string | null
-          bio: string | null
-          blog_handle: string | null
-          blog_name: string | null
-          bonus_day_count: number
-          bonus_last_claimed: string | null
-          church_name: string | null
-          church_role: string | null
-          city: string | null
-          country: string | null
-          created_at: string
-          denomination: string | null
-          doctrine: string | null
-          favorite_preacher: string | null
-          font_family: string | null
-          full_name: string
-          generations_limit: number
-          generations_used: number
           id: string
-          language: string
-          layout_style: string | null
-          neighborhood: string | null
-          pastoral_voice: string | null
-          phone: string | null
+        }
+        Insert: {
+          id: string
+        }
+        Update: {
+          id?: string
+        }
+        Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string
+          difficulty: string | null
+          id: string
+          library_id: string | null
+          question: string
+          reference: string | null
+          search_vector: unknown
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string
+          difficulty?: string | null
+          id?: string
+          library_id?: string | null
+          question: string
+          reference?: string | null
+          search_vector?: unknown
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string
+          difficulty?: string | null
+          id?: string
+          library_id?: string | null
+          question?: string
+          reference?: string | null
+          search_vector?: unknown
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_library_id_fkey"
+            columns: ["library_id"]
+            isOneToOne: false
+            referencedRelation: "content_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reading_plan_days: {
+        Row: {
+          book: string | null
+          chapters: string | null
+          day_number: number
+          id: string
+          passage: string
+          plan_id: string | null
+          testament: string | null
+          theme: string | null
+        }
+        Insert: {
+          book?: string | null
+          chapters?: string | null
+          day_number: number
+          id?: string
+          passage: string
+          plan_id?: string | null
+          testament?: string | null
+          theme?: string | null
+        }
+        Update: {
+          book?: string | null
+          chapters?: string | null
+          day_number?: number
+          id?: string
+          passage?: string
+          plan_id?: string | null
+          testament?: string | null
+          theme?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_plan_days_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "reading_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reading_plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          library_id: string | null
+          title: string
+          total_days: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          library_id?: string | null
+          title: string
+          total_days?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          library_id?: string | null
+          title?: string
+          total_days?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_plans_library_id_fkey"
+            columns: ["library_id"]
+            isOneToOne: false
+            referencedRelation: "content_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      research_cache: {
+        Row: {
+          background_context: string | null
+          created_at: string
+          id: string
+          original_language_notes: string | null
+          query: string | null
+          theological_insights: string | null
+          verse_reference: string | null
+        }
+        Insert: {
+          background_context?: string | null
+          created_at?: string
+          id?: string
+          original_language_notes?: string | null
+          query?: string | null
+          theological_insights?: string | null
+          verse_reference?: string | null
+        }
+        Update: {
+          background_context?: string | null
+          created_at?: string
+          id?: string
+          original_language_notes?: string | null
+          query?: string | null
+          theological_insights?: string | null
+          verse_reference?: string | null
+        }
+        Relationships: []
+      }
+      series: {
+        Row: {
+          created_at: string
+          id: string
+          language: string | null
+          passages: string[] | null
+          theme: string | null
+          title: string
+          total_weeks: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language?: string | null
+          passages?: string[] | null
+          theme?: string | null
+          title: string
+          total_weeks?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string | null
+          passages?: string[] | null
+          theme?: string | null
+          title?: string
+          total_weeks?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "series_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sermon_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_premium: boolean
+          structure: Json
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_premium?: boolean
+          structure?: Json
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_premium?: boolean
+          structure?: Json
+          title?: string
+        }
+        Relationships: []
+      }
+      social_calendar: {
+        Row: {
+          created_at: string
+          id: string
+          material_id: string | null
+          month: string
+          posts: Json
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          material_id?: string | null
+          month: string
+          posts?: Json
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          material_id?: string | null
+          month?: string
+          posts?: Json
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_calendar_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_calendar_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stripe_events: {
+        Row: {
+          amount_cents: number | null
+          created_at: string
+          currency: string | null
+          customer_id: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          plan_from: string | null
+          plan_to: string | null
+          processed_at: string
+          raw_event: Json | null
+          status: string | null
+          stripe_event_id: string
+          subscription_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_cents?: number | null
+          created_at?: string
+          currency?: string | null
+          customer_id?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          plan_from?: string | null
+          plan_to?: string | null
+          processed_at?: string
+          raw_event?: Json | null
+          status?: string | null
+          stripe_event_id: string
+          subscription_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_cents?: number | null
+          created_at?: string
+          currency?: string | null
+          customer_id?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          plan_from?: string | null
+          plan_to?: string | null
+          processed_at?: string
+          raw_event?: Json | null
+          status?: string | null
+          stripe_event_id?: string
+          subscription_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          amount_cents: number | null
+          cancel_at_period_end: boolean | null
+          canceled_at: string | null
+          created_at: string
+          currency: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
           plan: string
-          preaching_style: string | null
-          profile_completed: boolean | null
-          state: string | null
-          street: string | null
-          theme_color: string | null
-          trial_ends_at: string | null
-          trial_started_at: string | null
-          updated_at: string
-          wordpress_url: string | null
-          zip_code: string | null
-        }
-        Insert: {
-          audience?: string | null
-          avatar_url?: string | null
-          bible_version?: string | null
-          bio?: string | null
-          blog_handle?: string | null
-          blog_name?: string | null
-          bonus_day_count?: number
-          bonus_last_claimed?: string | null
-          church_name?: string | null
-          church_role?: string | null
-          city?: string | null
-          country?: string | null
-          created_at?: string
-          denomination?: string | null
-          doctrine?: string | null
-          favorite_preacher?: string | null
-          font_family?: string | null
-          full_name?: string
-          generations_limit?: number
-          generations_used?: number
-          id: string
-          language?: string
-          layout_style?: string | null
-          neighborhood?: string | null
-          pastoral_voice?: string | null
-          phone?: string | null
-          plan?: string
-          preaching_style?: string | null
-          profile_completed?: boolean | null
-          state?: string | null
-          street?: string | null
-          theme_color?: string | null
-          trial_ends_at?: string | null
-          trial_started_at?: string | null
-          updated_at?: string
-          wordpress_url?: string | null
-          zip_code?: string | null
-        }
-        Update: {
-          audience?: string | null
-          avatar_url?: string | null
-          bible_version?: string | null
-          bio?: string | null
-          blog_handle?: string | null
-          blog_name?: string | null
-          bonus_day_count?: number
-          bonus_last_claimed?: string | null
-          church_name?: string | null
-          church_role?: string | null
-          city?: string | null
-          country?: string | null
-          created_at?: string
-          denomination?: string | null
-          doctrine?: string | null
-          favorite_preacher?: string | null
-          font_family?: string | null
-          full_name?: string
-          generations_limit?: number
-          generations_used?: number
-          id?: string
-          language?: string
-          layout_style?: string | null
-          neighborhood?: string | null
-          pastoral_voice?: string | null
-          phone?: string | null
-          plan?: string
-          preaching_style?: string | null
-          profile_completed?: boolean | null
-          state?: string | null
-          street?: string | null
-          theme_color?: string | null
-          trial_ends_at?: string | null
-          trial_started_at?: string | null
-          updated_at?: string
-          wordpress_url?: string | null
-          zip_code?: string | null
-        }
-        Relationships: []
-      }
-      quiz_scores: {
-        Row: {
-          best_streak: number
-          created_at: string
-          games_played: number
-          id: string
-          level: number
-          total_xp: number
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          trial_end: string | null
+          trial_start: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
-          best_streak?: number
+          amount_cents?: number | null
+          cancel_at_period_end?: boolean | null
+          canceled_at?: string | null
           created_at?: string
-          games_played?: number
+          currency?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
           id?: string
-          level?: number
-          total_xp?: number
+          plan: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
-          best_streak?: number
+          amount_cents?: number | null
+          cancel_at_period_end?: boolean | null
+          canceled_at?: string | null
           created_at?: string
-          games_played?: number
+          currency?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
           id?: string
-          level?: number
-          total_xp?: number
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      quiz_sessions: {
+      user_content_bookmarks: {
         Row: {
-          category: string
-          correct_answers: number
           created_at: string
           id: string
-          score: number
-          time_seconds: number
-          total_questions: number
+          notes: string | null
+          quiz_id: string | null
+          section_id: string | null
           user_id: string
-          xp_earned: number
         }
         Insert: {
-          category?: string
-          correct_answers?: number
           created_at?: string
           id?: string
-          score?: number
-          time_seconds?: number
-          total_questions?: number
+          notes?: string | null
+          quiz_id?: string | null
+          section_id?: string | null
           user_id: string
-          xp_earned?: number
         }
         Update: {
-          category?: string
-          correct_answers?: number
           created_at?: string
           id?: string
-          score?: number
-          time_seconds?: number
-          total_questions?: number
+          notes?: string | null
+          quiz_id?: string | null
+          section_id?: string | null
           user_id?: string
-          xp_earned?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_content_bookmarks_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_content_bookmarks_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "content_sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_content_bookmarks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      reading_plan_progress: {
+      user_devotional_progress: {
         Row: {
-          completed: boolean
+          devotional_id: string | null
+          id: string
+          listened_audio: boolean | null
+          read_at: string | null
+          reflection_answer: string | null
+          user_id: string | null
+        }
+        Insert: {
+          devotional_id?: string | null
+          id?: string
+          listened_audio?: boolean | null
+          read_at?: string | null
+          reflection_answer?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          devotional_id?: string | null
+          id?: string
+          listened_audio?: boolean | null
+          read_at?: string | null
+          reflection_answer?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_devotional_progress_devotional_id_fkey"
+            columns: ["devotional_id"]
+            isOneToOne: false
+            referencedRelation: "devotionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_devotional_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_editorial_profile: {
+        Row: {
+          active_sites: Json | null
+          created_at: string
+          depth: string | null
+          id: string
+          preferred_length: string | null
+          priority_themes: string[] | null
+          publish_frequency: string | null
+          tone: string | null
+          updated_at: string
+          user_id: string
+          writing_style: string | null
+        }
+        Insert: {
+          active_sites?: Json | null
+          created_at?: string
+          depth?: string | null
+          id?: string
+          preferred_length?: string | null
+          priority_themes?: string[] | null
+          publish_frequency?: string | null
+          tone?: string | null
+          updated_at?: string
+          user_id: string
+          writing_style?: string | null
+        }
+        Update: {
+          active_sites?: Json | null
+          created_at?: string
+          depth?: string | null
+          id?: string
+          preferred_length?: string | null
+          priority_themes?: string[] | null
+          publish_frequency?: string | null
+          tone?: string | null
+          updated_at?: string
+          user_id?: string
+          writing_style?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_editorial_profile_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_reading_progress: {
+        Row: {
           completed_at: string
           day_number: number
           id: string
@@ -1010,7 +1342,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          completed?: boolean
           completed_at?: string
           day_number: number
           id?: string
@@ -1018,393 +1349,215 @@ export type Database = {
           user_id: string
         }
         Update: {
-          completed?: boolean
           completed_at?: string
           day_number?: number
           id?: string
           plan_id?: string
           user_id?: string
         }
-        Relationships: []
-      }
-      sermon_notes: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          material_id: string | null
-          session_id: string | null
-          text_color: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          content?: string
-          created_at?: string
-          id?: string
-          material_id?: string | null
-          session_id?: string | null
-          text_color?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          material_id?: string | null
-          session_id?: string | null
-          text_color?: string
-          updated_at?: string
-          user_id?: string
-        }
         Relationships: [
           {
-            foreignKeyName: "sermon_notes_material_id_fkey"
-            columns: ["material_id"]
+            foreignKeyName: "user_reading_progress_plan_id_fkey"
+            columns: ["plan_id"]
             isOneToOne: false
-            referencedRelation: "materials"
+            referencedRelation: "reading_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_reading_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
-      }
-      social_arts: {
-        Row: {
-          aspect_ratio: string
-          created_at: string
-          file_path: string
-          file_url: string
-          id: string
-          title: string | null
-          user_id: string
-        }
-        Insert: {
-          aspect_ratio?: string
-          created_at?: string
-          file_path: string
-          file_url: string
-          id?: string
-          title?: string | null
-          user_id: string
-        }
-        Update: {
-          aspect_ratio?: string
-          created_at?: string
-          file_path?: string
-          file_url?: string
-          id?: string
-          title?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      team_members: {
-        Row: {
-          accepted_at: string | null
-          created_at: string
-          email: string
-          id: string
-          invite_token: string | null
-          invited_by: string | null
-          role: string
-          status: string
-          updated_at: string
-          user_id: string | null
-        }
-        Insert: {
-          accepted_at?: string | null
-          created_at?: string
-          email: string
-          id?: string
-          invite_token?: string | null
-          invited_by?: string | null
-          role?: string
-          status?: string
-          updated_at?: string
-          user_id?: string | null
-        }
-        Update: {
-          accepted_at?: string | null
-          created_at?: string
-          email?: string
-          id?: string
-          invite_token?: string | null
-          invited_by?: string | null
-          role?: string
-          status?: string
-          updated_at?: string
-          user_id?: string | null
-        }
-        Relationships: []
       }
       user_roles: {
         Row: {
-          id: string
-          role: string
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          role?: string
-          user_id: string
-        }
-        Update: {
-          id?: string
-          role?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      visual_outputs: {
-        Row: {
-          created_at: string
-          format: string
-          id: string
-          language: string
-          material_id: string | null
-          output_type: string
-          slides_data: Json
-          user_id: string
-          variation_number: number
-        }
-        Insert: {
-          created_at?: string
-          format?: string
-          id?: string
-          language?: string
-          material_id?: string | null
-          output_type?: string
-          slides_data?: Json
-          user_id: string
-          variation_number?: number
-        }
-        Update: {
-          created_at?: string
-          format?: string
-          id?: string
-          language?: string
-          material_id?: string | null
-          output_type?: string
-          slides_data?: Json
-          user_id?: string
-          variation_number?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "visual_outputs_material_id_fkey"
-            columns: ["material_id"]
-            isOneToOne: false
-            referencedRelation: "materials"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      workspaces: {
-        Row: {
-          brand_color: string | null
-          communication_tone: string | null
-          content_preferences: string | null
-          created_at: string
-          default_template: string | null
-          description: string | null
-          emoji: string | null
-          id: string
-          name: string
-          target_audience: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          brand_color?: string | null
-          communication_tone?: string | null
-          content_preferences?: string | null
-          created_at?: string
-          default_template?: string | null
-          description?: string | null
-          emoji?: string | null
-          id?: string
-          name: string
-          target_audience?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          brand_color?: string | null
-          communication_tone?: string | null
-          content_preferences?: string | null
-          created_at?: string
-          default_template?: string | null
-          description?: string | null
-          emoji?: string | null
-          id?: string
-          name?: string
-          target_audience?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-    }
-    Views: {
-      admin_saas_metrics: {
-        Row: {
-          estimated_mrr_usd: number | null
-          total_users_registered: number | null
-          users_church: number | null
-          users_free: number | null
-          users_ministry: number | null
-          users_pastoral: number | null
-          users_trialing: number | null
-        }
-        Relationships: []
-      }
-      published_queue_public: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          material_id: string | null
-          published_at: string | null
-          scheduled_at: string | null
-          status: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string | null
-          material_id?: string | null
-          published_at?: string | null
-          scheduled_at?: string | null
-          status?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string | null
-          material_id?: string | null
-          published_at?: string | null
-          scheduled_at?: string | null
-          status?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "editorial_queue_material_id_fkey"
-            columns: ["material_id"]
-            isOneToOne: false
-            referencedRelation: "materials"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      team_members_safe: {
-        Row: {
-          accepted_at: string | null
-          created_at: string | null
-          email: string | null
-          id: string | null
-          invited_by: string | null
           role: string | null
-          status: string | null
-          updated_at: string | null
           user_id: string | null
         }
         Insert: {
-          accepted_at?: string | null
-          created_at?: string | null
-          email?: string | null
-          id?: string | null
-          invited_by?: string | null
           role?: string | null
-          status?: string | null
-          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
-          accepted_at?: string | null
-          created_at?: string | null
-          email?: string | null
-          id?: string | null
-          invited_by?: string | null
           role?: string | null
-          status?: string | null
-          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: []
       }
+      users: {
+        Row: {
+          bible_version: string | null
+          blog_url: string | null
+          created_at: string
+          doctrine_preference: string | null
+          email: string
+          full_name: string | null
+          generation_count_month: number
+          generation_reset_date: string
+          handle: string | null
+          id: string
+          language_preference: string
+          pastoral_voice: string | null
+          plan: string
+          quiz_score: number | null
+          stripe_customer_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          bible_version?: string | null
+          blog_url?: string | null
+          created_at?: string
+          doctrine_preference?: string | null
+          email: string
+          full_name?: string | null
+          generation_count_month?: number
+          generation_reset_date?: string
+          handle?: string | null
+          id: string
+          language_preference?: string
+          pastoral_voice?: string | null
+          plan?: string
+          quiz_score?: number | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bible_version?: string | null
+          blog_url?: string | null
+          created_at?: string
+          doctrine_preference?: string | null
+          email?: string
+          full_name?: string | null
+          generation_count_month?: number
+          generation_reset_date?: string
+          handle?: string | null
+          id?: string
+          language_preference?: string
+          pastoral_voice?: string | null
+          plan?: string
+          quiz_score?: number | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wordpress_sites: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          language: string | null
+          site_name: string
+          site_type: string
+          site_url: string
+          updated_at: string
+          user_id: string
+          wp_app_password: string
+          wp_rest_url: string
+          wp_username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          language?: string | null
+          site_name: string
+          site_type?: string
+          site_url: string
+          updated_at?: string
+          user_id: string
+          wp_app_password: string
+          wp_rest_url: string
+          wp_username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          language?: string | null
+          site_name?: string
+          site_type?: string
+          site_url?: string
+          updated_at?: string
+          user_id?: string
+          wp_app_password?: string
+          wp_rest_url?: string
+          wp_username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wordpress_sites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
     }
     Functions: {
-      get_admin_ai_metrics: { Args: never; Returns: Json }
-      get_admin_saas_metrics: {
-        Args: never
+      consume_credits: {
+        Args: { p_credits: number; p_user_id: string }
+        Returns: boolean
+      }
+      get_user_daily_usage: {
+        Args: { p_user_id: string }
         Returns: {
-          estimated_mrr_usd: number
-          total_users_registered: number
-          users_free: number
-          users_igreja: number
-          users_pro: number
-          users_starter: number
-          users_trialing: number
+          chapters_read_total: number
+          credits_remaining: number
+          current_streak: number
+          devotional_read_today: boolean
+          generations_today: number
+          quiz_score: number
         }[]
       }
-      get_public_blog_article: {
-        Args: { p_article_id: string }
+      get_user_reading_stats: {
+        Args: { p_plan_id: string; p_user_id: string }
+        Returns: Json
+      }
+      match_commentary: {
+        Args: {
+          filter_book?: string
+          filter_chapter?: number
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
         Returns: {
-          article_images: Json
-          bible_version: string
-          content: string
-          cover_image_url: string
-          created_at: string
-          favorite: boolean
+          book: string
+          chapter: number
+          commentary_text: string
           id: string
-          language: string
-          passage: string
-          title: string
-          type: string
-          updated_at: string
+          similarity: number
+          source: string
+          verse_start: number
         }[]
       }
-      get_public_blog_articles: {
-        Args: { p_handle: string }
+      reset_monthly_generations: { Args: never; Returns: undefined }
+      search_biblical_content: {
+        Args: {
+          category_filter?: string
+          limit_count?: number
+          query_text: string
+          testament_filter?: string
+        }
         Returns: {
-          article_images: Json
-          content: string
-          cover_image_url: string
-          created_at: string
+          book: string
+          category: string
           id: string
-          language: string
-          passage: string
-          published_at: string
-          title: string
-          updated_at: string
-        }[]
-      }
-      get_public_blog_profile: {
-        Args: { p_handle: string }
-        Returns: {
-          avatar_url: string
-          bio: string
-          blog_handle: string
-          blog_name: string
-          church_name: string
-          city: string
-          country: string
-          font_family: string
-          full_name: string
-          id: string
-          language: string
-          layout_style: string
-          theme_color: string
-        }[]
-      }
-      get_public_blog_siblings: {
-        Args: { p_article_id: string }
-        Returns: {
-          id: string
-          language: string
+          rank: number
+          reference: string
+          summary: string
+          testament: string
           title: string
         }[]
       }
-      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
-      increment_share_click: { Args: { p_token: string }; Returns: undefined }
-      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
