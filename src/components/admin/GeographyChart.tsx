@@ -41,7 +41,7 @@ export function GeographyChart() {
 
   const loadGeo = async () => {
     try {
-      const { data: rows, error } = await supabase
+      const { data: rows, error } = await (supabase as any)
         .from('page_views')
         .select('country');
 
