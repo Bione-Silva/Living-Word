@@ -313,7 +313,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
       const modeLabel = outputLabels[activeTab][lang];
       const title = `${modeLabel} — ${formData.bible_passage}`;
 
-      const { data: insertData, error } = await supabase.from('materials').insert({
+      const { data: insertData, error } = await (supabase as any).from('materials').insert({
         user_id: user.id,
         title,
         content: currentContent,

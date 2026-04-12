@@ -238,7 +238,7 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
     if (!user || !content) return;
     setSaving(true);
     try {
-      const { error } = await supabase.from('materials').insert({
+      const { error } = await (supabase as any).from('materials').insert({
         user_id: user.id,
         title: `YouTube → ${type} — ${input.substring(0, 50)}`,
         type: 'youtube-blog',

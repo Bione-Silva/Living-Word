@@ -184,7 +184,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
     if (!user || !result) return;
     setSaving(true);
     try {
-      const { error } = await supabase.from('materials').insert({
+      const { error } = await (supabase as any).from('materials').insert({
         user_id: user.id,
         title: `${toolTitle} — ${input.substring(0, 50)}`,
         type: toolId,
@@ -216,7 +216,7 @@ export function ToolModal({ open, onOpenChange, toolId, toolTitle }: ToolModalPr
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error || 'Unknown error');
 
-      await supabase.from('editorial_queue').insert({
+      await (supabase as any).from('editorial_queue').insert({
         user_id: user.id,
         material_id: data.material_id,
         status: 'published',
