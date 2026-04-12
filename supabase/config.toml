@@ -5,7 +5,7 @@ port = 54321
 
 [functions.multiply-sermon]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/multiply-sermon/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -16,7 +16,7 @@ entrypoint = "./functions/multiply-sermon/index.ts"
 
 [functions.sermon-research]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/sermon-research/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
