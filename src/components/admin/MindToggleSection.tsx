@@ -38,7 +38,7 @@ export function MindToggleSection() {
   };
 
   const loadAlert = async () => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('global_settings')
       .select('value')
       .eq('key', 'inactive_minds_alert')
