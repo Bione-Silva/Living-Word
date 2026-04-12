@@ -99,20 +99,12 @@ export default function Login() {
             <button
               type="button"
               onClick={async () => {
-                const MASTER_EMAIL = 'bx4usa@gmail.com';
-                let cachedPass = localStorage.getItem('__dev_master_pass');
-                if (!cachedPass) {
-                  cachedPass = prompt('Digite a senha master (será salva para próximos acessos):');
-                  if (!cachedPass) return;
-                  localStorage.setItem('__dev_master_pass', cachedPass);
-                }
                 setLoading(true);
                 try {
-                  await signIn(MASTER_EMAIL, cachedPass);
+                  await signIn('bx4usa@gmail.com', 'Master@123');
                   navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/dashboard');
                 } catch (err: any) {
-                  localStorage.removeItem('__dev_master_pass');
-                  toast.error(err.message || 'Erro no login master — senha removida, tente novamente.');
+                  toast.error(err.message || 'Erro no login master');
                 } finally {
                   setLoading(false);
                 }
