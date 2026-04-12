@@ -237,7 +237,7 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
             p: ({ children }) => <p className="text-sm leading-relaxed text-foreground/85 mb-3">{children}</p>,
             li: ({ children }) => <li className="text-sm leading-relaxed text-foreground/85">{children}</li>,
             blockquote: ({ children }) => (
-              <blockquote className="border-l-3 border-primary/40 pl-3 italic text-foreground/70 my-3">
+              <blockquote className="border-l-3 border-primary/40 pl-3 italic text-foreground/80 my-3">
                 {children}
               </blockquote>
             ),

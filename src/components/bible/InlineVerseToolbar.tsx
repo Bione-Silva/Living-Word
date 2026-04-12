@@ -133,17 +133,17 @@ export function InlineVerseToolbar({
           onChange={(e) => setNoteText(e.target.value)}
           placeholder={labels.notePlaceholder[lang]}
           rows={2}
-          className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="w-full px-3 py-2.5 rounded-lg border-2 border-border bg-card text-sm text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 placeholder:text-muted-foreground/60"
           autoFocus
         />
         <div className="flex gap-2">
-          <button onClick={() => setShowNote(false)} className="px-3 py-1 rounded-md border border-border text-xs text-muted-foreground hover:bg-muted">
+          <button onClick={() => setShowNote(false)} className="px-3.5 py-1.5 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors">
             ←
           </button>
           <button
             onClick={handleSaveNote}
             disabled={saving || !noteText.trim()}
-            className="px-3 py-1 rounded-md bg-primary text-primary-foreground text-xs font-medium disabled:opacity-40"
+            className="px-4 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-40 hover:bg-primary/90 transition-colors"
           >
             {labels.save[lang]}
           </button>
@@ -167,16 +167,16 @@ export function InlineVerseToolbar({
 
       {/* Actions */}
       <button onClick={handleFavorite} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Star className={`h-4 w-4 ${allFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground'}`} />
+        <Star className={`h-4 w-4 ${allFavorited ? 'text-yellow-500 fill-yellow-500' : 'text-foreground/70'}`} />
       </button>
       <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Copy className="h-4 w-4 text-muted-foreground" />
+        <Copy className="h-4 w-4 text-foreground/70" />
       </button>
       <button onClick={handleShare} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Share2 className="h-4 w-4 text-muted-foreground" />
+        <Share2 className="h-4 w-4 text-foreground/70" />
       </button>
       <button onClick={() => setShowNote(true)} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Pencil className="h-4 w-4 text-muted-foreground" />
+        <Pencil className="h-4 w-4 text-foreground/70" />
       </button>
 
       <div className="w-px h-4 bg-border mx-1" />

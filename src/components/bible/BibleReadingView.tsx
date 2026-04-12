@@ -375,7 +375,7 @@ export function BibleReadingView({
                   <div className="flex-1 min-w-0">
                     <span
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}
-                      className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90"
+                      className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground"
                     >
                       {v.text.trim()}
                     </span>
