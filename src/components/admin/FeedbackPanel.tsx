@@ -57,7 +57,7 @@ export function FeedbackPanel() {
 
   const loadFeedbacks = async () => {
     setLoading(true);
-    let query = supabase
+    let query = (supabase as any)
       .from('material_feedback')
       .select('*')
       .order('created_at', { ascending: false })
