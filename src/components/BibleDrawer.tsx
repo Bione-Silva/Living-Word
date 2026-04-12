@@ -7,7 +7,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, getVersionsByLanguage, getVersionsForUserLanguage, getBibleVersion, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, getVersionsByLanguage, getVersionsForUserLanguage, getBibleVersion, type BibleVersion, type L } from '@/lib/bible-data';
 
 interface Props {
   open: boolean;
@@ -17,9 +17,11 @@ interface Props {
   initialVerse?: number;
   initialVerseEnd?: number;
   initialTranslation?: string;
+  /** When set, only versions matching this language are shown (e.g. 'PT' when opened from a PT sermon) */
+  languageFilter?: 'PT' | 'EN' | 'ES';
 }
 
-export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, initialVerse, initialVerseEnd, initialTranslation }: Props) {
+export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, initialVerse, initialVerseEnd, initialTranslation, languageFilter }: Props) {
   const { lang } = useLanguage();
   const [book, setBook] = useState(initialBook || 'John');
   const [chapter, setChapter] = useState(initialChapter || 3);
@@ -55,6 +57,34 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     setVerses([]);
     try {
       const apiTranslation = getApiCodeForVersion(translation);
+      
+      // For versions not on bible-api.com, try wldeh CDN
+      if (apiTranslation === 'acf' || apiTranslation === 'rvr') {
+        const cdnLang = apiTranslation === 'acf' ? 'pt_ACF' : 'es';
+        const bookSlug = book.toLowerCase().replace(/\s+/g, '');
+        const cdnUrl = `https://cdn.jsdelivr.net/gh/wldeh/bible-api@main/bibles/${cdnLang}/books/${bookSlug}/chapters/${chapter}.json`;
+        const cdnRes = await fetch(cdnUrl);
+        if (cdnRes.ok) {
+          const cdnData = await cdnRes.json();
+          if (cdnData?.verses) {
+            setVerses(cdnData.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
+            setLoading(false);
+            return;
+          }
+        }
+        // Fallback to ARA/almeida for PT, web for EN
+        const fb = apiTranslation === 'acf' ? 'almeida' : 'web';
+        const fbBook = getApiBookName(book, fb === 'almeida' ? 'ara' : 'web');
+        const fbRef = `${fbBook} ${chapter}`;
+        const fbRes = await fetch(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
+        const fbData = fbRes.ok ? await fbRes.json() : null;
+        if (fbData?.verses) {
+          setVerses(fbData.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
+        }
+        setLoading(false);
+        return;
+      }
+
       const apiBook = getApiBookName(book, translation);
       const ref = `${apiBook} ${chapter}`;
       const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${apiTranslation}`);
@@ -114,7 +144,15 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     return verseNum >= highlightRange.start && verseNum <= end;
   };
 
-  const { primary: primaryVersions, secondary: secondaryVersions } = useMemo(() => getVersionsForUserLanguage(lang), [lang]);
+  const { primary: primaryVersions, secondary: secondaryVersions } = useMemo(() => {
+    const result = getVersionsForUserLanguage(lang);
+    if (languageFilter) {
+      // When a language filter is active (e.g. from a sermon), only show versions in that language
+      const filtered = [...result.primary, ...result.secondary].filter(v => v.language === languageFilter);
+      return { primary: filtered, secondary: [] as BibleVersion[] };
+    }
+    return result;
+  }, [lang, languageFilter]);
   const currentVersion = getBibleVersion(translation);
   const currentTranslationLabel = currentVersion ? `${currentVersion.name} (${currentVersion.shortLabel})` : translation;
 

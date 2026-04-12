@@ -887,6 +887,7 @@ export default function Sermoes() {
         initialVerse={bibleRef?.verseStart}
         initialVerseEnd={bibleRef?.verseEnd}
         initialTranslation={bibleTranslationCode}
+        languageFilter={lang}
       />
     </div>
   );
