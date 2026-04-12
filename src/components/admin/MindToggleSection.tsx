@@ -30,10 +30,10 @@ export function MindToggleSection() {
   }, []);
 
   const loadSettings = async () => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('mind_settings')
       .select('mind_id, active, updated_at');
-    if (data) setSettings(data as MindSetting[]);
+    if (data) setSettings(data as unknown as MindSetting[]);
     setLoading(false);
   };
 
