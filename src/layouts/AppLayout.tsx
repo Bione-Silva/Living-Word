@@ -292,7 +292,10 @@ export default function AppLayout() {
             </SheetHeader>
 
             <div className="space-y-3 mt-2">
-              {sidebarGroups.map((group) => {
+              {([
+                { key: 'for-you', label: { PT: 'Para Você', EN: 'For You', ES: 'Para Ti' } as Record<L, string>, icon: LayoutDashboard, tools: forYouLinks.map(l => ({ id: l.id, icon: l.icon, label: l.label })) },
+                { key: 'tools', label: { PT: 'Ferramentas', EN: 'Tools', ES: 'Herramientas' } as Record<L, string>, icon: Sparkles, tools: toolsLinks.map(l => ({ id: l.id, icon: l.icon, label: l.label })) },
+              ] satisfies SidebarToolGroup[]).map((group) => {
                 const isOpen = mobileOpenGroups[group.key] ?? false;
                 const GroupIcon = group.icon;
 
