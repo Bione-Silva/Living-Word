@@ -100,6 +100,7 @@ export const bibleVersions: BibleVersion[] = [
   // Português
   { code: 'ara', name: 'Almeida Revista e Atualizada', shortLabel: 'ARA', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false, isDefault: true },
   { code: 'acf', name: 'Almeida Corrigida Fiel', shortLabel: 'ACF', language: 'PT', source: 'api', apiCode: 'acf', isAvailable: true, isPremium: false },
+  { code: 'nvi', name: 'Nova Versão Internacional', shortLabel: 'NVI', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false },
   // English
   { code: 'kjv', name: 'King James Version', shortLabel: 'KJV', language: 'EN', source: 'api', apiCode: 'kjv', isAvailable: true, isPremium: false, isDefault: true },
   { code: 'web', name: 'World English Bible', shortLabel: 'WEB', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
@@ -204,6 +205,7 @@ export function versionToApiCode(version: string): string | null {
     'RVR': 'rvr',
     'RVR60': 'rvr',
     'NVI': 'almeida',
+    'NVI-PT': 'almeida',
   };
   return map[upper] || null;
 }
