@@ -7,7 +7,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, getVersionsByLanguage, getVersionsForUserLanguage, getBibleVersion, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, getVersionsByLanguage, getVersionsForUserLanguage, getBibleVersion, type BibleVersion, type L } from '@/lib/bible-data';
 
 interface Props {
   open: boolean;
