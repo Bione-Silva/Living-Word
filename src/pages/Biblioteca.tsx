@@ -148,7 +148,7 @@ export default function Biblioteca() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('materials').delete().eq('id', id);
+      const { error } = await (supabase as any).from('materials').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -159,7 +159,7 @@ export default function Biblioteca() {
 
   const toggleFavMutation = useMutation({
     mutationFn: async ({ id, favorite }: { id: string; favorite: boolean }) => {
-      const { error } = await supabase.from('materials').update({ favorite: !favorite }).eq('id', id);
+      const { error } = await (supabase as any).from('materials').update({ favorite: !favorite }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['materials'] }),

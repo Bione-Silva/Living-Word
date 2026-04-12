@@ -25,7 +25,7 @@ export function ConversionFunnel() {
         .eq('path', '/');
 
       // Total registrations
-      const { data: metrics } = await supabase.rpc('get_admin_saas_metrics');
+      const { data: metrics } = await (supabase as any).rpc('get_admin_saas_metrics');
       const m = metrics?.[0];
       const totalUsers = Number(m?.total_users_registered || 0);
       const trialing = Number(m?.users_trialing || 0);

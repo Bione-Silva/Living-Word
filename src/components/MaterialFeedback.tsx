@@ -54,7 +54,7 @@ export function MaterialFeedback({ materialType, materialTitle, toolId }: Materi
     setSending(true);
 
     try {
-      const { error } = await supabase.from('material_feedback' as any).insert({
+      const { error } = await (supabase as any).from('material_feedback' as any).insert({
         user_id: user.id,
         material_type: materialType,
         material_title: materialTitle || null,

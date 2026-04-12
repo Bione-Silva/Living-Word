@@ -127,7 +127,7 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     setSaveStatus('saving');
     try {
       if (noteId) {
-        await supabase.from('sermon_notes').update({ content: html, text_color: color }).eq('id', noteId);
+        await (supabase as any).from('sermon_notes').update({ content: html, text_color: color }).eq('id', noteId);
       } else {
         const { data } = await supabase
           .from('sermon_notes')
@@ -162,7 +162,7 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
     if (editorRef.current) editorRef.current.innerHTML = '';
     setHasContent(false);
     if (noteId) {
-      await supabase.from('sermon_notes').delete().eq('id', noteId);
+      await (supabase as any).from('sermon_notes').delete().eq('id', noteId);
       setNoteId(null);
       lastSavedRef.current = { content: '', textColor };
       setSaveStatus('idle');

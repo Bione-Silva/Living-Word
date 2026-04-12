@@ -138,7 +138,7 @@ export function DeepSearchModal({ open, onOpenChange, query: initialQuery }: Dee
         ...data.insights.map((ins, i) => `${i + 1}. ${ins}`),
       ].join('\n');
 
-      const { error: insertError } = await supabase.from('materials').insert({
+      const { error: insertError } = await (supabase as any).from('materials').insert({
         user_id: user.id,
         title: `${labels.results[lang]}: ${searchedQuery}`,
         content,

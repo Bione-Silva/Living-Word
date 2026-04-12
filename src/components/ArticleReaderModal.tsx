@@ -71,7 +71,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
     if (!item?.id) return;
     setSavingNotes(true);
     try {
-      const { error } = await supabase.from('materials').update({ notes }).eq('id', item.id);
+      const { error } = await (supabase as any).from('materials').update({ notes }).eq('id', item.id);
       if (error) throw error;
       toast.success(lang === 'PT' ? 'Anotações salvas!' : lang === 'EN' ? 'Notes saved!' : '¡Notas guardadas!');
     } catch {

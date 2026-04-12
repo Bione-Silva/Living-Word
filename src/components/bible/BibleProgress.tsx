@@ -37,8 +37,8 @@ export function BibleProgress() {
     if (!user) return;
     (async () => {
       const [{ data: progress }, { data: favs }] = await Promise.all([
-        supabase.from('reading_plan_progress').select('*').eq('user_id', user.id).eq('completed', true),
-        supabase.from('bible_favorites').select('id').eq('user_id', user.id),
+        (supabase as any).from('reading_plan_progress').select('*').eq('user_id', user.id).eq('completed', true),
+        (supabase as any).from('bible_favorites').select('id').eq('user_id', user.id),
       ]);
 
       const chaptersRead = progress?.length || 0;

@@ -80,18 +80,18 @@ export function DailyBonusCard({ onXpClaimed }: Props) {
       const xp = XP_PER_DAY[Math.min(newCount - 1, 6)];
 
       // Update bonus fields
-      await supabase.from('profiles').update({
+      await (supabase as any).from('profiles').update({
         bonus_last_claimed: todayStr(),
         bonus_day_count: newCount > 7 ? 1 : newCount,
       }).eq('id', user.id);
 
       // Update quiz_scores XP
-      const { data: existing } = await supabase.from('quiz_scores').select('total_xp, level').eq('user_id', user.id).maybeSingle();
+      const { data: existing } = await (supabase as any).from('quiz_scores').select('total_xp, level').eq('user_id', user.id).maybeSingle();
       if (existing) {
         const newXp = existing.total_xp + xp;
-        await supabase.from('quiz_scores').update({ total_xp: newXp, level: Math.floor(newXp / 100) + 1 }).eq('user_id', user.id);
+        await (supabase as any).from('quiz_scores').update({ total_xp: newXp, level: Math.floor(newXp / 100) + 1 }).eq('user_id', user.id);
       } else {
-        await supabase.from('quiz_scores').insert({ user_id: user.id, total_xp: xp, level: 1 });
+        await (supabase as any).from('quiz_scores').insert({ user_id: user.id, total_xp: xp, level: 1 });
       }
 
       setDayCount(newCount > 7 ? 1 : newCount);

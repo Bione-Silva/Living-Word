@@ -63,7 +63,7 @@ export default function DevocionalPublico() {
     if (!shareToken) return;
     (async () => {
       // Increment click
-      await supabase.rpc('increment_share_click', { p_token: shareToken } as any);
+      await (supabase as any).rpc('increment_share_click', { p_token: shareToken } as any);
 
       // Get share data
       const { data: shareData } = await supabase

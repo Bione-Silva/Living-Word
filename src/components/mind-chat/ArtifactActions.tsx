@@ -146,7 +146,7 @@ export function ArtifactActions({ content, lang, userId, modalidade, mindName, b
     setLoadingAction('outline');
     try {
       const typeMap: Record<string, string> = { sermao: 'outline', estudo: 'outline', devocional: 'outline', aconselhamento: 'outline' };
-      const { error } = await supabase.from('materials').insert({
+      const { error } = await (supabase as any).from('materials').insert({
         user_id: userId,
         type: typeMap[modalidade] || 'outline',
         title: `📝 ${title}`,
@@ -166,7 +166,7 @@ export function ArtifactActions({ content, lang, userId, modalidade, mindName, b
     setLoadingAction('link');
     try {
       // Save as published material
-      const { data: material, error: matErr } = await supabase.from('materials').insert({
+      const { data: material, error: matErr } = await (supabase as any).from('materials').insert({
         user_id: userId,
         type: 'blog_article',
         title,
@@ -176,7 +176,7 @@ export function ArtifactActions({ content, lang, userId, modalidade, mindName, b
       if (matErr || !material) throw matErr;
 
       // Add to editorial queue as published
-      const { error: qErr } = await supabase.from('editorial_queue').insert({
+      const { error: qErr } = await (supabase as any).from('editorial_queue').insert({
         user_id: userId,
         material_id: material.id,
         status: 'published',

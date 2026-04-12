@@ -367,7 +367,7 @@ export default function Devocional() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.rpc('is_admin').then(({ data }) => { if (data === true) setIsAdmin(true); });
+    (supabase as any).rpc('is_admin').then(({ data }) => { if (data === true) setIsAdmin(true); });
   }, [user]);
 
   const loadDevotional = useCallback(async (dateOverride?: string) => {
@@ -448,7 +448,7 @@ export default function Devocional() {
         .lte('created_at', data.scheduled_date + 'T23:59:59')
         .limit(1);
       if (existing && existing.length > 0) {
-        await supabase.from('materials').update({ notes: noteText }).eq('id', existing[0].id);
+        await (supabase as any).from('materials').update({ notes: noteText }).eq('id', existing[0].id);
       }
       const now = new Date();
       setNoteSavedAt(now.toLocaleTimeString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { hour: '2-digit', minute: '2-digit' }));

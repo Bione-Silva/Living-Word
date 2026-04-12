@@ -102,7 +102,7 @@ export default function ExposStudioPage() {
     const titulo = titleMatch ? titleMatch[1] : `Estudo E.X.P.O.S. — ${passagem}`;
 
     try {
-      const { error } = await supabase.from('expos_studies' as any).insert({
+      const { error } = await (supabase as any).from('expos_studies' as any).insert({
         user_id: user.id,
         passagem,
         formato,

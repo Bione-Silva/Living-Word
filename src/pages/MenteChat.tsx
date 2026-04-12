@@ -172,7 +172,7 @@ export default function MenteChat() {
     const titleMatch = content.match(/^#\s+(.+)/m) || content.match(/^##\s+(.+)/m);
     const title = titleMatch?.[1]?.replace(/[*_]/g, '').trim() || `${modLabel} — ${name}`;
 
-    const { error } = await supabase.from('materials').insert({
+    const { error } = await (supabase as any).from('materials').insert({
       user_id: user.id,
       type: materialType,
       title,

@@ -80,7 +80,7 @@ export function TeamSection() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('team_members').delete().eq('id', id);
+    const { error } = await (supabase as any).from('team_members').delete().eq('id', id);
     if (error) toast.error('Erro ao remover membro');
     else {
       toast.success('Membro removido');

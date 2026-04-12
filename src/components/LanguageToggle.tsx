@@ -34,7 +34,7 @@ export function LanguageToggle() {
 
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('profiles')
         .update({ language: nextLang, updated_at: new Date().toISOString() })
         .eq('id', profile.id);

@@ -168,7 +168,7 @@ export default function BibleReader() {
     setTranslation(code);
     localStorage.setItem('bible_translation_preference', code);
     if (user) {
-      supabase.from('profiles').update({ bible_version: code }).eq('id', user.id).then(() => {});
+      (supabase as any).from('profiles').update({ bible_version: code }).eq('id', user.id).then(() => {});
     }
   }, [user]);
 
@@ -187,9 +187,9 @@ export default function BibleReader() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('bible_favorites').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+    (supabase as any).from('bible_favorites').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
       .then(({ count }) => { if (count != null) setFavCount(count); });
-    supabase.from('bible_notes').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+    (supabase as any).from('bible_notes').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
       .then(({ count }) => { if (count != null) setNoteCount(count); });
   }, [user, tabsRefreshKey]);
 
