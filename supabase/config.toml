@@ -28,14 +28,11 @@ entrypoint = "./functions/sermon-research/index.ts"
 [functions.get-devotional-today]
 enabled = true
 verify_jwt = false
-entrypoint = "./functions/get-devotional-today/index.ts"
 
 [functions.track-pageview]
 enabled = true
 verify_jwt = false
-entrypoint = "./functions/track-pageview/index.ts"
 
 [functions.recommend-devotional]
 enabled = true
 verify_jwt = false
-entrypoint = "./functions/recommend-devotional/index.ts"
