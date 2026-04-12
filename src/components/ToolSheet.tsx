@@ -295,7 +295,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     if (!user || !result) return;
     setSaving(true);
     try {
-      const { error } = await supabase.from('materials').insert({
+      const { error } = await (supabase as any).from('materials').insert({
         user_id: user.id,
         title: `${toolTitle} — ${input.substring(0, 50)}`,
         type: toolId,
@@ -331,7 +331,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         if (!data?.success) throw new Error(data?.error || 'Unknown error');
 
         // Publish immediately
-        await supabase.from('editorial_queue').insert({
+        await (supabase as any).from('editorial_queue').insert({
           user_id: user.id,
           material_id: data.material_id,
           status: 'published',
@@ -351,7 +351,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
         if (edgeErr) throw edgeErr;
         if (!edgeData?.success) throw new Error(edgeData?.error || 'Unknown error');
 
-        await supabase.from('editorial_queue').insert({
+        await (supabase as any).from('editorial_queue').insert({
           user_id: user.id,
           material_id: edgeData.material_id,
           status: 'published',
@@ -409,7 +409,7 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     if (!blogArticle) return;
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('materials')
         .update({ title: blogArticle.title, content: blogArticle.content, updated_at: new Date().toISOString() })
         .eq('id', blogArticle.id);
@@ -427,13 +427,13 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     setPublishingArticle(true);
     try {
       if (blogArticle.queue_id) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('editorial_queue')
           .update({ status: 'published', published_at: new Date().toISOString() })
           .eq('id', blogArticle.queue_id);
         if (error) throw error;
       } else {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('editorial_queue')
           .insert({
             user_id: user.id,
@@ -461,13 +461,13 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
     try {
       const nextStatus = blogArticle.queue_status === 'archived' ? 'published' : 'archived';
       if (blogArticle.queue_id) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('editorial_queue')
           .update({ status: nextStatus, published_at: nextStatus === 'published' ? new Date().toISOString() : null })
           .eq('id', blogArticle.queue_id);
         if (error) throw error;
       } else {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('editorial_queue')
           .insert({
             user_id: user.id,
