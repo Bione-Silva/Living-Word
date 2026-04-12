@@ -57,6 +57,34 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     setVerses([]);
     try {
       const apiTranslation = getApiCodeForVersion(translation);
+      
+      // For versions not on bible-api.com, try wldeh CDN
+      if (apiTranslation === 'acf' || apiTranslation === 'rvr') {
+        const cdnLang = apiTranslation === 'acf' ? 'pt_ACF' : 'es';
+        const bookSlug = book.toLowerCase().replace(/\s+/g, '');
+        const cdnUrl = `https://cdn.jsdelivr.net/gh/wldeh/bible-api@main/bibles/${cdnLang}/books/${bookSlug}/chapters/${chapter}.json`;
+        const cdnRes = await fetch(cdnUrl);
+        if (cdnRes.ok) {
+          const cdnData = await cdnRes.json();
+          if (cdnData?.verses) {
+            setVerses(cdnData.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
+            setLoading(false);
+            return;
+          }
+        }
+        // Fallback to ARA/almeida for PT, web for EN
+        const fb = apiTranslation === 'acf' ? 'almeida' : 'web';
+        const fbBook = getApiBookName(book, fb === 'almeida' ? 'ara' : 'web');
+        const fbRef = `${fbBook} ${chapter}`;
+        const fbRes = await fetch(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
+        const fbData = fbRes.ok ? await fbRes.json() : null;
+        if (fbData?.verses) {
+          setVerses(fbData.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
+        }
+        setLoading(false);
+        return;
+      }
+
       const apiBook = getApiBookName(book, translation);
       const ref = `${apiBook} ${chapter}`;
       const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${apiTranslation}`);
