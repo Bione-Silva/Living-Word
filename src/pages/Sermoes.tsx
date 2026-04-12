@@ -137,19 +137,26 @@ function buildSystemPrompt(
   if (selections.style) parts.push(`- Preaching style: ${selections.style}`);
   if (selections.tone) parts.push(`- Message tone: ${selections.tone}`);
 
-  parts.push(`\nMANDATORY SERMON STRUCTURE (use Markdown):`);
-  parts.push(`1. **# Title** — creative and memorable`);
-  parts.push(`2. **Text-base:** with the main biblical passage as a clickable reference`);
+  const sectionNames = {
+    PT: { intro: 'Introdução', mainPoints: 'Pontos Principais', applications: 'Aplicações Práticas', conclusion: 'Conclusão', textBase: 'Texto-base', title: 'Título' },
+    EN: { intro: 'Introduction', mainPoints: 'Main Points', applications: 'Practical Applications', conclusion: 'Conclusion', textBase: 'Text-base', title: 'Title' },
+    ES: { intro: 'Introducción', mainPoints: 'Puntos Principales', applications: 'Aplicaciones Prácticas', conclusion: 'Conclusión', textBase: 'Texto-base', title: 'Título' },
+  }[lang];
+
+  parts.push(`\nMANDATORY SERMON STRUCTURE (use Markdown — ALL section headers MUST be in ${langFull}):`);
+  parts.push(`1. **# ${sectionNames.title}** — creative and memorable`);
+  parts.push(`2. **${sectionNames.textBase}:** with the main biblical passage as a clickable reference`);
   parts.push(`3. **> Blockquote** — the full biblical text quoted in italics`);
-  parts.push(`4. **## 🚀 Introduction** — hook, contextualization, central thesis`);
-  parts.push(`5. **## Main Points** (3-4 points), each with:`);
-  parts.push(`   - Bold subtitle (e.g. **Love: The Essence of the Fruit**)`);
+  parts.push(`4. **## 🚀 ${sectionNames.intro}** — hook, contextualization, central thesis`);
+  parts.push(`5. **## ${sectionNames.mainPoints}** (3-4 points), each with:`);
+  parts.push(`   - Bold subtitle`);
   parts.push(`   - Detailed exposition of the biblical text`);
   parts.push(`   - Practical illustration or real-life example`);
   parts.push(`   - Supporting verse references written as clickable links`);
   parts.push(`   - Use cross (†) dividers between major sections`);
-  parts.push(`6. **## ✨ Practical Applications** — bullet list with bold labels`);
-  parts.push(`7. **## 🌹 Conclusion** — summary, appeal, closing prayer`);
+  parts.push(`6. **## ✨ ${sectionNames.applications}** — bullet list with bold labels`);
+  parts.push(`7. **## 🌹 ${sectionNames.conclusion}** — summary, appeal, closing prayer`);
+  parts.push(`\nCRITICAL: Every section header, label, and all content MUST be written entirely in ${langFull}. Never mix languages.`);
 
   parts.push(`\nBIBLE REFERENCES — CRITICAL RULES:`);
   parts.push(`- Write ALL Bible references as Markdown links: [Book Chapter:Verse (VERSION)](bible://Book/Chapter/Verse)`);
