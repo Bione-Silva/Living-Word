@@ -76,7 +76,7 @@ serve(async (req: Request) => {
 
     // 5. Verificar plano (agendamento requer Pastoral+)
     const { data: userProfile } = await supabase
-      .from("users")
+      .from("profiles")
       .select("plan")
       .eq("id", user.id)
       .single();

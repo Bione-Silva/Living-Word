@@ -80,8 +80,8 @@ serve(async (req) => {
 
   // 3. Buscar dados do usuário
   const { data: userData } = await adminClient
-    .from("users")
-    .select("plan, credits_balance, pastoral_voice")
+    .from("profiles")
+    .select("plan, credits_remaining, pastoral_voice")
     .eq("id", user.id)
     .single()
 

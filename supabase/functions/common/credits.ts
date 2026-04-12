@@ -7,9 +7,9 @@ import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 export const PLAN_CREDITS: Record<string, number> = {
   free: 500,
-  starter: 2000,
-  pro: 8000,
-  church: 10000,
+  starter: 3000,
+  pro: 10000,
+  igreja: 30000,
 }
 
 export const GENERATION_COSTS: Record<string, number> = {
@@ -21,7 +21,7 @@ export const RATE_LIMITS: Record<string, { per_minute: number; per_day: number }
   free:    { per_minute: 2,  per_day: 10  },
   starter: { per_minute: 5,  per_day: 50  },
   pro:     { per_minute: 10, per_day: 200 },
-  church:  { per_minute: 15, per_day: 500 },
+  igreja:  { per_minute: 15, per_day: 500 },
 }
 
 const MODEL_ROUTING: Record<string, Record<string, string>> = {
@@ -40,37 +40,44 @@ const MODEL_ROUTING: Record<string, Record<string, string>> = {
     reels: "gpt-4o-mini", cell: "gpt-4o-mini", sermon: "gpt-4o",
     study: "gpt-4o", bilingual: "gpt-4o",
   },
-  church: {
+  igreja: {
     post: "gpt-4o-mini", devotional: "gpt-4o", outline: "gpt-4o",
     reels: "gpt-4o-mini", cell: "gpt-4o-mini", sermon: "gpt-4o",
     study: "gpt-4o", bilingual: "gpt-4o",
   },
 }
 
-// Mapeamento Regional (Geo Pricing)
+// Mapeamento Regional (Geo Pricing) — Sincronizado com src/utils/geoPricing.ts
 export const STRIPE_PRICE_TO_PLAN: Record<string, string> = {
-  // --- Starter ---
-  "price_1TIbCqEaDBbHafP6rVx4M0iq": "starter",
+  // --- BRL ---
+  "price_1TJg0mEaDBbHafP6EjCuGgmk": "starter",
+  "price_1TJg0nEaDBbHafP6R0XrOxCo": "starter",
+  "price_1TJg0oEaDBbHafP6bC747uSG": "pro",
+  "price_1TJg0pEaDBbHafP6ToL24iXI": "pro",
+  "price_1TJg0qEaDBbHafP6gyw9BqQ1": "igreja",
+  "price_1TJg0rEaDBbHafP69yZFNvtc": "igreja",
+  
+  // --- USD ---
   "price_1TIbCqEaDBbHafP6AqYI1lQ3": "starter",
-  "price_1TIbCrEaDBbHafP6gO6Z5UPt": "starter",
-  "price_1TIbCrEaDBbHafP6dRTQO3m2": "starter", // $1 TEST
-  // --- Pro ---
-  "price_1TIbCsEaDBbHafP6jMjpjCWF": "pro",
   "price_1TIbCsEaDBbHafP6qOWGnzjp": "pro",
+  "price_1TIbCtEaDBbHafP6D1krnMzA": "igreja",
+
+  // --- LATAM ---
+  "price_1TIbCrEaDBbHafP6gO6Z5UPt": "starter",
   "price_1TIbCsEaDBbHafP6kY9apvOc": "pro",
-  "price_1TIbCsEaDBbHafP6ximO1Myd": "pro", // $1 TEST
-  // --- Igreja ---
-  "price_1TIbCtEaDBbHafP6dIYl8Fjg": "church",
-  "price_1TIbCtEaDBbHafP6D1krnMzA": "church",
-  "price_1TIbCtEaDBbHafP6Rh4uTD5Q": "church",
-  "price_1TIbCuEaDBbHafP6RlbFZvJH": "church", // $1 TEST
+  "price_1TIbCtEaDBbHafP6Rh4uTD5Q": "igreja",
+
+  // --- TEST ($1) ---
+  "price_1TIbCrEaDBbHafP6dRTQO3m2": "starter",
+  "price_1TIbCsEaDBbHafP6ximO1Myd": "pro",
+  "price_1TIbCuEaDBbHafP6RlbFZvJH": "igreja",
 }
 
 export const STRIPE_ADDON_PRICE_IDS = [
-  "price_1TIbCuEaDBbHafP6fQWCkE7l",
-  "price_1TIbCuEaDBbHafP6FhfTaKnh",
-  "price_1TIbCvEaDBbHafP6DM4entar",
-  "price_1TIbCvEaDBbHafP6WaieVawh", // $1 TEST
+  "price_1TJl2SEaDBbHafP6pmEHdFEq", // BRL Topup
+  "price_1TJl2TEaDBbHafP6X6urHSkN", // USD Topup
+  "price_1TIbCvEaDBbHafP6DM4entar", // LATAM Topup
+  "price_1TIbCvEaDBbHafP6WaieVawh", // TEST Topup
 ]
 
 // ============================================================
@@ -87,7 +94,7 @@ export function getGenerationCost(type: string): number {
 
 export function calculateTotalCredits(plan: string, extraSeats: number = 0): number {
   const base = PLAN_CREDITS[plan] ?? 500
-  if (plan === "church" && extraSeats > 0) return base + Math.floor(base * 0.10 * extraSeats)
+  if (plan === "igreja" && extraSeats > 0) return base + Math.floor(base * 0.10 * extraSeats)
   return base
 }
 
@@ -164,13 +171,28 @@ export async function getCreditsBalance(
   userId: string
 ): Promise<{ balance: number; plan: string; maxSeats: number }> {
   const { data } = await adminClient
-    .from("users")
-    .select("credits_balance, plan, max_seats")
+    .from("profiles")
+    .select("credits_remaining, plan, max_seats")
     .eq("id", userId)
     .single()
 
-  return { balance: data?.credits_balance ?? 0, plan: data?.plan ?? "free", maxSeats: data?.max_seats ?? 1 }
+  return { 
+    balance: data?.credits_remaining ?? 0, 
+    plan: data?.plan ?? "free", 
+    maxSeats: data?.max_seats ?? 1 
+  }
 }
+
+export function estimateApiCostUsd(model: string, inputTokens: number, outputTokens: number): number {
+  const costs: Record<string, { input: number; output: number }> = {
+    "gemini-2.5-flash": { input: 0.000000075, output: 0.0000003 },
+    "gpt-4o-mini": { input: 0.00000015, output: 0.0000006 },
+    "gpt-4o": { input: 0.0000025, output: 0.00001 },
+  }
+  const c = costs[model] ?? costs["gpt-4o-mini"]
+  return (inputTokens * c.input) + (outputTokens * c.output)
+}
+
 
 export function estimateApiCostUsd(model: string, inputTokens: number, outputTokens: number): number {
   const costs: Record<string, { input: number; output: number }> = {

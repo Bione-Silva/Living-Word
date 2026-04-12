@@ -1,0 +1,1763 @@
+{
+  "category": "quiz",
+  "source": "250 Quiz Bíblico",
+  "total": 250,
+  "items": [
+    {
+      "question": "QUAL O NOME DA PESSOA COM MAIS IDADE JÁ MENCIONADA NA BÍBLIA?",
+      "answer": "Matusalém (Viveu 969 anos)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL PERSONAGEM ABAIXO NÃO TEVE SEU NOME MUDADO?",
+      "answer": "Davi",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "SOBRE O PROFETA SAMUEL, ASSINALE A ALTERNATIVA INCORRETA!",
+      "answer": "Ungiu os três reis de Israel (Saul, Davi e Salomão)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "DEUS USOU UM ANIMAL PARA FALAR COM BALAÃO, QUAL FOI?",
+      "answer": "Jumenta",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "DAVI ERA PASTOR DE OVELHAS E UM CERTO DIA ELE PRECISOU LUTAR COM DOIS ANIMAIS PARA PROTEGER SEU REBANHO. QUAIS ANIMAIS ERAM ESSES?",
+      "answer": "Leão e Urso",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DA ILHA QUE O APÓSTOLO JOÃO ESCREVEU O LIVRO DE APOCALIPSE?",
+      "answer": "Ilha de Pátmos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|profecia"
+    },
+    {
+      "question": "EM QUAIS LIVROS DA BÍBLIA CONTAM A HISTÓTIA DO NASCIMENTO DE JESUS?",
+      "answer": "Mateus e Lucas",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "QUANTOS CASAIS HUMANOS ENTRARAM NA ARCA DE NOÉ?",
+      "answer": "4 casais",
+      "reference": "Gênesis 7:13",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL DISCIPULO NEGOU A JESUS?",
+      "answer": "Pedro",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DA CIDADE FUNDADA POR CAIM, DEPOIS QUE SAIU DA PRESENÇA DE DEUS?",
+      "answer": "Enoque",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "JUDAS TRAIU A JESUS POR QUAL VALOR?",
+      "answer": "30 moedas de prata",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DOS DOIS IRMÃOS DE MOISÉS?",
+      "answer": "Miriã e Arão",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI O JUIZ HEBREU QUE DALILA SEDUZIU PARA ENTREGAR AO EXÉRCITO FILISTEU?",
+      "answer": "Sansão",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "COMO E ONDE ACONTECEU A CONVERSÃO DO APÓSTOLO PAULO?",
+      "answer": "Enquanto estava a caminho de Damasco para perseguir os cristãos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUANTOS LIVROS TEM A BÍBLIA PROTESTANTE?",
+      "answer": "66 Livros",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL O SIGNIFICADO ORIGINAL DA PALAVRA 'BÍBLIA'?",
+      "answer": "Bíblia é o plural de 'biblos' do grego e significa conjunto de livros",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "DE ACORDO COM 2 TIMÓTEO 3:16, TODA A ESCRITURA É:",
+      "answer": "Inspirada por Deus e útil para seus propósitos",
+      "reference": "2 Timóteo 3:16",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "COMO A BÍBLIA ESTÁ DIVIDIDA?",
+      "answer": "Antigo e Novo Testamento",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL É O TEMA CENTRAL DA BÍBLIA?",
+      "answer": "Salvação em Cristo Jesus",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL É O MENOR VERSÍCULO DA BÍBLIA?",
+      "answer": "Jó 3:2",
+      "reference": "João 11:35",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL O NOME DA CIDADE ONDE JESUS NASCEU?",
+      "answer": "Belém",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "COM QUE IDADE JESUS COMEÇOU SEU MINISTÉRIO?",
+      "answer": "Com aproximadamente 30 anos de idade",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "SOBRE JESUS É ERRADO DIZER:",
+      "answer": "Jesus pecou em poucas situações",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "QUAL FOI O PRIMEIRO MILAGRE DE JESUS?",
+      "answer": "Transformou a água em vinho",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|milagres"
+    },
+    {
+      "question": "QUAL MULHER FOI TIDA POR BÊBADA ENQUANTO ORAVA PEDINDO UM FILHO AO SENHOR?",
+      "answer": "Ana",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI A MULHER SENSATA QUE IMPEDIU DAVI DE DESTRUIR NABAL, SEU MARIDO E SUA CASA?",
+      "answer": "Abigail",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DA FILHA MAIS VELHA DE SAUL PROMETIDA EM CASAMENTO A DAVI, MAS DADA A OUTRO?",
+      "answer": "Merabe",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL MULHER DESEJOU MUDAR SEU PRÓPRIO NOME PARA MARA (SIGNIFICA AMARGA)?",
+      "answer": "Noemi",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "COM QUANTOS ANOS DAVI FOI UNGIDO A REI?",
+      "answer": "Aprox. 16 anos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM ERA A MULHER QUE AMEAÇOU DE MORTE AO PROFETA ELIAS?",
+      "answer": "Jezabel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUANTOS ANOS VIVEU SARA?",
+      "answer": "127 anos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL ERA O OFÍCIO DE PRISCILA?",
+      "answer": "Fabricante de tendas",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DO PRIMEIRO CASAL CRIADO POR DEUS?",
+      "answer": "Adão e Eva",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "O QUE DEUS DISSE PARA NOÉ CONSTRUIR?",
+      "answer": "Uma arca (grande embarcação) onde seriam salvos do dilúvio",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL FOI O SINAL QUE DEUS DEU A NOÉ, COMO PROMESSA DE NÃO MAIS DESTRUIR A TERRA COM ÁGUA?",
+      "answer": "Um arco-íris",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL O NOME DO MENINO QUE VENCEU O GIGANTE GOLIAS?",
+      "answer": "Davi",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUANTOS ERAM OS DISCÍPULOS DE JESUS?",
+      "answer": "12",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "EM QUAL LIVRO BÍBLICO ESTÁ ESCRITO O VERSÍCULO: \"O SENHOR É O MEU PASTOR, NADA ME FALTARÁ\"?",
+      "answer": "Salmos",
+      "reference": "Salmo 23",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUE PROFETA FOI ENGOLIDO POR UM GRANDE PEIXE?",
+      "answer": "Jonas",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "SOU O FILHO PROMETIDO POR DEUS A ABRAÃO. QUEM SOU EU?",
+      "answer": "Isaque",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI O LÍDER USADO POR DEUS PARA LIBERTAR OS ISRAELITAS DA ESCRAVIDÃO NO EGITO?",
+      "answer": "Moisés",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "SOU A MULHER ESTÉRIL QUE OROU PEDINDO UM FILHO. ENTREGUEI-O AO SENHOR PARA SERVI-LO POR TODA A VIDA. QUEM SOU EU?",
+      "answer": "Ana",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "SOU O 1º FILHO DE ADÃO, ODIEI E MATEI O MEU IRMÃO POR INVEJA. QUEM SOU EU?",
+      "answer": "Caim",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "FUI LANÇADO NUMA COVA DE LEÕES FAMINTOS, PORQUE NÃO DEIXEI DE ORAR A DEUS. QUEM SOU EU?",
+      "answer": "Daniel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "PEDI A DEUS SABEDORIA E ME TORNEI O HOMEM MAIS SÁBIO DA TERRA. QUEM SOU EU?",
+      "answer": "Salomão",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "EU VESTIA ROUPAS DE PELOS DE CAMELOS E COMIA GAFANHOTOS E MEL. BATIZAVA E PREGAVA O ARREPENDIMENTO. QUEM SOU EU?",
+      "answer": "João Batista",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DOS FILHOS DE ISAQUE?",
+      "answer": "Esaú e Jacó",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAIS DESSAS NÃO FAZEM PARTE DAS 10 PRAGAS DO EGITO?",
+      "answer": "Praga das serpentes e praga da esterilidade dos egípcios",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUE CIDADE FOI CONQUISTADA PELOS ISRAELITAS, APENAS RODEANDO-A POR 7 DIAS, AO SOM DE TROMBETAS E BRADOS DE VITÓRIA?",
+      "answer": "Jericó",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUEM FOI CHAMADO POR DEUS, AINDA MENINO, PARA SER PROFETA E JUIZ EM ISRAEL?",
+      "answer": "Samuel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "QUAL O NOME DOS 3 AMIGOS DE DANIEL QUE FORAM LANÇADOS NUMA FORNALHA DE FOGO ARDENTE?",
+      "answer": "Sadraque, Mesaque e Abedenego",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM VENDEU JOSÉ PARA UMA CARAVANA DE ISMAELITAS?",
+      "answer": "Os seus irmãos, por inveja, numa emboscada no campo",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DO ANJO QUE PRENUNCIOU O NASCIMENTO DE JESUS CRISTO E DE JOÃO BATISTA?",
+      "answer": "Gabriel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL FOI O ÚNICO EPISÓDIO REGISTRADO SOBRE A INFÂNCIA / ADOLESCÊNCIA DE JESUS NA BÍBLIA?",
+      "answer": "Jesus visitou ao templo em Jerusalém e foi encontrado entre os mestres, aos 12 anos.",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "DURANTE QUANTOS DIAS JESUS FOI TENTADO NO DESERTO PELO DIABO?",
+      "answer": "40",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "DESTES APÓSTOLOS, QUAL NÃO FOI UM DOS 12 DISCÍPULOS DE JESUS?",
+      "answer": "Paulo",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUE APÓSTOLO TEVE A VISÃO DO FIM DOS TEMPOS, DESCRITA NO LIVRO DO APOCALIPSE?",
+      "answer": "João",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens|profecia"
+    },
+    {
+      "question": "SEGUNDO JESUS, QUAIS SÃO OS MANDAMENTOS MAIS IMPORTANTES?",
+      "answer": "Amar a Deus sobre todas coisas e ao próximo como a si mesmo.",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "QUE ANIMAL FEZ UM SOM ENQUANTO PEDRO NEGAVA JESUS?",
+      "answer": "Um galo cantou",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "EM JOÃO 14:6 JESUS DISSE: \"EU SOU... NINGUÉM VEM AO PAI SENÃO POR MIM\". COMPLETE CORRETAMENTE",
+      "answer": "\"Eu sou o caminho, a verdade e a vida...\"",
+      "reference": "João 14:6",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "O REI SALOMÃO TEVE MUITAS ESPOSAS E CONCUBINAS. QUANTAS ERAM?",
+      "answer": "700 princesas e 300 concubinas",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI A MÃE DE CAIM, ABEL E SETE?",
+      "answer": "Eva",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "O NOME ADÃO, 'ADAM' EM HEBRAICO SIGNIFICA:",
+      "answer": "Solo, Terra",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "SOBRE JESUS, É CORRETO AFIRMAR:",
+      "answer": "Não foi filho único de Maria e José.",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUANTOS MAGOS DO ORIENTE FORAM VISITAR O BEBÊ JESUS, SEGUNDO A BÍBLIA?",
+      "answer": "3",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL O MAIOR LIVRO DA BÍBLIA?",
+      "answer": "Salmos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL AUTOR BÍBLICO ESCREVEU MAIS DE 5 MIL CANÇÕES?",
+      "answer": "Salomão",
+      "reference": "1 Reis 4:32",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAIS OS LIVROS DA BÍBLIA QUE POSSUEM APENAS 1 CAPÍTULO?",
+      "answer": "Obadias, Filemom, Judas, 2ª João e 3ª João",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "O QUE DEUS FEZ PARA INTERROMPER A CONSTRUÇÃO DA TORRE DE BABEL?",
+      "answer": "Confundiu a língua dos homens e os espalhou pela terra.",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL O NOME DO SOGRO DE JACÓ QUE O ENGANOU DANDO-LHE A FILHA MAIS VELHA, EM VEZ DE RAQUEL?",
+      "answer": "Labão",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL REI DA HISTÓRIA FICOU LEPROSO?",
+      "answer": "Uzias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL DOS PROFETAS FEZ FLUTUAR O FERRO DE UM MACHADO?",
+      "answer": "Eliseu",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|milagres"
+    },
+    {
+      "question": "QUAL FOI O PRIMEIRO MÁRTIR DA HISTÓRIA DA IGREJA?",
+      "answer": "Estevão",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL DOS DISCÍPULOS SUBSTITUIU JUDAS ISCARIOTES DEPOIS DA RESSURREIÇÃO DE JESUS?",
+      "answer": "Matias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUEM DISCURSOU NO DIA DE PENTECOSTES, TENDO O RESULTADO DE QUASE 3 MIL ALMAS ACRESCENTADAS?",
+      "answer": "Pedro",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL DESSAS PARÁBOLAS ENSINA SOBRE O AMOR AO PRÓXIMO?",
+      "answer": "Parábola do bom samaritano",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|parabolas"
+    },
+    {
+      "question": "QUAL DESTES LIVROS NÃO FOI ESCRITO PELO APÓSTOLO PAULO?",
+      "answer": "Tiago",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "QUANTOS HOMENS FORAM ALIMENTADOS COM OS VINTE PÃES ABENÇOADOS POR ELISEU?",
+      "answer": "100",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|milagres"
+    },
+    {
+      "question": "O QUE ACONTECEU QUANDO PAULO E SILAS ORAVAM E LOUVAVAM A DEUS NA PRISÃO?",
+      "answer": "Um terremoto",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens|milagres"
+    },
+    {
+      "question": "QUEM MORREU AO TENTAR PROTEGER A ARCA DA ALIANÇA DE UMA POSSÍVEL QUEDA?",
+      "answer": "Uzá",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUE HOMEM PRETENDIA EXTERMINAR COM TODOS OS JUDEUS NOS DIAS DA RAINHA ESTER?",
+      "answer": "Hamã",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL ERA O OUTRO NOME DO PROFETA DANIEL?",
+      "answer": "Beltessazar",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "COMO A BÍBLIA DESCREVE HOFNI E FINEIAS?",
+      "answer": "Filhos de Belial",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "POR QUANTOS DIAS PAULO PERMANECEU CEGO?",
+      "answer": "3",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAIS ERAM OS ALIMENTOS QUE OS CORVOS TRAZIAM AO PROFETA ELIAS?",
+      "answer": "Pão e carne",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "EM QUE ILHA PAULO ESTAVA QUANDO FOI MORDIDO POR UMA VÍBORA?",
+      "answer": "Malta",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "ONDE ELISEU SE HOSPEDAVA QUANDO PASSAVA POR SUNÉM?",
+      "answer": "Na casa de uma mulher rica",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUE AMIGO DE PAULO FOI NETO DE LOIDE E FILHO DE EUNICE?",
+      "answer": "Timóteo",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "POR QUE DEUS FERIU OS HOMENS DE BETE-SEMES?",
+      "answer": "Olharam para o interior da arca do Senhor",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "O QUE ACONTECIA QUANDO ALGUÉM DEIXAVA DO MANÁ PARA O DIA SEGUINTE?",
+      "answer": "Enchia de bichos e cheirava mal",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL ERAM OS NOMES DAS NORAS DE NOEMI?",
+      "answer": "Rute e Orfa",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "O QUE ACONTECEU AO HOMEM QUE CONTOU A DAVI QUE SAUL ESTAVA MORTO?",
+      "answer": "Davi mandou matá-lo",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "NOS DIAS DE SAMUEL COMO OS PROFETAS ERAM CHAMADOS?",
+      "answer": "Videntes",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "ONDE OS DISCÍPULOS DE JESUS FORAM PELA PRIMEIRA VEZ CHAMADOS DE CRISTÃOS?",
+      "answer": "Antioquia",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "QUANTOS LIVROS TEM O ANTIGO TESTAMENTO?",
+      "answer": "39",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUANTOS LIVROS TEM O NOVO TESTAMENTO?",
+      "answer": "27",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUANTO TEMPO A BÍBLIA DEMOROU PARA SER ESCRITA?",
+      "answer": "Aproximadamente 1600 anos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "EM QUANTAS LÍNGUAS A BÍBLIA FOI ESCRITA NO ORIGINAL?",
+      "answer": "3 Hebraico, Aramaico e Grego",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAIS CONTINENTES A BÍBLIA FOI ESCRITA ORIGINALMENTE?",
+      "answer": "Africa, Europa e Asia",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL FOI O PRIMEIRO LIVRO DA BÍBLIA A SER ESCRITO?",
+      "answer": "Jó",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAIS SÃO OS LIVROS QUE FAZEM PARTE DO PENTATEUCO?",
+      "answer": "Gênesis, Êxodo, Levítico, Números e Deuteronômio",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL DOS LIVROS ABAIXO NÃO SÃO POÉTICOS?",
+      "answer": "Romanos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral|NT"
+    },
+    {
+      "question": "QUAL LIVRO ABAIXO NÃO É UM PROFETA MENOR?",
+      "answer": "Filemom",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral|NT"
+    },
+    {
+      "question": "QUEM SÃO OS PROFETAS MAIORES",
+      "answer": "Isaías, Jeremias, Lamentações, Ezequiel e Daniel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O QUE QUE DEUS CRIOU NO 5° DIA?",
+      "answer": "Criou as criaturas aquáticas e os pássaros",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL O NOME DO SOBRINHO QUE CAMINHOU COM SEU TIO ABRAÃO?",
+      "answer": "Ló",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FORAM AS 4 MULHERES DE JACÓ?",
+      "answer": "Lia, Raquel, Zilpa e Bila",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "O REI SAUL É DESCENDENTE DE QUAL TRIBO DE ISRAEL?",
+      "answer": "Benjamim",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "SANSÃO É DESCENDENTE DE QUAL TRIBO DE ISRAEL?",
+      "answer": "Dã",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL FOI A PRIMEIRA PRAGA ENVIADA AO EGITO?",
+      "answer": "A água se tornou em sangue",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUEM FOI O SUCESSOR DE MOISÉS PARA LIDERAR O POVO DE ISRAEL",
+      "answer": "Josué",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL É O 8° LIVRO DA BÍBLIA?",
+      "answer": "Rute",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL LIVRO CONTA A HISTÓRIA DO PROFETA ELIAS?",
+      "answer": "1 Reis",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia|personagens"
+    },
+    {
+      "question": "QUAL O NOME DOS DOIS FILHOS QUE JACÓ TEVE COM ZILPA?",
+      "answer": "Gade e Aser",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "O REINO DO NORTE (ISRAEL) FOI INVADIDO POR QUAL POVO?",
+      "answer": "Assírio",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "O REINDO DO SUL (JUDÁ) FOI INAVIDO POR QUAL POVO?",
+      "answer": "Babilônico",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL O NOME DO FILHO DE SAUL QUE ERA MUITO AMIGO DE DAVI?",
+      "answer": "Jônatas",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DO NETO DE SAUL QUE ERA ALEIJADO?",
+      "answer": "Mefibosete",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "EM QUAL CAPÍTULO DO 1º LIVRO DE SAMUEL DAVI É UNGIDO A REI DE ISRAEL?",
+      "answer": "16",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DO PAI DO PROFETA SAMUEL?",
+      "answer": "Elcana",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "QUANTOS CAPÍTULOS DO LIVRO DE PROVÉRBIOS SALOMÃO ESCREVEU?",
+      "answer": "29",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "O PROFETAS OSÉIAS PROFETIZOU PARA QUAL REINO?",
+      "answer": "Norte (Israel)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS JOEL PROFETIZOU PARA QUAL REINO?",
+      "answer": "Sul (Judá)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS AMÓS PROFETIZOU PARA QUAL REINO?",
+      "answer": "Norte (Israel)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS OBADIAS PROFETIZOU PARA QUAL REINO?",
+      "answer": "Sul (Judá)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS MIQUÉIAS PROFETIZOU PARA QUAL REINO?",
+      "answer": "Sul (Judá)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS HABACUQUE PROFETIZOU PARA QUAL REINO?",
+      "answer": "Sul (Judá)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS SOFONIAS PROFETIZOU PARA QUAL REINO?",
+      "answer": "Sul (Judá)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS AGEU PROFETIZOU PARA QUAL REINO?",
+      "answer": "Sul (Judá)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS AGEU PROFETIZOU PARA QUAL REINO?",
+      "answer": "Sul (Judá)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "O PROFETAS MALAQUIAS PROFETIZOU PARA QUAL REINO?",
+      "answer": "Sul (Judá)",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "A CONVERSÃO DO APÓSTOLO PAULO ACONTECE EM QUAL CAPÍTULO DO LIVRO DE ATOS?",
+      "answer": "Capítulo 9",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUANTOS LIVROS DA BÍBLIA O APÓSTOLO PAULO ESCREVEU?",
+      "answer": "13",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens|geral"
+    },
+    {
+      "question": "O REINO DO NORTE (ISRAEL) FOI INVADIDO POR QUAL POVO?",
+      "answer": "Assírio",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "O REINDO DO SUL (JUDÁ) FOI INAVIDO POR QUAL POVO?",
+      "answer": "Babilônico",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL O NOME DO FILHO DE SAUL QUE ERA MUITO AMIGO DE DAVI?",
+      "answer": "Jônatas",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DO NETO DE SAUL QUE ERA ALEIJADO?",
+      "answer": "Mefibosete",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "EM QUAL CAPÍTULO DO 1º LIVRO DE SAMUEL DAVI É UNGIDO A REI DE ISRAEL?",
+      "answer": "16",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "AO INVÉS DE IR PARA NÍNIVE, JONAS EMBARCOU RUMO A QUAL CIDADE?",
+      "answer": "Tarsis",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "QUAL PESSOA TRATOU DE SEPULTAR O CORPO DE JESUS?",
+      "answer": "José de Arimateia",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL A IDADE DE CALEBE AO ENTRAR NA TERRA PROMETIDA?",
+      "answer": "85 anos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O ÚLTIMO LIVRO DO ANTIGO TESTAMENTO?",
+      "answer": "Malaquias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "PARA QUEM JESUS DISSE SER NECESSÁRIO \"NASCER DE NOVO\"?",
+      "answer": "Nicodemos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAIS PERSONAGENS ERAM GÊMEOS?",
+      "answer": "Jacó e Esaú",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM TEVE OS SEUS OLHOS PERFURADOS AO SER PRESO?",
+      "answer": "Sansão",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL OFERTA ABEL APRESENTOU A DEUS?",
+      "answer": "Primícias do seu rebanho",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "EM QUAIS LIVROS DA BÍBLIA O NOME DEUS NÃO É CITADO?",
+      "answer": "Ester e Cânticos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "EM TESSALÔNICA, PAULO, SILAS E TIMÓTEO REFUGIARAM-SE NA CASA DE QUAL IRMÃO?",
+      "answer": "Jasom",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUANTOS CAPÍTULOS TEM O LIVRO DE SOFONIAS?",
+      "answer": "3",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUANTOS DISCÍPULOS JESUS ENVIOU PARA A MISSÃO DE PREGAR O EVANGELHO?",
+      "answer": "72",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL LIVRO DA BÍBLIA POSTERIOR AO LIVRO DE JOEL?",
+      "answer": "Amós",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "ONDE SAUL MORREU?",
+      "answer": "Monte Gilboa",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAIS DESSES NOMES NÃO FAZIAM PARTE DAS 12 TRIBOS DE ISRAEL?",
+      "answer": "Diná",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAIS DESSES NOMES NÃO ERA UM CASAL?",
+      "answer": "Jacó e Ana",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "ANDRÉ ERA IRMÃO DE QUAL APÓSTOLO?",
+      "answer": "Pedro",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL DESSAS PARÁBOLAS JESUS NÃO CONTOU?",
+      "answer": "A parábola do soldado prudente.",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|parabolas"
+    },
+    {
+      "question": "POR QUE CAIM MATOU ABEL?",
+      "answer": "Por inveja",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FICOU TEMPORARIAMENTE MUDO?",
+      "answer": "Zacarias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUEM ERA REI E SACERDOTE NO PERÍODO DE ABRAÃO?",
+      "answer": "Melquisedeque",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL TRIBO FICOU RESPONSÁVEL POR CUIDAR DO TEMPLO E GUIAR O POVO NA ADORAÇÃO A DEUS?",
+      "answer": "Levi",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUEM FOI ASAFE?",
+      "answer": "Levita",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL É O MAIOR SALMO DA BÍBLIA?",
+      "answer": "119",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL É A ABREVIAÇÃO DO LIVRO DE FILIPENSES?",
+      "answer": "FP",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "A HISTÓRIA DA TORRE DE BABEL SE ENCONTRA EM QUE LIVRO BÍBLICO?",
+      "answer": "Gênesis",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUEM FOI VENDIDO POR SEUS IRMÃOS COMO ESCRAVO?",
+      "answer": "José",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL ALIMENTO ERA RESTRITO NO JEJUM DE DANIEL?",
+      "answer": "Legumes",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL ERA O MAIOR IMPÉRIO NA ÉPOCA DE DANIEL?",
+      "answer": "Babilônico",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "QUAL DESSES PERSONAGENS TAMBÉM ERA ROMANO?",
+      "answer": "Paulo",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUEM APARECEU NO MONTE DA TRANSFIGURAÇÃO JUNTO COM JESUS?",
+      "answer": "Moisés e Elias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL PROFETA FOI ARREBATADO?",
+      "answer": "Elias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "QUAL É A ABREVIAÇÃO DO LIVRO DE ESTER?",
+      "answer": "ET",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL O NOME DA MÃE DE JOÃO BATISTA?",
+      "answer": "Isabel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUEM FOI O SUMO SACERDOTE QUE CUIDOU DE SAMUEL?",
+      "answer": "Eli",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI A MULHER QUE PEDIU A CABEÇA DE JOÃO BATISTA?",
+      "answer": "A filha de Herodias.",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL ERA O NOME DA MÃE DE ISMAEL?",
+      "answer": "Agar",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUANTOS CAPÍTULOS TEM O LIVRO DE GÊNESIS?",
+      "answer": "50",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL O NOME DA ESPOSA DO REI ACABE?",
+      "answer": "Jezabel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DO MONTE ONDE A ARCA DE NOÉ REPOUSOU?",
+      "answer": "Ararate",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL DESSES HOMENS NÃO ERA PROFETA?",
+      "answer": "Esaú",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "QUAL A ABREVIAÇÃO PARA O LIVRO DE HABACUQUE?",
+      "answer": "HC",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL A ABREVIAÇÃO PARA O LIVRO DE GÊNESIS?",
+      "answer": "GN",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL A ABREVIAÇÃO PARA O LIVRO DE MATEUS?",
+      "answer": "MT",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL A ABREVIAÇÃO PARA O LIVRO DE JUDAS?",
+      "answer": "JD",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL A ABREVIAÇÃO PARA O LIVRO DE 1 PEDRO?",
+      "answer": "1PE",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL A ABREVIAÇÃO PARA O LIVRO DE EXÔDO?",
+      "answer": "EX",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL A ABREVIAÇÃO PARA O LIVRO DE MARCOS?",
+      "answer": "MC",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL A ABREVIAÇÃO PARA O LIVRO DE MIQUEIAS?",
+      "answer": "MQ",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL INSTRUMENTO DAVI GOSTAVA DE TOCAR?",
+      "answer": "Harpa",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUANDO A MULHER COM FLUXO DE SANGUE TOCOU NAS VESTES DE JESUS, NO QUE ELA PENSAVA?",
+      "answer": "\"Se eu tão somente tocar em seu manto, ficarei curada\".",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|milagres"
+    },
+    {
+      "question": "QUAL É O ÚLTIMO CAPÍTULO DA BÍBLIA?",
+      "answer": "Apocalipse 22",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUEM ERA OS GENTIOS NA BÍBLIA?",
+      "answer": "Eram os 'não judeus'.",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUEM A BÍBLIA DIZ QUE FOI PIOR QUE TODOS OS REIS DE ISRAEL?",
+      "answer": "Acabe",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAIS DESTES NOMES NÃO É MENCIONADO NA BÍBLIA?",
+      "answer": "Caio",
+      "reference": "3 João 1:1",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUEM AJUDOU JESUS A CARREGAR A CRUZ?",
+      "answer": "Simão Cirineu",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUEM FOI ARREBATADO POR DEUS E NÃO VIU A MORTE?",
+      "answer": "Enoque",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM ERA JOABE?",
+      "answer": "Chefe do exército de Davi",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUANTOS ANOS NOÉ VIVEU APÓS O DILÚVIO?",
+      "answer": "350 Anos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI O PAI DE ABRAÃO?",
+      "answer": "Terá",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL O NOME DO FILHO DE SAUL QUE HERDOU O TRONO?",
+      "answer": "Isbosete",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "SALOMÃO TAMBÉM ERA CONHECIDO POR QUAL NOME?",
+      "answer": "Jedidias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUANDO O REINO SE DIVIDIU, QUAIS TRIBOS FORMARAM O REINO DO SUL?",
+      "answer": "Judá e Benjamim",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL ERA O NOME DO PAI DE JEREMIAS?",
+      "answer": "Hilquias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "JOÃO BATISTA ERA DESCENDENTE DE QUAL TRIBO?",
+      "answer": "Levi",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL É O VERSÍCULO MAIS LONGO DA BÍBLIA?",
+      "answer": "Ester 8:9",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "geral"
+    },
+    {
+      "question": "QUAL É O PRIMEIRO SUICÍDIO MENCIONADO NAS ESCRITURAS?",
+      "answer": "Saul",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI VENDIDO POR 20 MOEDAS DE PRATA?",
+      "answer": "José",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUE NOME DE CRIANÇA COMEMOROU A PERDA DA GLÓRIA DE ISRAEL?",
+      "answer": "Icabode",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUE CARNE PODERIA SER VENDIDA OU LANÇADA FORA, MAS NÃO PODERIA SER COMIDA PELOS JUDEUS?",
+      "answer": "Porco",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUE LATOEIRO SE OPÔS A PAULO?",
+      "answer": "Alexandre",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUEM PERDEU SUA VIDA POR PEDIR PARA SE CASAR COM A SUA MADRASTA?",
+      "answer": "Adonias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FEZ BOLOS ASMOS PARA UM ANJO?",
+      "answer": "Gideão",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM ENCONTROU UM REINO QUANDO PROCURAVA UMAS JUMENTAS PERTENCENTES AO SEU PAI?",
+      "answer": "Saul",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM TENTOU ASSASSINAR SEU PRÓPRIO FILHO DURANTE UM JANTAR?",
+      "answer": "Saul",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL REI INSTALOU UM AQUEDUTO EM JERUSALÉM?",
+      "answer": "Ezequias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI O PRIMEIRO MISSIONÁRIO AOS GENTIOS?",
+      "answer": "Paulo",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUEM FEZ UMA FESTA QUE DUROU 180 DIAS?",
+      "answer": "Assuero",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM GANHOU UMA ESPOSA POR MATAR 200 HOMENS?",
+      "answer": "Davi",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL DOS APÓSTOLOS FOI MORDIDO POR UMA COBRA?",
+      "answer": "Paulo",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL FOI O REI CUJAS UNHAS CRESCERAM COMO AS DE UM PÁSSARO?",
+      "answer": "Nabucodonosor",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|profecia"
+    },
+    {
+      "question": "QUAL É O NOME DA FILHA DO REI SALOMÃO?",
+      "answer": "Tafate",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUE NOME TINHAM AS DUAS IRMÃS DE DAVI?",
+      "answer": "Zeruia e Abigail",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL ERA O NOME DOS FILHOS DE SAMUEL?",
+      "answer": "Joel e Abias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL FOI O REI DE ISRAEL QUE TEVE O MAIS CURTO REINADO?",
+      "answer": "Zinri",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL É O PROFETA QUE FALA EM UMA CAVERNA DE DRAGÕES?",
+      "answer": "Daniel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "QUANTAS VEZES NAUFRAGOU O APÓSTOLO PAULO?",
+      "answer": "3 vezes",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "NÃO FAZ PARTE DAS CARTAS DE PAULO",
+      "answer": "Sofonias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "QUEM OROU E O SOL E A LUA PARARAM?",
+      "answer": "Josué",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens|milagres"
+    },
+    {
+      "question": "OS AMIGOS DE QUEM SENTARAM-SE COM O SEU AMIGO 7 DIAS SEM FALAR?",
+      "answer": "Jó",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "ONDE PAULO PREGOU SEU PRIMEIRO SERMÃO?",
+      "answer": "Jerusalém",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL FOI O REI JUDEU QUE FOI FERIDO DE LEPRA?",
+      "answer": "Uzias",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL FOI O REI DE ISRAEL QUE FOI ASSASSINADO DURANTE UMA BEBEDEIRA?",
+      "answer": "Elá",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI CONDENADO À MORTE POR FAZER SUA ORAÇÃO?",
+      "answer": "Daniel",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL ERA O NOME DA BISAVÓ DE DAVI?",
+      "answer": "Rute",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUAL É O BICHO A RESPEITO DO QUAL SE DIZ QUE MORA NOS PALÁCIOS DOS REIS?",
+      "answer": "Lagartixa",
+      "reference": "Provérbios 30:28",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL FOI A CIDADE SENTENCIADA A SER DESTRUÍDA QUANDO UM VASO DE BARRO FOSSE QUEBRADO?",
+      "answer": "Jerusalém",
+      "reference": "Jeremias 19:10-11",
+      "difficulty": "medio",
+      "category": "AT|profecia"
+    },
+    {
+      "question": "QUE DISCÍPULO ENCONTROU UMA MOEDA NA BOCA DE UM PEIXE?",
+      "answer": "Pedro",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens|milagres"
+    },
+    {
+      "question": "A PRIMEIRA CARTA DE PEDRO FOI DIRIGIDA A?",
+      "answer": "Aos estrangeiros dispersos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "QUEM FOI A MULHER HEBRAICA QUE SE TORNOU RAINHA DA PÉRSIA?",
+      "answer": "Ester",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM DEUS ORDENOU QUE SACRIFICASSE SEU ÚNICO FILHO?",
+      "answer": "Abraão",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|personagens"
+    },
+    {
+      "question": "QUEM FOI O GOVERNADOR ROMANO QUE CONDENOU CRISTO À MORTE?",
+      "answer": "Pilatos",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|personagens"
+    },
+    {
+      "question": "QUAL É A RAIZ DE TODOS OS TIPOS DE MAL?",
+      "answer": "O amor ao dinheiro",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "NT|geral"
+    },
+    {
+      "question": "QUAL É O PRIMEIRO MANDAMENTO?",
+      "answer": "Não terá outros deuses diante de mim",
+      "reference": "",
+      "difficulty": "medio",
+      "category": "AT|geral"
+    },
+    {
+      "question": "QUAL FOI A CIDADE SENTENCIADA A SER DESTRUÍDA QUANDO UM VASO DE BARRO FOSSE QUEBRADO?",
+      "answer": "Jerusalém",
+      "reference": "Jeremias 19",
+      "difficulty": "medio",
+      "category": "AT"
+    },
+    {
+      "question": "QUE DISCÍPULO ENCONTROU UMA MOEDA NA BOCA DE UM PEIXE?",
+      "answer": "Pedro",
+      "reference": "Mateus 17:27",
+      "difficulty": "facil",
+      "category": "NT"
+    },
+    {
+      "question": "A PRIMEIRA CARTA DE PEDRO FOI DIRIGIDA A?",
+      "answer": "Aos estrangeiros dispersos",
+      "reference": "1 Pedro 1:1",
+      "difficulty": "medio",
+      "category": "NT"
+    },
+    {
+      "question": "QUEM FOI A MULHER HEBRAICA QUE SE TORNOU RAINHA DA PÉRSIA?",
+      "answer": "Ester",
+      "reference": "Livro de Ester",
+      "difficulty": "facil",
+      "category": "AT"
+    },
+    {
+      "question": "QUEM DEUS ORDENOU QUE SACRIFICASSE SEU ÚNICO FILHO?",
+      "answer": "Abraão",
+      "reference": "Gênesis 22",
+      "difficulty": "facil",
+      "category": "AT"
+    },
+    {
+      "question": "QUEM FOI O GOVERNADOR ROMANO QUE CONDENOU CRISTO À MORTE?",
+      "answer": "Pilatos",
+      "reference": "Mateus 27, Marcos 15, Lucas 23, João 18-19",
+      "difficulty": "facil",
+      "category": "NT"
+    },
+    {
+      "question": "QUAL É A RAIZ DE TODOS OS TIPOS DE MAL?",
+      "answer": "O amor ao dinheiro",
+      "reference": "1 Timóteo 6:10",
+      "difficulty": "facil",
+      "category": "NT"
+    },
+    {
+      "question": "QUAL É O PRIMEIRO MANDAMENTO?",
+      "answer": "Não terá outros deuses diante de mim",
+      "reference": "Êxodo 20:3, Deuteronômio 5:7",
+      "difficulty": "facil",
+      "category": "AT"
+    }
+  ],
+  "_metadata": {
+    "processed_at": "2026-04-11T05:29:13.970Z",
+    "source_file": "250+quiz+bíblico.pdf",
+    "model_used": "gemini-2.5-flash",
+    "items_extracted": 242
+  }
+}

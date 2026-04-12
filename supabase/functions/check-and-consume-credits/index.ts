@@ -80,72 +80,59 @@ serve(async (req) => {
       }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Verificar créditos globais residuais do Free
-    if (profile.credits_remaining < tool.credits_cost) {
-      return new Response(JSON.stringify({
-        allowed: false,
-        reason: "insufficient_credits",
-        credits_remaining: profile.credits_remaining,
+    // Registrar uso no Free e deduzir créditos via RPC
+    const { data: debitResult, error: debitError } = await supabase.rpc("debit_credits", {
+      p_user_id: user.id,
+      p_amount: tool.credits_cost,
+      p_generation_type: tool_slug,
+      p_description: `Uso de ferramenta (Plano Free): ${tool_slug}`
+    });
+
+    if (debitError || !debitResult?.[0]?.success) {
+      return new Response(JSON.stringify({ 
+        allowed: false, 
+        reason: debitResult?.[0]?.error_message || "insufficient_credits",
+        credits_remaining: debitResult?.[0]?.balance_remaining ?? profile.credits_remaining,
         credits_needed: tool.credits_cost,
       }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Registrar uso no Free e deduzir créditos em transação
-    const newCredits = profile.credits_remaining - tool.credits_cost;
+    // Apenas para plano free, registramos na tabela de uso mensal por ferramenta
+    await supabase.from("free_tool_usage").insert({
+      user_id: user.id,
+      tool_slug,
+      reset_at: resetAt,
+    });
 
-    const [, , txError] = await Promise.all([
-      supabase.from("free_tool_usage").insert({
-        user_id: user.id,
-        tool_slug,
-        reset_at: resetAt,
-      }),
-      supabase.from("profiles").update({ credits_remaining: newCredits }).eq("id", user.id),
-      supabase.from("credit_transactions_v1").insert({
-        user_id: user.id,
-        tool_slug,
-        credits_used: tool.credits_cost,
-        credits_before: profile.credits_remaining,
-        credits_after: newCredits,
-      }),
-    ]);
-
-    if (txError) return new Response(JSON.stringify({ error: "Erro ao registrar uso" }), { status: 500 });
-
-    return new Response(JSON.stringify({ allowed: true, credits_remaining: newCredits }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ 
+      allowed: true, 
+      credits_remaining: debitResult[0].balance_remaining 
+    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  // Planos pagos: verificar créditos
-  if (profile.credits_remaining < tool.credits_cost) {
+  // Planos pagos: deduzir créditos via RPC (Atômico)
+  const { data: debitResult, error: debitError } = await supabase.rpc("debit_credits", {
+    p_user_id: user.id,
+    p_amount: tool.credits_cost,
+    p_generation_type: tool_slug,
+    p_description: `Uso de ferramenta: ${tool_slug}`
+  });
+
+  if (debitError || !debitResult?.[0]?.success) {
     return new Response(JSON.stringify({
       allowed: false,
-      reason: "insufficient_credits",
-      credits_remaining: profile.credits_remaining,
+      reason: debitResult?.[0]?.error_message || "insufficient_credits",
+      credits_remaining: debitResult?.[0]?.balance_remaining ?? profile.credits_remaining,
       credits_needed: tool.credits_cost,
       reset_at: profile.current_period_end,
     }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  // Deduzir créditos para planos pagos
-  const newCredits = profile.credits_remaining - tool.credits_cost;
+  return new Response(JSON.stringify({ 
+    allowed: true, 
+    credits_remaining: debitResult[0].balance_remaining 
+  }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-  const [updateError, txError] = await Promise.all([
-    supabase.from("profiles").update({ credits_remaining: newCredits }).eq("id", user.id),
-    supabase.from("credit_transactions_v1").insert({
-      user_id: user.id,
-      tool_slug,
-      credits_used: tool.credits_cost,
-      credits_before: profile.credits_remaining,
-      credits_after: newCredits,
-    }),
-  ]);
-
-  if (updateError.error || txError.error) {
-    return new Response(JSON.stringify({ error: "Erro grave ao consumir créditos." }), { status: 500 });
-  }
-
-  return new Response(JSON.stringify({ allowed: true, credits_remaining: newCredits }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 });
 
 function getNextMonthReset(): string {

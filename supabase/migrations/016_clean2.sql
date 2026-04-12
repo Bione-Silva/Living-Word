@@ -1,0 +1,8 @@
+-- =====================================================
+-- 1. EXTENSIONS
+-- =====================================================
+-- 3. TABLES (Creates only if not exists)
+-- =====================================================
+-- 2. FUNCTIONS (must exist before triggers/policies)
+-- =====================================================
+-- 0. ALTER EXISTING TABLES TO ADD MISSING COLUMNS

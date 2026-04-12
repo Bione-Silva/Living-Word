@@ -295,8 +295,8 @@ serve(async (req) => {
 
   // 3. Buscar dados do usuário (via scoped client — RLS ativo)
   const { data: userData } = await scopedClient
-    .from("users")
-    .select("plan, credits_balance, doctrine_preference, pastoral_voice, bible_version, language_preference")
+    .from("profiles")
+    .select("plan, credits_remaining, doctrine_preference, pastoral_voice, bible_version, language_preference")
     .eq("id", user.id)
     .single()
 

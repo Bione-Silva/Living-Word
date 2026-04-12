@@ -1,0 +1,2 @@
+-- =====================================================
+-- 0. ALTER EXISTING TABLES TO ADD MISSING COLUMNS

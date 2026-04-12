@@ -1,0 +1,804 @@
+{
+  "category": "plano_leitura",
+  "source": "Plano de Leitura da Bíblia",
+  "total_days": 365,
+  "plan_title": "Plano de Leitura da Bíblia",
+  "items": [
+    {
+      "day_number": 1,
+      "passage": "Gênesis 1, Salmos 1, Mateus 1",
+      "book": "Gênesis",
+      "chapters": "1",
+      "testament": "AT",
+      "theme": "Reflita sobre as rodas de amigos que você tem participado. Você está influenciando, ou sendo influenciado?"
+    },
+    {
+      "day_number": 2,
+      "passage": "Gênesis 2, Provérbios 1, Mateus 2",
+      "book": "Gênesis",
+      "chapters": "2",
+      "testament": "AT",
+      "theme": "Busque por sabedoria sempre. Ela te dará discernimento, te protegerá, te livrará do caminho mal."
+    },
+    {
+      "day_number": 3,
+      "passage": "Gênesis 3, Salmos 2, Mateus 3",
+      "book": "Gênesis",
+      "chapters": "3",
+      "testament": "AT",
+      "theme": "Arrependa-se dos seus pecados, porque é chegado o Reino de Deus"
+    },
+    {
+      "day_number": 4,
+      "passage": "Gênesis 4, Provérbios 2, Mateus 4",
+      "book": "Gênesis",
+      "chapters": "4",
+      "testament": "AT",
+      "theme": "Ofereça suas primícias ao Senhor, isso mostrará que Ele estará em primeiro lugar na sua vida"
+    },
+    {
+      "day_number": 5,
+      "passage": "Gênesis 5, Salmos 3, Mateus 5",
+      "book": "Gênesis",
+      "chapters": "5",
+      "testament": "AT",
+      "theme": "O Senhor é o teu escudo protetor, quando você clama, Ele responde, quando você dorme, Ele te sustenta"
+    },
+    {
+      "day_number": 6,
+      "passage": "Gênesis 6, Provérbios 3, Mateus 6",
+      "book": "Gênesis",
+      "chapters": "6",
+      "testament": "AT",
+      "theme": "Confie no Senhor de todo o teu coração e não se apoie em seu próprio entendimento. Também não rejeite a disciplina."
+    },
+    {
+      "day_number": 7,
+      "passage": "Gênesis 7, Salmos 4, Mateus 7",
+      "book": "Gênesis",
+      "chapters": "7",
+      "testament": "AT",
+      "theme": "Não julgue de maneira hipócrita, ou seja, não fale do erro do seu irmão se você faz igual ou até pior"
+    },
+    {
+      "day_number": 8,
+      "passage": "Gênesis 8, Provérbios 4, Mateus 8",
+      "book": "Gênesis",
+      "chapters": "8",
+      "testament": "AT",
+      "theme": "Não vá aonde vão os maus. Não siga o exemplo deles. Não faça o que eles faze. Afaste-se de tudo que é mau"
+    },
+    {
+      "day_number": 9,
+      "passage": "Gênesis 9, Salmos 5, Mateus 9",
+      "book": "Gênesis",
+      "chapters": "9",
+      "testament": "AT",
+      "theme": "Jesus nos concedeu o maior milagre, perdão dos nossos pecados e salvação da nossa alma."
+    },
+    {
+      "day_number": 10,
+      "passage": "Gênesis 10, Provérbios 5, Mateus 10",
+      "book": "Gênesis",
+      "chapters": "10",
+      "testament": "AT",
+      "theme": "Seja fiel a sua esposa, ou seu marido. Afaste-se do caminho do adultério"
+    },
+    {
+      "day_number": 11,
+      "passage": "Gênesis 11, Salmos 6, Mateus 11",
+      "book": "Gênesis",
+      "chapters": "11",
+      "testament": "AT",
+      "theme": "Por mais difícil que seja a situação que você esteja vivendo, não abandone a sua fé. Continue firme em Deus"
+    },
+    {
+      "day_number": 12,
+      "passage": "Gênesis 12 e 13, Provérbios 6, Mateus 12",
+      "book": "Gênesis",
+      "chapters": "12-13",
+      "testament": "AT",
+      "theme": "A preguiça é um dos nossos maiores inimigos. Ela vai te impedir de conquistar seus sonhos. Vença a preguiça"
+    },
+    {
+      "day_number": 13,
+      "passage": "Gênesis 14, Salmos 7, Mateus 13",
+      "book": "Gênesis",
+      "chapters": "14",
+      "testament": "AT",
+      "theme": "Somos uma semente que quando é plantada em um terra fértil, cresce e da frutos. Essa terra é o Reino de Deus"
+    },
+    {
+      "day_number": 14,
+      "passage": "Gênesis 15, Provérbios 7, Mateus 14",
+      "book": "Gênesis",
+      "chapters": "15",
+      "testament": "AT",
+      "theme": "Busque por sabedoria e entendimento e fuja da imoralidade sexual"
+    },
+    {
+      "day_number": 15,
+      "passage": "Gênesis 16, Salmos 8 e 9, Mateus 15",
+      "book": "Gênesis",
+      "chapters": "16",
+      "testament": "AT",
+      "theme": "A grandeza de Deus é vista no mundo inteiro. Pare por um minuto, agora, para admirar a criação de Deus"
+    },
+    {
+      "day_number": 16,
+      "passage": "Gênesis 17, Provérbios 8, Mateus 16",
+      "book": "Gênesis",
+      "chapters": "17",
+      "testament": "AT",
+      "theme": "Deus usou a sabedoria para criar o mundo, como você quer conquistar seu sonhos sem agir com sabedoria? Seja sábio"
+    },
+    {
+      "day_number": 17,
+      "passage": "Gênesis 18, Salmos 10, Mateus 17",
+      "book": "Gênesis",
+      "chapters": "18",
+      "testament": "AT",
+      "theme": "Pratique a fidelidade a Deus em todas as situações. Isso é um exercício. Decida ser fiel"
+    },
+    {
+      "day_number": 18,
+      "passage": "Gênesis 19, Provérbios 9, Mateus 18",
+      "book": "Gênesis",
+      "chapters": "19",
+      "testament": "AT",
+      "theme": "Nunca corrija uma pessoa vaidosa, ela o odiará por isso, mas se você corrigir uma pessoa sabia, ela te respeitará"
+    },
+    {
+      "day_number": 19,
+      "passage": "Gênesis 19, Salmos 11, Mateus 19",
+      "book": "Gênesis",
+      "chapters": "19",
+      "testament": "AT",
+      "theme": "Para o homem, nem tudo é possível, mas para Deus, tudo é possível"
+    },
+    {
+      "day_number": 20,
+      "passage": "Gênesis 20, Provérbios 10, Mateus 20",
+      "book": "Gênesis",
+      "chapters": "20",
+      "testament": "AT",
+      "theme": "Seja honesto sempre. Odeie a mentira."
+    },
+    {
+      "day_number": 21,
+      "passage": "Gênesis 21 e 22, Salmos 12, Mateus 21",
+      "book": "Gênesis",
+      "chapters": "21-22",
+      "testament": "AT",
+      "theme": "Se crerem, receberão o que pedirem em oração"
+    },
+    {
+      "day_number": 22,
+      "passage": "Gênesis 23, Provérbios 11, Mateus 22",
+      "book": "Gênesis",
+      "chapters": "23",
+      "testament": "AT",
+      "theme": "Não seja desonesto, não seja orgulhoso, seja humilde. Pense menos em si, não menos de si"
+    },
+    {
+      "day_number": 23,
+      "passage": "Gênesis 24, Salmos 13, Mateus 23",
+      "book": "Gênesis",
+      "chapters": "24",
+      "testament": "AT",
+      "theme": "Confie no amor do Senhor e teu coração se encherá de alegria."
+    },
+    {
+      "day_number": 24,
+      "passage": "Gênesis 25, Provérbios 12, Mateus 24",
+      "book": "Gênesis",
+      "chapters": "25",
+      "testament": "AT",
+      "theme": "Aquele que quer aprender gosta que lhe digam quando está errado, só o tolo não gosta de ser corrigido"
+    },
+    {
+      "day_number": 25,
+      "passage": "Gênesis 26, Salmos 14, Mateus 25",
+      "book": "Gênesis",
+      "chapters": "26",
+      "testament": "AT",
+      "theme": "Você precisa aprender a ser fiel no pouco, pois se assim fores, Deus te colocará sobre o muito"
+    },
+    {
+      "day_number": 26,
+      "passage": "Gênesis 27, Provérbios 13, Mateus 26",
+      "book": "Gênesis",
+      "chapters": "27",
+      "testament": "AT",
+      "theme": "Quem toma cuidado com o que diz está protegendo a sua própria vida, mas quem fala demais destrói a si mesmo"
+    },
+    {
+      "day_number": 27,
+      "passage": "Gênesis 28, Salmos 15, Mateus 27",
+      "book": "Gênesis",
+      "chapters": "28",
+      "testament": "AT",
+      "theme": "Toda roda de amigos, tem um traidor. Não seja você o traidor e cuide, pois haverá um"
+    },
+    {
+      "day_number": 28,
+      "passage": "Gênesis 29, Provérbios 14, Mateus 28",
+      "book": "Gênesis",
+      "chapters": "29",
+      "testament": "AT",
+      "theme": "Quem se irrita facilmente tem atitudes tolas, mas o sábio permanece calmo"
+    },
+    {
+      "day_number": 29,
+      "passage": "Gênesis 30, Salmos 16 e 17, Marcos 1",
+      "book": "Gênesis",
+      "chapters": "30",
+      "testament": "AT",
+      "theme": "Jamais esqueça que a caminhada com Deus é um convite diário ao arrependimento. Peça perdão e Deus perdoará você"
+    },
+    {
+      "day_number": 30,
+      "passage": "Gênesis 31 e 32, Provérbios 15, Marcos 2",
+      "book": "Gênesis",
+      "chapters": "31-32",
+      "testament": "AT",
+      "theme": "O Senhor vê o que acontece em toda a parte, ele está observando todos, tanto os bons como os maus"
+    },
+    {
+      "day_number": 31,
+      "passage": "Gênesis 33, Salmos 18, Marcos 3",
+      "book": "Gênesis",
+      "chapters": "33",
+      "testament": "AT",
+      "theme": "Confie no Senhor, Ele é o teu libertador, tua rocha inabalável, teu escudo protetor que não te desamparará"
+    },
+    {
+      "day_number": 32,
+      "passage": "Gênesis 34 e 35, Provérbios 16, Marcos 4",
+      "book": "Gênesis",
+      "chapters": "34-35",
+      "testament": "AT",
+      "theme": "Faça planos, mas coloque tudo nas mãos do Senhor, pois Ele é que dá a última palavra"
+    },
+    {
+      "day_number": 33,
+      "passage": "Gênesis 36, Salmos 19, Marcos 5",
+      "book": "Gênesis",
+      "chapters": "36",
+      "testament": "AT",
+      "theme": "O céu anuncia a glória de Deus. Pare por um minuto, olhe para o céu e contemple a glória de Deus"
+    },
+    {
+      "day_number": 34,
+      "passage": "Gênesis 37, Provérbios 17, Marcos 6",
+      "book": "Gênesis",
+      "chapters": "37",
+      "testament": "AT",
+      "theme": "O começo de uma briga é como a primeira rachadura numa represa. É bom parar antes que a coisa piore"
+    },
+    {
+      "day_number": 35,
+      "passage": "Gênesis 38, Salmos 20, Marcos 7",
+      "book": "Gênesis",
+      "chapters": "38",
+      "testament": "AT",
+      "theme": "Na hora da angustia o Senhor ouve a tua oração. Pare de choramingar nas redes sociais e chore para Deus"
+    },
+    {
+      "day_number": 36,
+      "passage": "Gênesis 40, Provérbios 18, Marcos 8",
+      "book": "Gênesis",
+      "chapters": "40",
+      "testament": "AT",
+      "theme": "O tolo não quer aprender, só quer dar suas opiniões. Saiba que sempre é hora de aprender"
+    },
+    {
+      "day_number": 37,
+      "passage": "Gênesis 41, Salmos 21, Marcos 9",
+      "book": "Gênesis",
+      "chapters": "41",
+      "testament": "AT",
+      "theme": "Tudo é possível para aquele que tem sua fé firmada em Deus"
+    },
+    {
+      "day_number": 38,
+      "passage": "Gênesis 42, Provérbios 19, Marcos 10",
+      "book": "Gênesis",
+      "chapters": "42",
+      "testament": "AT",
+      "theme": "A pessoa sensata controla o seu gênio e a sua grandeza é perdoar quem a ofende"
+    },
+    {
+      "day_number": 39,
+      "passage": "Gênesis 43, Salmos 22, Marcos 11",
+      "book": "Gênesis",
+      "chapters": "43",
+      "testament": "AT",
+      "theme": "E quando estiveres orando, perdoe aquele que lhe ofendeu, assim Deus também perdoará as suas falhas"
+    },
+    {
+      "day_number": 40,
+      "passage": "Gênesis 44, Provérbios 20, Marcos 12",
+      "book": "Gênesis",
+      "chapters": "44",
+      "testament": "AT",
+      "theme": "O Senhor detesta quem usa medidas e pesos desonestos"
+    },
+    {
+      "day_number": 41,
+      "passage": "Gênesis 45, Salmos 23, Marcos 13",
+      "book": "Gênesis",
+      "chapters": "45",
+      "testament": "AT",
+      "theme": "O Senhor é o teu pastor e nada te faltará. Tenha fé"
+    },
+    {
+      "day_number": 42,
+      "passage": "Gênesis 46, Provérbios 21, Marcos 14",
+      "book": "Gênesis",
+      "chapters": "46",
+      "testament": "AT",
+      "theme": "Se você pensa que tudo o que faz é certo, lembre-se que Deus julga as suas intensões"
+    },
+    {
+      "day_number": 43,
+      "passage": "Gênesis 47, Salmos 24, Marcos 15",
+      "book": "Gênesis",
+      "chapters": "47",
+      "testament": "AT",
+      "theme": "Jesus pagou o preço pelos nossos pecados e nos fez livres de toda religiosidade. Sua graça no alcançou"
+    },
+    {
+      "day_number": 44,
+      "passage": "Gênesis 48, Provérbios 22, Marcos 16",
+      "book": "Gênesis",
+      "chapters": "48",
+      "testament": "AT",
+      "theme": "Eduque a criança no caminho que ela deve andar e até o fim da vida não se desviará dele. Apresente Jesus as crianças"
+    },
+    {
+      "day_number": 45,
+      "passage": "Gênesis 49 e 50, Salmos 25, Lucas 1",
+      "book": "Gênesis",
+      "chapters": "49-50",
+      "testament": "AT",
+      "theme": "Viva sempre de acordo com a verdade. Não faça aliança com a mentira"
+    },
+    {
+      "day_number": 46,
+      "passage": "Êxodo 1, Salmos 26, Lucas 2, Provérbios 23",
+      "book": "Êxodo",
+      "chapters": "1",
+      "testament": "AT",
+      "theme": "Não perca tempo falando com um tolo, porque ele desprezará a sua conversa inteligente"
+    },
+    {
+      "day_number": 47,
+      "passage": "Êxodo 2, Salmos 27, Lucas 3, Provérbios 24",
+      "book": "Êxodo",
+      "chapters": "2",
+      "testament": "AT",
+      "theme": "Com a sabedoria se constrói o lar e sobre a prudência ele se firma"
+    },
+    {
+      "day_number": 48,
+      "passage": "Êxodo 3, Salmos 28, Lucas 4, Provérbios 25",
+      "book": "Êxodo",
+      "chapters": "3",
+      "testament": "AT",
+      "theme": "A paciência convence até as autoridades e a perseverança pode vencer qualquer dificuldade"
+    },
+    {
+      "day_number": 49,
+      "passage": "Êxodo 4, Salmos 29, Lucas 5, Provérbios 26",
+      "book": "Êxodo",
+      "chapters": "4",
+      "testament": "AT",
+      "theme": "Sem lenha o fogo se apaga, bem como sem fofocas as brigas também terminam"
+    },
+    {
+      "day_number": 50,
+      "passage": "Êxodo 5 e 6, Salmos 30, Lucas 6, Provérbios 27",
+      "book": "Êxodo",
+      "chapters": "5-6",
+      "testament": "AT",
+      "theme": "Deus te dará coragem para enfrentar seus maiores medos. Ele te capacitará se te entregares de coração."
+    },
+    {
+      "day_number": 51,
+      "passage": "Êxodo 7, Salmos 31, Lucas 7, Provérbios 28",
+      "book": "Êxodo",
+      "chapters": "7",
+      "testament": "AT",
+      "theme": "Sua confiança no Senhor deve ser maior do que seu medo de não ser aceito pelas pessoas."
+    },
+    {
+      "day_number": 52,
+      "passage": "Êxodo 8, Salmos 32, Lucas 8, Provérbios 29",
+      "book": "Êxodo",
+      "chapters": "8",
+      "testament": "AT",
+      "theme": "Você precisa agir no justiça com o trabalho que lhe foi confiado."
+    },
+    {
+      "day_number": 53,
+      "passage": "Êxodo 9, Salmos 33, Lucas 9, Provérbios 30",
+      "book": "Êxodo",
+      "chapters": "9",
+      "testament": "AT",
+      "theme": "Jesus é capaz de alimentar sua alma diariamente, mas você precisa dar tudo que tem à Ele."
+    },
+    {
+      "day_number": 54,
+      "passage": "Êxodo 10, Salmos 34, Lucas 10, Provérbios 31",
+      "book": "Êxodo",
+      "chapters": "10",
+      "testament": "AT",
+      "theme": "Deus pode usar Seu poder para abençoar, e também para castigar. A você resta decidir o que quer dEle."
+    },
+    {
+      "day_number": 55,
+      "passage": "Êxodo 11, Salmos 35, Lucas 11",
+      "book": "Êxodo",
+      "chapters": "11",
+      "testament": "AT",
+      "theme": "Nossa oração por um suposto inimigo deve ser tão fervorosa quanto para um amigo."
+    },
+    {
+      "day_number": 56,
+      "passage": "Êxodo 12, Salmos 36, Lucas 12",
+      "book": "Êxodo",
+      "chapters": "12",
+      "testament": "AT",
+      "theme": "Seu temor à Deus compreende o medo que o inferno te dá."
+    },
+    {
+      "day_number": 57,
+      "passage": "Êxodo 13 e 14, Salmos 37, Lucas 13",
+      "book": "Êxodo",
+      "chapters": "13-14",
+      "testament": "AT",
+      "theme": "Reflita sobre suas atitudes e jamais seja um hipócrita"
+    },
+    {
+      "day_number": 58,
+      "passage": "Êxodo 15, Salmos 38, Lucas 14",
+      "book": "Êxodo",
+      "chapters": "15",
+      "testament": "AT",
+      "theme": "Seja um seguidor de Jesus. Que a sua vida aponte para Jesus em tudo o que você fizer"
+    },
+    {
+      "day_number": 59,
+      "passage": "Êxodo 16, Salmos 39, Lucas 15",
+      "book": "Êxodo",
+      "chapters": "16",
+      "testament": "AT",
+      "theme": "A presença de Jesus é o nosso maior tesouro. Faça de tudo para não perder esse tesouro"
+    },
+    {
+      "day_number": 60,
+      "passage": "Êxodo 17, Salmos 40, Lucas 16",
+      "book": "Êxodo",
+      "chapters": "17",
+      "testament": "AT",
+      "theme": "Sejam honestos no pouco ou no muito. Seja honesto sempre!"
+    },
+    {
+      "day_number": 61,
+      "passage": "Êxodo 18, Salmos 41, Lucas 17",
+      "book": "Êxodo",
+      "chapters": "18",
+      "testament": "AT",
+      "theme": "A fé é um exercício. Confie em Deus sempre"
+    },
+    {
+      "day_number": 62,
+      "passage": "Êxodo 19, Salmos 42, Lucas 18",
+      "book": "Êxodo",
+      "chapters": "19",
+      "testament": "AT",
+      "theme": "Na tua oração, não erga a voz pra dizer o quanto você é bom, mas sim o quanto é pecado e carece da misericórdia de Deus"
+    },
+    {
+      "day_number": 63,
+      "passage": "Êxodo 20 e 21, Salmos 43, Lucas 19",
+      "book": "Êxodo",
+      "chapters": "20-21",
+      "testament": "AT",
+      "theme": "A casa do Senhor é uma casa de oração. Quando fores ao templo, lembre-se que é um lugar de oração"
+    },
+    {
+      "day_number": 64,
+      "passage": "Êxodo 22, Salmos 44, Lucas 20",
+      "book": "Êxodo",
+      "chapters": "22",
+      "testament": "AT",
+      "theme": "Jamais compre algo que não possa pagar. E quando o dinheiro faltar, compre apenas o necessário."
+    },
+    {
+      "day_number": 65,
+      "passage": "Êxodo 23 e 24, Salmos 45, Lucas 21",
+      "book": "Êxodo",
+      "chapters": "23-24",
+      "testament": "AT",
+      "theme": "Você é a noiva de Cristo e precisa estar preparado para o grande dia."
+    },
+    {
+      "day_number": 66,
+      "passage": "Êxodo 25, Salmos 46, Lucas 22",
+      "book": "Êxodo",
+      "chapters": "25",
+      "testament": "AT",
+      "theme": "Em toda a Ceia que participares, tenha em mente o sacrifício e amor de Jesus por você."
+    },
+    {
+      "day_number": 67,
+      "passage": "Êxodo 26, Salmos 47, Lucas 23",
+      "book": "Êxodo",
+      "chapters": "26",
+      "testament": "AT",
+      "theme": "Nosso Deus gosta de detalhes: basta olhar para Sua criação. Então O adore em todos os detalhes."
+    },
+    {
+      "day_number": 68,
+      "passage": "Êxodo 27, Salmos 48, Lucas 24",
+      "book": "Êxodo",
+      "chapters": "27",
+      "testament": "AT",
+      "theme": "Deus guiou o povo de Israel e pode te guiar todos os dias. O povo dependia apenas dEle, e você?"
+    },
+    {
+      "day_number": 69,
+      "passage": "Êxodo 28 e 29, Salmos 49, João 1",
+      "book": "Êxodo",
+      "chapters": "28-29",
+      "testament": "AT",
+      "theme": "Jesus é a Luz e a Palavra pra você se buscarem com honestidade."
+    },
+    {
+      "day_number": 70,
+      "passage": "Êxodo 30, Salmos 50, João 2",
+      "book": "Êxodo",
+      "chapters": "30",
+      "testament": "AT",
+      "theme": "Obedecer a Deus em todos os detalhes é a diferença entre quem ouve falar e quem é um seguidor."
+    },
+    {
+      "day_number": 71,
+      "passage": "Êxodo 31, Jeremias 1, João 3",
+      "book": "Êxodo",
+      "chapters": "31",
+      "testament": "AT",
+      "theme": "Para fazer parte do Reino de Deus precisamos nascer de novo. Nascer para uma nova vida com Deus. As coisas velhas se passaram"
+    },
+    {
+      "day_number": 72,
+      "passage": "Êxodo 32, Jeremias 2, João 4",
+      "book": "Êxodo",
+      "chapters": "32",
+      "testament": "AT",
+      "theme": "Seja um adorador em todo momento e lugar. Adore a Deus em espírito e em verdade"
+    },
+    {
+      "day_number": 73,
+      "passage": "Êxodo 33, Jeremias 3, João 5",
+      "book": "Êxodo",
+      "chapters": "33",
+      "testament": "AT",
+      "theme": "Seja curado e não peques mais"
+    },
+    {
+      "day_number": 74,
+      "passage": "Êxodo 34, Jeremias 4, João 6",
+      "book": "Êxodo",
+      "chapters": "34",
+      "testament": "AT",
+      "theme": "Jesus é o pão da vida. Quem vai a Ele nunca mais terá fome"
+    },
+    {
+      "day_number": 75,
+      "passage": "Êxodo 35, Jeremias 5, João 7",
+      "book": "Êxodo",
+      "chapters": "35",
+      "testament": "AT",
+      "theme": "Rios de água viva fluirão na vida daquele que crer em Jesus"
+    },
+    {
+      "day_number": 76,
+      "passage": "Êxodo 36, Jeremias 6, João 8",
+      "book": "Êxodo",
+      "chapters": "36",
+      "testament": "AT",
+      "theme": "Quem nunca pecou que atire a primeira pedra. Não julgue o pecado do seu irmão, você também comete muitos erros"
+    },
+    {
+      "day_number": 77,
+      "passage": "Êxodo 37, Jeremias 7, João 9",
+      "book": "Êxodo",
+      "chapters": "37",
+      "testament": "AT",
+      "theme": "Vivemos cheios de pecados, mas o sangue de Jesus nos purifica"
+    },
+    {
+      "day_number": 78,
+      "passage": "Êxodo 38, Jeremias 8, João 10",
+      "book": "Êxodo",
+      "chapters": "38",
+      "testament": "AT",
+      "theme": "Jesus é o bom pastor e Nele encontramos descanso para nossa alma"
+    },
+    {
+      "day_number": 79,
+      "passage": "Êxodo 39 e 40, Jeremias 9, João 11",
+      "book": "Êxodo",
+      "chapters": "39-40",
+      "testament": "AT",
+      "theme": "Aquele que crê em Jesus ainda que esteja morto, viverá"
+    },
+    {
+      "day_number": 80,
+      "passage": "Levítico 1, Jeremias 10, João 12",
+      "book": "Levítico",
+      "chapters": "1",
+      "testament": "AT",
+      "theme": "Jesus é a luz do mundo e quando vivemos longe dele é certo que estaremos em direção a escuridão"
+    },
+    {
+      "day_number": 81,
+      "passage": "Levítico 2, Jeremias 11, João 13",
+      "book": "Levítico",
+      "chapters": "2",
+      "testament": "AT",
+      "theme": "Devemos amar os outros assim como amamos a nós mesmos"
+    },
+    {
+      "day_number": 82,
+      "passage": "Levítico 3, Jeremias 12 e 13, João 14",
+      "book": "Levítico",
+      "chapters": "3",
+      "testament": "AT",
+      "theme": "Entregue as suas aflições nas mãos do Senhor. Ele foi preparar uma morada para vivermos junto com ele"
+    },
+    {
+      "day_number": 83,
+      "passage": "Levítico 4 e 5, Jeremias 14, João 15",
+      "book": "Levítico",
+      "chapters": "4-5",
+      "testament": "AT",
+      "theme": "Precisamos permanecer nos caminhos do Senhor e assim daremos muitos frutos"
+    },
+    {
+      "day_number": 84,
+      "passage": "Levítico 6 e 7, Jeremias 15, João 16",
+      "book": "Levítico",
+      "chapters": "6-7",
+      "testament": "AT",
+      "theme": "Nesse mundo teremos aflições, mas devemos ter coragem, pois Jesus já venceu o mundo"
+    },
+    {
+      "day_number": 85,
+      "passage": "Levítico 8 e 9, Jeremias 16, João 17",
+      "book": "Levítico",
+      "chapters": "8-9",
+      "testament": "AT",
+      "theme": "A palavra de Deus deve ser autoridade na sua vida. Submeta-se a ela e assim viverá em oaz"
+    },
+    {
+      "day_number": 86,
+      "passage": "Levítico 10, Jeremias 17 e 18, João 18",
+      "book": "Levítico",
+      "chapters": "10",
+      "testament": "AT",
+      "theme": "Você é cidadão do Reino de Deus. Viva o Reino hoje"
+    },
+    {
+      "day_number": 87,
+      "passage": "Levítico 11, Jeremias 19 e 20, João 19",
+      "book": "Levítico",
+      "chapters": "11",
+      "testament": "AT",
+      "theme": "Está consumado! Jesus venceu. Ele é invencível e tua fé precisa estar firmada Nele"
+    },
+    {
+      "day_number": 88,
+      "passage": "Levítico 12, Jeremias 21 e 22, João 20",
+      "book": "Levítico",
+      "chapters": "12",
+      "testament": "AT",
+      "theme": "A sua fé deve ir além do que os seus olhos podem ver. Creia! Deus vai fazer"
+    },
+    {
+      "day_number": 89,
+      "passage": "Levítico 13, Jeremias 23 e 24, João 21",
+      "book": "Levítico",
+      "chapters": "13",
+      "testament": "AT",
+      "theme": "Seja grato por tudo. A gratidão é uma atitude que faz parte da caminhada com Deus"
+    },
+    {
+      "day_number": 90,
+      "passage": "Levítico 14 e 15, Jeremias 25, Atos 1",
+      "book": "Levítico",
+      "chapters": "14-15",
+      "testament": "AT",
+      "theme": "Tenha paciência, pois Deus é fiel para cumprir aquilo que Ele prometeu"
+    },
+    {
+      "day_number": 91,
+      "passage": "Levítico 16, Jeremias 26 e 27, Atos 2",
+      "book": "Levítico",
+      "chapters": "16",
+      "testament": "AT",
+      "theme": "Clame por Atos 2 na tua vida. Que o Espírito Santo venha sobre ti"
+    },
+    {
+      "day_number": 92,
+      "passage": "Levítico 17, Jeremias 28, Atos 3",
+      "book": "Levítico",
+      "chapters": "17",
+      "testament": "AT",
+      "theme": "Viva o Evangelho, e seja testemunha de tudo o que Jesus fez na tua vida"
+    },
+    {
+      "day_number": 93,
+      "passage": "Levítico 18, Jeremias 30 e 31, Atos 4",
+      "book": "Levítico",
+      "chapters": "18",
+      "testament": "AT",
+      "theme": "Não se permita passar um dia sem orar. Que a tua vida seja repleta de momentos de oração"
+    },
+    {
+      "day_number": 94,
+      "passage": "Levítico 19 e 20, Jeremias 32, Atos 5",
+      "book": "Levítico",
+      "chapters": "19-20",
+      "testament": "AT",
+      "theme": "Quando te faltar palavras para orar, leia um salmo em voz alta"
+    },
+    {
+      "day_number": 95,
+      "passage": "Levítico 21, Jeremias 33 e 34, Atos 6",
+      "book": "Levítico",
+      "chapters": "21",
+      "testament": "AT",
+      "theme": "Não permita que sua fé seja ridicularizada. Se posicione, tenha fé. Deus é contigo"
+    },
+    {
+      "day_number": 96,
+      "passage": "Levítico 22, Jeremias 35 e 36, Atos 7",
+      "book": "Levítico",
+      "chapters": "22",
+      "testament": "AT",
+      "theme": "Quando você achar que está sendo perseguido por conta da sua fé, ore muito mais"
+    },
+    {
+      "day_number": 97,
+      "passage": "Levítico 23 e 24, Jeremias 37, Atos 8",
+      "book": "Levítico",
+      "chapters": "23-24",
+      "testament": "AT",
+      "theme": "Quanto mais a igreja é perseguida, mais ele cresce. Quanto mais lutas, mais crescimento espiritual"
+    },
+    {
+      "day_number": 98,
+      "passage": "Levítico 25, Jeremias 38, Atos 9",
+      "book": "Levítico",
+      "chapters": "25",
+      "testament": "AT",
+      "theme": "O que desvia os ouvidos de ouvir a lei, até a sua oração será abominável. Cumpra os princípios de Deus"
+    },
+    {
+      "day_number": 99,
+      "passage": "Levítico 26, Jeremias 39 e 40, Atos 10",
+      "book": "Levítico",
+      "chapters": "26",
+      "testament": "AT",
+      "theme": "Não endureça seu coração, mas seja tomado por misericórida"
+    },
+    {
+      "day_number": 100,
+      "passage": "Levítico 27, Jeremias 41 e 42, Atos 11",
+      "book": "Levítico",
+      "chapters": "27",
+      "testament":

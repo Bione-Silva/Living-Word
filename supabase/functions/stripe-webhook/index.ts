@@ -70,6 +70,7 @@ serve(async (req: Request) => {
         const customerId = eventData.customer;
         const subscriptionId = eventData.subscription;
         const customerEmail = eventData.customer_email || eventData.customer_details?.email;
+        const planFromMetadata = eventData.metadata?.plan || eventData.subscription_data?.metadata?.plan;
 
         const user = await findUser(adminClient, customerId, customerEmail);
         if (!user) {
@@ -77,8 +78,26 @@ serve(async (req: Request) => {
           break;
         }
 
-        // Atualizar stripe_customer_id no perfil
-        await adminClient.from("users").update({
+        // Se for uma recarga (addon_topup), o modo é 'payment' e não tem subscription
+        if (planFromMetadata === "addon_topup") {
+          const topupAmount = 4000; // Valor fixo definido na arquitetura
+          await adminClient.rpc("add_credits_topup", {
+            p_user_id: user.id,
+            p_amount: topupAmount,
+            p_stripe_session_id: eventData.id
+          });
+          console.log(`💰 Recarga realizada: +${topupAmount} créditos para ${user.email}`);
+          
+          await adminClient.from("conversion_events").insert({
+            user_id: user.id,
+            event_type: "topup_purchased",
+            metadata: { stripe_customer_id: customerId, checkout_session_id: eventData.id, amount: topupAmount },
+          });
+          break;
+        }
+
+        // Atualizar stripe_customer_id no perfil para assinaturas normais
+        await adminClient.from("profiles").update({
           stripe_customer_id: customerId,
         }).eq("id", user.id);
 
@@ -297,7 +316,7 @@ async function findUser(
 ): Promise<{ id: string; email: string; plan: string } | null> {
   if (customerId) {
     const { data } = await client
-      .from("users")
+      .from("profiles")
       .select("id, email, plan")
       .eq("stripe_customer_id", customerId)
       .single();
@@ -307,7 +326,7 @@ async function findUser(
 
   if (email) {
     const { data } = await client
-      .from("users")
+      .from("profiles")
       .select("id, email, plan")
       .eq("email", email)
       .single();

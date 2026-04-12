@@ -59,7 +59,7 @@ serve(async (req) => {
       headers: {
         ...corsHeaders,
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=86400', // cache 24h — conteúdo não muda
+        'Cache-Control': 'no-cache, no-store, must-revalidate', // Garantir que áudio novo apareça sem delay de cache
       },
     })
   } catch (err) {

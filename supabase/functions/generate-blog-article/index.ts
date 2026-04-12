@@ -130,8 +130,8 @@ serve(async (req: Request) => {
 
   // 3. Dados do usuário (RLS via scoped client)
   const { data: userData } = await scopedClient
-    .from("users")
-    .select("plan, credits_balance, doctrine_preference, pastoral_voice, bible_version, language_preference, full_name")
+    .from("profiles")
+    .select("plan, credits_remaining, doctrine_preference, pastoral_voice, bible_version, language_preference, full_name")
     .eq("id", user.id)
     .single()
 

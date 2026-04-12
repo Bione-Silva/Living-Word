@@ -1,0 +1,1188 @@
+{
+  "category": "panorama",
+  "source": "Panorama Bíblico",
+  "total": 66,
+  "items": [
+    {
+      "title": "Gênesis",
+      "reference": "Gênesis",
+      "book": "Gênesis",
+      "testament": "AT",
+      "author": "Moisés",
+      "period": "Da Criação do mundo até a morte de José no Egito. Aproximadamente de 4000 a.C. até 1806 a.C.",
+      "chapters": 50,
+      "genre": "narrativa|lei",
+      "historical_context": "Cobre o período desde a criação do mundo até a morte de José no Egito, estabelecendo o cenário para os eventos bíblicos subsequentes. Apresenta a formação inicial do povo de Israel.",
+      "theological_message": "Revela a soberania de Deus na criação, a origem do pecado e a fidelidade divina em cumprir Seu plano de salvação, mesmo diante da falha humana.",
+      "practical_application": "Ensina sobre a origem da humanidade, o pecado e a redenção, afirmando a fé no único Deus verdadeiro, Criador e Senhor de todas as coisas.",
+      "key_verses": [
+        "Gênesis 1:1",
+        "Gênesis 3:15"
+      ],
+      "reflection_questions": [
+        "Como a narrativa da criação em Gênesis molda nossa compreensão do propósito de Deus para a humanidade?",
+        "De que forma a história dos patriarcas em Gênesis demonstra a fidelidade de Deus, mesmo diante das imperfeições humanas?",
+        "Quais lições sobre o pecado e a redenção podemos extrair de Gênesis para nossa vida hoje?"
+      ],
+      "summary": "Gênesis, o primeiro livro da Bíblia, narra a criação do universo por Deus, a queda da humanidade devido à desobediência, e o dilúvio. Focaliza nos patriarcas Abraão, Isaque e Jacó, e a história de José no Egito, que culmina com a família de Jacó se estabelecendo no Egito. O livro estabelece as bases para a história da redenção, mostrando a soberania e a graça de Deus."
+    },
+    {
+      "title": "Êxodo",
+      "reference": "Êxodo",
+      "book": "Êxodo",
+      "testament": "AT",
+      "author": "Moisés",
+      "period": "Da escravidão de Israel no Egito até a construção do Tabernáculo no Sinai, aproximadamente entre 1526 a.C. (nascimento de Moisés) e 1445 a.C. (Êxodo e construção do Tabernáculo).",
+      "chapters": 40,
+      "genre": "narrativa|lei",
+      "historical_context": "Descreve a libertação dos israelitas da escravidão no Egito, a jornada pelo deserto e o estabelecimento da aliança no Monte Sinai. Cobre o período do nascimento de Moisés até a construção do Tabernáculo.",
+      "theological_message": "Revela o poder soberano de Deus em libertar Seu povo, Sua fidelidade em cumprir promessas e Sua santidade ao estabelecer leis para uma nação redimida.",
+      "practical_application": "Mostra que Deus é o Libertador e Mediador, guiando Seu povo da servidão à liberdade e estabelecendo um relacionamento baseado em Sua graça e lei.",
+      "key_verses": [
+        "Êxodo 12:40",
+        "Êxodo 19:5-6"
+      ],
+      "reflection_questions": [
+        "Como a libertação de Israel do Egito por Deus nos ensina sobre Sua soberania e poder?",
+        "De que forma a entrega da Lei no Sinai molda nossa compreensão da santidade de Deus e da obediência?",
+        "Quais paralelos podemos traçar entre a Páscoa e a obra redentora de Jesus Cristo em nossa vida?"
+      ],
+      "summary": "Êxodo narra a opressão dos hebreus no Egito, o chamado de Moisés e as dez pragas que culminam na libertação milagrosa. O livro descreve a travessia do Mar Vermelho, a jornada pelo deserto com provisão divina, e a entrega dos Dez Mandamentos no Monte Sinai. Termina com a construção do Tabernáculo, simbolizando a presença de Deus no meio de Seu povo, e a formação de Israel como nação."
+    },
+    {
+      "title": "Levítico",
+      "reference": "Levítico",
+      "book": "Levítico",
+      "testament": "AT",
+      "author": "Moisés",
+      "period": "Provavelmente abrange cerca de um mês no segundo ano após o Êxodo, durante a permanência de Israel ao pé do Monte Sinai (aproximadamente 1440 a.C.), logo após a conclusão do Tabernáculo.",
+      "chapters": 27,
+      "genre": "lei",
+      "historical_context": "Situado no Monte Sinai, após a construção do Tabernáculo, o livro fornece as leis e regulamentos para a adoração e a vida santa do povo de Israel.",
+      "theological_message": "Enfatiza a santidade de Deus e a necessidade de pureza e expiação para que um povo pecador possa se aproximar e manter comunhão com um Deus santo.",
+      "practical_application": "Ensina que a santidade não é apenas ritualística, mas um estilo de vida que reflete o caráter de Deus, e que a expiação pelo pecado é fundamental para o relacionamento com Ele.",
+      "key_verses": [
+        "Levítico 19:2",
+        "Levítico 16:30"
+      ],
+      "reflection_questions": [
+        "Como as leis de Levítico revelam a santidade de Deus e a seriedade do pecado?",
+        "De que forma os rituais de sacrifício em Levítico prefiguram a obra redentora de Jesus Cristo?",
+        "Quais princípios de pureza e adoração em Levítico ainda são relevantes para a vida cristã hoje?"
+      ],
+      "summary": "Levítico estabelece as leis e regulamentos religiosos para os israelitas, abordando sacrifícios, purificação, dieta e práticas de adoração. Detalha os papéis dos sacerdotes e as instruções para manter a santidade e a comunhão com Deus. O livro enfatiza a santidade de Deus e a necessidade de um povo pecador se aproximar d'Ele por meio da expiação. O Dia da Expiação é o clímax, simbolizando a purificação dos pecados da nação."
+    },
+    {
+      "title": "Números",
+      "reference": "Números",
+      "book": "Números",
+      "testament": "AT",
+      "author": "Moisés",
+      "period": "Do segundo ano após o Êxodo até o quadragésimo ano da peregrinação no deserto (1445 a.C. até 1406 a.C.).",
+      "chapters": 36,
+      "genre": "narrativa|lei",
+      "historical_context": "Relata a jornada do povo de Israel pelo deserto, desde o Monte Sinai até a fronteira de Canaã, cobrindo quarenta anos de peregrinação.",
+      "theological_message": "Destaca a fidelidade constante de Deus em prover e guiar Seu povo, contrastando com a incredulidade e rebelião humana que resultam em disciplina divina.",
+      "practical_application": "Ensina a importância da obediência e confiança nas promessas de Deus, servindo como advertência contra a incredulidade e encorajamento à perseverança na jornada espiritual.",
+      "key_verses": [
+        "Números 14:11",
+        "Números 21:8-9"
+      ],
+      "reflection_questions": [
+        "Como a peregrinação de Israel no deserto, descrita em Números, ilustra as consequências da incredulidade e da obediência?",
+        "De que forma a fidelidade de Deus em prover para Seu povo no deserto nos encoraja hoje?",
+        "Quais lições sobre liderança e rebelião podemos aprender com os eventos registrados em Números?"
+      ],
+      "summary": "Números relata a jornada de Israel pelo deserto, incluindo dois censos do povo e a organização das tribos. O livro descreve as murmurações e rebeliões do povo, a recusa em entrar em Canaã devido à incredulidade, e a disciplina divina de quarenta anos de peregrinação. Apesar das falhas do povo, Deus demonstra Sua fidelidade em prover maná, água e vitórias. Termina com a nova geração pronta para entrar na Terra Prometida, enfatizando a importância da obediência."
+    },
+    {
+      "title": "Deuteronômio",
+      "reference": "Deuteronômio",
+      "book": "Deuteronômio",
+      "testament": "AT",
+      "author": "Moisés",
+      "period": "Do final da peregrinação no deserto até a véspera da entrada em Canaã, nos últimos meses do 40º ano da jornada de Israel (aproximadamente 1406 a.C.).",
+      "chapters": 34,
+      "genre": "lei|narrativa",
+      "historical_context": "Consiste nos discursos finais de Moisés ao povo de Israel nas planícies de Moabe, antes de sua entrada na Terra Prometida.",
+      "theological_message": "Reitera a Lei e a aliança de Deus, chamando o povo à obediência e fidelidade como caminho para a bênção e a vida, e alertando sobre as consequências da desobediência.",
+      "practical_application": "Enfatiza o amor a Deus de todo o coração e a importância de ensinar Suas leis às futuras gerações, moldando a vida cristã com base na Palavra e na fidelidade.",
+      "key_verses": [
+        "Deuteronômio 6:4-5",
+        "Deuteronômio 30:19"
+      ],
+      "reflection_questions": [
+        "Como os discursos de Moisés em Deuteronômio nos chamam a amar a Deus de todo o coração e a obedecer à Sua Palavra?",
+        "De que forma as bênçãos e maldições apresentadas em Deuteronômio nos lembram da importância da fidelidade a Deus?",
+        "Quais princípios de justiça e cuidado com o próximo em Deuteronômio podemos aplicar em nossa sociedade hoje?"
+      ],
+      "summary": "Deuteronômio, o quinto livro do Pentateuco, é uma recapitulação das leis e mandamentos de Deus, apresentada por Moisés à nova geração de israelitas. O livro contém três grandes discursos que relembram a história de Israel, reafirmam a Lei e profetizam o futuro. Moisés exorta o povo à obediência e fidelidade, destacando que a bênção e a vida dependem de amar a Deus e guardar Seus mandamentos. Termina com a nomeação de Josué como sucessor e a morte de Moisés, preparando Israel para a conquista de Canaã."
+    },
+    {
+      "title": "Josué",
+      "reference": "Josué",
+      "book": "Josué",
+      "testament": "AT",
+      "author": "Josué",
+      "period": "Aproximadamente 1406 a 1375 a.C., durante o período da conquista de Canaã.",
+      "chapters": 24,
+      "genre": "narrativa|historia",
+      "historical_context": "Narra a conquista da Terra Prometida pelos israelitas sob a liderança de Josué, sucessor de Moisés, e a subsequente divisão da terra entre as tribos.",
+      "theological_message": "Destaca a fidelidade de Deus em cumprir Suas promessas de herança e a importância da obediência e confiança na Sua liderança para alcançar a vitória.",
+      "practical_application": "Encoraja a fé e a coragem diante dos desafios, lembrando que a vitória não depende da força humana, mas da fidelidade a Deus e à Sua Palavra.",
+      "key_verses": [
+        "Josué 1:9",
+        "Josué 24:15"
+      ],
+      "reflection_questions": [
+        "Como a história da conquista de Canaã em Josué nos ensina sobre a fidelidade de Deus em cumprir Suas promessas?",
+        "De que forma a obediência de Josué e do povo de Israel é um exemplo para nós hoje?",
+        "Quais desafios enfrentamos em nossa vida que exigem a mesma fé e coragem demonstradas por Josué?"
+      ],
+      "summary": "Josué narra a liderança de Josué após a morte de Moisés, conduzindo Israel na conquista da Terra Prometida. Eventos marcantes incluem a travessia do Jordão e a queda das muralhas de Jericó, demonstrando que a vitória pertence a Deus. O livro detalha as campanhas militares contra os reis cananeus e a divisão da terra entre as doze tribos. Josué convoca o povo a permanecer fiel ao Senhor, e o livro termina com sua morte, encerrando uma era de conquistas e fé, e enfatizando a importância da obediência às promessas de Deus."
+    },
+    {
+      "title": "Juízes",
+      "reference": "Juízes",
+      "book": "Juízes",
+      "testament": "AT",
+      "author": "Samuel",
+      "period": "Aproximadamente de 1380 a.C. a 1050 a.C., entre a morte de Josué e a coroação de Saul.",
+      "chapters": 21,
+      "genre": "narrativa|historia",
+      "historical_context": "Descreve o período de cerca de 300 anos em Israel após a morte de Josué, marcado por instabilidade política, decadência moral e espiritual, e a ausência de um rei.",
+      "theological_message": "Ilustra o ciclo repetitivo de pecado, opressão, clamor e libertação, revelando a graça e paciência de Deus em levantar juízes para salvar Seu povo rebelde.",
+      "practical_application": "Adverte sobre as consequências da desobediência e idolatria, e destaca a necessidade de um governo justo e de um coração fiel a Deus, que traz ordem em meio ao caos.",
+      "key_verses": [
+        "Juízes 2:16",
+        "Juízes 21:25"
+      ],
+      "reflection_questions": [
+        "Como o ciclo de pecado e libertação em Juízes nos alerta sobre as consequências da desobediência a Deus?",
+        "De que forma a graça e a paciência de Deus, manifestadas através dos juízes, nos encorajam hoje?",
+        "Quais são os perigos de cada um fazer o que acha certo aos seus próprios olhos, como visto no livro de Juízes?"
+      ],
+      "summary": "O livro de Juízes retrata um período de cerca de 300 anos na história de Israel, após a morte de Josué. Ele descreve um ciclo repetitivo de apostasia, opressão por inimigos, clamor do povo a Deus, e a libertação por juízes levantados divinamente. Figuras como Gideão, Sansão e Débora são destacadas. O livro também revela a profunda corrupção espiritual e moral do povo, resumida na frase \"naqueles dias, não havia rei em Israel; cada um fazia o que achava certo aos seus próprios olhos\". Apesar dos fracassos, Juízes testemunha a graça e paciência de Deus."
+    },
+    {
+      "title": "Rute",
+      "reference": "Rute",
+      "book": "Rute",
+      "testament": "AT",
+      "author": "Samuel",
+      "period": "Durante a época dos juízes, aproximadamente entre 1150–1100 a.C.",
+      "chapters": 4,
+      "genre": "narrativa|historia",
+      "historical_context": "Situada durante o conturbado período dos juízes, a história de Rute oferece um contraste de fidelidade e graça em meio ao caos e à infidelidade de Israel.",
+      "theological_message": "Destaca a providência divina, a lealdade, a graça e a redenção, mostrando como Deus age nos bastidores para cumprir Seus propósitos e incluir estrangeiros em Sua linhagem.",
+      "practical_application": "Ensina sobre a importância da lealdade, da bondade e da confiança na providência de Deus, mesmo em situações de desamparo, e revela a inclusão de gentios no plano de salvação.",
+      "key_verses": [
+        "Rute 1:16",
+        "Rute 4:13-17"
+      ],
+      "reflection_questions": [
+        "Como a lealdade de Rute a Noemi e a Deus se manifesta em sua história e quais lições podemos tirar para nossos relacionamentos hoje?",
+        "De que forma a providência de Deus é evidente na história de Rute, mesmo quando não é explicitamente mencionada?",
+        "Quais aspectos da figura de Boaz como resgatador prefiguram a obra de Jesus Cristo em nossa redenção?"
+      ],
+      "summary": "O livro de Rute narra a história de Rute, uma moabita que, após a morte de seu marido e sogro, escolhe permanecer com sua sogra Noemi. Elas retornam a Belém, onde Rute encontra favor em Boaz, um parente da família de Elimeleque. Boaz, agindo como resgatador, casa-se com Rute, e eles têm um filho, Obede, que se torna avô do rei Davi. A história destaca temas de lealdade, fidelidade, providência divina e redenção, mostrando como Deus age em meio às circunstâncias da vida para cumprir Seus planos."
+    },
+    {
+      "title": "1 Samuel",
+      "reference": "1 Samuel",
+      "book": "1 Samuel",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "Cerca de 1100–1010 a.C., cobrindo a transição do período dos juízes para o início da monarquia em Israel.",
+      "chapters": 31,
+      "genre": "narrativa|historia",
+      "historical_context": "Descreve a transição de Israel de um sistema de juízes para uma monarquia, com o surgimento de Samuel, o reinado de Saul e a ascensão de Davi.",
+      "theological_message": "Explora temas de liderança, obediência a Deus e as consequências das escolhas humanas, mostrando como Deus age soberanamente na história de Seu povo.",
+      "practical_application": "Ensina sobre a importância de um coração temente a Deus na liderança, as falhas da desobediência e a fidelidade de Deus em cumprir Suas promessas, mesmo através de líderes imperfeitos.",
+      "key_verses": [
+        "1 Samuel 13:14",
+        "1 Samuel 16:7"
+      ],
+      "reflection_questions": [
+        "Como a transição da liderança dos juízes para a monarquia em 1 Samuel nos ensina sobre a vontade de Deus e a responsabilidade humana?",
+        "De que forma o contraste entre Saul e Davi ilustra a importância de um coração obediente a Deus?",
+        "Quais lições sobre liderança e fidelidade podemos aplicar em nossa vida hoje, a partir das histórias de Samuel, Saul e Davi?"
+      ],
+      "summary": "1 Samuel narra a transição de Israel do período dos juízes para a monarquia. O livro começa com o nascimento e ministério de Samuel, o último juiz e profeta. Em seguida, descreve a escolha e o reinado de Saul, o primeiro rei de Israel, que, devido à sua desobediência, é rejeitado por Deus. A narrativa então introduz Davi, um jovem pastor ungido por Samuel, que derrota Golias e ganha favor popular, mas é perseguido por Saul. O livro termina com a trágica morte de Saul em batalha, abrindo caminho para o reinado de Davi."
+    },
+    {
+      "title": "2 Samuel",
+      "reference": "2 Samuel",
+      "book": "2 Samuel",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "Aproximadamente de 1010 a 970 a.C., cobrindo o reinado completo de Davi.",
+      "chapters": 24,
+      "genre": "narrativa|historia",
+      "historical_context": "Cobre o reinado de Davi, desde sua ascensão ao trono até seus últimos dias, incluindo a consolidação do reino, a conquista de Jerusalém e os desafios familiares.",
+      "theological_message": "Destaca a fidelidade de Deus à Sua aliança com Davi, a soberania divina em meio às falhas humanas, e as consequências do pecado, mesmo para um \"homem segundo o coração de Deus\".",
+      "practical_application": "Ensina sobre a importância do arrependimento, a misericórdia de Deus e a certeza de que Deus cumpre Suas promessas, mesmo quando os líderes falham.",
+      "key_verses": [
+        "2 Samuel 7:12-16",
+        "2 Samuel 12:13"
+      ],
+      "reflection_questions": [
+        "Como o reinado de Davi em 2 Samuel nos ensina sobre a complexidade da liderança e as consequências do pecado?",
+        "De que forma a aliança de Deus com Davi aponta para a vinda de Jesus Cristo?",
+        "Quais lições sobre arrependimento, perdão e fidelidade divina podemos extrair da vida de Davi?"
+      ],
+      "summary": "2 Samuel continua a narrativa do reinado de Davi, desde sua ascensão ao trono de Judá e depois sobre todo Israel. Davi estabelece Jerusalém como capital e centraliza o culto a Deus. O Senhor faz uma aliança com Davi, prometendo um reino eterno através de sua descendência. O livro detalha as vitórias militares de Davi, mas também seus pecados com Bate-Seba e Urias, e as trágicas consequências para sua família, incluindo a revolta de Absalão. Apesar das falhas de Davi, Deus mantém Sua promessa, mostrando que busca corações arrependidos e preserva a linhagem messiânica."
+    },
+    {
+      "title": "1 Reis",
+      "reference": "1 Reis",
+      "book": "1 Reis",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "Cobre os eventos entre 970 e 722 a.C. 1 Reis foi escrito provavelmente algum tempo depois da destruição de Jerusalém pelos Babilônicos em 586 a.C.",
+      "chapters": 22,
+      "genre": "narrativa|historia",
+      "historical_context": "Inicia com o reinado de Salomão, a construção do Templo, e a subsequente divisão do reino de Israel em Reino do Norte (Israel) e Reino do Sul (Judá).",
+      "theological_message": "Mostra como a fidelidade ou a infidelidade dos reis a Deus determina o destino das nações, destacando as consequências da idolatria e a atuação dos profetas.",
+      "practical_application": "Ensina que o sucesso de uma nação depende da obediência a Deus, e que a idolatria e a desobediência trazem juízo, mas a fidelidade a Deus é o verdadeiro caminho.",
+      "key_verses": [
+        "1 Reis 11:11",
+        "1 Reis 18:39"
+      ],
+      "reflection_questions": [
+        "Como a história de Salomão em 1 Reis nos alerta sobre os perigos da idolatria e da infidelidade, mesmo para os mais sábios?",
+        "De que forma a divisão do reino de Israel e Judá ilustra as consequências da desobediência a Deus?",
+        "Quais lições sobre a atuação dos profetas, como Elias, podemos aplicar em nossa vida de fé hoje?"
+      ],
+      "summary": "1 Reis continua a história de Israel após a morte de Davi, com a ascensão de Salomão ao trono. Salomão constrói o Templo em Jerusalém, mas sua infidelidade no final da vida leva à divisão do reino. O livro descreve a formação do Reino do Norte (Israel) e do Reino do Sul (Judá), e a sucessão de reis, muitos dos quais se afastam de Deus. Destaca a atuação de profetas como Elias, que confronta a idolatria e demonstra o poder de Deus. O livro culmina com a morte de Acabe, mostrando que a fidelidade a Deus é o critério para avaliar os líderes."
+    },
+    {
+      "title": "2 Reis",
+      "reference": "2 Reis",
+      "book": "2 Reis",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "De aproximadamente 850 a.C. até 560 a.C., cobrindo os reinados desde Acazias até o cativeiro babilônico.",
+      "chapters": 25,
+      "genre": "narrativa|historia",
+      "historical_context": "Continua a história dos reinos divididos de Israel e Judá, narrando os reinados de diversos reis, a atuação dos profetas Elias e Eliseu, e a queda de Samaria e Jerusalém.",
+      "theological_message": "Mostra que a fidelidade ou desobediência a Deus determina o destino das nações, culminando na destruição de Israel pela Assíria e de Judá pela Babilônia devido à idolatria persistente.",
+      "practical_application": "Adverte sobre as consequências da apostasia e a importância do arrependimento, mas também revela a graça de Deus que preserva uma semente de esperança para o futuro Messias.",
+      "key_verses": [
+        "2 Reis 17:7-8",
+        "2 Reis 25:9-10"
+      ],
+      "reflection_questions": [
+        "Como a história dos reinos de Israel e Judá em 2 Reis nos alerta sobre os perigos da idolatria e da desobediência a Deus?",
+        "De que forma os milagres de Eliseu demonstram o poder e a compaixão de Deus, mesmo em tempos de apostasia?",
+        "Quais lições sobre a justiça divina e a esperança de restauração podemos extrair do livro de 2 Reis?"
+      ],
+      "summary": "2 Reis continua a história dos reinos divididos de Israel e Judá, narrando os acontecimentos desde o final do reinado de Acazias até a queda final de ambos. O livro destaca o ministério dos profetas Elias e Eliseu, que realizam milagres e confrontam a idolatria. Devido à persistente desobediência e apostasia, o Reino do Norte (Israel) é destruído pela Assíria em 722 a.C., e o Reino do Sul (Judá) é levado ao exílio babilônico em 586 a.C. O livro mostra que a fidelidade a Deus determina o destino das nações, mas encerra com uma nota de esperança na fidelidade divina."
+    },
+    {
+      "title": "1 Crônicas",
+      "reference": "1 Crônicas",
+      "book": "1 Crônicas",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "De Adão até a morte de Davi, com foco nos preparativos para o templo.",
+      "chapters": 29,
+      "genre": "narrativa|historia",
+      "historical_context": "Escrito para o povo de Israel que retornava do exílio babilônico, o livro recapitula a história desde Adão até o reinado de Davi, com foco na linhagem davídica e nos preparativos para o Templo.",
+      "theological_message": "Destaca a importância da adoração a Deus, o papel dos levitas no culto e a fidelidade divina em preservar a linhagem de Davi e Suas promessas messiânicas.",
+      "practical_application": "Encoraja a renovação espiritual e a busca sincera por Deus, lembrando que a verdadeira adoração e a fidelidade são centrais para a vida do povo de Deus.",
+      "key_verses": [
+        "1 Crônicas 22:9-10",
+        "1 Crônicas 29:10-13"
+      ],
+      "reflection_questions": [
+        "Como as genealogias em 1 Crônicas reforçam a fidelidade de Deus em preservar Seu povo e Suas promessas?",
+        "De que forma o foco no reinado de Davi e nos preparativos para o Templo em 1 Crônicas nos ensina sobre a adoração verdadeira?",
+        "Quais lições sobre liderança espiritual e a importância do culto a Deus podemos aplicar em nossa vida hoje?"
+      ],
+      "summary": "1 Crônicas apresenta uma genealogia abrangente desde Adão até o reinado de Davi, com foco especial na tribo de Judá e Levi. O livro narra o reinado de Davi, destacando sua liderança espiritual, suas conquistas e, principalmente, seus preparativos para a construção do Templo. Diferente de Samuel, Crônicas omite os pecados pessoais de Davi para enfatizar sua vocação espiritual e zelo pela adoração. O livro termina com a coroação de Salomão, reforçando a continuidade da promessa divina e a importância da obediência e adoração a Deus."
+    },
+    {
+      "title": "2 Crônicas",
+      "reference": "2 Crônicas",
+      "book": "2 Crônicas",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "De cerca de 970 a.C. (início do reinado de Salomão) até 586 a.C. (cativeiro na Babilônia).",
+      "chapters": 36,
+      "genre": "narrativa|historia",
+      "historical_context": "Continua a história de Israel, focando nos reis de Judá e na história do Templo de Jerusalém, desde Salomão até o exílio babilônico.",
+      "theological_message": "Mostra como a obediência a Deus traz bênçãos e prosperidade, enquanto a infidelidade e a idolatria conduzem ao juízo e à destruição, enfatizando a necessidade de fé sincera.",
+      "practical_application": "Encoraja a renovação espiritual e o arrependimento são cruciais para o povo de Deus, e que a fidelidade à Palavra de Deus é o caminho para a bênção.",
+      "key_verses": [
+        "2 Crônicas 7:14",
+        "2 Crônicas 34:31-32"
+      ],
+      "reflection_questions": [
+        "Como a história dos reis de Judá em 2 Crônicas nos ensina sobre as consequências da obediência e da desobediência a Deus?",
+        "De que forma o foco no Templo e no culto em 2 Crônicas nos ajuda a compreender a importância da adoração verdadeira?",
+        "Quais lições sobre arrependimento e restauração podemos aplicar em nossa vida hoje, a partir das reformas dos reis piedosos?"
+      ],
+      "summary": "2 Crônicas continua a história de Israel, focando no Reino de Judá e seus reis, desde Salomão até o exílio babilônico. O livro destaca a construção e dedicação do Templo de Jerusalém por Salomão, que se torna o centro da adoração. A narrativa avalia os reis de Judá com base em sua fidelidade a Deus, elogiando reformas de reis como Asa, Josafá, Ezequias e Josias, e denunciando a idolatria de outros. O livro mostra que a desobediência persistente leva ao cativeiro babilônico, mas termina com uma nota de esperança no decreto de Ciro para a reconstrução do Templo."
+    },
+    {
+      "title": "Esdras",
+      "reference": "Esdras",
+      "book": "Esdras",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "Cobre os acontecimentos de 530 a.C até os anos 400 a.C.",
+      "chapters": 10,
+      "genre": "narrativa|historia",
+      "historical_context": "Descreve o retorno dos exilados judeus da Babilônia a Jerusalém e a reconstrução do Templo, sob a liderança de Zorobabel e, posteriormente, de Esdras.",
+      "theological_message": "Enfatiza a fidelidade de Deus em cumprir Suas promessas de restauração, a importância da obediência à Lei de Deus e a necessidade de renovação espiritual para o povo.",
+      "practical_application": "Ensina que a reconstrução física deve ser acompanhada de restauração espiritual, e que a adoração verdadeira nasce da obediência à Palavra de Deus.",
+      "key_verses": [
+        "Esdras 1:3",
+        "Esdras 7:10"
+      ],
+      "reflection_questions": [
+        "Como o retorno dos exilados e a reconstrução do Templo em Esdras nos ensinam sobre a fidelidade de Deus em cumprir Suas promessas?",
+        "De que forma a liderança de Esdras na restauração espiritual do povo é um exemplo para nós hoje?",
+        "Quais desafios enfrentamos em nossa vida que exigem a mesma dedicação à Palavra de Deus e ao arrependimento?"
+      ],
+      "summary": "Esdras narra o retorno dos exilados judeus da Babilônia a Jerusalém, após o decreto de Ciro em 538 a.C. Sob a liderança de Zorobabel e Jesua, o povo reconstrói o altar e lança os alicerces do Templo, enfrentando oposição e desânimo. Após anos de interrupção, a obra é retomada e o Templo é concluído. Sessenta anos depois, Esdras, um sacerdote e escriba, lidera um segundo grupo de exilados, promovendo uma profunda reforma espiritual e moral, confrontando casamentos mistos e chamando o povo ao arrependimento e à obediência à Lei de Deus."
+    },
+    {
+      "title": "Neemias",
+      "reference": "Neemias",
+      "book": "Neemias",
+      "testament": "AT",
+      "author": "Esdras",
+      "period": "De 445 a.C. a 430 a.C., durante o domínio persa.",
+      "chapters": 13,
+      "genre": "narrativa|historia",
+      "historical_context": "Descreve a reconstrução dos muros de Jerusalém sob a liderança de Neemias, após o retorno dos exilados, e a restauração da identidade do povo judeu.",
+      "theological_message": "Destaca princípios de liderança, perseverança e dedicação à vontade divina, mostrando como Deus usa indivíduos fiéis para restaurar Seu povo e Sua cidade.",
+      "practical_application": "Ensina que a reconstrução física deve ser acompanhada de reformas sociais e espirituais, e que a oração e a vigilância são essenciais diante da oposição.",
+      "key_verses": [
+        "Neemias 1:4",
+        "Neemias 6:15"
+      ],
+      "reflection_questions": [
+        "Como a liderança de Neemias na reconstrução dos muros de Jerusalém nos inspira a enfrentar desafios com fé e perseverança?",
+        "De que forma a oposição enfrentada por Neemias nos ensina sobre a importância da oração e da dependência de Deus?",
+        "Quais lições sobre reforma social e espiritual podemos aplicar em nossa comunidade hoje, a partir do livro de Neemias?"
+      ],
+      "summary": "Neemias narra a reconstrução dos muros de Jerusalém após o exílio babilônico. Neemias, copeiro do rei Artaxerxes, é comovido pela situação de Jerusalém e recebe permissão para liderar a obra. Ele enfrenta forte oposição de Sambalate, Tobias e Gesém, mas com oração e vigilância, motiva o povo a trabalhar. Os muros são reconstruídos em 52 dias. Neemias também promove reformas sociais e espirituais, junto com Esdras, lendo a Lei de Deus e chamando o povo ao arrependimento e à renovação da aliança. O livro termina com Neemias corrigindo novas violações da Lei, enfatizando que a restauração dos corações é mais importante que a física."
+    },
+    {
+      "title": "Ester",
+      "reference": "Ester",
+      "book": "Ester",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "Por volta de 483–473 a.C., durante o reinado do rei Xerxes I (Assuero), rei da Pérsia.",
+      "chapters": 10,
+      "genre": "narrativa|historia",
+      "historical_context": "Situada no Império Persa, narra a história de uma jovem judia que se torna rainha e salva seu povo de um plano genocida.",
+      "theological_message": "Destaca a providência divina, o valor da coragem e a reversão de situações desfavoráveis, mostrando como Deus age nos bastidores para proteger e preservar Seu povo, mesmo quando não é explicitamente mencionado.",
+      "practical_application": "Ensina sobre a importância da coragem, da intercessão e da confiança na providência de Deus, mesmo em tempos de aparente silêncio divino.",
+      "key_verses": [
+        "Ester 4:14",
+        "Ester 8:16"
+      ],
+      "reflection_questions": [
+        "Como a história de Ester nos inspira a agir com coragem e fé diante de situações de perigo e injustiça?",
+        "De que forma a providência de Deus é evidente na história de Ester, mesmo sem menção direta ao Seu nome?",
+        "Quais lições sobre a importância da intercessão e da solidariedade podemos extrair do livro de Ester?"
+      ],
+      "summary": "O livro de Ester narra a história de Ester, uma jovem judia que se torna rainha da Pérsia durante o reinado de Assuero (Xerxes I). O vilão Hamã planeja aniquilar todos os judeus do império. Mordecai, primo de Ester, a desafia a interceder junto ao rei. Ester, arriscando sua vida, revela sua origem judaica e denuncia o plano maligno de Hamã. O rei, furioso, manda enforcar Hamã na forca que ele havia preparado para Mordecai. Um novo decreto permite que os judeus se defendam, resultando em grande livramento. A Festa do Purim é instituída para celebrar a providência e fidelidade de Deus em preservar Seu povo."
+    },
+    {
+      "title": "Jó",
+      "reference": "Jó",
+      "book": "Jó",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "Muitos creem que a história de Jó é uma das mais antigas da Bíblia, de aproximadamente 2000 a.C.",
+      "chapters": 42,
+      "genre": "poesia",
+      "historical_context": "A história de Jó, provavelmente situada na época dos patriarcas, aborda o problema universal do sofrimento humano e a justiça divina.",
+      "theological_message": "Questiona as causas do sofrimento, a soberania de Deus e a integridade da fé humana, revelando que o sofrimento nem sempre é resultado direto do pecado, e que a fé deve persistir mesmo sem respostas claras.",
+      "practical_application": "Encoraja a confiança em Deus em meio à dor, a humildade diante da Sua majestade e a certeza de que Deus restaura e redime, transformando o sofrimento em crescimento espiritual.",
+      "key_verses": [
+        "Jó 1:21",
+        "Jó 42:5-6"
+      ],
+      "reflection_questions": [
+        "Como a história de Jó nos ajuda a lidar com o sofrimento e as perguntas sobre a justiça divina?",
+        "De que forma a perseverança de Jó em sua fé, mesmo sem respostas, nos inspira hoje?",
+        "Quais lições sobre a soberania de Deus e a limitação humana podemos extrair dos diálogos entre Jó e seus amigos?"
+      ],
+      "summary": "O livro de Jó narra a história de um homem íntegro e temente a Deus que, subitamente, perde todos os seus bens, filhos e saúde, sendo testado por Satanás com permissão divina. Três amigos vêm consolá-lo, mas acabam acusando-o de pecado oculto, seguindo a lógica da retribuição. Jó, porém, insiste em sua inocência e clama por uma explicação de Deus. Um quarto amigo, Eliú, oferece uma perspectiva mais equilibrada. Finalmente, Deus responde a Jó do meio de um redemoinho, revelando Sua grandeza e sabedoria, sem dar explicações diretas. Jó se arrepende de questionar e é restaurado, recebendo o dobro do que tinha."
+    },
+    {
+      "title": "Salmos",
+      "reference": "Salmos",
+      "book": "Salmos",
+      "testament": "AT",
+      "author": "Vários Autores",
+      "period": "Os salmos foram escritos por volta dos anos 1400 a.C, que foi época de Moisés até os anos 500 a.C, que foi o período do exílio dos judeus da Babilônia.",
+      "chapters": 150,
+      "genre": "poesia",
+      "historical_context": "Composto ao longo de muitos séculos, reflete diversas experiências do povo de Israel, desde a época de Moisés até o pós-exílio, em momentos de louvor, lamento, guerra e paz.",
+      "theological_message": "Expressa a gama completa das emoções humanas diante de Deus, exaltando Sua glória, poder e fidelidade, e clamando por Sua justiça e misericórdia, apontando para o Messias.",
+      "practical_application": "Serve como um guia para a oração, adoração e reflexão espiritual, ensinando a confiar em Deus em todas as circunstâncias e a viver uma vida de louvor e obediência à Sua Palavra.",
+      "key_verses": [
+        "Salmos 23:1",
+        "Salmos 119:105"
+      ],
+      "reflection_questions": [
+        "Como os Salmos nos ajudam a expressar nossas emoções e sentimentos a Deus, tanto na alegria quanto na dor?",
+        "De que forma os Salmos revelam o caráter de Deus e Sua fidelidade para com Seu povo?",
+        "Quais Salmos você considera mais relevantes para sua vida hoje e por quê?"
+      ],
+      "summary": "O livro de Salmos é uma coleção de 150 cânticos e poemas religiosos, escritos por diversos autores ao longo de mil anos. Ele abrange uma ampla gama de temas, incluindo louvor, lamento, gratidão, confiança e sabedoria. Os Salmos expressam as emoções humanas diante de Deus, revelando Sua glória, poder e majestade, e clamando por Sua intervenção. O livro é dividido em cinco livros e serve como um guia para a adoração judaico-cristã, oferecendo reflexões espirituais e apontando profeticamente para o reinado do Messias."
+    },
+    {
+      "title": "Provérbios",
+      "reference": "Provérbios",
+      "book": "Provérbios",
+      "testament": "AT",
+      "author": "Salomão",
+      "period": "Entre 970 a.C. e 700 a.C., com possíveis edições posteriores.",
+      "chapters": 31,
+      "genre": "poesia",
+      "historical_context": "Reúne ensinamentos de sabedoria prática, principalmente do rei Salomão, para orientar o povo de Israel em como viver uma vida justa e piedosa.",
+      "theological_message": "Destaca que o temor do Senhor é o princípio da sabedoria, e que a vida sábia é caracterizada por justiça, integridade, discernimento e obediência aos princípios divinos.",
+      "practical_application": "Oferece conselhos práticos para a vida diária, relacionamentos, trabalho, finanças e conduta moral, incentivando a busca pela sabedoria que vem de Deus.",
+      "key_verses": [
+        "Provérbios 1:7",
+        "Provérbios 3:5-6"
+      ],
+      "reflection_questions": [
+        "Como o livro de Provérbios nos ensina que o temor do Senhor é o princípio da sabedoria?",
+        "De que forma os conselhos práticos de Provérbios podem ser aplicados em nossos relacionamentos e decisões diárias?",
+        "Quais são os perigos da tolice e da insensatez, e como Provérbios nos orienta a evitá-los?"
+      ],
+      "summary": "O livro de Provérbios é uma coleção de sabedoria prática e ética, atribuída principalmente ao rei Salomão. Ele ensina que o temor do Senhor é o fundamento da sabedoria, que se manifesta em discernimento, justiça e integridade. O livro aborda uma vasta gama de temas, incluindo o poder das palavras, a importância da família, a diligência no trabalho, a honestidade e a administração financeira. Provérbios contrasta a vida sábia com a vida tola, oferecendo orientação para viver de acordo com a vontade de Deus e alcançar prosperidade espiritual e moral."
+    },
+    {
+      "title": "Eclesiastes",
+      "reference": "Eclesiastes",
+      "book": "Eclesiastes",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "Salomão reinou aproximadamente entre 970 e 930 a.C.",
+      "chapters": 12,
+      "genre": "poesia",
+      "historical_context": "Escrito por \"o Pregador\" (tradicionalmente Salomão), reflete sobre a busca de sentido na vida sob a perspectiva humana, em um período de prosperidade e questionamento.",
+      "theological_message": "Explora a vaidade e a transitoriedade das realizações humanas \"debaixo do sol\", concluindo que a verdadeira realização e o sentido da vida são encontrados em temer a Deus e guardar Seus mandamentos.",
+      "practical_application": "Desafia a abandonar ilusões sobre a satisfação em coisas criadas e a desfrutar das dádivas simples da vida com gratidão, reconhecendo a soberania de Deus.",
+      "key_verses": [
+        "Eclesiastes 1:2",
+        "Eclesiastes 12:13"
+      ],
+      "reflection_questions": [
+        "Como a reflexão de Eclesiastes sobre a \"vaidade de vaidades\" nos ajuda a reavaliar nossas prioridades na vida?",
+        "De que forma o livro nos encoraja a encontrar sentido e satisfação em Deus, e não nas coisas terrenas?",
+        "Quais são as implicações de \"temer a Deus e guardar os Seus mandamentos\" para nossa vida diária, segundo Eclesiastes?"
+      ],
+      "summary": "Eclesiastes é uma meditação profunda sobre o sentido da vida, escrita por \"o Pregador\" (tradicionalmente Salomão). O autor explora diversas áreas da existência humana, como prazer, trabalho, conhecimento e posses, e conclui que tudo é \"vaidade de vaidades\" ou ilusório quando visto \"debaixo do sol\" (apenas sob a perspectiva terrena). O livro não é de desespero, mas um chamado à lucidez, incentivando a desfrutar das coisas simples da vida com gratidão e a reconhecer que o verdadeiro sentido está em temer a Deus e guardar Seus mandamentos."
+    },
+    {
+      "title": "Cantares",
+      "reference": "Cantares",
+      "book": "Cantares",
+      "testament": "AT",
+      "author": "Salomão",
+      "period": "Salomão reinou aproximadamente entre 970 e 930 a.C.",
+      "chapters": 8,
+      "genre": "poesia",
+      "historical_context": "Poema lírico atribuído a Salomão, que celebra o amor romântico e a beleza do relacionamento conjugal, refletindo a cultura da época.",
+      "theological_message": "Celebra o amor puro e verdadeiro entre um homem e uma mulher dentro do contexto do casamento, simbolizando também o relacionamento profundo entre Deus e Seu povo, ou Cristo e a Igreja.",
+      "practical_application": "Ensina sobre a importância da intimidade, do compromisso, do respeito e da pureza no amor, e a necessidade de proteger o relacionamento de ameaças externas.",
+      "key_verses": [
+        "Cantares 2:7",
+        "Cantares 8:6-7"
+      ],
+      "reflection_questions": [
+        "Como Cantares celebra a beleza e a intimidade do amor conjugal, e quais lições podemos tirar para nossos relacionamentos?",
+        "De que forma o livro nos ensina sobre a importância da pureza e do tempo certo no amor?",
+        "Quais aspectos do amor divino e do relacionamento de Cristo com a Igreja podem ser vistos simbolicamente em Cantares?"
+      ],
+      "summary": "Cantares de Salomão é um poema lírico que celebra o amor e a paixão entre um homem e uma mulher, tradicionalmente atribuído ao rei Salomão. O livro descreve o diálogo entre o amado e a amada, expressando seus sentimentos, elogios e desejo de estarem juntos, usando metáforas poéticas. Ele enfatiza a pureza e o tempo certo para o amor, e a necessidade de proteger o relacionamento. Muitos estudiosos interpretam o livro simbolicamente, vendo nele uma ilustração do amor entre Deus e Israel, ou entre Cristo e Sua Igreja. O livro termina reafirmando a força e a persistência do amor verdadeiro."
+    },
+    {
+      "title": "Isaías",
+      "reference": "Isaías",
+      "book": "Isaías",
+      "testament": "AT",
+      "author": "Isaías",
+      "period": "Profetizou durante os reinados de Uzias, Jotão, Acaz e Ezequias e talvez durante o reinado de Manassés. Os acontecimentos históricos registrados em Isaías abrangem um período de mais ou menos de 740 a 680 a.C.",
+      "chapters": 66,
+      "genre": "profecia",
+      "historical_context": "Profetizou no Reino do Sul (Judá) durante um período de crise política e espiritual, alertando sobre o juízo iminente e oferecendo esperança de restauração.",
+      "theological_message": "Proclama o juízo de Deus contra o pecado e a idolatria, mas também oferece consolo e promessas de redenção através do Messias, o Servo Sofredor e Príncipe da Paz.",
+      "practical_application": "Chama à fidelidade a Deus, ao arrependimento e à confiança em Sua salvação, lembrando que Deus é soberano sobre todas as nações e cumpre Suas promessas.",
+      "key_verses": [
+        "Isaías 7:14",
+        "Isaías 53:5"
+      ],
+      "reflection_questions": [
+        "Como as profecias de Isaías sobre o juízo e a restauração de Israel se aplicam à nossa compreensão da justiça e misericórdia de Deus?",
+        "De que forma a figura do \"Servo Sofredor\" em Isaías aponta para a obra de Jesus Cristo?",
+        "Quais são as implicações da mensagem de Isaías sobre a soberania de Deus para nossa vida e esperança hoje?"
+      ],
+      "summary": "O livro de Isaías é um dos mais ricos e teológicos da Bíblia, escrito pelo profeta Isaías no Reino do Sul (Judá). Ele anuncia o juízo de Deus contra o pecado, a injustiça e a idolatria de Judá e das nações vizinhas. Ao mesmo tempo, Isaías proclama consolo e esperança, apresentando importantes profecias messiânicas sobre o nascimento do \"Emanuel\" e a figura do \"Servo Sofredor\" que carregaria os pecados. O livro termina com visões escatológicas de restauração total, novos céus e nova terra, e a glória futura do povo de Deus, enfatizando a salvação para todas as nações."
+    },
+    {
+      "title": "Jeremias",
+      "reference": "Jeremias",
+      "book": "Jeremias",
+      "testament": "AT",
+      "author": "Jeremias",
+      "period": "Últimos anos do Reino de Judá, até o exílio babilônico.",
+      "chapters": 52,
+      "genre": "profecia",
+      "historical_context": "Profetizou no Reino de Judá durante um período crítico de decadência espiritual e política, antes e durante a queda de Jerusalém e o exílio babilônico.",
+      "theological_message": "Proclama o julgamento iminente de Deus devido à idolatria e injustiça, mas também oferece promessas de restauração e um \"nova aliança\" para o futuro, enfatizando a fidelidade divina.",
+      "practical_application": "Chama ao arrependimento genuíno, à confiança na soberania de Deus mesmo em tempos difíceis, e à esperança na restauração que Ele promete.",
+      "key_verses": [
+        "Jeremias 29:11",
+        "Jeremias 31:33"
+      ],
+      "reflection_questions": [
+        "Como a mensagem de Jeremias sobre o juízo e a nova aliança se relaciona com a obra de Jesus Cristo?",
+        "De que forma o sofrimento pessoal de Jeremias nos ensina sobre a fidelidade em meio à oposição?",
+        "Quais lições sobre o chamado de Jeremias ao arrependimento para nossa vida e sociedade hoje?"
+      ],
+      "summary": "O livro de Jeremias registra o ministério do profeta Jeremias no Reino de Judá, desde o reinado de Josias até o exílio babilônico. Jeremias denuncia a idolatria, a corrupção e a injustiça do povo, alertando sobre o juízo iminente por meio do império babilônico. Ele enfrenta forte oposição e sofrimento pessoal, sendo conhecido como \"o profeta chorão\". Apesar do tom de julgamento, Jeremias também transmite mensagens de esperança e restauração, anunciando uma \"nova aliança\" que seria escrita no coração. O livro termina com a destruição de Jerusalém e o exílio, mas reafirma a fidelidade de Deus às Suas promessas."
+    },
+    {
+      "title": "Lamentações de Jeremias",
+      "reference": "Lamentações",
+      "book": "Lamentações",
+      "testament": "AT",
+      "author": "Não declarada",
+      "period": "Cobre os eventos por volta de 586 a.C, logo após a queda de Jerusalém perante os babilônicos.",
+      "chapters": 5,
+      "genre": "poesia|profecia",
+      "historical_context": "Escrito após a destruição de Jerusalém pelos babilônios em 586 a.C., expressa a dor e o lamento pelo colapso da cidade e o sofrimento do povo.",
+      "theological_message": "Reflete sobre as consequências do pecado e do julgamento divino, mas também encontra esperança na misericórdia e fidelidade de Deus, que se renovam a cada manhã.",
+      "practical_application": "Ensina a chorar diante de Deus em tempos de dor, a reconhecer o peso do pecado e a confiar na Sua misericórdia, mesmo quando tudo parece perdido.",
+      "key_verses": [
+        "Lamentações 3:22-23",
+        "Lamentações 5:21"
+      ],
+      "reflection_questions": [
+        "Como o livro de Lamentações nos ajuda a processar a dor e o sofrimento em nossa vida?",
+        "De que forma a esperança na misericórdia de Deus, mesmo em meio à ruína, é um consolo para nós hoje?",
+        "Quais lições sobre o arrependimento e a fidelidade divina podemos extrair de Lamentações?"
+      ],
+      "summary": "O livro de Lamentações é uma coleção de cinco poemas que expressam profunda tristeza e luto pela destruição de Jerusalém e do Templo pelos babilônios em 586 a.C. Tradicionalmente atribuído a Jeremias, o livro descreve Jerusalém como uma viúva abandonada e humilhada, e reflete sobre a ira de Deus contra o pecado do povo. Em meio à condenação, o profeta encontra esperança na misericórdia e fidelidade de Deus, que se renovam a cada manhã. O livro termina com uma súplica por restauração, ensinando a chorar diante de Deus, reconhecer o pecado e confiar em Sua compaixão."
+    },
+    {
+      "title": "Ezequiel",
+      "reference": "Ezequiel",
+      "book": "Ezequiel",
+      "testament": "AT",
+      "author": "Ezequiel",
+      "period": "Ezequiel viveu entre os judeus cativos levados para a Babilônia pelo rei Nabucodonosor aproximadamente 597 a.C.",
+      "chapters": 48,
+      "genre": "profecia",
+      "historical_context": "Profetizou entre os judeus exilados na Babilônia, durante um período de profunda crise nacional e espiritual após a destruição de Jerusalém e do Templo.",
+      "theological_message": "Revela a soberania e a glória de Deus, o julgamento divino contra a idolatria e a injustiça de Israel e das nações, e a promessa de restauração espiritual e nacional com um novo coração.",
+      "practical_application": "Encoraja a fidelidade a Deus mesmo no exílio, a responsabilidade individual e a esperança na obra regeneradora do Espírito Santo, que traz vida onde só há morte.",
+      "key_verses": [
+        "Ezequiel 36:26-27",
+        "Ezequiel 37:12-14"
+      ],
+      "reflection_questions": [
+        "Como as visões de Ezequiel sobre a glória de Deus nos ensinam sobre Sua soberania e presença, mesmo em tempos de exílio?",
+        "De que forma a profecia do \"novo coração\" em Ezequiel aponta para a obra do Espírito Santo em nossa vida?",
+        "Quais lições sobre a responsabilidade individual e a restauração espiritual podemos extrair do livro de Ezequiel?"
+      ],
+      "summary": "O livro de Ezequiel registra as visões e mensagens do profeta Ezequiel, exilado na Babilônia. Ele recebe visões poderosas da glória de Deus, que se manifesta mesmo fora de Jerusalém. Ezequiel denuncia a idolatria, a violência e a hipocrisia de Judá, anunciando o julgamento iminente e a destruição de Jerusalém. Após a queda da cidade, o tom muda para esperança e restauração, com profecias sobre um novo coração e a famosa visão do vale de ossos secos, simbolizando a ressurreição espiritual de Israel. O livro termina com a visão de um novo templo e uma Jerusalém restaurada, onde a glória do Senhor habitará permanentemente."
+    },
+    {
+      "title": "Daniel",
+      "reference": "Daniel",
+      "book": "Daniel",
+      "testament": "AT",
+      "author": "Daniel",
+      "period": "Durante o exílio babilônico, cobrindo os impérios da Babilônia e da Pérsia.",
+      "chapters": 12,
+      "genre": "profecia|narrativa",
+      "historical_context": "Situado durante o exílio babilônico e o domínio persa, narra a história de Daniel e seus amigos na corte, e suas visões proféticas sobre o futuro dos impérios.",
+      "theological_message": "Enfatiza a soberania de Deus sobre os reinos humanos, a fidelidade dos justos em meio à perseguição, e a vinda do Reino eterno do Messias que destruirá todos os impérios terrenos.",
+      "practical_application": "Encoraja a perseverança na fé, a sabedoria e a integridade em ambientes hostis, e a confiança no plano soberano de Deus para a história e o fim dos tempos.",
+      "key_verses": [
+        "Daniel 2:44",
+        "Daniel 6:26-27"
+      ],
+      "reflection_questions": [
+        "Como a fidelidade de Daniel e seus amigos em Babilônia nos inspira a manter nossa fé em ambientes hostis?",
+        "De que forma as visões proféticas de Daniel revelam a soberania de Deus sobre a história e os impérios humanos?",
+        "Quais lições sobre a vinda do Reino de Deus e a esperança eterna podemos extrair do livro de Daniel?"
+      ],
+      "summary": "O livro de Daniel combina narrativas biográficas e visões proféticas. Ele narra a história de Daniel e seus três amigos, jovens judeus exilados na Babilônia, que demonstram fidelidade a Deus em meio à pressão cultural e religiosa. Eles enfrentam desafios como a recusa em comer a comida do rei, a fornalha ardente e a cova dos leões, sendo milagrosamente livrados por Deus. A segunda parte do livro apresenta visões apocalípticas de Daniel sobre o futuro dos reinos mundiais e a vinda do Messias, o \"Filho do Homem\", que estabelecerá um reino eterno. O livro enfatiza a soberania divina e a recompensa para os fiéis."
+    },
+    {
+      "title": "Oséias",
+      "reference": "Oséias",
+      "book": "Oséias",
+      "testament": "AT",
+      "author": "Oséias",
+      "period": "Final do Reino do Norte, antes da queda para a Assíria em 722 a.C.",
+      "chapters": 14,
+      "genre": "profecia",
+      "historical_context": "Profetizou no Reino do Norte (Israel) durante um período de prosperidade econômica, mas de intensa idolatria e decadência moral, antes de sua queda para a Assíria.",
+      "theological_message": "Utiliza a experiência pessoal do profeta com sua esposa infiel, Gômer, como metáfora do amor inabalável de Deus por Israel, apesar da infidelidade e apostasia do povo.",
+      "practical_application": "Chama ao arrependimento sincero, à busca do conhecimento de Deus e à esperança na restauração, lembrando que o amor persistente de Deus transforma juízo em misericórdia.",
+      "key_verses": [
+        "Oséias 11:8",
+        "Oséias 14:1"
+      ],
+      "reflection_questions": [
+        "Como o relacionamento de Oséias com Gômer ilustra o amor fiel de Deus por Seu povo, mesmo em sua infidelidade?",
+        "De que forma a mensagem de Oséias sobre o \"conhecimento de Deus\" é relevante para nós hoje?",
+        "Quais lições sobre o chamado de Oséias ao arrependimento para nossa vida e relacionamento com Deus?"
+      ],
+      "summary": "O livro de Oséias é uma profecia profunda e emocional, escrita pelo profeta Oséias no Reino do Norte (Israel). Deus ordena que Oséias se case com Gômer, uma mulher infiel, para simbolizar a relação de Israel com o Senhor. Oséias denuncia a idolatria, a prostituição cultual e a injustiça social do povo, anunciando o julgamento iminente e a queda para a Assíria. No entanto, em meio à condenação, o livro revela o coração partido de Deus, cheio de amor e misericórdia, prometendo restauração e cura para um povo arrependido. A mensagem central é o amor persistente de Deus diante da infidelidade humana."
+    },
+    {
+      "title": "Joel",
+      "reference": "Joel",
+      "book": "Joel",
+      "testament": "AT",
+      "author": "Joel",
+      "period": "Pouco se sabe sobre ele. Não se sabe exatamente quando Joel viveu e profetizou para o reino de Judá., mas possivelmente antes da invasão babilônica em Judá no ano de 586 a.C.",
+      "chapters": 3,
+      "genre": "profecia",
+      "historical_context": "O profeta Joel, do Reino do Sul (Judá), interpreta uma praga de gafanhotos como um sinal do \"Dia do Senhor\", um tempo de julgamento divino.",
+      "theological_message": "Chama o povo ao arrependimento sincero, destacando a misericórdia de Deus que promete restauração e a efusão do Espírito Santo sobre toda a carne.",
+      "practical_application": "Encoraja a buscar a Deus em meio à adversidade, a viver um arrependimento verdadeiro e a esperar a manifestação do Espírito Santo e a restauração divina.",
+      "key_verses": [
+        "Joel 2:13",
+        "Joel 2:28"
+      ],
+      "reflection_questions": [
+        "Como a praga de gafanhotos em Joel serve como um alerta sobre o \"Dia do Senhor\" e a necessidade de arrependimento?",
+        "De que forma a promessa do derramamento do Espírito Santo em Joel se cumpriu no Pentecostes e qual sua relevância hoje?",
+        "Quais lições sobre a misericórdia de Deus e a restauração podemos extrair do livro de Joel?"
+      ],
+      "summary": "O livro de Joel descreve uma devastadora praga de gafanhotos que assola a terra, interpretada pelo profeta como um sinal do \"Dia do Senhor\", um tempo de julgamento divino. Joel convoca o povo de Judá a um arrependimento sincero, com jejum e oração, enfatizando que Deus é misericordioso e tardio em irar-se. Em resposta ao clamor do povo, Deus promete restaurar o que foi destruído e, mais notavelmente, derramar Seu Espírito sobre toda a carne. O livro também aponta para o juízo final das nações e a restauração de Judá, culminando em uma mensagem de esperança e intervenção divina."
+    },
+    {
+      "title": "Amós",
+      "reference": "Amós",
+      "book": "Amós",
+      "testament": "AT",
+      "author": "Amós",
+      "period": "Amós pregou durante o reinado de Uzias, em Judá, e de Jeroboão II, em Israel, no oitavo século a.C.",
+      "chapters": 9,
+      "genre": "profecia",
+      "historical_context": "Profetizou no Reino do Norte (Israel) durante um período de aparente prosperidade, mas de profunda injustiça social, corrupção e idolatria.",
+      "theological_message": "Denuncia a injustiça social, a hipocrisia religiosa e a apostasia de Israel e das nações vizinhas, proclamando o juízo divino e a necessidade de justiça que procede de Deus.",
+      "practical_application": "Chama à justiça verdadeira, ao arrependimento sincero e à compaixão pelos oprimidos, lembrando que a verdadeira religião não é apenas ritos, mas vida transformada.",
+      "key_verses": [
+        "Amós 5:24",
+        "Amós 9:11"
+      ],
+      "reflection_questions": [
+        "Como a denúncia de Amós sobre a injustiça social em Israel se aplica aos desafios éticos de nossa sociedade hoje?",
+        "De que forma a mensagem de Amós sobre o \"Dia do Senhor\" nos alerta sobre as consequências da hipocrisia religiosa?",
+        "Quais lições sobre a justiça de Deus e a promessa de restauração podemos extrair do livro de Amós?"
+      ],
+      "summary": "O livro de Amós, um profeta boiadeiro de Judá, profetizou no Reino do Norte (Israel) durante um período de prosperidade superficial, mas de grande corrupção moral e social. Amós denuncia o juízo de Deus sobre as nações vizinhas e, principalmente, sobre Judá e Israel, por suas violências, injustiças e idolatria. Ele critica os ricos que oprimiam os pobres, os juízes corruptos e a religiosidade vazia. Amós adverte sobre o \"Dia do Senhor\" como um tempo de trevas para os rebeldes, mas também profetiza a restauração da \"tenda caída de Davi\", apontando para a vinda do Messias e a salvação para todas as nações."
+    },
+    {
+      "title": "Obadias",
+      "reference": "Obadias",
+      "book": "Obadias",
+      "testament": "AT",
+      "author": "Obadias",
+      "period": "Provavelmente após a queda de Jerusalém 586 a.C.",
+      "chapters": 1,
+      "genre": "profecia",
+      "historical_context": "Profetizou contra Edom, uma nação vizinha de Israel, após a queda de Jerusalém em 586 a.C., condenando sua arrogância e violência contra Judá.",
+      "theological_message": "Proclama o juízo divino contra o orgulho e a falta de compaixão de Edom, afirmando a justiça universal de Deus e a restauração final de Israel.",
+      "practical_application": "Adverte sobre as consequências da arrogância e da indiferença ao sofrimento alheio, e encoraja a confiança na soberania de Deus que julga o mal e estabelece Seu reino.",
+      "key_verses": [
+        "Obadias 1:3",
+        "Obadias 1:15"
+      ],
+      "reflection_questions": [
+        "Como o juízo de Deus contra Edom em Obadias nos alerta sobre as consequências do orgulho e da falta de compaixão?",
+        "De que forma a mensagem de Obadias sobre a justiça divina é relevante para nossa compreensão da soberania de Deus?",
+        "Quais lições sobre a restauração de Israel e o reino definitivo de Deus podemos extrair deste livro?"
+      ],
+      "summary": "Obadias é o menor livro do Antigo Testamento, contendo uma profecia intensa contra Edom, descendente de Esaú. O profeta condena a arrogância de Edom e sua violência contra Judá durante a queda de Jerusalém em 586 a.C. Obadias anuncia a destruição completa e inevitável de Edom, mostrando que Deus julga a maldade e a falta de compaixão. O livro também proclama o \"Dia do Senhor\" como um tempo de juízo universal, mas termina com uma promessa de libertação e restauração para Israel, afirmando que \"o reino será do Senhor\"."
+    },
+    {
+      "title": "Jonas",
+      "reference": "Jonas",
+      "book": "Jonas",
+      "testament": "AT",
+      "author": "Não fica claro quem é o autor desse livro. A história é sobre Jonas, mas é contado em terceira pessoa.",
+      "period": "Durante o reinado de Jeroboão II, no Reino do Norte (Israel).",
+      "chapters": 4,
+      "genre": "narrativa|profecia",
+      "historical_context": "A história de Jonas se passa durante o reinado de Jeroboão II, no Reino do Norte, quando o profeta é chamado a pregar em Nínive, capital da Assíria, inimiga de Israel.",
+      "theological_message": "Revela a compaixão universal de Deus, que se estende até mesmo aos inimigos de Israel, e a importância do arrependimento, contrastando com a relutância do profeta em aceitar a graça divina.",
+      "practical_application": "Desafia a ter um coração compassivo pelos perdidos, a obedecer à vontade de Deus mesmo quando é difícil, e a reconhecer que a misericórdia de Deus é maior que nossos preconceitos.",
+      "key_verses": [
+        "Jonas 1:3",
+        "Jonas 4:11"
+      ],
+      "reflection_questions": [
+        "Como a fuga de Jonas da missão de Deus nos ensina sobre a resistência à vontade divina e suas consequências?",
+        "De que forma o arrependimento de Nínive e a misericórdia de Deus nos desafiam a ter um coração compassivo pelos outros?",
+        "Quais lições sobre a soberania de Deus e a importância do arrependimento podemos extrair do livro de Jonas?"
+      ],
+      "summary": "O livro de Jonas narra a história do profeta Jonas, que tenta fugir da missão de Deus de pregar arrependimento à cidade de Nínive. Ele é engolido por um grande peixe após ser lançado ao mar durante uma tempestade, e no ventre do peixe, ora e é salvo. Jonas finalmente obedece e prega em Nínive, e a cidade inteira se arrepende, levando Deus a suspender o juízo. Jonas, porém, fica indignado com a misericórdia de Deus pelos seus inimigos. O livro termina com Deus ensinando a Jonas sobre Sua compaixão por todas as nações, deixando uma reflexão sobre a disposição de aceitar a graça divina para os inimigos."
+    },
+    {
+      "title": "Miquéias",
+      "reference": "Miquéias",
+      "book": "Miquéias",
+      "testament": "AT",
+      "author": "Miquéias",
+      "period": "Aproximadamente 700 a.C. Portanto, ele provavelmente foi contemporâneo dos Profetas Amós, Oseias e Isaías.",
+      "chapters": 7,
+      "genre": "profecia",
+      "historical_context": "Profetizou no Reino do Sul (Judá) durante um período de crise, com o Reino do Norte prestes a cair para a Assíria e Judá mergulhada em corrupção e injustiça social.",
+      "theological_message": "Denuncia a injustiça social, a opressão e a idolatria, proclamando o juízo divino, mas também oferece esperança na vinda do Messias, que nasceria em Belém e traria justiça e paz.",
+      "practical_application": "Chama à justiça, à misericórdia e à humildade diante de Deus, lembrando que a verdadeira fé se manifesta em amor ao próximo e integridade moral.",
+      "key_verses": [
+        "Miquéias 5:2",
+        "Miquéias 6:8"
+      ],
+      "reflection_questions": [
+        "Como a denúncia de Miquéias sobre a injustiça social e a hipocrisia religiosa se aplica aos desafios de nossa sociedade hoje?",
+        "De que forma a profecia do nascimento do Messias em Belém, registrada em Miquéias, aponta para Jesus Cristo?",
+        "Quais lições sobre \"praticar a justiça, amar a misericórdia e andar humildemente com o teu Deus\" podemos aplicar em nossa vida diária?"
+      ],
+      "summary": "O livro de Miquéias é uma profecia do Antigo Testamento que destaca a preocupação do profeta com a injustiça social, a opressão e a idolatria em Judá e Israel. Miquéias critica líderes corruptos, juízes e profetas falsos, anunciando o julgamento divino sobre Samaria e Jerusalém. Em meio à condenação, ele proclama esperança e redenção, com a famosa profecia do nascimento do Messias em Belém. O livro também oferece uma das definições mais claras do que Deus espera de Seu povo: \"praticar a justiça, amar a misericórdia e andar humildemente com o teu Deus\". Termina com uma nota de esperança na misericórdia de Deus e na restauração de Seu povo."
+    },
+    {
+      "title": "Naum",
+      "reference": "Naum",
+      "book": "Naum",
+      "testament": "AT",
+      "author": "Naum",
+      "period": "Antes da queda de Nínive, capital da Assíria, em 612 a.C.",
+      "chapters": 3,
+      "genre": "profecia",
+      "historical_context": "Profetizou contra Nínive, capital do Império Assírio, um império cruel e opressor, anunciando sua destruição iminente.",
+      "theological_message": "Proclama a justiça e a vingança de Deus contra o mal e a opressão, mas também oferece consolo ao povo de Deus, mostrando que Ele é um refúgio para os que n'Ele confiam.",
+      "practical_application": "Ensina que Deus é justo e age contra a arrogância e o mal, e que, mesmo quando o mal prospera, Deus tem o controle da história e trará justiça e restauração.",
+      "key_verses": [
+        "Naum 1:3",
+        "Naum 1:7"
+      ],
+      "reflection_questions": [
+        "Como a profecia de Naum sobre a destruição de Nínive nos ensina sobre a justiça de Deus contra o mal e a opressão?",
+        "De que forma a mensagem de Naum oferece consolo ao povo de Deus em meio à adversidade?",
+        "Quais lições sobre a soberania de Deus e a certeza de Sua justiça podemos extrair do livro de Naum?"
+      ],
+      "summary": "O livro de Naum é uma profecia concentrada no juízo de Deus contra Nínive, a capital do Império Assírio. Naum descreve o Senhor como um Deus zeloso, vingador e justo, que não ignora o pecado e julgará aqueles que praticam o mal e oprimem. O livro usa imagens vívidas para descrever a queda iminente de Nínive, que, apesar de sua aparente invencibilidade, será destruída por uma aliança de babilônios e medos em 612 a.C. Naum também oferece consolo a Judá, lembrando que Deus é um refúgio para os que n'Ele confiam. A mensagem central é que Deus é justo, vê o sofrimento dos oprimidos e age contra a arrogância e o mal."
+    },
+    {
+      "title": "Habacuque",
+      "reference": "Habacuque",
+      "book": "Habacuque",
+      "testament": "AT",
+      "author": "Habacuque",
+      "period": "Habacuque profetizou durante os reinados de Jeoacaz e Jeoiaquim.",
+      "chapters": 3,
+      "genre": "profecia",
+      "historical_context": "O profeta Habacuque dialoga com Deus sobre a injustiça e a violência em Judá, e a perplexidade de Deus usar uma nação mais ímpia (Babilônia) para julgar Seu povo.",
+      "theological_message": "Apresenta um diálogo sobre a justiça divina e o sofrimento dos justos, revelando que o \"justo viverá pela fé\" e que Deus é soberano e fiel, mesmo quando Seus caminhos são incompreensíveis.",
+      "practical_application": "Encoraja a levar nossas dúvidas a Deus, a confiar em Sua justiça e a viver pela fé em meio às incertezas, encontrando alegria no Senhor, independentemente das circunstâncias.",
+      "key_verses": [
+        "Habacuque 2:4",
+        "Habacuque 3:17-18"
+      ],
+      "reflection_questions": [
+        "Como o diálogo de Habacuque com Deus nos ajuda a lidar com as perguntas sobre a injustiça e o sofrimento no mundo?",
+        "De que forma o princípio de que \"o justo viverá pela fé\" é central para nossa vida cristã hoje?",
+        "Quais lições sobre a confiança em Deus, mesmo em meio às incertezas, podemos extrair do livro de Habacuque?"
+      ],
+      "summary": "O livro de Habacuque é um diálogo íntimo entre o profeta e Deus. Habacuque questiona a Deus sobre a violência e a corrupção em Judá, e a aparente inação divina. Deus responde que usará os babilônios para julgar Judá, o que confunde ainda mais o profeta, que pergunta como um Deus santo pode usar uma nação mais ímpia. Deus então revela que \"o justo viverá pela fé\" e que os babilônios também serão julgados. O livro termina com uma oração de confiança e louvor, onde Habacuque declara sua alegria no Senhor, mesmo que tudo falhe."
+    },
+    {
+      "title": "Sofonias",
+      "reference": "Sofonias",
+      "book": "Sofonias",
+      "testament": "AT",
+      "author": "Sofonias",
+      "period": "Sofonias profetizou durante os reinados de Jeoacaz e Jeoiaquim.",
+      "chapters": 3,
+      "genre": "profecia",
+      "historical_context": "Profetizou no Reino de Judá durante o reinado de Josias, um período de grande corrupção espiritual e moral, antes das reformas de Josias e da invasão babilônica.",
+      "theological_message": "Proclama o \"Dia do Senhor\" como um tempo de juízo universal contra a idolatria e a injustiça, mas também oferece esperança de restauração para um remanescente humilde e fiel.",
+      "practical_application": "Chama ao arrependimento, à busca da justiça e da humildade, e à confiança na misericórdia de Deus que salva e se alegra com Seu povo redimido.",
+      "key_verses": [
+        "Sofonias 1:14-15",
+        "Sofonias 3:17"
+      ],
+      "reflection_questions": [
+        "Como a mensagem de Sofonias sobre o \"Dia do Senhor\" nos alerta sobre a seriedade do pecado e do julgamento divino?",
+        "De que forma a promessa de restauração para um remanescente fiel em Sofonias nos oferece esperança hoje?",
+        "Quais lições sobre a busca da justiça, da humildade e da confiança em Deus podemos extrair do livro de Sofonias?"
+      ],
+      "summary": "O livro de Sofonias é uma profecia poderosa sobre o \"Dia do Senhor\", com um equilíbrio entre juízo severo e promessa de restauração. Sofonias profetizou em Judá durante o reinado de Josias, denunciando a idolatria, o sincretismo religioso e a injustiça social. Ele anuncia a destruição total da terra e o juízo sobre Judá e as nações vizinhas. A linguagem é forte, descrevendo o Dia do Senhor como um dia de ira e angústia. No entanto, Sofonias também proclama esperança, prometendo que Deus deixará um povo humilde e fiel, que confiará no Seu nome. O livro termina com uma linda imagem de Deus se regozijando sobre Seu povo redimido, mostrando que Ele se deleita em salvar."
+    },
+    {
+      "title": "Ageu",
+      "reference": "Ageu",
+      "book": "Ageu",
+      "testament": "AT",
+      "author": "Ageu",
+      "period": "Em 520 a.C, uma data precisa porque Ageu menciona \"o segundo ao do Rei Dario\", que pode ser verificado nos registros Persas.",
+      "chapters": 2,
+      "genre": "profecia",
+      "historical_context": "Profetizou para os judeus que retornaram do exílio babilônico, em 520 a.C., quando a reconstrução do Templo estava paralisada devido a dificuldades e desânimo.",
+      "theological_message": "Chama o povo a priorizar a reconstrução da Casa do Senhor, revelando que a estagnação e a crise material eram resultado da negligência espiritual, e prometendo bênçãos futuras.",
+      "practical_application": "Encoraja a colocar Deus em primeiro lugar em nossas vidas, a agir com determinação na obra do Senhor e a confiar que Ele sustenta a obediência e cumpre Suas promessas.",
+      "key_verses": [
+        "Ageu 1:4",
+        "Ageu 2:9"
+      ],
+      "reflection_questions": [
+        "Como a mensagem de Ageu sobre a prioridade da Casa do Senhor se aplica às nossas prioridades hoje?",
+        "De que forma a promessa de Deus de que a glória do novo Templo seria maior nos encoraja a perseverar em Sua obra?",
+        "Quais lições sobre a obediência e as bênçãos divinas podemos extrair do livro de Ageu?"
+      ],
+      "summary": "O livro de Ageu é uma mensagem urgente de Deus para os judeus que retornaram do exílio babilônico e estavam desanimados, com a reconstrução do Templo paralisada por 16 anos. Ageu confronta o povo, perguntando se era tempo de habitarem em casas confortáveis enquanto o Templo permanecia em ruínas, e revela que suas dificuldades materiais eram consequência dessa negligência. Ele convoca o povo a priorizar a obra do Senhor. Em resposta, o povo obedece e retoma a construção. Ageu também traz palavras de encorajamento, prometendo que a glória do novo Templo seria maior e que Zorobabel seria como um \"anel de selar\", garantindo a linhagem messiânica."
+    },
+    {
+      "title": "Zacarias",
+      "reference": "Zacarias",
+      "book": "Zacarias",
+      "testament": "AT",
+      "author": "Zacarias",
+      "period": "Em 520 a.C, uma data precisa por que Ageu menciona \"o segundo ao do Rei Dario\", que pode ser verificado nos registros Persas.",
+      "chapters": 14,
+      "genre": "profecia",
+      "historical_context": "Profetizou para os judeus pós-exílio, contemporâneo de Ageu, encorajando a reconstrução do Templo e a renovação espiritual, apontando para a vinda do Messias.",
+      "theological_message": "Contém visões simbólicas e mensagens proféticas sobre a restauração de Jerusalém, a purificação do sacerdócio e a vinda do Messias como Rei humilde e Pastor ferido, que reinará sobre toda a terra.",
+      "practical_application": "Encoraja a perseverança na fé, a busca da justiça e do arrependimento, e a esperança na obra redentora de Deus, que purifica o pecado e estabelece Seu reino eterno.",
+      "key_verses": [
+        "Zacarias 4:6",
+        "Zacarias 9:9"
+      ],
+      "reflection_questions": [
+        "Como as visões de Zacarias sobre a restauração de Jerusalém e o Templo nos inspiram a confiar na obra de Deus?",
+        "De que forma as profecias de Zacarias sobre o Messias se cumpriram em Jesus Cristo?",
+        "Quais lições sobre o arrependimento, a justiça e a esperança no Reino de Deus podemos extrair do livro de Zacarias?"
+      ],
+      "summary": "O livro de Zacarias é uma profecia pós-exílica, contemporânea de Ageu, que encoraja os judeus a reconstruir o Templo e a renovar sua devoção a Deus. O livro começa com um chamado ao arrependimento e apresenta uma série de oito visões noturnas simbólicas, que revelam a proteção divina, a justiça e os planos de Deus para Israel. Zacarias também destaca o papel do sumo sacerdote Josué e de Zorobabel, apontando para o \"Renovo\" messiânico. A segunda parte do livro contém mensagens mais diretas e oráculos sobre o futuro, incluindo profecias sobre a vinda do Messias como Rei humilde e Pastor ferido, e visões escatológicas sobre o Dia do Senhor e o estabelecimento do Seu reinado eterno."
+    },
+    {
+      "title": "Malaquias",
+      "reference": "Malaquias",
+      "book": "Malaquias",
+      "testament": "AT",
+      "author": "Malaquias",
+      "period": "Por volta de 430 a.C., após o retorno do exílio e a reconstrução do templo.",
+      "chapters": 4,
+      "genre": "profecia",
+      "historical_context": "O último livro do Antigo Testamento, escrito por volta de 430 a.C., revela um povo desanimado, com religiosidade superficial e negligência após o retorno do exílio.",
+      "theological_message": "Denuncia a corrupção sacerdotal, a negligência nos dízimos e ofertas, e a infidelidade conjugal, proclamando o amor eletivo de Deus e a vinda do \"Dia do Senhor\" com juízo e restauração.",
+      "practical_application": "Chama ao arrependimento, à adoração verdadeira e à fidelidade em todas as áreas da vida, lembrando que Deus deseja um relacionamento genuíno e que Ele enviará um precursor.",
+      "key_verses": [
+        "Malaquias 1:2",
+        "Malaquias 3:10"
+      ],
+      "reflection_questions": [
+        "Como a mensagem de Malaquias sobre a corrupção religiosa e a negligência espiritual se aplica aos desafios da igreja hoje?",
+        "De que forma o chamado de Malaquias à fidelidade nos dízimos e ofertas é relevante para nossa generosidade?",
+        "Quais lições sobre o amor eletivo de Deus e a promessa do \"Dia do Senhor\" podemos extrair do livro de Malaquias?"
+      ],
+      "summary": "O livro de Malaquias é o último livro do Antigo Testamento, funcionando como uma ponte para o Novo Testamento. Escrito por volta de 430 a.C., ele revela um povo desanimado e espiritualmente negligente após o exílio. O livro é estruturado como um diálogo entre Deus e o povo, onde Deus denuncia a corrupção sacerdotal, a negligência nos dízimos e ofertas, e a infidelidade conjugal. Malaquias proclama o amor eletivo de Deus por Israel e adverte sobre o \"Dia do Senhor\", um tempo de juízo e restauração. Ele promete enviar um mensageiro precursor (João Batista) para preparar o caminho do Senhor. O livro encerra com um chamado à obediência à Lei de Moisés e à esperança na vinda de Cristo."
+    },
+    {
+      "title": "Mateus",
+      "reference": "Mateus",
+      "book": "Mateus",
+      "testament": "NT",
+      "author": "Mateus",
+      "period": "Não é possível definir uma data, é quase certo que este evangelho foi escrito antes da destruição de Jerusalém que ocorreu no ano de 70 d.C.",
+      "chapters": 28,
+      "genre": "evangelho|narrativa",
+      "historical_context": "Escrito principalmente para um público judeu, apresenta Jesus como o Messias prometido nas Escrituras do Antigo Testamento, com genealogia e cumprimento de profecias.",
+      "theological_message": "Enfatiza que Jesus é o Messias, o Filho de Deus e o Rei de Israel, que veio para cumprir a Lei e os Profetas, estabelecendo o Reino de Deus.",
+      "practical_application": "Desafia a viver os ensinamentos do Reino, como o Sermão da Montanha, e a fazer discípulos de todas as nações, confiando na presença de Jesus até o fim dos tempos.",
+      "key_verses": [
+        "Mateus 5:3-11",
+        "Mateus 28:19"
+      ],
+      "reflection_questions": [
+        "Como Mateus apresenta Jesus como o Messias prometido e o Rei de Israel, e qual a relevância disso para nossa fé?",
+        "De que forma o Sermão da Montanha em Mateus nos desafia a viver os princípios do Reino de Deus?",
+        "Quais são as implicações da Grande Comissão em Mateus para nossa missão como cristãos hoje?"
+      ],
+      "summary": "O Evangelho de Mateus foi escrito para apresentar Jesus como o Messias prometido e o verdadeiro Rei de Israel, direcionado principalmente a um público judeu. Mateus começa com a genealogia de Jesus, ligando-o a Davi e Abraão, e narra Seu nascimento milagroso. O livro registra os ensinamentos de Jesus, incluindo o famoso Sermão da Montanha, e Seus milagres, demonstrando Sua autoridade divina. Mateus enfatiza o cumprimento das profecias do Antigo Testamento na vida de Jesus e o conflito com os líderes religiosos. O evangelho culmina com a paixão, morte e ressurreição de Jesus, e a Grande Comissão para fazer discípulos de todas as nações."
+    },
+    {
+      "title": "Marcos",
+      "reference": "Marcos",
+      "book": "Marcos",
+      "testament": "NT",
+      "author": "João Marcos",
+      "period": "Não existe um consenso sobre a data em que este evangelho foi escrito, mas ele deve ter sido escrito antes da destruição de Jerusalém que ocorreu no ano 70 d.C.",
+      "chapters": 16,
+      "genre": "evangelho|narrativa",
+      "historical_context": "Escrito para um público romano, valoriza a ação e os resultados, apresentando Jesus como o Servo de Deus que veio para servir e dar Sua vida em resgate.",
+      "theological_message": "Destaca a natureza imediata e poderosa do ministério de Jesus, enfatizando Seus milagres, autoridade e o papel central da cruz na redenção da humanidade.",
+      "practical_application": "Encoraja a seguir o exemplo de serviço e fé de Cristo, perseverando em meio aos desafios e reconhecendo que a glória de Cristo passa pela humildade e sofrimento.",
+      "key_verses": [
+        "Marcos 10:45",
+        "Marcos 16:1-8"
+      ],
+      "reflection_questions": [
+        "Como Marcos enfatiza a ação e o poder de Jesus, e qual a relevância disso para nossa compreensão de Sua divindade?",
+        "De que forma o livro nos desafia a seguir o exemplo de Jesus como Servo sofredor?",
+        "Quais lições sobre a crucificação e a ressurreição de Jesus podemos aplicar em nossa vida de fé hoje?"
+      ],
+      "summary": "O Evangelho de Marcos é o mais curto e dinâmico dos quatro evangelhos, escrito para um público romano. Ele vai direto ao ponto, sem genealogias, e apresenta Jesus como o Servo de Deus e o Filho do Homem. Marcos foca nos milagres de Jesus, demonstrando Sua autoridade sobre a natureza, doenças e demônios, e enfatiza a urgência e intensidade de Seu ministério. O livro também mostra o lado humano de Jesus e a dificuldade dos discípulos em compreender Sua verdadeira missão. O ponto central é a cruz, e o evangelho culmina com a paixão, crucificação e ressurreição de Jesus, evidenciando Seu papel central na redenção da humanidade."
+    },
+    {
+      "title": "Lucas",
+      "reference": "Lucas",
+      "book": "Lucas",
+      "testament": "NT",
+      "author": "Lucas",
+      "period": "Próximo de 62 d.C.",
+      "chapters": 24,
+      "genre": "evangelho|narrativa",
+      "historical_context": "Escrito por Lucas, um médico e historiador gentil, para Teófilo, com o objetivo de apresentar uma narrativa ordenada e confiável da vida de Jesus.",
+      "theological_message": "Destaca Jesus como o Salvador de todos os povos, com especial interesse pelos marginalizados, pobres e excluídos, revelando a compaixão de Deus e a universalidade da salvação.",
+      "practical_application": "Encoraja a viver com compaixão e misericórdia, a buscar o perdão e a confiar na providência de Deus, que se importa com todos, preparando o caminho para a missão da igreja.",
+      "key_verses": [
+        "Lucas 1:3-4",
+        "Lucas 19:10"
+      ],
+      "reflection_questions": [
+        "Como Lucas apresenta Jesus como o Salvador de todos os povos, e qual a relevância disso para nossa compreensão da graça de Deus?",
+        "De que forma as parábolas de Jesus em Lucas nos ensinam sobre o perdão, a misericórdia e a alegria do Pai?",
+        "Quais lições sobre a importância da oração e do cuidado com os marginalizados podemos aplicar em nossa vida hoje?"
+      ],
+      "summary": "O Evangelho de Lucas é um relato detalhado e cuidadoso da vida, ensinamentos, milagres, morte e ressurreição de Jesus Cristo, escrito por Lucas, médico e historiador. Lucas destaca o cuidado de Deus com os marginalizados, excluídos e esquecidos da sociedade. O livro narra os nascimentos milagrosos de João Batista e Jesus, e apresenta Jesus como o Filho do Homem, o Messias compassivo que veio buscar e salvar os perdidos. Lucas dá atenção especial à oração de Jesus e ao papel das mulheres em Seu ministério. O evangelho termina com a paixão, crucificação, ressurreição e ascensão de Jesus, preparando o caminho para o livro de Atos."
+    },
+    {
+      "title": "João",
+      "reference": "João",
+      "book": "João",
+      "testament": "NT",
+      "author": "João",
+      "period": "Aproximadamente de 90 - 95 d.C.",
+      "chapters": 21,
+      "genre": "evangelho|narrativa",
+      "historical_context": "Escrito na cidade de Éfeso, capital da Ásia Menor, em um período posterior aos evangelhos sinóticos, com um foco mais teológico e profundo na divindade de Jesus.",
+      "theological_message": "Destaca a divindade de Jesus Cristo como o Verbo eterno que se fez carne, o Filho de Deus e o Salvador do mundo, enfatizando a importância da fé Nele para a vida eterna.",
+      "practical_application": "Convida a crer em Jesus como o Cristo, o Filho de Deus, para ter vida eterna, e a viver em comunhão com Ele, reconhecendo Sua identidade divina e o significado espiritual de Seus atos.",
+      "key_verses": [
+        "João 1:1",
+        "João 20:31"
+      ],
+      "reflection_questions": [
+        "Como João apresenta Jesus como o Verbo eterno e o Filho de Deus, e qual a relevância disso para nossa compreensão de Sua divindade?",
+        "De que forma os \"sete sinais\" e as declarações \"Eu Sou\" em João revelam a identidade divina de Jesus?",
+        "Quais lições sobre a fé em Jesus para a vida eterna e o amor entre os discípulos podemos extrair do evangelho de João?"
+      ],
+      "summary": "O Evangelho de João é o mais teológico e profundo dos quatro evangelhos, escrito pelo apóstolo João. Ele começa com um prólogo impressionante, apresentando Jesus como o Verbo eterno, o Criador e a luz do mundo que se fez carne. João registra sete sinais milagrosos que demonstram o poder divino de Jesus e sete declarações \"Eu Sou\" que revelam Sua natureza divina. O evangelho foca em encontros pessoais de Jesus e dedica capítulos aos ensinamentos íntimos na última ceia. Termina com a paixão, crucificação, ressurreição e aparições de Jesus, com o objetivo de levar o leitor a crer que Jesus é o Cristo, o Filho de Deus, para ter vida eterna."
+    },
+    {
+      "title": "Atos",
+      "reference": "Atos",
+      "book": "Atos",
+      "testament": "NT",
+      "author": "Lucas",
+      "period": "Cobrindo os eventos que ocorreram entre os anos 30 e 62 d.C. O livro de atos encerra com a primeira prisão de Paulo em Roma isso por volta de 62 d.C.",
+      "chapters": 28,
+      "genre": "narrativa|historia",
+      "historical_context": "Continuação do Evangelho de Lucas, narra o início da igreja cristã, desde a ascensão de Jesus, o Pentecostes, e a expansão do evangelho de Jerusalém até Roma.",
+      "theological_message": "Destaca a ação soberana do Espírito Santo na capacitação dos discípulos para serem testemunhas de Cristo, e a propagação do evangelho que rompe barreiras culturais e geográficas.",
+      "practical_application": "Ensina que a igreja é chamada a ser testemunha de Cristo, capacitada pelo Espírito Santo, e que o evangelho avança apesar das dificuldades, mostrando a obra de Deus no mundo.",
+      "key_verses": [
+        "Atos 1:8",
+        "Atos 2:42"
+      ],
+      "reflection_questions": [
+        "Como o livro de Atos nos inspira a ser testemunhas de Cristo, capacitados pelo Espírito Santo?",
+        "De que forma a expansão do evangelho em Atos nos ensina sobre a superação de barreiras culturais e religiosas?",
+        "Quais lições sobre a vida em comunidade, a oração e a perseverança podemos extrair da igreja primitiva em Atos?"
+      ],
+      "summary": "O livro de Atos dos Apóstolos, escrito por Lucas, é a continuação do seu evangelho, narrando o nascimento e a expansão da igreja cristã. Começa com a ascensão de Jesus e a promessa do Espírito Santo, que é derramado no Pentecostes, capacitando os discípulos a pregar com ousadia. O livro descreve a formação da igreja em Jerusalém, a cura de um coxo, os sermões de Pedro e a conversão de milhares. Ele também relata a perseguição enfrentada pelos cristãos, a conversão de Saulo (Paulo) e suas viagens missionárias, que levam o evangelho a Samaria, Judeia e até Roma. Atos destaca a ação do Espírito Santo e o testemunho dos apóstolos, mostrando que a mensagem de Cristo avança apesar das dificuldades."
+    },
+    {
+      "title": "Romanos",
+      "reference": "Romanos",
+      "book": "Romanos",
+      "testament": "NT",
+      "author": "Paulo",
+      "period": "Aproximadamente em 57 d.C.",
+      "chapters": 16,
+      "genre": "epistola",
+      "historical_context": "Escrita por Paulo em Corinto, durante sua terceira viagem missionária, para os cristãos em Roma, muitos dos quais ele ainda não conhecia pessoalmente.",
+      "theological_message": "Explora temas cruciais como a justificação pela fé, a universalidade do pecado, a graça de Deus, a vida em Cristo e a soberania divina na salvação de judeus e gentios.",
+      "practical_application": "Exorta os cristãos a viverem em santidade, a apresentarem seus corpos como sacrifício vivo, a amarem uns aos outros e a buscarem a paz, refletindo a gratidão pela salvação.",
+      "key_verses": [
+        "Romanos 3:23",
+        "Romanos 8:1"
+      ],
+      "reflection_questions": [
+        "Como a doutrina da justificação pela fé em Romanos transforma nossa compreensão da salvação?",
+        "De que forma a mensagem de Romanos sobre a vida no Espírito nos desafia a viver em santidade?",
+        "Quais lições sobre a soberania de Deus e a responsabilidade de Israel podemos extrair do livro de Romanos?"
+      ],
+      "summary": "Romanos é a carta mais profunda e teológica de Paulo, escrita em Corinto para os cristãos em Roma. Paulo começa mostrando a necessidade universal da salvação, afirmando que todos, judeus e gentios, estão debaixo do pecado. Ele então apresenta a justificação pela fé em Jesus Cristo como a solução de Deus, usando Abraão como exemplo. A carta explica que, em Cristo, somos libertos do pecado e unidos a Ele em uma nova vida. Paulo aborda a soberania de Deus na salvação de Israel e dos gentios, e oferece orientações práticas para a vida cristã, incluindo amor, serviço e submissão às autoridades. O livro termina com saudações e uma exortação à unidade, revelando a profundidade do Evangelho."
+    },
+    {
+      "title": "1 Coríntios",
+      "reference": "1 Coríntios",
+      "book": "1 Coríntios",
+      "testament": "NT",
+      "author": "Paulo",
+      "period": "Aproximadamente em 55-57 d.C. de Éfeso.",
+      "chapters": 16,
+      "genre": "epistola",
+      "historical_context": "Escrita por Paulo em Éfeso para a igreja em Corinto, uma cidade rica e imoral, que enfrentava divisões, problemas éticos e confusões sobre a adoração e a ressurreição.",
+      "theological_message": "Corrige divisões, imoralidade e desordem no culto, enfatizando a unidade do corpo de Cristo, a centralidade da cruz, a importância do amor e a certeza da ressurreição.",
+      "practical_application": "Oferece instruções práticas sobre conduta cristã, uso dos dons espirituais e adoração, chamando a igreja a viver em santidade e maturidade espiritual.",
+      "key_verses": [
+        "1 Coríntios 1:10",
+        "1 Coríntios 13:4-7"
+      ],
+      "reflection_questions": [
+        "Como as divisões na igreja de Corinto nos alertam sobre os perigos do orgulho e da falta de unidade?",
+        "De que forma o \"hino do amor\" em 1 Coríntios 13 nos desafia a viver o amor cristão em nossos relacionamentos?",
+        "Quais lições sobre o uso dos dons espirituais e a importância da ressurreição podemos aplicar em nossa vida de fé hoje?"
+      ],
+      "summary": "1 Coríntios é uma carta de Paulo à igreja em Corinto, uma cidade conhecida por sua riqueza e imoralidade. Paulo escreve para corrigir sérios problemas na comunidade, incluindo divisões, imoralidade sexual, disputas legais entre irmãos e confusões sobre o casamento, alimentos sacrificados a ídolos e o uso dos dons espirituais. A carta enfatiza a unidade do corpo de Cristo, a centralidade da cruz e a importância do amor como o caminho superior. Paulo também aborda a ressurreição dos mortos como fundamento da fé cristã. O livro termina com orientações práticas e saudações, ensinando que a igreja é chamada a viver em santidade e a ser transformada pela graça de Deus."
+    },
+    {
+      "title": "2 Coríntios",
+      "reference": "2 Coríntios",
+      "book": "2 Coríntios",
+      "testament": "NT",
+      "author": "Paulo",
+      "period": "Aparentemente, ele escreveu 2 Coríntios enquanto estava na Macedônia, por volta dos anos 55–57 d.C.",
+      "chapters": 13,
+      "genre": "epistola",
+      "historical_context": "Escrita por Paulo na Macedônia, após uma fase difícil no relacionamento com a igreja em Corinto, que havia respondido positivamente a uma carta anterior severa.",
+      "theological_message": "Defende o ministério apostólico de Paulo, aborda o consolo divino em meio às tribulações, a reconciliação com Deus e a generosidade cristã, enfatizando a graça e a perseverança na fé.",
+      "practical_application": "Encoraja a confiar em Deus em meio ao sofrimento, a viver o ministério com sinceridade e humildade, e a praticar a generosidade como fruto da graça.",
+      "key_verses": [
+        "2 Coríntios 5:17",
+        "2 Coríntios 12:9"
+      ],
+      "reflection_questions": [
+        "Como o livro de 2 Coríntios nos ensina sobre o consolo de Deus em meio às tribulações e o poder que se aperfeiçoa na fraqueza?",
+        "De que forma a mensagem de Paulo sobre o ministério da reconciliação nos desafia a ser embaixadores de Cristo?",
+        "Quais lições sobre a generosidade cristã e a defesa da autoridade apostólica podemos aplicar em nossa vida hoje?"
+      ],
+      "summary": "2 Coríntios é uma das cartas mais pessoais e emocionais de Paulo, escrita na Macedônia para a igreja em Corinto. Paulo expressa alívio pela resposta positiva dos coríntios à sua carta anterior e defende seu ministério apostólico contra críticas e falsos mestres. Ele fala sobre o consolo de Deus em meio às aflições, a glória do ministério do Espírito e a nova aliança. Paulo compartilha suas lutas e sofrimentos, afirmando que o poder de Deus se aperfeiçoa na fraqueza. Ele também incentiva a generosidade para com os cristãos pobres da Judeia e confronta os falsos apóstolos. A carta enfatiza a reconciliação, a graça divina e a perseverança na fé, mostrando que Deus usa pessoas frágeis para manifestar Sua glória."
+    },
+    {
+      "title": "Gálatas",
+      "reference": "Gálatas",
+      "book": "Gálatas",
+      "testament": "NT",
+      "author": "Paulo",
+      "period": "Provavelmente em 50 d.C.",
+      "chapters": 6,
+      "genre": "epistola",
+      "historical_context": "Escrita por Paulo para as igrejas da Galácia, que estavam sendo influenciadas por falsos mestres (judaizantes) que exigiam a observância da lei para a salvação.",
+      "theological_message": "Defende a justificação pela fé em Cristo, a liberdade cristã da lei e a obra do Espírito Santo na vida do crente, combatendo o legalismo e a distorção do evangelho.",
+      "practical_application": "Encoraja a permanecer firme na liberdade em Cristo, a viver pelo Espírito e a manifestar o fruto do Espírito, servindo uns aos outros em amor e cumprindo a lei de Cristo.",
+      "key_verses": [
+        "Gálatas 2:16",
+        "Gálatas 5:1"
+      ],
+      "reflection_questions": [
+        "Como a mensagem de Gálatas sobre a justificação pela fé em Cristo nos liberta do legalismo e das obras da lei?",
+        "De que forma o contraste entre as obras da carne e o fruto do Espírito em Gálatas nos desafia a viver pelo Espírito?",
+        "Quais lições sobre a liberdade cristã e a importância do amor podemos aplicar em nossa vida hoje?"
+      ],
+      "summary": "Gálatas é uma carta firme e direta de Paulo, escrita para as igrejas da Galácia que estavam sendo desviadas por falsos mestres (judaizantes) que ensinavam a necessidade de obras da lei para a salvação. Paulo defende sua autoridade apostólica e proclama que a salvação é unicamente pela graça, mediante a fé em Jesus Cristo, e não pelas obras da lei. Ele usa o exemplo de Abraão para mostrar que a justificação sempre foi pela fé. A carta enfatiza a liberdade cristã em Cristo, alertando contra o retorno ao jugo da escravidão da lei. Paulo contrasta as obras da carne com o fruto do Espírito, chamando os crentes a viverem pelo Espírito, manifestando amor, alegria, paz e outras virtudes."
+    },
+    {
+      "title": "Efésios",
+      "reference": "Efésios",
+      "book": "Efésios",
+      "testament": "NT",
+      "author": "Paulo",
+      "period": "É possível que essa epístola tenha sido escrita quando Paulo esteve preso pela primeira vez em Roma, aproximadamente entre os anos 60 e 62 d.C.",
+      "chapters": 6,
+      "genre": "epistola",
+      "historical_context": "Escrita por Paulo durante sua primeira prisão em Roma, para os cristãos em Éfeso e outras igrejas da Ásia Menor, com um tom mais geral e teológico.",
+      "theological_message": "Revela o plano eterno de Deus em Cristo para unir todas as coisas, a riqueza das bênçãos espirituais e a unidade da igreja como corpo de Cristo, composta por judeus e gentios.",
+      "practical_application": "Exorta a viver de maneira digna da vocação recebida, a buscar a unidade, a santidade e o amor, e a revestir-se da armadura de Deus para a batalha espiritual.",
+      "key_verses": [
+        "Efésios 2:8-9",
+        "Efésios 4:1"
+      ],
+      "reflection_questions": [
+        "Como Efésios revela o plano eterno de Deus em Cristo e a riqueza das bênçãos espirituais que recebemos?",
+        "De que forma a mensagem de Efésios sobre a unidade da igreja nos desafia a viver em harmonia e amor?",
+        "Quais lições sobre a armadura de Deus e a batalha espiritual podemos aplicar em nossa vida hoje?"
+      ],
+      "summary": "O livro de Efésios é uma carta profunda e rica em teologia, onde Paulo apresenta a grandiosidade do plano de Deus para a igreja e para o mundo. Ele escreve para os cristãos de Éfeso, uma cidade importante no Império Romano e um centro de idolatria e comércio, mas também para outros irmãos na região. O tom da carta é mais geral do que pessoal, o que indica que ela tinha o propósito de ser lida por várias igrejas. Efésios se divide em duas partes principais: a primeira (capítulos 1–3) explica o que Deus fez por nós, a segunda (capítulos 4–6) nos ensina como devemos viver em resposta a essa obra maravilhosa."
+    },
+    {
+      "title": "Filipenses",
+      "reference": "Filipenses",
+      "book": "Filipenses",
+      "testament": "NT",
+      "author": "Paulo",
+      "period": "Paulo provavelmente escreveu Filipenses em algum momento entre 60 e 62 d.C., enquanto estava preso em Roma.",
+      "chapters": 4,
+      "genre": "epistola",
+      "historical_context": "Escrita por Paulo durante sua prisão em Roma, para a igreja em Filipos, uma comunidade querida que o apoiava financeiramente e espiritualmente.",
+      "theological_message": "Expressa alegria e gratidão em meio ao sofrimento, destacando o exemplo de humildade de Cristo, a importância da unidade e a perseverança na fé, confiando na obra de Deus.",
+      "practical_application": "Encoraja a viver com alegria constante, a buscar a unidade e a humildade, e a confiar em Deus em todas as circunstâncias, sabendo que Ele supre todas as necessidades.",
+      "key_verses": [
+        "Filipenses 2:5-8",
+        "Filipenses 4:13"
+      ],
+      "reflection_questions": [
+        "Como Filipenses nos ensina a encontrar alegria e gratidão em meio às dificuldades e ao sofrimento?",
+        "De que forma o exemplo de humildade de Cristo em Filipenses nos desafia a viver em unidade e serviço?",
+        "Quais lições sobre a confiança em Deus e a capacidade de \"tudo posso naquele que me fortalece\" podemos aplicar em nossa vida hoje?"
+      ],
+      "summary": "O livro de Filipenses é uma carta cheia de alegria, escrita por Paulo durante sua prisão em Roma para a igreja em Filipos, sua primeira igreja na Europa. Paulo agradece o apoio dos filipenses e expressa confiança no avanço do evangelho, mesmo em suas cadeias. A carta exorta à unidade e humildade, apresentando Cristo como o modelo supremo de serviço e esvaziamento. Paulo alerta contra falsos mestres e enfatiza a justiça pela fé em Cristo, não pelas obras da lei. O livro conclui com exortações práticas sobre paz, oração e contentamento, e a famosa declaração \"Posso todas as coisas naquele que me fortalece\"."
+    },
+    {
+      "title": "Colossenses",
+      "reference": "Colossenses",
+      "book": "Colossenses",
+      "testament": "NT",
+      "author": "Paulo",
+      "period": "Paulo escreveu a epístola aos colossenses na primeira vez que foi preso em Roma, cerca de 60 a 62 d.C.",
+      "chapters": 4,
+      "genre": "epistola",
+      "historical_context": "Escrita por Paulo durante sua primeira prisão em Roma, para a igreja em Colossos, que enfrentava ensinos falsos que misturavam o evangelho com filosofias humanas e práticas místicas.",
+      "theological_message": "Enfatiza a supremacia e a suficiência absoluta de Cristo sobre todas as coisas, combatendo heresias e revelando a plenitude de vida encontrada Nele.",
+      "practical_application": "Exorta a viver de acordo com a nova identidade em Cristo, buscando as coisas do alto, abandonando o pecado e revestindo-se de virtudes como compaixão, humildade e amor.",
+      "key_verses": [
+        "Colossenses 1:15-20",
+        "Colossenses 3:1-2"
+      ],
+      "reflection_questions": [
+        "Como Colossenses revela a supremacia e a suficiência de Cristo sobre todas as coisas, e qual a relevância disso para nossa fé?",
+        "De que forma a mensagem de Colossenses nos alerta sobre os perigos das filosofias humanas e das tradições religiosas vazias?",
+        "Quais lições sobre a nova vida em Cristo e a ética cristã podemos aplicar em nossos relacionamentos e conduta hoje?"
+      ],
+      "summary": "O livro de Colossenses é uma carta de Paulo escrita durante sua primeira prisão em Roma, para a igreja em Colossos, que estava sendo ameaçada por ensinos falsos. Paulo combate essas heresias, enfatizando a supremacia e a suficiência absoluta de Jesus Cristo como o Criador, Sustentador e Senhor de todas as coisas. Ele explica que, por meio da morte de Jesus na cruz, Deus reconciliou consigo todas as coisas, e que em Cristo temos redenção e perdão dos pecados. A carta exorta os crentes a viverem de acordo com sua nova identidade em Cristo, abandonando o pecado e revestindo-se de virtudes como misericórdia, humildade e amor. O livro ensina que Cristo é tudo, e que não precisamos de fórmulas humanas ou acréscimos religiosos para alcançar Deus."
+    },
+    {
+      "title": "1 Tessalonicenses",
+      "reference": "1 Tessalonicenses",
+      "book": "1 Tessalonicenses",
+      "testament": "NT",
+      "author": "Paulo",
+      "period": "Paulo escreveu de Corinto as Epístolas aos Tessalonicenses, durante a sua segunda viagem missionária”, cerca de 50–51 d.C.",
+      "chapters": 5,
+      "genre": "epistola",
+      "historical_context": "Escrita

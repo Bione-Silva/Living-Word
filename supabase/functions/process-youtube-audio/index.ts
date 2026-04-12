@@ -90,19 +90,31 @@ serve(async (req) => {
 
   // 3. User data
   const { data: userData } = await scopedClient
-    .from("users")
-    .select("plan, generation_count_month, doctrine_preference, pastoral_voice, language_preference, full_name")
+    .from("profiles")
+    .select("plan, credits_remaining, doctrine_preference, pastoral_voice, language_preference, full_name")
     .eq("id", user.id)
     .single()
 
   if (!userData) return errorResponse("user_not_found", 404)
 
-  // 4. Rate limits (Youtube costs 3 tokens/generations instead of 1)
-  const COST_GENERATIONS = 3
-  const limit = PLAN_LIMITS[userData.plan] ?? 5
-  if (userData.generation_count_month + COST_GENERATIONS > limit) {
-    return errorResponse("generation_limit_reached", 429, { limit, plan: userData.plan })
+  // 4. Verificar e debitar créditos (25 créditos por vídeo conforme tool_config)
+  const COST_CREDITS = 25
+  const creditResult = await adminClient.rpc("debit_credits", {
+    p_user_id: user.id,
+    p_amount: COST_CREDITS,
+    p_generation_type: "youtube_to_blog",
+    p_description: `Conversão YouTube para Blog: ${youtube_url.substring(0, 50)}...`
+  });
+
+  if (!creditResult.data?.[0]?.success) {
+    return errorResponse("insufficient_credits", 402, {
+      credits_required: COST_CREDITS,
+      credits_remaining: creditResult.data?.[0]?.balance_remaining ?? userData.credits_remaining,
+      plan: userData.plan
+    })
   }
+
+  const currentCredits = creditResult.data[0].balance_remaining;
 
   // 5. Preferências
   const resolvedLanguage = language ?? userData.language_preference ?? "PT"
@@ -181,11 +193,7 @@ serve(async (req) => {
     status: "draft",
   })
 
-  // 10. Computar uso no billing
-  await adminClient.from("users")
-    .update({ generation_count_month: userData.generation_count_month + COST_GENERATIONS })
-    .eq("id", user.id)
-
+  // 10. Log de billing (Transação já foi feita no RPC no início)
   await adminClient.from("generation_logs").insert({
     user_id: user.id,
     material_id: material?.id,
@@ -196,6 +204,7 @@ serve(async (req) => {
     generation_time_ms: generationMs,
     llm_model: modelToUse,
     cost_usd: costUsd,
+    credits_consumed: COST_CREDITS,
   })
 
   return jsonResponse({
@@ -203,7 +212,7 @@ serve(async (req) => {
     editorial_queue_id: material?.id,
     article,
     generation_time_ms: generationMs,
-    generations_remaining: limit - (userData.generation_count_month + COST_GENERATIONS),
+    credits_remaining: currentCredits,
     extracted_transcript_length: transcriptText.length
   })
 })

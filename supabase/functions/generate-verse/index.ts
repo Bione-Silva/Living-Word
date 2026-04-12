@@ -130,14 +130,16 @@ Do NOT repeat common verses like John 3:16 or Psalm 23 frequently. Choose from t
       cost_usd: ((inputTokens * 0.075 + outputTokens * 0.3) / 1_000_000),
     })
 
-    // Increment generations_used
-    await supabase.rpc('is_admin').then(() => {
-      // Just use a simple update
+    // Increment generations_used using atomic RPC
+    const { data: hasCredits, error: creditError } = await supabase.rpc('consume_credits', {
+      p_user_id: user.id,
+      p_credits: 1
     })
-    await supabase
-      .from('profiles')
-      .update({ generations_used: (await supabase.from('profiles').select('generations_used').eq('id', user.id).single()).data?.generations_used + 1 || 1 })
-      .eq('id', user.id)
+
+    if (creditError || !hasCredits) {
+      console.warn('User has no credits left:', user.id)
+      // Could return a 402 Payment Required here
+    }
 
     return new Response(
       JSON.stringify({

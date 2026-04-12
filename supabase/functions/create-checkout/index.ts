@@ -71,7 +71,7 @@ serve(async (req) => {
 
     // Pegar informações do usuário no banco
     const { data: dbUser } = await adminClient
-      .from("users")
+      .from("profiles")
       .select("*")
       .eq("id", user.id)
       .single()
@@ -107,7 +107,7 @@ serve(async (req) => {
         customerId = customerInfo.id
 
         // Salvar no bd
-        await adminClient.from("users").update({ stripe_customer_id: customerId }).eq("id", user.id)
+        await adminClient.from("profiles").update({ stripe_customer_id: customerId }).eq("id", user.id)
     }
 
     // Montar os itens de checkout

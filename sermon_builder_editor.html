@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Living Word — Sermon Builder</title>
+<style>
+:root {
+  --pr:#6B4F3A; --dk:#3D2B1F; --am:#C4956A; --aml:#F0E6D8;
+  --bg:#F5F0E8; --ln:#EDD9C8; --mu:#8B6B54; --wh:#fff;
+  --green:#1E4D2B; --greenl:#E8F2EB; --blue:#1A4FA0; --bluel:#E8EEF8;
+  --red:#991B1B; --redl:#FCE8E8; --purple:#5A1A9A; --purplel:#F0E8FB;
+  --orange:#7A4A10; --orangel:#FDF0E0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--dk);min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--dk);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.logo{font-family:Georgia,serif;font-size:18px;color:#F5F0E8;font-weight:500;white-space:nowrap}
+.logo span{color:var(--am);font-style:italic}
+.sermon-meta{flex:1;min-width:0}
+.sermon-title-input{background:transparent;border:none;outline:none;color:#F5F0E8;font-size:14px;font-weight:500;width:100%}
+.sermon-title-input::placeholder{color:rgba(245,240,232,.35)}
+.sermon-sub{font-size:10px;color:rgba(245,240,232,.35);margin-top:2px}
+.topbar-actions{display:flex;gap:8px;flex-shrink:0}
+.btn-tpl{background:rgba(196,149,106,.15);border:1px solid rgba(196,149,106,.3);color:var(--am);padding:7px 13px;border-radius:8px;font-size:11px;cursor:pointer}
+.btn-tpl:hover{background:rgba(196,149,106,.25)}
+.btn-pulpito{background:var(--am);border:none;color:var(--dk);padding:8px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-pulpito:hover{background:#D4A87A}
+
+/* TABS */
+.tabs{background:var(--wh);border-bottom:.5px solid var(--ln);display:flex;padding:0 20px;gap:2px;overflow-x:auto}
+.tab{padding:10px 15px;border:none;background:none;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:var(--mu);white-space:nowrap;font-family:inherit}
+.tab.active{border-bottom-color:var(--pr);color:var(--pr);font-weight:500}
+
+/* TEMPLATE PANEL */
+.tpl-panel{background:var(--dk);border-bottom:2px solid var(--pr);padding:10px 20px;display:none;flex-wrap:wrap;gap:8px}
+.tpl-panel.open{display:flex}
+.tpl-item{background:rgba(196,149,106,.15);border:1px solid rgba(196,149,106,.25);color:#F5F0E8;padding:6px 14px;border-radius:20px;font-size:11px;cursor:pointer}
+.tpl-item:hover{background:rgba(196,149,106,.3)}
+.tpl-close{margin-left:auto;background:transparent;border:none;color:#555;cursor:pointer;font-size:16px;align-self:center}
+
+/* MAIN AREA */
+.main{max-width:780px;margin:0 auto;padding:16px}
+
+/* PASSAGE + STATS ROW */
+.top-row{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.passage-input{flex:1;min-width:180px;padding:8px 13px;border-radius:9px;border:.5px solid var(--ln);background:var(--wh);font-size:13px;color:var(--dk);outline:none;font-family:inherit}
+.passage-input:focus{border-color:var(--am)}
+.stats-pills{display:flex;gap:6px;flex-shrink:0}
+.stat-pill{font-size:11px;padding:5px 11px;border-radius:20px;background:var(--wh);border:.5px solid var(--ln);color:var(--mu)}
+.stat-pill span{font-weight:500;color:var(--dk)}
+
+/* BLOCKS */
+.blocks-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+
+.block{border-radius:11px;overflow:hidden;cursor:grab;transition:opacity .15s,box-shadow .15s;user-select:none}
+.block:active{cursor:grabbing}
+.block.dragging{opacity:.3}
+.block.dragover{box-shadow:0 0 0 2px var(--am)}
+.block.hidden-podium{opacity:.65}
+
+.block-head{display:flex;align-items:center;gap:8px;padding:7px 11px;cursor:default}
+.drag-handle{color:rgba(0,0,0,.2);font-size:12px;cursor:grab;padding:0 2px}
+.block-icon{font-size:12px;font-weight:700;min-width:16px;text-align:center}
+.block-type-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;flex:1}
+.block-badges{display:flex;gap:4px;align-items:center}
+.bdg{font-size:9px;padding:1px 7px;border-radius:20px;font-weight:600}
+.bdg-slide{background:var(--bluel);color:var(--blue)}
+.bdg-hidden{background:#FFFFF0;color:#888800;border:.5px solid #CCCC99}
+.block-actions{display:flex;gap:1px}
+.bact{width:24px;height:24px;border:none;background:transparent;cursor:pointer;border-radius:5px;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--mu)}
+.bact:hover{background:rgba(0,0,0,.07)}
+.bact:disabled{opacity:.2;cursor:default}
+.bact.active{color:var(--blue);background:var(--bluel)}
+.bact.active-slide{color:var(--blue)}
+.bact.active-hide{color:#888800}
+.bact.danger{color:var(--red)}
+.bact.danger:hover{background:var(--redl)}
+
+.block-body{padding:8px 12px 10px}
+.block-textarea{width:100%;border:none;background:transparent;outline:none;resize:none;font-family:inherit;line-height:1.6;color:inherit;font-size:13px}
+
+/* ADD BLOCK */
+.add-wrap{position:relative;margin-top:2px}
+.add-btn{width:100%;padding:10px;border-radius:10px;border:1.5px dashed var(--am);background:#FFF8F0;color:var(--pr);font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.add-btn:hover{background:var(--aml)}
+.type-menu{position:absolute;bottom:110%;left:0;right:0;z-index:50;background:var(--wh);border:.5px solid var(--ln);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:12px;display:none;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.type-menu.open{display:grid}
+.type-btn{padding:7px 9px;border-radius:8px;border:.5px solid transparent;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;text-align:left;font-family:inherit;transition:opacity .1s}
+.type-btn:hover{opacity:.75}
+
+/* OUTLINE TAB */
+.outline-list{display:flex;flex-direction:column;gap:5px}
+.ol-item{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border-radius:9px;background:var(--wh);border:.5px solid var(--ln)}
+.ol-num{font-size:11px;color:var(--mu);min-width:22px;text-align:right;padding-top:1px}
+.ol-type{font-size:11px;font-weight:600;min-width:90px}
+.ol-text{font-size:12px;color:var(--dk);flex:1;line-height:1.4}
+.ol-badges{display:flex;gap:4px;flex-shrink:0}
+
+/* STATS TAB */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:var(--wh);border:.5px solid var(--ln);border-radius:10px;padding:14px;text-align:center}
+.stat-val{font-size:26px;font-weight:500;color:var(--pr);font-family:Georgia,serif}
+.stat-lbl{font-size:11px;color:var(--mu);margin-top:3px}
+.stat-sub{font-size:10px;color:var(--mu);opacity:.6;margin-top:1px}
+.dist-wrap{background:var(--wh);border:.5px solid var(--ln);border-radius:10px;padding:14px}
+.dist-title{font-size:11px;font-weight:500;color:var(--dk);margin-bottom:10px}
+.dist-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.dist-label{font-size:11px;color:var(--dk);min-width:120px}
+.dist-bar-bg{flex:1;height:7px;background:var(--aml);border-radius:4px;overflow:hidden}
+.dist-bar{height:100%;border-radius:4px;transition:width .3s}
+.dist-count{font-size:11px;color:var(--mu);min-width:16px;text-align:right}
+
+/* HIDDEN */
+.tab-content{display:none}
+.tab-content.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">Living <span>Word</span></div>
+  <div class="sermon-meta">
+    <input class="sermon-title-input" id="sermonTitle" value="João 15:1-8 — A Videira Verdadeira" placeholder="Título do sermão...">
+    <div class="sermon-sub" id="topMeta">João 15:1-8 · 0 palavras · ~0 min · 0 blocos no púlpito</div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-tpl" onclick="toggleTpl()">&#9638; Templates</button>
+    <button class="btn-pulpito" onclick="openPodium()">&#127908; Modo Púlpito</button>
+  </div>
+</div>
+
+<!-- TEMPLATE PANEL -->
+<div class="tpl-panel" id="tplPanel">
+  <button class="tpl-item" onclick="loadTpl('expositivo')">Expositivo 3 Pontos</button>
+  <button class="tpl-item" onclick="loadTpl('narrativo')">Narrativo</button>
+  <button class="tpl-item" onclick="loadTpl('celula')">Célula / Devocional</button>
+  <button class="tpl-item" onclick="loadTpl('evangelistico')">Evangelístico</button>
+  <button class="tpl-close" onclick="toggleTpl()">✕</button>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('editor',this)">&#9998; Editor</button>
+  <button class="tab" onclick="switchTab('outline',this)">&#9776; Outline</button>
+  <button class="tab" onclick="switchTab('stats',this)">&#9656; Stats</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- EDITOR TAB -->
+  <div class="tab-content active" id="tab-editor">
+    <div class="top-row">
+      <input class="passage-input" id="passageInput" value="João 15:1-8" placeholder="Passagem bíblica...">
+      <div class="stats-pills">
+        <div class="stat-pill">&#128196; <span id="pillWords">0</span> palavras</div>
+        <div class="stat-pill">&#9200; ~<span id="pillMin">0</span> min</div>
+        <div class="stat-pill">&#9679; <span id="pillVisible">0</span> no púlpito</div>
+      </div>
+    </div>
+
+    <div class="blocks-list" id="blocksList"></div>
+
+    <div class="add-wrap">
+      <button class="add-btn" onclick="toggleTypeMenu()">
+        <span style="font-size:18px;line-height:1">+</span> Adicionar Bloco
+      </button>
+      <div class="type-menu" id="typeMenu"></div>
+    </div>
+  </div>
+
+  <!-- OUTLINE TAB -->
+  <div class="tab-content" id="tab-outline">
+    <div style="font-size:11px;color:var(--mu);margin-bottom:10px;display:flex;gap:16px">
+      <span>&#10003; <span id="olVisible">0</span> visíveis no púlpito</span>
+      <span>&#9728; <span id="olHidden">0</span> ocultos</span>
+      <span>&#9658; <span id="olSlide">0</span> marcados para slide</span>
+    </div>
+    <div class="outline-list" id="outlineList"></div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div class="tab-content" id="tab-stats">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="stWords">0</div><div class="stat-lbl">Palavras</div><div class="stat-sub">no sermão</div></div>
+      <div class="stat-card"><div class="stat-val" id="stMin">~0 min</div><div class="stat-lbl">Tempo estimado</div><div class="stat-sub">130 palavras/min</div></div>
+      <div class="stat-card"><div class="stat-val" id="stTotal">0</div><div class="stat-lbl">Total de blocos</div><div class="stat-sub">no editor</div></div>
+      <div class="stat-card"><div class="stat-val" id="stPodium">0</div><div class="stat-lbl">Blocos no púlpito</div><div class="stat-sub">visíveis</div></div>
+    </div>
+    <div class="dist-wrap">
+      <div class="dist-title">Distribuição por tipo</div>
+      <div id="distChart"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TYPES = {
+  title:        {label:'Título',         icon:'T',  color:'#3D2B1F',bg:'#EDD9C8',border:'#6B4F3A',podiumDefault:true, serif:true,  bold:true,  size:'18px'},
+  big_idea:     {label:'Grande Ideia',   icon:'✦',  color:'#1E4D2B',bg:'#E8F2EB',border:'#2E642E',podiumDefault:true, bold:true,  size:'16px'},
+  verse:        {label:'Versículo',      icon:'†',  color:'#1A4FA0',bg:'#E8EEF8',border:'#1A4FA0',podiumDefault:true, serif:true, italic:true,size:'13px'},
+  point:        {label:'Ponto Principal',icon:'→',  color:'#6B4F3A',bg:'#F0E6D8',border:'#C4956A',podiumDefault:true, bold:true,  size:'15px'},
+  subpoint:     {label:'Subponto',       icon:'·',  color:'#8B6B54',bg:'#FDF8F2',border:'#C4956A',podiumDefault:true, size:'13px'},
+  illustration: {label:'Ilustração',     icon:'◎',  color:'#7A4A10',bg:'#FDF0E0',border:'#C4956A',podiumDefault:true, size:'13px'},
+  application:  {label:'Aplicação',      icon:'★',  color:'#1E4D2B',bg:'#E8F2EB',border:'#2E642E',podiumDefault:true, size:'13px'},
+  quote:        {label:'Citação',        icon:'"',  color:'#5A1A9A',bg:'#F0E8FB',border:'#7A4A9A',podiumDefault:true, serif:true, italic:true,size:'13px'},
+  transition:   {label:'Transição',      icon:'⤷',  color:'#8B6B54',bg:'#F5F0E8',border:'#C4956A',podiumDefault:false,size:'12px'},
+  prayer:       {label:'Oração',         icon:'✝',  color:'#1A4FA0',bg:'#EEF3F8',border:'#1A4FA0',podiumDefault:true, italic:true,size:'13px'},
+  conclusion:   {label:'Conclusão',      icon:'◉',  color:'#3D2B1F',bg:'#EDD9C8',border:'#6B4F3A',podiumDefault:true, bold:true,  size:'14px'},
+  call:         {label:'Chamada Final',  icon:'!',  color:'#991B1B',bg:'#FCE8E8',border:'#991B1B',podiumDefault:true, bold:true,  size:'15px'},
+  note:         {label:'Nota Pessoal',   icon:'✎',  color:'#888800',bg:'#FFFFF0',border:'#CCCC88',podiumDefault:false,size:'12px'},
+};
+
+const DEFAULTS = {
+  title:'Título do Sermão',
+  big_idea:'A Grande Ideia Central da Mensagem',
+  verse:'João 15:5 — "Eu sou a videira, vós as varas; quem permanece em mim e eu nele, esse dá muito fruto; porque sem mim nada podeis fazer."',
+  point:'Primeiro Ponto Principal',
+  subpoint:'Detalhe de apoio ao ponto principal',
+  illustration:'Ilustração ou história que conecta o ponto à vida real do ouvinte...',
+  application:'Como isso se aplica à sua vida prática esta semana?',
+  quote:'"Citação de pregador ou teólogo relevante."',
+  transition:'[Transição para o próximo ponto]',
+  prayer:'Oração de intercessão ou encerramento...',
+  conclusion:'Recapitulação da Grande Ideia e chamada à reflexão',
+  call:'Convite à decisão — o que você vai fazer hoje com o que ouviu?',
+  note:'[Nota pessoal — não aparece no Modo Púlpito]',
+};
+
+const TEMPLATES = {
+  expositivo:   ['title','verse','big_idea','point','illustration','application','point','illustration','application','point','illustration','application','conclusion','call'],
+  narrativo:    ['title','verse','big_idea','illustration','point','application','illustration','point','application','conclusion','call'],
+  celula:       ['title','verse','big_idea','point','application','quote','prayer'],
+  evangelistico:['title','big_idea','illustration','verse','point','application','call'],
+};
+
+let blocks = [];
+let dragSrc = null;
+let idN = 0;
+
+function genId(){ return 'b'+(++idN); }
+
+function makeBlock(type){
+  return {id:genId(),type,text:DEFAULTS[type]||'',hideInPodium:!TYPES[type].podiumDefault,markForSlide:(type==='point'||type==='big_idea')};
+}
+
+function loadTpl(name){
+  blocks = (TEMPLATES[name]||TEMPLATES.expositivo).map(makeBlock);
+  renderBlocks(); toggleTpl();
+}
+
+function init(){
+  buildTypeMenu();
+  loadTpl('expositivo');
+}
+
+function buildTypeMenu(){
+  const m = document.getElementById('typeMenu');
+  Object.entries(TYPES).forEach(([k,t])=>{
+    const btn = document.createElement('button');
+    btn.className='type-btn';
+    btn.style.cssText=`background:${t.bg};color:${t.color};border-color:${t.border}44`;
+    btn.innerHTML=`<span style="font-size:12px">${t.icon}</span>${t.label}`;
+    btn.onclick=()=>{ blocks.push(makeBlock(k)); renderBlocks(); toggleTypeMenu(); };
+    m.appendChild(btn);
+  });
+}
+
+function toggleTypeMenu(){
+  document.getElementById('typeMenu').classList.toggle('open');
+}
+
+function toggleTpl(){
+  document.getElementById('tplPanel').classList.toggle('open');
+}
+
+function renderBlocks(){
+  const list = document.getElementById('blocksList');
+  list.innerHTML='';
+  blocks.forEach((b,i)=>{
+    const t = TYPES[b.type];
+    const div = document.createElement('div');
+    div.className='block'+(b.hideInPodium?' hidden-podium':'');
+    div.dataset.id=b.id;
+    div.draggable=true;
+    div.style.cssText=`border:1.5px solid ${b.hideInPodium?'#ddd':t.border};background:${b.hideInPodium?'#fafafa':t.bg}`;
+
+    const badges = (b.markForSlide?`<span class="bdg bdg-slide">&#9658; Slide</span>`:'')
+                 + (b.hideInPodium?`<span class="bdg bdg-hidden">&#9728; Oculto</span>`:'');
+
+    div.innerHTML=`
+      <div class="block-head" style="border-bottom:1px solid ${t.border}22">
+        <span class="drag-handle">&#8942;&#8942;</span>
+        <span class="block-icon" style="color:${t.color}">${t.icon}</span>
+        <span class="block-type-label" style="color:${t.color}">${t.label}</span>
+        <div class="block-badges">${badges}</div>
+        <div class="block-actions">
+          <button class="bact${b.hideInPodium?' active-hide':''}" title="${b.hideInPodium?'Mostrar no Púlpito':'Ocultar no Púlpito'}" onclick="toggleHide('${b.id}')">&#9728;</button>
+          <button class="bact${b.markForSlide?' active-slide':''}" title="${b.markForSlide?'Remover do Slide':'Marcar para Slide'}" onclick="toggleSlide('${b.id}')">&#9658;</button>
+          <button class="bact" title="Mover acima" onclick="moveBlock('${b.id}',-1)" ${i===0?'disabled':''}>&#8593;</button>
+          <button class="bact" title="Mover abaixo" onclick="moveBlock('${b.id}',1)" ${i===blocks.length-1?'disabled':''}>&#8595;</button>
+          <button class="bact danger" title="Excluir" onclick="deleteBlock('${b.id}')">&#10005;</button>
+        </div>
+      </div>
+      <div class="block-body">
+        <textarea class="block-textarea" rows="${getRows(b.type)}"
+          style="color:${b.hideInPodium?'#aaa':t.color};font-family:${t.serif?'Georgia,serif':'inherit'};font-style:${t.italic?'italic':'normal'};font-weight:${t.bold?'600':'400'};font-size:${t.size||'13px'}"
+          oninput="updateText('${b.id}',this.value)">${b.text}</textarea>
+      </div>`;
+
+    div.addEventListener('dragstart',()=>{dragSrc=b.id;div.classList.add('dragging')});
+    div.addEventListener('dragend',()=>{dragSrc=null;document.querySelectorAll('.block').forEach(x=>x.classList.remove('dragging','dragover'))});
+    div.addEventListener('dragover',e=>{e.preventDefault();div.classList.add('dragover')});
+    div.addEventListener('dragleave',()=>div.classList.remove('dragover'));
+    div.addEventListener('drop',e=>{e.preventDefault();div.classList.remove('dragover');doDrop(b.id)});
+
+    list.appendChild(div);
+  });
+  updateStats();
+}
+
+function getRows(type){
+  if(type==='title'||type==='big_idea') return 2;
+  if(type==='illustration'||type==='verse') return 3;
+  return 2;
+}
+
+function updateText(id,val){ const b=blocks.find(x=>x.id===id);if(b)b.text=val;updateStats(); }
+function deleteBlock(id){ blocks=blocks.filter(x=>x.id!==id);renderBlocks(); }
+function toggleHide(id){ const b=blocks.find(x=>x.id===id);if(b)b.hideInPodium=!b.hideInPodium;renderBlocks(); }
+function toggleSlide(id){ const b=blocks.find(x=>x.id===id);if(b)b.markForSlide=!b.markForSlide;renderBlocks(); }
+
+function moveBlock(id,dir){
+  const i=blocks.findIndex(x=>x.id===id);
+  const ni=i+dir;
+  if(ni<0||ni>=blocks.length)return;
+  [blocks[i],blocks[ni]]=[blocks[ni],blocks[i]];
+  renderBlocks();
+}
+
+function doDrop(toId){
+  if(!dragSrc||dragSrc===toId)return;
+  const fi=blocks.findIndex(x=>x.id===dragSrc);
+  const ti=blocks.findIndex(x=>x.id===toId);
+  const [item]=blocks.splice(fi,1);
+  blocks.splice(ti,0,item);
+  renderBlocks();
+}
+
+function wordCount(){ return blocks.reduce((s,b)=>s+b.text.trim().split(/\s+/).filter(Boolean).length,0); }
+
+function updateStats(){
+  const wc=wordCount();
+  const mins=Math.round(wc/130);
+  const visible=blocks.filter(b=>!b.hideInPodium).length;
+  const passage=document.getElementById('passageInput').value;
+  const title=document.getElementById('sermonTitle').value;
+
+  document.getElementById('topMeta').textContent=`${passage} · ${wc.toLocaleString()} palavras · ~${mins} min · ${visible} blocos no púlpito`;
+  document.getElementById('pillWords').textContent=wc.toLocaleString();
+  document.getElementById('pillMin').textContent=mins;
+  document.getElementById('pillVisible').textContent=visible;
+  document.getElementById('stWords').textContent=wc.toLocaleString();
+  document.getElementById('stMin').textContent=`~${mins} min`;
+  document.getElementById('stTotal').textContent=blocks.length;
+  document.getElementById('stPodium').textContent=visible;
+  document.getElementById('olVisible').textContent=visible;
+  document.getElementById('olHidden').textContent=blocks.filter(b=>b.hideInPodium).length;
+  document.getElementById('olSlide').textContent=blocks.filter(b=>b.markForSlide).length;
+  renderOutline();
+  renderDist(wc);
+}
+
+function renderOutline(){
+  const ol=document.getElementById('outlineList');
+  ol.innerHTML='';
+  blocks.forEach((b,i)=>{
+    const t=TYPES[b.type];
+    const div=document.createElement('div');
+    div.className='ol-item';
+    div.style.opacity=b.hideInPodium?'.55':'1';
+    div.innerHTML=`
+      <span class="ol-num">${i+1}</span>
+      <span class="ol-type" style="color:${t.color}">${t.icon} ${t.label}</span>
+      <span class="ol-text">${b.text.substring(0,90)+(b.text.length>90?'…':'')}</span>
+      <div class="ol-badges">
+        ${b.hideInPodium?'<span class="bdg bdg-hidden">oculto</span>':''}
+        ${b.markForSlide?'<span class="bdg bdg-slide">slide</span>':''}
+      </div>`;
+    ol.appendChild(div);
+  });
+}
+
+function renderDist(wc){
+  const chart=document.getElementById('distChart');
+  chart.innerHTML='';
+  const counts={};
+  blocks.forEach(b=>{ counts[b.type]=(counts[b.type]||0)+1; });
+  Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([k,n])=>{
+    const t=TYPES[k];
+    const pct=blocks.length?Math.round((n/blocks.length)*100):0;
+    const row=document.createElement('div');
+    row.className='dist-row';
+    row.innerHTML=`
+      <span class="dist-label" style="color:${t.color}">${t.icon} ${t.label}</span>
+      <div class="dist-bar-bg"><div class="dist-bar" style="width:${pct}%;background:${t.border}"></div></div>
+      <span class="dist-count">${n}</span>`;
+    chart.appendChild(row);
+  });
+}
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name!=='editor')updateStats();
+}
+
+function openPodium(){
+  localStorage.setItem('lw_blocks',JSON.stringify(blocks));
+  window.open('sermon_podium.html','_blank','width=1200,height=800');
+}
+
+document.getElementById('sermonTitle').oninput=updateStats;
+document.getElementById('passageInput').oninput=updateStats;
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.add-wrap'))document.getElementById('typeMenu').classList.remove('open');
+});
+
+init();
+</script>
+</body>
+</html>

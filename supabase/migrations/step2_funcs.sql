@@ -1,0 +1,2 @@
+-- =====================================================
+-- 2. FUNCTIONS (must exist before triggers/policies)

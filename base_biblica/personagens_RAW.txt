@@ -1,0 +1,97 @@
+[
+  {
+    "category": "personagens",
+    "source": "200 Personagens Bíblicos",
+    "total": 200,
+    "items": [
+      {
+        "title": "Abdom",
+        "reference": "Juízes",
+        "book": "Juízes",
+        "testament": "AT",
+        "period": "Juízes",
+        "historical_context": "Abdom foi um dos juízes de Israel durante um período turbulento, descendente de Efraim. Sua liderança é destacada por sua vitória sobre os amalequitas, alcançada com a ajuda de Deus. Ele serviu como líder militar e espiritual.",
+        "theological_message": "A história de Abdom ensina a importância da liderança piedosa e da confiança em Deus, mesmo em tempos de dificuldade. Ele foi um exemplo de fé e coragem, buscando orientação divina e governando com justiça e retidão.",
+        "practical_application": "Devemos buscar ser líderes justos e sábios, confiando em Deus para manter a paz e a estabilidade em nossas comunidades. É importante discernir a verdade em situações difíceis e proteger o que é certo com coragem e determinação.",
+        "reflection_questions": [
+          "Como a história de Abdom nos inspira a confiar em Deus em momentos de dificuldade?",
+          "De que forma podemos aplicar a sabedoria e o discernimento de Abdom em nossas próprias vidas?",
+          "Qual a importância de uma liderança justa e corajosa em nossa comunidade hoje?"
+        ],
+        "summary": "Abdom foi um dos juízes de Israel, atuando em um período de opressão, e descendente de Efraim. Ele liderou com justiça e sabedoria, alcançando uma vitória sobre os amalequitas com a ajuda divina. Sua vida destaca a importância da liderança piedosa, da confiança em Deus e da coragem em meio à adversidade. Abdom é um lembrete de que Deus capacita e fortalece aqueles que o buscam sinceramente, capacitando-os a enfrentar desafios com fé."
+      },
+      {
+        "title": "Abigail",
+        "reference": "Primeiro Livro de Samuel",
+        "book": "Samuel",
+        "testament": "AT",
+        "period": "Reino Unido",
+        "historical_context": "Abigail era esposa de Nabal, um homem rico e insensato. Ela se destacou por sua inteligência, coragem e piedade, em contraste com a tolice de seu marido. Sua intervenção evitou que Davi retaliasse contra Nabal e sua família.",
+        "theological_message": "A história de Abigail destaca a sabedoria e compaixão em situações difíceis, reconhecendo a soberania de Deus. Ela agiu com humildade e respeito, confiando que Deus resolveria a situação de forma justa e evitaria uma tragédia.",
+        "practical_application": "Devemos buscar sabedoria e discernimento para evitar conflitos e agir com coragem e humildade em nossas interações. É importante ser generoso, bondoso e respeitar a autoridade, confiando em Deus para resolver situações complexas e proteger nossa família.",
+        "reflection_questions": [
+          "Como a sabedoria de Abigail pode nos guiar em situações de conflito hoje?",
+          "De que forma a coragem e humildade de Abigail se manifestaram em sua história?",
+          "Qual o papel da confiança em Deus na intervenção de Abigail para evitar uma tragédia?"
+        ],
+        "summary": "Abigail, esposa de Nabal, foi uma mulher de notável inteligência, coragem e piedade. Sua intervenção sábia e generosa impediu que Davi, irado pela recusa de Nabal em ajudar suas tropas, retaliasse contra a família. Após a morte de Nabal, Davi, impressionado, a tomou como esposa. A história de Abigail ensina sobre sabedoria, discernimento, coragem, humildade e confiança em Deus, mostrando como suas ações evitaram uma tragédia e abriram um novo caminho em sua vida."
+      },
+      {
+        "title": "Abner",
+        "reference": "Segundo Livro de Samuel",
+        "book": "Samuel",
+        "testament": "AT",
+        "period": "Reino Unido",
+        "historical_context": "Abner foi um general poderoso do rei Saul e seu primo. Após a morte de Saul, ele apoiou Isbosete, filho de Saul, como rei de Israel, e liderou seu exército contra Davi. Mais tarde, ele mudou de lado para apoiar Davi.",
+        "theological_message": "A história de Abner é um exemplo das consequências das escolhas erradas, da lealdade e da influência do poder. Seu arrependimento tardio e morte trágica ilustram como a traição e a violência podem destruir relações e causar dor e sofrimento.",
+        "practical_application": "Devemos ser leais e corajosos, mas também conscientes das consequências de nossas escolhas e ações. É importante buscar a reconciliação e evitar a violência, reconhecendo o impacto do poder e da influência em nossas vidas e nas relações com os outros.",
+        "reflection_questions": [
+          "Como a lealdade de Abner ao rei Saul e depois a Isbosete se manifestou?",
+          "Quais foram as consequências das escolhas erradas de Abner, como o assassinato de Asael?",
+          "O que a história de Abner nos ensina sobre o arrependimento tardio e a busca pela paz?"
+        ],
+        "summary": "Abner foi um general leal a Saul e, após sua morte, a Isbosete, lutando contra Davi. Reconhecendo Davi como o líder escolhido, ele decidiu apoiá-lo. No entanto, foi secretamente assassinado por Joabe, comandante de Davi, devido a erros passados. Sua história ensina sobre lealdade, coragem militar, as graves consequências de escolhas erradas e o arrependimento tardio, destacando como a violência pode destruir relações e causar dor e sofrimento."
+      },
+      {
+        "title": "Abraão",
+        "reference": "Gênesis 11:31",
+        "book": "Gênesis",
+        "testament": "AT",
+        "period": "Patriarcal",
+        "historical_context": "Abraão, originalmente Abrão, foi o pai do povo hebreu, chamado por Deus para deixar Ur dos Caldeus e ir para uma terra prometida. Ele viveu em um período de cidades pagãs e adoração a deuses da lua, e sua história é fundamental para o início da fé monoteísta.",
+        "theological_message": "Abraão é o pai da fé, cuja vida demonstra confiança plena em Deus e em Suas promessas, mesmo diante de desafios como a esterilidade de Sara e o pedido de sacrifício de Isaque. Sua história revela a soberania de Deus e a importância de uma relação fiel com Ele.",
+        "practical_application": "Devemos confiar nas promessas de Deus, mesmo quando as circunstâncias parecem impossíveis, e estar dispostos a obedecer a Ele. A história de Abraão nos inspira a manter uma fé inabalável e a valorizar a família, buscando a paz e a justiça em nossas interações.",
+        "reflection_questions": [
+          "Como a fé de Abraão foi testada e o que podemos aprender com sua resposta?",
+          "De que forma a história de Abraão nos ensina sobre a importância da obediência a Deus?",
+          "Quais são as principais promessas que Deus fez a Abraão e como elas se cumpriram?"
+        ],
+        "summary": "Abraão, inicialmente Abrão, é uma figura central do Antigo Testamento, conhecido como o pai do povo hebreu e da fé. Chamado por Deus para deixar sua terra e ir para Canaã, ele demonstrou fé e obediência, mesmo em face de desafios como a esterilidade de Sara e o pedido de sacrificar Isaque. Sua vida, marcada por encontros pessoais com Deus e a promessa de uma grande descendência, culminou no nascimento de Isaque e na formação de uma grande nação, tornando-o um exemplo de confiança e fidelidade divina."
+      },
+      {
+        "title": "Absalão",
+        "reference": "Segundo Livro de Samuel",
+        "book": "Samuel",
+        "testament": "AT",
+        "period": "Reino Unido",
+        "historical_context": "Absalão era filho do Rei Davi, conhecido por sua beleza e carisma. Ele liderou uma rebelião contra seu pai, buscando tomar o trono de Israel. Sua história é marcada por conflitos familiares e lutas pelo poder.",
+        "theological_message": "A vida de Absalão ilustra as consequências devastadoras da ambição desmedida, da falta de respeito e honra, e da traição. Sua morte trágica e o lamento de Davi mostram a dor e o sofrimento que o pecado pode causar, mesmo em relações familiares.",
+        "practical_application": "Devemos controlar a ambição, respeitar a autoridade e honrar os pais e a família. É crucial reconhecer as consequências do pecado e buscar o perdão e a misericórdia, evitando ações que levem à instabilidade e à violência em nossas vidas.",
+        "reflection_questions": [
+          "Como a ambição desmedida de Absalão o levou à sua queda?",
+          "De que forma a falta de respeito de Absalão por seu pai, Davi, impactou sua vida e seu reino?",
+          "O que a história de Absalão nos ensina sobre as consequências do pecado e a importância do perdão?"
+        ],
+        "summary": "Absalão, filho do Rei Davi, era um jovem carismático e bonito que, movido pela ambição, liderou uma rebelião contra seu próprio pai para usurpar o trono. Suas táticas manipuladoras e a falta de respeito resultaram em grande instabilidade política e na morte de muitas pessoas. A rebelião fracassou, e Absalão foi morto por Joabe. Sua trágica história serve como um poderoso exemplo das consequências da ambição desmedida, da traição e da violência, e da importância do perdão e da misericórdia."
+      },
+      {
+        "title": "Acã",
+        "reference": "Josué 7:1",
+        "book": "Josué",
+        "testament": "AT",
+        "period": "Êxodo",
+        "historical_context": "Acã foi um israelita da tribo de Judá que viveu durante a conquista da Terra Prometida sob a liderança de Josué. Ele desobedeceu à ordem de Deus de não tomar nada das coisas condenadas de Jericó, escondendo prata, ouro e uma capa babilônica.",
+        "theological_message": "O pecado de Acã, motivado pela cobiça e desobediência, trouxe consequências terríveis não apenas para ele e sua família, mas para todo o povo de Israel, resultando em derrota militar. Sua história revela a santidade de Deus e as consequências do julgamento divino quando a graça é rejeitada.",
+        "practical_application": "Devemos evitar a cobiça e a desobediência, reconhecendo que nossas ações têm impacto sobre a comunidade. É fundamental ser honesto e transparente, pois o pecado oculto pode trazer maldição e julgamento, enquanto a graça de Deus se manifesta naqueles que a aceitam.",
+        "reflection_questions": [
+          "Como a desobediência de

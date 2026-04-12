@@ -84,7 +84,7 @@ serve(async (req: Request) => {
 
     // 3. Buscar handle do usuário (já definido no cadastro)
     const { data: userProfile } = await adminClient
-      .from("users")
+      .from("profiles")
       .select("handle, blog_url")
       .eq("id", user_id)
       .single();
@@ -97,7 +97,7 @@ serve(async (req: Request) => {
 
       // Verificar unicidade
       const { data: existing } = await adminClient
-        .from("users")
+        .from("profiles")
         .select("handle")
         .eq("handle", handle)
         .single();
@@ -107,7 +107,7 @@ serve(async (req: Request) => {
       }
 
       // Salvar handle e blog_url
-      await adminClient.from("users").update({
+      await adminClient.from("profiles").update({
         handle,
         blog_url: `https://${handle}.livingword.app`,
       }).eq("id", user_id);

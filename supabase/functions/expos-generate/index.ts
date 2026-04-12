@@ -226,18 +226,15 @@ Deno.serve(async (req) => {
       cost_usd: ((usage.total_tokens || 0) / 1_000_000) * 0.15,
     });
 
-    // Update generations_used
-    await supabaseAdmin.rpc("", {}).catch(() => {});
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("generations_used")
-      .eq("id", user.id)
-      .single();
-    if (profile) {
-      await supabaseAdmin
-        .from("profiles")
-        .update({ generations_used: (profile.generations_used || 0) + 1 })
-        .eq("id", user.id);
+    // Update generations_used using atomic RPC
+    const { data: hasCredits, error: creditError } = await supabaseAdmin.rpc('consume_credits', {
+      p_user_id: user.id,
+      p_credits: 1
+    });
+
+    if (creditError || !hasCredits) {
+      console.warn('User has no credits left:', user.id);
+      // Could potentially throw or return 402, but proceeding for now
     }
 
     return new Response(
