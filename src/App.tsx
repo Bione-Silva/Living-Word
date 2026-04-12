@@ -47,7 +47,7 @@ import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
 const queryClient = new QueryClient();
 
-const MASTER_EMAIL = 'bionicaosilva@gmail.com';
+const MASTER_EMAIL = 'bx4usa@gmail.com';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
