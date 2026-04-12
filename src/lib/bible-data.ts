@@ -192,11 +192,15 @@ export function versionToApiCode(version: string): string | null {
   const map: Record<string, string> = {
     'ARA': 'almeida',
     'ARC': 'almeida',
+    'ACF': 'acf',
     'KJV': 'kjv',
     'WEB': 'web',
     'ASV': 'asv',
     'BBE': 'bbe',
     'OEB': 'oeb',
+    'RVR': 'rvr',
+    'RVR60': 'rvr',
+    'NVI': 'almeida',
   };
   return map[upper] || null;
 }
