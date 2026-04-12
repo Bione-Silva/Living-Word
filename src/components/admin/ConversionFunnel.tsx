@@ -19,7 +19,7 @@ export function ConversionFunnel() {
   const loadFunnel = async () => {
     try {
       // Landing page views
-      const { count: landingViews } = await supabase
+      const { count: landingViews } = await (supabase as any)
         .from('page_views')
         .select('*', { count: 'exact', head: true })
         .eq('path', '/');
