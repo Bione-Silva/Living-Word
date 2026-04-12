@@ -166,10 +166,10 @@ export function BibleReadingView({
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('bible_favorites').select('verse_number')
+    (supabase as any).from('bible_favorites').select('verse_number')
       .eq('user_id', user.id).eq('book_id', bookId).eq('chapter_number', chapter)
       .then(({ data }) => { if (data) setFavoritedVerses(new Set(data.map(d => d.verse_number))); });
-    supabase.from('bible_highlights').select('start_verse_number, color_key')
+    (supabase as any).from('bible_highlights').select('start_verse_number, color_key')
       .eq('user_id', user.id).eq('book_id', bookId).eq('chapter_number', chapter)
       .then(({ data }) => {
         if (data) {
@@ -189,7 +189,7 @@ export function BibleReadingView({
 
       // Toggle: same color = remove
       if (highlights[vn] === color) {
-        await supabase.from('bible_highlights').delete()
+        await (supabase as any).from('bible_highlights').delete()
           .eq('user_id', user.id).eq('book_id', bookId)
           .eq('chapter_number', chapter).eq('start_verse_number', vn);
         setHighlights(p => {
@@ -200,10 +200,10 @@ export function BibleReadingView({
         continue;
       }
 
-      await supabase.from('bible_highlights').delete()
+      await (supabase as any).from('bible_highlights').delete()
         .eq('user_id', user.id).eq('book_id', bookId)
         .eq('chapter_number', chapter).eq('start_verse_number', vn);
-      await supabase.from('bible_highlights').insert({
+      await (supabase as any).from('bible_highlights').insert({
         user_id: user.id, book_id: bookId, chapter_number: chapter,
         start_verse_number: vn, end_verse_number: vn,
         selected_text: v.text.trim(), color_key: color,
