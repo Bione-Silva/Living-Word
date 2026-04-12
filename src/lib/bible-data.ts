@@ -77,7 +77,8 @@ export function getBookName(id: string, lang: L): string {
  */
 export function getApiBookName(id: string, versionCode: string): string {
   const apiCode = getApiCodeForVersion(versionCode);
-  if (apiCode === 'almeida') return ptNames[id] || id;
+  if (apiCode === 'almeida' || apiCode === 'acf') return ptNames[id] || id;
+  if (apiCode === 'rvr') return esNames[id] || id;
   return id;
 }
 
