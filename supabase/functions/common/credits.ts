@@ -192,14 +192,3 @@ export function estimateApiCostUsd(model: string, inputTokens: number, outputTok
   const c = costs[model] ?? costs["gpt-4o-mini"]
   return (inputTokens * c.input) + (outputTokens * c.output)
 }
-
-
-export function estimateApiCostUsd(model: string, inputTokens: number, outputTokens: number): number {
-  const costs: Record<string, { input: number; output: number }> = {
-    "gemini-2.5-flash": { input: 0.000000075, output: 0.0000003 },
-    "gpt-4o-mini": { input: 0.00000015, output: 0.0000006 },
-    "gpt-4o": { input: 0.0000025, output: 0.00001 },
-  }
-  const c = costs[model] ?? costs["gpt-4o-mini"]
-  return (inputTokens * c.input) + (outputTokens * c.output)
-}
