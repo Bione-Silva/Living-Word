@@ -17,12 +17,19 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const today = new Date().toISOString().split('T')[0]
+    // Support date override from request body
+    let targetDate: string
+    try {
+      const body = await req.json()
+      targetDate = body?.date || new Date().toISOString().split('T')[0]
+    } catch {
+      targetDate = new Date().toISOString().split('T')[0]
+    }
 
     const { data: devotional, error } = await supabase
       .from('devotionals')
       .select('*')
-      .eq('scheduled_date', today)
+      .eq('scheduled_date', targetDate)
       .eq('is_published', true)
       .single()
 
@@ -46,20 +53,20 @@ serve(async (req) => {
         )
       }
 
-      return new Response(JSON.stringify({ devotional: latest, isFallback: true }), {
+      return new Response(JSON.stringify(latest), {
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=3600', // cache 1h para fallback
+          'Cache-Control': 'public, max-age=3600',
         },
       })
     }
 
-    return new Response(JSON.stringify({ devotional, isFallback: false }), {
+    return new Response(JSON.stringify(devotional), {
       headers: {
         ...corsHeaders,
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate', // Garantir que áudio novo apareça sem delay de cache
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     })
   } catch (err) {
