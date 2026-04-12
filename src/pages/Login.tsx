@@ -98,11 +98,25 @@ export default function Login() {
           {import.meta.env.DEV && (
             <button
               type="button"
-              onClick={() => {
-                setEmail('bx4usa@gmail.com');
-                setForgotMode(false);
-                toast.info('Email master preenchido — digite a senha e clique Entrar.');
+              onClick={async () => {
+                const devPass = import.meta.env.VITE_DEV_MASTER_PASSWORD;
+                if (!devPass) {
+                  setEmail('bx4usa@gmail.com');
+                  setForgotMode(false);
+                  toast.error('Defina VITE_DEV_MASTER_PASSWORD no .env.local para login automático.');
+                  return;
+                }
+                setLoading(true);
+                try {
+                  await signIn('bx4usa@gmail.com', devPass);
+                  navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/dashboard');
+                } catch (err: any) {
+                  toast.error(err.message || 'Erro no login master');
+                } finally {
+                  setLoading(false);
+                }
               }}
+              disabled={loading}
               className="w-full mb-6 py-4 text-lg font-bold rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:scale-[1.02] transition-transform"
             >
               🔥 Acesso Rápido Master (bx4usa@gmail.com)
