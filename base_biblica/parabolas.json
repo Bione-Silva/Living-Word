@@ -1,669 +1,439 @@
 {
   "category": "parabolas",
-  "source": "40 Parábolas de Jesus",
-  "total": 40,
+  "source": "40+Parábolas+de+JEsus.pdf",
+  "total": 54,
   "items": [
     {
       "title": "O bom samaritano",
       "reference": "Lucas 10.30-37",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola do Bom Samaritano se passa em um contexto social, cultural e religioso profundamente significativo no primeiro século da Palestina, um tempo marcado por divisões étnicas, tensões religiosas e questões de legalismo. Jesus contou essa parábola em resposta a uma pergunta sobre como herdar a vida eterna e quem é o próximo, desafiando a compreensão limitada dos líderes religiosos sobre o amor ao próximo.",
-      "theological_message": "A mensagem central da parábola do Bom Samaritano é o amor ao próximo. Jesus ensina que o verdadeiro amor e compaixão transcendem qualquer barreira de etnia, religião ou status social.",
-      "practical_application": "A parábola do Bom Samaritano nos desafia a aplicar o amor ao próximo de forma prática em nossas vidas, sem deixar que preconceitos, barreiras sociais ou diferenças religiosas nos impeçam de ajudar. Isso pode ser feito ajudando quem precisa, sem discriminação, e agindo com compaixão e generosidade.",
-      "reflection_questions": [
-        "Quem é o “próximo” na sua vida que você tem dificuldade de amar ou ajudar?",
-        "Existem pessoas ao seu redor que você, por qualquer motivo, tem evitado ajudar ou tratar com compaixão? Por que isso acontece?",
-        "Você costuma evitar ajudar pessoas que estão em necessidade porque acha que “não é problema seu”?",
-        "O que te impede de agir em certas situações, como o sacerdote e o levita na parábola? Como você pode mudar essa atitude?",
-        "De que forma você pode, de maneira prática, ser um “Bom Samaritano” na sua comunidade ou no seu dia a dia?",
-        "Quais ações simples você pode tomar hoje para demonstrar compaixão e amor ao próximo, mesmo que isso envolva sacrifício?",
-        "Como você reage quando ajudar o próximo envolve sair da sua zona de conforto?",
-        "Você está disposto a abrir mão do seu tempo, recursos ou conveniência para cuidar dos outros? Como pode crescer nessa área?"
-      ],
-      "summary": "A parábola é contada por Jesus em resposta a um intérprete da Lei que queria testar Jesus, perguntando: 'O que devo fazer para herdar a vida eterna?' Jesus começa a história com um homem que descia de Jerusalém para Jericó, assaltado e deixado quase morto. Um sacerdote e um levita passam e o ignoram, mas um samaritano, inimigo dos judeus, tem compaixão, cuida de suas feridas, leva-o a uma hospedaria e paga por sua recuperação. Jesus conclui com a instrução: 'Vai e faze da mesma maneira'."
+      "historical_context": "A parábola se passa em um contexto social, cultural e religioso da Palestina no primeiro século, marcado por divisões étnicas e tensões religiosas, especialmente entre judeus e samaritanos.",
+      "theological_message": "Jesus ensina que o verdadeiro amor ao próximo transcende barreiras de etnia, religião e status social, enfatizando a importância da misericórdia e compaixão.",
+      "practical_application": "Devemos agir com amor ao próximo, especialmente aqueles que são diferentes de nós ou que consideramos inimigos, ajudando-os sem esperar nada em troca.",
+      "summary": "A parábola narra a história de um homem que é atacado por ladrões e ignorado por um sacerdote e um levita, enquanto um samaritano, desprezado pelos judeus, o ajuda com compaixão, desafiando as normas religiosas e sociais da época."
     },
     {
-      "title": "A ovelha perdida",
-      "reference": "Lucas 15.4-7",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na época de Jesus, a imagem de um pastor cuidando de ovelhas era muito comum, e perder uma ovelha era uma perda significativa, tanto econômica quanto emocional. O conceito de 'ovelha perdida' também tinha um significado espiritual profundo na cultura judaica, comparando Israel a um rebanho sob o cuidado de Deus.",
-      "theological_message": "A mensagem central da parábola da Ovelha Perdida é o imenso valor de cada pessoa aos olhos de Deus e o amor incansável de Deus em buscar os perdidos. Jesus ensina que Deus não está satisfeito com os que já estão 'seguros' no rebanho, mas se preocupa intensamente com aqueles que se afastaram.",
-      "practical_application": "A parábola da Ovelha Perdida tem aplicações diretas para nossas vidas, mostrando como devemos valorizar cada pessoa e como podemos refletir o amor de Deus em nossas ações. Isso inclui valorizar especialmente aqueles que estão perdidos e não desistir de quem está distante da fé ou da comunidade.",
-      "reflection_questions": [
-        "Quem em sua vida pode ser uma “ovelha perdida” que você precisa buscar com amor e paciência?",
-        "Existe alguém que você conhece que está afastado da fé ou precisando de ajuda espiritual? Como você pode agir para alcançá-lo?",
-        "Você já se sentiu como uma ovelha perdida? Como foi a experiência de ser trazido de volta ao rebanho?",
-        "Pense em um momento em que você esteve distante de Deus. Como você sentiu o amor de Deus te chamando de volta?",
-        "Quais são as atitudes que você pode tomar para refletir o amor do Bom Pastor em sua vida?",
-        "O que você pode fazer para ser um reflexo da compaixão e da busca ativa por aqueles que estão perdidos, assim como o pastor na parábola?",
-        "Em sua vida, você tem se concentrado mais nas 'noventa e nove' ou em buscar a 'ovelha perdida'?"
-      ],
-      "summary": "A parábola da ovelha perdida começa com Jesus contando a história de um pastor que tinha 100 ovelhas, mas uma se perdeu. O pastor deixa as 99 seguras e parte em busca da perdida, arriscando-se em caminhos difíceis até encontrá-la. Ao encontrá-la, ele a coloca sobre os ombros com alegria e convoca amigos e vizinhos para celebrar. Jesus conclui dizendo que há mais alegria no céu por um pecador que se arrepende do que por 99 justos que não precisam de arrependimento."
+      "title": "A Ovelha Perdida",
+      "reference": "Lucas 15:3-7",
+      "historical_context": "Essa parábola reflete a preocupação de Deus em buscar os que se perderam, usando a figura do pastor, que era uma imagem familiar para o público judaico.",
+      "theological_message": "Deus valoriza cada indivíduo e se alegra quando um pecador se arrependente e volta para Ele.",
+      "practical_application": "Devemos nos importar e buscar aqueles que estão se afastando de Deus, refletindo o amor do Bom Pastor em nossas ações.",
+      "summary": "A parábola ensina sobre o valor de cada pessoa aos olhos de Deus, ressaltando a alegria no céu quando um pecador se arrepende e é trazido de volta ao rebanho."
     },
     {
-      "title": "A moeda perdida",
-      "reference": "Lucas 15.8-10",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Nos tempos de Jesus, uma dracma (moeda) representava o salário de um dia de trabalho, e perder uma era uma perda significativa para famílias com recursos limitados. Culturalmente, encontrar algo perdido era motivo de celebração, refletindo a alegria no céu quando um pecador se arrepende.",
-      "theological_message": "A mensagem central da parábola da Moeda Perdida é o imenso valor de cada pessoa para Deus e o compromisso de Deus em buscar e restaurar os que estão perdidos. Jesus ilustra que, assim como a mulher valoriza sua moeda, Deus se preocupa profundamente com cada ser humano, mesmo os que parecem insignificantes.",
-      "practical_application": "A parábola da Moeda Perdida tem aplicações práticas que nos ajudam a refletir sobre nosso valor diante de Deus e nossa responsabilidade em buscar os que estão afastados. Isso inclui valorizar cada pessoa, independentemente de sua situação, e não desistir de quem está afastado da fé ou dos relacionamentos.",
-      "reflection_questions": [
-        "Existe alguém em sua vida que você tem negligenciado ou subestimado o valor? Como você pode mudar isso?",
-        "Pense em alguém que talvez você tenha ignorado ou considerado sem importância. Como você pode demonstrar o amor de Deus a essa pessoa?",
-        "Como você reage quando alguém se afasta de Deus ou da comunidade? Você tem buscado essa pessoa ativamente?",
-        "Você tende a desistir de quem está perdido ou a persistir em ajudar? O que pode fazer para se envolver mais na vida daqueles que estão espiritualmente afastados?",
-        "Você já se sentiu como a moeda perdida, longe de Deus? Como foi ou como seria ser 'encontrado' por Ele?",
-        "Reflita sobre momentos em que você esteve distante de Deus. Como você sentiu o chamado de Deus para voltar? O que precisa fazer para se reconectar com Ele?",
-        "Como sua igreja ou comunidade celebra o retorno de alguém que estava perdido espiritualmente?",
-        "Existe espaço para celebrar a restauração de pessoas em sua igreja? O que pode ser feito para que isso seja motivo de mais alegria e encorajamento?",
-        "Em quais áreas de sua vida você pode se tornar mais ativo em 'buscar' os que estão afastados de Deus?"
-      ],
-      "summary": "A parábola fala de uma mulher que tem dez dracmas, mas perde uma delas, e diligentemente acende uma lâmpada e varre a casa até encontrá-la. Ao encontrá-la, ela chama suas amigas e vizinhas para celebrar, dizendo: 'Alegrem-se comigo, pois encontrei a minha moeda perdida!' Jesus conclui que há alegria na presença dos anjos de Deus por um pecador que se arrepende, destacando o amor de Deus e a busca incansável pelos afastados."
+      "title": "A Moeda Perdida",
+      "reference": "Lucas 15:8-10",
+      "historical_context": "A moeda perdida, uma dracma, representa uma perda significativa para uma mulher de recursos limitados. A busca dela ilustra a diligência e o cuidado de Deus na busca pelos perdidos.",
+      "theological_message": "Assim como a mulher se alegra ao encontrar a moeda, Deus se alegra quando um pecador se arrepende e volta para Ele.",
+      "practical_application": "Valorize cada pessoa e busque aqueles que estão afastados, celebrando a restauração e a reconciliação com Deus.",
+      "summary": "A parábola enfatiza o valor individual de cada pessoa e a alegria que ocorre no céu quando alguém que estava perdido é encontrado e restaurado."
     },
     {
-      "title": "O filho (perdido) pródigo",
-      "reference": "Lucas 15.11-32",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na cultura judaica, pedir a herança com o pai vivo era um ato de extrema desonra, e o filho mais novo na parábola não apenas desonra o pai, mas desperdiça os bens em uma vida desregrada. Cuidar de porcos era uma tarefa humilhante para um judeu, simbolizando a completa degradação do filho.",
-      "theological_message": "A mensagem central da parábola do Filho Pródigo é a graça, o perdão e o amor incondicional de Deus por todos aqueles que se arrependem e voltam a Ele, independentemente de quão longe tenham ido. A história destaca o pai como Deus amoroso, o filho mais novo como o pecador arrependido e o filho mais velho como a resistência à graça radical de Deus.",
-      "practical_application": "A parábola do Filho Pródigo tem lições valiosas e práticas que podem ser aplicadas no nosso dia a dia, desafiando-nos a refletir sobre nossa relação com Deus, como tratamos os outros e nossa disposição para perdoar e restaurar. Isso inclui acolher e perdoar os arrependidos, não guardar ressentimentos, praticar o arrependimento genuíno e celebrar a restauração de outras pessoas.",
-      "reflection_questions": [
-        "Você já se sentiu como o filho pródigo, afastado de Deus ou das pessoas ao seu redor? O que o impediu de voltar?",
-        "Pense em momentos de sua vida em que você se distanciou espiritualmente ou emocionalmente. Como você pode dar o primeiro passo para retornar ao relacionamento com Deus ou com as pessoas de sua vida?",
-        "Como você reage quando alguém próximo a você comete erros graves? Está mais inclinado a perdoar e restaurar ou a julgar?",
-        "Reflita sobre como você lida com o erro dos outros. Você tem facilidade para perdoar e acolher, como o pai, ou tende a agir como o filho mais velho, com julgamento e ressentimento?",
-        "Existe alguém em sua vida que você sente que 'não merece' perdão ou graça? Como você pode mudar sua atitude em relação a essa pessoa?",
-        "Assim como o pai da parábola não impôs condições para perdoar o filho, você pode estar guardando mágoas que precisam ser resolvidas. Como pode agir de forma mais graciosa?",
-        "Você tem celebrado as 'pequenas vitórias' espirituais e o retorno de pessoas à fé?",
-        "A parábola mostra a importância de celebrar o arrependimento e a restauração. Pense se você está participando das alegrias espirituais da sua comunidade, ou se está focado em outras questões, como o filho mais velho.",
-        "Como você pode ser mais parecido com o pai na parábola, oferecendo amor e perdão incondicional em suas relações?",
-        "Em quais áreas da sua vida você pode mostrar mais compaixão e graça, especialmente com aqueles que estão arrependidos ou que se afastaram?"
-      ],
-      "summary": "Um pai tinha dois filhos; o mais novo pede sua herança antecipadamente, parte para uma terra distante e gasta tudo em uma vida desregrada, acabando em miséria cuidando de porcos. Ele 'cai em si' e decide voltar para casa, disposto a ser tratado como empregado. O pai, ao vê-lo de longe, corre ao seu encontro, o abraça, beija e o restaura à posição de filho com uma grande festa. O filho mais velho, irritado com a celebração, recusa-se a entrar, questionando a justiça do pai, que o convida a celebrar a restauração do irmão."
+      "title": "O Filho Pródigo",
+      "reference": "Lucas 15:11-32",
+      "historical_context": "A cultura judaica valorizava a honra e o respeito dentro da família. O filho mais novo, ao pedir a herança antecipadamente, rompe com essas normas, simbolizando desrespeito e decadência.",
+      "theological_message": "O amor e o perdão do pai refletem a graça de Deus, que recebe de volta aqueles que se arrependem, independentemente de suas falhas.",
+      "practical_application": "Devemos estar abertos ao arrependimento e à restauração, tanto em nossas vidas pessoais quanto em nosso relacionamento com os outros, celebrando cada retorno.",
+      "summary": "A parábola ilustra a profundidade do perdão e a alegria da restauração familiar, mostrando como Deus acolhe Seus filhos arrependidos de braços abertos."
     },
     {
-      "title": "O administrador desonesto",
-      "reference": "Lucas 16.1-8",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na Palestina do primeiro século, administradores gerenciavam bens de ricos proprietários, muitas vezes com comissões, e eram acusados de desperdício ou corrupção. A prática de cobrar juros era proibida entre judeus, mas taxas ocultas eram comuns, e a cultura de favores e reciprocidade era essencial para a sobrevivência social.",
-      "theological_message": "A mensagem central da parábola do Administrador Desonesto está no uso sábio e estratégico dos recursos materiais, e não na desonestidade em si. Jesus usa essa história para ensinar sobre a astúcia necessária para lidar com os bens terrenos e como devemos utilizá-los para o bem maior, especialmente em relação ao Reino de Deus.",
-      "practical_application": "A parábola do Administrador Desonesto nos ensina lições valiosas sobre como devemos administrar nossos recursos e nos relacionar com as riquezas, desafiando-nos a usar o que temos de maneira sábia e intencional, sempre com foco no Reino de Deus. Isso inclui ser sábio no uso dos recursos, usar riquezas terrenas para benefícios eternos, ser fiel nas pequenas coisas e servir a Deus, não ao dinheiro.",
-      "reflection_questions": [
-        "Como você tem administrado os recursos que Deus lhe confiou? Está usando-os para o bem e para o Reino de Deus, ou apenas para seus próprios interesses?",
-        "Pense em como tem utilizado seu dinheiro, tempo e talentos. Eles estão sendo investidos em coisas que glorificam a Deus e ajudam os outros?",
-        "Você se considera fiel nas pequenas coisas? Como você pode ser mais fiel nas responsabilidades que parecem pequenas ou insignificantes?",
-        "Reflita sobre as áreas da sua vida onde pode demonstrar mais fidelidade e cuidado, sabendo que ser fiel no pouco é um caminho para ser confiado com mais.",
-        "O dinheiro tem exercido controle sobre suas decisões?",
-        "Há momentos em que o medo de perder ou o desejo de ganhar mais influência suas escolhas? Como você pode realinhar suas prioridades para que Deus, e não o dinheiro, esteja no centro de suas decisões?",
-        "Como você pode usar seu dinheiro ou recursos de maneira mais intencional para o bem do próximo e para o Reino de Deus?"
-      ],
-      "summary": "Um administrador é acusado de desperdiçar os bens de seu senhor e será demitido. Para garantir seu futuro, ele astutamente convoca os devedores do senhor e reduz suas dívidas, ganhando favores futuros. O senhor elogia a astúcia do administrador, não sua desonestidade, mas sua esperteza em planejar o futuro. Jesus usa essa história para ensinar que os 'filhos deste mundo' são mais sagazes em lidar com recursos terrenos do que os 'filhos da luz' em assuntos espirituais, incentivando o uso inteligente das riquezas para o Reino de Deus."
+      "title": "Parábola do Filho Pródigo",
+      "reference": "Lucas 15:11-32",
+      "historical_context": "A cultura judaica destacava a primogenitura e as normas familiares, refletindo a justiça cultural da época que esperava recompensar a obediência e a fidelidade.",
+      "theological_message": "A parábola ilustra a graça, o perdão e o amor incondicional de Deus pelos arrependidos, independentemente de sua trajetória.",
+      "practical_application": "Devemos acolher e perdoar aqueles que se arrependem, assim como o pai acolheu seu filho. Além disso, devemos cuidar para não guardar ressentimentos e celebrar a restauração dos outros.",
+      "summary": "A história narra a trajetória de um pai e seus dois filhos, onde o filho mais novo exige sua herança e a desperdiça em uma vida desregrada, mas ao voltar arrependido, é recebido com amor e festa pelo pai, enquanto o filho mais velho se recusa a celebrar, evidenciando a tensão entre lei, graça e perdão."
     },
     {
-      "title": "O homem rico e Lázaro",
-      "reference": "Lucas 16.19-31",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na época de Jesus, a riqueza era vista como bênção divina, e a pobreza, como castigo, embora profetas denunciassem ricos que oprimiam pobres. Jesus subverte essa visão ao nomear o pobre (Lázaro, 'Deus ajuda') e deixar o rico sem nome, destacando que o destino eterno é determinado pela justiça e compaixão, não pelo status social.",
-      "theological_message": "A mensagem central da parábola do Homem Rico e Lázaro gira em torno de justiça social, compaixão pelos necessitados e as consequências eternas das escolhas feitas na vida terrena. Jesus ensina que o destino eterno não é determinado por riqueza ou status, mas pela maneira como se vive, especialmente em relação aos pobres e oprimidos.",
-      "practical_application": "A parábola do Homem Rico e Lázaro traz lições profundas que nos desafiam a refletir sobre a forma como vivemos, tratamos os outros e usamos os recursos que temos. Isso inclui cultivar compaixão e generosidade, viver de acordo com as Escrituras e reavaliar nossa relação com as riquezas, priorizando o cuidado com os necessitados.",
-      "reflection_questions": [
-        "Você tem notado os “Lázaros” ao seu redor – as pessoas que estão em necessidade? Como você pode ser mais atento às necessidades dos outros?",
-        "Reflita sobre aqueles que você talvez tenha ignorado, intencional ou involuntariamente. O que pode fazer para se envolver ativamente na vida dessas pessoas?",
-        "De que maneira você tem usado seus recursos – tempo, dinheiro, talentos – para abençoar os outros?",
-        "Considere como você tem administrado suas bênçãos. Você as usa apenas para seu benefício ou as compartilha para ajudar os necessitados e promover o Reino de Deus?",
-        "Você tem vivido de acordo com os ensinamentos das Escrituras, especialmente no que diz respeito à compaixão e à justiça social?"
-      ],
-      "summary": "Um homem rico vivia em luxo, ignorando Lázaro, um mendigo coberto de feridas à sua porta. Ambos morrem: Lázaro é levado pelos anjos ao seio de Abraão, enquanto o rico vai para o Hades, em tormento. O rico pede a Abraão que Lázaro lhe dê água e depois que avise seus irmãos, mas Abraão responde que eles já têm Moisés e os Profetas, e não creriam mesmo se alguém ressuscitasse dos mortos."
+      "title": "Parábola do Administrador Desonesto",
+      "reference": "Lucas 16:1-13",
+      "historical_context": "Durante a época de Jesus, os administradores eram comuns entre proprietários de terras, exercendo funções de confiança e gestão de bens, em um contexto social e econômico estratificado.",
+      "theological_message": "A parábola critica a desonestidade do administrador, mas também ensina sobre a astúcia e a necessidade de utilizar sabiamente os recursos terrenos para propósitos espirituais.",
+      "practical_application": "Os discípulos devem ser sábios no uso das riquezas materiais, investindo em relacionamentos e possibilidades que garantam recompensas eternas, em vez de se apegar às riquezas terrenas.",
+      "summary": "O administrador desonesto, ao se ver demitido, usa seus últimos recursos para garantir favores de devedores, revelando a importância de planejar e agir sabiamente, mesmo em situações desonestas, o que leva o patrão a elogiá-lo pela sua astúcia."
     },
     {
-      "title": "Os servos",
-      "reference": "Lucas 17.7-10",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na época de Jesus, a servidão era comum, e servos cumpriam obrigações sem expectativa de recompensa especial, sendo a obediência vista como natural. A cultura judaica valorizava a humildade no serviço a Deus, e Jesus desafiava o orgulho e a busca por honrarias dos líderes religiosos.",
-      "theological_message": "A mensagem central da parábola dos servos, em Lucas 17:7-10, está no ensino sobre humildade, obediência e serviço fiel a Deus. Jesus ensina que os discípulos de Cristo devem servir a Deus com uma atitude de dever e submissão, sem buscar reconhecimento, recompensas ou elogios por fazerem o que é esperado.",
-      "practical_application": "A parábola dos Servos em Lucas 17:7-10 traz lições profundas sobre humildade, serviço e obediência, desafiando-nos a refletir sobre nossa postura em relação ao serviço a Deus e ao próximo. Isso inclui servir a Deus com humildade, reconhecer que o serviço é um dever natural e praticar a obediência e fidelidade sem expectativa de recompensa.",
-      "reflection_questions": [
-        "Como você tem servido a Deus e aos outros? Sua motivação é agradar a Deus ou buscar reconhecimento humano?",
-        "Reflita sobre o que tem motivado seu serviço. Você se sente frustrado quando não é reconhecido, ou consegue servir com alegria, sabendo que Deus vê seu coração?",
-        "Você se considera um servo fiel nas pequenas tarefas diárias, mesmo quando elas parecem insignificantes?",
-        "Pense nas pequenas responsabilidades que Deus lhe confiou. Como você pode ser mais diligente e fiel nessas áreas, lembrando-se de que tudo o que fazemos deve ser para a glória de Deus?",
-        "Quando você ajuda os outros, faz isso de forma desinteressada, ou espera algo em troca?",
-        "Examine suas atitudes em relação à ajuda e à generosidade. Como você pode crescer em servir aos outros com um coração puro, sem buscar retorno ou reconhecimento?",
-        "Você tem uma atitude de humildade em seu serviço, reconhecendo que está apenas cumprindo seu dever diante de Deus?",
-        "Reflita sobre como você enxerga seu serviço no Reino de Deus. Você se sente orgulhoso de suas obras ou mantém uma postura de humildade, sabendo que está apenas fazendo o que lhe foi pedido?"
-      ],
-      "summary": "Jesus pergunta se um senhor convidaria um servo que acabou de arar ou cuidar do gado para comer imediatamente. A resposta implícita é não; o servo deve primeiro preparar o jantar do senhor e servi-lo. Jesus então pergunta se o senhor agradecerá ao servo por cumprir suas ordens, e a resposta implícita é não, pois o servo está apenas fazendo seu dever. A parábola ensina que, após cumprir todas as tarefas, o servo não espera agradecimento, pois fez o que lhe era devido."
+      "title": "A Parábola do Administrador Desonesto",
+      "reference": "Lucas 16:1-13",
+      "historical_context": "A parábola do Administrador Desonesto é única no Novo Testamento e explora temas de administração de recursos e fidelidade, refletindo valores do Antigo Testamento sobre a honra e a integridade na gestão de bens.",
+      "theological_message": "A mensagem central é sobre o uso sábio e estratégico dos recursos materiais, e a fidelidade no que é pequeno se reflete na capacidade de lidar com responsabilidades maiores.",
+      "practical_application": "Devemos ser sábios e intencionais com os recursos que Deus nos confia, usando-os para promover o Reino de Deus e ajudar os outros.",
+      "summary": "Jesus usa a história de um administrador que, mesmo desonesto, é elogiado por sua astúcia em garantir seu futuro, mostrando que devemos usar nossas riquezas e bens materiais de maneira inteligente para o bem maior."
     },
     {
-      "title": "A viúva e o juiz",
-      "reference": "Lucas 18.2-5",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "No primeiro século, viúvas eram vulneráveis e frequentemente negligenciadas, enquanto juízes deveriam ser justos, mas muitos eram corruptos. A persistência da viúva em buscar justiça refletia a desigualdade social, onde os marginalizados precisavam lutar para serem ouvidos.",
-      "theological_message": "A mensagem central da parábola da Viúva e o Juiz é a importância da persistência na oração e a confiança na justiça de Deus. Jesus conta essa história para encorajar seus seguidores a orar continuamente, sem desanimar, e para lembrar que Deus, ao contrário do juiz injusto, é fiel e justo para responder às orações daqueles que O buscam com fé.",
-      "practical_application": "A parábola da Viúva e o Juiz nos oferece lições valiosas sobre persistência na oração, confiança na justiça de Deus e manutenção da fé, desafiando-nos a viver com uma atitude de oração constante e a confiar no caráter justo e fiel de Deus. Isso inclui ser persistente em oração, confiar na justiça de Deus mesmo quando ela parece demorada, e interceder pelos outros com a mesma persistência.",
-      "reflection_questions": [
-        "Você tem sido persistente em oração ou tem desistido de orar quando não vê respostas imediatas?",
-        "Reflita sobre sua prática de oração. Você tem perseverado em oração, mesmo quando as respostas parecem distantes, ou tem se desanimado? Como pode fortalecer sua persistência?",
-        "Em que áreas da sua vida você tem sentido que a justiça está demorando a chegar? Como você pode confiar mais na justiça de Deus?",
-        "Pense em situações onde você tem esperado pela intervenção de Deus. Você consegue descansar, sabendo que Deus é justo e trará a resposta no tempo certo?",
-        "Como está sua fé em momentos de silêncio ou demora de respostas? Você continua confiando em Deus, mesmo quando parece que Ele está demorando para agir?",
-        "Avalie sua fé nos momentos de silêncio. Como você pode fortalecer sua confiança em Deus, especialmente quando Ele parece distante ou quando as respostas não chegam rapidamente?",
-        "Você está intercedendo por outras pessoas com a mesma persistência que a viúva demonstrou?",
-        "Pense nas pessoas ao seu redor que precisam de ajuda ou oração. Você tem orado com persistência por elas, como a viúva buscava justiça? O que você pode fazer para ser mais constante na intercessão pelos outros?"
-      ],
-      "summary": "Jesus conta a parábola de uma viúva que busca justiça de um juiz que 'não temia a Deus nem respeitava os homens'. O juiz, insensível, inicialmente recusa, mas a viúva persiste em suas demandas. Devido à insistência da viúva, o juiz finalmente cede para não ser incomodado. Jesus usa essa história para ensinar a importância de orar sempre e nunca desanimar, confiando que Deus, ao contrário do juiz injusto, responderá com justiça."
+      "title": "A Parábola do Homem Rico e Lázaro",
+      "reference": "Lucas 16:19-31",
+      "historical_context": "A parábola retrata a vida de um homem rico que ignora um pobre chamado Lázaro. Ela se passa em um contexto onde as desigualdades sociais eram visíveis e frequentemente criticadas por Jesus. As viúvas e os pobres eram frequentemente ignorados e marginalizados, o que era comum na sociedade da época.",
+      "theological_message": "A parábola ensina sobre a justiça social, a importância da compaixão e as consequências eternas das decisões de vida. Jesus usa a história para revelar que a riqueza e o status social não garantem favor diante de Deus; é a forma como se vive e se trata os outros que realmente importa.",
+      "practical_application": "Devemos cultivar a compaixão e a generosidade, estar atentos às necessidades dos que nos cercam, e viver de acordo com os ensinamentos das Escrituras sobre a justiça e o cuidado dos pobres.",
+      "summary": "O homem rico, vivendo em luxo, ignora Lázaro, um pobre à sua porta. Após a morte, Lázaro é acolhido por Abraão, enquanto o rico sofre no Hades. A parábola ilustra a reversão das expectativas sociais e as consequências eternas das ações na vida terrena."
     },
     {
-      "title": "Os talentos",
-      "reference": "Lucas 19.12-27",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Jesus contou essa parábola perto de Jericó, enquanto seus discípulos esperavam o estabelecimento imediato do Reino de Deus, mas Jesus os preparava para um tempo de espera e responsabilidades. A parábola reflete a prática comum de nobres viajando para obter reinos e a confiança de senhores em servos para administrar bens, esperando que os recursos fossem multiplicados.",
-      "theological_message": "A mensagem central da parábola dos Talentos é que Deus confia responsabilidades, dons e recursos a cada um de Seus servos, e espera que eles os administrem fielmente enquanto aguardam o retorno de Cristo. O Senhor deseja que Seus seguidores sejam fiéis e produtivos, investindo no Reino de Deus com o que lhes foi dado, sabendo que haverá recompensa para a fidelidade e juízo para a negligência e desobediência.",
-      "practical_application": "A parábola dos Talentos nos oferece lições profundas e práticas sobre como devemos viver de maneira fiel, diligente e produtiva com os recursos, dons e oportunidades que Deus nos dá. Isso inclui usar nossos dons e talentos para o Reino de Deus, ser fiel nas pequenas coisas e estar preparado para o retorno de Cristo.",
-      "reflection_questions": [
-        "Quais dons, talentos ou recursos Deus confiou a você? Você tem usado esses recursos de forma ativa e produtiva para o Reino de Deus?",
-        "Reflita sobre as habilidades, oportunidades e responsabilidades que Deus lhe deu. Você está usando esses dons com diligência ou tem deixado algum 'enterrado'?",
-        "Você tem sido fiel nas pequenas coisas que Deus confiou a você?",
-        "Pergunte-se: nas pequenas tarefas do dia a dia, no trabalho, na igreja ou na sua família, você tem demonstrado fidelidade? O que você pode fazer para melhorar sua diligência em áreas que parecem pequenas?",
-        "Existe alguma área da sua vida onde o medo de falhar tem impedido você de agir?",
-        "O servo negligente da parábola foi motivado pelo medo e não usou sua mina. Há algo em sua vida que você não está fazendo por medo de errar? Como você pode confiar mais em Deus e agir com coragem?",
-        "Como você pode multiplicar os talentos, dons ou oportunidades que Deus lhe deu?",
-        "Pense em como você pode expandir o impacto do que Deus lhe confiou. Como você pode investir seu tempo, talentos ou finanças para o crescimento do Reino de Deus?",
-        "Se Jesus voltasse hoje, você estaria satisfeito com a maneira como administrou o que Ele lhe confiou?"
-      ],
-      "summary": "Um nobre, antes de viajar para receber um reino, confia dez minas a dez servos, instruindo-os a negociar com o dinheiro até sua volta. Ao retornar como rei, ele chama os servos para prestar contas: dois servos multiplicaram suas minas (um para dez, outro para cinco) e são recompensados com autoridade sobre cidades. Um terceiro servo, por medo, escondeu sua mina e não fez nada, sendo repreendido e tendo sua mina retirada. A parábola conclui que a quem tem, mais será dado, e a quem não tem, até o que tem lhe será tirado."
+      "title": "A Parábola dos Servos",
+      "reference": "Lucas 17:7-10",
+      "historical_context": "O conceito de servidão era comum na época de Jesus, em que um servo tinha que realizar suas obrigações sem esperar reconhecimento. Essa parábola reflete a relação entre servos e senhores na sociedade judaica e romana, onde a obediência e a submissão eram valoradas.",
+      "theological_message": "A parábola enfatiza que o serviço a Deus deve ser visto como uma obrigação natural, não como uma oportunidade para buscar reconhecimento. A verdadeira obediência deve ser feita com humildade, sem a expectativa de recompensas.",
+      "practical_application": "Devemos servir a Deus e aos outros com humildade e desapego a recompensas, entendendo que é nosso dever cumprir as responsabilidades em nossas vidas. Servir é um privilégio e deve ser feito com alegria.",
+      "summary": "Jesus ilustra a expectativa de um servo em relação ao seu senhor, mostrando que, após cumprir suas obrigações, o servo não espera agradecimentos. A parábola consagra a ideia de que o serviço a Deus deve ser uma resposta natural à Sua chamada, evidenciando humildade e obediência."
     },
     {
-      "title": "Os lavradores maus",
-      "reference": "Lucas 20.9-16",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A vinha simbolizava Israel, o povo de Deus, e os lavradores representavam os líderes religiosos responsáveis por cuidar dele. Profetas enviados por Deus foram maltratados e rejeitados, e a parábola antecipa a crucificação de Jesus, o Filho de Deus, pelos líderes religiosos que buscavam tomar a herança.",
-      "theological_message": "A mensagem central da parábola dos Lavradores Maus é que Deus confia responsabilidades aos líderes espirituais para cuidarem de Seu povo, mas quando esses líderes abusam de sua autoridade, rejeitam os mensageiros de Deus e se recusam a produzir os frutos esperados, eles enfrentam juízo. A parábola também antecipa a rejeição de Jesus Cristo, o Filho de Deus, e o julgamento que recairá sobre aqueles que O rejeitam, revelando que o Reino de Deus será transferido para aqueles que aceitarem o Filho e forem fiéis.",
-      "practical_application": "A parábola dos Lavradores Maus traz lições importantes sobre fidelidade, responsabilidade espiritual e a aceitação de Jesus Cristo, desafiando-nos a refletir sobre como administramos os dons e responsabilidades que Deus nos confiou. Isso inclui ser fiel na responsabilidade espiritual, aceitar a correção de Deus e reconhecer a autoridade de Jesus em nossa vida.",
-      "reflection_questions": [
-        "De que forma você tem cuidado das responsabilidades espirituais que Deus lhe confiou?",
-        "Reflita sobre as áreas em que Deus confiou algo a você, seja na igreja, no trabalho, na família ou em sua vida pessoal. Você está sendo fiel em cuidar do que lhe foi dado?",
-        "Você tem sido aberto às correções de Deus ou resiste quando Ele envia sinais ou pessoas para corrigir seu caminho?",
-        "Pense nas vezes em que Deus tentou lhe corrigir ou advertir por meio de líderes espirituais, da Bíblia ou de eventos em sua vida. Você está sendo receptivo às correções ou resiste a elas?",
-        "Sua vida está produzindo frutos espirituais que glorificam a Deus?",
-        "Avalie os “frutos” da sua vida – suas atitudes, comportamentos, ações e influência sobre os outros. Como você pode se tornar mais frutífero e produzir resultados que glorifiquem a Deus e beneficiem as pessoas ao seu redor?",
-        "Em quais áreas da sua vida você ainda não submeteu ao senhorio de Jesus?",
-        "Examine sua vida e identifique áreas que você ainda está controlando, sem permitir que Cristo seja o Senhor delas. Como você pode entregar essas áreas a Jesus e viver com Ele no controle?"
-      ],
-      "summary": "Um homem planta uma vinha e a arrenda a lavradores, viajando para longe. Na época da colheita, ele envia servos para receber sua parte, mas os lavradores os espancam e os mandam embora de mãos vazias. O proprietário envia mais servos, que são maltratados, e finalmente envia seu próprio filho, pensando que o respeitariam. No entanto, os lavradores conspiram para matar o filho, acreditando que assim tomariam a herança para si, e o matam. O dono da vinha então virá, destruirá os lavradores maus e dará a vinha a outros."
+      "title": "A Viúva e o Juiz",
+      "reference": "Lucas 18:1-8",
+      "historical_context": "Na sociedade judaica do primeiro século, as viúvas eram especialmente vulneráveis, sendo muitas vezes negligenciadas e tratadas de maneira injusta. O Antigo Testamento enfatiza a necessidade de cuidar dos pobres e oprimidos, como as viúvas.",
+      "theological_message": "A parábola ensina sobre a persistência na oração e a justiça de Deus. É um chamado para os fiéis a não desanimarem, mesmo diante da injustiça.",
+      "practical_application": "As pessoas devem ser persistentes em suas orações e confiar que Deus, diferente de um juiz injusto, ouvirá e responderá as súplicas de Seus filhos.",
+      "summary": "A história gira em torno de uma viúva que insiste em obter justiça de um juiz corrupto. Sua persistência leva o juiz a atendê-la, e a parábola ensina que Deus também ouvirá a quem clama incessantemente por justiça."
     },
     {
-      "title": "A roupa nova",
-      "reference": "Lucas 5.36",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A parábola da Roupa Nova e do Vinho Novo ocorre no início do ministério de Jesus, em um contexto de crescente tensão com os líderes religiosos judaicos, especialmente os fariseus. Eles questionavam por que os discípulos de Jesus não seguiam práticas religiosas tradicionais, como o jejum, e Jesus usou essa parábola para simbolizar a introdução de uma nova aliança e a incompatibilidade entre essa nova mensagem e as estruturas religiosas antigas.",
-      "theological_message": "A mensagem central da parábola da Roupa Nova e do Vinho Novo é que o evangelho e a nova aliança trazidos por Jesus não podem ser simplesmente 'ajustados' ou 'costurados' ao antigo sistema religioso e às práticas da antiga aliança. A mensagem de Cristo é algo totalmente novo e exige uma renovação completa – tanto em estruturas espirituais quanto no coração daqueles que a recebem.",
-      "practical_application": "A parábola da Roupa Nova e do Vinho Novo nos ensina que o evangelho e a nova vida em Cristo exigem uma transformação total e não podem ser simplesmente 'costurados' ao velho modo de viver ou ao sistema religioso anterior. Isso inclui aceitar a transformação total em Cristo, substituir o legalismo pela graça e abrir-se para o novo que Deus está fazendo em nossa vida.",
-      "reflection_questions": [
-        "Em que áreas da sua vida você tem tentado 'remendar' em vez de permitir uma transformação completa?",
-        "Reflita se há algo em sua vida onde você está fazendo ajustes superficiais, mas precisa de uma renovação total. O que Deus está lhe pedindo para entregar completamente a Ele?",
-        "Você está se apegando a práticas antigas ou tradições que precisam ser renovadas?",
-        "Pense se há hábitos religiosos ou pessoais dos quais você se apegou por tradição, mas que talvez não estejam mais alinhados com o novo que Deus está fazendo em sua vida. Como você pode substituir esses velhos hábitos por novos, mais alinhados com o evangelho?",
-        "Você está resistindo ao novo que Deus quer fazer em sua vida?"
-      ],
-      "summary": "Jesus compara o novo ensino que Ele traz a uma roupa nova, e o sistema religioso antigo a uma roupa velha, dizendo que não faz sentido costurar um remendo de roupa nova em uma roupa velha, pois ambos seriam danificados. A roupa nova se rasgará, e a roupa velha não conseguirá suportar o tecido mais forte e novo. Essa parábola ilustra a incompatibilidade entre a mensagem transformadora de Jesus e o antigo sistema religioso."
+      "title": "Os Talentos",
+      "reference": "Lucas 19:12-27",
+      "historical_context": "Jesus contou esta parábola perto de Jericó, em um contexto onde seus discípulos esperavam um estabelecimento imediato do Reino de Deus, refletindo uma expectativa política. A parábola aborda a responsabilidade dos servos durante a ausência do senhor.",
+      "theological_message": "A parábola ilustra a importância da fidelidade e da responsabilidade com os talentos e recursos que Deus confia a cada um. Jesus ensina que um dia todos darão conta do que fizeram com o que receberam.",
+      "practical_application": "Os seguidores de Jesus são chamados a utilizar seus dons e recursos de maneira eficaz, investindo no Reino de Deus e sendo responsáveis em suas ações.",
+      "summary": "Na parábola, um nobre confia minas a seus servos antes de partir para receber um reino. Ao retornar, ele pede contas sobre a administração das minas, recompensando aqueles que foram fiéis enquanto punindo o servo negligente."
     },
     {
-      "title": "O vinho novo",
-      "reference": "Lucas 5.37-38",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A parábola da Roupa Nova e do Vinho Novo ocorre no início do ministério de Jesus, em um contexto de crescente tensão com os líderes religiosos judaicos, especialmente os fariseus. Eles questionavam por que os discípulos de Jesus não seguiam práticas religiosas tradicionais, como o jejum, e Jesus usou essa parábola para simbolizar a introdução de uma nova aliança e a incompatibilidade entre essa nova mensagem e as estruturas religiosas antigas.",
-      "theological_message": "A mensagem central da parábola da Roupa Nova e do Vinho Novo é que o evangelho e a nova aliança trazidos por Jesus não podem ser simplesmente 'ajustados' ou 'costurados' ao antigo sistema religioso e às práticas da antiga aliança. A mensagem de Cristo é algo totalmente novo e exige uma renovação completa – tanto em estruturas espirituais quanto no coração daqueles que a recebem.",
-      "practical_application": "A parábola da Roupa Nova e do Vinho Novo nos ensina que o evangelho e a nova vida em Cristo exigem uma transformação total e não podem ser simplesmente 'costurados' ao velho modo de viver ou ao sistema religioso anterior. Isso inclui aceitar a transformação total em Cristo, substituir o legalismo pela graça e abrir-se para o novo que Deus está fazendo em nossa vida.",
-      "reflection_questions": [
-        "Em que áreas da sua vida você tem tentado 'remendar' em vez de permitir uma transformação completa?",
-        "Reflita se há algo em sua vida onde você está fazendo ajustes superficiais, mas precisa de uma renovação total. O que Deus está lhe pedindo para entregar completamente a Ele?",
-        "Você está se apegando a práticas antigas ou tradições que precisam ser renovadas?",
-        "Pense se há hábitos religiosos ou pessoais dos quais você se apegou por tradição, mas que talvez não estejam mais alinhados com o novo que Deus está fazendo em sua vida. Como você pode substituir esses velhos hábitos por novos, mais alinhados com o evangelho?",
-        "Você está resistindo ao novo que Deus quer fazer em sua vida?"
-      ],
-      "summary": "Jesus usa a metáfora do vinho novo em odres velhos, explicando que ninguém põe vinho novo em odres velhos, pois o vinho novo, ao fermentar, romperá os odres, derramando-se e estragando ambos. Ele ensina que o vinho novo (o evangelho e a nova aliança) precisa de odres novos (novos corações e estruturas espirituais). Essa parábola ilustra a incompatibilidade entre a mensagem transformadora de Jesus e o antigo sistema religioso, que não pode contê-la sem ser destruído."
+      "title": "Parábola dos Talentos",
+      "reference": "Mateus 25:14-30; Lucas 19:11-27",
+      "historical_context": "A parábola é contada em um contexto de ensinamentos sobre o Reino de Deus e a responsabilidade dos servos durante a ausência do Senhor.",
+      "theological_message": "Deus confia dons, talentos e recursos a cada um de Seus servos, que são esperados a usá-los fielmente enquanto aguardam o retorno de Cristo.",
+      "practical_application": "Cada servo deve ser responsável por administrar os recursos que Deus lhe confia, utilizando-os para expandir o Reino de Deus.",
+      "summary": "A parábola ilustra dois tipos de servos: aqueles que usam diligentemente os recursos que lhes foram confiados e são recompensados, e o servo que escondeu seu talento por medo, sendo punido por sua inatividade."
     },
     {
-      "title": "Os dois alicerces",
-      "reference": "Lucas 6.47-49",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A parábola dos Dois Alicerces foi contada por Jesus no Sermão da Planície, em um contexto onde a Lei de Moisés e os profetas eram a base religiosa, mas muitos focavam em rituais externos. A construção de casas exigia preparação cuidadosa devido à topografia de Israel, e Jesus usou essa realidade para ilustrar a importância de ouvir e praticar Suas palavras como um alicerce sólido.",
-      "theological_message": "A mensagem central da parábola dos Dois Alicerces é que ouvir os ensinamentos de Jesus não é suficiente por si só – é necessário praticar essas palavras para construir uma vida sólida e duradoura. Jesus compara aqueles que ouvem e praticam Seus ensinamentos a uma pessoa sábia que constrói sua casa sobre a rocha, enquanto aqueles que apenas ouvem, mas não praticam, são como alguém que constrói sua casa sobre a areia, sem uma base firme.",
-      "practical_application": "A parábola dos Dois Alicerces traz lições valiosas sobre a importância de não apenas ouvir a palavra de Deus, mas também de colocá-la em prática em nossa vida diária. Isso inclui viver uma fé ativa e prática, construir nossa vida com base na Palavra de Deus e preparar-se para as tempestades da vida, fortalecendo nossa fundação espiritual.",
-      "reflection_questions": [
-        "Em que áreas da sua vida você está ouvindo os ensinamentos de Jesus, mas ainda não os colocou em prática?",
-        "Reflita sobre onde você pode estar adiando a obediência ou tomando decisões sem base nos ensinamentos de Cristo. Como você pode agir de maneira diferente?",
-        "O que você está usando como alicerce para a sua vida?",
-        "Sua vida está fundamentada nos ensinamentos de Jesus ou em valores instáveis, como opiniões pessoais, riqueza, ou a busca por aprovação? Em que áreas você precisa fortalecer sua fundação em Cristo?",
-        "Como você reage às “tempestades” da vida?",
-        "Quando enfrenta dificuldades, você se sente abalado ou encontra estabilidade na sua fé? O que isso revela sobre o alicerce que você está construindo? Como você pode se preparar melhor para os desafios, reforçando sua confiança em Deus?"
-      ],
-      "summary": "Jesus conta a parábola de dois homens que constroem casas. Um homem sábio cava fundo e constrói sua casa sobre a rocha, garantindo uma base firme que resiste a enchentes e tempestades. O outro homem, insensato, constrói sua casa diretamente sobre o chão, sem alicerces, em terreno arenoso. Quando a torrente vem, a casa sem alicerces desaba com grande destruição, enquanto a casa sobre a rocha permanece firme. Jesus ensina que ouvir e praticar Suas palavras é como construir sobre a rocha, enquanto apenas ouvir sem praticar é como construir sobre a areia."
+      "title": "Parábola dos Lavradores Maus",
+      "reference": "Lucas 20:9-16",
+      "historical_context": "A parábola é contada em uma situação de crescente rejeição de Jesus pelos líderes religiosos de Israel e simboliza o julgamento sobre eles por sua infidelidade.",
+      "theological_message": "Deus espera que os líderes espirituais cuidem de Seu povo e produzam frutos de justiça; quando não o fazem, enfrentam juízo.",
+      "practical_application": "A responsabilidade de produzir frutos espirituais não é apenas para os líderes da época, mas uma mensagem para todos que têm a responsabilidade de servir a Deus.",
+      "summary": "A parábola descreve como o proprietário de uma vinha envia servos (representando os profetas) para coletar os frutos, mas os lavradores os maltratam e, por fim, matam o filho do proprietário, simbolizando a rejeição de Jesus."
     },
     {
-      "title": "Os dois devedores",
-      "reference": "Lucas 7.41-43",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A parábola dos Dois Devedores é uma resposta à crítica de Simão, o fariseu, por Jesus permitir que uma mulher pecadora lavasse Seus pés, em um contexto onde fariseus valorizavam a pureza externa e condenavam pecadores. Dívidas eram um problema social, e um denário era o salário de um dia, tornando a dívida de 500 denários (mais de um ano de salário) e 50 denários (dois meses) significativas, ilustrando a magnitude do perdão espiritual.",
-      "theological_message": "A mensagem central da parábola dos Dois Devedores é que todos são devedores diante de Deus, mas aqueles que reconhecem a profundidade de seu pecado e recebem o perdão divino respondem com maior amor e gratidão. Jesus usa a parábola para ensinar que a compreensão do perdão que recebemos de Deus influencia diretamente nossa resposta de amor a Ele.",
-      "practical_application": "A parábola dos Dois Devedores oferece lições profundas sobre a graça, o perdão e a nossa resposta de amor a Deus, desafiando-nos a reconhecer a profundidade do perdão recebido. Isso inclui permitir que o perdão inspire amor e gratidão, e evitar o legalismo e a comparação com os outros, cultivando uma postura de humildade.",
-      "reflection_questions": [
-        "Você reconhece a profundidade do perdão que Deus lhe concedeu?",
-        "Como você se sente ao refletir sobre as áreas da sua vida onde Deus lhe perdoou? Há algo que você tem dificuldade em reconhecer como parte desse perdão?",
-        "O quanto o perdão que você recebeu tem impactado a maneira como você ama a Deus?",
-        "A parábola ensina que aqueles que percebem o tamanho do seu perdão respondem com grande amor. Como você tem expressado seu amor a Deus em resposta ao perdão que recebeu?",
-        "Você tem demonstrado esse amor de forma prática no seu dia a dia?",
-        "De que maneiras você pode demonstrar mais amor por Deus e pelas pessoas ao seu redor? Quais atitudes ou ações poderiam refletir melhor sua gratidão?",
-        "Você tem sido legalista ou comparado sua “dívida” com a de outros?",
-        "Em que momentos você se compara aos outros e se vê como mais justo ou melhor do que eles? Como pode mudar essa atitude e praticar mais humildade?"
-      ],
-      "summary": "Jesus conta a história de dois homens que deviam a um credor: um devia quinhentos denários e o outro cinquenta, e nenhum tinha como pagar. O credor perdoa a dívida de ambos. Jesus pergunta a Simão qual deles o amaria mais, e Simão responde que seria aquele a quem foi perdoada a maior dívida. Jesus confirma a resposta, usando a parábola para mostrar que a mulher pecadora, que demonstrou grande amor, compreendia a profundidade do perdão recebido, ao contrário de Simão."
+      "title": "Parábola da Roupa Nova e do Vinho Novo",
+      "reference": "Lucas 5:36-39",
+      "historical_context": "Contada no início do ministério de Jesus, em um contexto de tensão com os fariseus e outras autoridades religiosas que representavam tradições antigas.",
+      "theological_message": "A nova aliança introduzida por Jesus é incompatível com as antigas estruturas e tradições religiosas.",
+      "practical_application": "É importante estar aberto às mudanças que Deus traz e não limitar a ação de Deus a práticas antigas que não se alinham com a nova revelação em Cristo.",
+      "summary": "A parábola usa as imagens de roupas novas e vinhos novos em odres velhos para ilustrar a incompatibilidade entre o antigo e o novo, enfatizando a necessidade de uma nova abordagem na fé."
     },
     {
-      "title": "O semeador",
-      "reference": "Lucas 8.5-8",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na Palestina agrícola, a semeadura manual resultava em sementes caindo em diferentes tipos de solo, uma prática familiar que Jesus usou para ilustrar como a palavra de Deus é recebida. O público, composto por discípulos, camponeses e líderes religiosos, enfrentava desafios em compreender a mensagem espiritual de Jesus, que contrastava com as expectativas messiânicas políticas.",
-      "theological_message": "A mensagem central da Parábola do Semeador é que a eficácia da palavra de Deus depende da condição do coração que a recebe. Jesus compara a semente à palavra de Deus e os diferentes tipos de solo às diversas formas como as pessoas respondem a essa palavra. Nem todos que ouvem a mensagem do evangelho a compreendem ou permitem que ela transforme suas vidas, e a frutificação espiritual só ocorre em corações preparados e receptivos.",
-      "practical_application": "A Parábola do Semeador oferece lições importantes sobre a forma como recebemos a palavra de Deus e os resultados que ela pode produzir em nossas vidas. Isso inclui examinar o estado do nosso coração, cultivar profundidade espiritual e eliminar distrações para priorizar o Reino de Deus.",
-      "reflection_questions": [
-        "Qual tipo de solo melhor descreve o estado atual do seu coração?",
-        "Você se identifica com o solo à beira do caminho, o solo pedregoso, o solo cheio de espinhos ou o bom solo? O que está impedindo a palavra de Deus de crescer em sua vida?",
-        "Quais são as 'pedras' em sua vida que estão impedindo que sua fé tenha raízes profundas?",
-        "Existem áreas onde você está apenas superficialmente conectado com Deus? Como você pode trabalhar para cultivar uma fé mais profunda e duradoura?",
-        "Que preocupações ou distrações estão sufocando seu crescimento espiritual?",
-        "Você tem sido distraído pelas preocupações com dinheiro, sucesso, relacionamentos ou prazeres do mundo? O que você pode fazer para liberar essas distrações e priorizar o Reino de Deus?",
-        "Você tem permitido que a palavra de Deus transforme sua vida ou apenas a ouve sem colocá-la em prática?"
-      ],
-      "summary": "Um semeador saiu para semear, e as sementes caíram em quatro tipos de solo. Algumas caíram à beira do caminho, foram pisadas e comidas pelos pássaros. Outras caíram em solo rochoso, brotaram, mas secaram por falta de umidade. Algumas caíram entre espinhos, que cresceram e as sufocaram. Finalmente, algumas caíram em boa terra, cresceram e produziram frutos cem vezes mais. Jesus explica que a semente é a palavra de Deus, e os solos representam diferentes reações à mensagem."
+      "title": "A Roupa Nova e o Vinho Novo",
+      "reference": "Lucas 5:36-39",
+      "historical_context": "Contexto de crescente tensão entre Jesus e os líderes religiosos judaicos, especialmente os fariseus. A parábola surge em uma discussão sobre práticas religiosas tradicionais.",
+      "theological_message": "A mensagem nova de Jesus e a nova aliança não podem ser misturadas com as tradições religiosas antigas, pois ambas as partes serão danificadas.",
+      "practical_application": "Refletir sobre áreas em sua vida onde você pode estar tentando ajustar o novo de Deus às velhas tradições, pedindo renovação espiritual total.",
+      "summary": "Jesus explica que não se pode costurar um remendo de roupa nova em uma roupa velha, nem colocar vinho novo em odres velhos, simbolizando a incompatibilidade entre a nova mensagem da graça e as antigas práticas judaicas."
     },
     {
-      "title": "A lamparina",
-      "reference": "Lucas 8.16-18",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na Palestina, a iluminação dependia de lamparinas a óleo, que eram colocadas em lugares altos para iluminar toda a casa, sendo uma imagem clara para os ouvintes de Jesus. A luz já era uma metáfora espiritual comum no Antigo Testamento, simbolizando a presença de Deus, a verdade e a sabedoria, e Jesus expande essa imagem para ensinar que Seus seguidores devem ser como luzes que iluminam os outros.",
-      "theological_message": "A mensagem central da Parábola da Lamparina é que a verdade de Deus e a sabedoria espiritual não devem ser escondidas, mas sim reveladas ao mundo. Aqueles que receberam a luz da verdade, ou seja, o entendimento da palavra de Deus, têm a responsabilidade de vivê-la de maneira aberta e transparente, deixando essa luz brilhar para que todos ao redor possam vê-la e ser guiados por ela.",
-      "practical_application": "A Parábola da Lamparina nos ensina lições práticas sobre como devemos viver de maneira transparente, compartilhar a verdade de Deus e fazer a Palavra de Deus brilhar em nossas ações. Isso inclui avaliar nossas ações e motivações, procurar oportunidades para compartilhar a fé e identificar áreas onde podemos melhorar para refletir a luz de Cristo.",
-      "reflection_questions": [
-        "Você está permitindo que a 'luz' de Cristo brilhe em sua vida de forma visível?",
-        "Como as pessoas ao seu redor podem perceber a influência de Cristo em suas ações, atitudes e palavras? Existem áreas onde você tem escondido essa luz?",
-        "Você está vivendo de maneira transparente e íntegra diante de Deus e dos outros?",
-        "Há algo em sua vida que você está tentando manter oculto ou escondido? Como a luz de Cristo pode ajudar você a viver de maneira mais honesta e transparente?",
-        "Quais oportunidades você tem para compartilhar a 'luz' da verdade de Deus com os outros?",
-        "Em que situações você poderia estar sendo uma influência positiva, mas talvez esteja hesitando em compartilhar a sua fé? O que o impede de ser mais aberto sobre a sua fé em Cristo?",
-        "Como você está ouvindo e aplicando a palavra de Deus?",
-        "Jesus disse para prestarmos atenção em como estamos ouvindo a palavra. Você tem ouvido a palavra de Deus de maneira passiva ou está procurando colocá-la em prática? Como pode melhorar a sua aplicação da palavra no dia a dia?"
-      ],
-      "summary": "Jesus pergunta se alguém acende uma lamparina para escondê-la debaixo de uma cama ou de um jarro, em vez de colocá-la em um lugar alto para iluminar. A resposta implícita é que a lamparina é acesa para iluminar. Jesus usa essa imagem para ensinar que nada que está escondido permanecerá oculto, e tudo o que está em segredo será revelado. Ele conclui que aqueles que têm ouvidos para ouvir devem prestar atenção, pois a quem tem, mais será dado, e a quem não tem, até o que pensa ter lhe será tirado."
+      "title": "Os Dois Alicerces",
+      "reference": "Lucas 6:47-49",
+      "historical_context": "Contada no Sermão da Planície, a parábola enfatiza a importância de ouvir e praticar as palavras de Jesus em um contexto onde os líderes religiosos focavam mais em rituais do que em genuína obediência.",
+      "theological_message": "A verdadeira fé se manifesta na obedência aos ensinamentos de Jesus, e aqueles que praticam suas palavras são comparados a um construtor que edifica sobre uma rocha sólida.",
+      "practical_application": "Evalie se está apenas ouvindo os ensinamentos de Jesus ou se realmente está colocando-os em prática em sua vida.",
+      "summary": "Jesus compara aqueles que ouvem e implementam Seus ensinamentos àqueles que constroem uma casa sobre uma rocha firme, enquanto os que apenas ouvem, sem agir, são comparados a construtores que constroem sobre areia, com fundamentos instáveis."
     },
     {
-      "title": "Os empregados alertas",
-      "reference": "Lucas 12.35-40",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na Palestina do primeiro século, a relação senhor-servo era comum, e servos eram responsáveis por cuidar da casa na ausência do senhor, devendo estar preparados para sua chegada inesperada. A hospitalidade e a preparação eram centrais, e Jesus usou essa realidade para ensinar sobre a vigilância e a preparação constante para o retorno do Mestre, simbolizando Sua segunda vinda, que muitos judeus esperavam como um Messias político.",
-      "theological_message": "A mensagem central da Parábola dos Empregados à Espera é que os seguidores de Cristo devem viver em vigilância constante, sempre preparados para o retorno inesperado de Jesus, que virá como um senhor retornando para casa. Jesus usa essa parábola para ensinar sobre a importância da fidelidade, da responsabilidade espiritual e da preparação contínua, destacando que todos serão julgados de acordo com o que foi confiado a eles.",
-      "practical_application": "A Parábola dos Empregados à Espera oferece lições valiosas sobre a importância da vigilância espiritual, da fidelidade no serviço a Deus e da responsabilidade com aquilo que recebemos de Cristo. Isso inclui viver de maneira vigilante, usar nossos dons e recursos com responsabilidade, ter cuidado com a negligência espiritual e levar a responsabilidade espiritual a sério.",
-      "reflection_questions": [
-        "Estou vivendo de forma fiel nas responsabilidades que Deus me confiou?",
-        "Tenho sido responsável com as oportunidades e tarefas que Deus colocou em minhas mãos? Como posso ser mais diligente em meu serviço a Deus e aos outros?",
-        "Estou preparado para o retorno de Cristo?",
-        "Se Jesus voltasse hoje, eu estaria pronto? Estou vivendo de maneira que reflita vigilância espiritual e prontidão para o retorno dEle?",
-        "Tenho sido vigilante em minha vida espiritual ou estou relaxado?"
-      ],
-      "summary": "Jesus instrui seus ouvintes a estarem prontos para servir, com suas lamparinas acesas, como servos que esperam seu senhor voltar de um banquete de casamento. Ele promete que os servos encontrados vigilantes serão bem-aventurados, e o senhor os honrará, vestindo-se para servi-los. Jesus adverte que o retorno do senhor será inesperado, como um ladrão, e, portanto, os seguidores devem estar preparados a qualquer momento, pois o Filho do Homem virá numa hora em que não o esperam."
+      "title": "A Parábola dos Dois Alicerces",
+      "reference": "Lucas 6:47-49",
+      "historical_context": "Contada no final de um conjunto de ensinamentos sobre como viver de maneira piedosa e verdadeira. Jesus começou a ser visto como um rabi e figura de autoridade espiritual, contrastando com a prática legalista dos fariseus.",
+      "theological_message": "A prática da obediência aos ensinamentos de Jesus é fundamental para ter uma vida sólida e resistente às adversidades.",
+      "practical_application": "Refletir sobre a base da própria vida e se ela está fundamentada na obediência aos ensinamentos de Jesus.",
+      "summary": "Jesus compara aqueles que ouvem e praticam Seus ensinamentos a um homem sábio que constrói sua casa sobre a rocha, enquanto aqueles que ouvem, mas não praticam, são comparados a alguém que constrói sua casa sobre areia, que não resiste às tempestades."
     },
     {
-      "title": "O amigo persistente",
-      "reference": "Lucas 11.5-8",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A parábola do Amigo Persistente se passa na Palestina do primeiro século, onde a hospitalidade era um valor essencial e a recusa em ajudar um amigo em necessidade seria uma falha de caráter. Casas pequenas e famílias grandes significavam que atender à porta à meia-noite perturbaria a todos, mas a pressão social e a reputação incentivavam a ajuda mútua, mesmo em horários inconvenientes.",
-      "theological_message": "A mensagem central da Parábola do Amigo Persistente é o ensinamento de que devemos ser persistentes em nossas orações e súplicas a Deus. Jesus ilustra que, assim como um amigo finalmente responde ao pedido insistente de outro, Deus responderá às nossas necessidades quando nos aproximarmos dEle com perseverança.",
-      "practical_application": "A Parábola do Amigo Persistente nos ensina a importância de persistir em nossas orações e de confiar que Deus responderá no tempo certo. Isso inclui ser persistente em oração, confiar na fidelidade de Deus mesmo que a resposta não seja imediata, e interceder pelos outros com a mesma persistência, sem desistir na primeira recusa.",
-      "reflection_questions": [
-        "Tenho sido persistente em minhas orações ou desisto facilmente?",
-        "Quando encontro obstáculos ou quando Deus parece não responder rapidamente, continuo orando ou perco a fé? Como posso me tornar mais perseverante em oração?",
-        "Confio na fidelidade de Deus para responder no Seu tempo?",
-        "Ao orar, acredito que Deus está ouvindo e que Ele sabe o que é melhor para mim, mesmo que a resposta demore? Como posso confiar mais no tempo de Deus em vez de buscar respostas imediatas?"
-      ],
-      "summary": "Jesus conta a história de um homem que, à meia-noite, recebe um visitante inesperado e não tem pão para oferecer. Ele vai à casa de um amigo para pedir três pães, mas o amigo, já deitado com a família e com a porta trancada, inicialmente recusa devido à inconveniência. No entanto, por causa da persistência do homem em bater à porta, o amigo finalmente se levanta e lhe dá os pães. Jesus usa essa parábola para ensinar sobre a importância da persistência na oração."
+      "title": "A Parábola dos Dois Devedores",
+      "reference": "Lucas 7:41-43",
+      "historical_context": "Contada em um jantar na casa de Simão, o fariseu, em resposta a críticas sobre a interação de Jesus com uma mulher pecadora. Reflete as normas sociais e religiosas da época, onde os 'puros' se consideravam superiores.",
+      "theological_message": "O perdão de Deus é acessível a todos, independentemente da magnitude do pecado, e o amor demonstrado a Deus está diretamente relacionado à percepção do perdão recebido.",
+      "practical_application": "Reconhecer a própria natureza de pecador e a necessidade de perdão, o que deve inspirar amor e gratidão a Deus.",
+      "summary": "Jesus conta a história de dois devedores, um com uma dívida maior e outro com uma dívida menor, ambos perdoados, para ilustrar como a consciência do perdão recebido leva a uma resposta de amor significativo."
     },
     {
-      "title": "O rico sem juízo",
-      "reference": "Lucas 12.16-21",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A parábola do Rico Sem Juízo foi contada em um contexto agrícola onde a riqueza era medida por colheitas e bens, e muitas vezes vista como bênção divina, embora a tradição judaica advertisse contra a confiança na riqueza. A parábola surge após Jesus ser interrompido por uma disputa de herança, abordando a ganância e a busca desenfreada por bens materiais, e a fragilidade da vida diante da morte inesperada.",
-      "theological_message": "A mensagem central da Parábola do Rico Sem Juízo é a advertência contra o perigo de confiar nas riquezas e ignorar a fragilidade da vida. Jesus ensina que acumular bens materiais sem se preocupar com as coisas de Deus é insensatez, pois a vida pode ser exigida a qualquer momento, e as riquezas materiais não têm valor eterno.",
-      "practical_application": "A Parábola do Rico Sem Juízo nos desafia a refletir sobre como usamos nossas riquezas e onde colocamos nossa confiança, advertindo contra o perigo de confiar nas posses materiais e ignorar o que é mais importante. Isso inclui colocar nossa confiança em Deus, viver cada dia com sabedoria e ser generoso com o que Deus nos deu, investindo em coisas com valor eterno.",
-      "reflection_questions": [
-        "Onde estou colocando minha confiança — em Deus ou nas riquezas?",
-        "Confio mais em minha estabilidade financeira e bens materiais para garantir meu futuro, ou confio que Deus é o meu provedor?",
-        "Como estou usando os recursos que Deus me deu?",
-        "Tenho sido generoso com o que recebi ou estou acumulando para o meu próprio conforto?",
-        "Como posso usar meus recursos de maneira que beneficie os outros e honre a Deus?",
-        "Estou vivendo com a consciência da fragilidade da vida?",
-        "Tenho considerado que a vida é breve e que não temos controle sobre o futuro? Como posso viver de forma mais intencional, investindo em coisas com valor eterno?"
-      ],
-      "summary": "Um homem rico tem uma colheita abundante e decide demolir seus celeiros para construir maiores, planejando viver confortavelmente por muitos anos. Deus, porém, o chama de insensato, dizendo que naquela mesma noite sua vida seria exigida, tornando inúteis todos os seus planos e acúmulos. Jesus conclui que assim acontece com quem guarda riquezas para si mesmo, mas não é rico para com Deus, enfatizando a vaidade de confiar em bens materiais e a importância de ser rico espiritualmente."
+      "title": "Parábola dos Dois Devedores",
+      "reference": "Lucas 7:41-42",
+      "historical_context": "A parábola foi contada por Jesus durante um jantar na casa de um fariseu chamado Simão, onde Ele conversava sobre perdão e amor.",
+      "theological_message": "Todos são devedores diante de Deus e a percepção do perdão recebido influencia a capacidade de amar e ser grato.",
+      "practical_application": "Reconhecer a profundidade do perdão que recebemos de Deus nos leva a amar mais intensamente.",
+      "summary": "Jesus conta a história de dois devedores, um devendo uma quantia maior e o outro menor. Ambos não podiam pagar, mas o credor perdoou suas dívidas. Isso ilustra como o perdão de Deus é oferecido a todos, independentemente do tamanho da dívida."
     },
     {
-      "title": "O empregado fiel",
-      "reference": "Lucas 12.42-48",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "Na Palestina do primeiro século, a relação senhor-servo era fundamental, com servos administrando propriedades na ausência do senhor, e a fidelidade era altamente valorizada. A incerteza do retorno do senhor exigia vigilância constante, e Jesus usou essa estrutura social para ensinar sobre a importância de ser fiel e responsável enquanto se aguarda o retorno inesperado de Cristo, que muitos esperavam como um Messias político.",
-      "theological_message": "A mensagem central da Parábola do Empregado Fiel é o ensinamento sobre a importância de viver com fidelidade, vigilância e responsabilidade, especialmente em relação ao cumprimento da vontade de Deus enquanto aguardamos o retorno de Cristo. Jesus destaca que aqueles que receberam mais conhecimento e responsabilidade serão cobrados de acordo com o que lhes foi confiado, e que a fidelidade contínua será recompensada, enquanto a negligência e infidelidade trarão consequências severas.",
-      "practical_application": "A Parábola do Empregado Fiel nos desafia a viver de forma fiel, vigilante e responsável enquanto aguardamos o retorno de Cristo. Isso inclui viver com fidelidade nas responsabilidades diárias, estar sempre preparado para o retorno de Cristo e usar nossos dons e recursos de forma responsável, sabendo que Deus recompensa a fidelidade.",
-      "reflection_questions": [
-        "Estou sendo fiel nas responsabilidades que Deus me confiou?",
-        "Tenho tratado as tarefas diárias, os relacionamentos e o trabalho como oportunidades de servir a Deus com diligência e integridade?",
-        "Estou vivendo com a consciência de que Cristo pode voltar a qualquer momento?",
-        "Minha vida reflete uma atitude de vigilância e preparação espiritual para o retorno de Jesus?",
-        "O que eu preciso ajustar em minha vida para estar preparado?",
-        "Como estou usando os dons e recursos que Deus me deu?",
-        "Tenho sido um bom administrador dos talentos, recursos financeiros e oportunidades que Deus confiou a mim? Como posso usá-los de forma mais responsável e para a glória de Deus?",
-        "Tenho sido vigilante em minha vida espiritual ou estou sendo negligente?"
-      ],
-      "summary": "Jesus descreve um senhor que confia a administração de sua casa a um empregado enquanto se ausenta. O empregado fiel cumpre suas responsabilidades diligentemente, cuidando dos outros servos e distribuindo comida, sendo recompensado com mais responsabilidades ao retorno do senhor. O empregado infiel, pensando que o senhor demoraria, abusa de sua autoridade e se entrega a excessos, sendo pego de surpresa e punido severamente ao retorno inesperado do senhor. Jesus ensina que a responsabilidade é proporcional ao conhecimento da vontade do senhor."
+      "title": "Parábola do Semeador",
+      "reference": "Lucas 8:4-15",
+      "historical_context": "A parábola foi contada por Jesus em um contexto em que agricultores semeavam sementes à beira do caminho, em solo pedregoso, em meio a espinhos, e em solo bom, refletindo as condições de vida e de fé da comunidade da época.",
+      "theological_message": "A eficácia da palavra de Deus depende da condição do coração que a recebe, destacando que somente aqueles com corações preparados podem produzir frutos espirituais.",
+      "practical_application": "Examine o estado do seu coração para determinar como você recebe a palavra de Deus e que frutos ela pode produzir na sua vida.",
+      "summary": "A parábola compara a palavra de Deus a uma semente que cai em diferentes tipos de solo, ilustrando como as reações das pessoas à mensagem do evangelho variam conforme a condição de seus corações."
     },
     {
-      "title": "A figueira sem figos",
-      "reference": "Lucas 13.6-9",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola da Figueira sem Figos foi contada por Jesus em um contexto agrícola que era familiar para o público da época. A agricultura desempenhava um papel central na economia e na vida cotidiana da Palestina do primeiro século.",
-      "theological_message": "A mensagem central da Parábola da Figueira sem Figos é um chamado urgente ao arrependimento e à produção de frutos espirituais. Jesus utiliza a imagem da figueira estéril para ilustrar a expectativa de Deus de que Seu povo, após receber cuidado e oportunidades, produza frutos de justiça, obediência e transformação.",
-      "practical_application": "A Parábola da Figueira sem Figos traz uma mensagem clara de que Deus espera frutos espirituais de Seus filhos e que o arrependimento é necessário para evitar o julgamento. Essa parábola pode ser aplicada à nossa vida de maneira prática, nos desafiando a avaliar nossa vida espiritual e a nossa resposta ao chamado de Deus.",
-      "reflection_questions": [
-        "Minha vida está produzindo frutos espirituais?",
-        "Estou demonstrando frutos como amor, paciência, bondade e justiça em minha vida?"
-      ],
-      "summary": "Jesus conta a história de um homem que tinha uma figueira plantada em sua vinha, que por três anos não produziu frutos. O dono da vinha decide cortá-la, mas o vinhateiro pede mais um ano para cultivá-la com cuidado extra. A parábola ilustra a paciência de Deus, que dá oportunidades para o arrependimento e a produção de frutos espirituais. Contudo, essa paciência não é infinita, e o julgamento virá se não houver mudança."
+      "title": "Parábola da Lamparina",
+      "reference": "Lucas 8:16-18",
+      "historical_context": "Foi contada em um contexto onde a iluminação dependia de lamparinas, e as pessoas entendiam a importância de não esconder a luz, refletindo a cultura da Palestina antiga e a necessidade de revelar a verdade.",
+      "theological_message": "A luz da verdade de Deus deve ser compartilhada e vivida publicamente, pois aqueles que a recebem devem deixar que ela brilhe, revelando o que está oculto.",
+      "practical_application": "Viva de maneira transparente e compartilhe a verdade de Deus abertamente, permitindo que sua vida reflita a luz de Cristo.",
+      "summary": "A parábola ensina que ninguém acende uma lamparina para escondê-la; ao invés disso, a verdade de Deus deve ser revelada e vivida visivelmente, permitindo que outros sejam guiados por essa luz."
     },
     {
-      "title": "A figueira sem folhas",
-      "reference": "Lucas 21.29-31",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola da Figueira sem Folhas (ou da figueira e todas as árvores) foi contada por Jesus no contexto de uma série de ensinamentos sobre os sinais do fim dos tempos e a vinda do Reino de Deus. Esse discurso profético de Jesus é conhecido como o Sermão Profético ou o Discurso do Monte das Oliveiras, e é encontrado em Lucas 21, bem como em Mateus 24 e Marcos 13.",
-      "theological_message": "A mensagem central da Parábola da Figueira sem Folhas é que os sinais visíveis indicam a proximidade de eventos importantes, especialmente a chegada do Reino de Deus. Jesus chama os discípulos a serem vigilantes, a discernirem os tempos e a estarem preparados para a vinda do Reino.",
-      "practical_application": "A Parábola da Figueira sem Folhas nos ensina sobre a importância de estarmos atentos aos sinais espirituais e preparados para a vinda do Reino de Deus. Ela nos desafia a viver com discernimento, vigilância e um senso de urgência espiritual.",
-      "reflection_questions": [
-        "Estou atento aos sinais de Deus em minha vida?",
-        "Tenho buscado discernir o que Deus está me mostrando através das circunstâncias ao meu redor?"
-      ],
-      "summary": "Jesus usa a imagem de uma figueira e outras árvores para ensinar sobre discernimento espiritual. Assim como as folhas da figueira indicam a proximidade do verão, os sinais dos tempos indicam a vinda do Reino de Deus. A parábola chama os discípulos a estarem vigilantes e preparados. Ela enfatiza que o Reino de Deus virá com certeza, e a preparação espiritual é urgente."
+      "title": "Parábola dos Empregados à Espera",
+      "reference": "Lucas 12:35-40",
+      "historical_context": "A história reflete a organização social da Palestina no primeiro século, onde a vigilância e a responsabilidade eram essenciais na relação senhor-servo.",
+      "theological_message": "A parábola ensina sobre a necessidade de estar sempre pronto para o retorno de Cristo, enfatizando a vigilância espiritual.",
+      "practical_application": "Os seguidores de Cristo devem viver de forma vigilante e fiel, prontos para o retorno inesperado de Jesus.",
+      "summary": "A parábola retrata servos que devem manter-se preparados para a chegada de seus senhores, simbolizando a expectativa de Cristo e a responsabilidade espiritual dos crentes."
     },
     {
-      "title": "A semente de mostarda",
-      "reference": "Lucas 13.18-19",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola da Semente de Mostarda foi contada por Jesus em um contexto onde a agricultura era parte central da vida diária e facilmente compreendida pelo público de Seus ensinamentos. As sementes e o cultivo de plantas eram temas comuns nas parábolas de Jesus, pois faziam parte do dia a dia das pessoas na Palestina do primeiro século.",
-      "theological_message": "A mensagem central da Parábola da Semente de Mostarda é a ideia de que o Reino de Deus começa de forma pequena e aparentemente insignificante, mas cresce e se expande até se tornar uma realidade grandiosa e transformadora. Jesus usa a imagem da semente de mostarda para ilustrar como o Reino, embora seu início seja modesto e humilde, está destinado a se tornar uma força poderosa que abrange e transforma o mundo, oferecendo abrigo, proteção e esperança a todos que se aproximam dele.",
-      "practical_application": "A Parábola da Semente de Mostarda nos desafia a enxergar o potencial de crescimento nas pequenas ações e a confiar no poder de Deus para transformar o que é aparentemente insignificante em algo grandioso. Ela nos ensina a viver com fé, a acreditar no plano de Deus e a sermos participantes ativos no crescimento do Seu Reino.",
-      "reflection_questions": [
-        "Estou valorizando os pequenos começos em minha vida espiritual e no meu serviço a Deus?",
-        "Tenho dado importância às pequenas ações e aos gestos de fé, ou estou desanimado por não ver grandes resultados imediatos?"
-      ],
-      "summary": "Jesus descreve o Reino de Deus como uma pequena semente de mostarda que cresce e se torna uma grande planta. A parábola ilustra que o Reino de Deus começa de forma humilde e imperceptível, mas tem um potencial de crescimento extraordinário. Ele se expandirá e oferecerá abrigo e proteção a todos, demonstrando o poder transformador de Deus. Essa mensagem encoraja a não subestimar os pequenos começos e a confiar no plano divino."
+      "title": "Parábola do Amigo Persistente",
+      "reference": "Lucas 11:5-8",
+      "historical_context": "Passa no contexto da Palestina do primeiro século, onde a hospitalidade e a ajuda aos necessitados eram valores centrais na cultura judaica.",
+      "theological_message": "A persistência na oração é incentivada e Deus está sempre disposto a ouvir e responder às nossas necessidades.",
+      "practical_application": "Os cristãos devem se apoiar na persistência em suas orações e confiar na fidelidade de Deus para responder.",
+      "summary": "A parábola ilustra a importância da persistência ao pedir ajuda, mostrando que a perseverança em oração é valorizada e eficaz."
     },
     {
-      "title": "O fermento",
-      "reference": "Lucas 13.20-21",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola do Fermento foi contada por Jesus em um contexto onde a panificação e o uso de fermento eram parte integrante da vida cotidiana. As práticas agrícolas e a preparação de alimentos, como o pão, eram bem conhecidas pelos ouvintes de Jesus, tornando essa parábola uma ilustração eficaz e fácil de entender para o público do primeiro século.",
-      "theological_message": "A mensagem central da Parábola do Fermento é que o Reino de Deus tem um poder transformador que, embora comece de forma pequena e invisível, cresce e se expande até influenciar e transformar tudo ao seu redor. Jesus usa a imagem do fermento para destacar como algo aparentemente insignificante pode ter um impacto profundo e duradouro, mudando completamente a natureza daquilo com que entra em contato.",
-      "practical_application": "A Parábola do Fermento nos ensina sobre o poder de pequenas ações e a natureza transformadora do Reino de Deus. Ela nos desafia a enxergar como a influência de Deus pode crescer e se espalhar de maneiras que inicialmente não percebemos, mas que acabam mudando vidas e comunidades inteiras.",
-      "reflection_questions": [
-        "Estou subestimando o poder das pequenas ações em minha vida?",
-        "Confio que Deus está trabalhando em minha vida, mesmo quando não vejo resultados imediatos?"
-      ],
-      "summary": "Jesus descreve uma mulher que mistura fermento em três medidas de farinha, e o fermento permeia toda a massa, fazendo-a crescer. A parábola ilustra que o Reino de Deus começa de forma pequena e invisível, mas tem um poder transformador que se espalha gradualmente. Ele afeta tudo o que toca, mudando completamente a natureza das vidas e comunidades. Essa mensagem encoraja a valorizar pequenas ações de fé e bondade."
+      "title": "A Parábola do Amigo Persistente",
+      "reference": "Lucas 11:5-8",
+      "historical_context": "Esta parábola é contada em um contexto onde a intercessão e a hospitalidade eram valores essenciais entre os judeus. A expectativa de hospedar bem um visitante era uma norma cultural.",
+      "theological_message": "A mensagem central é sobre a persistência na oração e a confiança na resposta de Deus. Se um amigo humano cede ao pedido por causa da insistência, quanto mais Deus, que é generoso e fiel, atenderá aqueles que O buscam.",
+      "practical_application": "Perseverar em oração, mesmo quando não há resposta imediata. A persistência demonstra confiança em Deus e em Sua fidelidade.",
+      "summary": "A parábola fala sobre um homem que visita um amigo à noite, pedindo pão. Mesmo relutante, o amigo acaba atendendo ao pedido por causa da persistência, mostrando assim que Deus também responde às nossas orações quando perseveramos."
     },
     {
-      "title": "Os convidados para festa de casamento",
-      "reference": "Lucas 14.7-14",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola dos Convidados para a Festa de Casamento, contada por Jesus em Lucas 14:7-14, é ambientada em um contexto social e cultural onde banquetes e festas de casamento eram eventos de grande importância na sociedade judaica do primeiro século. Esses eventos eram ocasiões para mostrar status social, honra e prestígio, e a ordem de assentos era cuidadosamente observada e respeitada.",
-      "theological_message": "A mensagem central da Parábola dos Convidados para a Festa de Casamento é um chamado à humildade e à generosidade genuína, destacando que, no Reino de Deus, os valores são diferentes dos padrões sociais comuns. Jesus ensina que aqueles que se exaltam serão humilhados, e aqueles que se humilham serão exaltados, e que a verdadeira hospitalidade envolve convidar e cuidar daqueles que não têm como retribuir.",
-      "practical_application": "A Parábola dos Convidados para a Festa de Casamento nos desafia a viver com humildade e generosidade verdadeira, destacando a importância de servir aos outros sem esperar nada em troca. Jesus nos ensina a reavaliar nossas prioridades e a valorizar as atitudes que refletem o coração do Reino de Deus.",
-      "reflection_questions": [
-        "Tenho buscado reconhecimento ou praticado a humildade em minhas ações?",
-        "Minhas atitudes refletem uma verdadeira humildade ou estou constantemente buscando os lugares de destaque e a aprovação dos outros?"
-      ],
-      "summary": "Jesus observa os convidados de um banquete escolhendo os lugares de honra e ensina a humildade. Ele aconselha a escolher o último lugar, pois quem se exalta será humilhado, e quem se humilha será exaltado. Jesus também desafia o anfitrião a convidar os pobres e marginalizados, que não podem retribuir. A parábola destaca que a verdadeira honra vem de Deus e a generosidade incondicional é recompensada no Reino eterno."
+      "title": "A Parábola do Rico Sem Juízo",
+      "reference": "Lucas 12:16-21",
+      "historical_context": "Contada em um contexto onde a riqueza era associada à bênção de Deus, e muitos acreditavam que a segurança estava nas posses. Jesus aborda a insensatez de confiar nas riquezas e ignora a fragilidade da vida.",
+      "theological_message": "A mensagem aqui é que acumular riquezas para si mesmo, sem consideração por Deus, é insensatez. A verdadeira riqueza está em ser rico para com Deus, investindo no que é eterno.",
+      "practical_application": "Refletir sobre como usamos as riquezas e onde colocamos a confiança. Devemos viver generosamente e em obediência a Deus, não acumulando apenas para nós.",
+      "summary": "Um homem rico tem uma colheita abundante e decide construir celeiros maiores para armazenar suas riquezas, pensando que assim garantirá sua segurança. Porém, Deus o chama de insensato, pois sua vida seria exigida naquela mesma noite."
     },
     {
-      "title": "A grande festa",
-      "reference": "Lucas 14.15-24",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola da Grande Festa, contada por Jesus em Lucas 14:15-24, foi inserida em um contexto social e cultural em que banquetes e festas eram uma parte essencial da vida cotidiana no Oriente Médio do primeiro século. Esses eventos eram oportunidades para demonstrar hospitalidade, status social e relações de reciprocidade.",
-      "theological_message": "A mensagem central da Parábola da Grande Festa é que o Reino de Deus é uma oferta generosa e inclusiva, disponível para todos, especialmente para aqueles que são frequentemente ignorados ou marginalizados pela sociedade. Jesus ensina que aqueles que rejeitam o convite de Deus perdem a oportunidade de participar de Suas bênçãos, enquanto aqueles que aceitam são bem-vindos à Sua mesa, independentemente de sua condição social ou passado.",
-      "practical_application": "A Parábola da Grande Festa nos convida a refletir sobre a maneira como respondemos ao convite de Deus e nos desafia a viver de forma inclusiva e generosa, estendendo a graça de Deus a todos, especialmente àqueles que são frequentemente esquecidos pela sociedade.",
-      "reflection_questions": [
-        "Estou priorizando o convite de Deus em minha vida?",
-        "Minhas ocupações diárias têm me afastado do chamado de Deus?"
-      ],
-      "summary": "Um anfitrião prepara uma grande festa e convida muitos, mas os convidados originais recusam com desculpas. Irado, o anfitrião manda seus servos convidarem os pobres, aleijados, cegos e coxos das ruas. A parábola ilustra que o Reino de Deus é uma oferta generosa e inclusiva para todos, mas a rejeição do convite tem consequências. Aqueles que aceitam são bem-vindos, enquanto os que recusam perdem a oportunidade de participar das bênçãos divinas."
+      "title": "A Parábola do Empregado Fiel",
+      "reference": "Mateus 24:45-51",
+      "historical_context": "Nessa parábola, Jesus se baseia na relação entre senhores e servos, uma dinâmica comum na sociedade do primeiro século, para ensinar sobre responsabilidade e vigilância.",
+      "theological_message": "A fidelidade e responsabilidade espiritual são fundamentais na vida cristã, especialmente enquanto aguardamos o retorno de Cristo. A parábola enfatiza a importância de estarmos sempre prontos e vigilantes.",
+      "practical_application": "Ser fiel em nossas responsabilidades diárias e viver de forma que honre a Deus e prepare o caminho para Sua volta.",
+      "summary": "Um empregado fiel que cuida dos bens de seu senhor é recompensado, enquanto o infiel que descuida do que lhe foi confiado é punido. Isso reflete nosso relacionamento com Deus em relação às responsabilidades que Ele nos deu."
     },
     {
-      "title": "A construção de uma torre",
+      "title": "Parábola do Empregado Fiel",
+      "reference": "Lucas 12:43-48",
+      "historical_context": "O conhecimento da Lei traz uma responsabilidade maior, e aqueles que conhecem a vontade de Deus devem viver de forma diligente e responsável, especialmente em um contexto de espera pela volta do Senhor.",
+      "theological_message": "A fidelidade e a responsabilidade espiritual são primordiais, destacando que aqueles que têm maior conhecimento receberão maior prestação de contas.",
+      "practical_application": "Devemos ser vigilantes e viver de maneira responsável nas nossas responsabilidades diárias até o retorno de Cristo.",
+      "summary": "A parábola ilustra a importância de ser um empregado fiel e diligente, que cuida de suas responsabilidades em preparação para a chegada do Senhor."
+    },
+    {
+      "title": "Parábola da Figueira sem Figos",
+      "reference": "Lucas 13:6-9",
+      "historical_context": "A parábola é contada em um contexto onde Jesus aborda a necessidade de arrependimento e a urgência da produção de frutos espirituais. A figueira simboliza Israel e sua esterilidade espiritual.",
+      "theological_message": "Deus espera frutos de justiça e obediência de Seu povo. A paciência de Deus é grande, mas não eterna; o arrependimento é necessário para evitar o julgamento.",
+      "practical_application": "Os indivíduos são desafiados a avaliar sua vida espiritual e a produção de frutos que demonstrem um verdadeiro relacionamento com Deus.",
+      "summary": "A Parábola da Figueira sem Figos ilustra a expectativa de Deus de que seu povo produza frutos espirituais, ressaltando que a falta de frutos pode levar ao juízo divino."
+    },
+    {
+      "title": "Parábola da Figueira sem Folhas",
+      "reference": "Lucas 21:29-31",
+      "historical_context": "Esta parábola é contada no contexto do Sermão Profético de Jesus, onde Ele fala sobre os sinais do fim dos tempos e a vinda do Reino de Deus, utilizando a figueira como um símbolo de discernimento espiritual.",
+      "theological_message": "Assim como o brotar das folhas da figueira indica a aproximação do verão, os sinais nos tempos devem ser lidos como indicativos da proximidade do Reino de Deus.",
+      "practical_application": "Os indivíduos são chamados a estar atentos e preparados para a vinda do Reino, vivendo com discernimento e vigilância espiritual.",
+      "summary": "A Parábola da Figueira sem Folhas ensina sobre a importância de reconhecer os sinais do tempo que indicam a proximidade do Reino de Deus, instando os ouvintes a se manterem preparados."
+    },
+    {
+      "title": "A Semente de Mostarda",
+      "reference": "Lucas 13:18-19",
+      "historical_context": "A agricultura era parte central da vida diária na Palestina do primeiro século, e as sementes e o cultivo eram temas facilmente compreendidos pelo público de Jesus.",
+      "theological_message": "O Reino de Deus começa de forma humilde e pequena, mas cresce e se expande até se tornar algo grandioso e transformador.",
+      "practical_application": "Refletir sobre a importância de pequenos começos em nossa vida espiritual e confiar que Deus pode usar esses inícios para realizar grandes obras.",
+      "summary": "A parábola compara a pequena semente de mostarda que cresce e se torna uma grande planta, simbolizando como o Reino de Deus, embora comece pequeno, tem um potencial incrível de crescimento e transformação."
+    },
+    {
+      "title": "O Fermento",
+      "reference": "Lucas 13:20-21",
+      "historical_context": "A panificação e o uso de fermento eram parte integrante da vida cotidiana na Palestina, onde o pão era um alimento básico, e as mulheres eram responsáveis por seu preparo.",
+      "theological_message": "O Reino de Deus começa de maneira pequena e quase invisível, mas sua influência se espalha de maneira lenta e poderosa, impactando tudo ao seu redor.",
+      "practical_application": "Reconhecer que até mesmo as pequenas ações cotidianas têm um impacto significativo no Reino de Deus e que, mesmo que não vejamos resultados imediatos, Deus está operando.",
+      "summary": "Na parábola, o fermento representa a forma como o Reino de Deus, inicialmente pequeno, pode transformar e expandir a vida e a sociedade de forma poderosa e invisível."
+    },
+    {
+      "title": "Parábola do Fermento",
+      "reference": "Lucas 13:20-21",
+      "historical_context": "A parábola é contada dentro do contexto do primeiro século, onde Jesus frequenta as comunidades judaicas, utilizando exemplos do cotidiano para comunicar verdades espirituais.",
+      "theological_message": "O Reino de Deus, embora comece pequeno e invisível, possui um poder transformador que afeta toda a criação.",
+      "practical_application": "A parábola nos encoraja a valorizar pequenos atos de fé e bondade, pois esses podem ter um impacto significativo.",
+      "summary": "Jesus utiliza a figura do fermento misturado à massa, ilustrando como algo pequeno pode crescer e transformar, simbolizando o crescimento oculto e poderoso do Reino de Deus."
+    },
+    {
+      "title": "Parábola dos Convidados para a Festa de Casamento",
+      "reference": "Lucas 14:15-24",
+      "historical_context": "Contexto de um banquete como símbolo de aceitação social. Os convites eram considerados uma honra e rejeitá-los era visto como um insulto.",
+      "theological_message": "A inclusividade do Reino de Deus é enfatizada, mostrando que todos, especialmente os marginalizados, são convidados a participar das bênçãos de Deus.",
+      "practical_application": "Devemos estender nossa generosidade aos que não podem retribuir e acolher aqueles que são frequentemente ignorados pela sociedade.",
+      "summary": "Jesus compara o Reino de Deus a um grande banquete, onde aqueles que normalmente seriam excluídos são agora convidados a participar, desafiando as normas sociais da época."
+    },
+    {
+      "title": "Parábola da Grande Festa",
+      "reference": "Lucas 14:15-24",
+      "historical_context": "Através do pano de fundo de banquetes na sociedade judaica, Jesus destaca a importância da hospitalidade e da generosidade.",
+      "theological_message": "Deus é generoso e convidativo, e oferece Sua graça a todos, independentemente de seu status social.",
+      "practical_application": "Devemos responder prontamente ao convite de Deus e não deixar que as distrações da vida nos impeçam de aceitar Sua oferta.",
+      "summary": "Um anfitrião convida muitos, mas, ao serem rejeitados, decide estender o convite aos pobres e excluídos, simbolizando a inclusividade do Reino de Deus."
+    },
+    {
+      "title": "A Parábola da Construção de uma Torre",
       "reference": "Lucas 14.28-33",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola da Construção de uma Torre é contada por Jesus em um contexto onde a construção e a agricultura eram partes essenciais da vida cotidiana no Oriente Médio do primeiro século. Essa parábola ilustra a importância de considerar cuidadosamente os custos antes de se comprometer com uma tarefa importante, usando a imagem familiar de uma construção, algo que os ouvintes de Jesus entenderiam bem.",
-      "theological_message": "A mensagem central da Parábola da Construção de uma Torre é que seguir a Jesus requer um comprometimento total e uma avaliação cuidadosa do custo. Jesus ensina que o discipulado não é uma decisão a ser tomada levianamente ou de forma impulsiva, mas uma escolha que exige reflexão, entrega completa e disposição para enfrentar os desafios e sacrifícios que essa jornada traz.",
-      "practical_application": "A Parábola da Construção de uma Torre nos desafia a refletir sobre o custo do discipulado e o comprometimento que é necessário para seguir a Jesus de forma genuína e fiel. Ela nos ensina a importância de tomar decisões conscientes e de estar dispostos a sacrificar tudo pelo Reino de Deus.",
-      "reflection_questions": [
-        "Tenho calculado o custo de seguir a Jesus?",
-        "Antes de tomar decisões sobre minha vida espiritual, tenho considerado as implicações e os sacrifícios que podem ser exigidos de mim?"
-      ],
-      "summary": "Jesus conta a parábola de um construtor que, antes de iniciar uma torre, deve calcular o custo para evitar o ridículo de não terminá-la. A parábola enfatiza que seguir a Jesus exige um comprometimento total e uma avaliação honesta dos sacrifícios. Não é uma decisão superficial, mas uma entrega completa e disposição para enfrentar desafios. O discipulado requer perseverança, e começar sem um compromisso sério pode levar ao fracasso espiritual."
+      "historical_context": "No primeiro século, na Palestina, a construção de torres e outras estruturas era uma prática comum tanto na vida urbana quanto rural. Torres de vigia eram frequentemente construídas em campos agrícolas e vinhedos para proteger as colheitas de ladrões e animais.",
+      "theological_message": "Seguir a Jesus requer um comprometimento total e uma avaliação cuidadosa do custo. Jesus ensina que o discipulado não é uma decisão a ser tomada levianamente ou de forma impulsiva, mas uma escolha que exige reflexão e entrega completa.",
+      "practical_application": "Avalie suas prioridades e pergunte a si mesmo: Estou disposto a pagar o preço para seguir Jesus, mesmo que isso signifique sacrificar meus confortos e interesses pessoais?",
+      "summary": "A parábola enfatiza a importância do planejamento e da avaliação antes de entrar em um compromisso sério, destacando que o discipulado exige total dedicação e a disposição para enfrentar desafios."
     },
     {
-      "title": "O fariseu e o cobrador de impostos",
-      "reference": "Lucas 18.10-14",
-      "book": "Lucas",
-      "testament": "NT",
-      "historical_context": "A Parábola do Fariseu e do Cobrador de Impostos, contada por Jesus em Lucas 18:10-14, é inserida em um contexto cultural e religioso onde as diferenças entre fariseus e cobradores de impostos eram profundas e significativas na sociedade judaica do primeiro século. Essa parábola explora as atitudes de orgulho e humildade, usando dois personagens que eram vistos de maneira muito diferente pelo povo daquela época.",
-      "theological_message": "A mensagem central da Parábola do Fariseu e do Cobrador de Impostos é que Deus aceita e justifica aqueles que se aproximam Dele com humildade, arrependimento e dependência de Sua misericórdia, enquanto rejeita aqueles que confiam em sua própria justiça e se exaltam diante dos outros. Jesus usa essa parábola para destacar a diferença entre uma atitude de orgulho e autojustificação e uma postura de humildade e sinceridade diante de Deus.",
-      "practical_application": "A Parábola do Fariseu e do Cobrador de Impostos nos desafia a refletir sobre nossa atitude diante de Deus e nos chama a desenvolver um coração humilde e arrependido. Jesus nos ensina a evitar o orgulho espiritual e a dependência de nossas próprias obras, convidando-nos a confiar na misericórdia de Deus e a tratar os outros com compaixão.",
-      "reflection_questions": [
-        "Como é minha atitude ao orar?",
-        "Quando eu oro, estou me aproximando de Deus com humildade e dependência ou estou buscando exaltar minhas próprias realizações e boas obras?"
-      ],
-      "summary": "Jesus conta a história de um fariseu e um cobrador de impostos orando no Templo. O fariseu ora exaltando sua própria justiça e comparando-se aos outros, enquanto o cobrador de impostos, humildemente, pede misericórdia. Jesus declara que o cobrador de impostos foi justificado, pois Deus aceita aqueles que se aproximam com humildade e arrependimento. A parábola condena o orgulho religioso e a autojustificação, enfatizando que a verdadeira justiça vem da graça de Deus e de um coração sincero."
+      "title": "A Parábola do Fariseu e do Cobrador de Impostos",
+      "reference": "Lucas 18:10-14",
+      "historical_context": "A sociedade judaica do primeiro século via os fariseus como guardiões da lei e os cobradores de impostos como traidores e pecadores, sendo significativa a diferença entre ambos na cultura e religião da época.",
+      "theological_message": "A verdadeira justiça diante de Deus não é baseada em ações externas ou em comparação com os outros, mas sim em um coração humilde e arrependido que busca a misericórdia divina.",
+      "practical_application": "Reflita sobre suas próprias atitudes: estou me aproximando de Deus em humildade ou me considerando superior aos outros? Busque viver de forma que reconheça sua necessidade de graça.",
+      "summary": "A parábola compara os orações de um fariseu e um cobrador de impostos, enfatizando que a humildade e o reconhecimento da própria necessidade de perdão são mais valorizados por Deus do que o orgulho religioso."
     },
     {
-      "title": "O retorno do proprietário",
-      "reference": "Marcos 12.1-9",
-      "book": "Marcos",
-      "testament": "NT",
-      "historical_context": "A Parábola do Retorno do Proprietário, contada por Jesus em Marcos 12:1-9, se desenrola em um contexto onde a agricultura e a propriedade de terras eram partes essenciais da economia e da vida social na Palestina do primeiro século. Essa parábola também reflete as tensões entre os líderes religiosos de Israel e a mensagem de Jesus.",
-      "theological_message": "A mensagem central da Parábola do Retorno do Proprietário é que Deus espera frutos de fidelidade e obediência de Seu povo, e aqueles que rejeitam Seus mensageiros e Sua autoridade enfrentarão julgamento. Jesus usa essa parábola para denunciar a rejeição contínua dos profetas por parte dos líderes religiosos de Israel e para profetizar sua própria rejeição e morte nas mãos desses mesmos líderes.",
-      "practical_application": "A Parábola do Retorno do Proprietário nos desafia a refletir sobre nossa resposta ao chamado de Deus e sobre como estamos cuidando da \"vinha\" que Ele confiou a nós. Ela destaca a importância de produzir frutos espirituais e de responder à autoridade de Deus com humildade e obediência.",
-      "reflection_questions": [
-        "Estou cuidando bem da vinha que Deus confiou a mim?",
-        "Estou usando meus dons, talentos e oportunidades para produzir frutos espirituais que glorificam a Deus?"
-      ],
-      "summary": "Um proprietário planta uma vinha, arrenda-a a agricultores e viaja. Na época da colheita, ele envia servos para recolher os frutos, mas os agricultores os maltratam e matam. Finalmente, o proprietário envia seu próprio filho, que também é morto pelos agricultores. A parábola simboliza a rejeição de Deus pelos líderes de Israel e a profecia da morte de Jesus. Ela alerta que a infidelidade terá julgamento e que o Reino será transferido para outros que aceitarem o Filho."
+      "title": "Parábola do Fariseu e do Cobrador de Impostos",
+      "reference": "Lucas 18:10-14",
+      "historical_context": "A parábola ocorre em um contexto onde o orgulho religioso era comum entre fariseus e líderes religiosos que se consideravam superiores aos pecadores. Jesus desafia essa norma ao mostrar que a verdadeira justiça não é baseada na aparência ou em práticas religiosas, mas sim em um coração humilde.",
+      "theological_message": "A verdadeira aceitação diante de Deus vem da humildade e do arrependimento, não da autojustificação e orgulho. Deus rejeita os arrogantes e aceita os humildes.",
+      "practical_application": "Na oração, aproximar-se de Deus com um coração humilde e reconhecer a necessidade de Sua misericórdia é essencial. Devemos evitar comparações com os outros e focar em nosso próprio arrependimento.",
+      "summary": "A parábola contrasta a oração de um fariseu orgulhoso que se vangloria de suas boas obras, com a oração humilde de um cobrador de impostos que reconhece sua necessidade de perdão. Jesus ensina que o cobrador foi justificado, invertendo as expectativas sociais."
     },
     {
-      "title": "A semente que cresce",
-      "reference": "Marcos 4.26-29",
-      "book": "Marcos",
-      "testament": "NT",
-      "historical_context": "A Parábola da Semente que Cresce, contada por Jesus em Marcos 4:26-29, está situada em um contexto onde a agricultura era uma parte fundamental da vida cotidiana na Palestina do primeiro século. A sociedade da época era predominantemente agrária, e as pessoas tinham um profundo conhecimento dos processos de plantio, cultivo e colheita.",
-      "theological_message": "A mensagem central da Parábola da Semente que Cresce é que o Reino de Deus se desenvolve de maneira misteriosa e independente, sob a direção soberana de Deus, e alcançará a sua plenitude no tempo certo. Jesus ensina que, embora os seres humanos tenham um papel ativo em semear a Palavra e participar do trabalho do Reino, o crescimento e o sucesso final desse Reino são obra exclusiva de Deus, ocorrendo de maneira invisível e além do nosso controle.",
-      "practical_application": "A Parábola da Semente que Cresce nos ensina a confiar na obra de Deus e a reconhecer que o crescimento do Seu Reino acontece de maneira misteriosa, muitas vezes invisível e além do nosso controle. Ela nos desafia a semear a Palavra com fidelidade, a esperar com paciência e a confiar que Deus está sempre trabalhando.",
-      "reflection_questions": [
-        "Como estou semeando a Palavra de Deus em minha vida e na vida dos outros?",
-        "Estou fazendo minha parte para plantar as sementes do Reino de Deus ao meu redor, ou estou esperando que o crescimento aconteça sem o meu envolvimento?"
-      ],
-      "summary": "Jesus descreve um agricultor que planta uma semente e, sem saber como, ela cresce e amadurece até a colheita. A parábola ilustra que o Reino de Deus cresce de forma misteriosa e independente do controle humano, sob a soberania divina. Embora tenhamos um papel em semear a Palavra, o crescimento e o sucesso final são obra de Deus. A mensagem encoraja a confiar no processo de Deus e a ter paciência, mesmo sem ver resultados imediatos."
+      "title": "Parábola do Retorno do Proprietário",
+      "reference": "Marcos 12:1-9",
+      "historical_context": "A parábola é contada em um contexto onde Jesus enfrenta a oposição dos líderes religiosos, que viam sua mensagem como uma ameaça. Ela reflete as tensões entre Jesus e a liderança religiosa de Jerusalém.",
+      "theological_message": "Deus espera frutos de fidelidade e justiça de Seu povo. Aqueles que rejeitam Seus mensageiros enfrentam julgamento, enquanto a bênção é transferida para aqueles que a valorizam.",
+      "practical_application": "Devemos ser responsáveis diante de Deus, reconhecendo que somos como arrendatários da Sua criação. A rejeição da mensagem de Deus nos leva a consequências graves.",
+      "summary": "A parábola narra a história de um proprietário que arrenda sua vinha a agricultores, mas quando envia seus servos para receber os frutos, eles são maltratados. Finalmente, ele envia seu filho, que também é assassinado. A parábola simboliza a rejeição de Jesus e o julgamento que virá sobre aqueles que não produzem frutos."
     },
     {
-      "title": "O joio",
-      "reference": "Mateus 13.24-30",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola do Joio e do Trigo, contada por Jesus em Mateus 13:24-30, é situada em um contexto agrícola familiar para os ouvintes da Palestina do primeiro século. A agricultura era uma parte central da economia e da vida diária das pessoas, e os processos de cultivo, crescimento e colheita eram bem compreendidos pelo povo.",
-      "theological_message": "A mensagem central da Parábola do Joio e do Trigo é que o Reino de Deus e o mal coexistem no mundo até o dia do julgamento final, quando Deus fará a separação definitiva entre os justos e os ímpios. Jesus ensina que, embora o mal esteja presente e ativo no mundo, Deus é paciente e permite que ele cresça lado a lado com o bem até o momento certo.",
-      "practical_application": "A Parábola do Joio e do Trigo nos desafia a refletir sobre como lidar com a presença do mal no mundo e como viver como filhos do Reino de Deus em meio às dificuldades e provações. Jesus nos ensina a confiar na justiça divina e a manter a paciência enquanto esperamos pelo julgamento final.",
-      "reflection_questions": [
-        "Como lido com a presença do mal no mundo ao meu redor?",
-        "Quando vejo injustiças ou maldade, minha reação é de frustração e desespero, ou consigo confiar que Deus está no controle e que haverá um julgamento final?"
-      ],
-      "summary": "Um homem semeia boa semente em seu campo, mas um inimigo planta joio entre o trigo. Os servos querem arrancar o joio, mas o dono ordena que esperem até a colheita para não danificar o trigo. A parábola ensina que o bem e o mal coexistem no mundo até o julgamento final, quando Deus fará a separação definitiva. Ela destaca a paciência de Deus e a certeza de que a justiça será feita no tempo certo, recompensando os fiéis e punindo os que persistiram no mal."
+      "title": "Parábola da Vinha",
+      "reference": "Isaías 5:1-7",
+      "historical_context": "A vinha simboliza Israel e a decepção de Deus com a desobediência do povo. O tema da rejeição dos profetas por Israel é recorrente no Antigo Testamento.",
+      "theological_message": "Deus espera frutos de justiça de Seu povo e, ao não produzi-los, enfrentará juízo.",
+      "practical_application": "Reflita sobre sua responsabilidade em produzir frutos espirituais e sobre sua resposta aos mensageiros de Deus.",
+      "summary": "A parábola destaca que, apesar dos cuidados do proprietário, a vinha não produziu frutos, simbolizando a rejeição da mensagem de Deus pelos líderes religiosos de Israel."
     },
     {
-      "title": "O tesouro escondido",
-      "reference": "Mateus 13.44",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola do Tesouro Escondido, contada por Jesus em Mateus 13:44, está inserida em um contexto onde o conceito de encontrar um tesouro escondido era algo familiar e compreensível para as pessoas da Palestina do primeiro século. Devido às condições sociais e políticas da época, as práticas de esconder bens valiosos eram comuns, e Jesus usa essa ideia para transmitir uma mensagem espiritual sobre o valor do Reino de Deus.",
-      "theological_message": "A mensagem central da Parábola do Tesouro Escondido é que o Reino de Deus é de valor inestimável e vale a pena sacrificar tudo para possuí-lo. Jesus ensina que, quando alguém realmente compreende a grandeza e a importância do Reino, essa descoberta se torna a prioridade absoluta da vida, superando qualquer outro bem material ou realização pessoal.",
-      "practical_application": "A Parábola do Tesouro Escondido nos desafia a refletir sobre o valor que damos ao Reino de Deus em nossas vidas e o quanto estamos dispostos a sacrificar para viver plenamente na Sua presença. Jesus nos convida a avaliar nossas prioridades e a decidir se estamos dispostos a fazer de Deus e de Seu Reino a nossa maior riqueza.",
-      "reflection_questions": [
-        "O que considero o tesouro mais valioso em minha vida?",
-        "Quais são as coisas que tenho colocado em primeiro lugar? Elas são mais importantes para mim do que o Reino de Deus?"
-      ],
-      "summary": "Um homem encontra um tesouro escondido em um campo, e cheio de alegria, vende tudo o que possui para comprar o campo e assegurar o tesouro. A parábola ilustra o valor inestimável do Reino de Deus, que supera qualquer bem material. Ela ensina que a descoberta do Reino traz imensa alegria e exige um compromisso total, levando a uma decisão radical de sacrificar tudo para possuí-lo. O Reino de Deus é uma descoberta pessoal que redefine prioridades e o foco da vida."
+      "title": "Parábola da Semente que Cresce",
+      "reference": "Marcos 4:26-29",
+      "historical_context": "Em um contexto agrícola, a parábola reflete a dependência do agricultor em relação ao crescimento que depende de fatores fora de seu controle.",
+      "theological_message": "O Reino de Deus cresce de forma misteriosa e soberana, independentemente do controle humano.",
+      "practical_application": "Confie no processo de crescimento espiritual que muitas vezes é invisível e gradual, mesmo diante da falta de resultados imediatos.",
+      "summary": "A parábola ilustra como, embora o agricultor semeie a semente, o verdadeiro crescimento acontece de forma misteriosa e automática, ressaltando que Deus é quem faz o Reino prosperar."
     },
     {
-      "title": "A pérola",
-      "reference": "Mateus 13.45-46",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola da Pérola de Grande Valor, contada por Jesus em Mateus 13:45-46, está situada em um contexto econômico e cultural onde as pérolas eram altamente valorizadas e consideradas um símbolo de riqueza e status. As pérolas eram algumas das joias mais preciosas do mundo antigo, e Jesus usa essa imagem para ilustrar o valor inestimável do Reino de Deus.",
-      "theological_message": "A mensagem central da Parábola da Pérola de Grande Valor é que o Reino de Deus é de valor inestimável e merece o sacrifício de tudo o que possuímos para obtê-lo. Jesus ensina que o Reino é tão precioso que, uma vez que o encontramos, nada mais em nossa vida pode se comparar a ele.",
-      "practical_application": "A Parábola da Pérola de Grande Valor nos desafia a refletir sobre o quanto estamos dispostos a sacrificar e investir para viver plenamente no Reino de Deus. Jesus nos chama a avaliar nossas prioridades e a considerar se estamos dispostos a abrir mão de tudo para buscar aquilo que tem valor eterno.",
-      "reflection_questions": [
-        "O que considero a \"pérola de grande valor\" em minha vida?",
-        "Quais são as coisas ou pessoas que estou colocando como prioridade em minha vida?"
-      ],
-      "summary": "Um mercador, em busca de pérolas preciosas, encontra uma de valor extraordinário. Reconhecendo seu valor inestimável, ele vende tudo o que possui para comprá-la. A parábola ilustra que o Reino de Deus é de valor incomparável, superando qualquer riqueza material. A descoberta do Reino traz imensa alegria e exige um compromisso total, levando a uma decisão radical de sacrificar tudo para possuí-lo. O Reino de Deus é o bem mais precioso e digno de todos os esforços."
+      "title": "A Parábola do Joio e do Trigo",
+      "reference": "Mateus 13:24-30",
+      "historical_context": "Situada em um contexto agrícola familiar para os ouvintes da Palestina do primeiro século, onde a agricultura era parte central da vida diária.",
+      "theological_message": "O bem e o mal coexistem no mundo até o juízo final, ressaltando a paciência de Deus em lidar com a maldade.",
+      "practical_application": "Devemos focar em nosso próprio crescimento espiritual, confiar no tempo de Deus para o julgamento e permanecer fiéis mesmo em meio ao mal.",
+      "summary": "A parábola narra a história de um homem que semeia trigo, mas seu inimigo planta joio. A separação entre ambos ocorrerá na colheita, simbolizando o julgamento de Deus no fim dos tempos."
     },
     {
-      "title": "A rede",
-      "reference": "Mateus 13.47-48",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola da Rede, contada por Jesus em Mateus 13:47-48, está situada em um contexto cultural e econômico onde a pesca era uma parte essencial da vida diária na região da Galileia e outras áreas ao redor do Mar Mediterrâneo. A pesca era uma das principais atividades econômicas e um modo de sustento para muitas famílias.",
-      "theological_message": "A mensagem central da Parábola da Rede é que o Reino de Deus é inclusivo e acolhe todos, mas haverá um julgamento final que separará os justos dos ímpios. Jesus compara o Reino a uma rede que apanha peixes de todos os tipos, simbolizando a diversidade de pessoas que têm a oportunidade de ouvir e responder à mensagem do evangelho.",
-      "practical_application": "A Parábola da Rede nos ensina lições importantes sobre o Reino de Deus, a inclusão de todas as pessoas e o julgamento final. Jesus nos chama a refletir sobre a maneira como vivemos e respondemos ao convite de Deus, sabendo que haverá uma separação entre os justos e os ímpios no fim dos tempos.",
-      "reflection_questions": [
-        "Estou vivendo de acordo com os princípios do Reino de Deus?",
-        "Minha vida hoje reflete os valores e princípios do Reino? Estou vivendo de maneira que agradaria a Deus?"
-      ],
-      "summary": "Jesus compara o Reino de Deus a uma rede de pesca lançada ao mar, que captura peixes de todos os tipos. Quando a rede é cheia, os pescadores separam os peixes bons dos ruins. A parábola ilustra que o Reino de Deus é inclusivo, acolhendo pessoas de todas as origens. No entanto, haverá um julgamento final onde os justos serão separados dos ímpios. A mensagem enfatiza a inevitabilidade do juízo divino e a necessidade de viver de acordo com os princípios do Reino."
+      "title": "A Parábola do Tesouro Escondido",
+      "reference": "Mateus 13:44",
+      "historical_context": "O contexto social e político da Palestina do primeiro século incluía práticas de esconder bens devido a insegurança, guerras e saques.",
+      "theological_message": "O Reino de Deus é um tesouro de valor inestimável que vale a pena buscar e pelo qual se deve sacrificar tudo.",
+      "practical_application": "Devemos reconhecer o valor do Reino de Deus em nossas vidas e estar dispostos a abrir mão de nossos bens materiais e ansiedades para possuí-lo.",
+      "summary": "A parábola ilustra como encontrar um tesouro escondido representa o valor do Reino de Deus, que é tão precioso que justifica qualquer sacrifício para obtê-lo."
     },
     {
-      "title": "O empregado mau",
-      "reference": "Mateus 18.23-24",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola do Empregado Mau, também conhecida como a parábola do servo que não perdoa, é contada por Jesus em Mateus 18:23-35. Ela se passa em um contexto cultural, social e econômico que envolvia a dinâmica de servidão, grandes dívidas e o sistema de justiça nos tempos de Jesus.",
-      "theological_message": "A mensagem central da Parábola do Empregado Mau é que assim como Deus nos perdoa generosamente, devemos perdoar os outros de coração. Jesus usa essa parábola para ilustrar o tamanho da dívida espiritual que cada um de nós tem diante de Deus e como somos incapazes de pagá-la.",
-      "practical_application": "A Parábola do Empregado Mau ensina lições profundas sobre o perdão e como devemos viver à luz do perdão que recebemos de Deus. Jesus nos chama a refletir sobre a imensidão do perdão de Deus em nossas vidas e a estender esse perdão aos outros, sem reservas.",
-      "reflection_questions": [
-        "Eu entendo a magnitude do perdão que recebi de Deus?",
-        "Assim como o servo foi perdoado de uma dívida impagável, Deus nos perdoa generosamente. Tenho refletido sobre o tamanho do perdão que Deus me concedeu?"
-      ],
-      "summary": "Um rei perdoa a dívida impagável de um servo, que por sua vez se recusa a perdoar uma dívida muito menor de um companheiro. O rei, indignado, revoga o perdão e pune o servo. A parábola ensina que o perdão de Deus é imenso e incondicional, e que devemos estender esse mesmo perdão aos outros. A recusa em perdoar, após ter recebido grande perdão, resulta em julgamento severo e demonstra um coração que não compreendeu a graça divina."
+      "title": "Parábola do Tesouro Escondido",
+      "reference": "Mateus 13:44",
+      "historical_context": "A Palestina do primeiro século estava sob domínio romano e era caracterizada por invasões e conflitos, levando as pessoas a esconderem bens valiosos para protegê-los.",
+      "theological_message": "O Reino de Deus é comparado a um tesouro de valor incalculável que vale a pena ser buscado a todo custo.",
+      "practical_application": "Refletir sobre o que se valoriza em vida e considerar o que se está disposto a sacrificar para seguir a Deus.",
+      "summary": "Um homem encontra um tesouro escondido em um campo, fica tão alegre que vende tudo que possui para comprar o campo e garantir sua posse, simbolizando o valor supremo do Reino de Deus."
     },
     {
-      "title": "Os trabalhadores no vinhedo",
-      "reference": "Mateus 20.1-16",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola dos Trabalhadores no Vinhedo (Mateus 20:1-16) ocorre dentro de um contexto social, econômico e cultural específico da Palestina do primeiro século, particularmente em relação ao trabalho agrícola e às práticas de contratação de trabalhadores para o cultivo das vinhas. Entender esse contexto ajuda a compreender a profundidade do ensino de Jesus sobre graça, justiça e o Reino de Deus.",
-      "theological_message": "A mensagem central da Parábola dos Trabalhadores no Vinhedo é que o Reino de Deus é regido pela graça, não pelo mérito humano, e que Deus, em Sua soberania, concede Suas bênçãos conforme Sua vontade e generosidade. Jesus ensina que as recompensas no Reino não são baseadas no tempo de serviço ou na quantidade de trabalho, mas no favor gracioso de Deus, que pode dar tanto aos que chegaram cedo quanto aos que vieram por último.",
-      "practical_application": "A Parábola dos Trabalhadores no Vinhedo nos desafia a repensar como lidamos com a graça de Deus, a justiça, e nossa atitude em relação às bênçãos que Ele concede aos outros. Ela nos ensina sobre a soberania de Deus, a natureza do Reino e a importância de viver com gratidão, humildade e generosidade.",
-      "reflection_questions": [
-        "Estou aceitando a maneira como Deus escolhe abençoar minha vida e a vida dos outros?",
-        "Estou mostrando a mesma dignidade e respeito a todos, independentemente de sua caminhada espiritual ou experiência de vida?"
-      ],
-      "summary": "Um proprietário contrata trabalhadores para seu vinhedo em diferentes horas do dia, prometendo pagamento justo. No final do dia, ele paga a todos a mesma quantia, um denário, começando pelos últimos. Os primeiros trabalhadores reclamam, sentindo-se injustiçados, mas o proprietário afirma seu direito de ser generoso. A parábola ensina que o Reino de Deus é regido pela graça soberana, não pelo mérito humano. Deus abençoa a todos que respondem ao Seu chamado, independentemente do tempo de serviço, invertendo as expectativas humanas de justiça."
+      "title": "Parábola da Pérola de Grande Valor",
+      "reference": "Mateus 13:45-46",
+      "historical_context": "A parábola está situada num contexto em que o Reino de Deus é comparado a tesouros de grande valor, enfatizando a ideia de que a vida eterna com Deus é mais preciosa do que qualquer riqueza material.",
+      "theological_message": "O Reino de Deus é de valor inestimável e merece o sacrifício de tudo o que possuímos para obtê-lo.",
+      "practical_application": "Reflita sobre o que realmente valoriza em sua vida e considere o que está disposto a sacrificar para priorizar o Reino de Deus.",
+      "summary": "A Parábola da Pérola de Grande Valor ensina que o Reino de Deus é tão precioso que, ao encontrá-lo, deve-se estar disposto a abrir mão de tudo o que possuímos para seguir a Deus."
     },
     {
-      "title": "Os dois filhos",
-      "reference": "Mateus 21.28-31",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola dos Dois Filhos foi contada por Jesus durante a última semana de Sua vida, após Sua entrada triunfal em Jerusalém, quando Ele começou a confrontar diretamente os líderes religiosos. O contexto histórico, social e religioso da época lança luz sobre a profundidade dessa parábola e as lições que ela transmite.",
-      "theological_message": "A mensagem central da Parábola dos Dois Filhos é que a obediência verdadeira a Deus se manifesta nas ações, não apenas nas palavras. Jesus usa essa parábola para ensinar que aqueles que realmente fazem a vontade de Deus são os que se arrependem e agem de acordo com Sua vontade, independentemente de uma resposta inicial de recusa.",
-      "practical_application": "A Parábola dos Dois Filhos tem uma mensagem clara sobre a importância de vivermos uma obediência verdadeira, refletida em nossas ações e não apenas em palavras. Ela nos desafia a avaliar nossa resposta ao chamado de Deus e como estamos colocando em prática Sua vontade em nossa vida diária.",
-      "reflection_questions": [
-        "Minha obediência a Deus é refletida nas minhas ações ou apenas nas minhas palavras?",
-        "Assim como o segundo filho disse que obedeceria, mas não fez, pergunte a si mesmo: Estou apenas falando sobre servir a Deus ou estou realmente vivendo conforme a Sua vontade no meu dia a dia?"
-      ],
-      "summary": "Um pai pede a seus dois filhos para trabalharem na vinha. O primeiro diz \"não\", mas depois se arrepende e vai; o segundo diz \"sim\", mas não vai. Jesus pergunta qual deles fez a vontade do pai, revelando que a obediência verdadeira se manifesta em ações, não apenas em palavras. A parábola condena a hipocrisia religiosa e destaca que o arrependimento sincero, mesmo após uma recusa inicial, leva à verdadeira obediência e aceitação no Reino de Deus."
+      "title": "Parábola da Rede",
+      "reference": "Mateus 13:47-50",
+      "historical_context": "Durante o ministério de Jesus, a pesca era uma atividade comum na Galileia, onde as redes eram usadas para capturar peixes do Lago de Genesaré. A inclusão de peixes de todos os tipos simboliza a universalidade do convite de Deus para todos os povos.",
+      "theological_message": "A parábola ilustra o julgamento final de Deus, onde os justos serão separados dos ímpios, enfatizando a importância da inclusão no Reino de Deus e do estilo de vida que esse Reino exige.",
+      "practical_application": "Devemos examinar nossas vidas à luz dos princípios do Reino de Deus, viver de acordo com seus valores e ser inclusivos no nosso ministério e em nossas vidas pessoais.",
+      "summary": "A Parábola da Rede ensina sobre a inclusão e o julgamento final no Reino de Deus, alertando que todos são chamados, mas haverá uma separação entre os que obedecem a Deus e os que o rejeitam."
     },
     {
-      "title": "A festa de casamento",
-      "reference": "Mateus 22.2-14",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola da Festa de Casamento, contada por Jesus em Mateus 22:2-14, ocorre dentro do contexto da Palestina do primeiro século. Jesus já estava em Jerusalém, e esse período foi marcado por crescente tensão entre Ele e os líderes religiosos (fariseus, saduceus e escribas), que questionavam Sua autoridade.",
-      "theological_message": "A mensagem central da Parábola da Festa de Casamento é que o Reino de Deus é oferecido a todos, mas é necessário aceitar o convite de Deus com um coração arrependido e preparado. Jesus ensina que, embora o convite ao Reino seja amplamente oferecido, nem todos respondem corretamente.",
-      "practical_application": "A Parábola da Festa de Casamento nos desafia a refletir sobre nossa resposta ao convite de Deus e a nos perguntarmos se estamos espiritualmente preparados para o Reino de Deus. A mensagem central sobre aceitar o convite com arrependimento e transformação é vital para nossa vida cristã.",
-      "reflection_questions": [
-        "Como eu tenho respondido ao convite de Deus em minha vida?",
-        "Deus me convida para fazer parte do Seu Reino e para segui-Lo. Tenho aceitado esse convite com sinceridade ou deixado que outras prioridades ditem minhas escolhas?"
-      ],
-      "summary": "Um rei prepara uma festa de casamento para seu filho e convida muitos, mas os convidados recusam e até maltratam os servos. Irado, o rei envia suas tropas para destruir os assassinos e suas cidades. Ele então manda seus servos convidarem todos das ruas, bons e maus. Um convidado sem veste nupcial é expulso. A parábola ensina que o convite ao Reino de Deus é universal, mas exige arrependimento e preparação espiritual, simbolizada pela veste nupcial. Muitos são chamados, mas poucos são escolhidos."
+      "title": "Parábola do Empregado Mau",
+      "reference": "Mateus 18:23-35",
+      "historical_context": "A parábola é contada em um contexto de dívidas opressivas na sociedade judaica, onde o perdão de dívidas era uma questão significativa para a justiça social e a mercê da mercê de Deus através do perdão.",
+      "theological_message": "Reflete a importância do perdão inter-humano, mostrando que aqueles que experimentam o perdão de Deus devem, por sua vez, perdoar os outros. O não fazê-lo leva a consequências severas.",
+      "practical_application": "A parábola nos chama a perdoar de coração, refletindo sobre a misericórdia que recebemos de Deus e a responsabilidade que temos de estender essa graça aos outros.",
+      "summary": "A Parábola do Empregado Mau ilustra a imensidão do perdão de Deus e a expectativa de que devemos perdoar os outros, sob pena de enfrentar a severidade do julgamento divino."
     },
     {
-      "title": "As dez virgens",
-      "reference": "Mateus 25.1-13",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola das Dez Virgens faz parte do discurso escatológico de Jesus no Monte das Oliveiras, em Mateus 24 e 25, onde Ele fala sobre o fim dos tempos e a preparação necessária para a vinda do Reino de Deus. Esse discurso ocorre durante a última semana da vida de Jesus, pouco antes de Sua crucificação, e tem um foco forte na vigilância e na preparação para o dia do julgamento.",
-      "theological_message": "A mensagem central da Parábola das Dez Virgens é que todos devem estar constantemente preparados para a volta de Cristo, pois ninguém sabe o dia ou a hora em que Ele virá. A parábola ressalta a importância da vigilância espiritual, da preparação contínua e da fidelidade.",
-      "practical_application": "A Parábola das Dez Virgens é um chamado claro para que cada cristão viva em preparação constante para a volta de Cristo. Essa preparação envolve manter uma vida de fé ativa, vigilância espiritual e comprometimento genuíno com Deus. A parábola nos ensina a estar sempre prontos, pois o retorno de Cristo é certo, mas imprevisível.",
-      "reflection_questions": [
-        "Minha fé está viva e ativa, ou estou negligenciando minha vida espiritual?",
-        "O óleo das lâmpadas simboliza uma fé ativa e perseverante. Eu estou alimentando minha fé regularmente por meio da oração, leitura da Bíblia e comunhão com Deus, ou estou permitindo que minha fé enfraqueça?"
-      ],
-      "summary": "Dez virgens esperam o noivo para uma festa de casamento; cinco são prudentes e levam óleo extra, cinco são tolas e não. O noivo atrasa, e todas adormecem. À meia-noite, o noivo chega, e as tolas, sem óleo, saem para comprar, mas a porta é fechada. A parábola ensina a necessidade de vigilância espiritual e preparação contínua para a volta inesperada de Cristo. A fé ativa e o compromisso genuíno com Deus são essenciais para entrar no Reino, pois a oportunidade de preparação tem um fim."
+      "title": "Parábola dos Trabalhadores no Vinhedo",
+      "reference": "Mateus 20:1-16",
+      "historical_context": "Ambientada em um contexto agrícola da Palestina, a parábola reflete as práticas de trabalho e a realidade econômica da época, onde os jornaleiros dependiam de trabalho diário para sustentar suas famílias.",
+      "theological_message": "Demonstra a graça de Deus, onde a recompensa não é baseada na quantidade de trabalho feito, mas na bondade do Senhor, que superou as expectativas humanas de justiça.",
+      "practical_application": "Encoraja a refletir sobre a graça que recebemos e como devemos agir de forma generosa e justa na vida cotidiana, promovendo um espírito inclusivo e acolhedor.",
+      "summary": "A Parábola dos Trabalhadores no Vinhedo enfatiza a generosidade de Deus em recompensar todos os trabalhadores igualmente, independentemente do tempo que passaram a trabalhar, ressaltando a natureza da graça divina."
     },
     {
-      "title": "As ovelhas e as cabras",
-      "reference": "Mateus 25.31-36",
-      "book": "Mateus",
-      "testament": "NT",
-      "historical_context": "A Parábola das Ovelhas e das Cabras, também chamada de Parábola do Juízo Final, faz parte do discurso escatológico de Jesus, que abrange Mateus 24 e 25, onde Ele fala sobre os eventos relacionados ao fim dos tempos e à segunda vinda de Cristo. Esse ensinamento se passa durante a última semana da vida de Jesus, enquanto Ele está em Jerusalém, pouco antes de Sua crucificação.",
-      "theological_message": "A mensagem central da Parábola das Ovelhas e das Cabras é que o julgamento final de Deus será baseado em atos de compaixão e misericórdia. Jesus ensina que o critério para separar os justos dos ímpios será a maneira como trataram os necessitados — os pobres, famintos, sedentos, estrangeiros, doentes e presos.",
-      "practical_application": "A Parábola das Ovelhas e das Cabras é um chamado claro para uma vida de compaixão ativa e cuidado com os necessitados. Ela nos ensina que o critério do julgamento final será como tratamos os mais vulneráveis, e que servir ao próximo é servir a Cristo.",
-      "reflection_questions": [
-        "Estou demonstrando amor prático pelos necessitados ao meu redor?",
-        "Assim como as ovelhas na parábola, tenho procurado formas de ajudar os famintos, sedentos, doentes, presos ou marginalizados?"
-      ],
-      "summary": "Jesus descreve o Filho do Homem vindo em glória para julgar as nações, separando as pessoas como um pastor separa ovelhas de cabras. As ovelhas (justos) são recompensadas por atos de compaixão aos necessitados, pois ao servi-los, serviram a Cristo. As cabras (ímpios) são condenadas por ignorar essas necessidades. A parábola ensina que o julgamento final se baseia no amor prático ao próximo, e que servir aos mais vulneráveis é servir ao próprio Jesus, com consequências eternas para nossas ações."
+      "title": "A Parábola dos Trabalhadores no Vinhedo",
+      "reference": "Mateus 20:1-16",
+      "historical_context": "A parábola ocorre dentro de um contexto social, econômico e cultural específico da Palestina do primeiro século, especialmente em relação ao trabalho agrícola. Os trabalhadores dependiam de empregos diários, e a agricultura era a principal atividade econômica.",
+      "theological_message": "A mensagem central da parábola é que o Reino de Deus é regido pela graça, não pelo mérito humano. Deus concede Suas bênçãos conforme Sua vontade e generosidade. A parábola desafia a visão de que as recompensas no Reino de Deus são baseadas em esforço ou mérito.",
+      "practical_application": "Examine suas atitudes em relação às bênçãos que outras pessoas recebem. Pergunte-se se se sente ressentido por não ter recebido o que outros consideram 'justo'. Celebre a graça de Deus na vida dos outros.",
+      "summary": "A história conta sobre um proprietário que contrata trabalhadores em diferentes momentos do dia, mas paga a todos o mesmo valor, gerando descontentamento entre aqueles que trabalharam mais. O proprietário explica que está sendo justo, pois pagou o que havia prometido, e que tem o direito de ser generoso. A parábola termina com a afirmação de que os últimos serão os primeiros, desafiando as expectativas humanas sobre justiça e recompensa."
+    },
+    {
+      "title": "A Parábola dos Dois Filhos",
+      "reference": "Mateus 21:28-31",
+      "historical_context": "Contada durante a última semana da vida de Jesus, a parábola responde a líderes religiosos que praticavam uma religiosidade externa, mas eram hipócritas em sua verdadeira obediência a Deus.",
+      "theological_message": "A parábola ilustra a importância da verdadeira obediência e arrependimento em contraste com as aparências. Jesús enfatiza que muitos que são considerados pecadores podem aceitar o chamado de Deus e arrepender-se mais verdadeiramente do que os que se consideram justos.",
+      "practical_application": "Refletir sobre como respondemos ao chamado de Deus em nossas vidas. Avaliar se estamos praticando uma religiosidade externa ou se nossa obediência a Deus é genuína.",
+      "summary": "Um pai pede a seus dois filhos que trabalhem na vinha. O primeiro diz que não irá, mas depois se arrepende e vai. O segundo diz que irá, mas não vai. A parábola enfatiza que é mais importante a ação genuína do que a aparência externa de obediência."
+    },
+    {
+      "title": "Parábola dos Dois Filhos",
+      "reference": "Mateus 21:28-31",
+      "historical_context": "Contada por Jesus durante a última semana de Sua vida em Jerusalém, a parábola confronta os líderes religiosos da época e se insere em um contexto de hipocrisia religiosa e desobediência a Deus.",
+      "theological_message": "A mensagem central gira em torno da verdadeira obediência a Deus, que é manifestada através de ações e não apenas palavras. O arrependimento sincero é fundamental para a verdadeira obediência.",
+      "practical_application": "Os ouvintes são desafiados a avaliar sua própria obediência a Deus, refletindo sobre áreas em que podem estar apenas falando sobre servir a Deus sem realmente agir de acordo com Sua vontade.",
+      "summary": "A parábola ilustra a diferença entre as ações e as palavras, onde o primeiro filho representa aqueles que, mesmo após desobedecer, se arrependem e realizam a vontade do pai, em contraste com o segundo filho que apenas professa obediência sem agir."
+    },
+    {
+      "title": "Parábola da Festa de Casamento",
+      "reference": "Mateus 22:2-14",
+      "historical_context": "No contexto judaico, o convite de um rei para uma festa de casamento era considerado uma grande honra. Rejeitar o convite era um ato de desonra e insulto, refletindo a rejeição histórica de Israel ao chamado de Deus.",
+      "theological_message": "A Parábola da Festa de Casamento ensina que o convite de Deus ao seu Reino é amplo e inclusivo, mas é necessário que os convidados aceitem com um coração transformado. A rejeição desse convite traz consequências.",
+      "practical_application": "A parábola desafia todos a avaliarem sua resposta ao convite de Deus, se estão espiritualmente preparados e se suas vidas refletem os valores do Reino.",
+      "summary": "O Rei organiza uma festa de casamento para seu filho, mas os convidados rejeitam o convite. Após a rejeição, o Rei decide convidar a todos, tanto bons quanto maus. Um convidado sem a veste apropriada é expulso da festa, simbolizando a necessidade de aceitação e transformação para entrar no Reino de Deus."
+    },
+    {
+      "title": "Parábola das Dez Virgens",
+      "reference": "Mateus 25:1-13",
+      "historical_context": "A parábola é contada dentro do contexto cultural judaico do primeiro século, onde as tradições de casamento e a vigilância espiritual eram altamente valorizadas. A sociedade esperava a chegada de um novo Messias, e Jesus, ao contar essa parábola, enfatiza a preparação espiritual em meio à expectativa.",
+      "theological_message": "Preparemo-nos constantemente para a vinda de Cristo, pois a sua chegada será inesperada. Aqueles que não estiverem spiritualmente prontos poderão perder a oportunidade de participar do Reino de Deus.",
+      "practical_application": "Devemos manter nossa fé viva e ativa. A preparação espiritual é individual e não pode ser transferida. É crucial agir e não procrastinar quando se trata de tomar medidas espirituais.",
+      "summary": "A Parábola das Dez Virgens ilustra a importância da preparação espiritual para a vinda de Cristo. Dez virgens representam aqueles que esperam o noivo, destacando a vigilância necessária para estarem prontos quando Ele chegar. Aqueles que estão preparados entram no banquete, enquanto os despreparados ficam de fora."
+    },
+    {
+      "title": "Parábola das Ovelhas e das Cabras",
+      "reference": "Mateus 25:31-46",
+      "historical_context": "Contada durante a última semana da vida de Jesus em Jerusalém, em um contexto de crescente expectativa sobre o juízo final, esta parábola reflete as tensões sociais da Palestina sob o domínio romano, onde a compaixão pelos marginalizados era frequentemente negligenciada.",
+      "theological_message": "O critério de julgamento de Deus não se baseia apenas em práticas religiosas, mas na maneira como tratamos os necessitados e marginalizados. A compaixão e as boas ações são reflexos de nosso relacionamento com Deus.",
+      "practical_application": "Devemos estar atentos às necessidades dos outros, especialmente dos mais vulneráveis, pois as ações que empreendemos para cuidar deles revelam nossa verdadeira fé e relacionamento com Cristo.",
+      "summary": "A Parábola das Ovelhas e das Cabras apresenta o julgamento final, onde Cristo separa os justos das pessoas más, com base em como cada um agiu em relação aos necessitados. A forma como tratamos os outros reflete nossa verdadeira relação com Deus."
+    },
+    {
+      "title": "A Parábola das Ovelhas e das Cabras",
+      "reference": "Mateus 25:31-46",
+      "historical_context": "A parábola é contada no contexto do discurso de Jesus sobre o fim dos tempos e o juízo final, abordando a separação entre justos e ímpios em busca de compreensão sobre a vida e a conduta moral.",
+      "theological_message": "A mensagem central da parábola é que o julgamento final de Deus será baseado em atos de compaixão e misericórdia, onde as atitudes em relação aos necessitados refletem a relação com Cristo.",
+      "practical_application": "Identificar oportunidades para ajudar os necessitados e praticar o amor ao próximo através de atos concretos de generosidade e cuidado.",
+      "summary": "Jesus usa a imagem de ovelhas e cabras para ilustrar a separação entre justos e ímpios no julgamento final. Os justos, simbolizados pelas ovelhas, são recompensados por suas ações de misericórdia; enquanto os ímpios, representados pelas cabras, são condenados por sua omissão em ajudar os necessitados."
     }
   ]
 }

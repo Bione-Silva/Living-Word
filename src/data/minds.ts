@@ -26,6 +26,7 @@ export interface MindFullData {
   subtitle: Record<L, string>;
   role: Record<L, string>;
   locked: boolean;
+  hidden?: boolean;
   badges: Record<L, string>[];
   bio: Record<L, string>;
   specialties: Record<L, string>[];
@@ -96,9 +97,9 @@ export const minds: MindFullData[] = [
     role: { PT: 'Pregação Poética e Puritana', EN: 'Poetic & Puritan Preaching', ES: 'Predicación Poética y Puritana' },
     locked: true,
     badges: [
-      { PT: '500+ Sermões Analisados', EN: '500+ Sermons Analyzed', ES: '500+ Sermones Analizados' },
-      { PT: '8.200 Páginas Processadas', EN: '8,200 Pages Processed', ES: '8.200 Páginas Procesadas' },
-      { PT: '45 Milhões de Tokens', EN: '45 Million Tokens', ES: '45 Millones de Tokens' },
+      { PT: '3.528 Sermões Analisados', EN: '3,528 Sermons Analyzed', ES: '3.528 Sermones Analizados' },
+      { PT: '25.000+ Páginas Processadas', EN: '25,000+ Pages Processed', ES: '25.000+ Páginas Procesadas' },
+      { PT: '85 Milhões de Tokens', EN: '85 Million Tokens', ES: '85 Millones de Tokens' },
     ],
     bio: {
       PT: 'Esta IA replica a mente do maior pregador da era vitoriana — o homem que lotava o Metropolitan Tabernacle com 6.000 pessoas todos os domingos, sem microfone, sem PowerPoint, apenas com a força bruta da Palavra exposta em poesia puritana.',
@@ -146,9 +147,8 @@ export const minds: MindFullData[] = [
     role: { PT: 'Avivamento & Santificação', EN: 'Revival & Sanctification', ES: 'Avivamiento & Santificación' },
     locked: true,
     badges: [
-      { PT: '300+ Sermões Indexados', EN: '300+ Sermons Indexed', ES: '300+ Sermones Indexados' },
-      { PT: '4.500 Páginas Processadas', EN: '4,500 Pages Processed', ES: '4.500 Páginas Procesadas' },
-      { PT: '25 Milhões de Tokens', EN: '25 Million Tokens', ES: '25 Millones de Tokens' },
+      { PT: '141 Sermões Padrão Indexados', EN: '141 Standard Sermons Indexed', ES: '141 Sermones Estándar Indexados' },
+      { PT: '1.2 Milhão de Tokens', EN: '1.2 Million Tokens', ES: '1.2 Millón de Tokens' },
     ],
     bio: {
       PT: 'Esta IA incorpora o espírito incansável de John Wesley — o homem que percorreu mais de 400.000 km a cavalo pregando ao ar livre, fundou o movimento Metodista e revolucionou a espiritualidade protestante com sua ênfase na santificação e na experiência pessoal com Deus. Seu famoso "coração estranhamente aquecido" permeia cada resposta.',
@@ -245,6 +245,7 @@ export const minds: MindFullData[] = [
     subtitle: { PT: 'O Profeta do Avivamento', EN: 'The Prophet of Revival', ES: 'El Profeta del Avivamiento' },
     role: { PT: 'Pregação Profética & Avivamento', EN: 'Prophetic Preaching & Revival', ES: 'Predicación Profética & Avivamiento' },
     locked: true,
+    hidden: true,
     badges: [
       { PT: '200+ Pregações Indexadas', EN: '200+ Sermons Indexed', ES: '200+ Predicaciones Indexadas' },
       { PT: '3.500 Páginas Processadas', EN: '3,500 Pages Processed', ES: '3.500 Páginas Procesadas' },
@@ -294,6 +295,7 @@ export const minds: MindFullData[] = [
     subtitle: { PT: 'O Mentor de Destinos', EN: 'The Destiny Mentor', ES: 'El Mentor de Destinos' },
     role: { PT: 'Liderança & Inteligência Emocional', EN: 'Leadership & Emotional Intelligence', ES: 'Liderazgo & Inteligencia Emocional' },
     locked: true,
+    hidden: true,
     badges: [
       { PT: '150+ Palestras Indexadas', EN: '150+ Lectures Indexed', ES: '150+ Conferencias Indexadas' },
       { PT: '2.800 Páginas Processadas', EN: '2,800 Pages Processed', ES: '2.800 Páginas Procesadas' },

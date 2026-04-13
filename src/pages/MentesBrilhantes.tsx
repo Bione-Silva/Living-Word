@@ -55,7 +55,7 @@ export default function MentesBrilhantes() {
     loadActiveMinds();
   }, []);
 
-  const visibleMinds = minds.filter(m => activeMinds.includes(m.id));
+  const visibleMinds = minds.filter(m => activeMinds.includes(m.id) && !m.hidden);
 
   const handleMindClick = (mind: MindFullData) => {
     if (mind.locked && isFree) {

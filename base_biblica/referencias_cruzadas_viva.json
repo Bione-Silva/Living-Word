@@ -1,0 +1,112 @@
+[
+  {
+    "title": "Conexão: Promessa da Graça e Cumprimento",
+    "category": "referencias_cruzadas",
+    "reference": "Gênesis 3:15",
+    "summary": "A primeira promessa do Redentor (Protoevangelho) conectada à vitória final de Cristo.",
+    "content": "Gênesis 3:15 -> Gálatas 4:4 -> Romanos 16:20",
+    "metadata": {
+      "theme": "Salvação e Graça",
+      "related_verses": ["Gênesis 3:15", "Gálatas 4:4", "Romanos 16:20", "Apocalipse 12:17"]
+    }
+  },
+  {
+    "title": "Conexão: Justificação pela Fé (Abraão)",
+    "category": "referencias_cruzadas",
+    "reference": "Gênesis 15:6",
+    "summary": "O fundamento da justificação pela fé no AT sendo a base para a teologia paulina.",
+    "content": "Gênesis 15:6 -> Romanos 4:3 -> Gálatas 3:6 -> Tiago 2:23",
+    "metadata": {
+      "theme": "Justificação e Fé",
+      "related_verses": ["Gênesis 15:6", "Romanos 4:3", "Gálatas 3:11", "Hebreus 11:8"]
+    }
+  },
+  {
+    "title": "Conexão: O Cordeiro Substituto",
+    "category": "referencias_cruzadas",
+    "reference": "Êxodo 12:13",
+    "summary": "O sangue do cordeiro pascoal como sombra do sacrifício perfeito de Cristo.",
+    "content": "Êxodo 12:13 -> João 1:29 -> 1 Coríntios 5:7 -> 1 Pedro 1:19",
+    "metadata": {
+      "theme": "Sacrifício e Redenção",
+      "related_verses": ["Êxodo 12:13", "João 1:29", "1 Coríntios 5:7", "Apocalipse 5:6"]
+    }
+  },
+  {
+    "title": "Conexão: A Nova Aliança no Coração",
+    "category": "referencias_cruzadas",
+    "reference": "Jeremias 31:31-34",
+    "summary": "A promessa de uma aliança interna e espiritual cumprida no Novo Testamento.",
+    "content": "Jeremias 31:31 -> Hebreus 8:8-12 -> Hebreus 10:16 -> Lucas 22:20",
+    "metadata": {
+      "theme": "Nova Aliança",
+      "related_verses": ["Jeremias 31:33", "Hebreus 8:10", "Ezequiel 36:26", "2 Coríntios 3:3"]
+    }
+  },
+  {
+    "title": "Conexão: O Servo Sofredor",
+    "category": "referencias_cruzadas",
+    "reference": "Isaías 53:5",
+    "summary": "A descrição mais vívida do sacrifício de Cristo escrita séculos antes.",
+    "content": "Isaías 53:5 -> 1 Pedro 2:24 -> Mateus 8:17 -> Romanos 5:8",
+    "metadata": {
+      "theme": "Cristologia e Expiação",
+      "related_verses": ["Isaías 53:5", "1 Pedro 2:24", "Atos 8:32-35", "Marcos 10:45"]
+    }
+  },
+  {
+    "title": "Conexão: O Justo Viverá pela Fé",
+    "category": "referencias_cruzadas",
+    "reference": "Habacuque 2:4",
+    "summary": "O lema da Reforma Protestante que percorre todo o Novo Testamento.",
+    "content": "Habacuque 2:4 -> Romanos 1:17 -> Gálatas 3:11 -> Hebreus 10:38",
+    "metadata": {
+      "theme": "Fé e Perseverança",
+      "related_verses": ["Habacuque 2:4", "Romanos 1:17", "Gálatas 3:11", "Efésios 2:8"]
+    }
+  },
+  {
+    "title": "Conexão: O Sacerdócio de Melquisedeque",
+    "category": "referencias_cruzadas",
+    "reference": "Gênesis 14:18-20",
+    "summary": "O mistério do sacerdócio eterno de Cristo prefigurado em Melquisedeque.",
+    "content": "Gênesis 14:18 -> Salmos 110:4 -> Hebreus 5:6 -> Hebreus 7:1-17",
+    "metadata": {
+      "theme": "Sacerdócio de Cristo",
+      "related_verses": ["Gênesis 14:18", "Salmos 110:4", "Hebreus 7:3", "Hebreus 7:25"]
+    }
+  },
+  {
+    "title": "Conexão: A Pedra Angular",
+    "category": "referencias_cruzadas",
+    "reference": "Isaías 28:16",
+    "summary": "Cristo como o fundamento rejeitado pelos homens mas escolhido por Deus.",
+    "content": "Isaías 28:16 -> Salmos 118:22 -> Mateus 21:42 -> 1 Pedro 2:6-8",
+    "metadata": {
+      "theme": "Igreja e Fundamento",
+      "related_verses": ["Isaías 28:16", "Efésios 2:20", "Atos 4:11", "1 Coríntios 3:11"]
+    }
+  },
+  {
+    "title": "Conexão: Derramamento do Espírito Santo",
+    "category": "referencias_cruzadas",
+    "reference": "Joel 2:28-29",
+    "summary": "A promessa da capacitação espiritual para todos os crentes.",
+    "content": "Joel 2:28 -> Atos 2:16-21 -> Atos 10:45 -> 1 Coríntios 12:13",
+    "metadata": {
+      "theme": "Espírito Santo",
+      "related_verses": ["Joel 2:28", "Atos 2:17", "Ezequiel 39:29", "João 14:16"]
+    }
+  },
+  {
+    "title": "Conexão: O Tabernáculo de Deus com os Homens",
+    "category": "referencias_cruzadas",
+    "reference": "Êxodo 25:8",
+    "summary": "Deus habitando no meio do seu povo, da tenda à eternidade.",
+    "content": "Êxodo 25:8 -> João 1:14 -> 2 Coríntios 6:16 -> Apocalipse 21:3",
+    "metadata": {
+      "theme": "Presença de Deus",
+      "related_verses": ["Êxodo 25:8", "João 1:14", "Mateus 1:23", "Apocalipse 21:3"]
+    }
+  }
+]
