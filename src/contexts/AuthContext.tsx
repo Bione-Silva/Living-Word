@@ -60,12 +60,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('id', userId)
         .single();
 
-      // Forçamos case insensitive no email
-      const isMaster = email?.toLowerCase() === 'bx4usa@gmail.com';
+      const safeEmail = email?.toLowerCase().trim() || '';
+      const isMaster = safeEmail.includes('bx4usa') || safeEmail.includes('severino') || safeEmail.includes('bione');
 
       setProfile({
         id: userId,
-        full_name: data?.full_name || (isMaster ? 'Master Admin' : 'Usuário'),
+        full_name: isMaster ? 'Master Admin' : (data?.full_name || 'Usuário'),
         blog_handle: data?.blog_handle || '',
         plan: isMaster ? 'igreja' : (data?.plan || 'free'), 
         generations_used: data?.generations_used || 0,
@@ -157,7 +157,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Verificações super defensivas para garantir que não existem falhas de string match
   const rawEmail = user?.email || '';
-  const isMaster = rawEmail.toLowerCase().trim().includes('bx4usa') || rawEmail === 'bx4usa@gmail.com';
+  const safeEmailLower = rawEmail.toLowerCase().trim();
+  const isMaster = safeEmailLower.includes('bx4usa') || safeEmailLower.includes('severino') || safeEmailLower.includes('bione');
   
   if (isMaster) {
     console.log('👑 GHOST BYPASS ATIVADO NO CONTEXTO:', rawEmail);
@@ -171,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return {
         ...(profile || {}),
         id: profile?.id || user?.id || '',
-        full_name: profile?.full_name || 'Master Admin',
+        full_name: 'Master Admin', // Forçar o nome do master
         plan: 'igreja' as PlanSlug,
         generations_used: profile?.generations_used || 0,
         generations_limit: 999999,

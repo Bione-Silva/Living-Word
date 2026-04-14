@@ -32,12 +32,11 @@ export function planIndex(plan: PlanSlug): number {
   return PLAN_ORDER.indexOf(plan);
 }
 
-// ── Monthly credits per plan (Credit Wallet) ──
 export const PLAN_CREDITS: Record<PlanSlug, number> = {
-  free: 999999,
-  starter: 999999,
-  pro: 999999,
-  pastor_pro: 999999,
+  free: 50,
+  starter: 500,
+  pro: 2000,
+  pastor_pro: 5000,
   igreja: 999999,
 };
 
