@@ -1050,7 +1050,7 @@ export default function Devocional() {
             <Send className="h-3.5 w-3.5" /> {labels.share[lang]}
           </button>
           <Link
-            to="/mente-chat"
+            to="/bom-amigo"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80"
             style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
           >
