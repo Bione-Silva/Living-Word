@@ -52,44 +52,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, email?: string) => {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
-        
-      // GHOST BYPASS: Unconditional bypass ensures master level regardless of DB fetch
+
+      // Forçamos case insensitive no email
+      const isMaster = email?.toLowerCase() === 'bx4usa@gmail.com';
+
       setProfile({
         id: userId,
-        full_name: data?.full_name || 'Bypass User',
+        full_name: data?.full_name || (isMaster ? 'Master Admin' : 'Usuário'),
         blog_handle: data?.blog_handle || '',
-        plan: 'igreja', 
+        plan: isMaster ? 'igreja' : (data?.plan || 'free'), 
         generations_used: data?.generations_used || 0,
-        generations_limit: 999999,
+        generations_limit: isMaster ? 999999 : (data?.generations_limit || 100),
         language: data?.language || 'PT',
         avatar_url: data?.avatar_url,
         doctrine: data?.doctrine,
         pastoral_voice: data?.pastoral_voice,
         bible_version: data?.bible_version,
-        trial_started_at: data?.trial_started_at,
-        trial_ends_at: data?.trial_ends_at,
-        phone: data?.phone,
-        street: data?.street,
-        neighborhood: data?.neighborhood,
-        city: data?.city,
-        state: data?.state,
-        zip_code: data?.zip_code,
-        country: data?.country,
-        theme_color: data?.theme_color,
-        font_family: data?.font_family,
-        layout_style: data?.layout_style,
-        profile_completed: data?.profile_completed ?? true,
       });
 
     } catch (err) {
       console.error('Error fetching profile:', err);
+      // Fallback absoluto para Mestre
+      if (email?.toLowerCase() === 'bx4usa@gmail.com') {
+        setProfile({
+          id: userId,
+          full_name: 'Master Admin',
+          blog_handle: '',
+          plan: 'igreja', 
+          generations_used: 0,
+          generations_limit: 999999,
+          language: 'PT',
+        } as UserProfile);
+      } else {
+        setProfile(null);
+      }
     }
   };
 
@@ -101,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(nextSession?.user ?? null);
 
       if (nextSession?.user) {
-        setTimeout(() => fetchProfile(nextSession.user.id), 0);
+        setTimeout(() => fetchProfile(nextSession.user.id, nextSession.user.email), 0);
       } else {
         setProfile(null);
       }
@@ -114,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(nextSession?.user ?? null);
 
       if (nextSession?.user) {
-        fetchProfile(nextSession.user.id);
+        fetchProfile(nextSession.user.id, nextSession.user.email);
       }
 
       setLoading(false);
@@ -149,11 +152,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
+    if (user) await fetchProfile(user.id, user.email);
   };
 
+  // Verificações super defensivas para garantir que não existem falhas de string match
+  const rawEmail = user?.email || '';
+  const isMaster = rawEmail.toLowerCase().trim().includes('bx4usa') || rawEmail === 'bx4usa@gmail.com';
+  
+  if (isMaster) {
+    console.log('👑 GHOST BYPASS ATIVADO NO CONTEXTO:', rawEmail);
+  }
+
+  // Garantia blindada de que o Mestre sempre terá os acessos ilimitados
+  // não importando race conditions, problemas de HMR ou banco de dados.
+  const effectiveProfile = React.useMemo(() => {
+    if (!profile && !isMaster) return null;
+    if (isMaster) {
+      return {
+        ...(profile || {}),
+        id: profile?.id || user?.id || '',
+        full_name: profile?.full_name || 'Master Admin',
+        plan: 'igreja' as PlanSlug,
+        generations_used: profile?.generations_used || 0,
+        generations_limit: 999999,
+        language: profile?.language || 'PT',
+        profile_completed: true
+      } as UserProfile;
+    }
+    return profile;
+  }, [profile, isMaster, user?.id]);
+
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile: effectiveProfile, loading, signUp, signIn, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
