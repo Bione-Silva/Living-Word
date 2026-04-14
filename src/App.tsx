@@ -10,6 +10,7 @@ import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
+import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Blog from "./pages/Blog";
@@ -123,6 +124,7 @@ const App = () => (
                 <Route path="/" element={<><SubdomainRedirect /><Landing /></>} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/blog/:handle" element={<BlogPublic />} />
                 <Route path="/blog/:handle/:articleId" element={<BlogArticle />} />

@@ -16,6 +16,7 @@ import { SmartDevotionalRecommender } from '@/components/engagement/SmartDevotio
 import { UserEngagementDashboard } from '@/components/engagement/UserEngagementDashboard';
 import { NotificationCenter } from '@/components/engagement/NotificationCenter';
 import { UpgradeModal } from '@/components/UpgradeModal';
+import { PodiumModePromoBlock } from '@/components/landing/PodiumModePromoBlock';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
   Wand2, PenLine, Type, Lightbulb, Sparkles, Film,
@@ -96,6 +97,8 @@ export default function Dashboard() {
       <MoreToolsAccordion onToolClick={handleToolClick} />
       <UserEngagementDashboard />
       <RecentGenerations />
+
+      <PodiumModePromoBlock lang={lang as 'PT' | 'EN' | 'ES'} />
 
       <ExtrasModal
         open={extrasOpen}

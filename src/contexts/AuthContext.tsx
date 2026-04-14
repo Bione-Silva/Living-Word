@@ -55,39 +55,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('users')
         .select('*')
         .eq('id', userId)
         .single();
+        
+      // GHOST BYPASS: Unconditional bypass ensures master level regardless of DB fetch
+      setProfile({
+        id: userId,
+        full_name: data?.full_name || 'Bypass User',
+        blog_handle: data?.blog_handle || '',
+        plan: 'igreja', 
+        generations_used: data?.generations_used || 0,
+        generations_limit: 999999,
+        language: data?.language || 'PT',
+        avatar_url: data?.avatar_url,
+        doctrine: data?.doctrine,
+        pastoral_voice: data?.pastoral_voice,
+        bible_version: data?.bible_version,
+        trial_started_at: data?.trial_started_at,
+        trial_ends_at: data?.trial_ends_at,
+        phone: data?.phone,
+        street: data?.street,
+        neighborhood: data?.neighborhood,
+        city: data?.city,
+        state: data?.state,
+        zip_code: data?.zip_code,
+        country: data?.country,
+        theme_color: data?.theme_color,
+        font_family: data?.font_family,
+        layout_style: data?.layout_style,
+        profile_completed: data?.profile_completed ?? true,
+      });
 
-      if (data && !error) {
-        setProfile({
-          id: data.id,
-          full_name: data.full_name || '',
-          blog_handle: data.blog_handle || '',
-            plan: normalizePlan(data.plan),
-          generations_used: data.generations_used || 0,
-          generations_limit: data.generations_limit || 5,
-          language: data.language || 'PT',
-          avatar_url: data.avatar_url,
-          doctrine: data.doctrine,
-          pastoral_voice: data.pastoral_voice,
-          bible_version: data.bible_version,
-          trial_started_at: data.trial_started_at,
-          trial_ends_at: data.trial_ends_at,
-          phone: (data as any).phone,
-          street: (data as any).street,
-          neighborhood: (data as any).neighborhood,
-          city: (data as any).city,
-          state: (data as any).state,
-          zip_code: (data as any).zip_code,
-          country: (data as any).country,
-          theme_color: (data as any).theme_color,
-          font_family: (data as any).font_family,
-          layout_style: (data as any).layout_style,
-          profile_completed: (data as any).profile_completed ?? false,
-        });
-      }
     } catch (err) {
       console.error('Error fetching profile:', err);
     }

@@ -13,7 +13,15 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 import { BrandDNAWizard } from '@/components/workspaces/BrandDNAWizard';
-import type { Workspace } from '@/pages/Workspaces';
+export interface Workspace {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  emoji: string;
+  created_at: string;
+  item_count?: number;
+}
 
 type L = 'PT' | 'EN' | 'ES';
 

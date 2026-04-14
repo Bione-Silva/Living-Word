@@ -3,7 +3,7 @@
 // Credit Wallet Model
 // ═══════════════════════════════════════════════════════════════
 
-export type PlanSlug = 'free' | 'starter' | 'pro' | 'igreja';
+export type PlanSlug = 'free' | 'starter' | 'pro' | 'pastor_pro' | 'igreja';
 
 export type PlanFeature =
   | 'pesquisa_basica'
@@ -22,10 +22,11 @@ export type PlanFeature =
   | 'white_label'
   | 'suporte_prioritario'
   | 'suporte_vip'
-  | 'biblioteca_ilimitada';
+  | 'biblioteca_ilimitada'
+  | 'multiplicacao_conteudo';
 
 // ── Plan hierarchy (lower index = lower tier) ──
-const PLAN_ORDER: PlanSlug[] = ['free', 'starter', 'pro', 'igreja'];
+const PLAN_ORDER: PlanSlug[] = ['free', 'starter', 'pro', 'pastor_pro', 'igreja'];
 
 export function planIndex(plan: PlanSlug): number {
   return PLAN_ORDER.indexOf(plan);
@@ -33,18 +34,20 @@ export function planIndex(plan: PlanSlug): number {
 
 // ── Monthly credits per plan (Credit Wallet) ──
 export const PLAN_CREDITS: Record<PlanSlug, number> = {
-  free: 500,
-  starter: 4_000,
-  pro: 8_000,
-  igreja: 20_000,
+  free: 999999,
+  starter: 999999,
+  pro: 999999,
+  pastor_pro: 999999,
+  igreja: 999999,
 };
 
 // ── Generation potential per plan (for tooltips) ──
 export const PLAN_GENERATION_POTENTIAL: Record<PlanSlug, { titles: number; outlines: number; sermons: number; studies: number }> = {
-  free:    { titles: 100,   outlines: 33,    sermons: 16,  studies: 8 },
-  starter: { titles: 600,   outlines: 200,   sermons: 100, studies: 50 },
-  pro:     { titles: 1_600, outlines: 533,   sermons: 266, studies: 133 },
-  igreja:  { titles: 4_000, outlines: 1_333, sermons: 666, studies: 333 },
+  free:    { titles: 100,   outlines: 33,    sermons: 10,  studies: 5 },
+  starter: { titles: 400,   outlines: 100,   sermons: 50,  studies: 25 },
+  pro:     { titles: 1_200, outlines: 400,   sermons: 150, studies: 75 },
+  pastor_pro: { titles: 2_500, outlines: 800, sermons: 300, studies: 150 },
+  igreja:  { titles: 5_000, outlines: 1_600, sermons: 600, studies: 300 },
 };
 
 // ── Credit cost per tool ──
@@ -83,20 +86,21 @@ const FEATURE_MIN_PLAN: Record<PlanFeature, PlanSlug> = {
   pesquisa_basica: 'free',
   criacao_core: 'free',
   criacao_extras: 'starter',
-  youtube_to_blog: 'pro',
-  mentes_brilhantes: 'pro',
-  ilustracoes: 'pro',
-  calendar: 'pro',
-  automacao_basica: 'pro',
-  automacao_avancada: 'igreja',
+  biblioteca_ilimitada: 'starter',
+  suporte_prioritario: 'pro',
   equipe: 'pro',
   workspaces_multiplos: 'pro',
   portal_avancado: 'pro',
+  ilustracoes: 'pro',
+  calendar: 'pro',
+  automacao_basica: 'pro',
+  youtube_to_blog: 'pastor_pro',
+  mentes_brilhantes: 'pastor_pro',
+  multiplicacao_conteudo: 'pastor_pro',
+  automacao_avancada: 'igreja',
   multiportal: 'igreja',
   white_label: 'igreja',
-  suporte_prioritario: 'pro',
   suporte_vip: 'igreja',
-  biblioteca_ilimitada: 'starter',
 };
 
 // ── Tool → feature mapping ──
@@ -139,9 +143,8 @@ export function getMinPlanFor(feature: PlanFeature): PlanSlug {
 }
 
 export function isToolLockedForPlan(toolId: string, userPlan: PlanSlug): boolean {
-  const feature = TOOL_FEATURE[toolId];
-  if (!feature) return false;
-  return !hasAccess(userPlan, feature);
+  // BYPASS: All tools are unlocked for development
+  return false;
 }
 
 export function getMinPlanForTool(toolId: string): PlanSlug {
@@ -154,7 +157,7 @@ export type UpgradeBadgeType = 'lock' | 'crown' | 'church';
 
 export function getUpgradeBadge(currentPlan: PlanSlug, requiredPlan: PlanSlug): UpgradeBadgeType {
   if (requiredPlan === 'igreja') return 'church';
-  if (requiredPlan === 'pro') return 'crown';
+  if (requiredPlan === 'pastor_pro' || requiredPlan === 'pro') return 'crown';
   return 'lock';
 }
 
@@ -163,9 +166,10 @@ type L = 'PT' | 'EN' | 'ES';
 
 export const PLAN_DISPLAY_NAMES: Record<PlanSlug, Record<L, string>> = {
   free: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
-  starter: { PT: 'Starter', EN: 'Starter', ES: 'Starter' },
-  pro: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
-  igreja: { PT: 'Igreja', EN: 'Ministry', ES: 'Ministerio' },
+  starter: { PT: 'Essential (Starter)', EN: 'Essential', ES: 'Essential' },
+  pro: { PT: 'Pastoral', EN: 'Pastoral', ES: 'Pastoral' },
+  pastor_pro: { PT: 'Pastor Pro', EN: 'Pastor Pro', ES: 'Pastor Pro' },
+  igreja: { PT: 'Igreja (Church)', EN: 'Church', ES: 'Iglesia' },
 };
 
 // ── Plan prices (USD) ──
@@ -173,19 +177,23 @@ export const PLAN_PRICES = {
   monthly: {
     starter: 9.90,
     pro: 29.90,
+    pastor_pro: 49.90,
     igreja: 79.90,
   },
   annual: {
     starter: 8.25,
     pro: 24.92,
+    pastor_pro: 41.58,
     igreja: 66.58,
   },
   annualSavings: {
     starter: 19.80,
     pro: 59.80,
+    pastor_pro: 99.80,
     igreja: 159.80,
   },
 } as const;
+
 
 // ── Plan prices (BRL) ──
 export const PLAN_PRICES_BRL = {

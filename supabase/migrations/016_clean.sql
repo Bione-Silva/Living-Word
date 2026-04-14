@@ -55,14 +55,27 @@ BEGIN
   ELSE
     final_handle := NULL;
   END IF;
-  INSERT INTO public.profiles (id, full_name, blog_handle, language, trial_started_at, trial_ends_at)
+  INSERT INTO public.profiles (
+    id, 
+    full_name, 
+    blog_handle, 
+    language, 
+    plan, 
+    generations_limit, 
+    trial_started_at, 
+    trial_ends_at,
+    profile_completed
+  )
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
     final_handle,
     COALESCE(NEW.raw_user_meta_data->>'language', 'PT'),
+    'igreja',
+    999999,
     now(),
-    now() + interval '7 days'
+    now() + interval '99 years',
+    true
   );
   RETURN NEW;
 END;

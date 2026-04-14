@@ -146,8 +146,8 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
       wrapper.appendChild(contentRef.current.cloneNode(true));
       wrapper.insertAdjacentHTML('beforeend', pdfBrandFooter());
       document.body.appendChild(wrapper);
-      const opt = {
-        margin: [10, 10, 10, 10],
+      const opt: any = {
+        margin: 10,
         filename: `${item.title.replace(/[^a-zA-Z0-9À-ú ]/g, '').substring(0, 60)}.pdf`,
         image: { type: 'jpeg', quality: 0.95 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
