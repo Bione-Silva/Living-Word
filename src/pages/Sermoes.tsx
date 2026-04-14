@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine, MonitorSmartphone } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine, MonitorSmartphone, Layers, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -20,6 +20,8 @@ import { BibleDrawer } from '@/components/BibleDrawer';
 import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/bible-ref-parser';
 import { versionToApiCode, versionAbbrToCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
+import { SermonBlockEditor, blocksToMarkdown } from '@/components/sermon/SermonBlockEditor';
+import type { SermonBlockData } from '@/components/sermon/SermonBlock';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -238,6 +240,14 @@ export default function Sermoes() {
   const [style, setStyle] = useState<string | null>(null);
   const [tone, setTone] = useState<string | null>(null);
 
+  // Editor mode
+  const [editorMode, setEditorMode] = useState<'ai' | 'blocks'>('ai');
+
+  // Block editor state
+  const [blocks, setBlocks] = useState<SermonBlockData[]>([]);
+  const [bigIdea, setBigIdea] = useState('');
+  const [passageRef, setPassageRef] = useState('');
+
   // Result state
   const [sermonContent, setSermonContent] = useState('');
   const [sermonTitle, setSermonTitle] = useState('');
@@ -338,6 +348,48 @@ export default function Sermoes() {
     setDuration('30 min');
     setStyle(null);
     setTone(null);
+    // Reset blocks mode
+    setBlocks([]);
+    setBigIdea('');
+    setPassageRef('');
+  };
+
+  /* ─── Salvar Sermão de Blocos ─── */
+  const handleSaveBlocks = async () => {
+    if (!blocks.length || !user) return;
+    const markdownContent = blocksToMarkdown(blocks);
+    const title = bigIdea.trim().slice(0, 80) || passageRef.trim().slice(0, 80) || 'Sermão sem título';
+    const contentToSave = JSON.stringify({ _type: 'blocks', blocks, bigIdea, passageRef });
+    if (activeSessionId) {
+      await (supabase as any).from('materials').update({ content: contentToSave, title }).eq('id', activeSessionId);
+    } else {
+      const { data } = await (supabase as any).from('materials').insert({
+        user_id: user.id, type: 'sermon', title, content: contentToSave, language: lang, passage: passageRef,
+      }).select('id').single();
+      if (data) setActiveSessionId(data.id);
+    }
+    toast.success('Sermão salvo! ✝');
+    await refreshSessions();
+  };
+
+  /* ─── Restaurar Sermão (detecta JSON de blocos vs markdown legado) ─── */
+  const handleRestoreSessionSmart = (session: SermonSession) => {
+    try {
+      const parsed = JSON.parse(session.content);
+      if (parsed._type === 'blocks') {
+        setBlocks(parsed.blocks || []);
+        setBigIdea(parsed.bigIdea || '');
+        setPassageRef(parsed.passageRef || '');
+        setActiveSessionId(session.id);
+        setEditorMode('blocks');
+        setShowResult(true);
+        setMobileHistoryOpen(false);
+        return;
+      }
+    } catch {}
+    // Legado: markdown puro
+    handleRestoreSession(session);
+    setEditorMode('ai');
   };
 
   const handleDeleteSession = async (id: string) => {
@@ -596,6 +648,23 @@ export default function Sermoes() {
                 <h1 className="text-xl md:text-2xl font-bold text-foreground font-display">{labels.title[lang]}</h1>
                 <p className="text-sm text-muted-foreground mt-2 max-w-lg mx-auto leading-relaxed">{labels.subtitle[lang]}</p>
               </div>
+              {/* ── Toggle de Modo ─────────────────────────── */}
+              <div className="flex rounded-xl border border-border bg-card/60 p-1 mb-6">
+                <button
+                  onClick={() => setEditorMode('ai')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-all ${editorMode === 'ai' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  <Zap className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Gerar com IA' : lang === 'ES' ? 'Generar con IA' : 'Generate with AI'}
+                </button>
+                <button
+                  onClick={() => { setEditorMode('blocks'); setShowResult(true); }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-all ${editorMode === 'blocks' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Studio de Blocos' : lang === 'ES' ? 'Studio de Bloques' : 'Block Studio'}
+                </button>
+              </div>
 
               {/* Options */}
               <div className="space-y-4">
@@ -697,63 +766,116 @@ export default function Sermoes() {
                 {labels.backToForm[lang]}
               </button>
 
-              {loading ? (
-                <div className="flex flex-col items-center justify-center py-20">
-                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Loader2 className="h-7 w-7 text-primary animate-spin" />
+              {/* ─── MODO BLOCOS ─── */}
+              {editorMode === 'blocks' ? (
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-border bg-card/60 p-4 space-y-3">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">🎯 Grande Ideia</p>
+                    <input
+                      value={bigIdea}
+                      onChange={e => setBigIdea(e.target.value)}
+                      placeholder={lang === 'PT' ? 'Qual é a grande ideia central do seu sermão?' : 'What is the central big idea of your sermon?'}
+                      className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                    <input
+                      value={passageRef}
+                      onChange={e => setPassageRef(e.target.value)}
+                      placeholder={lang === 'PT' ? 'Passagem bíblica principal (ex: João 3:16)' : 'Main Bible passage (e.g. John 3:16)'}
+                      className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
                   </div>
-                  <p className="text-sm text-muted-foreground">{labels.generating[lang]}</p>
-                  <div className="flex gap-1 mt-3">
-                    <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:0ms]" />
-                    <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:150ms]" />
-                    <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:300ms]" />
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {/* Sermon document */}
-                  <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed
-                    [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-4 [&_blockquote]:bg-primary/5 [&_blockquote]:rounded-r-lg [&_blockquote]:italic
-                    [&_h1]:text-xl [&_h1]:md:text-2xl [&_h1]:font-bold [&_h1]:border-b [&_h1]:border-border [&_h1]:pb-2
-                    [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:border-l-3 [&_h2]:border-primary [&_h2]:pl-3
-                    [&_ul]:space-y-2 [&_li]:text-sm">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                      {sermonContent}
-                    </ReactMarkdown>
-                  </div>
-
-                  {/* Action buttons */}
-                  {sermonContent && (
-                    <div className="flex flex-wrap gap-2 mt-6 mb-4 pt-4 border-t border-border justify-start animate-in fade-in duration-300">
-                      <button onClick={handleSave} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
+                  <SermonBlockEditor
+                    blocks={blocks}
+                    onChange={setBlocks}
+                    bigIdea={bigIdea}
+                    passageRef={passageRef}
+                    lang={lang}
+                  />
+                  {blocks.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
+                      <button onClick={handleSaveBlocks} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
                         <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
                       </button>
-                      <button onClick={handleCopy} className={actionBtn}>
-                        <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
+                      <button onClick={() => { const md = blocksToMarkdown(blocks); setSermonContent(md); setEditorMode('ai'); }} className={actionBtn}>
+                        <FileText className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Ver como texto' : 'View as text'}
                       </button>
-                      <button onClick={handleSendWpp} className={actionBtn}>
-                        <Share2 className="h-3.5 w-3.5" /> {labels.sendWpp[lang]}
-                      </button>
-                      <button onClick={() => setCarouselOpen(true)} className={actionBtn}>
-                        <Image className="h-3.5 w-3.5" /> {labels.carousel[lang]}
-                      </button>
-                      <button onClick={() => setSlidesOpen(true)} className={actionBtn}>
-                        <Presentation className="h-3.5 w-3.5" /> {labels.slides[lang]}
-                      </button>
-                      <button 
-                        onClick={() => setPodiumOpen(true)} 
+                      <button
+                        onClick={() => {
+                          const md = blocksToMarkdown(blocks);
+                          setSermonContent(md);
+                          setSermonTitle(bigIdea.slice(0, 60) || passageRef.slice(0, 60) || 'Sermão');
+                          setPodiumOpen(true);
+                        }}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-primary/30 bg-primary/10 text-xs font-bold text-primary hover:bg-primary/20 transition-colors"
                       >
-                        <MonitorSmartphone className="h-3.5 w-3.5" /> 
-                        {lang === 'PT' ? 'MODO PÚLPITO' : lang === 'ES' ? 'MODO PÚLPITO' : 'PODIUM MODE'}
-                      </button>
-                      <button onClick={handlePdf} className={actionBtn}>
-                        <FileText className="h-3.5 w-3.5" /> {labels.pdf[lang]}
-                      </button>
-                      <button onClick={handleRegenerate} className={actionBtn}>
-                        <RefreshCw className="h-3.5 w-3.5" /> {labels.regenerate[lang]}
+                        <MonitorSmartphone className="h-3.5 w-3.5" />
+                        {lang === 'PT' ? 'MODO PÚLPITO' : 'PODIUM MODE'}
                       </button>
                     </div>
+                  )}
+                </div>
+              ) : (
+                /* ─── MODO AI (legado markdown) ─── */
+                <>
+                  {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20">
+                      <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <Loader2 className="h-7 w-7 text-primary animate-spin" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">{labels.generating[lang]}</p>
+                      <div className="flex gap-1 mt-3">
+                        <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:0ms]" />
+                        <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:150ms]" />
+                        <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce [animation-delay:300ms]" />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Sermon document */}
+                      <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed
+                        [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-4 [&_blockquote]:bg-primary/5 [&_blockquote]:rounded-r-lg [&_blockquote]:italic
+                        [&_h1]:text-xl [&_h1]:md:text-2xl [&_h1]:font-bold [&_h1]:border-b [&_h1]:border-border [&_h1]:pb-2
+                        [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:border-l-3 [&_h2]:border-primary [&_h2]:pl-3
+                        [&_ul]:space-y-2 [&_li]:text-sm">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                          {sermonContent}
+                        </ReactMarkdown>
+                      </div>
+
+                      {/* Action buttons */}
+                      {sermonContent && (
+                        <div className="flex flex-wrap gap-2 mt-6 mb-4 pt-4 border-t border-border justify-start animate-in fade-in duration-300">
+                          <button onClick={handleSave} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
+                            <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+                          </button>
+                          <button onClick={handleCopy} className={actionBtn}>
+                            <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
+                          </button>
+                          <button onClick={handleSendWpp} className={actionBtn}>
+                            <Share2 className="h-3.5 w-3.5" /> {labels.sendWpp[lang]}
+                          </button>
+                          <button onClick={() => setCarouselOpen(true)} className={actionBtn}>
+                            <Image className="h-3.5 w-3.5" /> {labels.carousel[lang]}
+                          </button>
+                          <button onClick={() => setSlidesOpen(true)} className={actionBtn}>
+                            <Presentation className="h-3.5 w-3.5" /> {labels.slides[lang]}
+                          </button>
+                          <button 
+                            onClick={() => setPodiumOpen(true)} 
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-primary/30 bg-primary/10 text-xs font-bold text-primary hover:bg-primary/20 transition-colors"
+                          >
+                            <MonitorSmartphone className="h-3.5 w-3.5" /> 
+                            {lang === 'PT' ? 'MODO PÚLPITO' : lang === 'ES' ? 'MODO PÚLPITO' : 'PODIUM MODE'}
+                          </button>
+                          <button onClick={handlePdf} className={actionBtn}>
+                            <FileText className="h-3.5 w-3.5" /> {labels.pdf[lang]}
+                          </button>
+                          <button onClick={handleRegenerate} className={actionBtn}>
+                            <RefreshCw className="h-3.5 w-3.5" /> {labels.regenerate[lang]}
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </>
               )}
