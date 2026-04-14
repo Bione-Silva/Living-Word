@@ -6,10 +6,11 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 export const PLAN_CREDITS: Record<string, number> = {
-  free: 500,
-  starter: 3000,
-  pro: 10000,
-  igreja: 30000,
+  free: 30,
+  starter: 150,
+  pro: 450,
+  pastor_pro: 1500,
+  igreja: 999999,
 }
 
 export const GENERATION_COSTS: Record<string, number> = {

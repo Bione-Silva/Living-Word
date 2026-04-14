@@ -33,20 +33,20 @@ export function planIndex(plan: PlanSlug): number {
 }
 
 export const PLAN_CREDITS: Record<PlanSlug, number> = {
-  free: 50,
-  starter: 500,
-  pro: 2000,
-  pastor_pro: 5000,
+  free: 30,
+  starter: 150,
+  pro: 450,
+  pastor_pro: 1500,
   igreja: 999999,
 };
 
 // ── Generation potential per plan (for tooltips) ──
 export const PLAN_GENERATION_POTENTIAL: Record<PlanSlug, { titles: number; outlines: number; sermons: number; studies: number }> = {
-  free:    { titles: 100,   outlines: 33,    sermons: 10,  studies: 5 },
-  starter: { titles: 400,   outlines: 100,   sermons: 50,  studies: 25 },
-  pro:     { titles: 1_200, outlines: 400,   sermons: 150, studies: 75 },
-  pastor_pro: { titles: 2_500, outlines: 800, sermons: 300, studies: 150 },
-  igreja:  { titles: 5_000, outlines: 1_600, sermons: 600, studies: 300 },
+  free:    { titles: 10,   outlines: 2,     sermons: 1,   studies: 1 },
+  starter: { titles: 50,   outlines: 10,    sermons: 7,   studies: 5 },
+  pro:     { titles: 150,  outlines: 30,    sermons: 20,  studies: 15 },
+  pastor_pro: { titles: 500,  outlines: 100,   sermons: 75,  studies: 50 },
+  igreja:  { titles: 5_000, outlines: 1_000, sermons: 500, studies: 300 },
 };
 
 // ── Credit cost per tool ──
