@@ -11,8 +11,6 @@ import { CompareMindsDialog } from '@/components/minds/CompareMindsDialog';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
-
 type L = 'PT' | 'EN' | 'ES';
 
 const pageTitle: Record<L, string> = {
@@ -39,20 +37,9 @@ export default function MentesBrilhantes() {
   const [loadingMinds, setLoadingMinds] = useState(true);
 
   useEffect(() => {
-    const loadActiveMinds = async () => {
-      const { data } = await supabase
-        .from('mind_settings')
-        .select('mind_id')
-        .eq('active', true);
-      if (data && data.length > 0) {
-        setActiveMinds(data.map((d: any) => d.mind_id));
-      } else {
-        // Fallback for new projects before mind_settings is populated
-        setActiveMinds(minds.map(m => m.id));
-      }
-      setLoadingMinds(false);
-    };
-    loadActiveMinds();
+    // Forçar o uso da constante `minds` local como fonte única de verdade
+    setActiveMinds(minds.map(m => m.id));
+    setLoadingMinds(false);
   }, []);
 
   const visibleMinds = minds.filter(m => activeMinds.includes(m.id) && !m.hidden);
@@ -65,8 +52,8 @@ export default function MentesBrilhantes() {
     }
   };
 
-  const totalTokens = '168M+';
-  const totalPages = '30,000+';
+  const totalTokens = '184M+';
+  const totalPages = '42.000+';
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
