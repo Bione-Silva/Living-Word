@@ -165,10 +165,10 @@ type L = 'PT' | 'EN' | 'ES';
 
 export const PLAN_DISPLAY_NAMES: Record<PlanSlug, Record<L, string>> = {
   free: { PT: 'Grátis', EN: 'Free', ES: 'Gratis' },
-  starter: { PT: 'Essential (Starter)', EN: 'Essential', ES: 'Essential' },
-  pro: { PT: 'Pastoral', EN: 'Pastoral', ES: 'Pastoral' },
-  pastor_pro: { PT: 'Pastor Pro', EN: 'Pastor Pro', ES: 'Pastor Pro' },
-  igreja: { PT: 'Igreja (Church)', EN: 'Church', ES: 'Iglesia' },
+  starter: { PT: 'Standard', EN: 'Standard', ES: 'Estándar' },
+  pro: { PT: 'Pro', EN: 'Pro', ES: 'Pro' },
+  pastor_pro: { PT: 'Ministério', EN: 'Ministry', ES: 'Ministerio' },
+  igreja: { PT: 'ADM SaaS', EN: 'Admin SaaS', ES: 'Admin SaaS' },
 };
 
 // ── Plan prices (USD) ──
