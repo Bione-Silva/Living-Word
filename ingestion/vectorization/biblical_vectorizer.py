@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from supabase import create_client, Client
 from openai import OpenAI
 
-load_dotenv('.env.local')
+load_dotenv('../../.env.local')
 
 # Setup Supabase
 supabase_url = os.getenv("SUPABASE_URL")
@@ -28,7 +28,7 @@ def chunk_text(text, size):
     return [text[i:i+size] for i in range(0, len(text), size)]
 
 def vectorize_biblical_knowledge():
-    raw_dir = 'data/biblical_base/raw'
+    raw_dir = '../../data/biblical_base/raw'
     mind_id = 'base-biblica'
     
     print("Iniciando Vetorização da Base Bíblica de Conhecimento...")

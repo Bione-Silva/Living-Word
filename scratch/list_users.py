@@ -7,20 +7,19 @@ service_role_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 
 headers = {
     "apikey": service_role_key,
-    "Authorization": f"Bearer {service_role_key}"
+    "Authorization": f"Bearer {service_role_key}",
+    "Content-Type": "application/json"
 }
 
-def inspect_profile():
-    print(f"Inspecting profiles table structure...")
-    res = requests.get(f"{supabase_url}/rest/v1/profiles?limit=1", headers=headers)
+def find_users():
+    print(f"Listing all users in Auth...")
+    res = requests.get(f"{supabase_url}/auth/v1/admin/users", headers=headers)
     if res.status_code == 200:
-        data = res.json()
-        if data:
-            print(f"Columns: {list(data[0].keys())}")
-        else:
-            print("Table empty.")
+        users = res.json().get('users', [])
+        for u in users:
+            print(f"User: {u.get('email')} (ID: {u.get('id')})")
     else:
-        print(f"Error: {res.text}")
+        print(f"Error listing users: {res.text}")
 
 if __name__ == "__main__":
-    inspect_profile()
+    find_users()

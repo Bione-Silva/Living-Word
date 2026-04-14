@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Living Word — UI Kit Completo para Lovable</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pr:#6B4F3A; --am:#C4956A; --aml:#F0E6D8; --bg:#F5F0E8;
+  --ln:#EDD9C8; --dk:#3D2B1F; --mu:#8B6B54; --wh:#ffffff;
+  --gn:#1E4D2B; --gnl:#E8F2EB; --bl:#1A4FA0; --bll:#E8EEF8;
+  --rd:#991B1B; --rdl:#FCE8E8; --bdr:.5px solid #EDD9C8;
+  --r-sm:8px; --r-md:10px; --r-lg:14px;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#E8E0D4;color:var(--dk)}
+
+/* ─────────── NAV DE SEÇÕES ─────────── */
+.nav-sections{background:var(--dk);padding:14px 24px;display:flex;gap:8px;align-items:center;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:18px;color:#F5F0E8;font-weight:500;margin-right:16px}
+.nav-logo em{color:var(--am);font-style:italic}
+.nav-btn{font-size:11px;padding:5px 13px;border-radius:20px;border:.5px solid rgba(245,240,232,.2);color:rgba(245,240,232,.6);cursor:pointer;background:transparent;font-family:'DM Sans',sans-serif;transition:all .1s}
+.nav-btn:hover,.nav-btn.on{background:rgba(196,149,106,.25);color:var(--am);border-color:rgba(196,149,106,.4)}
+
+/* ─────────── SEÇÃO WRAPPER ─────────── */
+.section{padding:24px;display:none}
+.section.visible{display:block}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--dk);margin-bottom:16px;padding-bottom:12px;border-bottom:var(--bdr)}
+
+/* ─────────── TOKENS DOCS ─────────── */
+.token-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:20px}
+.token-swatch{border-radius:8px;overflow:hidden;border:var(--bdr)}
+.token-color{height:40px}
+.token-info{padding:6px 8px;background:var(--wh);font-size:10px}
+.token-name{font-weight:500;color:var(--dk)}
+.token-hex{color:var(--mu)}
+
+/* ─────────── LAYOUT PRINCIPAL ─────────── */
+.app-layout{display:grid;grid-template-columns:200px 1fr;border-radius:var(--r-lg);overflow:hidden;border:var(--bdr);background:var(--bg)}
+.app-layout-3{display:grid;grid-template-columns:200px 1fr 260px;border-radius:var(--r-lg);overflow:hidden;border:var(--bdr);background:var(--bg)}
+
+/* ─────────── SIDEBAR ─────────── */
+.sb{background:var(--dk);display:flex;flex-direction:column;padding:0}
+.sb-logo{padding:16px;border-bottom:.5px solid rgba(255,255,255,.07);margin-bottom:6px}
+.sb-logo-text{font-family:'Cormorant Garamond',serif;font-size:17px;color:#F5F0E8;font-weight:500}
+.sb-logo-text em{color:var(--am);font-style:italic}
+.sb-sub{font-size:9px;color:rgba(245,240,232,.28);margin-top:1px;letter-spacing:.05em}
+.sb-section{font-size:9px;font-weight:500;letter-spacing:.1em;color:rgba(245,240,232,.25);padding:10px 16px 4px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 16px;font-size:12px;color:rgba(245,240,232,.55);cursor:pointer;border-left:2px solid transparent;transition:all .12s}
+.sb-item:hover{background:rgba(255,255,255,.05);color:#F5F0E8}
+.sb-item.on{background:rgba(196,149,106,.15);color:var(--am);border-left-color:var(--am)}
+.sb-item svg{width:13px;height:13px;flex-shrink:0;opacity:.7}
+.sb-item.on svg{opacity:1}
+.sb-chip{margin-left:auto;background:var(--am);color:var(--dk);font-size:8px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-chip.new{background:var(--gnl);color:var(--gn)}
+.sb-sep{height:.5px;background:rgba(255,255,255,.06);margin:6px 16px}
+.sb-bottom{margin-top:auto;padding:12px 14px;border-top:.5px solid rgba(255,255,255,.06)}
+.sb-credits{font-size:9px;color:rgba(245,240,232,.28);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.sb-cval{font-size:12px;color:var(--am);font-weight:500}
+.sb-bar{height:2.5px;background:rgba(255,255,255,.07);border-radius:2px;margin:5px 0 8px;overflow:hidden}
+.sb-bfill{height:100%;background:var(--am);border-radius:2px}
+.sb-upgrade{display:block;margin-bottom:8px;background:rgba(196,149,106,.18);border:none;color:var(--am);font-size:11px;font-weight:500;padding:7px 10px;border-radius:8px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;width:100%}
+.sb-user{display:flex;align-items:center;gap:7px}
+.sb-av{width:26px;height:26px;border-radius:50%;background:rgba(196,149,106,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--am);flex-shrink:0}
+.sb-uname{font-size:11px;color:rgba(245,240,232,.65)}
+.sb-uplan{font-size:9px;color:rgba(245,240,232,.28)}
+
+/* ─────────── TOPBAR ─────────── */
+.topbar{background:var(--wh);border-bottom:var(--bdr);padding:12px 20px;display:flex;align-items:center;gap:10px}
+.greeting{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--dk);flex:1}
+.greeting em{color:var(--am);font-style:normal}
+.streak-badge{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;background:var(--aml);border:var(--bdr);font-size:11px;font-weight:500;color:var(--pr)}
+.lang-pills{display:flex;gap:4px}
+.lang-pill{font-size:10px;padding:3px 9px;border-radius:20px;border:var(--bdr);color:var(--mu);cursor:pointer;background:transparent;font-family:'DM Sans',sans-serif}
+.lang-pill.on{background:var(--dk);color:#F5F0E8;border-color:var(--dk)}
+
+/* ─────────── CONTENT ─────────── */
+.content{padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:var(--bg)}
+
+/* ─────────── CAFÉ HERO ─────────── */
+.cafe-hero{background:var(--wh);border:var(--bdr);border-radius:var(--r-lg);overflow:hidden}
+.cafe-top{padding:12px 16px 0;display:flex;align-items:center;justify-content:space-between}
+.cafe-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}
+.cafe-label em{color:var(--am);font-style:normal}
+.cafe-date{font-size:10px;color:var(--mu)}
+.cafe-body{padding:12px 16px}
+.cafe-pill{display:inline-flex;align-items:center;gap:4px;background:var(--aml);color:var(--pr);font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.cafe-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--dk);line-height:1.25;margin-bottom:11px}
+.cafe-verse-wrap{border-left:2.5px solid var(--am);padding:9px 13px;background:var(--aml);border-radius:0 8px 8px 0}
+.cafe-verse{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--dk);line-height:1.6}
+.cafe-ref{font-size:10px;color:var(--mu);margin-top:4px;font-family:'DM Sans',sans-serif;font-style:normal}
+.cafe-footer{padding:10px 16px;border-top:var(--bdr);display:flex;align-items:center;gap:8px}
+.cafe-btn{font-size:11px;padding:6px 14px;border-radius:7px;border:var(--bdr);background:var(--aml);color:var(--pr);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500}
+.cafe-btn.ghost{background:transparent;color:var(--mu)}
+.cafe-social{margin-left:auto;display:flex;gap:10px}
+.cafe-social span{font-size:11px;color:var(--mu)}
+
+/* ─────────── 2 COLUNAS ─────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ─────────── PALAVRA AMIGA ─────────── */
+.pa-card{background:var(--wh);border:var(--bdr);border-radius:var(--r-md);padding:14px}
+.card-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:9px}
+.card-label em{color:var(--am);font-style:normal}
+.pa-field{width:100%;padding:9px 11px;border-radius:7px;border:var(--bdr);background:var(--bg);font-size:12px;color:var(--dk);font-family:'DM Sans',sans-serif;min-height:52px;resize:none;outline:none}
+.pa-btn{width:100%;margin-top:7px;padding:8px;border-radius:8px;background:var(--am);border:none;color:var(--dk);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ─────────── RECOMENDADO ─────────── */
+.rec-card{background:var(--wh);border:var(--bdr);border-radius:var(--r-md);padding:14px}
+.rec-item{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:var(--bdr)}
+.rec-item:last-child{border-bottom:none;padding-bottom:0}
+.rec-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.rec-title{font-size:12px;font-weight:500;color:var(--dk);line-height:1.3}
+.rec-sub{font-size:10px;color:var(--mu);margin-top:1px}
+.rec-tags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.rtag{font-size:9px;padding:1px 6px;border-radius:20px;background:var(--aml);color:var(--pr)}
+
+/* ─────────── FERRAMENTAS ─────────── */
+.tools-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tool-card{background:var(--wh);border:var(--bdr);border-radius:var(--r-md);padding:11px 13px;cursor:pointer;transition:all .12s;display:flex;flex-direction:column;gap:5px}
+.tool-card:hover{border-color:var(--am);background:#FFFDF8}
+.tool-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tool-name{font-size:12px;font-weight:500;color:var(--dk)}
+.tool-sub{font-size:10px;color:var(--mu);line-height:1.3}
+
+/* ─────────── BLOG BANNER ─────────── */
+.blog-banner{background:var(--dk);border-radius:var(--r-md);padding:13px 16px;display:flex;align-items:center;gap:14px}
+.bb-icon{font-size:20px;flex-shrink:0}
+.bb-body{flex:1}
+.bb-title{font-size:13px;font-weight:500;color:#F5F0E8;margin-bottom:1px}
+.bb-sub{font-size:11px;color:rgba(245,240,232,.45);line-height:1.4}
+.bb-url{font-size:10px;color:var(--am);margin-top:3px}
+.bb-btn{background:var(--am);border:none;color:var(--dk);font-size:11px;font-weight:500;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+
+/* ─────────── EDITOR TOPBAR ─────────── */
+.ed-topbar{background:var(--wh);border-bottom:var(--bdr);padding:10px 16px;display:flex;align-items:center;gap:8px}
+.ed-back{font-size:11px;color:var(--mu);cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;border:var(--bdr);background:transparent}
+.ed-title{flex:1;background:transparent;border:none;outline:none;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--dk)}
+.ed-meta{font-size:10px;color:var(--mu)}
+.ed-status{font-size:10px;padding:3px 9px;border-radius:20px;border:var(--bdr);color:var(--mu);cursor:pointer}
+.ed-status.ready{background:var(--gnl);color:var(--gn);border-color:#C0DD97}
+.btn-pulpit{background:var(--am);border:none;color:var(--dk);font-size:11px;font-weight:500;padding:6px 13px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-multi{background:var(--dk);border:none;color:#F5F0E8;font-size:11px;font-weight:500;padding:6px 13px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ─────────── PASSAGE ROW ─────────── */
+.passage-row{padding:9px 16px;border-bottom:var(--bdr);background:var(--wh);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.passage-input{padding:6px 11px;border-radius:8px;border:var(--bdr);background:var(--bg);font-size:12px;color:var(--dk);font-family:'DM Sans',sans-serif;width:160px;outline:none}
+.mini-select{padding:5px 9px;border-radius:20px;border:var(--bdr);background:var(--bg);font-size:11px;color:var(--mu);cursor:pointer;font-family:'DM Sans',sans-serif}
+.ed-stats{margin-left:auto;display:flex;gap:10px}
+.ed-stat{font-size:10px;color:var(--mu)}
+.ed-stat strong{color:var(--dk);font-weight:500}
+
+/* ─────────── BLOCKS ─────────── */
+.blocks-area{padding:12px 16px;display:flex;flex-direction:column;gap:7px;background:var(--bg)}
+.blk{border-radius:10px;overflow:hidden;border:.5px solid var(--ln);background:var(--wh)}
+.blk-head{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:.5px solid rgba(196,149,106,.1)}
+.blk-drag{color:rgba(139,107,84,.3);font-size:11px;cursor:grab}
+.blk-icon{font-size:12px;font-weight:700;min-width:16px;text-align:center}
+.blk-type{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;flex:1}
+.blk-bdg{font-size:9px;padding:1px 6px;border-radius:20px;font-weight:500}
+.blk-acts{display:flex;gap:1px}
+.blk-act{width:22px;height:22px;border:none;background:transparent;cursor:pointer;border-radius:5px;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--mu)}
+.blk-act:hover{background:var(--aml)}
+.blk-body{padding:8px 11px}
+.blk-text{font-size:13px;line-height:1.6;color:var(--dk)}
+
+.blk-verse{border-color:#B5D4F4;background:#F0F5FB}
+.blk-idea{border-color:#C0DD97;background:#F4FAF0}
+.blk-illus{border-color:#FAC775;background:#FDFAF4}
+.blk-appl{border-color:#9FE1CB;background:#F0FAF7}
+.blk-call{border-color:#F09595;background:#FDF4F4}
+
+.add-blk{width:100%;padding:8px;border-radius:9px;border:1.5px dashed var(--am);background:transparent;color:var(--pr);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ─────────── RIGHT PANEL ─────────── */
+.rp{background:var(--wh);border-left:var(--bdr);display:flex;flex-direction:column}
+.rp-tabs{display:flex;border-bottom:var(--bdr)}
+.rp-tab{flex:1;padding:9px 4px;font-size:10px;font-weight:500;text-align:center;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent}
+.rp-tab.on{color:var(--pr);border-bottom-color:var(--am)}
+.rp-body{padding:12px;display:flex;flex-direction:column;gap:10px}
+.rp-input{width:100%;padding:7px 10px;border-radius:7px;border:var(--bdr);background:var(--bg);font-size:11px;color:var(--dk);font-family:'DM Sans',sans-serif;outline:none}
+.rp-result{border:var(--bdr);border-radius:8px;overflow:hidden}
+.rp-res-head{padding:7px 10px;border-bottom:var(--bdr);background:var(--aml);display:flex;align-items:center;justify-content:space-between}
+.rp-res-label{font-size:9px;font-weight:600;color:var(--pr);text-transform:uppercase;letter-spacing:.07em}
+.rp-drag{font-size:9px;color:var(--mu);cursor:grab}
+.rp-res-body{padding:9px 10px;font-size:11px;line-height:1.55;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--dk)}
+.rp-res-ref{font-size:10px;color:var(--mu);margin-top:4px;font-family:'DM Sans',sans-serif;font-style:normal}
+
+/* ─────────── STUDY SCREEN ─────────── */
+.study-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-card{background:var(--wh);border:var(--bdr);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:11px}
+.form-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--dk)}
+.form-tag{font-size:9px;padding:2px 8px;border-radius:20px;border:var(--bdr);color:var(--mu)}
+.field{display:flex;flex-direction:column;gap:4px}
+.field-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--mu)}
+.field-input{padding:8px 11px;border-radius:8px;border:var(--bdr);background:var(--bg);font-size:12px;color:var(--dk);font-family:'DM Sans',sans-serif;outline:none;width:100%}
+.field-select{padding:7px 11px;border-radius:8px;border:var(--bdr);background:var(--bg);font-size:12px;color:var(--dk);font-family:'DM Sans',sans-serif;outline:none;width:100%}
+.row{display:flex;gap:8px}
+.row .field{flex:1}
+.sections-grid{display:flex;flex-direction:column;gap:5px}
+.sec-item{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:7px;border:var(--bdr);background:var(--bg)}
+.sec-num{width:18px;height:18px;border-radius:5px;background:var(--aml);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--pr);flex-shrink:0}
+.sec-name{font-size:11px;color:var(--dk);font-weight:500;flex:1}
+.sec-badge{font-size:9px;padding:1px 6px;border-radius:20px}
+.gen-btn{width:100%;padding:10px;border-radius:9px;background:var(--dk);border:none;color:#F5F0E8;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.gen-btn-outline{width:100%;padding:9px;border-radius:9px;background:transparent;border:.5px solid var(--am);color:var(--pr);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.fmt-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.fmt-opt{padding:8px 10px;border-radius:8px;border:var(--bdr);cursor:pointer}
+.fmt-opt.on{border-color:var(--am);background:var(--aml)}
+.fmt-name{font-size:11px;font-weight:500;color:var(--dk)}
+.fmt-desc{font-size:10px;color:var(--mu);margin-top:1px}
+.fmt-cred{font-size:9px;color:var(--am);margin-top:2px}
+.topic-pills{display:flex;gap:5px;flex-wrap:wrap}
+.tpill{font-size:10px;padding:3px 10px;border-radius:20px;border:var(--bdr);color:var(--mu);cursor:pointer;background:transparent}
+.tpill.on{background:var(--aml);color:var(--pr);border-color:var(--am)}
+.blog-preview{border:var(--bdr);border-radius:8px;overflow:hidden}
+.bp-bar{background:var(--aml);padding:7px 12px;display:flex;align-items:center;gap:6px;border-bottom:var(--bdr)}
+.bp-dot{width:7px;height:7px;border-radius:50%;background:var(--ln)}
+.bp-url{font-size:10px;color:var(--mu);flex:1;text-align:center}
+.bp-body{padding:11px 13px;background:var(--wh)}
+.bp-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--dk);margin-bottom:3px}
+.bp-meta{font-size:10px;color:var(--mu);margin-bottom:7px;display:flex;gap:6px}
+.bp-text{font-size:11px;color:var(--dk);line-height:1.6}
+
+/* ─────────── PODIUM ─────────── */
+.podium{background:#080808;border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
+.podium-top{padding:12px 20px;border-bottom:1px solid #111;display:flex;align-items:center;gap:14px}
+.timer-wrap{text-align:center;cursor:pointer;min-width:90px}
+.timer-num{font-size:30px;font-weight:700;font-family:monospace;letter-spacing:.05em;color:#44DD88;line-height:1}
+.timer-action{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.timer-bar-bg{flex:1;height:4px;background:#1a1a1a;border-radius:2px;overflow:hidden}
+.timer-bar{height:100%;width:0%;background:#44DD88;border-radius:2px;transition:width 1s}
+.pod-controls{display:flex;gap:8px;align-items:center}
+.pod-ctrl{font-size:10px;color:#555;display:flex;align-items:center;gap:4px}
+.pod-ctrl input[type=range]{width:60px;accent-color:#C4956A}
+.pod-ctrl input[type=number]{width:38px;background:#1a1a1a;border:1px solid #2a2a2a;color:#888;font-size:10px;border-radius:4px;padding:2px 4px;text-align:center}
+.pod-exit{background:#1a1a1a;border:1px solid #222;color:#555;font-size:10px;padding:4px 10px;border-radius:6px;cursor:pointer}
+.podium-main{flex:1;padding:32px 60px;display:flex;flex-direction:column;justify-content:center;min-height:200px}
+.pod-type{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;opacity:.5;font-family:'DM Sans',sans-serif;margin-bottom:14px}
+.pod-text{font-family:'Cormorant Garamond',serif;font-size:28px;line-height:1.5;color:#E8E0D8}
+.pod-dots{display:flex;gap:5px;margin-top:20px;flex-wrap:wrap}
+.pdot{width:7px;height:7px;border-radius:50%;background:#1a1a1a}
+.pdot.done{background:#333}
+.pdot.current{background:#C4956A}
+.podium-outline{border-top:1px solid #111;padding:10px 16px;display:flex;gap:5px;overflow-x:auto;background:#0a0a0a}
+.pod-chip{padding:3px 10px;border-radius:6px;font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid #1a1a1a;color:#444;background:#0d0d0d;white-space:nowrap}
+.pod-chip.on{background:rgba(196,149,106,.2);color:var(--am);border-color:rgba(196,149,106,.4)}
+.podium-nav{display:flex;justify-content:space-between;padding:10px 20px 14px;border-top:1px solid #111;background:#0a0a0a}
+.pod-nav-btn{background:#141414;border:1px solid #222;color:#555;font-size:12px;padding:8px 22px;border-radius:8px;cursor:pointer}
+.pod-hint{font-size:10px;color:#333;font-family:'DM Sans',sans-serif}
+
+/* ─────────── MULTIPLY ─────────── */
+.multi-card{background:var(--wh);border:var(--bdr);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:11px}
+.multi-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--dk)}
+.multi-sub{font-size:11px;color:var(--mu);line-height:1.4}
+.multi-opts{display:flex;flex-direction:column;gap:6px}
+.multi-opt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;border:var(--bdr);background:var(--bg)}
+.multi-chk{width:16px;height:16px;border-radius:4px;border:var(--bdr);background:var(--wh);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer}
+.multi-chk.on{background:var(--gn);border-color:var(--gn);color:#fff}
+.multi-opt-icon{font-size:14px;flex-shrink:0}
+.multi-opt-body{flex:1}
+.multi-opt-name{font-size:12px;font-weight:500;color:var(--dk)}
+.multi-opt-desc{font-size:10px;color:var(--mu)}
+.multi-opt-cred{font-size:10px;color:var(--am);margin-left:auto;white-space:nowrap}
+.multi-total{padding:9px 12px;background:var(--aml);border-radius:9px;display:flex;justify-content:space-between;align-items:center}
+.multi-total-label{font-size:11px;color:var(--pr);font-weight:500}
+.multi-total-val{font-size:13px;font-weight:600;color:var(--pr)}
+.langs-row{display:flex;gap:6px}
+.lang-toggle{padding:5px 12px;border-radius:20px;border:var(--bdr);font-size:11px;cursor:pointer;background:transparent;color:var(--mu);font-family:'DM Sans',sans-serif}
+.lang-toggle.on{background:var(--dk);color:#F5F0E8;border-color:var(--dk)}
+</style>
+</head>
+<body>
+
+<!-- ────────── NAV ────────── -->
+<div class="nav-sections">
+  <div class="nav-logo">Living <em>Word</em></div>
+  <button class="nav-btn on" onclick="show('dashboard')">Dashboard</button>
+  <button class="nav-btn" onclick="show('sermon')">Sermão</button>
+  <button class="nav-btn" onclick="show('study')">Estudo Bíblico</button>
+  <button class="nav-btn" onclick="show('blog')">Blog & Artigos</button>
+  <button class="nav-btn" onclick="show('podium')">Modo Púlpito</button>
+  <button class="nav-btn" onclick="show('multiply')">Multiplicar</button>
+  <button class="nav-btn" onclick="show('tokens')">Design Tokens</button>
+</div>
+
+<!-- ────────── DASHBOARD ────────── -->
+<div class="section visible" id="sec-dashboard">
+  <div class="section-title">Tela 1 — Dashboard (Usuário Geral + Pregador)</div>
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sb">
+      <div class="sb-logo">
+        <div class="sb-logo-text">Living <em>Word</em></div>
+        <div class="sb-sub">Palavra Viva · Palabra Viva</div>
+      </div>
+      <div class="sb-section">Para você</div>
+      <div class="sb-item on">
+        <svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1.2" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1.2" fill="currentColor" opacity=".4"/><rect x="1" y="8" width="5" height="5" rx="1.2" fill="currentColor" opacity=".4"/><rect x="8" y="8" width="5" height="5" rx="1.2" fill="currentColor" opacity=".4"/></svg>
+        Início
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5c3.038 0 5.5 2.462 5.5 5.5S10.038 12.5 7 12.5 1.5 10.038 1.5 7 3.962 1.5 7 1.5z" stroke="currentColor" stroke-width="1.3"/></svg>
+        Devocional Diário
+        <span class="sb-chip new">Novo</span>
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h10M2 10.5h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Bíblia
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.5 5h4l-3 2.5 1 4L7 9 3.5 11.5l1-4L1.5 5h4z" stroke="currentColor" stroke-width="1.2"/></svg>
+        Palavra Amiga
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10H2z" stroke="currentColor" stroke-width="1.3"/><path d="M4 5h6M4 7.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Meu Blog
+        <span class="sb-chip">Pro</span>
+      </div>
+      <div class="sb-sep"></div>
+      <div class="sb-section">Ferramentas</div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5c3 0 5.5 2.5 5.5 5.5S10 12.5 7 12.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 1.5C4 1.5 1.5 4 1.5 7S4 12.5 7 12.5" stroke="currentColor" stroke-width="1.3" opacity=".5"/></svg>
+        Sermão
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Estudo Bíblico
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10H2z" stroke="currentColor" stroke-width="1.3"/></svg>
+        Blog & Artigos
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3.5" width="11" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        Artes Bíblicas
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.5 5h4l-3 2.5 1 4L7 9 3.5 11.5l1-4L1.5 5h4z" stroke="currentColor" stroke-width="1.2"/></svg>
+        Mentes Brilhantes
+        <span class="sb-chip">Pro</span>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-credits">Créditos</div>
+        <div class="sb-cval">500 disponíveis</div>
+        <div class="sb-bar"><div class="sb-bfill" style="width:18%"></div></div>
+        <button class="sb-upgrade">Fazer upgrade →</button>
+        <div class="sb-user">
+          <div class="sb-av">U</div>
+          <div><div class="sb-uname">Usuário</div><div class="sb-uplan">Plano Grátis</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div>
+      <div class="topbar">
+        <div class="greeting">Boa noite, <em>Amigo</em> 👋</div>
+        <div class="streak-badge">🔥 7 dias seguidos</div>
+        <div class="lang-pills">
+          <button class="lang-pill on">PT</button>
+          <button class="lang-pill">EN</button>
+          <button class="lang-pill">ES</button>
+        </div>
+      </div>
+      <div class="content">
+        <!-- CAFÉ HERO -->
+        <div class="cafe-hero">
+          <div class="cafe-top">
+            <div class="cafe-label">☕ <em>Café com a Palavra Viva de Deus</em></div>
+            <div class="cafe-date">Sábado, 11 de abril</div>
+          </div>
+          <div class="cafe-body">
+            <div class="cafe-pill">🌿 Perseverança</div>
+            <div class="cafe-title">A Resistência da Videira sob o Sol</div>
+            <div class="cafe-verse-wrap">
+              <div class="cafe-verse">"Bem-aventurado o homem que suporta, com perseverança, a provação; porque, depois de ter sido aprovado, receberá a coroa da vida."</div>
+              <div class="cafe-ref">— Tiago 1:12 (ARA)</div>
+            </div>
+          </div>
+          <div class="cafe-footer">
+            <button class="cafe-btn">📖 Ouvir / Ler completo →</button>
+            <button class="cafe-btn ghost">Compartilhar</button>
+            <div class="cafe-social"><span>❤️ 1</span><span>💬 0</span></div>
+          </div>
+        </div>
+        <!-- 2 COLUNAS -->
+        <div class="two-col">
+          <div class="pa-card">
+            <div class="card-label">💬 <em>Palavra Amiga</em> — Como você está?</div>
+            <textarea class="pa-field" placeholder="Ex: Estou ansioso, me sinto sozinho..." rows="3"></textarea>
+            <button class="pa-btn">✨ Quero uma Palavra</button>
+          </div>
+          <div class="rec-card">
+            <div class="card-label">⭐ <em>Recomendado</em> para você</div>
+            <div class="rec-item">
+              <div class="rec-icon" style="background:#E8F2EB">📗</div>
+              <div>
+                <div class="rec-title">Alegria mesmo na tribulação</div>
+                <div class="rec-sub">Baseado no seu histórico</div>
+                <div class="rec-tags"><span class="rtag">Alegria</span><span class="rtag">Perseverança</span><span class="rtag">Fé</span></div>
+              </div>
+            </div>
+            <div class="rec-item">
+              <div class="rec-icon" style="background:#E8EEF8">📘</div>
+              <div>
+                <div class="rec-title">Estudo: O Pai Pródigo</div>
+                <div class="rec-sub">Lucas 15 · 8 seções</div>
+                <div class="rec-tags"><span class="rtag">Graça</span><span class="rtag">Restauração</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- FERRAMENTAS -->
+        <div>
+          <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:9px">🚀 Navegue nas ferramentas</div>
+          <div class="tools-row">
+            <div class="tool-card">
+              <div class="tool-icon" style="background:#F0E6D8">🎙️</div>
+              <div class="tool-name">Sermão</div>
+              <div class="tool-sub">Prepare sua mensagem</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-icon" style="background:#E8F2EB">📖</div>
+              <div class="tool-name">Estudo Bíblico</div>
+              <div class="tool-sub">Teológico com 8 seções</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-icon" style="background:#E8EEF8">✍️</div>
+              <div class="tool-name">Blog & Artigos</div>
+              <div class="tool-sub">Devocional ou texto livre</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-icon" style="background:#F0E6D8">🎨</div>
+              <div class="tool-name">Artes Bíblicas</div>
+              <div class="tool-sub">Instagram e Stories</div>
+            </div>
+          </div>
+        </div>
+        <!-- BLOG BANNER -->
+        <div class="blog-banner">
+          <div class="bb-icon">📝</div>
+          <div class="bb-body">
+            <div class="bb-title">Seu blog devocional está esperando por você</div>
+            <div class="bb-sub">Publique com seu nome e sua voz — sem WordPress, sem técnica.</div>
+            <div class="bb-url">seunome.palavraviva.app</div>
+          </div>
+          <button class="bb-btn">Criar meu blog →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────── SERMÃO ────────── -->
+<div class="section" id="sec-sermon">
+  <div class="section-title">Tela 2 — Editor de Sermão (Sermon Builder)</div>
+  <div class="app-layout-3" style="height:620px">
+    <div class="sb">
+      <div class="sb-logo"><div class="sb-logo-text">Living <em>Word</em></div></div>
+      <div class="sb-section">Ferramentas</div>
+      <div class="sb-item on">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5c3 0 5.5 2.5 5.5 5.5S10 12.5 7 12.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 1.5C4 1.5 1.5 4 1.5 7S4 12.5 7 12.5" stroke="currentColor" stroke-width="1.3" opacity=".5"/></svg>
+        Sermão
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Estudo Bíblico
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10H2z" stroke="currentColor" stroke-width="1.3"/></svg>
+        Blog & Artigos
+      </div>
+      <div class="sb-item">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.5 5h4l-3 2.5 1 4L7 9 3.5 11.5l1-4L1.5 5h4z" stroke="currentColor" stroke-width="1.2"/></svg>
+        Mentes Brilhantes
+        <span class="sb-chip">Pro</span>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-credits">Créditos</div>
+        <div class="sb-cval">19.892 disponíveis</div>
+        <div class="sb-bar"><div class="sb-bfill" style="width:72%"></div></div>
+        <div class="sb-user">
+          <div class="sb-av">SB</div>
+          <div><div class="sb-uname">Severino Bione</div><div class="sb-uplan">Pro · Igreja</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- EDITOR -->
+    <div style="display:flex;flex-direction:column;overflow:hidden;background:var(--bg)">
+      <div class="ed-topbar">
+        <div class="ed-back">← Sermões</div>
+        <div class="ed-title">João 15:1-8 — A Videira Verdadeira</div>
+        <div class="ed-meta">347 palavras · ~2,7 min</div>
+        <div class="ed-status">● Rascunho</div>
+        <button class="btn-pulpit">🎤 Púlpito</button>
+        <button class="btn-multi">✦ Multiplicar</button>
+      </div>
+      <div class="passage-row">
+        <input class="passage-input" value="João 15:1-8">
+        <select class="mini-select"><option>✦ Nenhuma Mente</option><option>Billy Graham</option><option>Spurgeon</option></select>
+        <select class="mini-select"><option>🌎 Geral</option><option>Imigrante</option></select>
+        <select class="mini-select"><option>PT</option><option>EN</option><option>PT/EN</option></select>
+        <div class="ed-stats">
+          <div class="ed-stat"><strong>8</strong> blocos</div>
+          <div class="ed-stat"><strong>5</strong> no púlpito</div>
+        </div>
+      </div>
+      <div class="blocks-area" style="overflow-y:auto;flex:1">
+        <div class="blk">
+          <div class="blk-head">
+            <span class="blk-drag">⠿⠿</span>
+            <span class="blk-icon" style="color:#3D2B1F">T</span>
+            <span class="blk-type" style="color:#3D2B1F">Título</span>
+            <div class="blk-acts"><button class="blk-act">👁</button><button class="blk-act">📊</button><button class="blk-act">✦</button><button class="blk-act" style="color:var(--rd)">✕</button></div>
+          </div>
+          <div class="blk-body"><div class="blk-text" style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500">João 15:1-8 — A Videira Verdadeira</div></div>
+        </div>
+        <div class="blk blk-verse">
+          <div class="blk-head">
+            <span class="blk-drag">⠿⠿</span>
+            <span class="blk-icon" style="color:#1A4FA0">✝</span>
+            <span class="blk-type" style="color:#1A4FA0">Versículo</span>
+            <span class="blk-bdg" style="background:#E8EEF8;color:#1A4FA0">NVI</span>
+            <div class="blk-acts"><button class="blk-act">👁</button><button class="blk-act">📊</button><button class="blk-act">✦</button><button class="blk-act" style="color:var(--rd)">✕</button></div>
+          </div>
+          <div class="blk-body"><div class="blk-text" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#1A4FA0;font-size:13px">"Eu sou a videira verdadeira... Permanecei em mim e eu permanecerei em vós." — João 15:1,4</div></div>
+        </div>
+        <div class="blk blk-idea">
+          <div class="blk-head">
+            <span class="blk-drag">⠿⠿</span>
+            <span class="blk-icon" style="color:#1E4D2B">✦</span>
+            <span class="blk-type" style="color:#1E4D2B">Grande Ideia</span>
+            <span class="blk-bdg" style="background:#E8F2EB;color:#1E4D2B">IA gerou</span>
+            <div class="blk-acts"><button class="blk-act">👁</button><button class="blk-act">📊</button><button class="blk-act">✦</button><button class="blk-act" style="color:var(--rd)">✕</button></div>
+          </div>
+          <div class="blk-body"><div class="blk-text" style="font-size:13px;font-weight:500;color:#1E4D2B">Separados de Cristo, somos incapazes de produzir fruto que dure.</div></div>
+        </div>
+        <div class="blk">
+          <div class="blk-head">
+            <span class="blk-drag">⠿⠿</span>
+            <span class="blk-icon" style="color:#6B4F3A">→</span>
+            <span class="blk-type" style="color:#6B4F3A">Ponto Principal</span>
+            <span class="blk-bdg" style="background:#E8EEF8;color:#1A4FA0">📊 Slide</span>
+            <div class="blk-acts"><button class="blk-act">👁</button><button class="blk-act">📊</button><button class="blk-act">✦</button><button class="blk-act" style="color:var(--rd)">✕</button></div>
+          </div>
+          <div class="blk-body"><div class="blk-text" style="font-weight:500;font-size:13px">1. A Videira é a única fonte de vida espiritual genuína</div></div>
+        </div>
+        <div class="blk blk-illus">
+          <div class="blk-head">
+            <span class="blk-drag">⠿⠿</span>
+            <span class="blk-icon" style="color:#7A4A10">◎</span>
+            <span class="blk-type" style="color:#7A4A10">Ilustração</span>
+            <span class="blk-bdg" style="background:#FDF0E0;color:#7A4A10">Billy Graham</span>
+            <div class="blk-acts"><button class="blk-act">👁</button><button class="blk-act">📊</button><button class="blk-act">✦</button><button class="blk-act" style="color:var(--rd)">✕</button></div>
+          </div>
+          <div class="blk-body"><div class="blk-text" style="font-size:12px;color:#7A4A10;font-style:italic">Um fazendeiro cortou um galho verde da videira e colocou num vaso. Por três dias pareceu vivo. No quarto dia, estava seco...</div></div>
+        </div>
+        <div class="blk blk-appl">
+          <div class="blk-head">
+            <span class="blk-drag">⠿⠿</span>
+            <span class="blk-icon" style="color:#1E4D2B">★</span>
+            <span class="blk-type" style="color:#1E4D2B">Aplicação</span>
+            <div class="blk-acts"><button class="blk-act">👁</button><button class="blk-act">📊</button><button class="blk-act">✦</button><button class="blk-act" style="color:var(--rd)">✕</button></div>
+          </div>
+          <div class="blk-body"><div class="blk-text" style="font-size:12px;color:#1E4D2B">Que disciplinas espirituais te mantêm conectado à Videira esta semana?</div></div>
+        </div>
+        <div class="blk blk-call">
+          <div class="blk-head">
+            <span class="blk-drag">⠿⠿</span>
+            <span class="blk-icon" style="color:#991B1B">!</span>
+            <span class="blk-type" style="color:#991B1B">Chamada Final</span>
+            <span class="blk-bdg" style="background:#FCE8E8;color:#991B1B">👁 Oculto</span>
+            <div class="blk-acts"><button class="blk-act">👁</button><button class="blk-act">📊</button><button class="blk-act">✦</button><button class="blk-act" style="color:var(--rd)">✕</button></div>
+          </div>
+          <div class="blk-body"><div class="blk-text" style="font-weight:500;color:#991B1B;font-size:13px">Hoje: escolha permanecer. Não amanhã — hoje.</div></div>
+        </div>
+        <button class="add-blk">+ Adicionar Bloco</button>
+      </div>
+    </div>
+    <!-- RIGHT PANEL -->
+    <div class="rp">
+      <div class="rp-tabs">
+        <div class="rp-tab on">🔬 Pesquisa</div>
+        <div class="rp-tab">◎ Ilus.</div>
+        <div class="rp-tab">✦ Mentes</div>
+        <div class="rp-tab">📋 Outline</div>
+      </div>
+      <div class="rp-body">
+        <input class="rp-input" value="João 15:1-8" placeholder="Versículo ou tema...">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--mu)">Síntese · PT</div>
+        <div class="rp-result">
+          <div class="rp-res-head">
+            <span class="rp-res-label">📖 menō (μένω)</span>
+            <span class="rp-drag">arrastar ⠿</span>
+          </div>
+          <div class="rp-res-body">"Permanecer" não é passividade — é ação de adesão contínua. Spurgeon: o galho não produz fruto esforçando-se, mas permanecendo.
+            <div class="rp-res-ref">Síntese: Spurgeon + Calvin · João 15</div>
+          </div>
+        </div>
+        <div class="rp-result">
+          <div class="rp-res-head">
+            <span class="rp-res-label">✝ Passagens cruzadas</span>
+            <span class="rp-drag">arrastar ⠿</span>
+          </div>
+          <div class="rp-res-body" style="font-style:normal;font-size:11px;display:flex;flex-direction:column;gap:4px;padding:9px 10px">
+            <div style="padding:4px 8px;border-radius:6px;background:var(--bg);font-family:'DM Sans',sans-serif">João 8:31 — "Se permanecerdes na minha palavra..."</div>
+            <div style="padding:4px 8px;border-radius:6px;background:var(--bg);font-family:'DM Sans',sans-serif">João 6:56 — "Quem come a minha carne permanece em mim"</div>
+            <div style="padding:4px 8px;border-radius:6px;background:var(--bg);font-family:'DM Sans',sans-serif">1 João 2:24 — "Aquilo que ouvistes permaneça em vós"</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--dk);line-height:1.6;padding:8px 10px;background:var(--bg);border-radius:8px;border:var(--bdr)">
+          <strong style="font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);display:block;margin-bottom:4px">Contexto histórico</strong>
+          A metáfora da videira era central na cultura judaica — Israel era chamado de "vinha de Deus" (Is 5:1-7). Jesus redefine: Ele é a videira verdadeira.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────── ESTUDO ────────── -->
+<div class="section" id="sec-study">
+  <div class="section-title">Tela 3 — Estudo Bíblico</div>
+  <div class="app-layout">
+    <div class="sb">
+      <div class="sb-logo"><div class="sb-logo-text">Living <em>Word</em></div></div>
+      <div class="sb-section">Ferramentas</div>
+      <div class="sb-item"><svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5c3 0 5.5 2.5 5.5 5.5S10 12.5 7 12.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 1.5C4 1.5 1.5 4 1.5 7S4 12.5 7 12.5" stroke="currentColor" stroke-width="1.3" opacity=".5"/></svg>Sermão</div>
+      <div class="sb-item on"><svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Estudo Bíblico</div>
+      <div class="sb-item"><svg viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10H2z" stroke="currentColor" stroke-width="1.3"/></svg>Blog & Artigos</div>
+      <div class="sb-bottom">
+        <div class="sb-credits">Créditos</div><div class="sb-cval">19.892</div>
+        <div class="sb-bar"><div class="sb-bfill" style="width:72%"></div></div>
+        <div class="sb-user"><div class="sb-av">SB</div><div><div class="sb-uname">Severino Bione</div><div class="sb-uplan">Pro</div></div></div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="form-card">
+        <div class="form-header"><div class="form-title">Novo Estudo Bíblico</div><div class="form-tag">20 créditos</div></div>
+        <div class="field"><div class="field-label">Passagem ou livro bíblico</div><input class="field-input" value="João 15:1-17"></div>
+        <div class="row">
+          <div class="field"><div class="field-label">Estilo</div>
+            <select class="field-select"><option>Expositivo (verso a verso)</option><option>Temático</option><option>Devocional pessoal</option><option>Discipulado em grupo</option></select>
+          </div>
+          <div class="field"><div class="field-label">Idioma</div>
+            <select class="field-select"><option>Português (BR)</option><option>English</option><option>Español</option></select>
+          </div>
+        </div>
+        <div>
+          <div class="field-label" style="margin-bottom:6px">O estudo terá 8 seções</div>
+          <div class="sections-grid">
+            <div class="sec-item"><div class="sec-num">1</div><div class="sec-name">Contexto histórico e cultural</div><span class="sec-badge" style="background:var(--gnl);color:var(--gn)">✓</span></div>
+            <div class="sec-item"><div class="sec-num">2</div><div class="sec-name">Análise verso a verso</div><span class="sec-badge" style="background:var(--gnl);color:var(--gn)">✓</span></div>
+            <div class="sec-item"><div class="sec-num">3</div><div class="sec-name">Palavras originais (grego/hebraico)</div><span class="sec-badge" style="background:var(--bll);color:var(--bl)">Pro</span></div>
+            <div class="sec-item"><div class="sec-num">4</div><div class="sec-name">Teologia sistemática do texto</div><span class="sec-badge" style="background:var(--gnl);color:var(--gn)">✓</span></div>
+            <div class="sec-item"><div class="sec-num">5</div><div class="sec-name">Passagens cruzadas relevantes</div><span class="sec-badge" style="background:var(--gnl);color:var(--gn)">✓</span></div>
+            <div class="sec-item"><div class="sec-num">6</div><div class="sec-name">Perguntas para reflexão pessoal</div><span class="sec-badge" style="background:var(--gnl);color:var(--gn)">✓</span></div>
+            <div class="sec-item"><div class="sec-num">7</div><div class="sec-name">Aplicações práticas</div><span class="sec-badge" style="background:var(--gnl);color:var(--gn)">✓</span></div>
+            <div class="sec-item"><div class="sec-num">8</div><div class="sec-name">Oração baseada no texto</div><span class="sec-badge" style="background:var(--gnl);color:var(--gn)">✓</span></div>
+          </div>
+        </div>
+        <button class="gen-btn">✦ Gerar Estudo Completo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────── BLOG ────────── -->
+<div class="section" id="sec-blog">
+  <div class="section-title">Tela 4 — Blog & Artigos</div>
+  <div class="app-layout">
+    <div class="sb">
+      <div class="sb-logo"><div class="sb-logo-text">Living <em>Word</em></div></div>
+      <div class="sb-section">Ferramentas</div>
+      <div class="sb-item"><svg viewBox="0 0 14 14" fill="none"><path d="M7 1.5c3 0 5.5 2.5 5.5 5.5S10 12.5 7 12.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 1.5C4 1.5 1.5 4 1.5 7S4 12.5 7 12.5" stroke="currentColor" stroke-width="1.3" opacity=".5"/></svg>Sermão</div>
+      <div class="sb-item"><svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Estudo Bíblico</div>
+      <div class="sb-item on"><svg viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10H2z" stroke="currentColor" stroke-width="1.3"/><path d="M4 5h6M4 7.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Blog & Artigos</div>
+      <div class="sb-bottom">
+        <div class="sb-credits">Créditos</div><div class="sb-cval">500 disponíveis</div>
+        <div class="sb-bar"><div class="sb-bfill" style="width:18%"></div></div>
+        <button class="sb-upgrade">Fazer upgrade →</button>
+        <div class="sb-user"><div class="sb-av">U</div><div><div class="sb-uname">Usuário</div><div class="sb-uplan">Grátis</div></div></div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="form-card">
+        <div class="form-header"><div class="form-title">Criar Artigo ou Devocional</div><div class="form-tag">10 créditos</div></div>
+        <div class="field"><div class="field-label">Sobre o que você quer escrever?</div><input class="field-input" value="Como perseverar na fé em tempos difíceis"></div>
+        <div>
+          <div class="field-label" style="margin-bottom:6px">Tópicos sugeridos</div>
+          <div class="topic-pills">
+            <span class="tpill on">Perseverança</span><span class="tpill">Oração</span><span class="tpill">Família</span><span class="tpill">Ansiedade</span><span class="tpill">Gratidão</span><span class="tpill">Propósito</span>
+          </div>
+        </div>
+        <div>
+          <div class="field-label" style="margin-bottom:6px">Formato</div>
+          <div class="fmt-opts">
+            <div class="fmt-opt on"><div class="fmt-name">Devocional</div><div class="fmt-desc">300–500 palavras</div><div class="fmt-cred">10 créditos</div></div>
+            <div class="fmt-opt"><div class="fmt-name">Artigo pastoral</div><div class="fmt-desc">600–900 palavras</div><div class="fmt-cred">20 créditos</div></div>
+            <div class="fmt-opt"><div class="fmt-name">Post para redes</div><div class="fmt-desc">5 posts para a semana</div><div class="fmt-cred">15 créditos</div></div>
+            <div class="fmt-opt"><div class="fmt-name">Texto livre</div><div class="fmt-desc">Você define o tamanho</div><div class="fmt-cred">10 créditos</div></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><div class="field-label">Idioma</div><select class="field-select"><option>Português</option><option>English</option><option>Español</option></select></div>
+          <div class="field"><div class="field-label">Publicar onde?</div><select class="field-select"><option>Salvar rascunho</option><option>Meu Blog (palavraviva.app)</option><option>WordPress</option></select></div>
+        </div>
+        <div>
+          <div class="field-label" style="margin-bottom:6px">Preview do seu blog</div>
+          <div class="blog-preview">
+            <div class="bp-bar"><div class="bp-dot"></div><div class="bp-dot"></div><div class="bp-dot"></div><div class="bp-url">seunome.palavraviva.app</div></div>
+            <div class="bp-body">
+              <div class="bp-title">Como perseverar na fé em tempos difíceis</div>
+              <div class="bp-meta"><span>Severino Bione</span><span>·</span><span>11 de abril, 2026</span><span>·</span><span>4 min de leitura</span></div>
+              <div class="bp-text">A perseverança não é a ausência de fraqueza — é a decisão de continuar mesmo quando as forças acabam. Tiago nos lembra que bem-aventurado é quem suporta a provação...</div>
+            </div>
+          </div>
+        </div>
+        <button class="gen-btn">✍️ Gerar e Publicar</button>
+        <button class="gen-btn-outline">Gerar e revisar antes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────── MODO PÚLPITO ────────── -->
+<div class="section" id="sec-podium">
+  <div class="section-title">Tela 5 — Modo Púlpito (Podium Mode)</div>
+  <div class="podium" style="max-width:900px">
+    <div class="podium-top">
+      <div class="timer-wrap" id="timerWrap" onclick="toggleTimer()">
+        <div class="timer-num" id="timerNum">40:00</div>
+        <div class="timer-action" id="timerAct">▶ Iniciar</div>
+      </div>
+      <div class="timer-bar-bg"><div class="timer-bar" id="timerBar"></div></div>
+      <div class="pod-controls">
+        <div class="pod-ctrl">⏱ <input type="number" id="timerMin" value="40" min="5" max="180" onchange="setMin(this.value)"> min</div>
+        <button class="pod-exit" onclick="resetTimer()">Reset</button>
+        <div class="pod-ctrl">Aa <input type="range" min="16" max="48" value="28" oninput="setFont(this.value)"></div>
+        <span style="font-size:10px;color:#444" id="blockCount">2 / 7</span>
+        <button class="pod-exit">Sair (Esc)</button>
+      </div>
+    </div>
+    <div class="podium-main">
+      <div class="pod-type" id="podType" style="color:#8ABBE8">✝  Versículo</div>
+      <div class="pod-text" id="podText" style="font-style:italic;color:#8ABBE8;font-size:28px">"Eu sou a videira verdadeira e meu Pai é o agricultor. Todo galho que nele não dá fruto, ele corta... Permanecei em mim e eu permanecerei em vós."<br><span style="font-size:16px;opacity:.6;font-style:normal;font-family:'DM Sans',sans-serif">— João 15:1-4</span></div>
+      <div class="pod-dots" id="podDots">
+        <div class="pdot done"></div>
+        <div class="pdot current"></div>
+        <div class="pdot"></div>
+        <div class="pdot"></div>
+        <div class="pdot"></div>
+        <div class="pdot"></div>
+        <div class="pdot"></div>
+      </div>
+    </div>
+    <div class="podium-outline" id="podOutline">
+      <div class="pod-chip">T · Título</div>
+      <div class="pod-chip on">✝ · Versículo</div>
+      <div class="pod-chip">✦ · Grande Ideia</div>
+      <div class="pod-chip">→ · Ponto 1</div>
+      <div class="pod-chip">◎ · Ilustração</div>
+      <div class="pod-chip">★ · Aplicação</div>
+      <div class="pod-chip">! · Chamada Final</div>
+    </div>
+    <div class="podium-nav">
+      <button class="pod-nav-btn" onclick="navPod(-1)">← Anterior</button>
+      <div class="pod-hint">← → para navegar · Espaço para avançar · Esc para sair</div>
+      <button class="pod-nav-btn" onclick="navPod(1)">Próximo →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ────────── MULTIPLICAR ────────── -->
+<div class="section" id="sec-multiply">
+  <div class="section-title">Tela 6 — Multiplicar Mensagem</div>
+  <div style="max-width:560px">
+    <div class="multi-card">
+      <div>
+        <div class="multi-title">✦ Multiplicar Mensagem</div>
+        <div class="multi-sub" style="margin-top:4px">"João 15:1-8 — A Videira Verdadeira" · 347 palavras</div>
+      </div>
+      <div>
+        <div class="field-label" style="margin-bottom:6px">Idiomas</div>
+        <div class="langs-row">
+          <button class="lang-toggle on">PT</button>
+          <button class="lang-toggle on">EN</button>
+          <button class="lang-toggle">ES</button>
+        </div>
+      </div>
+      <div class="field"><div class="field-label">Mente pastoral</div>
+        <select class="field-select"><option>✦ Nenhuma (genérico)</option><option>Billy Graham</option><option>Spurgeon</option><option>Wesley</option><option>Calvino</option></select>
+      </div>
+      <div>
+        <div class="field-label" style="margin-bottom:7px">Selecione o que gerar</div>
+        <div class="multi-opts">
+          <div class="multi-opt"><div class="multi-chk on">✓</div><div class="multi-opt-icon">📝</div><div class="multi-opt-body"><div class="multi-opt-name">Artigo de blog</div><div class="multi-opt-desc">~600 palavras, tom devocional</div></div><div class="multi-opt-cred">20 cr</div></div>
+          <div class="multi-opt"><div class="multi-chk on">✓</div><div class="multi-opt-icon">☀️</div><div class="multi-opt-body"><div class="multi-opt-name">5 devocionais diários</div><div class="multi-opt-desc">Um por dia, seg–sex</div></div><div class="multi-opt-cred">10 cr</div></div>
+          <div class="multi-opt"><div class="multi-chk on">✓</div><div class="multi-opt-icon">💬</div><div class="multi-opt-body"><div class="multi-opt-name">7 posts para redes sociais</div><div class="multi-opt-desc">Um por dia da semana</div></div><div class="multi-opt-cred">15 cr</div></div>
+          <div class="multi-opt"><div class="multi-chk on">✓</div><div class="multi-opt-icon">👥</div><div class="multi-opt-body"><div class="multi-opt-name">Perguntas para célula</div><div class="multi-opt-desc">5 perguntas de discussão</div></div><div class="multi-opt-cred">5 cr</div></div>
+          <div class="multi-opt"><div class="multi-chk">○</div><div class="multi-opt-icon">📧</div><div class="multi-opt-body"><div class="multi-opt-name">Newsletter da igreja</div><div class="multi-opt-desc">Resumo para email</div></div><div class="multi-opt-cred">10 cr</div></div>
+          <div class="multi-opt"><div class="multi-chk">○</div><div class="multi-opt-icon">🎠</div><div class="multi-opt-body"><div class="multi-opt-name">Carrossel de slides</div><div class="multi-opt-desc">Marcados para slide</div></div><div class="multi-opt-cred">15 cr</div></div>
+        </div>
+      </div>
+      <div class="multi-total">
+        <div class="multi-total-label">Total estimado</div>
+        <div class="multi-total-val">50 créditos · 3.240 disponíveis</div>
+      </div>
+      <div class="field"><div class="field-label">Publicação automática</div>
+        <select class="field-select"><option>Salvar como rascunho</option><option>Publicar no blog (palavraviva.app)</option><option>Publicar no WordPress conectado</option></select>
+      </div>
+      <button class="gen-btn">✦ Multiplicar agora →</button>
+      <button class="gen-btn-outline">Revisar antes de publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ────────── TOKENS ────────── -->
+<div class="section" id="sec-tokens">
+  <div class="section-title">Design Tokens — Living Word</div>
+  <div class="token-grid">
+    <div class="token-swatch"><div class="token-color" style="background:#6B4F3A"></div><div class="token-info"><div class="token-name">--lw-primary</div><div class="token-hex">#6B4F3A</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#C4956A"></div><div class="token-info"><div class="token-name">--lw-amber</div><div class="token-hex">#C4956A</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#F0E6D8"></div><div class="token-info"><div class="token-name">--lw-amber-light</div><div class="token-hex">#F0E6D8</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#F5F0E8"></div><div class="token-info"><div class="token-name">--lw-bg</div><div class="token-hex">#F5F0E8</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#EDD9C8"></div><div class="token-info"><div class="token-name">--lw-linen</div><div class="token-hex">#EDD9C8</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#3D2B1F"></div><div class="token-info"><div class="token-name">--lw-dark</div><div class="token-hex">#3D2B1F</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#8B6B54"></div><div class="token-info"><div class="token-name">--lw-muted</div><div class="token-hex">#8B6B54</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#1E4D2B"></div><div class="token-info"><div class="token-name">--lw-green</div><div class="token-hex">#1E4D2B</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#E8F2EB"></div><div class="token-info"><div class="token-name">--lw-green-light</div><div class="token-hex">#E8F2EB</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#1A4FA0"></div><div class="token-info"><div class="token-name">--lw-blue</div><div class="token-hex">#1A4FA0</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#E8EEF8"></div><div class="token-info"><div class="token-name">--lw-blue-light</div><div class="token-hex">#E8EEF8</div></div></div>
+    <div class="token-swatch"><div class="token-color" style="background:#991B1B"></div><div class="token-info"><div class="token-name">--lw-red</div><div class="token-hex">#991B1B</div></div></div>
+  </div>
+  <div style="background:var(--wh);border:var(--bdr);border-radius:10px;padding:16px;margin-top:4px">
+    <div style="font-size:11px;font-weight:500;color:var(--dk);margin-bottom:8px">Fontes</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--dk)">Cormorant Garamond — Títulos e textos bíblicos</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--mu)">DM Sans — Interface, labels e body text</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('visible'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('visible');
+  event.target.classList.add('on');
+  window.scrollTo(0,0);
+}
+
+// PODIUM TIMER
+let totalSec=40*60,elapsed=0,running=false,interval=null;
+let fontSize=28;
+function toggleTimer(){
+  if(running){clearInterval(interval);running=false;document.getElementById('timerAct').textContent='▶ Continuar';}
+  else{interval=setInterval(()=>{elapsed++;updateTimer();},1000);running=true;document.getElementById('timerAct').textContent='⏸ Pausar';}
+}
+function resetTimer(){clearInterval(interval);running=false;elapsed=0;updateTimer();document.getElementById('timerAct').textContent='▶ Iniciar';}
+function setMin(v){totalSec=Math.max(5,Math.min(180,+v))*60;resetTimer();}
+function updateTimer(){
+  const rem=Math.max(0,totalSec-elapsed);
+  const mm=String(Math.floor(rem/60)).padStart(2,'0');
+  const ss=String(rem%60).padStart(2,'0');
+  const pct=totalSec>0?Math.min(1,elapsed/totalSec):0;
+  const col=pct>.9?'#FF4444':pct>.75?'#FF9900':'#44DD88';
+  document.getElementById('timerNum').textContent=mm+':'+ss;
+  document.getElementById('timerNum').style.color=col;
+  document.getElementById('timerBar').style.width=(pct*100)+'%';
+  document.getElementById('timerBar').style.background=col;
+  if(rem===0&&running){clearInterval(interval);running=false;document.getElementById('timerAct').textContent='Encerrado';}
+}
+function setFont(v){fontSize=+v;document.getElementById('podText').style.fontSize=v+'px';}
+
+const POD_BLOCKS=[
+  {type:'T · Título',text:'João 15:1-8 — A Videira Verdadeira',color:'#F5F0E8',italic:false},
+  {type:'✝ · Versículo',text:'"Eu sou a videira verdadeira e meu Pai é o agricultor... Permanecei em mim e eu permanecerei em vós." — João 15:1,4',color:'#8ABBE8',italic:true},
+  {type:'✦ · Grande Ideia',text:'Separados de Cristo, somos incapazes de produzir fruto que dure para a eternidade.',color:'#7AE09A',italic:false},
+  {type:'→ · Ponto Principal',text:'1. A Videira é a única fonte de vida espiritual genuína',color:'#F5D8B0',italic:false},
+  {type:'◎ · Ilustração',text:'Um fazendeiro cortou um galho verde da videira e colocou num vaso com água. Por três dias pareceu vivo. No quarto dia, estava completamente seco. Aparência de vida não é vida.',color:'#F5D0A0',italic:true},
+  {type:'★ · Aplicação',text:'Que disciplinas espirituais te mantêm conectado à Videira esta semana? Identifique uma e pratique hoje.',color:'#7AE09A',italic:false},
+  {type:'! · Chamada Final',text:'Hoje: escolha permanecer. Não amanhã — hoje.',color:'#FF9999',italic:false},
+];
+let podIdx=1;
+function navPod(dir){
+  podIdx=Math.max(0,Math.min(POD_BLOCKS.length-1,podIdx+dir));
+  renderPod();
+}
+function renderPod(){
+  const b=POD_BLOCKS[podIdx];
+  document.getElementById('podType').textContent=b.type;
+  document.getElementById('podType').style.color=b.color;
+  document.getElementById('podText').textContent=b.text;
+  document.getElementById('podText').style.color=b.color;
+  document.getElementById('podText').style.fontStyle=b.italic?'italic':'normal';
+  document.getElementById('podText').style.fontSize=fontSize+'px';
+  document.getElementById('blockCount').textContent=(podIdx+1)+' / '+POD_BLOCKS.length;
+  document.querySelectorAll('.pod-chip').forEach((c,i)=>{c.classList.toggle('on',i===podIdx);});
+  document.querySelectorAll('.pdot').forEach((d,i)=>{d.className='pdot'+(i<podIdx?' done':i===podIdx?' current':'');});
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')navPod(1);
+  if(e.key==='ArrowLeft')navPod(-1);
+});
+</script>
+</body>
+</html>

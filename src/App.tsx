@@ -44,6 +44,8 @@ import BomAmigo from "./pages/BomAmigo";
 import Sermoes from "./pages/Sermoes";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
+import SeriesList from "./pages/SeriesList";
+import SeriesDetail from "./pages/SeriesDetail";
 import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
 const queryClient = new QueryClient();
@@ -141,6 +143,8 @@ const App = () => (
                   <Route path="/bom-amigo" element={<BomAmigo />} />
                   <Route path="/sermoes" element={<Sermoes />} />
                   <Route path="/sermoes/editor" element={<Sermoes />} />
+                  <Route path="/series" element={<SeriesList />} />
+                  <Route path="/series/:id" element={<SeriesDetail />} />
                   <Route path="/quiz" element={<Quiz />} />
                   <Route path="/kids" element={<Kids />} />
                   <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />

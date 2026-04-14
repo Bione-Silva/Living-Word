@@ -9,8 +9,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { minds } from '@/data/minds';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
-import { supabase } from '@/integrations/supabase/client';
-
+import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/integrations/supabase/client';
 type L = 'PT' | 'EN' | 'ES';
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -51,7 +50,7 @@ const welcomeMessages: Record<string, Record<L, (name: string) => string>> = {
   },
 };
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mind-chat`;
+const CHAT_URL = `${SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL}/functions/v1/mind-chat`;
 
 async function streamMindChat({
   messages,
@@ -72,11 +71,14 @@ async function streamMindChat({
   onDone: () => void;
   onError: (msg: string) => void;
 }) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
   const resp = await fetch(CHAT_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ messages, mindId, modality, language, userName }),
   });

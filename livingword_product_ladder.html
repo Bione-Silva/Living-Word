@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Living Word — Esteira de Produtos</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pr:#6B4F3A;--am:#C4956A;--aml:#F0E6D8;--bg:#F5F0E8;
+  --ln:#EDD9C8;--dk:#3D2B1F;--mu:#8B6B54;--wh:#fff;
+  --gn:#1E4D2B;--gnl:#E8F2EB;--bl:#1A4FA0;--bll:#E8EEF8;
+  --rd:#991B1B;--rdl:#FCE8E8;--bdr:.5px solid #EDD9C8;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--dk);padding:20px;max-width:1100px;margin:0 auto}
+h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--dk);margin:24px 0 14px}
+.sec-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:12px}
+
+/* PERSONAS */
+.personas{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.persona{background:var(--wh);border:var(--bdr);border-radius:12px;padding:14px}
+.p-icon{font-size:22px;margin-bottom:7px}
+.p-name{font-size:13px;font-weight:500;color:var(--dk);margin-bottom:3px}
+.p-desc{font-size:11px;color:var(--mu);line-height:1.5;margin-bottom:8px}
+.p-pain{font-size:11px;color:var(--rd);line-height:1.4;padding:6px 9px;background:var(--rdl);border-radius:7px}
+.p-plan{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--am);margin-top:7px}
+
+/* PLANS GRID */
+.plans{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:28px}
+.plan{border-radius:13px;overflow:hidden;border:var(--bdr);background:var(--wh)}
+.plan.hero{border:1.5px solid var(--am)}
+.plan.dark{border:1.5px solid var(--pr)}
+.plan-hd{padding:14px;background:var(--wh)}
+.plan-hd.dark-hd{background:var(--dk)}
+.plan-badge{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mu);margin-bottom:4px}
+.plan-badge.gold{color:var(--am)}
+.plan-name{font-size:16px;font-weight:600;color:var(--dk);margin-bottom:2px}
+.plan-name.light{color:#F5F0E8}
+.plan-price{font-size:24px;font-weight:700;color:var(--pr);line-height:1}
+.plan-price.gold{color:var(--am)}
+.plan-price small{font-size:12px;font-weight:400;color:var(--mu)}
+.plan-price small.light{color:rgba(245,240,232,.4)}
+.plan-persona{display:inline-block;font-size:9px;background:var(--aml);color:var(--pr);padding:2px 8px;border-radius:20px;margin-top:5px}
+.plan-persona.dark{background:rgba(196,149,106,.2);color:var(--am)}
+.plan-credits{display:inline-block;font-size:10px;font-weight:500;background:var(--aml);color:var(--am);padding:3px 9px;border-radius:20px;margin-top:5px}
+.plan-credits.dark{background:rgba(196,149,106,.15);color:var(--am)}
+.plan-body{padding:11px 14px;background:var(--bg);display:flex;flex-direction:column;gap:4px}
+.fi{display:flex;align-items:flex-start;gap:5px;font-size:10px;line-height:1.45;color:var(--dk)}
+.fi .ok{color:var(--gn);flex-shrink:0}
+.fi .no{color:rgba(139,107,84,.3);flex-shrink:0}
+.fi .muted{color:rgba(139,107,84,.45)}
+.fi-group{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);margin:6px 0 2px}
+.plan-cta{display:block;width:calc(100% - 28px);margin:10px 14px 14px;padding:9px;border-radius:9px;border:none;font-size:12px;font-weight:500;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif}
+.cta-free{background:var(--bg);border:var(--bdr);color:var(--mu)}
+.cta-starter{background:var(--aml);color:var(--pr)}
+.cta-pro{background:var(--am);color:var(--dk)}
+.cta-mini{background:var(--dk);color:#F5F0E8}
+.cta-church{background:var(--pr);color:#F5F0E8}
+
+/* MATRIX */
+.matrix-wrap{background:var(--wh);border:var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:28px}
+.mx{display:grid;grid-template-columns:210px repeat(5,1fr);border-bottom:var(--bdr)}
+.mx:last-child{border-bottom:none}
+.mx.hd{background:var(--dk)}
+.mx-cell{padding:8px 10px;font-size:11px;display:flex;align-items:center}
+.mx-cell.lbl{border-right:var(--bdr);color:var(--dk);font-weight:500}
+.mx-cell.ctr{justify-content:center}
+.cat-row{background:var(--aml);grid-column:1/-1;padding:6px 12px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--pr);border-bottom:var(--bdr)}
+.ok{color:var(--gn);font-size:13px}
+.no{color:rgba(139,107,84,.2);font-size:11px}
+.partial{font-size:10px;color:var(--bl);background:var(--bll);padding:1px 6px;border-radius:4px;line-height:1.6}
+
+/* FLOW */
+.flow{display:flex;align-items:flex-start;gap:8px;background:var(--wh);border:var(--bdr);border-radius:12px;padding:16px;margin-bottom:28px;overflow-x:auto}
+.fstep{min-width:140px;flex-shrink:0}
+.fbox{background:var(--aml);border:.5px solid var(--am);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+.fbox.dark{background:var(--dk);border-color:var(--pr)}
+.fbox-name{font-size:13px;font-weight:600;color:var(--pr)}
+.fbox-name.light{color:#F5F0E8}
+.fbox-price{font-size:11px;color:var(--mu)}
+.fbox-price.light{color:rgba(245,240,232,.5)}
+.ftrigger-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--am);margin-bottom:3px}
+.ftrigger{font-size:10px;color:var(--mu);line-height:1.4}
+.farrow{font-size:18px;color:var(--ln);padding-top:10px;flex-shrink:0}
+
+/* REVENUE */
+.rev{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.rev-card{background:var(--wh);border:var(--bdr);border-radius:12px;padding:16px}
+.rev-title{font-size:12px;font-weight:600;color:var(--dk);margin-bottom:12px}
+.rev-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:var(--bdr);font-size:11px}
+.rev-row:last-child{border-bottom:none}
+.rev-label{color:var(--mu)}
+.rev-val{font-weight:600;color:var(--pr)}
+.rev-total{font-size:15px;color:var(--dk)}
+
+/* RULE BOX */
+.rules{background:var(--dk);border-radius:12px;padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rule{display:flex;align-items:flex-start;gap:9px}
+.rule-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.rule-title{font-size:12px;font-weight:500;color:#F5F0E8;margin-bottom:2px}
+.rule-desc{font-size:11px;color:rgba(245,240,232,.45);line-height:1.5}
+</style>
+</head>
+<body>
+
+<h2 style="margin-top:0">Living Word — Esteira de Produtos e Planos</h2>
+
+<!-- PERSONAS -->
+<div class="sec-label">4 Personas — Quem usa e o que sofre</div>
+<div class="personas">
+  <div class="persona">
+    <div class="p-icon">🙏</div>
+    <div class="p-name">O Cristão Comum</div>
+    <div class="p-desc">Não prega. Quer crescer espiritualmente. Abre o celular toda manhã em busca de algo significativo em PT.</div>
+    <div class="p-pain">Solidão espiritual de seg a sáb. Sem guia diário em PT nativo de qualidade.</div>
+    <div class="p-plan">Plano ideal → Grátis ou Starter</div>
+  </div>
+  <div class="persona">
+    <div class="p-icon">🎙️</div>
+    <div class="p-name">Pastor Bivocacional</div>
+    <div class="p-desc">Trabalha de dia. Prepara sermão no celular no ônibus. Sem equipe, sem tempo, sem grana para Logos.</div>
+    <div class="p-pain">30h de preparo por sermão. Sem ferramenta em PT. Sem equipe de comunicação.</div>
+    <div class="p-plan">Plano ideal → Pastor Pro</div>
+  </div>
+  <div class="persona">
+    <div class="p-icon">📱</div>
+    <div class="p-name">Influencer Cristão</div>
+    <div class="p-desc">Cria conteúdo no Instagram/YouTube. Tem audiência mas não tem estrutura teológica para postar todo dia.</div>
+    <div class="p-pain">Conteúdo inconsistente, sem profundidade. Perde seguidores para quem posta todos os dias.</div>
+    <div class="p-plan">Plano ideal → Ministério</div>
+  </div>
+  <div class="persona">
+    <div class="p-icon">⛪</div>
+    <div class="p-name">Igreja / Ministério</div>
+    <div class="p-desc">Pastor + equipe pastoral. Precisa de fluxo editorial, discipulado para membros e múltiplos canais.</div>
+    <div class="p-pain">Equipe sem ferramenta unificada. Conteúdo morre no domingo. Sem presença digital.</div>
+    <div class="p-plan">Plano ideal → Igreja</div>
+  </div>
+</div>
+
+<!-- PLANOS -->
+<div class="sec-label">Esteira de 5 Planos — da entrada ao institucional</div>
+<div class="plans">
+
+  <div class="plan">
+    <div class="plan-hd">
+      <div class="plan-badge">Porta de entrada</div>
+      <div class="plan-name">Grátis</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-persona">Cristão Comum</div>
+      <div class="plan-credits">500 créditos/mês</div>
+    </div>
+    <div class="plan-body">
+      <div class="fi"><span class="ok">✓</span> Café com a Palavra (todo dia)</div>
+      <div class="fi"><span class="ok">✓</span> Bíblia completa</div>
+      <div class="fi"><span class="ok">✓</span> Palavra Amiga (3/mês)</div>
+      <div class="fi"><span class="ok">✓</span> Streak + gamificação</div>
+      <div class="fi"><span class="ok">✓</span> 1 sermão/mês</div>
+      <div class="fi"><span class="ok">✓</span> 1 artigo no blog/mês</div>
+      <div class="fi"><span class="ok">✓</span> Blog no palavraviva.app</div>
+      <div class="fi-group">Não incluído</div>
+      <div class="fi"><span class="no">×</span><span class="muted">Mentes Pastorais</span></div>
+      <div class="fi"><span class="no">×</span><span class="muted">Estudo ilimitado</span></div>
+      <div class="fi"><span class="no">×</span><span class="muted">Multiply</span></div>
+      <div class="fi"><span class="no">×</span><span class="muted">Domínio próprio</span></div>
+    </div>
+    <button class="plan-cta cta-free">Começar grátis</button>
+  </div>
+
+  <div class="plan hero">
+    <div class="plan-hd">
+      <div class="plan-badge gold">★ Mais acessado</div>
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">$9,90<small>/mês</small></div>
+      <div class="plan-persona">Cristão Comum + Líder</div>
+      <div class="plan-credits">4.000 créditos/mês</div>
+    </div>
+    <div class="plan-body">
+      <div class="fi-group">Tudo do Grátis, mais:</div>
+      <div class="fi"><span class="ok">✓</span> Palavra Amiga ilimitada</div>
+      <div class="fi"><span class="ok">✓</span> Estudo Bíblico (8 seções)</div>
+      <div class="fi"><span class="ok">✓</span> Plano de leitura bíblica</div>
+      <div class="fi"><span class="ok">✓</span> ~200 sermões ou 400 artigos</div>
+      <div class="fi"><span class="ok">✓</span> Blog com subdomínio próprio</div>
+      <div class="fi"><span class="ok">✓</span> Artes bíblicas para redes</div>
+      <div class="fi"><span class="ok">✓</span> Sem watermark</div>
+      <div class="fi"><span class="ok">✓</span> Modo Púlpito básico</div>
+      <div class="fi-group">Não incluído</div>
+      <div class="fi"><span class="no">×</span><span class="muted">Mentes Pastorais</span></div>
+      <div class="fi"><span class="no">×</span><span class="muted">Multiply</span></div>
+      <div class="fi"><span class="no">×</span><span class="muted">Domínio próprio</span></div>
+    </div>
+    <button class="plan-cta cta-starter">7 dias grátis →</button>
+  </div>
+
+  <div class="plan">
+    <div class="plan-hd">
+      <div class="plan-badge">Pregador / Influencer</div>
+      <div class="plan-name">Pastor Pro</div>
+      <div class="plan-price">$29,90<small>/mês</small></div>
+      <div class="plan-persona">Pastor + Influencer</div>
+      <div class="plan-credits">8.000 créditos/mês</div>
+    </div>
+    <div class="plan-body">
+      <div class="fi-group">Tudo do Starter, mais:</div>
+      <div class="fi"><span class="ok">✓</span> Mentes Pastorais (4 pregadores)</div>
+      <div class="fi"><span class="ok">✓</span> Domínio próprio conectado</div>
+      <div class="fi"><span class="ok">✓</span> Multiply completo</div>
+      <div class="fi"><span class="ok">✓</span> Research Suite avançado</div>
+      <div class="fi"><span class="ok">✓</span> Calendário editorial</div>
+      <div class="fi"><span class="ok">✓</span> WordPress 1 site</div>
+      <div class="fi"><span class="ok">✓</span> Analytics de publicação</div>
+      <div class="fi"><span class="ok">✓</span> Modo Púlpito completo</div>
+      <div class="fi"><span class="ok">✓</span> Séries automáticas</div>
+    </div>
+    <button class="plan-cta cta-pro">Começar →</button>
+  </div>
+
+  <div class="plan">
+    <div class="plan-hd">
+      <div class="plan-badge">Evangelista / Líder de rede</div>
+      <div class="plan-name">Ministério</div>
+      <div class="plan-price">$49,90<small>/mês</small></div>
+      <div class="plan-persona">Evangelista / Líder</div>
+      <div class="plan-credits">20.000 créditos/mês</div>
+    </div>
+    <div class="plan-body">
+      <div class="fi-group">Tudo do Pro, mais:</div>
+      <div class="fi"><span class="ok">✓</span> Multiply trilíngue PT+EN+ES</div>
+      <div class="fi"><span class="ok">✓</span> 3 domínios / 3 sites WP</div>
+      <div class="fi"><span class="ok">✓</span> Calendário editorial anual</div>
+      <div class="fi"><span class="ok">✓</span> Mentes futuras (marketplace)</div>
+      <div class="fi"><span class="ok">✓</span> Relatório mensal de alcance</div>
+      <div class="fi"><span class="ok">✓</span> Séries 4–12 semanas auto</div>
+      <div class="fi"><span class="ok">✓</span> Suporte prioritário</div>
+    </div>
+    <button class="plan-cta cta-mini">Começar →</button>
+  </div>
+
+  <div class="plan dark">
+    <div class="plan-hd dark-hd">
+      <div class="plan-badge" style="color:rgba(245,240,232,.35)">Institucional</div>
+      <div class="plan-name light">Igreja</div>
+      <div class="plan-price gold">$79,90<small class="light">/mês</small></div>
+      <div class="plan-persona dark">Igreja + Equipe</div>
+      <div class="plan-credits dark">50.000 cr · 10 usuários</div>
+    </div>
+    <div class="plan-body">
+      <div class="fi-group">Tudo do Ministério, mais:</div>
+      <div class="fi"><span class="ok">✓</span> 10 usuários incluídos</div>
+      <div class="fi"><span class="ok">✓</span> 10 domínios / 10 sites WP</div>
+      <div class="fi"><span class="ok">✓</span> Painel admin da equipe</div>
+      <div class="fi"><span class="ok">✓</span> Fluxo de aprovação editorial</div>
+      <div class="fi"><span class="ok">✓</span> Histórico compartilhado</div>
+      <div class="fi"><span class="ok">✓</span> Módulo Kids incluso</div>
+      <div class="fi"><span class="ok">✓</span> Discipulado p/ membros</div>
+      <div class="fi"><span class="ok">✓</span> Relatórios de engajamento</div>
+    </div>
+    <button class="plan-cta cta-church">Falar com equipe →</button>
+  </div>
+
+</div>
+
+<!-- MATRIX -->
+<div class="sec-label">Matriz de features completa</div>
+<div class="matrix-wrap">
+  <div class="mx hd">
+    <div class="mx-cell" style="color:#F5F0E8;font-weight:500;border-right:.5px solid rgba(255,255,255,.1)">Feature</div>
+    <div class="mx-cell ctr" style="color:rgba(245,240,232,.55);font-size:10px">Grátis</div>
+    <div class="mx-cell ctr" style="color:var(--am);font-size:10px;font-weight:600">$9,90</div>
+    <div class="mx-cell ctr" style="color:rgba(245,240,232,.8);font-size:10px">$29,90</div>
+    <div class="mx-cell ctr" style="color:rgba(245,240,232,.8);font-size:10px">$49,90</div>
+    <div class="mx-cell ctr" style="color:rgba(245,240,232,.8);font-size:10px">$79,90</div>
+  </div>
+  <div class="mx"><div class="cat-row">☕ Formação espiritual diária — gratuito para sempre (retém o usuário)</div></div>
+  <div class="mx"><div class="mx-cell lbl">Café com a Palavra (devocional)</div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Bíblia completa (leitura)</div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Streak + gamificação</div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Palavra Amiga</div><div class="mx-cell ctr"><span class="partial">3/mês</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Recomendações personalizadas (IA)</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="cat-row">📖 Estudo e crescimento bíblico</div></div>
+  <div class="mx"><div class="mx-cell lbl">Estudo Bíblico 8 seções</div><div class="mx-cell ctr"><span class="partial">1/mês</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Planos de leitura bíblica</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Research Suite (grego / contexto histórico)</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="cat-row">🎙️ Preparação de sermão (para o pregador)</div></div>
+  <div class="mx"><div class="mx-cell lbl">Editor de blocos (Sermon Builder)</div><div class="mx-cell ctr"><span class="partial">1/mês</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Modo Púlpito (timer + AMOLED)</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Mentes Pastorais (Billy Graham, Spurgeon…)</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Templates gerativos com IA</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="cat-row">✍️ Conteúdo e presença digital</div></div>
+  <div class="mx"><div class="mx-cell lbl">Blog no palavraviva.app</div><div class="mx-cell ctr"><span class="partial">1 art/mês</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Domínio próprio</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Multiply (blog + devocionais + social)</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Publicação automática WordPress</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="partial">1 site</span></div><div class="mx-cell ctr"><span class="partial">3 sites</span></div><div class="mx-cell ctr"><span class="partial">10 sites</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Calendário editorial + séries automáticas</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Multiply trilíngue PT + EN + ES</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="cat-row">⛪ Equipe e ministério institucional</div></div>
+  <div class="mx"><div class="mx-cell lbl">Usuários incluídos</div><div class="mx-cell ctr"><span style="font-size:10px;color:var(--dk)">1</span></div><div class="mx-cell ctr"><span style="font-size:10px;color:var(--dk)">1</span></div><div class="mx-cell ctr"><span style="font-size:10px;color:var(--dk)">1</span></div><div class="mx-cell ctr"><span style="font-size:10px;color:var(--dk)">1</span></div><div class="mx-cell ctr"><span style="font-size:10px;font-weight:600;color:var(--gn)">10</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Painel admin da equipe</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Módulo Kids</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+  <div class="mx"><div class="mx-cell lbl">Discipulado para membros da congregação</div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="no">×</span></div><div class="mx-cell ctr"><span class="ok">✓</span></div></div>
+</div>
+
+<!-- UPSELL FLOW -->
+<div class="sec-label">Fluxo de upsell — como o usuário sobe naturalmente</div>
+<div class="flow">
+  <div class="fstep">
+    <div class="fbox"><div class="fbox-name">Grátis</div><div class="fbox-price">$0 · 500 cr</div></div>
+    <div class="ftrigger-label">Gatilho de upgrade</div>
+    <div class="ftrigger">Usou os 3 créditos de Palavra Amiga. Ou tentou o 2º estudo bíblico do mês.</div>
+  </div>
+  <div class="farrow">→</div>
+  <div class="fstep">
+    <div class="fbox"><div class="fbox-name">Starter</div><div class="fbox-price">$9,90 · 4.000 cr</div></div>
+    <div class="ftrigger-label">Gatilho de upgrade</div>
+    <div class="ftrigger">Tentou gerar com Mente Pastoral. Ou precisou de domínio próprio para o blog.</div>
+  </div>
+  <div class="farrow">→</div>
+  <div class="fstep">
+    <div class="fbox"><div class="fbox-name">Pastor Pro</div><div class="fbox-price">$29,90 · 8.000 cr</div></div>
+    <div class="ftrigger-label">Gatilho de upgrade</div>
+    <div class="ftrigger">Gerou mais de 20 artigos/mês. Ou precisou de Multiply trilíngue ou 2º domínio.</div>
+  </div>
+  <div class="farrow">→</div>
+  <div class="fstep">
+    <div class="fbox"><div class="fbox-name">Ministério</div><div class="fbox-price">$49,90 · 20.000 cr</div></div>
+    <div class="ftrigger-label">Gatilho de upgrade</div>
+    <div class="ftrigger">Tentou adicionar 2º usuário. Ou precisou do módulo Kids para a igreja.</div>
+  </div>
+  <div class="farrow">→</div>
+  <div class="fstep">
+    <div class="fbox dark"><div class="fbox-name light">Igreja</div><div class="fbox-price light">$79,90 · 10 usuários</div></div>
+    <div class="ftrigger-label">Plano final</div>
+    <div class="ftrigger">Equipe pastoral completa, múltiplos sites, discipulado para membros.</div>
+  </div>
+</div>
+
+<!-- RECEITA -->
+<div class="sec-label">Projeção de receita — 500 usuários pagos</div>
+<div class="rev">
+  <div class="rev-card">
+    <div class="rev-title">Cenário conservador (maioria no Starter)</div>
+    <div class="rev-row"><div class="rev-label">250× Starter ($9,90)</div><div class="rev-val">$2.475/mês</div></div>
+    <div class="rev-row"><div class="rev-label">150× Pastor Pro ($29,90)</div><div class="rev-val">$4.485/mês</div></div>
+    <div class="rev-row"><div class="rev-label">70× Ministério ($49,90)</div><div class="rev-val">$3.493/mês</div></div>
+    <div class="rev-row"><div class="rev-label">30× Igreja ($79,90)</div><div class="rev-val">$2.397/mês</div></div>
+    <div class="rev-row"><div class="rev-label" style="font-weight:600">MRR</div><div class="rev-val rev-total">$12.850/mês</div></div>
+    <div class="rev-row"><div class="rev-label">ARPU</div><div class="rev-val">$25,70 · ARR $154.200</div></div>
+  </div>
+  <div class="rev-card">
+    <div class="rev-title">Cenário otimista (mix Pro + Ministério)</div>
+    <div class="rev-row"><div class="rev-label">150× Starter ($9,90)</div><div class="rev-val">$1.485/mês</div></div>
+    <div class="rev-row"><div class="rev-label">200× Pastor Pro ($29,90)</div><div class="rev-val">$5.980/mês</div></div>
+    <div class="rev-row"><div class="rev-label">100× Ministério ($49,90)</div><div class="rev-val">$4.990/mês</div></div>
+    <div class="rev-row"><div class="rev-label">50× Igreja ($79,90)</div><div class="rev-val">$3.995/mês</div></div>
+    <div class="rev-row"><div class="rev-label" style="font-weight:600">MRR</div><div class="rev-val rev-total">$16.450/mês</div></div>
+    <div class="rev-row"><div class="rev-label">ARPU</div><div class="rev-val">$32,90 · ARR $197.400</div></div>
+  </div>
+</div>
+
+<!-- REGRAS -->
+<div class="sec-label">5 regras que não podem mudar</div>
+<div class="rules">
+  <div class="rule"><div class="rule-icon">☕</div><div><div class="rule-title">Café é sempre grátis</div><div class="rule-desc">O devocional diário nunca pode ser bloqueado. É o product-led growth. Cria hábito todos os dias e mantém o usuário no app mesmo sem assinar.</div></div></div>
+  <div class="rule"><div class="rule-icon">📖</div><div><div class="rule-title">Bíblia sempre grátis</div><div class="rule-desc">Bloquear acesso à Bíblia destrói a percepção de valor espiritual. É infraestrutura, não feature.</div></div></div>
+  <div class="rule"><div class="rule-icon">✦</div><div><div class="rule-title">Mentes Pastorais no Pro (nunca no Starter)</div><div class="rule-desc">São o maior gatilho de conversão $9,90→$29,90. Fazer preview da Mente gratuitamente para mostrar o contraste com geração genérica.</div></div></div>
+  <div class="rule"><div class="rule-icon">🌎</div><div><div class="rule-title">Trilíngue para todos, nativo só no Ministério</div><div class="rule-desc">PT básico para todos. Trilíngue simultâneo (PT+EN+ES no mesmo Multiply) é exclusivo do plano Ministério — é o diferencial para o pastor imigrante.</div></div></div>
+  <div class="rule"><div class="rule-icon">📝</div><div><div class="rule-title">Blog com subdomínio só a partir do Starter pago</div><div class="rule-desc">O blog é o melhor argumento para o usuário grátis pagar $9,90. "Tenha seu nome online" é motivação emocional mais forte que "mais créditos".</div></div></div>
+</div>
+
+</body>
+</html>

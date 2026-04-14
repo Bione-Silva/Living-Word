@@ -67,6 +67,7 @@ const forYouLinks = [
 
 const toolsLinks = [
   { id: 'sermon', to: '/sermoes/editor', icon: Wand2, label: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón' } },
+  { id: 'series', to: '/series', icon: CalendarDays, label: { PT: 'Séries de Sermões', EN: 'Sermon Series', ES: 'Series de Sermones' } },
   { id: 'bible-study', to: '/estudos/novo', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' } },
   { id: 'articles', to: '/blog', icon: FileText, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog & Artículos' } },
   { id: 'social', to: '/social-studio', icon: ImageIcon, label: { PT: 'Artes Bíblicas', EN: 'Biblical Arts', ES: 'Artes Bíblicas' } },

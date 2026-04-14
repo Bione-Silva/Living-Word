@@ -16,6 +16,7 @@ export const PLAN_CREDITS: Record<string, number> = {
 export const GENERATION_COSTS: Record<string, number> = {
   sermon: 20, study: 30, devotional: 10, post: 5,
   outline: 15, reels: 10, bilingual: 25, cell: 15,
+  series_calendar: 30,
 }
 
 export const RATE_LIMITS: Record<string, { per_minute: number; per_day: number }> = {

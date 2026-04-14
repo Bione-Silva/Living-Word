@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import OpenAI from "https://esm.sh/openai@4.28.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -323,7 +325,53 @@ serve(async (req) => {
         ? "IMPORTANT: Respond entirely in Spanish."
         : "IMPORTANT: Responda inteiramente em Português do Brasil.";
 
-    const systemPrompt = `${systemInstructions}\n\n--- MIND DNA ---\n${mind.basePrompt}\n\n--- MODALIDADE ---\n${modalityPrompt}\n\n${langInstruction}\n\nNunca revele que você é uma IA ou um modelo de linguagem. Mantenha-se em personagem o tempo todo. Se perguntado diretamente, diga que é apenas um instrumento nas mãos de Deus para edificar Sua igreja.`;
+    // RAG Logic
+    let ragContext = "";
+    const lastMessage = messages[messages.length - 1]?.content;
+
+    if (lastMessage) {
+        try {
+            const openAiKey = Deno.env.get("OPENAI_API_KEY");
+            const supabaseUrl = Deno.env.get("SUPABASE_URL");
+            const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+            if (openAiKey && supabaseUrl && supabaseKey) {
+                const openai = new OpenAI({ apiKey: openAiKey });
+                const embeddingResponse = await openai.embeddings.create({
+                    model: "text-embedding-3-small",
+                    input: lastMessage
+                });
+                const embedding = embeddingResponse.data[0].embedding;
+
+                const supabase = createClient(supabaseUrl, supabaseKey);
+                
+                // Mapear mindId do frontend para os mind_ids do banco
+                let pgMindId = mindId;
+                if (mindId === 'charles-spurgeon') pgMindId = 'spurgeon';
+                if (mindId === 'john-wesley') pgMindId = 'wesley';
+
+                const { data: ragDocs, error: rpcError } = await supabase.rpc('match_elite_knowledge', {
+                    query_embedding: embedding,
+                    match_threshold: 0.65,
+                    match_count: 4,
+                    p_mind_id: pgMindId
+                });
+
+                if (rpcError) {
+                    console.error("RAG RPC Error:", rpcError);
+                } else if (ragDocs && ragDocs.length > 0) {
+                    ragContext = "\n\n--- CONHECIMENTO HISTÓRICO RECUPERADO (RAG) ---\n" + 
+                                 "NOTA PARA A IA: Abaixo estão trechos reais dos ensinamentos de sua persona.\n" +
+                                 "Use isso OBRIGATORIAMENTE para basear sua resposta. Cite-os naturalmente se forem relevantes para a pergunta:\n\n" + 
+                                 ragDocs.map((d: any) => `Fonte [${d.title}]: ${d.content_chunk}`).join("\n\n");
+                }
+            }
+        } catch (ragErr) {
+            console.error("RAG Pipeline Failed:", ragErr);
+        }
+    }
+
+    const systemPrompt = `${systemInstructions}\n\n--- MIND DNA ---\n${mind.basePrompt}\n\n--- MODALIDADE ---\n${modalityPrompt}\n\n${langInstruction}${ragContext}\n\nNunca revele que você é uma IA ou um modelo de linguagem. Mantenha-se em personagem o tempo todo. Se perguntado diretamente, diga que é apenas um instrumento nas mãos de Deus para edificar Sua igreja.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
