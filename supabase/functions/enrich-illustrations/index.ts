@@ -17,7 +17,13 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')!;
+    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY")!;
+    if (!lovableApiKey) {
+      return new Response(JSON.stringify({ error: "AI gateway not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Auth
     const authHeader = req.headers.get("Authorization");
@@ -74,14 +80,14 @@ Deno.serve(async (req) => {
       ? material.content.substring(0, 2000)
       : JSON.stringify(material.content).substring(0, 2000);
 
-    const sceneResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+    const sceneResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${geminiApiKey}`,
+        Authorization: `Bearer ${lovableApiKey}`,
       },
       body: JSON.stringify({
-        model: "gemini-2.5-flash",
+        model: "google/gemini-2.5-flash",
         tools: [{
           type: "function",
           function: {
@@ -148,14 +154,14 @@ Deno.serve(async (req) => {
     // Generate 3 images in parallel
     const imagePromises = scenes.slice(0, 3).map(async (scene, idx) => {
       try {
-        const imgResp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+        const imgResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${geminiApiKey}`,
+            Authorization: `Bearer ${lovableApiKey}`,
           },
           body: JSON.stringify({
-            model: IMAGE_MODEL,
+            model: "google/gemini-2.5-flash-image",
             messages: [{ role: "user", content: scene.prompt }],
             modalities: ["image", "text"],
           }),
