@@ -1,1 +1,4 @@
 project_id = "osusqcbyybfuwdewvbai"
+
+[functions.kb-search]
+verify_jwt = false
