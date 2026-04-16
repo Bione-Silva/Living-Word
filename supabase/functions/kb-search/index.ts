@@ -1,7 +1,7 @@
-// kb-search — Internal RAG gateway
-// Receives a natural-language query, generates an OpenAI embedding,
-// then calls knowledge.search_corpus() via service_role and returns the
-// top-K chunks ranked by cosine similarity.
+// kb-search — Internal RAG gateway (Gemini edition)
+// Receives a natural-language query, generates a Google Gemini embedding
+// (text-embedding-004, 768 dims), then calls knowledge.search_corpus()
+// via service_role and returns the top-K chunks ranked by cosine similarity.
 //
 // Designed to be called from other edge functions (e.g. mind-chat) — NOT
 // directly from the browser. We still expose CORS for internal tooling
@@ -16,10 +16,12 @@ const corsHeaders = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// Config
+// Config — Google Gemini embeddings
 // ─────────────────────────────────────────────────────────────
-const EMBEDDING_MODEL = "text-embedding-3-small"; // 1536 dims — must match knowledge.chunks
-const EMBEDDING_DIMS = 1536;
+const EMBEDDING_MODEL = "text-embedding-004"; // 768 dims — must match knowledge.chunks
+const EMBEDDING_DIMS = 768;
+const GEMINI_EMBED_URL =
+  `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent`;
 
 interface KbSearchBody {
   query: string;
@@ -28,6 +30,9 @@ interface KbSearchBody {
   filter_bible_ref?: string | null;
   top_k?: number;
   similarity_threshold?: number;
+  // Optional: "RETRIEVAL_QUERY" (default) or "RETRIEVAL_DOCUMENT"
+  // Use RETRIEVAL_DOCUMENT only if you ever reuse this function for ingestion.
+  task_type?: "RETRIEVAL_QUERY" | "RETRIEVAL_DOCUMENT";
 }
 
 interface SearchResultRow {
@@ -58,27 +63,35 @@ function isFiniteNumber(n: unknown): n is number {
   return typeof n === "number" && Number.isFinite(n);
 }
 
-async function embedQuery(text: string, openaiKey: string): Promise<number[]> {
-  const resp = await fetch("https://api.openai.com/v1/embeddings", {
+async function embedQuery(
+  text: string,
+  geminiKey: string,
+  taskType: "RETRIEVAL_QUERY" | "RETRIEVAL_DOCUMENT" = "RETRIEVAL_QUERY",
+): Promise<number[]> {
+  const url = `${GEMINI_EMBED_URL}?key=${encodeURIComponent(geminiKey)}`;
+
+  const resp = await fetch(url, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${openaiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: EMBEDDING_MODEL,
-      input: text,
+      // The model field is required by the v1beta REST contract even though
+      // it's already in the URL path.
+      model: `models/${EMBEDDING_MODEL}`,
+      content: {
+        parts: [{ text }],
+      },
+      taskType,
     }),
   });
 
   if (!resp.ok) {
     const errText = await resp.text();
-    console.error("[kb-search] OpenAI embeddings error:", resp.status, errText);
-    throw new Error(`OpenAI embeddings failed (${resp.status})`);
+    console.error("[kb-search] Gemini embeddings error:", resp.status, errText);
+    throw new Error(`Gemini embeddings failed (${resp.status}): ${errText}`);
   }
 
   const data = await resp.json();
-  const embedding: number[] | undefined = data?.data?.[0]?.embedding;
+  const embedding: number[] | undefined = data?.embedding?.values;
 
   if (!Array.isArray(embedding) || embedding.length !== EMBEDDING_DIMS) {
     throw new Error(
@@ -107,16 +120,16 @@ Deno.serve(async (req) => {
     // ── Secrets ──────────────────────────────────────────────
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       console.error("[kb-search] Missing Supabase env vars");
       return jsonResponse({ error: "Server misconfigured (supabase)" }, 500);
     }
-    if (!OPENAI_API_KEY) {
-      console.error("[kb-search] Missing OPENAI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      console.error("[kb-search] Missing GEMINI_API_KEY");
       return jsonResponse(
-        { error: "Server misconfigured (OPENAI_API_KEY missing)" },
+        { error: "Server misconfigured (GEMINI_API_KEY missing)" },
         500,
       );
     }
@@ -151,10 +164,13 @@ Deno.serve(async (req) => {
     const filter_mind = body.filter_mind?.toString().trim() || null;
     const filter_language = body.filter_language?.toString().trim() || null;
     const filter_bible_ref = body.filter_bible_ref?.toString().trim() || null;
+    const task_type = body.task_type === "RETRIEVAL_DOCUMENT"
+      ? "RETRIEVAL_DOCUMENT"
+      : "RETRIEVAL_QUERY";
 
-    // ── 1. Generate embedding ────────────────────────────────
+    // ── 1. Generate embedding via Gemini ─────────────────────
     const t0 = Date.now();
-    const embedding = await embedQuery(query, OPENAI_API_KEY);
+    const embedding = await embedQuery(query, GEMINI_API_KEY, task_type);
     const tEmbed = Date.now() - t0;
 
     // ── 2. Call RPC via service_role ─────────────────────────
@@ -192,6 +208,8 @@ Deno.serve(async (req) => {
       count: results.length,
       timings_ms: { embedding: tEmbed, rpc: tRpc, total: tEmbed + tRpc },
       embedding_model: EMBEDDING_MODEL,
+      embedding_dims: EMBEDDING_DIMS,
+      task_type,
       results,
     });
   } catch (err) {
