@@ -229,7 +229,16 @@ export default function AppLayout() {
       <div className="theme-app h-screen bg-background flex flex-col">
         <ThemeInjector />
         <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
-          <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Abrir menu"
+              className="h-9 w-9 -ml-1 rounded-lg flex items-center justify-center text-foreground hover:bg-primary/10 active:bg-primary/15 transition-colors"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
+          </div>
           <div className="flex items-center gap-2 shrink-0">
             <SupportChatBubble />
             {profile?.blog_handle && (
