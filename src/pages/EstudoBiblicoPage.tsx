@@ -100,8 +100,24 @@ export default function EstudoBiblicoPage() {
         )}
       </div>
 
+      {/* ── Study type picker ── */}
+      <StudyTypePicker value={studyType} onChange={setStudyType} />
+
       {/* Bible quick-access button */}
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="text-xs text-muted-foreground">
+          {(() => {
+            const opt = STUDY_TYPE_OPTIONS.find(o => o.id === studyType);
+            if (!opt) return null;
+            const label = opt.label[lang as 'PT' | 'EN' | 'ES'];
+            const prefix = lang === 'PT' ? 'Modo selecionado:' : lang === 'EN' ? 'Selected mode:' : 'Modo seleccionado:';
+            return (
+              <span>
+                {prefix} <span className="font-semibold text-primary">{label}</span>
+              </span>
+            );
+          })()}
+        </div>
         <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => setBibleOpen(true)}>
           <BookOpen className="h-3.5 w-3.5" />
           {lang === 'PT' ? 'Abrir Bíblia' : lang === 'EN' ? 'Open Bible' : 'Abrir Biblia'}
@@ -111,7 +127,7 @@ export default function EstudoBiblicoPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left sidebar - form */}
         <div className="w-full lg:w-[380px] shrink-0">
-          <StudyForm onSubmit={handleGenerate} isLoading={isLoading} prefillPassage={prefillPassage} />
+          <StudyForm onSubmit={handleGenerate} isLoading={isLoading} prefillPassage={prefillPassage} studyType={studyType} />
         </div>
 
         {/* Right main area */}
