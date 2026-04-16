@@ -121,7 +121,7 @@ export function StudyTypePicker({ value, onChange }: StudyTypePickerProps) {
         <p className="text-xs text-muted-foreground mt-1">{HEADINGS.subtitle[l]}</p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
         {OPTIONS.map((opt) => {
           const Icon = opt.icon;
           const active = value === opt.id;
@@ -134,34 +134,36 @@ export function StudyTypePicker({ value, onChange }: StudyTypePickerProps) {
               disabled={disabled}
               aria-pressed={active}
               className={cn(
-                'group relative text-left rounded-lg border p-3 transition-all min-h-[96px] flex flex-col gap-1.5',
+                'group relative text-left rounded-lg border p-2.5 transition-all flex items-start gap-2.5',
                 active
                   ? 'border-primary bg-primary/8 ring-1 ring-primary/40 shadow-sm'
                   : 'border-border bg-background hover:border-primary/40 hover:bg-muted/40',
-                disabled && 'opacity-55 cursor-not-allowed hover:border-border hover:bg-background',
+                disabled && 'opacity-70 cursor-not-allowed hover:border-border hover:bg-background',
               )}
             >
-              <div className="flex items-center justify-between gap-2">
-                <div
-                  className={cn(
-                    'h-7 w-7 rounded-md flex items-center justify-center shrink-0 transition-colors',
-                    active ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary',
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                </div>
-                {disabled && (
-                  <span className="inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted/70 px-1.5 py-0.5 rounded">
-                    <Lock className="h-2.5 w-2.5" />
-                    {HEADINGS.soon[l]}
-                  </span>
+              <div
+                className={cn(
+                  'h-8 w-8 rounded-md flex items-center justify-center shrink-0 transition-colors mt-0.5',
+                  active ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary',
                 )}
+              >
+                <Icon className="h-4 w-4" />
               </div>
-              <div className="text-xs font-semibold text-foreground leading-tight">
-                {opt.label[l]}
-              </div>
-              <div className="text-[10.5px] text-muted-foreground leading-snug line-clamp-3">
-                {opt.desc[l]}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                  <div className="text-xs font-semibold text-foreground leading-tight truncate">
+                    {opt.label[l]}
+                  </div>
+                  {disabled && (
+                    <span className="inline-flex items-center gap-0.5 text-[8.5px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/20 px-1 py-0.5 rounded shrink-0">
+                      <Lock className="h-2 w-2" />
+                      {HEADINGS.soon[l]}
+                    </span>
+                  )}
+                </div>
+                <div className="text-[10.5px] text-muted-foreground leading-snug line-clamp-2">
+                  {opt.desc[l]}
+                </div>
               </div>
             </button>
           );
