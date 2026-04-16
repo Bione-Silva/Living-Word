@@ -1405,6 +1405,10 @@ export type Database = {
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
       increment_share_click: { Args: { p_token: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
+      kb_ingest_document: {
+        Args: { p_chunks: Json; p_document: Json; p_upsert?: boolean }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
