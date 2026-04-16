@@ -17,6 +17,7 @@ import { BlogThemeCustomizer } from '@/components/blog/BlogThemeCustomizer';
 import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
 import { PlanOverviewCard } from '@/components/dashboard/PlanOverviewCard';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
+import { PushNotificationsCard } from '@/components/PushNotificationsCard';
 import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
 import type { Language } from '@/lib/i18n';
 
@@ -441,7 +442,8 @@ export default function Configuracoes() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="account">
+        <TabsContent value="account" className="space-y-4">
+          <PushNotificationsCard />
           <Card>
             <CardHeader><CardTitle className="font-display">{t('settings.account')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">

@@ -6,6 +6,7 @@ import { ToolSheet } from '@/components/ToolSheet';
 import { ExtrasModal } from '@/components/ExtrasModal';
 import { extraOutreachTools, extraFunTools } from '@/components/ExtraToolsSections';
 import { DashboardGreeting } from '@/components/dashboard/DashboardGreeting';
+import { DashboardTopBanner } from '@/components/dashboard/DashboardTopBanner';
 import { BomAmigoCard } from '@/components/dashboard/BomAmigoCard';
 import { DevotionalCard } from '@/components/dashboard/DevotionalCard';
 import { ToolsCircleGrid } from '@/components/dashboard/ToolsCircleGrid';
@@ -84,6 +85,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
+      <DashboardTopBanner />
       <DashboardGreeting />
       <div id="bom-amigo">
         <BomAmigoCard />
