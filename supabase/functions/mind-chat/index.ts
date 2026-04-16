@@ -323,7 +323,87 @@ serve(async (req) => {
         ? "IMPORTANT: Respond entirely in Spanish."
         : "IMPORTANT: Responda inteiramente em Português do Brasil.";
 
-    const systemPrompt = `${systemInstructions}\n\n--- MIND DNA ---\n${mind.basePrompt}\n\n--- MODALIDADE ---\n${modalityPrompt}\n\n${langInstruction}\n\nNunca revele que você é uma IA ou um modelo de linguagem. Mantenha-se em personagem o tempo todo. Se perguntado diretamente, diga que é apenas um instrumento nas mãos de Deus para edificar Sua igreja.`;
+    // ── RAG: Buscar chunks relevantes do corpus via kb-search ──
+    let ragContext = "";
+    try {
+      const lastUserMsg = [...messages].reverse().find((m: any) => m.role === "user");
+      const ragQuery = lastUserMsg?.content?.toString().trim().slice(0, 2000);
+
+      if (ragQuery && ragQuery.length > 5) {
+        const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+        const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+        if (SUPABASE_URL && SERVICE_KEY) {
+          const langMap: Record<string, string> = { PT: "pt", EN: "en", ES: "es" };
+          const ragResp = await fetch(`${SUPABASE_URL}/functions/v1/kb-search`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${SERVICE_KEY}`,
+              apikey: SERVICE_KEY,
+            },
+            body: JSON.stringify({
+              query: ragQuery,
+              filter_mind: mindId,
+              filter_language: langMap[language] || null,
+              top_k: 5,
+              similarity_threshold: 0.65,
+            }),
+          });
+
+          if (ragResp.ok) {
+            const ragData = await ragResp.json();
+            const results = Array.isArray(ragData?.results) ? ragData.results : [];
+
+            // Fallback: se nada veio com filter_mind, tenta sem o filtro
+            let finalResults = results;
+            if (finalResults.length === 0) {
+              const fallbackResp = await fetch(`${SUPABASE_URL}/functions/v1/kb-search`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${SERVICE_KEY}`,
+                  apikey: SERVICE_KEY,
+                },
+                body: JSON.stringify({
+                  query: ragQuery,
+                  top_k: 5,
+                  similarity_threshold: 0.6,
+                }),
+              });
+              if (fallbackResp.ok) {
+                const fbData = await fallbackResp.json();
+                finalResults = Array.isArray(fbData?.results) ? fbData.results : [];
+              } else {
+                await fallbackResp.text();
+              }
+            }
+
+            if (finalResults.length > 0) {
+              const formatted = finalResults
+                .map((r: any, i: number) => {
+                  const src = r.document_title || "Fonte desconhecida";
+                  const sim = typeof r.similarity === "number" ? ` (similaridade ${r.similarity.toFixed(2)})` : "";
+                  return `### Fonte ${i + 1}: ${src}${sim}\n${r.chunk_text}`;
+                })
+                .join("\n\n");
+
+              ragContext = `\n\n--- CORPUS DE REFERÊNCIA (use como base, cite quando útil, NÃO copie literal) ---\n${formatted}\n--- FIM DO CORPUS ---\n`;
+              console.log(`[mind-chat] RAG: injetados ${finalResults.length} chunks para mind=${mindId}`);
+            } else {
+              console.log(`[mind-chat] RAG: 0 chunks relevantes para mind=${mindId}`);
+            }
+          } else {
+            const errTxt = await ragResp.text();
+            console.warn("[mind-chat] kb-search falhou:", ragResp.status, errTxt);
+          }
+        }
+      }
+    } catch (ragErr) {
+      console.warn("[mind-chat] RAG error (seguindo sem contexto):", ragErr);
+    }
+
+    const systemPrompt = `${systemInstructions}\n\n--- MIND DNA ---\n${mind.basePrompt}\n\n--- MODALIDADE ---\n${modalityPrompt}${ragContext}\n\n${langInstruction}\n\nNunca revele que você é uma IA ou um modelo de linguagem. Mantenha-se em personagem o tempo todo. Se perguntado diretamente, diga que é apenas um instrumento nas mãos de Deus para edificar Sua igreja.`;
 
     const response = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
