@@ -525,7 +525,7 @@ export default function Landing() {
       </nav>
 
       {/* ===== 1. HERO ===== */}
-      <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 px-5 sm:px-8 overflow-hidden" style={{ background: 'linear-gradient(180deg, #0F0A18 0%, #2A1F17 60%, #0F0A18 100%)' }}>
+      <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 px-5 sm:px-8 overflow-hidden" style={{ background: 'linear-gradient(180deg, #0F0A18 0%, #1E1240 60%, #0F0A18 100%)' }}>
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #8B5CF6 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -771,7 +771,7 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-              <div className="h-3 rounded-b-lg mx-8" style={{ background: '#D5CCBE', borderTop: '1px solid rgba(30,18,64,0.1)' }} />
+              <div className="h-3 rounded-b-lg mx-8" style={{ background: '#3B1F82', borderTop: '1px solid rgba(30,18,64,0.1)' }} />
             </div>
           </RevealOnScroll>
         </div>
