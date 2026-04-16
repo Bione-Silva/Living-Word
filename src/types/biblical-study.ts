@@ -71,6 +71,15 @@ export interface BiblicalStudyResponse {
   study: BiblicalStudyOutput;
 }
 
+export type StudyType =
+  | 'complete'
+  | 'pastoral'
+  | 'cell'
+  | 'devotional'
+  | 'academic'
+  | 'youth'
+  | 'kids';
+
 export interface BiblicalStudyFormData {
   bible_passage: string;
   theme: string;
@@ -79,4 +88,5 @@ export interface BiblicalStudyFormData {
   doctrine_line: string;
   pastoral_voice: string;
   depth_level: string;
+  study_type: StudyType;
 }
