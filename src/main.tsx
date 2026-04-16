@@ -16,8 +16,14 @@ const isPreviewHost =
   window.location.hostname.includes("lovableproject.com");
 
 if (isPreviewHost || isInIframe) {
+  // Only unregister non-push service workers in preview/iframe; keep /sw-push.js for testing
   navigator.serviceWorker?.getRegistrations().then((registrations) => {
-    registrations.forEach((r) => r.unregister());
+    registrations.forEach((r) => {
+      const scriptUrl = r.active?.scriptURL || '';
+      if (!scriptUrl.includes('/sw-push.js')) {
+        r.unregister();
+      }
+    });
   });
 }
 
