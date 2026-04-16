@@ -376,6 +376,9 @@ serve(async (req) => {
       ? `\n\nIMPORTANT: The topic "${detectedTopic}" is pastorally sensitive. Use careful, welcoming, non-judgmental language. Include a pastoral_warning at the end recommending consultation with a qualified pastor or Christian counselor.`
       : "";
 
+    const focus = studyTypeFocus[study_type] || studyTypeFocus.complete;
+    const studyTypeInstruction = `\n\nSTUDY TYPE: ${focus.tag}.\n${focus.instruction}`;
+
     const systemPrompt = `You are a world-class biblical scholar and theologian. You produce rigorous, academically-informed biblical studies rooted in the ${doctrine_line} tradition with a ${pastoral_voice} pastoral voice.
 
 Your output MUST be a valid JSON object matching the exact schema below. Do NOT include markdown code fences. Output ONLY the JSON object.
@@ -415,9 +418,10 @@ Minimum structure requirements:
 - reflection_questions: at least ${requirements.questionsCount} items
 - total study length: at least ${requirements.totalWords} words across all narrative fields
 
-Write everything in ${targetLang}. Depth: ${depthDesc}.${cautionInstruction}`;
+Write everything in ${targetLang}. Depth: ${depthDesc}.${studyTypeInstruction}${cautionInstruction}`;
 
-    const baseUserPrompt = `Generate a complete biblical study for: ${bible_passage} (${bible_version}).${theme ? ` Focus theme: ${theme}.` : ""}
+    const baseUserPrompt = `Generate a ${focus.tag.toLowerCase()} for: ${bible_passage} (${bible_version}).${theme ? ` Focus theme: ${theme}.` : ""}
+Apply the STUDY TYPE rules from the system prompt strictly.
 Build every section fully. Do not summarize the whole study into 3 short paragraphs. Return ONLY the JSON object.`;
 
     const startTime = Date.now();
