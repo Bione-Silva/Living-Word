@@ -195,37 +195,28 @@ Deno.serve(async (req) => {
 
   const { document, chunks, upsert } = validation.data;
 
+  // Cliente no schema `public` — vamos chamar uma RPC SECURITY DEFINER
+  // (`public.kb_ingest_document`) que escreve no schema `knowledge` por dentro
+  // do Postgres. Isso evita ter que expor o schema `knowledge` ao PostgREST.
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
-    db: { schema: "knowledge" },
   });
 
   try {
     const t0 = Date.now();
 
-    // ── Optional upsert: delete existing document with same (source, title)
-    if (upsert) {
-      const delQuery = supabase.from("documents").delete();
-      delQuery.eq("title", document.title);
-      if (document.source) {
-        delQuery.eq("source", document.source);
-      } else {
-        delQuery.is("source", null);
-      }
-      const { error: delErr } = await delQuery;
-      if (delErr) {
-        console.error("[kb-ingest] Upsert delete failed:", delErr);
-        return jsonResponse(
-          { error: "Failed to delete existing document for upsert", details: delErr.message },
-          500,
-        );
-      }
-    }
+    // Embeddings precisam virar string no formato pgvector "[0.1,0.2,...]"
+    // pra que o cast `(c->>'embedding')::vector(768)` na RPC funcione.
+    const chunksPayload = chunks.map((c) => ({
+      chunk_index: c.chunk_index,
+      chunk_text: c.chunk_text,
+      embedding: `[${c.embedding.join(",")}]`,
+      token_count: c.token_count ?? null,
+      metadata: c.metadata ?? null,
+    }));
 
-    // ── Insert document
-    const { data: docRow, error: docErr } = await supabase
-      .from("documents")
-      .insert({
+    const { data, error } = await supabase.rpc("kb_ingest_document", {
+      p_document: {
         title: document.title,
         source: document.source ?? null,
         mind: document.mind ?? null,
@@ -233,51 +224,26 @@ Deno.serve(async (req) => {
         bible_refs: document.bible_refs ?? null,
         themes: document.themes ?? null,
         metadata: document.metadata ?? null,
-      })
-      .select("id")
-      .single();
+      },
+      p_chunks: chunksPayload,
+      p_upsert: upsert,
+    });
 
-    if (docErr || !docRow) {
-      console.error("[kb-ingest] Document insert failed:", docErr);
+    if (error) {
+      console.error("[kb-ingest] RPC kb_ingest_document failed:", error);
       return jsonResponse(
-        { error: "Failed to insert document", details: docErr?.message },
+        { error: "Failed to ingest document", details: error.message },
         500,
       );
     }
 
-    const documentId = docRow.id as string;
-
-    // ── Insert chunks (single batch — pgvector accepts JS number arrays)
-    const chunkRows = chunks.map((c) => ({
-      document_id: documentId,
-      chunk_index: c.chunk_index,
-      chunk_text: c.chunk_text,
-      embedding: c.embedding,
-      token_count: c.token_count ?? null,
-      metadata: c.metadata ?? null,
-      embedding_model: "text-embedding-004",
-    }));
-
-    const { error: chunkErr, count: insertedCount } = await supabase
-      .from("chunks")
-      .insert(chunkRows, { count: "exact" });
-
-    if (chunkErr) {
-      console.error("[kb-ingest] Chunk insert failed:", chunkErr);
-      // Rollback the document so we don't leave an orphan
-      await supabase.from("documents").delete().eq("id", documentId);
-      return jsonResponse(
-        { error: "Failed to insert chunks (document rolled back)", details: chunkErr.message },
-        500,
-      );
-    }
-
+    const result = data as { document_id: string; chunks_inserted: number };
     const elapsedMs = Date.now() - t0;
 
     return jsonResponse({
       ok: true,
-      document_id: documentId,
-      chunks_inserted: insertedCount ?? chunks.length,
+      document_id: result.document_id,
+      chunks_inserted: result.chunks_inserted,
       elapsed_ms: elapsedMs,
       embedding_model: "text-embedding-004",
       embedding_dims: EMBEDDING_DIMS,
