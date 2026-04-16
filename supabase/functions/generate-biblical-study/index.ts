@@ -320,6 +320,7 @@ serve(async (req) => {
       doctrine_line = "evangelical_general",
       pastoral_voice = "welcoming",
       depth_level = "intermediate",
+      study_type = "complete",
     } = body;
 
     if (!bible_passage) {
