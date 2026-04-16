@@ -83,8 +83,8 @@
     --muted: 261 50% 94%;
     --muted-foreground: 260 20% 38%;
 
-    --accent: 258 90% 66%;             /* Spirit Light */
-    --accent-foreground: 0 0% 100%;
+    --accent: 261 64% 92%;             /* Soft Lavender — for hover bg, keeps dark icons readable */
+    --accent-foreground: 260 43% 15%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
