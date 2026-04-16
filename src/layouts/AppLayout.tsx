@@ -129,6 +129,7 @@ export default function AppLayout() {
   const [activeTool, setActiveTool] = useState<{ id: string; title: string } | null>(null);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [helpToolId, setHelpToolId] = useState<string | null>(null);
   const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({});
   const [collapsed, setCollapsed] = useState(() => {
