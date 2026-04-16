@@ -4,16 +4,12 @@ import { useAuth } from '@/contexts/AuthContext';
 /**
  * Maps theme_color names from the wizard to HSL values for --primary injection.
  */
-const COLOR_MAP: Record<string, string> = {
-  amber: '36 64% 57%',
-  blue: '217 91% 60%',
-  green: '142 71% 45%',
-  purple: '262 83% 58%',
-  rose: '350 89% 60%',
-  teal: '173 80% 40%',
-  indigo: '239 84% 67%',
-  orange: '25 95% 53%',
-};
+/**
+ * NOTE: With the new Purple identity, the global --primary token IS the brand.
+ * We no longer override --primary from the user profile theme_color to avoid
+ * breaking the unified palette. Only the font_family is injected dynamically.
+ */
+const COLOR_MAP: Record<string, string> = {};
 
 /**
  * Maps font_family names from the wizard to CSS font-family stacks.
@@ -38,13 +34,8 @@ export function ThemeInjector() {
   useEffect(() => {
     const root = document.documentElement;
 
-    // Inject primary color
-    const colorKey = profile?.theme_color || 'amber';
-    const hsl = COLOR_MAP[colorKey];
-    if (hsl) {
-      root.style.setProperty('--primary', hsl);
-      root.style.setProperty('--sidebar-primary', hsl);
-    }
+    // Primary color is now globally fixed to the Purple brand identity.
+    // (theme_color from profile is intentionally ignored.)
 
     // Inject font family
     const fontKey = profile?.font_family || 'cormorant';
@@ -54,8 +45,6 @@ export function ThemeInjector() {
     }
 
     return () => {
-      root.style.removeProperty('--primary');
-      root.style.removeProperty('--sidebar-primary');
       root.style.removeProperty('--font-display');
     };
   }, [profile?.theme_color, profile?.font_family]);
