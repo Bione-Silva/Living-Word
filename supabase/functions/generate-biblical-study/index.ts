@@ -239,7 +239,46 @@ interface RequestBody {
   doctrine_line?: string;
   pastoral_voice?: string;
   depth_level?: string;
+  study_type?: string;
 }
+
+const studyTypeFocus: Record<string, { tag: string; instruction: string }> = {
+  complete: {
+    tag: "Complete biblical study",
+    instruction:
+      "Produce a complete, balanced biblical study covering historical/literary context, exegesis, theology, biblical connections, applications, and reflection questions. Keep an academic-pastoral balance.",
+  },
+  pastoral: {
+    tag: "Pastoral study",
+    instruction:
+      "Emphasize PASTORAL CARE and ministerial application. The 'application' section must focus on shepherding, counseling situations, and how a pastor can communicate this to the congregation. Reflection questions should help leaders identify wounds, hopes and growth opportunities in their flock. Keep tone warm and pastoral.",
+  },
+  cell: {
+    tag: "Cell / small group study",
+    instruction:
+      "Adapt the study for a CELL / SMALL GROUP meeting (60-75 minutes). The 'reflection_questions' must include at least one icebreaker question, group discussion prompts, and a collective application step. Keep language accessible. The conclusion must include a clear group dynamic suggestion.",
+  },
+  devotional: {
+    tag: "Devotional study",
+    instruction:
+      "Render this as a SHORT DEVOTIONAL: focus on a single central truth, daily personal application, a short prayer (place it inside 'conclusion'), and one complementary reading suggestion. Keep narrative warm, intimate and contemplative. Trim sections that are unnecessary for personal devotion but keep the structure valid.",
+  },
+  academic: {
+    tag: "Academic study",
+    instruction:
+      "Use rigorous ACADEMIC tone with original languages, source critical perspectives and theological debate. Be precise and technical.",
+  },
+  youth: {
+    tag: "Youth study",
+    instruction:
+      "Use accessible, energetic YOUTH-friendly language, engage current dilemmas (identity, relationships, social media, purpose) and make application practical for teenagers.",
+  },
+  kids: {
+    tag: "Kids study",
+    instruction:
+      "Tell the passage as a SIMPLE BIBLE STORY for children. Use very short sentences, include one creative activity and a short prayer.",
+  },
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -281,6 +320,7 @@ serve(async (req) => {
       doctrine_line = "evangelical_general",
       pastoral_voice = "welcoming",
       depth_level = "intermediate",
+      study_type = "complete",
     } = body;
 
     if (!bible_passage) {
@@ -336,6 +376,9 @@ serve(async (req) => {
       ? `\n\nIMPORTANT: The topic "${detectedTopic}" is pastorally sensitive. Use careful, welcoming, non-judgmental language. Include a pastoral_warning at the end recommending consultation with a qualified pastor or Christian counselor.`
       : "";
 
+    const focus = studyTypeFocus[study_type] || studyTypeFocus.complete;
+    const studyTypeInstruction = `\n\nSTUDY TYPE: ${focus.tag}.\n${focus.instruction}`;
+
     const systemPrompt = `You are a world-class biblical scholar and theologian. You produce rigorous, academically-informed biblical studies rooted in the ${doctrine_line} tradition with a ${pastoral_voice} pastoral voice.
 
 Your output MUST be a valid JSON object matching the exact schema below. Do NOT include markdown code fences. Output ONLY the JSON object.
@@ -375,9 +418,10 @@ Minimum structure requirements:
 - reflection_questions: at least ${requirements.questionsCount} items
 - total study length: at least ${requirements.totalWords} words across all narrative fields
 
-Write everything in ${targetLang}. Depth: ${depthDesc}.${cautionInstruction}`;
+Write everything in ${targetLang}. Depth: ${depthDesc}.${studyTypeInstruction}${cautionInstruction}`;
 
-    const baseUserPrompt = `Generate a complete biblical study for: ${bible_passage} (${bible_version}).${theme ? ` Focus theme: ${theme}.` : ""}
+    const baseUserPrompt = `Generate a ${focus.tag.toLowerCase()} for: ${bible_passage} (${bible_version}).${theme ? ` Focus theme: ${theme}.` : ""}
+Apply the STUDY TYPE rules from the system prompt strictly.
 Build every section fully. Do not summarize the whole study into 3 short paragraphs. Return ONLY the JSON object.`;
 
     const startTime = Date.now();

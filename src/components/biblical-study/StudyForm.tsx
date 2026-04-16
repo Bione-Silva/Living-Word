@@ -5,13 +5,14 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, Loader2 } from 'lucide-react';
-import type { BiblicalStudyFormData } from '@/types/biblical-study';
+import type { BiblicalStudyFormData, StudyType } from '@/types/biblical-study';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StudyFormProps {
   onSubmit: (data: BiblicalStudyFormData) => void;
   isLoading: boolean;
   prefillPassage?: string;
+  studyType: StudyType;
 }
 
 const doctrineOptions = [
@@ -31,7 +32,7 @@ const languageOptions = [
   { value: 'ES', label: 'Español' },
 ];
 
-export function StudyForm({ onSubmit, isLoading, prefillPassage }: StudyFormProps) {
+export function StudyForm({ onSubmit, isLoading, prefillPassage, studyType }: StudyFormProps) {
   const { lang, t } = useLanguage();
   const [formData, setFormData] = useState<BiblicalStudyFormData>({
     bible_passage: prefillPassage || '',
@@ -41,11 +42,22 @@ export function StudyForm({ onSubmit, isLoading, prefillPassage }: StudyFormProp
     doctrine_line: 'evangelical_general',
     pastoral_voice: 'welcoming',
     depth_level: 'intermediate',
+    study_type: studyType,
   });
 
   useEffect(() => {
     setFormData(prev => ({ ...prev, language: lang }));
   }, [lang]);
+
+  // Sync study_type from parent + suggest sensible defaults per type
+  useEffect(() => {
+    setFormData(prev => {
+      const next: BiblicalStudyFormData = { ...prev, study_type: studyType };
+      if (studyType === 'devotional' || studyType === 'cell') next.depth_level = 'basic';
+      else if (studyType === 'complete' || studyType === 'pastoral') next.depth_level = prev.depth_level === 'basic' ? 'intermediate' : prev.depth_level;
+      return next;
+    });
+  }, [studyType]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
