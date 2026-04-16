@@ -32,6 +32,7 @@ export default function EstudoBiblicoPage() {
   const [darkStudy, setDarkStudy] = useState(false);
   const [bibleOpen, setBibleOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
+  const [studyType, setStudyType] = useState<StudyType>('complete');
 
   const handleGenerate = async (formData: BiblicalStudyFormData) => {
     setIsLoading(true);
