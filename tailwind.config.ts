@@ -65,12 +65,22 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         lw: {
-          cafe: "hsl(25, 29%, 33%)",
-          dark: "hsl(25, 30%, 12%)",
-          amber: "hsl(25, 38%, 59%)",
-          gold: "hsl(38, 52%, 58%)",
-          parchment: "hsl(37, 33%, 94%)",
-          cream: "hsl(40, 40%, 97%)",
+          cafe: "hsl(257, 56%, 16%)",      /* Scripture Dark */
+          dark: "hsl(260, 43%, 7%)",        /* Night Canvas */
+          amber: "hsl(258, 90%, 66%)",      /* Spirit Light (kept name for compat) */
+          gold: "hsl(44, 87%, 47%)",        /* Sacred Gold */
+          parchment: "hsl(35, 65%, 90%)",   /* Parchment */
+          cream: "hsl(270, 60%, 97%)",      /* Divine White */
+        },
+        sacred: {
+          gold: "hsl(44, 87%, 47%)",
+          parchment: "hsl(35, 65%, 90%)",
+          lavender: "hsl(261, 64%, 92%)",   /* Soft Lavender */
+          divine: "hsl(270, 60%, 97%)",     /* Divine White */
+          stone: "hsl(220, 13%, 18%)",      /* Stone Gray */
+          covenant: "hsl(258, 61%, 32%)",
+          spirit: "hsl(258, 90%, 66%)",
+          word: "hsl(263, 70%, 50%)",
         },
       },
       borderRadius: {

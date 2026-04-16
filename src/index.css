@@ -196,11 +196,11 @@
   }
 
   .glow-amber {
-    box-shadow: 0 0 60px -12px hsl(38 52% 58% / 0.3);
+    box-shadow: 0 0 60px -12px hsl(258 90% 66% / 0.35);
   }
 
   .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(38,52%,58%)] to-[hsl(45,60%,70%)];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(263,70%,55%)] to-[hsl(258,90%,72%)];
   }
 
   .blog-prose {
@@ -227,18 +227,18 @@
   /* ── High-contrast prose for all generated content in theme-app ── */
   .theme-app .prose,
   .theme-blog .prose {
-    --tw-prose-body: hsl(24 30% 15%);
-    --tw-prose-headings: hsl(24 30% 10%);
-    --tw-prose-bold: hsl(24 30% 10%);
-    --tw-prose-links: hsl(28 42% 32%);
-    --tw-prose-counters: hsl(24 20% 35%);
-    --tw-prose-bullets: hsl(24 20% 35%);
-    --tw-prose-hr: hsl(30 15% 78%);
-    --tw-prose-quotes: hsl(24 25% 20%);
-    --tw-prose-quote-borders: hsl(28 42% 55%);
-    --tw-prose-code: hsl(24 30% 15%);
-    --tw-prose-th-borders: hsl(30 15% 78%);
-    --tw-prose-td-borders: hsl(30 15% 85%);
+    --tw-prose-body: hsl(260 30% 18%);
+    --tw-prose-headings: hsl(260 43% 12%);
+    --tw-prose-bold: hsl(260 43% 12%);
+    --tw-prose-links: hsl(263 70% 50%);
+    --tw-prose-counters: hsl(260 20% 38%);
+    --tw-prose-bullets: hsl(260 20% 38%);
+    --tw-prose-hr: hsl(261 40% 86%);
+    --tw-prose-quotes: hsl(263 40% 28%);
+    --tw-prose-quote-borders: hsl(258 90% 66%);
+    --tw-prose-code: hsl(260 30% 18%);
+    --tw-prose-th-borders: hsl(261 40% 86%);
+    --tw-prose-td-borders: hsl(261 40% 90%);
   }
 
   /* ── Premium pastoral prose for rich AI-generated markdown ── */
