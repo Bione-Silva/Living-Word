@@ -5,11 +5,27 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import loginBg from '@/assets/login-bg.jpg';
+
+// Purple palette (matches brand purple #1a1346 family)
+const C = {
+  bg: 'hsl(250, 30%, 96%)',
+  overlay: 'hsl(250, 30%, 96%)',
+  border: 'hsl(252, 20%, 86%)',
+  inputBg: 'hsl(250, 35%, 98%)',
+  inputBgHover: 'hsl(250, 30%, 95%)',
+  primary: 'hsl(255, 55%, 55%)',
+  primaryHover: 'hsl(255, 55%, 48%)',
+  primaryRing: 'hsl(255, 55%, 55% / 0.2)',
+  text: 'hsl(252, 35%, 18%)',
+  textSoft: 'hsl(252, 20%, 35%)',
+  textMuted: 'hsl(252, 12%, 50%)',
+  textFaint: 'hsl(252, 12%, 60%)',
+  link: 'hsl(255, 55%, 50%)',
+};
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -64,8 +80,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4" style={{ backgroundColor: 'hsl(37, 33%, 94%)' }}>
-      {/* Background image with low opacity */}
+    <div className="min-h-screen relative flex items-center justify-center p-4" style={{ backgroundColor: C.bg }}>
+      {/* Background emblem (kept) */}
       <img
         src={loginBg}
         alt=""
@@ -76,15 +92,15 @@ export default function Login() {
       />
 
       {/* Subtle overlay to soften */}
-      <div className="absolute inset-0 bg-[hsl(37,33%,94%)]/50 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: `${C.overlay}80` }} />
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link to="/" className="font-display text-4xl font-bold" style={{ color: 'hsl(28, 42%, 38%)' }}>
+          <Link to="/" className="font-display text-4xl font-bold" style={{ color: C.primary }}>
             Living Word
           </Link>
-          <p className="text-sm mt-2" style={{ color: 'hsl(24, 15%, 45%)' }}>
+          <p className="text-sm mt-2" style={{ color: C.textMuted }}>
             {forgotMode
               ? (t('auth.forgot') || 'Recuperar senha')
               : 'Sua plataforma pastoral inteligente'}
@@ -92,34 +108,40 @@ export default function Login() {
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-[hsl(30,15%,82%)]/60 bg-white/80 backdrop-blur-sm shadow-[0_8px_40px_hsl(28,20%,50%,0.08)] p-8 sm:p-10">
-          <h2 className="font-display text-2xl font-bold text-center mb-7" style={{ color: 'hsl(24, 30%, 18%)' }}>
+        <div
+          className="rounded-2xl border bg-white/80 backdrop-blur-sm p-8 sm:p-10"
+          style={{
+            borderColor: `${C.border}99`,
+            boxShadow: '0 8px 40px hsl(255, 40%, 40%, 0.10)',
+          }}
+        >
+          <h2 className="font-display text-2xl font-bold text-center mb-7" style={{ color: C.text }}>
             {forgotMode ? (t('auth.forgot') || 'Recuperar senha') : (t('auth.login') || 'Entrar')}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[hsl(24,20%,30%)] font-medium">{t('auth.email') || 'Email'}</Label>
+              <Label htmlFor="email" className="font-medium" style={{ color: C.textSoft }}>{t('auth.email') || 'Email'}</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border-[hsl(30,15%,82%)] bg-[hsl(37,30%,97%)] focus:border-[hsl(28,42%,50%)] focus:ring-[hsl(28,42%,50%)]/20 text-[hsl(24,30%,15%)] placeholder:text-[hsl(24,15%,60%)]"
+                style={{ borderColor: C.border, backgroundColor: C.inputBg, color: C.text }}
                 placeholder="seu@email.com"
               />
             </div>
             {!forgotMode && (
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-[hsl(24,20%,30%)] font-medium">{t('auth.password') || 'Senha'}</Label>
+                <Label htmlFor="password" className="font-medium" style={{ color: C.textSoft }}>{t('auth.password') || 'Senha'}</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="border-[hsl(30,15%,82%)] bg-[hsl(37,30%,97%)] focus:border-[hsl(28,42%,50%)] focus:ring-[hsl(28,42%,50%)]/20 text-[hsl(24,30%,15%)]"
+                  style={{ borderColor: C.border, backgroundColor: C.inputBg, color: C.text }}
                   placeholder="••••••••"
                 />
               </div>
@@ -127,7 +149,10 @@ export default function Login() {
 
             <Button
               type="submit"
-              className="w-full py-6 text-base font-bold rounded-xl bg-[hsl(28,42%,42%)] hover:bg-[hsl(28,42%,36%)] text-white shadow-md"
+              className="w-full py-6 text-base font-bold rounded-xl text-white shadow-md transition-colors"
+              style={{ backgroundColor: C.primary }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = C.primaryHover)}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = C.primary)}
               disabled={loading}
             >
               {loading ? '...' : forgotMode ? 'Enviar link' : (t('auth.login') || 'Entrar')}
@@ -137,17 +162,20 @@ export default function Login() {
               <>
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[hsl(30,15%,82%)]" />
+                    <div className="w-full border-t" style={{ borderColor: C.border }} />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white/80 px-3 text-[hsl(24,15%,55%)]">ou</span>
+                    <span className="bg-white/80 px-3" style={{ color: C.textFaint }}>ou</span>
                   </div>
                 </div>
 
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full py-5 text-sm font-medium rounded-xl border-[hsl(30,15%,82%)] bg-[hsl(37,30%,97%)] hover:bg-[hsl(37,25%,94%)] text-[hsl(24,30%,18%)]"
+                  className="w-full py-5 text-sm font-medium rounded-xl transition-colors"
+                  style={{ borderColor: C.border, backgroundColor: C.inputBg, color: C.text }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = C.inputBgHover)}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = C.inputBg)}
                   onClick={handleGoogleLogin}
                   disabled={googleLoading}
                 >
@@ -167,13 +195,13 @@ export default function Login() {
                 type="button"
                 onClick={() => setForgotMode(!forgotMode)}
                 className="text-sm font-medium hover:underline"
-                style={{ color: 'hsl(28, 42%, 42%)' }}
+                style={{ color: C.link }}
               >
                 {forgotMode ? (t('auth.login') || 'Voltar ao login') : (t('auth.forgot') || 'Esqueci minha senha')}
               </button>
               {!forgotMode && (
-                <p className="text-sm" style={{ color: 'hsl(24, 15%, 50%)' }}>
-                  <Link to={planParam ? `/cadastro?plan=${planParam}` : '/cadastro'} className="font-medium hover:underline" style={{ color: 'hsl(28, 42%, 42%)' }}>
+                <p className="text-sm" style={{ color: C.textMuted }}>
+                  <Link to={planParam ? `/cadastro?plan=${planParam}` : '/cadastro'} className="font-medium hover:underline" style={{ color: C.link }}>
                     {t('auth.create') || 'Criar conta'}
                   </Link>
                 </p>
@@ -183,7 +211,7 @@ export default function Login() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs mt-8" style={{ color: 'hsl(24, 15%, 55%)' }}>
+        <p className="text-center text-xs mt-8" style={{ color: C.textFaint }}>
           Feito com ❤️ por Living Word
         </p>
       </div>
