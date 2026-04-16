@@ -25,7 +25,7 @@ import {
   Sparkles, Repeat, Palette, Video, Users, MessageSquare, Mail, Megaphone,
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert, ChevronUp,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
-  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal,
+  PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal, Menu, X,
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -129,6 +129,7 @@ export default function AppLayout() {
   const [activeTool, setActiveTool] = useState<{ id: string; title: string } | null>(null);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [helpToolId, setHelpToolId] = useState<string | null>(null);
   const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({});
   const [collapsed, setCollapsed] = useState(() => {
@@ -228,7 +229,16 @@ export default function AppLayout() {
       <div className="theme-app h-screen bg-background flex flex-col">
         <ThemeInjector />
         <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
-          <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Abrir menu"
+              className="h-9 w-9 -ml-1 rounded-lg flex items-center justify-center text-foreground hover:bg-primary/10 active:bg-primary/15 transition-colors"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
+          </div>
           <div className="flex items-center gap-2 shrink-0">
             <SupportChatBubble />
             {profile?.blog_handle && (
@@ -397,6 +407,151 @@ export default function AppLayout() {
                     );
                   })}
                 </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* ─── Mobile Hamburger Menu (left drawer) — full navigation ─── */}
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetContent side="left" className="theme-app w-[88vw] max-w-[340px] p-0 overflow-y-auto">
+            <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
+              <SheetTitle className="font-display text-xl text-primary text-left">Living Word</SheetTitle>
+              <SheetDescription className="sr-only">Menu principal</SheetDescription>
+            </SheetHeader>
+
+            <div className="px-3 py-3 space-y-1">
+              {/* Primary navigation */}
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === '/dashboard' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <LayoutDashboard className="h-4 w-4 shrink-0" />
+                <span>{t('nav.dashboard')}</span>
+              </Link>
+              <Link
+                to="/bible"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === '/bible' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <BookOpen className="h-4 w-4 shrink-0" />
+                <span>{lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}</span>
+              </Link>
+              <Link
+                to="/dashboard/mentes"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname.startsWith('/dashboard/mentes') ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Brain className="h-4 w-4 shrink-0" />
+                <span>{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
+              </Link>
+              <Link
+                to="/biblioteca"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === '/biblioteca' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Library className="h-4 w-4 shrink-0" />
+                <span>{lang === 'PT' ? 'Biblioteca' : lang === 'EN' ? 'Library' : 'Biblioteca'}</span>
+              </Link>
+              <Link
+                to="/calendario"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === '/calendario' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <CalendarDays className="h-4 w-4 shrink-0" />
+                <span>{lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario'}</span>
+              </Link>
+
+              {/* Tools groups */}
+              <div className="pt-3 mt-2 border-t border-border">
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground px-3 mb-1.5">
+                  {lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}
+                </p>
+                {sidebarGroups.map((group) => {
+                  const isOpen = mobileOpenGroups[`menu-${group.key}`] ?? false;
+                  const GroupIcon = group.icon;
+                  return (
+                    <div key={`menu-${group.key}`} className="mb-1">
+                      <button
+                        onClick={() => setMobileOpenGroups(p => ({ ...p, [`menu-${group.key}`]: !isOpen }))}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                      >
+                        <GroupIcon className="h-4 w-4 shrink-0 text-primary" />
+                        <span className="flex-1 text-left">{group.label[lang]}</span>
+                        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isOpen ? '' : '-rotate-90'}`} />
+                      </button>
+                      {isOpen && (
+                        <div className="pl-3 pr-1 py-1 space-y-0.5">
+                          {group.tools.map((tool) => {
+                            const ToolIcon = tool.icon;
+                            const isLocked = isToolLockedForPlan(tool.id, userPlan);
+                            return (
+                              <button
+                                key={tool.id}
+                                onClick={() => { setMobileMenuOpen(false); handleToolClick(tool); }}
+                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-xs transition-colors text-left ${
+                                  isLocked ? 'text-muted-foreground' : 'text-foreground/85 hover:bg-primary/5 hover:text-primary'
+                                }`}
+                              >
+                                <ToolIcon className="h-3.5 w-3.5 shrink-0" />
+                                <span className="flex-1 truncate">{tool.label[lang]}</span>
+                                {isLocked && <ToolLockBadge userPlan={userPlan} toolId={tool.id} />}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Account */}
+              <div className="pt-3 mt-2 border-t border-border">
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground px-3 mb-1.5">
+                  {lang === 'PT' ? 'Conta' : lang === 'EN' ? 'Account' : 'Cuenta'}
+                </p>
+                {accountItems.map((item) => {
+                  const ItemIcon = item.icon;
+                  return (
+                    <Link
+                      key={`menu-${item.to}-${item.label.PT}`}
+                      to={item.to}
+                      target={item.external ? '_blank' : undefined}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        item.admin
+                          ? 'text-destructive hover:bg-destructive/10'
+                          : location.pathname === item.to
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-foreground hover:bg-muted'
+                      }`}
+                    >
+                      <ItemIcon className="h-4 w-4 shrink-0" />
+                      <span>{item.label[lang]}</span>
+                      {item.external && <ExternalLink className="h-3 w-3 ml-auto text-muted-foreground" />}
+                    </Link>
+                  );
+                })}
+
+                <button
+                  onClick={() => { setMobileMenuOpen(false); handleSignOut(); }}
+                  className="w-full mt-1 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  <span>{lang === 'PT' ? 'Sair' : lang === 'EN' ? 'Sign Out' : 'Salir'}</span>
+                </button>
               </div>
             </div>
           </SheetContent>
