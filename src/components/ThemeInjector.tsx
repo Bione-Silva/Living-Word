@@ -45,8 +45,6 @@ export function ThemeInjector() {
     }
 
     return () => {
-      root.style.removeProperty('--primary');
-      root.style.removeProperty('--sidebar-primary');
       root.style.removeProperty('--font-display');
     };
   }, [profile?.theme_color, profile?.font_family]);
