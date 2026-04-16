@@ -68,11 +68,15 @@ export function usePushNotifications() {
       }
 
       const existing = await reg.pushManager.getSubscription();
+      const appServerKey = urlBase64ToUint8Array(vapidData.publicKey);
       const sub =
         existing ||
         (await reg.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidData.publicKey),
+          applicationServerKey: appServerKey.buffer.slice(
+            appServerKey.byteOffset,
+            appServerKey.byteOffset + appServerKey.byteLength,
+          ) as ArrayBuffer,
         }));
 
       const payload = {
