@@ -842,6 +842,9 @@ export type Database = {
           plan: string
           preaching_style: string | null
           profile_completed: boolean | null
+          push_enabled: boolean
+          push_hour: number
+          push_timezone: string
           state: string | null
           street: string | null
           theme_color: string | null
@@ -881,6 +884,9 @@ export type Database = {
           plan?: string
           preaching_style?: string | null
           profile_completed?: boolean | null
+          push_enabled?: boolean
+          push_hour?: number
+          push_timezone?: string
           state?: string | null
           street?: string | null
           theme_color?: string | null
@@ -920,6 +926,9 @@ export type Database = {
           plan?: string
           preaching_style?: string | null
           profile_completed?: boolean | null
+          push_enabled?: boolean
+          push_hour?: number
+          push_timezone?: string
           state?: string | null
           street?: string | null
           theme_color?: string | null
@@ -928,6 +937,92 @@ export type Database = {
           updated_at?: string
           wordpress_url?: string | null
           zip_code?: string | null
+        }
+        Relationships: []
+      }
+      push_deliveries: {
+        Row: {
+          clicked_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          payload: Json
+          status: string
+          status_code: number | null
+          subscription_id: string | null
+          user_id: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          payload?: Json
+          status?: string
+          status_code?: number | null
+          subscription_id?: string | null
+          user_id: string
+        }
+        Update: {
+          clicked_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          payload?: Json
+          status?: string
+          status_code?: number | null
+          subscription_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_deliveries_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "push_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          last_error: string | null
+          last_error_at: string | null
+          last_success_at: string | null
+          p256dh: string
+          platform: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          last_error?: string | null
+          last_error_at?: string | null
+          last_success_at?: string | null
+          p256dh: string
+          platform?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          last_error?: string | null
+          last_error_at?: string | null
+          last_success_at?: string | null
+          p256dh?: string
+          platform?: string | null
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1332,6 +1427,7 @@ export type Database = {
     }
     Functions: {
       get_admin_ai_metrics: { Args: never; Returns: Json }
+      get_admin_push_metrics: { Args: never; Returns: Json }
       get_admin_saas_metrics: {
         Args: never
         Returns: {
