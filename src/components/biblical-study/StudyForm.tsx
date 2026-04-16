@@ -5,13 +5,14 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, Loader2 } from 'lucide-react';
-import type { BiblicalStudyFormData } from '@/types/biblical-study';
+import type { BiblicalStudyFormData, StudyType } from '@/types/biblical-study';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StudyFormProps {
   onSubmit: (data: BiblicalStudyFormData) => void;
   isLoading: boolean;
   prefillPassage?: string;
+  studyType: StudyType;
 }
 
 const doctrineOptions = [
