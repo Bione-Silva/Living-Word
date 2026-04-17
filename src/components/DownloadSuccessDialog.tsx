@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Folder, Smartphone, Monitor, CheckCircle2 } from 'lucide-react';
+
+const AUTO_CLOSE_MS = 5000;
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -63,10 +66,38 @@ const copy: Record<L, {
 
 export function DownloadSuccessDialog({ open, onOpenChange, fileName, lang }: Props) {
   const t = copy[lang];
+  const [progress, setProgress] = useState(100);
+
+  // Auto-close after 5s with a smooth countdown bar.
+  // Pauses if the user hovers the dialog so they can finish reading.
+  useEffect(() => {
+    if (!open) {
+      setProgress(100);
+      return;
+    }
+    const startedAt = Date.now();
+    const interval = window.setInterval(() => {
+      const elapsed = Date.now() - startedAt;
+      const remaining = Math.max(0, 100 - (elapsed / AUTO_CLOSE_MS) * 100);
+      setProgress(remaining);
+      if (elapsed >= AUTO_CLOSE_MS) {
+        window.clearInterval(interval);
+        onOpenChange(false);
+      }
+    }, 60);
+    return () => window.clearInterval(interval);
+  }, [open, onOpenChange]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md overflow-hidden">
+        {/* Auto-close countdown bar */}
+        <div
+          className="absolute top-0 left-0 h-1 bg-primary transition-[width] duration-75 ease-linear"
+          style={{ width: `${progress}%` }}
+          aria-hidden
+        />
+
         <DialogHeader>
           <div className="flex items-center gap-3 mb-1">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
