@@ -257,6 +257,54 @@ export default function SocialStudio() {
     setActiveSceneId(null);
   };
 
+  // ── Plano free não tem acesso ao Estúdio Social ──
+  if (!hasAccess) {
+    return (
+      <div className="theme-app max-w-3xl mx-auto py-12">
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-background">
+          <CardContent className="p-8 sm:p-12 text-center space-y-6">
+            <div className="inline-flex h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary/70 items-center justify-center shadow-lg mx-auto">
+              <Wand2 className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                {lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}
+              </h1>
+              <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                {lang === 'PT'
+                  ? 'Crie artes profissionais para suas redes em segundos. Disponível nos planos Starter, Pro e Igreja.'
+                  : lang === 'EN'
+                  ? 'Create professional social media art in seconds. Available on Starter, Pro and Church plans.'
+                  : 'Crea artes profesionales para tus redes en segundos. Disponible en planes Starter, Pro e Iglesia.'}
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-3 max-w-2xl mx-auto pt-2">
+              {[
+                { plan: 'Starter', credits: 'Banco compartilhado', emoji: '🎨' },
+                { plan: 'Pro', credits: '+ 20 imagens novas/mês', emoji: '👑' },
+                { plan: 'Igreja', credits: '+ 50 imagens novas/mês', emoji: '🏛️' },
+              ].map((p) => (
+                <div key={p.plan} className="rounded-xl border border-border bg-card p-4 text-center">
+                  <div className="text-2xl mb-1">{p.emoji}</div>
+                  <div className="font-bold text-sm text-foreground">{p.plan}</div>
+                  <div className="text-[11px] text-muted-foreground mt-1">{p.credits}</div>
+                </div>
+              ))}
+            </div>
+            <Button
+              size="lg"
+              className="gap-2"
+              onClick={() => window.location.assign('/upgrade')}
+            >
+              <Sparkles className="h-4 w-4" />
+              {lang === 'PT' ? 'Ver planos' : lang === 'EN' ? 'View plans' : 'Ver planes'}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="theme-app">
       {/* Header */}
