@@ -15,18 +15,13 @@ export function HistoricalSourcesCard({ sources, lang }: HistoricalSourcesCardPr
   if (!sources || !sources.trim()) return null;
 
   return (
-    <div className="rounded-lg border p-4 flex gap-3 items-start"
-      style={{
-        backgroundColor: '#faf8f5',
-        borderColor: '#e7e0d5',
-      }}
-    >
-      <BookOpen className="h-5 w-5 shrink-0 mt-0.5" style={{ color: '#8B7355' }} />
+    <div className="rounded-lg border border-border bg-muted/40 p-4 flex gap-3 items-start">
+      <BookOpen className="h-5 w-5 shrink-0 mt-0.5 text-accent" />
       <div className="space-y-1 min-w-0">
-        <p className="text-xs font-semibold tracking-wide" style={{ color: '#6B4F3A' }}>
+        <p className="text-xs font-semibold tracking-wide text-foreground">
           {labels[lang]}
         </p>
-        <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: '#5a4a3a' }}>
+        <p className="text-sm leading-relaxed whitespace-pre-line text-muted-foreground">
           {sources}
         </p>
       </div>
