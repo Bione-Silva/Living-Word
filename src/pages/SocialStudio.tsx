@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
 import { type SlideData } from '@/components/social-studio/SlideCanvas';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
+import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { VersePalettePicker, type VersePalette } from '@/components/social-studio/VersePalettePicker';
 import { SlideCountPicker, type SlideCount } from '@/components/social-studio/SlideCountPicker';
 import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGallery';
