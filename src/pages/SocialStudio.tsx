@@ -108,6 +108,17 @@ export default function SocialStudio() {
     backgroundImageUrl: undefined,
   });
 
+  // Resolve the active Bible version label (e.g. "ARA", "KJV") from the user's profile.
+  // Falls back to the default version for the current UI language.
+  const versionLabel = (() => {
+    const code = profile?.bible_version || getDefaultVersionCode(lang);
+    return getBibleVersion(code)?.shortLabel || code.toUpperCase();
+  })();
+
+  /** Append the Bible version label to a passage reference, e.g. "João 3:16 (ARA)". */
+  const withVersion = (passage: string) =>
+    passage.includes('(') ? passage : `${passage} (${versionLabel})`;
+
   const handlePaletteSelect = useCallback((p: VersePalette) => {
     setActivePaletteId(p.id);
     setActiveSceneId(null);
