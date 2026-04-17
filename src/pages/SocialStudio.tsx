@@ -240,7 +240,7 @@ export default function SocialStudio() {
           totalSlides: total,
         }));
         setSlides(built);
-        setPresentationMode(true);
+        setPresentationMode(false); // Devotional carousel is for social, not a presentation
         toast.success(h.carouselGenerated);
       }
     } catch {
