@@ -98,9 +98,9 @@ export default function BlogPublic() {
   });
 
   // Derive theme
-  const themeColor = profile?.theme_color || 'amber';
+  const themeColor = profile?.theme_color || 'purple';
   const fontFamily = profile?.font_family || 'cormorant';
-  const primaryHsl = isCustomHex(themeColor) ? hexToHsl(themeColor) : (THEME_COLORS[themeColor] || THEME_COLORS.amber);
+  const primaryHsl = isCustomHex(themeColor) ? hexToHsl(themeColor) : (THEME_COLORS[themeColor] || THEME_COLORS.purple);
   const blogFont = FONT_FAMILIES[fontFamily] || FONT_FAMILIES.cormorant;
 
   useEffect(() => {
