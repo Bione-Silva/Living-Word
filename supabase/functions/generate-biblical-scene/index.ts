@@ -81,17 +81,24 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const userPlan = (profile?.plan || 'free') as string;
 
-    // Plano free não tem acesso ao Estúdio
-    if (!ALLOWED_PLANS.has(userPlan)) {
+    // Admins sempre passam (para seed/teste); demais regras só se aplicam abaixo.
+    const { data: isAdminData } = await adminClient.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin',
+    });
+    const isAdmin = isAdminData === true;
+
+    const body = await req.json().catch(() => ({}));
+    const prompt = typeof body?.prompt === 'string' ? body.prompt.trim() : '';
+    const mode: 'search' | 'generate' = body?.mode === 'generate' ? 'generate' : 'search';
+
+    // Plano free não tem acesso ao Estúdio (apenas para GENERATE; SEARCH é livre p/ logados)
+    if (mode === 'generate' && !isAdmin && !ALLOWED_PLANS.has(userPlan)) {
       return new Response(JSON.stringify({
         error: 'plan_required',
         message: 'O Estúdio Social está disponível nos planos Starter, Pro e Igreja.',
       }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-
-    const body = await req.json().catch(() => ({}));
-    const prompt = typeof body?.prompt === 'string' ? body.prompt.trim() : '';
-    const mode: 'search' | 'generate' = body?.mode === 'generate' ? 'generate' : 'search';
 
     if (!prompt || prompt.length < 3) {
       return new Response(JSON.stringify({ error: 'Missing prompt' }), {
