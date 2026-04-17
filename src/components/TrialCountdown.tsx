@@ -85,16 +85,16 @@ export function TrialCountdown() {
   return (
     <div className={`rounded-xl border-2 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shadow-sm ${
       urgency 
-        ? 'border-orange-400/50 bg-gradient-to-r from-orange-500/10 to-amber-500/10' 
+        ? 'border-destructive/50 bg-gradient-to-r from-destructive/10 to-destructive/5' 
         : 'border-primary/30 bg-gradient-to-r from-primary/8 to-primary/4'
     }`}>
       <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 ${
-        urgency ? 'bg-orange-500/15' : 'bg-primary/15'
+        urgency ? 'bg-destructive/15' : 'bg-primary/15'
       }`}>
-        <Sparkles className={`h-5 w-5 sm:h-6 sm:w-6 ${urgency ? 'text-orange-500 animate-pulse' : 'text-primary'}`} />
+        <Sparkles className={`h-5 w-5 sm:h-6 sm:w-6 ${urgency ? 'text-destructive animate-pulse' : 'text-primary'}`} />
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className={`font-bold text-sm sm:text-base ${urgency ? 'text-orange-600 dark:text-orange-400' : 'text-foreground'}`}>
+        <h3 className={`font-bold text-sm sm:text-base ${urgency ? 'text-destructive' : 'text-foreground'}`}>
           {t.trial} — {t.daysLeft} {daysLeft <= 1 ? t.hoursLeft : ''}
         </h3>
         <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-relaxed">{t.activeMsg}</p>
@@ -102,7 +102,7 @@ export function TrialCountdown() {
       <Link to="/upgrade" className="w-full sm:w-auto">
         <Button size="sm" className={`gap-1.5 w-full sm:w-auto font-bold shadow-md ${
           urgency 
-            ? 'bg-orange-500 text-white hover:bg-orange-600' 
+            ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' 
             : 'bg-primary text-primary-foreground hover:bg-primary/90'
         }`}>
           <Crown className="h-3.5 w-3.5" />

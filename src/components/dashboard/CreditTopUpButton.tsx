@@ -60,10 +60,10 @@ export function CreditTopUpButton() {
   };
 
   return (
-    <div className="rounded-xl border-2 border-amber-400/40 bg-gradient-to-r from-amber-500/10 to-yellow-500/5 p-4 space-y-2">
+    <div className="rounded-xl border-2 border-primary/30 bg-gradient-to-r from-primary/10 to-accent/5 p-4 space-y-2">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-          <Zap className="h-4 w-4 text-amber-500" />
+        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+          <Zap className="h-4 w-4 text-primary" />
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold">{labels.title[l]}</p>
@@ -73,7 +73,7 @@ export function CreditTopUpButton() {
       <Button
         onClick={handleTopUp}
         disabled={loading}
-        className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold gap-2"
+        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold gap-2"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
