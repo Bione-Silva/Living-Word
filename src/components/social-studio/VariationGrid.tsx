@@ -123,7 +123,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
     useImperativeHandle(ref, () => ({ refresh: () => {} }));
 
     const handleDownload = async (item: VariationItem, format: 'png' | 'jpg') => {
-      const node = item.ref.current;
+      const node = getNode(item.id);
       if (!node) return;
       setBusyKey(`${item.id}-${format}`);
       try {
@@ -157,7 +157,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
       try {
         const zip = new JSZip();
         for (const item of items) {
-          const node = item.ref.current;
+          const node = getNode(item.id);
           if (!node) continue;
           const dataUrl = await captureNodeAsPng(node);
           const folder = `slide-${item.slideIdx + 1}`;
@@ -189,8 +189,10 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
         // Use the first template (editorial) for each slide as the presentation base
         for (let i = 0; i < slides.length; i++) {
           const item = items.find((it) => it.slideIdx === i && it.template === 'cinematic');
-          if (!item?.ref.current) continue;
-          const dataUrl = await captureNodeAsPng(item.ref.current);
+          if (!item) continue;
+          const node = getNode(item.id);
+          if (!node) continue;
+          const dataUrl = await captureNodeAsPng(node);
           const slide = pptx.addSlide();
           slide.background = { color: '0A0A0A' };
           // Center the captured image with margin
