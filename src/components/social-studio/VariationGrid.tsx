@@ -301,7 +301,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
                       <div key={item.id} className="group relative">
                         <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border shadow-sm transition-all hover:shadow-lg hover:border-primary/40">
                           <SlideCanvas
-                            ref={item.ref}
+                            ref={setRef(item.id)}
                             slide={slide}
                             aspectRatio={aspectRatio}
                             template={item.template}
