@@ -282,7 +282,20 @@ export default function SocialStudio() {
                 </Card>
               )}
 
-              {/* Visual style */}
+              {/* Verse palette gallery — only when a verse is loaded */}
+              {verseContext && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4">
+                    <VersePalettePicker
+                      value={activePaletteId}
+                      onChange={handlePaletteSelect}
+                      lang={lang}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Visual style — custom background + colors */}
               <div>
                 <div className="flex items-center gap-2 mb-2 px-1">
                   <Palette className="h-4 w-4 text-primary" />
@@ -291,7 +304,7 @@ export default function SocialStudio() {
                 <p className="text-xs text-muted-foreground mb-3 px-1">{h.designDesc}</p>
                 <ThemeCustomizer
                   value={theme}
-                  onChange={setTheme}
+                  onChange={(v) => { setTheme(v); setActivePaletteId(null); }}
                   lang={lang}
                   onUploadBackground={handleBackgroundUpload}
                 />
