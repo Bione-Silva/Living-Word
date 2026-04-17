@@ -86,6 +86,7 @@ export default function SocialStudio() {
   const [verseContext, setVerseContext] = useState<{ text: string; book: string } | null>(null);
   const [loadingDevotional, setLoadingDevotional] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
+  const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
@@ -94,6 +95,16 @@ export default function SocialStudio() {
     overlayOpacity: 55,
     backgroundImageUrl: undefined,
   });
+
+  const handlePaletteSelect = useCallback((p: VersePalette) => {
+    setActivePaletteId(p.id);
+    setTheme((prev) => ({
+      ...prev,
+      gradient: p.gradient,
+      textColor: p.textColor,
+      backgroundImageUrl: undefined,
+    }));
+  }, []);
 
   // Workspace defaults
   useEffect(() => {
