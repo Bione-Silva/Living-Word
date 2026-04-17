@@ -416,7 +416,7 @@ export default function AppLayout() {
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetContent side="left" className="theme-app w-[88vw] max-w-[340px] p-0 overflow-y-auto">
             <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
-              <SheetTitle className="font-display text-xl text-primary text-left">Living Word</SheetTitle>
+              <SheetTitle className="font-display text-xl text-sidebar-foreground text-left">Living Word</SheetTitle>
               <SheetDescription className="sr-only">Menu principal</SheetDescription>
             </SheetHeader>
 
@@ -643,10 +643,10 @@ export default function AppLayout() {
         {/* Logo */}
         <div className={`p-4 pb-2 shrink-0 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-sidebar-primary/20 flex items-center justify-center shrink-0">
-              <Wand2 className="h-4 w-4 text-sidebar-primary" />
+            <div className="w-8 h-8 rounded-lg bg-sidebar-foreground/15 flex items-center justify-center shrink-0">
+              <Wand2 className="h-4 w-4 text-sidebar-foreground" />
             </div>
-            {!collapsed && <span className="font-display text-xl font-bold text-sidebar-primary">Living Word</span>}
+            {!collapsed && <span className="font-display text-xl font-bold text-sidebar-foreground">Living Word</span>}
           </Link>
           {!collapsed && (
             <button onClick={toggleCollapsed} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors" title="Recolher sidebar">
@@ -686,7 +686,7 @@ export default function AppLayout() {
               to="/dashboard"
               className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname === '/dashboard'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
@@ -707,7 +707,7 @@ export default function AppLayout() {
                     onClick={() => !collapsed && toggleGroup(group.key)}
                     className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isOpen
-                        ? 'text-sidebar-primary bg-sidebar-accent/30'
+                        ? 'text-sidebar-foreground bg-sidebar-accent/30'
                         : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                     }`}
                   >
@@ -715,7 +715,7 @@ export default function AppLayout() {
                     {!collapsed && (
                       <>
                         <span className="flex-1 text-left">{group.label[lang]}</span>
-                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'} ${isOpen ? 'text-sidebar-primary' : 'text-sidebar-foreground/40'}`} />
+                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'} ${isOpen ? 'text-sidebar-foreground' : 'text-sidebar-foreground/40'}`} />
                       </>
                     )}
                   </button>
@@ -754,7 +754,7 @@ export default function AppLayout() {
               to="/bible"
               className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname === '/bible'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
@@ -781,7 +781,7 @@ export default function AppLayout() {
               to="/dashboard/mentes"
               className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname.startsWith('/dashboard/mentes')
-                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
@@ -789,7 +789,7 @@ export default function AppLayout() {
               {!collapsed && (
                 <>
                   {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
-                  <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
+                  <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-foreground/40 text-sidebar-foreground px-1.5 py-0">
                     Premium
                   </Badge>
                 </>
@@ -803,7 +803,7 @@ export default function AppLayout() {
               to="/biblioteca"
               className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname === '/biblioteca'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
@@ -818,7 +818,7 @@ export default function AppLayout() {
               to="/calendario"
               className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname === '/calendario'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
@@ -878,14 +878,14 @@ export default function AppLayout() {
                     className="w-8 h-8 rounded-full object-cover shrink-0"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-bold text-sidebar-primary shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-bold text-sidebar-foreground shrink-0">
                     {profile?.full_name?.charAt(0) || 'U'}
                   </div>
                 )}
                 {!collapsed && (
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
-                    <p className="text-[11px] text-sidebar-foreground/50 capitalize">
+                    <p className="text-sm font-medium truncate text-sidebar-foreground">{profile?.full_name || 'Usuário'}</p>
+                    <p className="text-[11px] text-sidebar-foreground/60 capitalize">
                       {PLAN_DISPLAY_NAMES[userPlan]?.[lang] || userPlan}
                     </p>
                   </div>

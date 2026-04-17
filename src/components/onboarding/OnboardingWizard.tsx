@@ -181,7 +181,7 @@ export default function OnboardingWizard() {
   // Provisioning loading screen
   if (provisioning) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
+      <div className="theme-app min-h-screen flex items-center justify-center p-4 bg-background">
         <div className="text-center space-y-6 max-w-md">
           <div className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
             <Sparkles className="w-10 h-10 text-primary" />
@@ -243,8 +243,26 @@ export default function OnboardingWizard() {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
-      <div className="max-w-xl mx-auto px-4 py-8">
+    <div className="theme-app min-h-screen relative bg-background">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-60"
+        style={{
+          background:
+            'radial-gradient(circle at 20% 10%, hsl(263 70% 50% / 0.08), transparent 50%), radial-gradient(circle at 80% 90%, hsl(43 80% 46% / 0.08), transparent 50%)',
+        }}
+      />
+      <div className="relative z-10 max-w-xl mx-auto px-4 py-8">
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+              <Sparkles className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="font-display text-2xl font-bold text-foreground">Living Word</span>
+          </div>
+        </div>
+
         {/* Skip */}
         <div className="text-center mb-4">
           <button onClick={() => navigate('/dashboard')} className="text-xs text-muted-foreground hover:text-primary transition-colors">
@@ -255,7 +273,7 @@ export default function OnboardingWizard() {
         {/* Progress */}
         <Progress value={progress} className="h-1.5 mb-8" />
 
-        <Card className="p-6 space-y-6">
+        <Card className="p-6 space-y-6 bg-card border-border shadow-xl shadow-primary/5">
           {/* Step: Welcome */}
           {currentStep === 'welcome' && (
             <div className="text-center space-y-4">

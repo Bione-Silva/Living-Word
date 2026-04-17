@@ -8,24 +8,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
-import { Eye, EyeOff } from 'lucide-react';
-import loginBg from '@/assets/login-bg.jpg';
-
-const C = {
-  bg: 'hsl(37, 33%, 96%)',
-  overlay: 'hsl(37, 33%, 96%)',
-  border: 'hsl(30, 15%, 84%)',
-  inputBg: 'hsl(37, 30%, 98%)',
-  inputBgHover: 'hsl(37, 26%, 95%)',
-  primary: 'hsl(25, 29%, 33%)',
-  primaryHover: 'hsl(25, 29%, 28%)',
-  primaryRing: 'hsl(25, 38%, 59% / 0.2)',
-  text: 'hsl(25, 30%, 12%)',
-  textSoft: 'hsl(25, 22%, 28%)',
-  textMuted: 'hsl(25, 15%, 45%)',
-  textFaint: 'hsl(25, 12%, 58%)',
-  link: 'hsl(25, 29%, 33%)',
-};
+import { Eye, EyeOff, Wand2 } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -81,27 +64,27 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4" style={{ backgroundColor: C.bg }}>
-      {/* Background emblem (kept) */}
-      <img
-        src={loginBg}
-        alt=""
+    <div className="theme-app min-h-screen relative flex items-center justify-center p-4 bg-background">
+      {/* Decorative gradient backdrop */}
+      <div
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover opacity-[0.35] pointer-events-none"
-        width={1920}
-        height={1080}
+        className="absolute inset-0 pointer-events-none opacity-60"
+        style={{
+          background:
+            'radial-gradient(circle at 20% 10%, hsl(263 70% 50% / 0.08), transparent 50%), radial-gradient(circle at 80% 90%, hsl(43 80% 46% / 0.08), transparent 50%)',
+        }}
       />
-
-      {/* Subtle overlay to soften */}
-      <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: `${C.overlay}80` }} />
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link to="/" className="font-display text-4xl font-bold" style={{ color: C.primary }}>
-            Living Word
+          <Link to="/" className="inline-flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+              <Wand2 className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="font-display text-3xl font-bold text-foreground">Living Word</span>
           </Link>
-          <p className="text-sm mt-2" style={{ color: C.textMuted }}>
+          <p className="text-sm mt-3 text-muted-foreground">
             {forgotMode
               ? (t('auth.forgot') || 'Recuperar senha')
               : 'Sua plataforma bíblica inteligente'}
@@ -109,33 +92,27 @@ export default function Login() {
         </div>
 
         {/* Card */}
-        <div
-          className="rounded-2xl border bg-white/80 backdrop-blur-sm p-8 sm:p-10"
-          style={{
-            borderColor: `${C.border}99`,
-            boxShadow: '0 8px 40px hsl(25 29% 33% / 0.10)',
-          }}
-        >
-          <h2 className="font-display text-2xl font-bold text-center mb-7" style={{ color: C.text }}>
+        <div className="rounded-2xl border border-border bg-card text-card-foreground shadow-xl shadow-primary/5 p-8 sm:p-10">
+          <h2 className="font-display text-2xl font-bold text-center mb-7 text-foreground">
             {forgotMode ? (t('auth.forgot') || 'Recuperar senha') : (t('auth.login') || 'Entrar')}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-medium" style={{ color: C.textSoft }}>{t('auth.email') || 'Email'}</Label>
+              <Label htmlFor="email" className="font-medium">{t('auth.email') || 'Email'}</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{ borderColor: C.border, backgroundColor: C.inputBg, color: C.text }}
                 placeholder="seu@email.com"
+                className="bg-background border-border"
               />
             </div>
             {!forgotMode && (
               <div className="space-y-2">
-                <Label htmlFor="password" className="font-medium" style={{ color: C.textSoft }}>{t('auth.password') || 'Senha'}</Label>
+                <Label htmlFor="password" className="font-medium">{t('auth.password') || 'Senha'}</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -143,9 +120,8 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    style={{ borderColor: C.border, backgroundColor: C.inputBg, color: C.text }}
                     placeholder="••••••••"
-                    className="pr-10"
+                    className="pr-10 bg-background border-border"
                   />
                   <button
                     type="button"
@@ -153,8 +129,7 @@ export default function Login() {
                     aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                     aria-pressed={showPassword}
                     tabIndex={-1}
-                    className="absolute inset-y-0 right-0 flex items-center justify-center px-3 rounded-r-md transition-colors hover:opacity-70"
-                    style={{ color: C.textMuted }}
+                    className="absolute inset-y-0 right-0 flex items-center justify-center px-3 rounded-r-md text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -164,10 +139,7 @@ export default function Login() {
 
             <Button
               type="submit"
-              className="w-full py-6 text-base font-bold rounded-xl text-white shadow-md transition-colors"
-              style={{ backgroundColor: C.primary }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = C.primaryHover)}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = C.primary)}
+              className="w-full py-6 text-base font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-md shadow-primary/20"
               disabled={loading}
             >
               {loading ? '...' : forgotMode ? 'Enviar link' : (t('auth.login') || 'Entrar')}
@@ -177,20 +149,17 @@ export default function Login() {
               <>
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t" style={{ borderColor: C.border }} />
+                    <div className="w-full border-t border-border" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white/80 px-3" style={{ color: C.textFaint }}>ou</span>
+                    <span className="bg-card px-3 text-muted-foreground">ou</span>
                   </div>
                 </div>
 
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full py-5 text-sm font-medium rounded-xl transition-colors"
-                  style={{ borderColor: C.border, backgroundColor: C.inputBg, color: C.text }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = C.inputBgHover)}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = C.inputBg)}
+                  className="w-full py-5 text-sm font-medium rounded-xl bg-background border-border hover:bg-muted"
                   onClick={handleGoogleLogin}
                   disabled={googleLoading}
                 >
@@ -209,14 +178,16 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setForgotMode(!forgotMode)}
-                className="text-sm font-medium hover:underline"
-                style={{ color: C.link }}
+                className="text-sm font-medium text-primary hover:underline"
               >
                 {forgotMode ? (t('auth.login') || 'Voltar ao login') : (t('auth.forgot') || 'Esqueci minha senha')}
               </button>
               {!forgotMode && (
-                <p className="text-sm" style={{ color: C.textMuted }}>
-                  <Link to={planParam ? `/cadastro?plan=${planParam}` : '/cadastro'} className="font-medium hover:underline" style={{ color: C.link }}>
+                <p className="text-sm text-muted-foreground">
+                  <Link
+                    to={planParam ? `/cadastro?plan=${planParam}` : '/cadastro'}
+                    className="font-medium text-primary hover:underline"
+                  >
                     {t('auth.create') || 'Criar conta'}
                   </Link>
                 </p>
@@ -226,7 +197,7 @@ export default function Login() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs mt-8" style={{ color: C.textFaint }}>
+        <p className="text-center text-xs mt-8 text-muted-foreground">
           Feito com ❤️ por Living Word
         </p>
       </div>

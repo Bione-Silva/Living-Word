@@ -37,10 +37,18 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="theme-app min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-border bg-card text-card-foreground shadow-lg">
+    <div className="theme-app min-h-screen relative flex items-center justify-center p-4 bg-background">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-60"
+        style={{
+          background:
+            'radial-gradient(circle at 20% 10%, hsl(263 70% 50% / 0.08), transparent 50%), radial-gradient(circle at 80% 90%, hsl(43 80% 46% / 0.08), transparent 50%)',
+        }}
+      />
+      <Card className="relative z-10 w-full max-w-md border-border bg-card text-card-foreground shadow-xl shadow-primary/5">
         <CardHeader>
-          <CardTitle className="font-display text-2xl text-center">Nova senha</CardTitle>
+          <CardTitle className="font-display text-2xl text-center text-foreground">Nova senha</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -53,9 +61,9 @@ export default function ResetPassword() {
             )}
             <div className="space-y-2">
               <Label>Nova senha</Label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className="bg-background border-border" />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
               {loading ? '...' : 'Atualizar senha'}
             </Button>
           </form>
