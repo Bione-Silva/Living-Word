@@ -28,6 +28,7 @@ import {
   PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal, Menu, X,
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
+import { BrandIcon } from '@/components/BrandIcon';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
@@ -643,8 +644,8 @@ export default function AppLayout() {
         {/* Logo */}
         <div className={`p-4 pb-2 shrink-0 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-sidebar-foreground/15 flex items-center justify-center shrink-0">
-              <Wand2 className="h-4 w-4 text-sidebar-foreground" />
+            <div className="w-8 h-8 rounded-lg bg-sidebar-foreground/15 flex items-center justify-center shrink-0 overflow-hidden">
+              <BrandIcon className="h-6 w-6" />
             </div>
             {!collapsed && <span className="font-display text-xl font-bold text-sidebar-foreground">Living Word</span>}
           </Link>

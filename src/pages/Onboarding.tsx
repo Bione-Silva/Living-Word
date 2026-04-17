@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Check, ChevronRight, Sparkles, Wand2 } from 'lucide-react';
+import { Check, ChevronRight, Sparkles } from 'lucide-react';
+import { BrandIcon } from '@/components/BrandIcon';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -191,8 +192,8 @@ export default function Onboarding() {
       <div className="relative z-10 w-full max-w-lg">
         <div className="text-center mb-4">
           <div className="inline-flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-              <Wand2 className="h-4 w-4 text-primary-foreground" />
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30 overflow-hidden">
+              <BrandIcon className="h-7 w-7" />
             </div>
             <span className="font-display text-2xl font-bold text-foreground">Living Word</span>
           </div>

@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Sparkles, Wand2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { BrandIcon } from '@/components/BrandIcon';
 import type { Language } from '@/lib/i18n';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -99,7 +100,7 @@ export default function Cadastro() {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-              <Wand2 className="h-5 w-5 text-primary-foreground" />
+              <BrandIcon className="h-7 w-7" />
             </div>
             <span className="font-display text-3xl font-bold text-foreground">Living Word</span>
           </Link>
