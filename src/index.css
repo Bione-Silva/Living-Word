@@ -62,41 +62,41 @@
     --sidebar-ring: 258 90% 66%;
   }
 
-  /* ── Authenticated app + public blog (Light Lavender) ── */
+  /* ── Authenticated app + public blog (Warm Parchment) ── */
   .theme-app,
   .theme-blog {
-    --background: 261 64% 96%;         /* #F8F6FD-ish Divine White wash */
-    --foreground: 260 43% 12%;
+    --background: 35 38% 95%;          /* #F5F0E8 Parchment */
+    --foreground: 25 25% 15%;          /* deep café text */
 
     --card: 0 0% 100%;                 /* pure white reading surface */
-    --card-foreground: 260 43% 12%;
+    --card-foreground: 25 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 260 43% 12%;
+    --popover-foreground: 25 25% 15%;
 
-    --primary: 263 70% 50%;            /* Word Primary */
+    --primary: 263 70% 50%;            /* Word Primary (CTAs) */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 261 64% 92%;          /* #E5E0F5 Soft Lavender */
-    --secondary-foreground: 260 43% 15%;
+    --secondary: 35 30% 90%;           /* warm sand */
+    --secondary-foreground: 25 25% 18%;
 
-    --muted: 261 50% 94%;
-    --muted-foreground: 260 20% 38%;
+    --muted: 35 28% 92%;               /* lighter parchment */
+    --muted-foreground: 25 15% 38%;
 
-    --accent: 261 64% 92%;             /* Soft Lavender — for hover bg, keeps dark icons readable */
-    --accent-foreground: 260 43% 15%;
+    --accent: 35 30% 88%;              /* warm hover bg */
+    --accent-foreground: 25 25% 18%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 261 40% 86%;
-    --input: 261 40% 86%;
+    --border: 30 20% 84%;              /* soft warm border */
+    --input: 30 20% 84%;
     --ring: 263 70% 50%;
 
-    --blog-heading: 260 43% 12%;
-    --blog-body: 260 25% 22%;
-    --blog-meta: 260 18% 40%;
-    --blog-quote: 263 40% 28%;
+    --blog-heading: 25 25% 12%;
+    --blog-body: 25 18% 22%;
+    --blog-meta: 25 12% 40%;
+    --blog-quote: 30 35% 28%;
 
     /* Sidebar: dark purple (Scripture Dark) for premium contrast */
     --sidebar-background: 257 56% 16%; /* #1E1240 */
