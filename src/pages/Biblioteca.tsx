@@ -190,7 +190,7 @@ export default function Biblioteca() {
           variant={favFilter ? 'default' : 'outline'}
           size="icon"
           onClick={() => setFavFilter(!favFilter)}
-          className={`shrink-0 border-lw-amber/40 shadow-sm ${favFilter ? '' : 'text-lw-cafe'}`}
+          className={`shrink-0 border-border shadow-sm ${favFilter ? '' : 'text-muted-foreground'}`}
         >
           <Star className={`h-4 w-4 ${favFilter ? 'fill-current' : ''}`} />
         </Button>
