@@ -196,11 +196,11 @@
   }
 
   .glow-amber {
-    box-shadow: 0 0 60px -12px hsl(38 52% 58% / 0.35);
+    box-shadow: 0 0 60px -12px hsl(43 80% 46% / 0.35);
   }
 
   .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(38,52%,58%)] to-[hsl(32,45%,68%)];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(43,80%,46%)] to-[hsl(43,70%,62%)];
   }
 
   .blog-prose {
