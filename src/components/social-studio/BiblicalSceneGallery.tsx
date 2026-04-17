@@ -279,7 +279,7 @@ export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm }: Pro
         )}
 
         {quota && quota.limit > 0 && quota.remaining === 0 && !isStarter && (
-          <div className="flex items-center gap-2 text-[11px] text-amber-600 dark:text-amber-400 px-1">
+          <div className="flex items-center gap-2 text-[11px] text-destructive px-1">
             <Lock className="h-3 w-3" />
             <span>{l.noQuota}</span>
           </div>
