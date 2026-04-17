@@ -471,6 +471,7 @@ export default function SocialStudio() {
                 aspectRatio={aspectRatio}
                 theme={theme}
                 lang={lang}
+                template={template}
                 presentationMode={presentationMode}
               />
             </div>
