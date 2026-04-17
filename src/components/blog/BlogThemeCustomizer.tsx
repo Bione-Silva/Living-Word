@@ -80,7 +80,7 @@ export function BlogThemeCustomizer() {
   const l = (lang || 'PT') as L;
   const lb = (key: string) => LABELS[key]?.[l] || LABELS[key]?.['PT'] || key;
 
-  const [selectedColor, setSelectedColor] = useState(profile?.theme_color || 'amber');
+  const [selectedColor, setSelectedColor] = useState(profile?.theme_color || 'purple');
   const [customHex, setCustomHex] = useState('');
   const [selectedFont, setSelectedFont] = useState(profile?.font_family || 'cormorant');
   const [saving, setSaving] = useState(false);
@@ -94,7 +94,7 @@ export function BlogThemeCustomizer() {
 
   useEffect(() => {
     if (profile) {
-      setSelectedColor(profile.theme_color || 'amber');
+      setSelectedColor(profile.theme_color || 'purple');
       setSelectedFont(profile.font_family || 'cormorant');
     }
   }, [profile]);
@@ -120,7 +120,7 @@ export function BlogThemeCustomizer() {
       if (customHex) {
         updateData.theme_color = customHex;
       } else {
-        updateData.theme_color = selectedColor || 'amber';
+        updateData.theme_color = selectedColor || 'purple';
       }
       const { error } = await supabase
         .from('profiles')

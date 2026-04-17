@@ -235,7 +235,7 @@ export default function AppLayout() {
     return (
       <div className="theme-app h-[100dvh] bg-background flex flex-col">
         <ThemeInjector />
-        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border px-4 pt-[max(env(safe-area-inset-top),0.875rem)] pb-3 min-h-[calc(3.5rem+env(safe-area-inset-top))] flex items-center justify-between shadow-sm safe-area-top">
+        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border px-4 pt-[calc(env(safe-area-inset-top,0px)+1.25rem)] pb-3 min-h-[calc(4rem+env(safe-area-inset-top,0px))] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2 min-w-0 flex-1 pr-3">
             <button
               onClick={() => setMobileMenuOpen(true)}

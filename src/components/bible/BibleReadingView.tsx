@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -221,6 +221,27 @@ export function BibleReadingView({
     });
   };
 
+  // Long-press handlers — require holding for 500ms before selection toggles.
+  // Prevents accidental opens on every tap while reading.
+  const pressTimerRef = useRef<number | null>(null);
+  const pressTriggeredRef = useRef(false);
+
+  const startPress = (verseNum: number) => {
+    pressTriggeredRef.current = false;
+    if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
+    pressTimerRef.current = window.setTimeout(() => {
+      pressTriggeredRef.current = true;
+      toggleVerseSelection(verseNum);
+    }, 500);
+  };
+
+  const cancelPress = () => {
+    if (pressTimerRef.current) {
+      window.clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+  };
+
   const chapterNumbers = Array.from({ length: totalChapters }, (_, i) => i + 1);
 
   return (
@@ -360,8 +381,12 @@ export function BibleReadingView({
                 >
                   {/* Verse number badge */}
                   <button
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}
-                    className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors ${
+                    onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); startPress(v.verse); }}
+                    onPointerUp={cancelPress}
+                    onPointerLeave={cancelPress}
+                    onPointerCancel={cancelPress}
+                    onContextMenu={(e) => e.preventDefault()}
+                    className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors select-none ${
                       isSelected
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-muted/60 text-muted-foreground hover:bg-primary/20 hover:text-primary'
@@ -373,8 +398,12 @@ export function BibleReadingView({
                   {/* Verse text + inline toolbar */}
                   <div className="flex-1 min-w-0">
                     <span
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleVerseSelection(v.verse); }}
-                      className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90"
+                      onPointerDown={(e) => { e.stopPropagation(); startPress(v.verse); }}
+                      onPointerUp={cancelPress}
+                      onPointerLeave={cancelPress}
+                      onPointerCancel={cancelPress}
+                      onContextMenu={(e) => e.preventDefault()}
+                      className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 select-none"
                     >
                       {v.text.trim()}
                     </span>
