@@ -10,6 +10,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { Eye, EyeOff } from 'lucide-react';
 import { BrandIcon } from '@/components/BrandIcon';
+import loginBg from '@/assets/login-bg.jpg';
+
+const PURPLE_THEME = {
+  '--primary': '263 70% 50%',
+  '--primary-foreground': '0 0% 100%',
+  '--ring': '263 70% 50%',
+} as React.CSSProperties;
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -65,14 +72,24 @@ export default function Login() {
   };
 
   return (
-    <div className="theme-app min-h-screen relative flex items-center justify-center p-4 bg-background">
-      {/* Decorative gradient backdrop */}
+    <div
+      className="theme-app min-h-screen relative flex items-center justify-center p-4"
+      style={{
+        ...PURPLE_THEME,
+        backgroundColor: '#F1ECFA',
+        backgroundImage: `url(${loginBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Soft purple wash to keep card readable */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none opacity-60"
+        className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 20% 10%, hsl(263 70% 50% / 0.08), transparent 50%), radial-gradient(circle at 80% 90%, hsl(43 80% 46% / 0.08), transparent 50%)',
+            'radial-gradient(circle at 50% 40%, hsl(263 70% 96% / 0.65), hsl(263 60% 90% / 0.35) 60%, transparent 100%)',
         }}
       />
 
@@ -83,9 +100,9 @@ export default function Login() {
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
               <BrandIcon className="h-7 w-7" />
             </div>
-            <span className="font-display text-3xl font-bold text-foreground">Living Word</span>
+            <span className="font-display text-3xl font-bold" style={{ color: 'hsl(263 70% 35%)' }}>Living Word</span>
           </Link>
-          <p className="text-sm mt-3 text-muted-foreground">
+          <p className="text-sm mt-3" style={{ color: 'hsl(263 30% 40%)' }}>
             {forgotMode
               ? (t('auth.forgot') || 'Recuperar senha')
               : 'Sua plataforma bíblica inteligente'}

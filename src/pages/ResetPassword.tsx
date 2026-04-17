@@ -7,6 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
+import loginBg from '@/assets/login-bg.jpg';
+
+const PURPLE_THEME = {
+  '--primary': '263 70% 50%',
+  '--primary-foreground': '0 0% 100%',
+  '--ring': '263 70% 50%',
+} as React.CSSProperties;
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -37,18 +44,28 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="theme-app min-h-screen relative flex items-center justify-center p-4 bg-background">
+    <div
+      className="theme-app min-h-screen relative flex items-center justify-center p-4"
+      style={{
+        ...PURPLE_THEME,
+        backgroundColor: '#F1ECFA',
+        backgroundImage: `url(${loginBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none opacity-60"
+        className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 20% 10%, hsl(263 70% 50% / 0.08), transparent 50%), radial-gradient(circle at 80% 90%, hsl(43 80% 46% / 0.08), transparent 50%)',
+            'radial-gradient(circle at 50% 40%, hsl(263 70% 96% / 0.65), hsl(263 60% 90% / 0.35) 60%, transparent 100%)',
         }}
       />
-      <Card className="relative z-10 w-full max-w-md border-border bg-card text-card-foreground shadow-xl shadow-primary/5">
+      <Card className="relative z-10 w-full max-w-md border-border bg-card text-card-foreground shadow-xl shadow-primary/10">
         <CardHeader>
-          <CardTitle className="font-display text-2xl text-center text-foreground">Nova senha</CardTitle>
+          <CardTitle className="font-display text-2xl text-center" style={{ color: 'hsl(263 70% 35%)' }}>Nova senha</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
