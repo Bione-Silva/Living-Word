@@ -323,7 +323,7 @@ function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWate
 /* ────────────────────────────────────────────
    TEMPLATE 4 — GRADIENT POSTER (centered verse, geometric accents)
    ──────────────────────────────────────────── */
-function GradientTemplate({ slide, themeColor, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl' | 'textColor'>) {
+function GradientTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'textColor'>) {
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
   const gradient = themeColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)';
   const verseSize = autoVerseSize(slide.text);
@@ -331,8 +331,15 @@ function GradientTemplate({ slide, themeColor, fontFamily, showWatermark }: Omit
   return (
     <div
       className="relative h-full w-full overflow-hidden flex items-center justify-center"
-      style={{ backgroundImage: gradient, containerType: 'size' }}
+      style={{ backgroundImage: bgImageUrl ? undefined : gradient, containerType: 'size' }}
     >
+      {/* Optional background image with gradient overlay for color cohesion */}
+      {bgImageUrl && (
+        <>
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+          <div className="absolute inset-0" style={{ backgroundImage: gradient, opacity: 0.78, mixBlendMode: 'multiply' }} />
+        </>
+      )}
       {/* Geometric decorative elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute rounded-full" style={{ top: '-8%', left: '-6%', width: '35%', height: '35%', border: '1px solid rgba(255,255,255,0.12)' }} />
