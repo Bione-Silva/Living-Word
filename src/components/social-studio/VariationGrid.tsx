@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import JSZip from 'jszip';
 import PptxGenJS from 'pptxgenjs';
 import { SlideCanvas, type SlideData } from './SlideCanvas';
@@ -84,7 +84,6 @@ interface VariationItem {
   id: string;
   template: CanvasTemplate;
   slideIdx: number;
-  ref: React.RefObject<HTMLDivElement>;
 }
 
 function dataUrlToBlob(dataUrl: string) {
@@ -104,18 +103,22 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
     const [pptxBusy, setPptxBusy] = useState(false);
 
     // Build a flat matrix of variations: each slide × each template
-    const items: VariationItem[] = [];
-    slides.forEach((_, slideIdx) => {
-      ALL_TEMPLATES.forEach((tpl) => {
-        items.push({
-          id: `${slideIdx}-${tpl}`,
-          template: tpl,
-          slideIdx,
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          ref: useRef<HTMLDivElement>(null),
+    const items: VariationItem[] = useMemo(() => {
+      const list: VariationItem[] = [];
+      slides.forEach((_, slideIdx) => {
+        ALL_TEMPLATES.forEach((tpl) => {
+          list.push({ id: `${slideIdx}-${tpl}`, template: tpl, slideIdx });
         });
       });
-    });
+      return list;
+    }, [slides]);
+
+    // Map of refs keyed by item id (stable across renders)
+    const refsMap = useRef<Map<string, HTMLDivElement | null>>(new Map());
+    const setRef = (id: string) => (el: HTMLDivElement | null) => {
+      refsMap.current.set(id, el);
+    };
+    const getNode = (id: string) => refsMap.current.get(id) || null;
 
     useImperativeHandle(ref, () => ({ refresh: () => {} }));
 
