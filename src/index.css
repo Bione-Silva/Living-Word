@@ -6,148 +6,148 @@
 
 @layer base {
   :root {
-    /* ── Landing (Dark Premium + Gold) ── */
-    --background: 222 47% 5%;
-    --foreground: 37 33% 94%;
+    /* ── Landing (Night Canvas + Word Primary / Sacred Gold) — Clickone Palette ── */
+    --background: 261 41% 7%;          /* Night Canvas */
+    --foreground: 240 50% 99%;         /* Divine White */
 
-    --card: 220 35% 12%;
-    --card-foreground: 37 33% 94%;
+    --card: 256 56% 16%;               /* Scripture Dark */
+    --card-foreground: 240 50% 99%;
 
-    --popover: 220 35% 12%;
-    --popover-foreground: 37 33% 94%;
+    --popover: 256 56% 16%;
+    --popover-foreground: 240 50% 99%;
 
-    --primary: 38 52% 58%;
-    --primary-foreground: 25 30% 12%;
+    --primary: 263 70% 50%;            /* Word Primary */
+    --primary-foreground: 240 50% 99%;
 
-    --secondary: 220 28% 16%;
-    --secondary-foreground: 37 33% 94%;
+    --secondary: 257 61% 32%;          /* Covenant */
+    --secondary-foreground: 240 50% 99%;
 
-    --muted: 220 22% 18%;
-    --muted-foreground: 37 12% 68%;
+    --muted: 215 28% 17%;              /* Stone Gray */
+    --muted-foreground: 281 62% 90%;   /* Soft Lavender */
 
-    --accent: 38 52% 58%;
-    --accent-foreground: 25 30% 12%;
+    --accent: 43 80% 46%;              /* Sacred Gold */
+    --accent-foreground: 261 41% 7%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 24% 22%;
-    --input: 220 24% 22%;
-    --ring: 38 52% 58%;
+    --border: 257 61% 32%;             /* Covenant */
+    --input: 257 61% 32%;
+    --ring: 258 90% 66%;               /* Spirit Light */
 
     --radius: 0.75rem;
 
-    /* LP-specific tokens (dark premium + gold palette) */
-    --lw-dark: 222 47% 5%;
-    --lw-primary: 38 52% 58%;
-    --lw-amber: 38 52% 58%;
-    --lw-amber-light: 37 24% 88%;
-    --lw-bg: 222 38% 8%;
-    --lw-linen: 37 24% 88%;
-    --lw-text: 37 33% 94%;
-    --lw-muted: 37 12% 68%;
+    /* LP-specific tokens (Clickone palette) */
+    --lw-dark: 261 41% 7%;
+    --lw-primary: 263 70% 50%;
+    --lw-amber: 43 80% 46%;
+    --lw-amber-light: 281 62% 90%;
+    --lw-bg: 261 41% 7%;
+    --lw-linen: 47 77% 83%;
+    --lw-text: 240 50% 99%;
+    --lw-muted: 281 62% 90%;
 
     /* Sacred Gold accent (for premium badges) */
-    --sacred-gold: 38 52% 58%;
-    --parchment: 37 33% 94%;
+    --sacred-gold: 43 80% 46%;
+    --parchment: 47 77% 83%;
 
-    /* Sidebar: dark café aligned to app palette */
-    --sidebar-background: 25 29% 33%;
-    --sidebar-foreground: 37 33% 94%;
-    --sidebar-primary: 25 38% 59%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 25 22% 40%;
-    --sidebar-accent-foreground: 37 33% 94%;
-    --sidebar-border: 25 22% 40%;
-    --sidebar-ring: 25 38% 59%;
+    /* Sidebar: Scripture Dark with Word Primary highlights */
+    --sidebar-background: 256 56% 16%;  /* Scripture Dark */
+    --sidebar-foreground: 240 50% 99%;
+    --sidebar-primary: 263 70% 50%;     /* Word Primary */
+    --sidebar-primary-foreground: 240 50% 99%;
+    --sidebar-accent: 257 61% 32%;      /* Covenant */
+    --sidebar-accent-foreground: 240 50% 99%;
+    --sidebar-border: 257 61% 32%;
+    --sidebar-ring: 258 90% 66%;        /* Spirit Light */
   }
 
-  /* ── Authenticated app + public blog (Warm Parchment) ── */
+  /* ── Authenticated app + public blog (Parchment light, Word Primary CTA) ── */
   .theme-app,
   .theme-blog {
-    --background: 37 33% 94%;          /* #F5F0E8 Parchment */
-    --foreground: 25 30% 12%;          /* #3D2B1F deep café */
+    --background: 47 77% 83%;          /* Parchment */
+    --foreground: 261 41% 7%;          /* Night Canvas */
 
     --card: 0 0% 100%;
-    --card-foreground: 25 30% 12%;
+    --card-foreground: 261 41% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 25 30% 12%;
+    --popover-foreground: 261 41% 7%;
 
-    --primary: 25 29% 33%;             /* #6B4F3A Café Ministerial */
-    --primary-foreground: 0 0% 100%;
+    --primary: 263 70% 50%;            /* Word Primary */
+    --primary-foreground: 240 50% 99%;
 
-    --secondary: 37 26% 90%;           /* warm sand */
-    --secondary-foreground: 25 26% 20%;
+    --secondary: 47 60% 90%;           /* light parchment */
+    --secondary-foreground: 261 41% 7%;
 
-    --muted: 37 24% 91%;               /* soft parchment */
-    --muted-foreground: 25 15% 38%;
+    --muted: 47 50% 92%;
+    --muted-foreground: 257 20% 30%;
 
-    --accent: 25 38% 59%;              /* #C4956A Amber */
-    --accent-foreground: 0 0% 100%;
+    --accent: 43 80% 46%;              /* Sacred Gold */
+    --accent-foreground: 261 41% 7%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 18% 84%;
-    --input: 30 18% 84%;
-    --ring: 25 38% 59%;
+    --border: 47 30% 78%;
+    --input: 47 30% 78%;
+    --ring: 263 70% 50%;
 
-    --blog-heading: 25 30% 12%;
-    --blog-body: 25 18% 22%;
-    --blog-meta: 25 12% 40%;
-    --blog-quote: 25 29% 33%;
+    --blog-heading: 261 41% 7%;
+    --blog-body: 257 25% 18%;
+    --blog-meta: 257 15% 35%;
+    --blog-quote: 263 70% 50%;
 
-    /* Sidebar: dark café to match official app palette */
-    --sidebar-background: 25 29% 33%;  /* #6B4F3A */
-    --sidebar-foreground: 37 33% 94%;
-    --sidebar-primary: 25 38% 59%;     /* amber highlight */
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 25 22% 40%;
-    --sidebar-accent-foreground: 37 33% 94%;
-    --sidebar-border: 25 22% 40%;
-    --sidebar-ring: 25 38% 59%;
+    /* Sidebar: Scripture Dark to match official Clickone palette */
+    --sidebar-background: 256 56% 16%;  /* Scripture Dark */
+    --sidebar-foreground: 240 50% 99%;
+    --sidebar-primary: 263 70% 50%;     /* Word Primary */
+    --sidebar-primary-foreground: 240 50% 99%;
+    --sidebar-accent: 257 61% 32%;      /* Covenant */
+    --sidebar-accent-foreground: 240 50% 99%;
+    --sidebar-border: 257 61% 32%;
+    --sidebar-ring: 258 90% 66%;        /* Spirit Light */
   }
 
-  /* ── Dark mode for authenticated app ── */
+  /* ── Dark mode for authenticated app (Night Canvas) ── */
   .theme-app.dark,
   .dark .theme-app {
-    --background: 25 30% 12%;
-    --foreground: 37 33% 94%;
+    --background: 261 41% 7%;          /* Night Canvas */
+    --foreground: 240 50% 99%;         /* Divine White */
 
-    --card: 24 25% 16%;
-    --card-foreground: 37 33% 94%;
+    --card: 256 56% 16%;               /* Scripture Dark */
+    --card-foreground: 240 50% 99%;
 
-    --popover: 24 25% 16%;
-    --popover-foreground: 37 33% 94%;
+    --popover: 256 56% 16%;
+    --popover-foreground: 240 50% 99%;
 
-    --primary: 25 38% 59%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 263 70% 50%;            /* Word Primary */
+    --primary-foreground: 240 50% 99%;
 
-    --secondary: 25 20% 22%;
-    --secondary-foreground: 37 33% 94%;
+    --secondary: 257 61% 32%;          /* Covenant */
+    --secondary-foreground: 240 50% 99%;
 
-    --muted: 25 16% 20%;
-    --muted-foreground: 37 14% 70%;
+    --muted: 215 28% 17%;              /* Stone Gray */
+    --muted-foreground: 281 62% 90%;   /* Soft Lavender */
 
-    --accent: 25 29% 33%;
-    --accent-foreground: 37 33% 94%;
+    --accent: 43 80% 46%;              /* Sacred Gold */
+    --accent-foreground: 261 41% 7%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 25 18% 28%;
-    --input: 25 18% 28%;
-    --ring: 25 38% 59%;
+    --border: 257 61% 32%;             /* Covenant */
+    --input: 257 61% 32%;
+    --ring: 258 90% 66%;               /* Spirit Light */
 
-    --sidebar-background: 24 28% 14%;
-    --sidebar-foreground: 37 33% 94%;
-    --sidebar-primary: 25 38% 59%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 25 22% 24%;
-    --sidebar-accent-foreground: 37 33% 94%;
-    --sidebar-border: 25 18% 28%;
-    --sidebar-ring: 25 38% 59%;
+    --sidebar-background: 256 56% 16%;
+    --sidebar-foreground: 240 50% 99%;
+    --sidebar-primary: 263 70% 50%;
+    --sidebar-primary-foreground: 240 50% 99%;
+    --sidebar-accent: 257 61% 32%;
+    --sidebar-accent-foreground: 240 50% 99%;
+    --sidebar-border: 257 61% 32%;
+    --sidebar-ring: 258 90% 66%;
   }
 }
 
@@ -196,11 +196,11 @@
   }
 
   .glow-amber {
-    box-shadow: 0 0 60px -12px hsl(38 52% 58% / 0.35);
+    box-shadow: 0 0 60px -12px hsl(43 80% 46% / 0.35);
   }
 
   .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(38,52%,58%)] to-[hsl(32,45%,68%)];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(43,80%,46%)] to-[hsl(43,70%,62%)];
   }
 
   .blog-prose {
@@ -227,18 +227,18 @@
   /* ── High-contrast prose for all generated content in theme-app ── */
   .theme-app .prose,
   .theme-blog .prose {
-    --tw-prose-body: hsl(25 18% 22%);
-    --tw-prose-headings: hsl(25 30% 12%);
-    --tw-prose-bold: hsl(25 30% 12%);
-    --tw-prose-links: hsl(25 29% 33%);
-    --tw-prose-counters: hsl(25 12% 40%);
-    --tw-prose-bullets: hsl(25 12% 40%);
-    --tw-prose-hr: hsl(30 18% 84%);
-    --tw-prose-quotes: hsl(25 29% 33%);
-    --tw-prose-quote-borders: hsl(25 38% 59%);
-    --tw-prose-code: hsl(25 22% 16%);
-    --tw-prose-th-borders: hsl(30 18% 84%);
-    --tw-prose-td-borders: hsl(261 40% 90%);
+    --tw-prose-body: hsl(257 25% 18%);
+    --tw-prose-headings: hsl(261 41% 7%);
+    --tw-prose-bold: hsl(261 41% 7%);
+    --tw-prose-links: hsl(263 70% 50%);
+    --tw-prose-counters: hsl(257 15% 35%);
+    --tw-prose-bullets: hsl(257 15% 35%);
+    --tw-prose-hr: hsl(47 30% 78%);
+    --tw-prose-quotes: hsl(263 70% 50%);
+    --tw-prose-quote-borders: hsl(43 80% 46%);
+    --tw-prose-code: hsl(257 25% 18%);
+    --tw-prose-th-borders: hsl(47 30% 78%);
+    --tw-prose-td-borders: hsl(281 40% 90%);
   }
 
   /* ── Premium pastoral prose for rich AI-generated markdown ── */

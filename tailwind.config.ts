@@ -65,22 +65,22 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         lw: {
-          cafe: "hsl(257, 56%, 16%)",      /* Scripture Dark */
-          dark: "hsl(260, 43%, 7%)",        /* Night Canvas */
-          amber: "hsl(258, 90%, 66%)",      /* Spirit Light (kept name for compat) */
-          gold: "hsl(44, 87%, 47%)",        /* Sacred Gold */
-          parchment: "hsl(35, 65%, 90%)",   /* Parchment */
-          cream: "hsl(270, 60%, 97%)",      /* Divine White */
+          cafe: "hsl(256, 56%, 16%)",      /* Scripture Dark */
+          dark: "hsl(261, 41%, 7%)",       /* Night Canvas */
+          amber: "hsl(263, 70%, 50%)",     /* Word Primary (kept name for compat) */
+          gold: "hsl(43, 80%, 46%)",       /* Sacred Gold */
+          parchment: "hsl(47, 77%, 83%)",  /* Parchment */
+          cream: "hsl(240, 50%, 99%)",     /* Divine White */
         },
         sacred: {
-          gold: "hsl(44, 87%, 47%)",
-          parchment: "hsl(35, 65%, 90%)",
-          lavender: "hsl(261, 64%, 92%)",   /* Soft Lavender */
-          divine: "hsl(270, 60%, 97%)",     /* Divine White */
-          stone: "hsl(220, 13%, 18%)",      /* Stone Gray */
-          covenant: "hsl(258, 61%, 32%)",
-          spirit: "hsl(258, 90%, 66%)",
-          word: "hsl(263, 70%, 50%)",
+          gold: "hsl(43, 80%, 46%)",       /* Sacred Gold */
+          parchment: "hsl(47, 77%, 83%)",  /* Parchment */
+          lavender: "hsl(281, 62%, 90%)",  /* Soft Lavender */
+          divine: "hsl(240, 50%, 99%)",    /* Divine White */
+          stone: "hsl(215, 28%, 17%)",     /* Stone Gray */
+          covenant: "hsl(257, 61%, 32%)",  /* Covenant */
+          spirit: "hsl(258, 90%, 66%)",    /* Spirit Light */
+          word: "hsl(263, 70%, 50%)",      /* Word Primary */
         },
       },
       borderRadius: {
