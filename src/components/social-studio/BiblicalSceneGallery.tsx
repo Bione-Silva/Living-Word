@@ -96,6 +96,33 @@ export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm }: Pro
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+
+  // Detecta se o usuário é admin (para mostrar botão de popular banco)
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.rpc('is_admin');
+      setIsAdmin(data === true);
+    })();
+  }, []);
+
+  const handleSeed = async () => {
+    if (!confirm('Gerar 10 cenas curadas no banco compartilhado? (~30s, custo ~$0.39)')) return;
+    setSeeding(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('seed-biblical-scenes', { body: {} });
+      if (error) throw error;
+      const ok = (data?.results || []).filter((r: { status: string }) => r.status === 'created').length;
+      toast.success(`${ok} cenas criadas no banco!`);
+      await loadScenes(searchTerm);
+    } catch (e) {
+      console.error(e);
+      toast.error('Falha ao popular banco');
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const loadScenes = useCallback(async (term?: string) => {
     setLoading(true);
