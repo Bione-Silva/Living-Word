@@ -781,7 +781,7 @@ export default function AppLayout() {
               to="/dashboard/mentes"
               className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname.startsWith('/dashboard/mentes')
-                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
@@ -789,7 +789,7 @@ export default function AppLayout() {
               {!collapsed && (
                 <>
                   {lang === 'EN' ? '🧠 Brilliant Minds' : lang === 'ES' ? '🧠 Mentes Brillantes' : '🧠 Mentes Brilhantes'}
-                  <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-primary/40 text-sidebar-primary px-1.5 py-0">
+                  <Badge variant="outline" className="ml-auto text-[9px] border-sidebar-foreground/40 text-sidebar-foreground px-1.5 py-0">
                     Premium
                   </Badge>
                 </>
