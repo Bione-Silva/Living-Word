@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Download, Image as ImageIcon, FileImage, Loader2, Archive, Presentation, Sparkles } from 'lucide-react';
 import { captureNodeAsPng, compressToJpeg } from './export-utils';
 import { toast } from 'sonner';
+import { DownloadSuccessDialog } from '@/components/DownloadSuccessDialog';
 
 type L = 'PT' | 'EN' | 'ES';
 
