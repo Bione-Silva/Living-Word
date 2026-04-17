@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const IMAGE_MODEL = "gemini-2.5-flash";
+const IMAGE_MODEL = "google/gemini-2.5-flash-image";
 
 async function generateImageWithRetry(
   geminiApiKey: string,
@@ -24,7 +24,7 @@ async function generateImageWithRetry(
         await new Promise(r => setTimeout(r, 3000 * attempt));
       }
 
-      const response = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${geminiApiKey}`,
@@ -133,10 +133,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY');
+    const geminiApiKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!geminiApiKey) {
-      return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), {
+      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -212,14 +212,14 @@ The article MUST have between 500 and 800 words. Structure it like a well-organi
 
     // Generate article content
     console.log("[Article] Generating text content...");
-    const aiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${geminiApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-2.5-flash",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -256,7 +256,7 @@ The article MUST have between 500 and 800 words. Structure it like a well-organi
       await supabaseAdmin.from("generation_logs").insert({
         user_id: userId,
         feature: "Blog Creator",
-        model: "gemini-2.5-flash",
+        model: "google/gemini-2.5-flash",
         input_tokens: usage.prompt_tokens || 0,
         output_tokens: usage.completion_tokens || 0,
         total_tokens: usage.total_tokens || 0,
