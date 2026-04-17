@@ -124,6 +124,11 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
+  // Force light theme (Divine White #F8F6FF) across all authenticated screens —
+  // matches the look of MindProfile and keeps Bible/reading/writing surfaces light.
+  useForceLightTheme();
+
+
   // Only ONE group open at a time — stored in localStorage for session persistence
   const [openGroup, setOpenGroup] = useState<string | null>(() => {
     try { return localStorage.getItem('lw-sidebar-open-group') || null; } catch { return null; }
