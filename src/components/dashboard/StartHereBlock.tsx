@@ -9,8 +9,8 @@ const actions = [
     label: { PT: 'Preparar Sermão', EN: 'Prepare Sermon', ES: 'Preparar Sermón' },
     desc: { PT: 'Esboço, roteiro e sermão completo', EN: 'Outline, script and full sermon', ES: 'Bosquejo, guión y sermón completo' },
     action: 'tool:studio',
-    color: 'text-amber-700 dark:text-amber-400',
-    bg: 'bg-amber-50 dark:bg-amber-900/20',
+    color: 'text-purple-700 dark:text-purple-400',
+    bg: 'bg-purple-50 dark:bg-purple-900/20',
   },
   {
     id: 'study',

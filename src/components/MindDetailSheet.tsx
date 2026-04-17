@@ -52,7 +52,7 @@ const modalities: Modality[] = [
   },
   {
     id: 'aconselhamento', icon: Users, emoji: '🗣️',
-    color: 'bg-amber-50 border-amber-200 hover:border-amber-400 hover:bg-amber-100',
+    color: 'bg-purple-50 border-purple-200 hover:border-purple-400 hover:bg-purple-100',
     label: { PT: 'Aconselhamento Pastoral', EN: 'Pastoral Counseling', ES: 'Consejería Pastoral' },
     description: { PT: 'Buscando sabedoria e cura para crises com a perspectiva teológica deste mentor', EN: 'Seeking wisdom and healing for crises from this mentor\'s theological perspective', ES: 'Buscando sabiduría y sanación para crisis con la perspectiva teológica' },
   },

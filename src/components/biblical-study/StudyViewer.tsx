@@ -207,7 +207,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
           <AccordionContent className="space-y-3 pb-4">
             {[
               { label: t('believe'), value: study.aplicacao.crer, color: 'bg-blue-500' },
-              { label: t('change'), value: study.aplicacao.mudar, color: 'bg-amber-500' },
+              { label: t('change'), value: study.aplicacao.mudar, color: 'bg-purple-500' },
               { label: t('act'), value: study.aplicacao.agir, color: 'bg-green-500' },
             ].filter(item => item.value).map((item) => (
               <div key={item.label} className="flex items-start gap-3">
@@ -301,7 +301,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
                   <ul className="space-y-1 ml-1">
                     {study.notas_lider.pontos_atencao.map((p, i) => (
                       <li key={i} className="text-sm flex items-start gap-2">
-                        <span className="text-amber-500 mt-0.5">•</span>
+                        <span className="text-primary mt-0.5">•</span>
                         <span className="text-foreground/90">{p}</span>
                       </li>
                     ))}
