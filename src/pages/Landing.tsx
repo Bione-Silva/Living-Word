@@ -467,8 +467,15 @@ export default function Landing() {
     <div className="min-h-screen overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif", color: '#0F0A18' }}>
 
       {/* ===== NAV ===== */}
-      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ background: 'rgba(15,10,24,0.92)', borderBottom: '1px solid rgba(212,168,83,0.15)' }}>
-        <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md"
+        style={{
+          background: 'rgba(15,10,24,0.92)',
+          borderBottom: '1px solid rgba(212,168,83,0.15)',
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+        }}
+      >
+        <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-3">
           <span className="font-display text-lg tracking-tight" style={{ color: '#F5F0E8' }}>Living <span style={{ color: '#D4A853' }}>Word</span></span>
           <div className="hidden md:flex items-center gap-7">
             <button onClick={() => scrollTo('how')} className="text-[13px] font-medium transition-colors hover:text-[#D4A853]" style={{ color: 'rgba(245,240,232,0.65)' }}>{copy.nav.how[lang]}</button>
