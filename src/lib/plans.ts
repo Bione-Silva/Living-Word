@@ -92,6 +92,7 @@ const FEATURE_MIN_PLAN: Record<PlanFeature, PlanSlug> = {
   pesquisa_basica: 'free',
   criacao_core: 'free',
   criacao_extras: 'starter',
+  social_studio: 'starter',
   youtube_to_blog: 'pro',
   mentes_brilhantes: 'pro',
   ilustracoes: 'pro',
