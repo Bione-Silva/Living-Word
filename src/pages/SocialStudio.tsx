@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
 import { type SlideData } from '@/components/social-studio/SlideCanvas';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
-import { VersePalettePicker, VERSE_PALETTES, type VersePalette } from '@/components/social-studio/VersePalettePicker';
+import { VersePalettePicker, type VersePalette } from '@/components/social-studio/VersePalettePicker';
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
 import { VariationGrid } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
