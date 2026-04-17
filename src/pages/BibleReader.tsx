@@ -244,7 +244,7 @@ export default function BibleReader() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-5 bg-white rounded-2xl p-4 md:p-6 shadow-sm">
+    <div className="bible-light bible-light-surface max-w-4xl mx-auto space-y-5 rounded-2xl border border-border bg-background p-4 md:p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">

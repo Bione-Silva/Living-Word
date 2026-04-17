@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "./styles/bible-theme.css";
 
 const AUTH_STORAGE_MATCHERS = [/^sb-/, /^supabase\.auth\./, /-auth-token/];
 

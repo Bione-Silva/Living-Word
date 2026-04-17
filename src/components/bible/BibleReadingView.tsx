@@ -221,7 +221,7 @@ export function BibleReadingView({
     });
   };
 
-  // Long-press handlers — require holding for 500ms before selection toggles.
+  // Long-press handlers — require holding for 1s before selection toggles.
   // Prevents accidental opens on every tap while reading.
   const pressTimerRef = useRef<number | null>(null);
   const pressTriggeredRef = useRef(false);
@@ -232,7 +232,7 @@ export function BibleReadingView({
     pressTimerRef.current = window.setTimeout(() => {
       pressTriggeredRef.current = true;
       toggleVerseSelection(verseNum);
-    }, 500);
+    }, 1000);
   };
 
   const cancelPress = () => {
@@ -264,7 +264,7 @@ export function BibleReadingView({
                   Cap {chapter} <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-56 p-3" align="start">
+              <PopoverContent className="bible-light w-56 p-3" align="start">
                 <div className="grid grid-cols-6 gap-1.5">
                   {chapterNumbers.map(n => (
                     <button
@@ -289,7 +289,7 @@ export function BibleReadingView({
               <SelectTrigger className="w-auto h-7 px-2.5 gap-1 text-xs font-medium border-border bg-muted/60 rounded-md">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bible-light">
                 <SelectGroup>
                   <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
                     {lang === 'PT' ? 'Recomendadas' : lang === 'ES' ? 'Recomendadas' : 'Recommended'}
