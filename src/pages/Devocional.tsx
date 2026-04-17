@@ -350,6 +350,9 @@ export default function Devocional() {
   const [bibleDrawerOpen, setBibleDrawerOpen] = useState(false);
   const shareArtRef = useRef<HTMLDivElement>(null);
   const [preferredBibleVersion, setPreferredBibleVersion] = useState('NVI');
+  const [senderName, setSenderName] = useState<string>('');
+  const [shareUrl, setShareUrl] = useState<string>('');
+  const [shareUrlLoading, setShareUrlLoading] = useState(false);
 
   // Register global callback for BibleRichText links
   useEffect(() => {
