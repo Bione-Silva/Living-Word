@@ -65,48 +65,48 @@
   /* ── Authenticated app + public blog (Warm Parchment) ── */
   .theme-app,
   .theme-blog {
-    --background: 35 38% 95%;          /* #F5F0E8 Parchment */
-    --foreground: 25 25% 15%;          /* deep café text */
+    --background: 37 33% 94%;          /* #F5F0E8 Parchment */
+    --foreground: 25 30% 12%;          /* #3D2B1F deep café */
 
-    --card: 0 0% 100%;                 /* pure white reading surface */
-    --card-foreground: 25 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 25 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 25 25% 15%;
+    --popover-foreground: 25 30% 12%;
 
-    --primary: 263 70% 50%;            /* Word Primary (CTAs) */
+    --primary: 25 29% 33%;             /* #6B4F3A Café Ministerial */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 35 30% 90%;           /* warm sand */
-    --secondary-foreground: 25 25% 18%;
+    --secondary: 37 26% 90%;           /* warm sand */
+    --secondary-foreground: 25 26% 20%;
 
-    --muted: 35 28% 92%;               /* lighter parchment */
+    --muted: 37 24% 91%;               /* soft parchment */
     --muted-foreground: 25 15% 38%;
 
-    --accent: 35 30% 88%;              /* warm hover bg */
-    --accent-foreground: 25 25% 18%;
+    --accent: 25 38% 59%;              /* #C4956A Amber */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 20% 84%;              /* soft warm border */
-    --input: 30 20% 84%;
-    --ring: 263 70% 50%;
+    --border: 30 18% 84%;
+    --input: 30 18% 84%;
+    --ring: 25 38% 59%;
 
-    --blog-heading: 25 25% 12%;
+    --blog-heading: 25 30% 12%;
     --blog-body: 25 18% 22%;
     --blog-meta: 25 12% 40%;
-    --blog-quote: 30 35% 28%;
+    --blog-quote: 25 29% 33%;
 
-    /* Sidebar: dark purple (Scripture Dark) for premium contrast */
-    --sidebar-background: 257 56% 16%; /* #1E1240 */
-    --sidebar-foreground: 270 60% 97%;
-    --sidebar-primary: 258 90% 66%;    /* Spirit Light for active */
+    /* Sidebar: dark café to match official app palette */
+    --sidebar-background: 25 29% 33%;  /* #6B4F3A */
+    --sidebar-foreground: 37 33% 94%;
+    --sidebar-primary: 25 38% 59%;     /* amber highlight */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 258 61% 32%;     /* Covenant hover */
-    --sidebar-accent-foreground: 270 60% 97%;
-    --sidebar-border: 258 61% 32%;
-    --sidebar-ring: 258 90% 66%;
+    --sidebar-accent: 25 22% 40%;
+    --sidebar-accent-foreground: 37 33% 94%;
+    --sidebar-border: 25 22% 40%;
+    --sidebar-ring: 25 38% 59%;
   }
 
   /* ── Dark mode for authenticated app ── */
