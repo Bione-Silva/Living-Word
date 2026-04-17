@@ -13,6 +13,7 @@ import { ToolsCircleGrid } from '@/components/dashboard/ToolsCircleGrid';
 import { StreakBar } from '@/components/dashboard/StreakBar';
 import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
+import { SocialStudioHighlightCard } from '@/components/dashboard/SocialStudioHighlightCard';
 import { SmartDevotionalRecommender } from '@/components/engagement/SmartDevotionalRecommender';
 import { UserEngagementDashboard } from '@/components/engagement/UserEngagementDashboard';
 import { NotificationCenter } from '@/components/engagement/NotificationCenter';
@@ -93,6 +94,7 @@ export default function Dashboard() {
       <DevotionalCard />
       <SmartDevotionalRecommender />
       <ToolsCircleGrid onToolClick={handleToolClick} />
+      <SocialStudioHighlightCard />
       <StreakBar />
       <NotificationCenter />
       <MoreToolsAccordion onToolClick={handleToolClick} />

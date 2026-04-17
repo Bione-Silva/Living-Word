@@ -81,7 +81,6 @@ const sidebarGroups: SidebarToolGroup[] = [
       { id: 'trivia', icon: HelpCircle, label: { PT: 'Quiz Bíblico', EN: 'Bible Trivia', ES: 'Trivia Bíblica' } },
       { id: 'poetry', icon: Feather, label: { PT: 'Poesia Cristã', EN: 'Christian Poetry', ES: 'Poesía Cristiana' } },
       { id: 'deep-translation', icon: Globe, label: { PT: 'Tradução Teológica', EN: 'Theological Translation', ES: 'Traducción Teológica' } },
-      { id: 'social-content', icon: ImageIcon, label: { PT: 'Conteúdo Social', EN: 'Social Content', ES: 'Contenido Social' } },
     ],
   },
   {
