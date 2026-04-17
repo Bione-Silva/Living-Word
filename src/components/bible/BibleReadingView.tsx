@@ -221,6 +221,27 @@ export function BibleReadingView({
     });
   };
 
+  // Long-press handlers — require holding for 500ms before selection toggles.
+  // Prevents accidental opens on every tap while reading.
+  const pressTimerRef = useRef<number | null>(null);
+  const pressTriggeredRef = useRef(false);
+
+  const startPress = (verseNum: number) => {
+    pressTriggeredRef.current = false;
+    if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
+    pressTimerRef.current = window.setTimeout(() => {
+      pressTriggeredRef.current = true;
+      toggleVerseSelection(verseNum);
+    }, 500);
+  };
+
+  const cancelPress = () => {
+    if (pressTimerRef.current) {
+      window.clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+  };
+
   const chapterNumbers = Array.from({ length: totalChapters }, (_, i) => i + 1);
 
   return (
