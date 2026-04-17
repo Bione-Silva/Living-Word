@@ -405,18 +405,16 @@ export default function SocialStudio() {
                 </Card>
               )}
 
-              {/* Verse palette gallery */}
-              {verseContext && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <VersePalettePicker
-                      value={activePaletteId}
-                      onChange={handlePaletteSelect}
-                      lang={lang}
-                    />
-                  </CardContent>
-                </Card>
-              )}
+              {/* Verse palette gallery — always visible (permanent) */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <VersePalettePicker
+                    value={activePaletteId}
+                    onChange={handlePaletteSelect}
+                    lang={lang}
+                  />
+                </CardContent>
+              </Card>
 
               {/* Biblical Scene Gallery — community library + AI on demand */}
               <Card className="bg-card border-border">
