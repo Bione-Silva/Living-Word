@@ -139,12 +139,13 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           blob = dataUrlToBlob(pngDataUrl);
           ext = 'png';
         }
+        const fname = `living-word-${item.template}-${item.slideIdx + 1}.${ext}`;
         const link = document.createElement('a');
-        link.download = `living-word-${item.template}-${item.slideIdx + 1}.${ext}`;
+        link.download = fname;
         link.href = URL.createObjectURL(blob);
         link.click();
         URL.revokeObjectURL(link.href);
-        toast.success(l.saved);
+        setSavedDialog({ open: true, fileName: fname });
       } catch (err) {
         console.error(err);
         toast.error('Erro ao baixar');
