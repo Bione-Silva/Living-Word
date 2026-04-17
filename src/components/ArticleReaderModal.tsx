@@ -175,7 +175,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
               onClick={handleEnrich}
               disabled={enriching}
               className="rounded-full p-2 hover:bg-black/5 transition-colors"
-              style={{ color: '#6B4F3A' }}
+              style={{ color: '#1E1240' }}
               title={lang === 'PT' ? 'Enriquecer com Ilustrações' : lang === 'EN' ? 'Enrich with Illustrations' : 'Enriquecer con Ilustraciones'}
             >
               {enriching ? <Loader2 className="h-5 w-5 animate-spin" /> : <Palette className="h-5 w-5" />}
@@ -185,7 +185,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
             <button
               onClick={() => setShowNotes(!showNotes)}
               className={`rounded-full p-2 hover:bg-black/5 transition-colors ${showNotes ? 'bg-black/5' : ''}`}
-              style={{ color: '#6B4F3A' }}
+              style={{ color: '#1E1240' }}
               title={lang === 'PT' ? 'Anotações do Pregador' : 'Preacher Notes'}
             >
               <StickyNote className="h-5 w-5" />
@@ -195,7 +195,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
             onClick={handleExportPDF}
             disabled={exporting}
             className="rounded-full p-2 hover:bg-black/5 transition-colors"
-            style={{ color: '#6B4F3A' }}
+            style={{ color: '#1E1240' }}
             title="Exportar PDF"
           >
             {exporting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}
@@ -203,7 +203,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
           <button
             onClick={() => onOpenChange(false)}
             className="rounded-full p-2 hover:bg-black/5 transition-colors"
-            style={{ color: '#6B4F3A' }}
+            style={{ color: '#1E1240' }}
           >
             <X className="h-5 w-5" />
             <span className="sr-only">Fechar</span>
@@ -271,8 +271,8 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
                     '--tw-prose-quotes': '#2a1f14',
                     '--tw-prose-quote-borders': '#C4956A',
                     '--tw-prose-links': '#4a3218',
-                    '--tw-prose-bullets': '#6B4F3A',
-                    '--tw-prose-counters': '#6B4F3A',
+                    '--tw-prose-bullets': '#1E1240',
+                    '--tw-prose-counters': '#1E1240',
                     '--tw-prose-hr': '#d4c8b8',
                     '--tw-prose-th-borders': '#d4c8b8',
                     '--tw-prose-td-borders': '#e7dfd5',
@@ -298,7 +298,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
           {showNotes && (
             <div className="w-[280px] md:w-[320px] shrink-0 flex flex-col p-4 overflow-y-auto" style={{ backgroundColor: '#faf8f3' }}>
               <div className="flex items-center gap-2 mb-3">
-                <StickyNote className="h-4 w-4" style={{ color: '#6B4F3A' }} />
+                <StickyNote className="h-4 w-4" style={{ color: '#1E1240' }} />
                 <h3 className="text-sm font-semibold" style={{ color: '#3c2f21' }}>
                   {lang === 'PT' ? 'Anotações do Pregador' : lang === 'EN' ? 'Preacher Notes' : 'Notas del Predicador'}
                 </h3>

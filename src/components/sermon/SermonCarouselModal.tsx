@@ -58,11 +58,11 @@ const typeLabels: Record<string, Record<L, string>> = {
 /* ═══ Color palette rotation for visual variety ═══ */
 const SLIDE_PALETTES = [
   { bg: 'linear-gradient(135deg, hsl(38,35%,92%) 0%, hsl(30,25%,88%) 100%)', text: '#3D2E1F', accent: '#B8935A' },   // warm cream
-  { bg: 'linear-gradient(135deg, hsl(200,18%,18%) 0%, hsl(210,22%,14%) 100%)', text: '#E8DCC8', accent: '#D4A853' },   // dark petrol
+  { bg: 'linear-gradient(135deg, hsl(200,18%,18%) 0%, hsl(210,22%,14%) 100%)', text: '#E8DCC8', accent: '#6D28D9' },   // dark petrol
   { bg: 'linear-gradient(135deg, hsl(35,30%,95%) 0%, hsl(40,20%,90%) 100%)', text: '#4A3728', accent: '#9B7E4F' },     // off-white warm
   { bg: 'linear-gradient(135deg, hsl(145,15%,18%) 0%, hsl(160,20%,14%) 100%)', text: '#D6CFC0', accent: '#8BAF7E' },   // forest dark
   { bg: 'linear-gradient(135deg, hsl(30,20%,88%) 0%, hsl(25,15%,82%) 100%)', text: '#3D2E1F', accent: '#A6845A' },     // light tan
-  { bg: 'linear-gradient(135deg, hsl(220,20%,15%) 0%, hsl(230,25%,12%) 100%)', text: '#DDDAE0', accent: '#D4A853' },   // midnight blue
+  { bg: 'linear-gradient(135deg, hsl(220,20%,15%) 0%, hsl(230,25%,12%) 100%)', text: '#DDDAE0', accent: '#6D28D9' },   // midnight blue
   { bg: 'linear-gradient(135deg, hsl(38,25%,90%) 0%, hsl(42,18%,85%) 100%)', text: '#3B3124', accent: '#C4A05C' },     // parchment
   { bg: 'linear-gradient(135deg, hsl(15,12%,16%) 0%, hsl(20,18%,12%) 100%)', text: '#E3D5C5', accent: '#C89B5E' },     // espresso dark
 ];
