@@ -424,18 +424,26 @@ function GradientTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWater
 /* ────────────────────────────────────────────
    TEMPLATE 5 — LIVING WORD AMBER (centered verse, warm cross motif)
    ──────────────────────────────────────────── */
-function LwAmberTemplate({ slide, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl' | 'textColor'>) {
+function LwAmberTemplate({ slide, bgImageUrl, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'textColor'>) {
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
   const verseSize = autoVerseSize(slide.text);
+  const amberGradient = 'linear-gradient(145deg, #1a0f05 0%, #2d1a0a 25%, #4a2c17 50%, #1E1240 75%, #6D28D9 100%)';
 
   return (
     <div
       className="relative h-full w-full overflow-hidden flex items-center justify-center"
       style={{
-        background: 'linear-gradient(145deg, #1a0f05 0%, #2d1a0a 25%, #4a2c17 50%, #1E1240 75%, #6D28D9 100%)',
+        background: bgImageUrl ? undefined : amberGradient,
         containerType: 'size',
       }}
     >
+      {/* Optional background image with amber overlay for warm cohesion */}
+      {bgImageUrl && (
+        <>
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+          <div className="absolute inset-0" style={{ background: amberGradient, opacity: 0.75, mixBlendMode: 'multiply' }} />
+        </>
+      )}
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute" style={{ top: '8%', left: '50%', width: '1px', height: '14%', backgroundColor: 'rgba(245,230,200,0.2)', transform: 'translateX(-50%)' }} />
