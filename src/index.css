@@ -65,10 +65,10 @@
   /* ── Authenticated app + public blog (Soft Lavender + Divine White, Word Primary CTA) ── */
   .theme-app,
   .theme-blog {
-    --background: 270 43% 92%;         /* Soft Lavender #E8E0F5 */
+    --background: 252 100% 99%;        /* Divine White #F8F6FF */
     --foreground: 261 41% 7%;          /* Night Canvas */
 
-    --card: 252 100% 99%;              /* Divine White #F8F6FF */
+    --card: 270 43% 92%;               /* Soft Lavender #E8E0F5 */
     --card-foreground: 261 41% 7%;
 
     --popover: 252 100% 99%;           /* Divine White */
@@ -77,10 +77,10 @@
     --primary: 263 70% 50%;            /* Word Primary */
     --primary-foreground: 240 50% 99%;
 
-    --secondary: 252 100% 99%;         /* Divine White */
+    --secondary: 270 43% 92%;          /* Soft Lavender */
     --secondary-foreground: 261 41% 7%;
 
-    --muted: 270 50% 95%;              /* lavender mais claro */
+    --muted: 270 43% 95%;              /* lavender bem claro */
     --muted-foreground: 257 20% 30%;
 
     --accent: 43 80% 46%;              /* Sacred Gold */
