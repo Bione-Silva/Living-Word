@@ -445,6 +445,13 @@ export default function SocialStudio() {
                 />
               </div>
 
+              {/* Poster style picker — single template applied to all slides */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <TemplatePicker value={template} onChange={setTemplate} lang={lang} />
+                </CardContent>
+              </Card>
+
               {slides.length > 0 && (
                 <Button
                   variant="ghost"
