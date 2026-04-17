@@ -472,7 +472,9 @@ export default function Landing() {
         style={{
           background: 'rgba(15,10,24,0.92)',
           borderBottom: '1px solid rgba(212,168,83,0.15)',
-          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)',
+          paddingLeft: 'env(safe-area-inset-left, 0px)',
+          paddingRight: 'env(safe-area-inset-right, 0px)',
         }}
       >
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-3">
