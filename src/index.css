@@ -227,18 +227,18 @@
   /* ── High-contrast prose for all generated content in theme-app ── */
   .theme-app .prose,
   .theme-blog .prose {
-    --tw-prose-body: hsl(25 18% 22%);
-    --tw-prose-headings: hsl(25 30% 12%);
-    --tw-prose-bold: hsl(25 30% 12%);
-    --tw-prose-links: hsl(25 29% 33%);
-    --tw-prose-counters: hsl(25 12% 40%);
-    --tw-prose-bullets: hsl(25 12% 40%);
-    --tw-prose-hr: hsl(30 18% 84%);
-    --tw-prose-quotes: hsl(25 29% 33%);
-    --tw-prose-quote-borders: hsl(25 38% 59%);
-    --tw-prose-code: hsl(25 22% 16%);
-    --tw-prose-th-borders: hsl(30 18% 84%);
-    --tw-prose-td-borders: hsl(261 40% 90%);
+    --tw-prose-body: hsl(257 25% 18%);
+    --tw-prose-headings: hsl(261 41% 7%);
+    --tw-prose-bold: hsl(261 41% 7%);
+    --tw-prose-links: hsl(263 70% 50%);
+    --tw-prose-counters: hsl(257 15% 35%);
+    --tw-prose-bullets: hsl(257 15% 35%);
+    --tw-prose-hr: hsl(47 30% 78%);
+    --tw-prose-quotes: hsl(263 70% 50%);
+    --tw-prose-quote-borders: hsl(43 80% 46%);
+    --tw-prose-code: hsl(257 25% 18%);
+    --tw-prose-th-borders: hsl(47 30% 78%);
+    --tw-prose-td-borders: hsl(281 40% 90%);
   }
 
   /* ── Premium pastoral prose for rich AI-generated markdown ── */
