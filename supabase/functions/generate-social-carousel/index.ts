@@ -13,7 +13,12 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { verse, topic, language = 'PT' } = await req.json()
+    const body = await req.json()
+    const { verse, topic, language = 'PT', slideCount: rawCount } = body
+    // Normalize slideCount to allowed values
+    const allowed = [3, 5, 7] as const
+    const slideCount: 3 | 5 | 7 =
+      allowed.includes(rawCount) ? rawCount : 7
 
     if (!verse || typeof verse !== 'string' || verse.trim().length < 5) {
       return new Response(
@@ -54,27 +59,40 @@ Deno.serve(async (req) => {
 
     const langLabel = language === 'EN' ? 'English' : language === 'ES' ? 'Spanish' : 'Portuguese'
 
-    const systemPrompt = `You are a Christian social media content strategist. Your job is to create engaging Instagram carousel content from a Bible verse.
-
-Rules:
-- Return ONLY valid JSON: an object with a "slides" array containing exactly 7 objects
-- Each slide object has: "slide" (number 1-7), "type" (string), "title" (short headline, max 8 words), "content" (body text, max 180 chars)
-- Write in ${langLabel}
-- Slide structure:
-  1. type:"verse" — The Bible verse itself as title, reference as content
-  2. type:"hook" — A provocative question or statement to grab attention
-  3. type:"context" — Historical or theological context of the verse
+    // Slide structure varies by count
+    const structures: Record<3 | 5 | 7, string> = {
+      3: `1. type:"verse" — The Bible verse, reference as content
+  2. type:"insight" — A deep spiritual insight
+  3. type:"cta" — Practical application + call to share/save`,
+      5: `1. type:"verse" — The Bible verse, reference as content
+  2. type:"hook" — Provocative question to grab attention
+  3. type:"insight" — A deep spiritual insight or reflection
+  4. type:"application" — Practical application for daily life
+  5. type:"cta" — Short prayer + call to action`,
+      7: `1. type:"verse" — The Bible verse itself, reference as content
+  2. type:"hook" — A provocative question or statement
+  3. type:"context" — Historical or theological context
   4. type:"insight" — A deep spiritual insight or reflection
   5. type:"application" — Practical application for daily life
   6. type:"prayer" — A short prayer inspired by the verse
-  7. type:"cta" — Call to action (save, share, follow)
+  7. type:"cta" — Call to action (save, share, follow)`,
+    }
+
+    const systemPrompt = `You are a Christian social media content strategist. Create engaging carousel content from a Bible verse.
+
+Rules:
+- Return ONLY valid JSON: an object with a "slides" array containing exactly ${slideCount} objects
+- Each slide object has: "slide" (number 1-${slideCount}), "type" (string), "title" (short headline, max 8 words), "content" (body text, max 180 chars)
+- Write in ${langLabel}
+- Slide structure for ${slideCount} slides:
+  ${structures[slideCount]}
 - Tone: pastoral, warm, engaging for social media
 - Do NOT use markdown formatting in the content
 - Keep content concise and impactful — designed for visual slides`
 
     const userPrompt = topic
-      ? `Create a 7-slide carousel for: "${verse}" with focus on the topic: "${topic}"`
-      : `Create a 7-slide carousel for: "${verse}"`
+      ? `Create a ${slideCount}-slide carousel for: "${verse}" with focus on the topic: "${topic}"`
+      : `Create a ${slideCount}-slide carousel for: "${verse}"`
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
