@@ -62,25 +62,25 @@
     --sidebar-ring: 258 90% 66%;        /* Spirit Light */
   }
 
-  /* ── Authenticated app + public blog (Parchment light, Word Primary CTA) ── */
+  /* ── Authenticated app + public blog (Soft Lavender + Divine White, Word Primary CTA) ── */
   .theme-app,
   .theme-blog {
-    --background: 47 77% 83%;          /* Parchment */
+    --background: 270 43% 92%;         /* Soft Lavender #E8E0F5 */
     --foreground: 261 41% 7%;          /* Night Canvas */
 
-    --card: 0 0% 100%;
+    --card: 252 100% 99%;              /* Divine White #F8F6FF */
     --card-foreground: 261 41% 7%;
 
-    --popover: 0 0% 100%;
+    --popover: 252 100% 99%;           /* Divine White */
     --popover-foreground: 261 41% 7%;
 
     --primary: 263 70% 50%;            /* Word Primary */
     --primary-foreground: 240 50% 99%;
 
-    --secondary: 47 60% 90%;           /* light parchment */
+    --secondary: 252 100% 99%;         /* Divine White */
     --secondary-foreground: 261 41% 7%;
 
-    --muted: 47 50% 92%;
+    --muted: 270 50% 95%;              /* lavender mais claro */
     --muted-foreground: 257 20% 30%;
 
     --accent: 43 80% 46%;              /* Sacred Gold */
@@ -89,8 +89,8 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 47 30% 78%;
-    --input: 47 30% 78%;
+    --border: 270 30% 85%;             /* lavender border */
+    --input: 270 30% 85%;
     --ring: 263 70% 50%;
 
     --blog-heading: 261 41% 7%;
