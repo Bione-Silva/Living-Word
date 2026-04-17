@@ -257,7 +257,7 @@ export default function OnboardingWizard() {
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
+              <BrandIcon className="h-7 w-7" />
             </div>
             <span className="font-display text-2xl font-bold text-foreground">Living Word</span>
           </div>

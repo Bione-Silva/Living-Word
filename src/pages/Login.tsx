@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
-import { Eye, EyeOff, Wand2 } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+import { BrandIcon } from '@/components/BrandIcon';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -80,7 +81,7 @@ export default function Login() {
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-              <Wand2 className="h-5 w-5 text-primary-foreground" />
+              <BrandIcon className="h-7 w-7" />
             </div>
             <span className="font-display text-3xl font-bold text-foreground">Living Word</span>
           </Link>
