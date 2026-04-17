@@ -179,8 +179,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const geminiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
-    if (!geminiKey) throw new Error('GEMINI_API_KEY not configured')
+    const aiKey = Deno.env.get('LOVABLE_API_KEY')
+    if (!aiKey) throw new Error('LOVABLE_API_KEY not configured')
     const openaiKey = Deno.env.get('OPENAI_API_KEY') || ''
 
     const supabaseAdmin = createClient(
@@ -225,13 +225,13 @@ Deno.serve(async (req) => {
     for (const lang of missingLangs) {
       try {
         console.log(`[${lang}] Generating text...`)
-        const devotional = await generateDevotionalText(geminiKey, lang, targetDate)
+        const devotional = await generateDevotionalText(aiKey, lang, targetDate)
 
         // Generate cover image (skip if requested for speed)
         let coverUrl: string | null = null
         if (!skipImage) {
           console.log(`[${lang}] Generating cover image...`)
-          const imgData = await generateCoverImage(geminiKey, devotional.title, devotional.category)
+          const imgData = await generateCoverImage(aiKey, devotional.title, devotional.category)
           if (imgData) {
             coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
             console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
