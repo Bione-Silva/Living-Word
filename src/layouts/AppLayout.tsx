@@ -30,6 +30,7 @@ import {
 import { useState, useCallback } from 'react';
 import { BrandIcon } from '@/components/BrandIcon';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
