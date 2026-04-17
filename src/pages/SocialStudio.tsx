@@ -416,13 +416,14 @@ export default function SocialStudio() {
                 </Card>
               )}
 
-              {/* Biblical Scene Gallery — always available */}
+              {/* Biblical Scene Gallery — community library + AI on demand */}
               <Card className="bg-card border-border">
                 <CardContent className="p-4">
                   <BiblicalSceneGallery
                     onPick={handleSceneSelect}
                     lang={lang}
                     activeId={activeSceneId}
+                    searchTerm={verseContext?.book || verseContext?.text}
                   />
                 </CardContent>
               </Card>
