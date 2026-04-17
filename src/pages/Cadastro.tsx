@@ -9,9 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Wand2 } from 'lucide-react';
 import type { Language } from '@/lib/i18n';
-import watermarkBg from '@/assets/onboarding-watermark.jpg';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -85,73 +84,72 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
-      {/* Watermark background */}
-      <img
-        src={watermarkBg}
-        alt=""
+    <div className="theme-app min-h-screen relative flex items-center justify-center p-4 bg-background">
+      <div
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover opacity-[0.12] pointer-events-none"
-        width={1920}
-        height={1080}
+        className="absolute inset-0 pointer-events-none opacity-60"
+        style={{
+          background:
+            'radial-gradient(circle at 20% 10%, hsl(263 70% 50% / 0.08), transparent 50%), radial-gradient(circle at 80% 90%, hsl(43 80% 46% / 0.08), transparent 50%)',
+        }}
       />
-      <div className="absolute inset-0 bg-[hsl(37,33%,96%)]/40 pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="font-display text-3xl font-bold" style={{ color: 'hsl(28, 42%, 38%)' }}>
-            Living Word
+          <Link to="/" className="inline-flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+              <Wand2 className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="font-display text-3xl font-bold text-foreground">Living Word</span>
           </Link>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-[hsl(30,15%,85%)]/60 bg-white/80 backdrop-blur-sm shadow-[0_8px_40px_hsl(28,20%,50%,0.06)] p-7 sm:p-9">
+        <div className="rounded-2xl border border-border bg-card text-card-foreground shadow-xl shadow-primary/5 p-7 sm:p-9">
           <div className="text-center mb-6">
-            <div className="w-12 h-12 mx-auto rounded-xl bg-[hsl(28,42%,42%)]/10 flex items-center justify-center mb-3">
-              <Sparkles className="w-6 h-6" style={{ color: 'hsl(28, 42%, 42%)' }} />
+            <div className="w-12 h-12 mx-auto rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+              <Sparkles className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="font-display text-xl font-bold text-[hsl(24,30%,18%)]">{copy.title[lang]}</h1>
-            <p className="text-sm text-[hsl(24,15%,45%)] mt-1">{copy.subtitle[lang]}</p>
+            <h1 className="font-display text-xl font-bold text-foreground">{copy.title[lang]}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{copy.subtitle[lang]}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-[hsl(24,20%,30%)] font-medium">{copy.name[lang]}</Label>
+              <Label className="font-medium">{copy.name[lang]}</Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="border-[hsl(30,15%,82%)] bg-[hsl(37,30%,98%)] text-[hsl(24,30%,15%)]"
+                className="bg-background border-border"
                 required
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[hsl(24,20%,30%)] font-medium">{copy.email[lang]}</Label>
+              <Label className="font-medium">{copy.email[lang]}</Label>
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="border-[hsl(30,15%,82%)] bg-[hsl(37,30%,98%)] text-[hsl(24,30%,15%)]"
+                className="bg-background border-border"
                 required
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[hsl(24,20%,30%)] font-medium">{copy.password[lang]}</Label>
+              <Label className="font-medium">{copy.password[lang]}</Label>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="border-[hsl(30,15%,82%)] bg-[hsl(37,30%,98%)] text-[hsl(24,30%,15%)]"
+                className="bg-background border-border"
                 required
                 minLength={6}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[hsl(24,20%,30%)] font-medium">{copy.language[lang]}</Label>
+              <Label className="font-medium">{copy.language[lang]}</Label>
               <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                <SelectTrigger className="border-[hsl(30,15%,82%)] bg-[hsl(37,30%,98%)] text-[hsl(24,30%,15%)]">
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="PT">Português</SelectItem>
                   <SelectItem value="EN">English</SelectItem>
@@ -162,7 +160,7 @@ export default function Cadastro() {
 
             <Button
               type="submit"
-              className="w-full py-5 rounded-xl bg-[hsl(28,42%,42%)] hover:bg-[hsl(28,42%,36%)] text-white font-bold"
+              className="w-full py-5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-md shadow-primary/20"
               disabled={loading || !name || !email || !password}
             >
               {loading ? '...' : copy.cta[lang]}
@@ -170,14 +168,14 @@ export default function Cadastro() {
           </form>
 
           <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[hsl(30,15%,85%)]" /></div>
-            <div className="relative flex justify-center text-xs uppercase"><span className="bg-white/80 px-3 text-[hsl(24,15%,55%)]">{copy.or[lang]}</span></div>
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+            <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-3 text-muted-foreground">{copy.or[lang]}</span></div>
           </div>
 
           <Button
             type="button"
             variant="outline"
-            className="w-full py-5 text-sm font-medium rounded-xl border-[hsl(30,15%,82%)] bg-[hsl(37,30%,97%)] hover:bg-[hsl(37,25%,94%)] text-[hsl(24,30%,18%)]"
+            className="w-full py-5 text-sm font-medium rounded-xl bg-background border-border hover:bg-muted"
             onClick={async () => {
               const result = await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin });
               if (result.error) toast.error('Erro ao entrar com Google');
@@ -192,16 +190,16 @@ export default function Cadastro() {
             {copy.google[lang]}
           </Button>
 
-          <p className="text-center text-sm text-[hsl(24,15%,50%)] mt-5">
+          <p className="text-center text-sm text-muted-foreground mt-5">
             {copy.hasAccount[lang]}{' '}
-            <Link to={planParam ? `/login?plan=${planParam}` : '/login'} className="font-medium hover:underline" style={{ color: 'hsl(28, 42%, 42%)' }}>
+            <Link to={planParam ? `/login?plan=${planParam}` : '/login'} className="font-medium text-primary hover:underline">
               {copy.login[lang]}
             </Link>
           </p>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs mt-6" style={{ color: 'hsl(24, 15%, 55%)' }}>
+        <p className="text-center text-xs mt-6 text-muted-foreground">
           Feito com ❤️ por Living Word
         </p>
       </div>
