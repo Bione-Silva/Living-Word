@@ -5,7 +5,7 @@ const corsHeaders = {
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
 
 /** Map version codes to their native language */
 const VERSION_LANGUAGE: Record<string, string> = {
@@ -21,7 +21,7 @@ const VERSION_LANGUAGE: Record<string, string> = {
 const DEFAULT_VERSION: Record<string, string> = {
   PT: 'ARA',
   EN: 'KJV',
-  ES: 'ARA', // closest available
+  ES: 'ARA',
 }
 
 Deno.serve(async (req) => {
@@ -62,14 +62,14 @@ Deno.serve(async (req) => {
       })
     }
 
-    if (!geminiApiKey) {
-      return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not configured' }), {
+    if (!LOVABLE_API_KEY) {
+      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    // Determine effective version: if version language doesn't match user language, use default for user language
+    // Determine effective version
     const versionLang = VERSION_LANGUAGE[version] || 'EN'
     const userLang = (language || 'PT').toUpperCase()
     let effectiveVersion = version.toUpperCase()
@@ -92,25 +92,26 @@ Rules:
 - Do NOT hallucinate — if you are unsure of the exact wording, return your best known canonical text
 - Return the verse text EXACTLY as it appears in the ${effectiveVersion} translation`
 
-    const aiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${geminiApiKey}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Return the exact text of: ${passage}` },
         ],
         response_format: { type: 'json_object' },
-        temperature: 0,
       }),
     })
 
     if (!aiResponse.ok) {
       const status = aiResponse.status
+      const errText = await aiResponse.text()
+      console.error('AI gateway error:', status, errText)
       if (status === 429) {
         return new Response(JSON.stringify({ error: 'Rate limit exceeded, try again later' }), {
           status: 429,
