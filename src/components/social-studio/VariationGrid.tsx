@@ -167,12 +167,13 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           zip.file(`${folder}/${item.template}.png`, dataUrlToBlob(dataUrl));
         }
         const blob = await zip.generateAsync({ type: 'blob' });
+        const fname = `living-word-artes-${Date.now()}.zip`;
         const link = document.createElement('a');
-        link.download = `living-word-artes-${Date.now()}.zip`;
+        link.download = fname;
         link.href = URL.createObjectURL(blob);
         link.click();
         URL.revokeObjectURL(link.href);
-        toast.success(l.zipReady);
+        setSavedDialog({ open: true, fileName: fname });
       } catch (err) {
         console.error(err);
         toast.error('Erro ao gerar ZIP');
