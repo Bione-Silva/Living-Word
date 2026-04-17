@@ -63,15 +63,17 @@
   }
 
   /* ── Authenticated app + public blog (Soft Lavender + Divine White, Word Primary CTA) ── */
+  /* Apply to <html> too so mobile address bar / overscroll area stays purple-white */
+  html.light,
   .theme-app,
   .theme-blog {
-    --background: 252 100% 99%;        /* Divine White #F8F6FF */
+    --background: 270 50% 98%;         /* Lavender White (matches Mentes surface) */
     --foreground: 261 41% 7%;          /* Night Canvas */
 
-    --card: 270 43% 92%;               /* Soft Lavender #E8E0F5 */
+    --card: 0 0% 100%;                 /* Pure white cards (matches MindProfile bg-white) */
     --card-foreground: 261 41% 7%;
 
-    --popover: 252 100% 99%;           /* Divine White */
+    --popover: 0 0% 100%;              /* Pure white */
     --popover-foreground: 261 41% 7%;
 
     --primary: 263 70% 50%;            /* Word Primary */
