@@ -67,49 +67,70 @@ Deno.serve(async (req) => {
       });
     }
 
-    const payload = JSON.stringify({
-      title: 'Living Word ✦',
-      body: 'Notificação de teste recebida com sucesso. A Palavra está pronta para você ✨',
-      url: '/dashboard',
-      tag: 'test',
-    });
+    // 3 notificações de teste diferentes para validar entrega
+    const payloads = [
+      {
+        title: '✦ Living Word — Teste 1/3',
+        body: 'Devocional do dia: "Aquietai-vos e sabei que Eu sou Deus." (Sl 46.10)',
+        url: '/devocional',
+        tag: 'test-1',
+      },
+      {
+        title: '📖 Living Word — Teste 2/3',
+        body: 'Sua leitura bíblica está esperando. Continue de onde parou em Romanos 8.',
+        url: '/biblia',
+        tag: 'test-2',
+      },
+      {
+        title: '🕊️ Living Word — Teste 3/3',
+        body: 'Notificações ativas com sucesso. A Palavra chegará a você todos os dias ✨',
+        url: '/dashboard',
+        tag: 'test-3',
+      },
+    ];
 
     let sent = 0;
     let failed = 0;
     for (const s of subs) {
-      try {
-        const res = await sendWebPush(
-          { endpoint: s.endpoint, p256dh: s.p256dh, auth: s.auth },
-          payload,
-          vapid
-        );
-        const ok = res.status >= 200 && res.status < 300;
-        await admin.from('push_deliveries').insert({
-          user_id: user.id,
-          subscription_id: s.id,
-          payload: JSON.parse(payload),
-          status: ok ? 'sent' : 'failed',
-          status_code: res.status,
-          error: ok ? null : await res.text().catch(() => null),
-        });
-        if (ok) {
-          sent++;
-          await admin.from('push_subscriptions').update({ last_success_at: new Date().toISOString() }).eq('id', s.id);
-        } else {
-          failed++;
-          if (res.status === 404 || res.status === 410) {
-            await admin.from('push_subscriptions').delete().eq('id', s.id);
+      for (let i = 0; i < payloads.length; i++) {
+        const payload = JSON.stringify(payloads[i]);
+        try {
+          // pequeno delay entre envios para o navegador renderizar separadamente
+          if (i > 0) await new Promise((r) => setTimeout(r, 800));
+          const res = await sendWebPush(
+            { endpoint: s.endpoint, p256dh: s.p256dh, auth: s.auth },
+            payload,
+            vapid
+          );
+          const ok = res.status >= 200 && res.status < 300;
+          await admin.from('push_deliveries').insert({
+            user_id: user.id,
+            subscription_id: s.id,
+            payload: JSON.parse(payload),
+            status: ok ? 'sent' : 'failed',
+            status_code: res.status,
+            error: ok ? null : await res.text().catch(() => null),
+          });
+          if (ok) {
+            sent++;
+            await admin.from('push_subscriptions').update({ last_success_at: new Date().toISOString() }).eq('id', s.id);
+          } else {
+            failed++;
+            if (res.status === 404 || res.status === 410) {
+              await admin.from('push_subscriptions').delete().eq('id', s.id);
+              break;
+            }
           }
+        } catch (e) {
+          failed++;
+          await admin.from('push_deliveries').insert({
+            user_id: user.id,
+            subscription_id: s.id,
+            payload: JSON.parse(payload),
+            status: 'failed',
+            error: String(e),
+          });
         }
-      } catch (e) {
-        failed++;
-        await admin.from('push_deliveries').insert({
-          user_id: user.id,
-          subscription_id: s.id,
-          payload: JSON.parse(payload),
-          status: 'failed',
-          error: String(e),
-        });
       }
     }
 
