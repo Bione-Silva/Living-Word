@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
 import { type SlideData } from '@/components/social-studio/SlideCanvas';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
+import { VersePalettePicker, type VersePalette } from '@/components/social-studio/VersePalettePicker';
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
 import { VariationGrid } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
@@ -85,6 +86,7 @@ export default function SocialStudio() {
   const [verseContext, setVerseContext] = useState<{ text: string; book: string } | null>(null);
   const [loadingDevotional, setLoadingDevotional] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
+  const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
@@ -93,6 +95,16 @@ export default function SocialStudio() {
     overlayOpacity: 55,
     backgroundImageUrl: undefined,
   });
+
+  const handlePaletteSelect = useCallback((p: VersePalette) => {
+    setActivePaletteId(p.id);
+    setTheme((prev) => ({
+      ...prev,
+      gradient: p.gradient,
+      textColor: p.textColor,
+      backgroundImageUrl: undefined,
+    }));
+  }, []);
 
   // Workspace defaults
   useEffect(() => {
@@ -270,7 +282,20 @@ export default function SocialStudio() {
                 </Card>
               )}
 
-              {/* Visual style */}
+              {/* Verse palette gallery — only when a verse is loaded */}
+              {verseContext && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4">
+                    <VersePalettePicker
+                      value={activePaletteId}
+                      onChange={handlePaletteSelect}
+                      lang={lang}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Visual style — custom background + colors */}
               <div>
                 <div className="flex items-center gap-2 mb-2 px-1">
                   <Palette className="h-4 w-4 text-primary" />
@@ -279,7 +304,7 @@ export default function SocialStudio() {
                 <p className="text-xs text-muted-foreground mb-3 px-1">{h.designDesc}</p>
                 <ThemeCustomizer
                   value={theme}
-                  onChange={setTheme}
+                  onChange={(v) => { setTheme(v); setActivePaletteId(null); }}
                   lang={lang}
                   onUploadBackground={handleBackgroundUpload}
                 />
