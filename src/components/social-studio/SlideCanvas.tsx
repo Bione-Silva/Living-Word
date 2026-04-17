@@ -24,12 +24,16 @@ const aspectClasses: Record<AspectRatio, string> = {
   '9:16': 'aspect-[9/16] max-w-[360px]',
   '4:5': 'aspect-[4/5] max-w-[440px]',
   '1:1': 'aspect-square max-w-[480px]',
+  '1.91:1': 'aspect-[1.91/1] max-w-[560px]',
+  '9:16-tiktok': 'aspect-[9/16] max-w-[360px]',
 };
 
 const captureSizes: Record<AspectRatio, { width: number; height: number }> = {
   '9:16': { width: 1080, height: 1920 },
   '4:5': { width: 1080, height: 1350 },
   '1:1': { width: 1080, height: 1080 },
+  '1.91:1': { width: 1200, height: 628 },
+  '9:16-tiktok': { width: 1080, height: 1920 },
 };
 
 /* ── Helpers ── */
