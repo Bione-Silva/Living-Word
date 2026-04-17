@@ -62,7 +62,7 @@ function EditorialVerse({ verse, fontFamily, textColor, backgroundImageUrl, them
         </p>
         <div className="mt-4 flex items-center gap-3">
           <div className="h-px w-6" style={{ backgroundColor: dark ? '#C4AE93' : `${txtColor}44` }} />
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] font-sans" style={{ color: dark ? '#6B4F3A' : `${txtColor}99` }}>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] font-sans" style={{ color: dark ? '#1E1240' : `${txtColor}99` }}>
             {verse.book}
           </p>
           <div className="h-px w-6" style={{ backgroundColor: dark ? '#C4AE93' : `${txtColor}44` }} />
@@ -88,7 +88,7 @@ function SwissVerse({ verse, fontFamily, textColor, themeColor }: { verse: Verse
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 bottom-0" style={{ left: '12%', width: '1px', backgroundColor: lineColor }} />
         <div className="absolute left-0 right-0" style={{ top: '75%', height: '1px', backgroundColor: lineColor }} />
-        <div className="absolute top-[75%] bottom-[8%]" style={{ left: '88%', width: '2px', backgroundColor: dark ? '#6B4F3A' : txtColor }} />
+        <div className="absolute top-[75%] bottom-[8%]" style={{ left: '88%', width: '2px', backgroundColor: dark ? '#1E1240' : txtColor }} />
       </div>
 
       <span className="absolute top-4 left-[12%] ml-4 text-[9px] uppercase tracking-[0.3em] font-sans font-medium" style={{ color: dark ? '#BBA58A' : `${txtColor}55` }}>
@@ -102,8 +102,8 @@ function SwissVerse({ verse, fontFamily, textColor, themeColor }: { verse: Verse
       </div>
 
       <div className="absolute flex flex-col items-end" style={{ bottom: '8%', right: '10%' }}>
-        <div className="h-px w-12 mb-2" style={{ backgroundColor: dark ? '#6B4F3A' : txtColor }} />
-        <p className="text-xs font-bold uppercase tracking-[0.3em] font-sans text-right" style={{ color: dark ? '#6B4F3A' : `${txtColor}CC` }}>
+        <div className="h-px w-12 mb-2" style={{ backgroundColor: dark ? '#1E1240' : txtColor }} />
+        <p className="text-xs font-bold uppercase tracking-[0.3em] font-sans text-right" style={{ color: dark ? '#1E1240' : `${txtColor}CC` }}>
           {verse.book}
         </p>
       </div>

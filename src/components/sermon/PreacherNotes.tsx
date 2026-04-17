@@ -21,7 +21,7 @@ const TEXT_COLORS = [
   { value: '#15803D', label: 'Verde' },
   { value: '#DC2626', label: 'Vermelho' },
   { value: '#92400E', label: 'Marrom' },
-  { value: '#D4A853', label: 'Dourado' },
+  { value: '#6D28D9', label: 'Dourado' },
 ];
 
 const HIGHLIGHT_COLORS = [
@@ -211,7 +211,7 @@ export function PreacherNotes({ materialId }: PreacherNotesProps) {
   const insertChecklist = () => {
     editorRef.current?.focus();
     const id = `chk-${Date.now()}`;
-    const html = `<div class="checklist-item" style="display:flex;align-items:center;gap:6px;margin:4px 0;"><input type="checkbox" id="${id}" style="width:16px;height:16px;accent-color:#D4A853;cursor:pointer;" /><label for="${id}" contenteditable="true" style="flex:1;outline:none;"></label></div>`;
+    const html = `<div class="checklist-item" style="display:flex;align-items:center;gap:6px;margin:4px 0;"><input type="checkbox" id="${id}" style="width:16px;height:16px;accent-color:#6D28D9;cursor:pointer;" /><label for="${id}" contenteditable="true" style="flex:1;outline:none;"></label></div>`;
     execCmd('insertHTML', html);
     // Focus the label
     const label = editorRef.current?.querySelector(`label[for="${id}"]`) as HTMLElement | null;

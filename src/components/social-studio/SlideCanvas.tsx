@@ -104,7 +104,7 @@ function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 bottom-0" style={{ left: '12%', width: '1px', backgroundColor: lineColor }} />
         <div className="absolute left-0 right-0" style={{ top: '75%', height: '1px', backgroundColor: lineColor }} />
-        <div className="absolute top-[75%] bottom-[8%]" style={{ left: '88%', width: '2px', backgroundColor: dark ? '#6B4F3A' : txtColor }} />
+        <div className="absolute top-[75%] bottom-[8%]" style={{ left: '88%', width: '2px', backgroundColor: dark ? '#1E1240' : txtColor }} />
       </div>
       <div className="absolute flex flex-col justify-center" style={{ top: '8%', bottom: '30%', left: '12%', right: '10%', paddingLeft: '1rem' }}>
         <p className="text-2xl sm:text-3xl md:text-4xl font-black leading-[1.1] tracking-tight text-left" style={{ color: dark ? '#1A1008' : txtColor }}>
@@ -112,14 +112,14 @@ function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark
         </p>
       </div>
       {slide.slideNumber && slide.totalSlides && (
-        <span className="absolute top-4 right-5 text-xs font-mono font-bold" style={{ color: dark ? '#6B4F3A' : `${txtColor}88` }}>
+        <span className="absolute top-4 right-5 text-xs font-mono font-bold" style={{ color: dark ? '#1E1240' : `${txtColor}88` }}>
           {String(slide.slideNumber).padStart(2, '0')}/{String(slide.totalSlides).padStart(2, '0')}
         </span>
       )}
       {slide.subtitle && (
         <div className="absolute flex flex-col items-end" style={{ bottom: '8%', right: '10%' }}>
-          <div className="h-px w-12 mb-2" style={{ backgroundColor: dark ? '#6B4F3A' : txtColor }} />
-          <p className="text-xs font-bold uppercase tracking-[0.3em] font-sans text-right" style={{ color: dark ? '#6B4F3A' : `${txtColor}CC` }}>
+          <div className="h-px w-12 mb-2" style={{ backgroundColor: dark ? '#1E1240' : txtColor }} />
+          <p className="text-xs font-bold uppercase tracking-[0.3em] font-sans text-right" style={{ color: dark ? '#1E1240' : `${txtColor}CC` }}>
             {slide.subtitle}
           </p>
         </div>
@@ -262,23 +262,23 @@ function LwAmberTemplate({ slide, fontFamily, showWatermark }: Omit<Props, 'aspe
 
   return (
     <div className="relative h-full w-full overflow-hidden flex items-center justify-center"
-      style={{ background: 'linear-gradient(145deg, #1a0f05 0%, #2d1a0a 25%, #4a2c17 50%, #6b4f3a 75%, #d4a853 100%)' }}>
+      style={{ background: 'linear-gradient(145deg, #1a0f05 0%, #2d1a0a 25%, #4a2c17 50%, #1E1240 75%, #6D28D9 100%)' }}>
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Cross motif */}
-        <div className="absolute" style={{ top: '8%', left: '50%', width: '1px', height: '20%', backgroundColor: 'rgba(212,168,83,0.15)', transform: 'translateX(-50%)' }} />
-        <div className="absolute" style={{ top: '16%', left: '50%', width: '12%', height: '1px', backgroundColor: 'rgba(212,168,83,0.15)', transform: 'translateX(-50%)' }} />
+        <div className="absolute" style={{ top: '8%', left: '50%', width: '1px', height: '20%', backgroundColor: 'rgba(109,40,217,0.15)', transform: 'translateX(-50%)' }} />
+        <div className="absolute" style={{ top: '16%', left: '50%', width: '12%', height: '1px', backgroundColor: 'rgba(109,40,217,0.15)', transform: 'translateX(-50%)' }} />
         {/* Corner accents */}
-        <div className="absolute" style={{ bottom: '6%', left: '6%', width: '30px', height: '30px', borderLeft: '1px solid rgba(212,168,83,0.2)', borderBottom: '1px solid rgba(212,168,83,0.2)' }} />
-        <div className="absolute" style={{ top: '6%', right: '6%', width: '30px', height: '30px', borderRight: '1px solid rgba(212,168,83,0.2)', borderTop: '1px solid rgba(212,168,83,0.2)' }} />
+        <div className="absolute" style={{ bottom: '6%', left: '6%', width: '30px', height: '30px', borderLeft: '1px solid rgba(109,40,217,0.2)', borderBottom: '1px solid rgba(109,40,217,0.2)' }} />
+        <div className="absolute" style={{ top: '6%', right: '6%', width: '30px', height: '30px', borderRight: '1px solid rgba(109,40,217,0.2)', borderTop: '1px solid rgba(109,40,217,0.2)' }} />
         {/* Radial glow */}
-        <div className="absolute" style={{ top: '50%', left: '50%', width: '80%', height: '80%', transform: 'translate(-50%, -50%)', background: 'radial-gradient(circle, rgba(212,168,83,0.08) 0%, transparent 70%)' }} />
+        <div className="absolute" style={{ top: '50%', left: '50%', width: '80%', height: '80%', transform: 'translate(-50%, -50%)', background: 'radial-gradient(circle, rgba(109,40,217,0.08) 0%, transparent 70%)' }} />
       </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-10 sm:px-14 max-w-full">
         {slide.slideNumber && slide.totalSlides && (
-          <span className="text-[10px] font-sans font-medium tracking-[0.3em] uppercase mb-6" style={{ color: 'rgba(212,168,83,0.5)' }}>
+          <span className="text-[10px] font-sans font-medium tracking-[0.3em] uppercase mb-6" style={{ color: 'rgba(109,40,217,0.5)' }}>
             {slide.slideNumber} / {slide.totalSlides}
           </span>
         )}
@@ -292,16 +292,16 @@ function LwAmberTemplate({ slide, fontFamily, showWatermark }: Omit<Props, 'aspe
 
         {slide.subtitle && (
           <div className="mt-6 flex items-center gap-3">
-            <div className="h-px w-10" style={{ backgroundColor: 'rgba(212,168,83,0.4)' }} />
-            <p className="text-xs font-sans font-semibold uppercase tracking-[0.3em]" style={{ color: '#D4A853' }}>
+            <div className="h-px w-10" style={{ backgroundColor: 'rgba(109,40,217,0.4)' }} />
+            <p className="text-xs font-sans font-semibold uppercase tracking-[0.3em]" style={{ color: '#6D28D9' }}>
               {slide.subtitle}
             </p>
-            <div className="h-px w-10" style={{ backgroundColor: 'rgba(212,168,83,0.4)' }} />
+            <div className="h-px w-10" style={{ backgroundColor: 'rgba(109,40,217,0.4)' }} />
           </div>
         )}
 
         {showWatermark && (
-          <span className="mt-8 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(212,168,83,0.25)' }}>
+          <span className="mt-8 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: 'rgba(109,40,217,0.25)' }}>
             Living Word
           </span>
         )}

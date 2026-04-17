@@ -8,8 +8,8 @@ export const BRAND = {
   site: 'www.livingwordgo.com',
   logoPath: '/logo-livingword.png',
   colors: {
-    gold: '#D4A853',
-    brown: '#6B4F3A',
+    gold: '#6D28D9',
+    brown: '#1E1240',
     muted: '#999999',
   },
 } as const;

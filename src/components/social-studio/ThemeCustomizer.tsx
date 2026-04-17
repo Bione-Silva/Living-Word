@@ -49,7 +49,7 @@ const textColorPresets = [
   { id: 'cream', label: 'Creme', color: '#FFF8E7', preview: '#FFF8E7' },
   { id: 'amber', label: 'Âmbar', color: '#FBBF24', preview: '#FBBF24' },
   { id: 'slate', label: 'Slate', color: '#1F2937', preview: '#1F2937' },
-  { id: 'espresso', label: 'Espresso', color: '#3D2B1F', preview: '#3D2B1F' },
+  { id: 'espresso', label: 'Espresso', color: '#0F0A18', preview: '#0F0A18' },
 ];
 
 const labels = {

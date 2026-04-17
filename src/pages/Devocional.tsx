@@ -313,9 +313,9 @@ function BibleRichText({ text, className }: { text: string; className?: string }
         if (linkMatch) {
           const [, label, href] = linkMatch;
           if (href.startsWith('/biblia') || href.startsWith('/bible')) {
-            return <button key={i} onClick={() => (window as any).__openBibleDrawer?.()} className="underline decoration-1 underline-offset-2 font-bold transition-colors hover:opacity-80 cursor-pointer" style={{ color: '#D4A853' }}>{label}</button>;
+            return <button key={i} onClick={() => (window as any).__openBibleDrawer?.()} className="underline decoration-1 underline-offset-2 font-bold transition-colors hover:opacity-80 cursor-pointer" style={{ color: '#6D28D9' }}>{label}</button>;
           }
-          return <button key={i} onClick={() => (window as any).__openBibleDrawer?.()} className="underline decoration-1 underline-offset-2 font-bold transition-colors hover:opacity-80 cursor-pointer" style={{ color: '#D4A853' }}>{label}</button>;
+          return <button key={i} onClick={() => (window as any).__openBibleDrawer?.()} className="underline decoration-1 underline-offset-2 font-bold transition-colors hover:opacity-80 cursor-pointer" style={{ color: '#6D28D9' }}>{label}</button>;
         }
         return <span key={i}>{part}</span>;
       })}
@@ -603,7 +603,7 @@ export default function Devocional() {
 
   /* ─── Styles ─── */
   const colors = {
-    bg: '#F5F0E8',
+    bg: '#F5E6B2',
     text: '#2C2416',
     textMuted: 'hsl(24, 18%, 45%)',
     gold: '#C9A84C',

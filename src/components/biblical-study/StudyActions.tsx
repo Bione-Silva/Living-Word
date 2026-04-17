@@ -285,9 +285,9 @@ function buildHTMLContent(study: BiblicalStudyOutput, lang: 'PT' | 'EN' | 'ES'):
   let html = `<div style="${baseStyle}font-family:Arial,sans-serif;">`;
 
   // Brand header
-  html += `<div style="display:flex;align-items:center;gap:10px;padding-bottom:10px;margin-bottom:16px;border-bottom:2px solid #D4A853;">
+  html += `<div style="display:flex;align-items:center;gap:10px;padding-bottom:10px;margin-bottom:16px;border-bottom:2px solid #6D28D9;">
     <img src="/logo-livingword.png" style="height:36px;width:36px;object-fit:contain;" alt="Living Word" />
-    <span style="font-family:Georgia,serif;font-size:14px;font-weight:bold;color:#6B4F3A;">Living Word</span>
+    <span style="font-family:Georgia,serif;font-size:14px;font-weight:bold;color:#1E1240;">Living Word</span>
   </div>`;
 
   html += `<h1 style="font-size:24px;margin-bottom:8px;color:#000;">${study.verdade_central.frase_central}</h1>`;

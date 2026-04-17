@@ -58,13 +58,13 @@ const typeLabels: Record<string, Record<L, string>> = {
 
 /* ═══ Color palette rotation ═══ */
 const SLIDE_PALETTES = [
-  { bg: '#1E2A3A', bgEnd: '#162030', text: '#E8DCC8', accent: '#D4A853' },       // dark navy
-  { bg: '#F5F0E8', bgEnd: '#EDE6DA', text: '#3D2E1F', accent: '#B8935A' },       // warm parchment
+  { bg: '#1E2A3A', bgEnd: '#162030', text: '#E8DCC8', accent: '#6D28D9' },       // dark navy
+  { bg: '#F5E6B2', bgEnd: '#EDE6DA', text: '#3D2E1F', accent: '#B8935A' },       // warm parchment
   { bg: '#1A2F26', bgEnd: '#142820', text: '#D6CFC0', accent: '#8BAF7E' },       // forest dark
   { bg: '#FAF6F0', bgEnd: '#F0EBE2', text: '#4A3728', accent: '#9B7E4F' },       // off-white
   { bg: '#2C1F1A', bgEnd: '#201510', text: '#E3D5C5', accent: '#C89B5E' },       // espresso
   { bg: '#F2EDE5', bgEnd: '#E8E0D5', text: '#3B3124', accent: '#A6845A' },       // light tan
-  { bg: '#1A2540', bgEnd: '#121B30', text: '#DDDAE0', accent: '#D4A853' },       // midnight blue
+  { bg: '#1A2540', bgEnd: '#121B30', text: '#DDDAE0', accent: '#6D28D9' },       // midnight blue
   { bg: '#EDE8DF', bgEnd: '#E0DAD0', text: '#3D2E1F', accent: '#C4A05C' },       // cream
 ];
 
