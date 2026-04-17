@@ -707,7 +707,7 @@ export default function AppLayout() {
                     onClick={() => !collapsed && toggleGroup(group.key)}
                     className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isOpen
-                        ? 'text-sidebar-primary bg-sidebar-accent/30'
+                        ? 'text-sidebar-foreground bg-sidebar-accent/30'
                         : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                     }`}
                   >
@@ -715,7 +715,7 @@ export default function AppLayout() {
                     {!collapsed && (
                       <>
                         <span className="flex-1 text-left">{group.label[lang]}</span>
-                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'} ${isOpen ? 'text-sidebar-primary' : 'text-sidebar-foreground/40'}`} />
+                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'} ${isOpen ? 'text-sidebar-foreground' : 'text-sidebar-foreground/40'}`} />
                       </>
                     )}
                   </button>
