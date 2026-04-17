@@ -166,7 +166,7 @@ export function InlineVerseToolbar({
 
       {/* Actions */}
       <button onClick={handleFavorite} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Star className={`h-4 w-4 ${allFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground'}`} />
+        <Star className={`h-4 w-4 ${allFavorited ? 'text-primary fill-primary' : 'text-muted-foreground'}`} />
       </button>
       <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-muted transition-colors">
         <Copy className="h-4 w-4 text-muted-foreground" />

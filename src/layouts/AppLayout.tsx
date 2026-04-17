@@ -123,6 +123,7 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const isBibleRoute = location.pathname === '/bible';
 
   // Force light theme (Divine White #F8F6FF) across all authenticated screens —
   // matches the look of MindProfile and keeps Bible/reading/writing surfaces light.
@@ -233,7 +234,7 @@ export default function AppLayout() {
      ═══════════════════════════════════════════════════════════════ */
   if (isMobile) {
     return (
-      <div className="theme-app h-[100dvh] bg-background flex flex-col">
+      <div className={`${isBibleRoute ? 'bible-light bg-background' : 'theme-app bg-background'} h-[100dvh] flex flex-col`}>
         <ThemeInjector />
         <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border px-4 pt-[calc(env(safe-area-inset-top,0px)+1.25rem)] pb-3 min-h-[calc(4rem+env(safe-area-inset-top,0px))] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2 min-w-0 flex-1 pr-3">
@@ -261,12 +262,12 @@ export default function AppLayout() {
           <PWAInstallBanner />
         </div>
 
-        <main className="flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-[calc(5rem+env(safe-area-inset-bottom))]">
+        <main className={`flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-[calc(5rem+env(safe-area-inset-bottom))] ${isBibleRoute ? 'bible-light bible-light-surface' : ''}`}>
           <Outlet />
         </main>
 
         {/* ─── Mobile BottomNavBar: 5 items ─── */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border px-2 py-1 safe-area-bottom">
+        <nav className={`fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border px-2 py-1 safe-area-bottom ${isBibleRoute ? 'bible-light' : ''}`}>
           <div className="flex justify-around items-center">
             <Link
               to="/dashboard"

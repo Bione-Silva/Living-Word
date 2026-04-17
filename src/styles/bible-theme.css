@@ -1,0 +1,21 @@
+.bible-light {
+  --background: 0 0% 100%;
+  --foreground: 261 41% 7%;
+  --card: 0 0% 100%;
+  --card-foreground: 261 41% 7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 261 41% 7%;
+  --secondary: 270 43% 97%;
+  --secondary-foreground: 261 41% 7%;
+  --muted: 270 35% 97%;
+  --muted-foreground: 257 18% 38%;
+  --accent: 270 43% 96%;
+  --accent-foreground: 263 70% 50%;
+  --border: 270 24% 88%;
+  --input: 270 24% 88%;
+  --ring: 263 70% 50%;
+}
+
+.bible-light-surface {
+  background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(270 43% 99%) 100%);
+}

@@ -74,7 +74,7 @@ export function FavoritesSidebar({ open, onOpenChange, onNavigate, refreshKey = 
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-[320px] sm:w-[360px] p-0 border-r border-border bg-card">
+      <SheetContent side="left" className="bible-light w-[320px] sm:w-[360px] p-0 border-r border-border bg-card">
         <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center">
