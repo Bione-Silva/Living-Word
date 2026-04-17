@@ -53,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.info('[Auth] Fetching profile for userId:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -60,6 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (data && !error) {
+        if (data.id !== userId) {
+          console.error('[Auth] CRITICAL: profile.id mismatch with auth user', { authId: userId, profileId: data.id });
+          return;
+        }
+        console.info('[Auth] Profile loaded:', { id: data.id, name: data.full_name });
         setProfile({
           id: data.id,
           full_name: data.full_name || '',
@@ -95,11 +101,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, nextSession) => {
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      console.info('[Auth] onAuthStateChange:', event, 'user:', nextSession?.user?.id, nextSession?.user?.email);
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
 
       if (nextSession?.user) {
+        setProfile(null); // clear stale profile before fetching the new one
         setTimeout(() => fetchProfile(nextSession.user.id), 0);
       } else {
         setProfile(null);
@@ -109,6 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     supabase.auth.getSession().then(({ data: { session: nextSession } }) => {
+      console.info('[Auth] Initial getSession user:', nextSession?.user?.id, nextSession?.user?.email);
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
 
@@ -143,8 +152,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn('[Auth] signOut error (continuing cleanup):', e);
+    }
+    // Defensive cleanup: remove any lingering Supabase auth tokens from local/session storage.
+    try {
+      const purge = (storage: Storage) => {
+        const keys: string[] = [];
+        for (let i = 0; i < storage.length; i++) {
+          const k = storage.key(i);
+          if (!k) continue;
+          if (k.startsWith('sb-') || k.startsWith('supabase.auth.') || k.includes('-auth-token')) {
+            keys.push(k);
+          }
+        }
+        keys.forEach((k) => storage.removeItem(k));
+      };
+      purge(window.localStorage);
+      purge(window.sessionStorage);
+    } catch (e) {
+      console.warn('[Auth] Storage purge failed:', e);
+    }
     setProfile(null);
+    setSession(null);
+    setUser(null);
   };
 
   const refreshProfile = async () => {
