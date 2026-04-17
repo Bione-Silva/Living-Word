@@ -105,7 +105,7 @@ export default function Login() {
           <p className="text-sm mt-2" style={{ color: C.textMuted }}>
             {forgotMode
               ? (t('auth.forgot') || 'Recuperar senha')
-              : 'Sua plataforma pastoral inteligente'}
+              : 'Sua plataforma bíblica inteligente'}
           </p>
         </div>
 
