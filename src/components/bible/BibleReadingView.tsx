@@ -247,9 +247,9 @@ export function BibleReadingView({
   return (
     <div className="space-y-4">
       {/* Breadcrumb: Home > Book > Cap N ▾  ... Version  */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-sm">
+      <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 md:border-0 md:bg-transparent md:p-0">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
             <button onClick={onHome} className="p-1.5 rounded-md hover:bg-muted transition-colors">
               <Home className="h-4 w-4 text-muted-foreground" />
             </button>
@@ -314,7 +314,7 @@ export function BibleReadingView({
         </div>
 
         {/* Version indicator bar */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background border border-border">
           <BookOpen className="h-3.5 w-3.5 text-primary/60 shrink-0" />
           <span className="text-[11px] text-primary/80 font-medium truncate">
             {name} {chapter} — {getTranslationLabelByCode(translation)}
@@ -341,7 +341,7 @@ export function BibleReadingView({
       </div>
 
       {/* Verses */}
-      <div className="min-h-[400px]">
+      <div className="min-h-[400px] rounded-2xl border border-border bg-card p-3 md:p-4">
         {(loading || retrying) ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -359,7 +359,7 @@ export function BibleReadingView({
             </button>
           </div>
         ) : (
-          <div className="space-y-0">
+          <div className="space-y-1">
             {verses.map((v, idx) => {
               const isSelected = selectedVerses.has(v.verse);
               const hlClass = highlights[v.verse] ? highlightClassMap[highlights[v.verse]] || '' : '';
@@ -372,11 +372,11 @@ export function BibleReadingView({
                   key={v.verse}
                   id={`verse-${v.verse}`}
                   className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
-                    isUrlHighlight
-                      ? 'bg-primary/15 ring-2 ring-primary/40 animate-pulse'
-                      : isSelected
-                        ? 'bg-primary/8 ring-1 ring-primary/20'
-                        : hlClass || 'hover:bg-muted/40'
+                      isUrlHighlight
+                        ? 'bg-primary/10 ring-2 ring-primary/30 animate-pulse'
+                        : isSelected
+                          ? 'bg-primary/5 ring-1 ring-primary/20'
+                          : hlClass || 'hover:bg-muted/40'
                   }`}
                 >
                   {/* Verse number badge */}
@@ -437,7 +437,7 @@ export function BibleReadingView({
       </div>
 
       {/* Bottom nav */}
-      <div className="flex items-center justify-between pt-4 border-t border-border">
+      <div className="flex items-center justify-between rounded-2xl border border-border bg-card px-3 py-3">
         <button
           onClick={() => chapter > 1 && onChapterChange(chapter - 1)}
           disabled={chapter <= 1}

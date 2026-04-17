@@ -167,7 +167,7 @@ export function ReadingPlans({ onNavigate }: Props) {
               className={`shrink-0 flex flex-col items-center gap-1 px-4 py-3 rounded-xl border transition-all ${
                 activePlan === p.id
                   ? 'bg-primary/10 border-primary/50'
-                  : 'bg-card border-border hover:border-primary/30'
+                  : 'bg-background border-border hover:border-primary/30'
               }`}
             >
               <span className="text-xl">{p.emoji}</span>
@@ -186,7 +186,7 @@ export function ReadingPlans({ onNavigate }: Props) {
         const isComplete = done.size >= plan.totalDays;
 
         return (
-          <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-foreground">{plan.name[lang]}</span>
               <div className="flex items-center gap-2">
@@ -205,7 +205,7 @@ export function ReadingPlans({ onNavigate }: Props) {
                   <div
                     key={i}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      isToday ? 'bg-primary/10 ring-1 ring-primary/30' : isDone ? 'bg-primary/5' : 'hover:bg-muted/50'
+                      isToday ? 'bg-primary/10 ring-1 ring-primary/30' : isDone ? 'bg-primary/5' : 'bg-background hover:bg-muted/40'
                     }`}
                   >
                     <button
