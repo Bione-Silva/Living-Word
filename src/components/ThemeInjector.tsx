@@ -2,14 +2,9 @@ import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
- * Maps theme_color names from the wizard to HSL values for --primary injection.
+ * The authenticated app follows the fixed Warm Parchment palette from the
+ * project design system. User profile theme colors must not override it.
  */
-/**
- * NOTE: With the new Purple identity, the global --primary token IS the brand.
- * We no longer override --primary from the user profile theme_color to avoid
- * breaking the unified palette. Only the font_family is injected dynamically.
- */
-const COLOR_MAP: Record<string, string> = {};
 
 /**
  * Maps font_family names from the wizard to CSS font-family stacks.
@@ -25,8 +20,7 @@ const FONT_MAP: Record<string, string> = {
 };
 
 /**
- * Injects the user's selected theme_color and font_family as CSS custom properties
- * on the document root, enabling dynamic theming across the authenticated app.
+ * Injects only typography custom properties while preserving the fixed app palette.
  */
 export function ThemeInjector() {
   const { profile } = useAuth();
@@ -34,8 +28,8 @@ export function ThemeInjector() {
   useEffect(() => {
     const root = document.documentElement;
 
-    // Primary color is now globally fixed to the Purple brand identity.
-    // (theme_color from profile is intentionally ignored.)
+    // The authenticated palette is fixed by the design system.
+    // profile.theme_color is intentionally ignored here.
 
     // Inject font family
     const fontKey = profile?.font_family || 'cormorant';
