@@ -51,7 +51,7 @@ function getUserPrompt(lang: Lang, dateStr: string): string {
   return `Escreva o devocional do dia ${dateStr} em Português (Brasil).
 Tema/categoria: "${category}".
 Escolha um versículo bíblico que se conecte com o tema.
-Lembre-se: a soma total de título + versículo + corpo + oração precisa caber em 1m30s a 2min de áudio (225–300 palavras no total). Seja conciso, pastoral e profundo.
+Lembre-se: o áudio final TEM que durar MENOS de 2 minutos. Soma total de todos os campos: 200–280 palavras. body_text entre 120 e 160 palavras. Oração curta (25–40 palavras). Seja conciso, pastoral e profundo.
 Retorne APENAS o objeto JSON.`
 }
 
