@@ -10,7 +10,7 @@ import type { MindFullData } from '@/data/minds';
 import { minds } from '@/data/minds';
 import {
   Database, Fingerprint, Zap, Sparkles, Shield, BookOpen,
-  PenTool, Users, GraduationCap, BookMarked, ChevronRight, Cpu, ScrollText, ArrowLeftRight
+  PenTool, Users, GraduationCap, BookMarked, ChevronRight, Cpu, ScrollText, ArrowLeftRight, ArrowLeft
 } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
