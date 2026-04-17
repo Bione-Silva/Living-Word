@@ -25,8 +25,8 @@
     --muted: 215 28% 17%;              /* Stone Gray */
     --muted-foreground: 281 62% 90%;   /* Soft Lavender */
 
-    --accent: 43 80% 46%;              /* Sacred Gold */
-    --accent-foreground: 261 41% 7%;
+    --accent: 270 43% 92%;             /* Soft Lavender (was Sacred Gold) */
+    --accent-foreground: 263 70% 50%;  /* Word Primary */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -83,8 +83,8 @@
     --muted: 270 43% 95%;              /* lavender bem claro */
     --muted-foreground: 257 20% 30%;
 
-    --accent: 43 80% 46%;              /* Sacred Gold */
-    --accent-foreground: 261 41% 7%;
+    --accent: 270 43% 92%;             /* Soft Lavender — replaces Sacred Gold */
+    --accent-foreground: 263 70% 50%;  /* Word Primary on lavender */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -130,8 +130,8 @@
     --muted: 215 28% 17%;              /* Stone Gray */
     --muted-foreground: 281 62% 90%;   /* Soft Lavender */
 
-    --accent: 43 80% 46%;              /* Sacred Gold */
-    --accent-foreground: 261 41% 7%;
+    --accent: 256 56% 22%;             /* Deep purple — replaces Sacred Gold in dark mode */
+    --accent-foreground: 240 50% 99%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -235,7 +235,7 @@
     --tw-prose-bullets: hsl(257 15% 35%);
     --tw-prose-hr: hsl(47 30% 78%);
     --tw-prose-quotes: hsl(263 70% 50%);
-    --tw-prose-quote-borders: hsl(43 80% 46%);
+    --tw-prose-quote-borders: hsl(263 70% 50%);
     --tw-prose-code: hsl(257 25% 18%);
     --tw-prose-th-borders: hsl(47 30% 78%);
     --tw-prose-td-borders: hsl(281 40% 90%);
