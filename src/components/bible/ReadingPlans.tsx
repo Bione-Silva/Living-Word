@@ -190,7 +190,7 @@ export function ReadingPlans({ onNavigate }: Props) {
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-foreground">{plan.name[lang]}</span>
               <div className="flex items-center gap-2">
-                {isComplete && <Trophy className="h-3.5 w-3.5 text-yellow-500" />}
+                {isComplete && <Trophy className="h-3.5 w-3.5 text-primary" />}
                 <span className="text-[10px] text-muted-foreground">{done.size}/{plan.totalDays}</span>
               </div>
             </div>

@@ -245,7 +245,7 @@ export function BibleReadingView({
   const chapterNumbers = Array.from({ length: totalChapters }, (_, i) => i + 1);
 
   return (
-    <div className="space-y-4">
+    <div className="bible-light space-y-4">
       {/* Breadcrumb: Home > Book > Cap N ▾  ... Version  */}
       <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 md:border-0 md:bg-transparent md:p-0">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

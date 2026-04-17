@@ -257,7 +257,7 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent side="right" className="w-[380px] sm:w-[440px] p-0 border-l border-border bg-card">
+      <SheetContent side="right" className="bible-light w-[380px] sm:w-[440px] p-0 border-l border-border bg-card">
         <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
