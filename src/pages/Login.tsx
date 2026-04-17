@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
+import { Eye, EyeOff } from 'lucide-react';
 import loginBg from '@/assets/login-bg.jpg';
 
 // Purple palette (matches brand purple #1a1346 family)
@@ -30,6 +31,7 @@ const C = {
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
   const { signIn } = useAuth();
@@ -135,15 +137,29 @@ export default function Login() {
             {!forgotMode && (
               <div className="space-y-2">
                 <Label htmlFor="password" className="font-medium" style={{ color: C.textSoft }}>{t('auth.password') || 'Senha'}</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  style={{ borderColor: C.border, backgroundColor: C.inputBg, color: C.text }}
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    style={{ borderColor: C.border, backgroundColor: C.inputBg, color: C.text }}
+                    placeholder="••••••••"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                    aria-pressed={showPassword}
+                    tabIndex={-1}
+                    className="absolute inset-y-0 right-0 flex items-center justify-center px-3 rounded-r-md transition-colors hover:opacity-70"
+                    style={{ color: C.textMuted }}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
             )}
 
