@@ -556,8 +556,76 @@ export default function Devocional() {
     });
   }, [displayDate, displayTitle]);
 
+  const getOrCreateShareLink = useCallback(async (): Promise<string> => {
+    if (shareUrl) return shareUrl;
+    if (!user || !displayDate) throw new Error('share-unavailable');
+
+    setShareUrlLoading(true);
+    try {
+      const dateOnly = displayDate.slice(0, 10);
+      // Try to find existing token for this user + date
+      const { data: existing } = await supabase
+        .from('devocional_compartilhamentos' as any)
+        .select('share_token')
+        .eq('user_id', user.id)
+        .eq('devocional_date', dateOnly)
+        .maybeSingle();
+
+      let token = (existing as any)?.share_token as string | undefined;
+
+      if (!token) {
+        token = crypto.randomUUID();
+        const { error: insertErr } = await supabase
+          .from('devocional_compartilhamentos' as any)
+          .insert({
+            user_id: user.id,
+            devocional_date: dateOnly,
+            share_token: token,
+          } as any);
+        if (insertErr) throw insertErr;
+      }
+
+      const url = `${window.location.origin}/devocional/publico/${token}`;
+      setShareUrl(url);
+      return url;
+    } finally {
+      setShareUrlLoading(false);
+    }
+  }, [shareUrl, user, displayDate]);
+
+  const buildWhatsAppMessage = useCallback((url: string) => {
+    const verseLine = displayVerse
+      ? `${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}`
+      : '';
+    return labels.whatsAppInvite[lang]
+      .replace('{title}', displayTitle)
+      .replace('{verse}', verseLine || displayVerseText || '')
+      .replace('{sender}', senderName)
+      .replace('{url}', url);
+  }, [displayTitle, displayVerse, displayVerseText, lang, preferredBibleVersion, senderName]);
+
+  const copyShareLink = useCallback(async () => {
+    try {
+      const url = await getOrCreateShareLink();
+      await navigator.clipboard.writeText(url);
+      toast.success(labels.linkCopied[lang]);
+    } catch {
+      toast.error(labels.shareImageError[lang]);
+    }
+  }, [getOrCreateShareLink, lang]);
+
   const shareDevotionalImage = useCallback(async (mode: 'download' | 'share' | 'whatsapp') => {
     try {
+      // WhatsApp now sends the public link with a short pastoral invitation —
+      // lighter than an image, opens the devotional inside Living Word, and
+      // surfaces the sender's name to convert the recipient.
+      if (mode === 'whatsapp') {
+        const url = await getOrCreateShareLink();
+        const waText = buildWhatsAppMessage(url);
+        openWhatsAppShare(waText);
+        return;
+      }
+
       const file = await createShareImageFile();
       const canShareFiles = typeof navigator.share === 'function'
         && (typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] }));
@@ -576,29 +644,17 @@ export default function Devocional() {
         return;
       }
 
-      if (mode === 'whatsapp') {
-        if (canShareFiles) {
-          toast.success(labels.whatsappHint[lang]);
-          await navigator.share({
-            title: displayTitle,
-            text: shareCaption,
-            files: [file],
-          });
-          return;
-        }
-
-        // Desktop fallback: download image then open the official WhatsApp share URL with text
-        downloadFile(file);
-        const waText = `✨ *${displayTitle}*\n📖 ${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}\n\n${formattedDisplayDate}\n\n_Anexe a imagem que foi baixada_ 👆`;
-        openWhatsAppShare(waText);
-        toast.success(labels.whatsappFallback[lang]);
-        return;
-      }
+      // mode === 'share' — native share with image + link
+      let url = '';
+      try { url = await getOrCreateShareLink(); } catch { /* optional */ }
+      const captionWithLink = url
+        ? `${buildWhatsAppMessage(url)}`
+        : shareCaption;
 
       if (canShareFiles) {
         await navigator.share({
           title: displayTitle,
-          text: shareCaption,
+          text: captionWithLink,
           files: [file],
         });
         return;
@@ -611,7 +667,8 @@ export default function Devocional() {
         toast.error(labels.shareImageError[lang]);
       }
     }
-  }, [createShareImageFile, displayTitle, displayVerse, downloadFile, formattedDisplayDate, isMobile, lang, preferredBibleVersion, shareCaption]);
+  }, [buildWhatsAppMessage, createShareImageFile, displayTitle, downloadFile, getOrCreateShareLink, isMobile, lang, shareCaption]);
+
 
   /* ─── Styles ─── */
   const colors = {
