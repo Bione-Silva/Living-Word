@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Sparkles, Wand2, Image as ImageIcon, Lock, Crown } from 'lucide-react';
+import { Loader2, Sparkles, Wand2, Image as ImageIcon, Lock, Crown, Database } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -96,6 +96,33 @@ export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm }: Pro
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+
+  // Detecta se o usuário é admin (para mostrar botão de popular banco)
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.rpc('is_admin');
+      setIsAdmin(data === true);
+    })();
+  }, []);
+
+  const handleSeed = async () => {
+    if (!confirm('Gerar 10 cenas curadas no banco compartilhado? (~30s, custo ~$0.39)')) return;
+    setSeeding(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('seed-biblical-scenes', { body: {} });
+      if (error) throw error;
+      const ok = (data?.results || []).filter((r: { status: string }) => r.status === 'created').length;
+      toast.success(`${ok} cenas criadas no banco!`);
+      await loadScenes(searchTerm);
+    } catch (e) {
+      console.error(e);
+      toast.error('Falha ao popular banco');
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const loadScenes = useCallback(async (term?: string) => {
     setLoading(true);
@@ -184,9 +211,22 @@ export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm }: Pro
           ))}
         </div>
       ) : scenes.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border p-6 text-center">
-          <Sparkles className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+        <div className="rounded-xl border border-dashed border-border p-6 text-center space-y-3">
+          <Sparkles className="h-6 w-6 text-muted-foreground mx-auto" />
           <p className="text-xs text-muted-foreground">{l.searchEmpty}</p>
+          {isAdmin && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleSeed}
+              disabled={seeding}
+              className="gap-1.5 mx-auto"
+            >
+              {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5" />}
+              {seeding ? 'Gerando 10 cenas...' : 'Popular banco (admin)'}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
