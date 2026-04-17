@@ -129,7 +129,7 @@ export function PlanOverviewCard() {
             { key: 'sermons', cost: 20, icon: Mic, color: 'text-violet-600 bg-violet-50' },
             { key: 'studies', cost: 30, icon: BookOpen, color: 'text-blue-600 bg-blue-50' },
             { key: 'outlines', cost: 15, icon: FileText, color: 'text-emerald-600 bg-emerald-50' },
-            { key: 'titles', cost: 3, icon: Lightbulb, color: 'text-amber-600 bg-amber-50' },
+            { key: 'titles', cost: 3, icon: Lightbulb, color: 'text-purple-600 bg-purple-50' },
           ].map(({ key, cost, icon: Icon, color }) => {
             const value = remaining > 0 ? Math.floor(remaining / cost) : 0;
             return (
