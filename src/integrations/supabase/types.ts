@@ -148,6 +148,80 @@ export type Database = {
         }
         Relationships: []
       }
+      biblical_scene_library: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          image_url: string
+          is_curated: boolean
+          keywords: string[]
+          prompt: string
+          storage_path: string
+          updated_at: string
+          use_count: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          image_url: string
+          is_curated?: boolean
+          keywords?: string[]
+          prompt: string
+          storage_path: string
+          updated_at?: string
+          use_count?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          image_url?: string
+          is_curated?: boolean
+          keywords?: string[]
+          prompt?: string
+          storage_path?: string
+          updated_at?: string
+          use_count?: number
+        }
+        Relationships: []
+      }
+      biblical_scene_usage: {
+        Row: {
+          created_at: string
+          id: string
+          month_key: string
+          scene_library_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          month_key: string
+          scene_library_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          month_key?: string
+          scene_library_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "biblical_scene_usage_scene_library_id_fkey"
+            columns: ["scene_library_id"]
+            isOneToOne: false
+            referencedRelation: "biblical_scene_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           agent_id: string
@@ -1426,6 +1500,10 @@ export type Database = {
       }
     }
     Functions: {
+      count_user_scene_generations_this_month: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
       get_admin_ai_metrics: { Args: never; Returns: Json }
       get_admin_push_metrics: { Args: never; Returns: Json }
       get_admin_saas_metrics: {
