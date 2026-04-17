@@ -12,20 +12,19 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'text is required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    const apiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
+    const apiKey = Deno.env.get('LOVABLE_API_KEY')
 
     if (apiKey) {
       try {
-        const aiResp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+        const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
           method: 'POST',
           headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'gemini-2.5-flash',
+            model: 'google/gemini-2.5-flash',
             messages: [
               { role: 'system', content: 'Analyze sentiment. Reply with ONLY raw JSON, no markdown: {"sentiment":"positive"|"negative"|"mixed","score":0.0-1.0}' },
               { role: 'user', content: text.slice(0, 2000) },
             ],
-            temperature: 0.1,
             max_tokens: 50,
           }),
         })

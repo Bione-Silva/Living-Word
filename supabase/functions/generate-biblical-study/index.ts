@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = "google/gemini-2.5-flash";
 
 const depthRequirements = {
   basic: {
@@ -190,7 +190,7 @@ async function requestStudyGeneration({
   systemPrompt: string;
   userPrompt: string;
 }) {
-  const aiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+  const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${geminiApiKey}`,
@@ -294,10 +294,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY');
+    const geminiApiKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!geminiApiKey) {
-      return jsonResponse({ error: "GEMINI_API_KEY not configured" }, 500);
+      return jsonResponse({ error: "LOVABLE_API_KEY not configured" }, 500);
     }
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
