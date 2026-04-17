@@ -13,6 +13,7 @@ import {
   BookOpen, Palette, Type, Layout, Mic, Church
 } from 'lucide-react';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
+import { BrandIcon } from '@/components/BrandIcon';
 
 type L = 'PT' | 'EN' | 'ES';
 

@@ -28,6 +28,7 @@ import {
   PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal, Menu, X,
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
+import { BrandIcon } from '@/components/BrandIcon';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
