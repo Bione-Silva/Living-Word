@@ -189,7 +189,7 @@ export default function SocialStudio() {
       setVerseContext({ text: state.verseText, book: state.passage });
       setSlides([{
         text: `"${state.verseText}"`,
-        subtitle: state.passage,
+        subtitle: withVersion(state.passage),
         slideNumber: 1,
         totalSlides: 1,
       }]);
@@ -216,10 +216,10 @@ export default function SocialStudio() {
 
   const handleVerseGenerated = useCallback((v: { text: string; book: string; topic_image: string }) => {
     setVerseContext({ text: v.text, book: v.book });
-    setSlides([{ text: `"${v.text}"`, subtitle: v.book, slideNumber: 1, totalSlides: 1 }]);
+    setSlides([{ text: `"${v.text}"`, subtitle: withVersion(v.book), slideNumber: 1, totalSlides: 1 }]);
     setSlideCount(1);
     setPresentationMode(false);
-  }, []);
+  }, [versionLabel]);
 
   const handleTextGenerated = useCallback((text: string) => {
     const truncated = text.length > 280 ? text.slice(0, 277) + '…' : text;
@@ -247,7 +247,7 @@ export default function SocialStudio() {
         const total = result.length;
         const built: SlideData[] = result.map((s, i) => ({
           text: s.type === 'verse' ? `"${s.content}"` : s.title,
-          subtitle: s.type === 'verse' ? verseContext.book : s.content,
+          subtitle: s.type === 'verse' ? withVersion(verseContext.book) : s.content,
           slideNumber: i + 1,
           totalSlides: total,
         }));
