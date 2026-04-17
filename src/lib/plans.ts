@@ -9,6 +9,7 @@ export type PlanFeature =
   | 'pesquisa_basica'
   | 'criacao_core'
   | 'criacao_extras'
+  | 'social_studio'
   | 'youtube_to_blog'
   | 'mentes_brilhantes'
   | 'ilustracoes'
@@ -23,6 +24,14 @@ export type PlanFeature =
   | 'suporte_prioritario'
   | 'suporte_vip'
   | 'biblioteca_ilimitada';
+
+// ── Cota mensal de geração nova de imagem bíblica (com IA) ──
+export const BIBLICAL_SCENE_QUOTA: Record<PlanSlug, number> = {
+  free: 0,
+  starter: 0,
+  pro: 20,
+  igreja: 50,
+};
 
 // ── Plan hierarchy (lower index = lower tier) ──
 const PLAN_ORDER: PlanSlug[] = ['free', 'starter', 'pro', 'igreja'];
