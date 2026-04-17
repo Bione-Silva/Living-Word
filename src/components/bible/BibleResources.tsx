@@ -228,7 +228,7 @@ export function BibleResources() {
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex items-center gap-1 bg-muted/60 rounded-lg p-1 border border-border/50">
+      <div className="flex items-center gap-1 rounded-2xl border border-border bg-background p-1">
         {tabs.map(t => (
           <button
             key={t.key}
@@ -236,7 +236,7 @@ export function BibleResources() {
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-md text-xs font-semibold transition-all ${
               tab === t.key
                 ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-foreground/70 bg-card/50 border border-border/40 hover:text-foreground hover:bg-card'
+                : 'text-foreground/70 bg-background border border-border/40 hover:text-foreground hover:bg-card'
             }`}
           >
             <t.icon className="h-3.5 w-3.5" />
@@ -251,7 +251,7 @@ export function BibleResources() {
           {mapItems.map((item, i) => (
             <Collapsible key={i}>
               <CollapsibleTrigger asChild>
-                <button className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors text-left group">
+                  <button className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors text-left group">
                   <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
                     <item.icon className="h-4 w-4 text-primary" />
                   </div>
@@ -359,7 +359,7 @@ export function BibleResources() {
               <button
                 key={bookId}
                 onClick={() => setSelectedContextBook(bookId)}
-                className="flex items-center gap-2 p-2.5 rounded-lg border border-border bg-card hover:bg-muted/50 hover:border-primary/30 transition-all text-left text-sm text-foreground group"
+                className="flex items-center gap-2 p-2.5 rounded-lg border border-border bg-card hover:bg-muted/40 hover:border-primary/30 transition-all text-left text-sm text-foreground group"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                 <span className="flex-1">{getBookName(bookId, lang)}</span>
