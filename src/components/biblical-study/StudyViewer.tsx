@@ -207,7 +207,7 @@ export function StudyViewer({ study }: StudyViewerProps) {
           <AccordionContent className="space-y-3 pb-4">
             {[
               { label: t('believe'), value: study.aplicacao.crer, color: 'bg-blue-500' },
-              { label: t('change'), value: study.aplicacao.mudar, color: 'bg-amber-500' },
+              { label: t('change'), value: study.aplicacao.mudar, color: 'bg-purple-500' },
               { label: t('act'), value: study.aplicacao.agir, color: 'bg-green-500' },
             ].filter(item => item.value).map((item) => (
               <div key={item.label} className="flex items-start gap-3">
