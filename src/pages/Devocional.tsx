@@ -6,7 +6,7 @@ import {
   BookOpen, ArrowLeft, Calendar, MessageCircle,
   Play, Pause, Volume2, VolumeX, Share2, Copy, ListChecks,
   PenLine, Send, Download, Image as ImageIcon, Clock, Check,
-  Mic, User, UserRound
+  Mic, User, UserRound, Link2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -71,6 +71,14 @@ const labels = {
   saveImage: { PT: 'Baixar arte', EN: 'Download art', ES: 'Descargar arte' },
   share: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   shareWa: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
+  copyLink: { PT: 'Copiar link', EN: 'Copy link', ES: 'Copiar enlace' },
+  linkCopied: { PT: 'Link copiado! Cole no WhatsApp ou onde quiser.', EN: 'Link copied! Paste it in WhatsApp or anywhere.', ES: '¡Enlace copiado! Pégalo en WhatsApp o donde quieras.' },
+  preparingLink: { PT: 'Preparando link...', EN: 'Preparing link...', ES: 'Preparando enlace...' },
+  whatsAppInvite: {
+    PT: '✨ *{title}*\n📖 {verse}\n\n_{sender} enviou este devocional pra você através da Living Word — sua dose diária de Palavra._\n\n👉 Abra e leia: {url}',
+    EN: '✨ *{title}*\n📖 {verse}\n\n_{sender} sent you this devotional through Living Word — your daily dose of the Word._\n\n👉 Open and read: {url}',
+    ES: '✨ *{title}*\n📖 {verse}\n\n_{sender} te envió este devocional a través de Living Word — tu dosis diaria de la Palabra._\n\n👉 Abre y lee: {url}',
+  },
   deepenChat: { PT: 'Continuar no Chat', EN: 'Continue in Chat', ES: 'Continuar en el Chat' },
   journal: { PT: '✍️ Minha Reflexão Pessoal', EN: '✍️ My Personal Reflection', ES: '✍️ Mi Reflexión Personal' },
   journalSub: {
@@ -342,6 +350,9 @@ export default function Devocional() {
   const [bibleDrawerOpen, setBibleDrawerOpen] = useState(false);
   const shareArtRef = useRef<HTMLDivElement>(null);
   const [preferredBibleVersion, setPreferredBibleVersion] = useState('NVI');
+  const [senderName, setSenderName] = useState<string>('');
+  const [shareUrl, setShareUrl] = useState<string>('');
+  const [shareUrlLoading, setShareUrlLoading] = useState(false);
 
   // Register global callback for BibleRichText links
   useEffect(() => {
@@ -396,11 +407,12 @@ export default function Devocional() {
     const load = async () => {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('language, bible_version')
+        .select('language, bible_version, full_name')
         .eq('id', user.id)
         .single();
       const userLang = profile?.language || lang;
       setPreferredBibleVersion(profile?.bible_version || 'NVI');
+      setSenderName(profile?.full_name?.trim() || (lang === 'PT' ? 'Um amigo' : lang === 'ES' ? 'Un amigo' : 'A friend'));
       const { data } = await supabase
         .from('devotionals')
         .select('id, title, category, anchor_verse, anchor_verse_text, scheduled_date, body_text, cover_image_url, audio_url_nova, audio_url_alloy, audio_url_onyx')
@@ -544,8 +556,76 @@ export default function Devocional() {
     });
   }, [displayDate, displayTitle]);
 
+  const getOrCreateShareLink = useCallback(async (): Promise<string> => {
+    if (shareUrl) return shareUrl;
+    if (!user || !displayDate) throw new Error('share-unavailable');
+
+    setShareUrlLoading(true);
+    try {
+      const dateOnly = displayDate.slice(0, 10);
+      // Try to find existing token for this user + date
+      const { data: existing } = await supabase
+        .from('devocional_compartilhamentos' as any)
+        .select('share_token')
+        .eq('user_id', user.id)
+        .eq('devocional_date', dateOnly)
+        .maybeSingle();
+
+      let token = (existing as any)?.share_token as string | undefined;
+
+      if (!token) {
+        token = crypto.randomUUID();
+        const { error: insertErr } = await supabase
+          .from('devocional_compartilhamentos' as any)
+          .insert({
+            user_id: user.id,
+            devocional_date: dateOnly,
+            share_token: token,
+          } as any);
+        if (insertErr) throw insertErr;
+      }
+
+      const url = `${window.location.origin}/devocional/publico/${token}`;
+      setShareUrl(url);
+      return url;
+    } finally {
+      setShareUrlLoading(false);
+    }
+  }, [shareUrl, user, displayDate]);
+
+  const buildWhatsAppMessage = useCallback((url: string) => {
+    const verseLine = displayVerse
+      ? `${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}`
+      : '';
+    return labels.whatsAppInvite[lang]
+      .replace('{title}', displayTitle)
+      .replace('{verse}', verseLine || displayVerseText || '')
+      .replace('{sender}', senderName)
+      .replace('{url}', url);
+  }, [displayTitle, displayVerse, displayVerseText, lang, preferredBibleVersion, senderName]);
+
+  const copyShareLink = useCallback(async () => {
+    try {
+      const url = await getOrCreateShareLink();
+      await navigator.clipboard.writeText(url);
+      toast.success(labels.linkCopied[lang]);
+    } catch {
+      toast.error(labels.shareImageError[lang]);
+    }
+  }, [getOrCreateShareLink, lang]);
+
   const shareDevotionalImage = useCallback(async (mode: 'download' | 'share' | 'whatsapp') => {
     try {
+      // WhatsApp now sends the public link with a short pastoral invitation —
+      // lighter than an image, opens the devotional inside Living Word, and
+      // surfaces the sender's name to convert the recipient.
+      if (mode === 'whatsapp') {
+        const url = await getOrCreateShareLink();
+        const waText = buildWhatsAppMessage(url);
+        openWhatsAppShare(waText);
+        return;
+      }
+
       const file = await createShareImageFile();
       const canShareFiles = typeof navigator.share === 'function'
         && (typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] }));
@@ -564,29 +644,17 @@ export default function Devocional() {
         return;
       }
 
-      if (mode === 'whatsapp') {
-        if (canShareFiles) {
-          toast.success(labels.whatsappHint[lang]);
-          await navigator.share({
-            title: displayTitle,
-            text: shareCaption,
-            files: [file],
-          });
-          return;
-        }
-
-        // Desktop fallback: download image then open the official WhatsApp share URL with text
-        downloadFile(file);
-        const waText = `✨ *${displayTitle}*\n📖 ${displayVerse}${preferredBibleVersion ? ` • ${preferredBibleVersion}` : ''}\n\n${formattedDisplayDate}\n\n_Anexe a imagem que foi baixada_ 👆`;
-        openWhatsAppShare(waText);
-        toast.success(labels.whatsappFallback[lang]);
-        return;
-      }
+      // mode === 'share' — native share with image + link
+      let url = '';
+      try { url = await getOrCreateShareLink(); } catch { /* optional */ }
+      const captionWithLink = url
+        ? `${buildWhatsAppMessage(url)}`
+        : shareCaption;
 
       if (canShareFiles) {
         await navigator.share({
           title: displayTitle,
-          text: shareCaption,
+          text: captionWithLink,
           files: [file],
         });
         return;
@@ -599,7 +667,8 @@ export default function Devocional() {
         toast.error(labels.shareImageError[lang]);
       }
     }
-  }, [createShareImageFile, displayTitle, displayVerse, downloadFile, formattedDisplayDate, isMobile, lang, preferredBibleVersion, shareCaption]);
+  }, [buildWhatsAppMessage, createShareImageFile, displayTitle, downloadFile, getOrCreateShareLink, isMobile, lang, shareCaption]);
+
 
   /* ─── Styles ─── */
   const colors = {
@@ -942,27 +1011,40 @@ export default function Devocional() {
                 formattedDate={formattedDisplayDate}
               />
             </div>
+            {/* Primary CTA: WhatsApp with link + sender invitation */}
+            <button
+              onClick={() => shareDevotionalImage('whatsapp')}
+              disabled={shareUrlLoading}
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90 shadow-sm disabled:opacity-60"
+              style={{ backgroundColor: '#25D366', color: '#fff' }}
+            >
+              <WhatsAppIcon />
+              {shareUrlLoading ? labels.preparingLink[lang] : (lang === 'PT' ? 'Enviar pelo WhatsApp' : lang === 'ES' ? 'Enviar por WhatsApp' : 'Send via WhatsApp')}
+            </button>
+
+            {/* Secondary actions */}
             <div className="grid grid-cols-3 gap-2">
               <button
+                onClick={copyShareLink}
+                disabled={shareUrlLoading}
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-medium transition-colors hover:opacity-80 disabled:opacity-60"
+                style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
+              >
+                <Link2 className="h-4 w-4" /> {labels.copyLink[lang]}
+              </button>
+              <button
                 onClick={() => shareDevotionalImage('download')}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Download className="h-4 w-4" /> {labels.saveImage[lang]}
               </button>
               <button
                 onClick={() => shareDevotionalImage('share')}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Share2 className="h-4 w-4" /> {labels.share[lang]}
-              </button>
-              <button
-                onClick={() => shareDevotionalImage('whatsapp')}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
-                style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
-              >
-                <WhatsAppIcon /> {labels.shareWa[lang]}
               </button>
             </div>
             <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-0" aria-hidden="true">
@@ -1035,8 +1117,11 @@ export default function Devocional() {
           <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
-          <button onClick={() => shareDevotionalImage('whatsapp')} disabled={!displayCover} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
+          <button onClick={() => shareDevotionalImage('whatsapp')} disabled={shareUrlLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <WhatsAppIcon /> {labels.shareWa[lang]}
+          </button>
+          <button onClick={copyShareLink} disabled={shareUrlLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
+            <Link2 className="h-3.5 w-3.5" /> {labels.copyLink[lang]}
           </button>
           <button
             onClick={() => shareDevotionalImage('share')}
