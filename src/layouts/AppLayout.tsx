@@ -30,6 +30,7 @@ import {
 import { useState, useCallback } from 'react';
 import { BrandIcon } from '@/components/BrandIcon';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
@@ -122,6 +123,11 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  // Force light theme (Divine White #F8F6FF) across all authenticated screens —
+  // matches the look of MindProfile and keeps Bible/reading/writing surfaces light.
+  useForceLightTheme();
+
 
   // Only ONE group open at a time — stored in localStorage for session persistence
   const [openGroup, setOpenGroup] = useState<string | null>(() => {
