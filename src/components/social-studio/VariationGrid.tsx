@@ -363,6 +363,13 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
             </div>
           ))}
         </div>
+
+        <DownloadSuccessDialog
+          open={savedDialog.open}
+          onOpenChange={(open) => setSavedDialog((s) => ({ ...s, open }))}
+          fileName={savedDialog.fileName}
+          lang={lang}
+        />
       </div>
     );
   }
