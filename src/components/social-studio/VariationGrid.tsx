@@ -220,8 +220,9 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           });
         }
 
-        await pptx.writeFile({ fileName: `living-word-apresentacao-${Date.now()}.pptx` });
-        toast.success(l.pptxReady);
+        const pptxName = `living-word-apresentacao-${Date.now()}.pptx`;
+        await pptx.writeFile({ fileName: pptxName });
+        setSavedDialog({ open: true, fileName: pptxName });
       } catch (err) {
         console.error(err);
         toast.error('Erro ao gerar PPTX');
