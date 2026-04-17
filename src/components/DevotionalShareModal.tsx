@@ -129,18 +129,18 @@ export function DevotionalShareModal({ open, onOpenChange, devotionalTitle, devo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-[hsl(36,30%,97%)] border-[hsl(38,40%,80%)]">
+      <DialogContent className="sm:max-w-md bg-[hsl(252,100%,99%)] border-[hsl(270,43%,92%)]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-serif text-[hsl(24,30%,20%)]">
+          <DialogTitle className="text-xl font-serif text-[hsl(256,56%,16%)]">
             {labels.title[l]}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 pt-2">
           {/* Preview */}
-          <div className="rounded-xl bg-white border border-[hsl(38,40%,85%)] p-4">
-            <p className="font-serif font-bold text-[hsl(24,30%,20%)]">{devotionalTitle}</p>
-            <p className="text-sm text-[hsl(38,52%,48%)] mt-1">📖 {devotionalVerse}</p>
+          <div className="rounded-xl bg-white border border-[hsl(270,43%,92%)] p-4">
+            <p className="font-serif font-bold text-[hsl(256,56%,16%)]">{devotionalTitle}</p>
+            <p className="text-sm text-[hsl(263,70%,50%)] mt-1">📖 {devotionalVerse}</p>
           </div>
 
           {/* Share buttons */}
@@ -163,7 +163,7 @@ export function DevotionalShareModal({ open, onOpenChange, devotionalTitle, devo
               onClick={handleCopy}
               disabled={!shareUrl}
               variant="outline"
-              className="rounded-xl border-[hsl(38,40%,80%)] flex items-center gap-2"
+              className="rounded-xl border-[hsl(270,43%,92%)] flex items-center gap-2"
             >
               {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
               {labels.copyLink[l]}
@@ -171,13 +171,13 @@ export function DevotionalShareModal({ open, onOpenChange, devotionalTitle, devo
           </div>
 
           {/* Description */}
-          <p className="text-xs text-[hsl(24,30%,45%)] text-center leading-relaxed">
+          <p className="text-xs text-[hsl(257,61%,32%)] text-center leading-relaxed">
             {labels.desc[l]}
           </p>
 
           {/* Stats */}
           {totalClicks > 0 && (
-            <div className="flex items-center justify-center gap-2 text-sm text-[hsl(38,52%,48%)] bg-[hsl(38,52%,58%)]/5 rounded-lg py-2">
+            <div className="flex items-center justify-center gap-2 text-sm text-[hsl(263,70%,50%)] bg-[hsl(263,70%,50%)]/5 rounded-lg py-2">
               <BarChart3 className="h-4 w-4" />
               <span className="font-semibold">{totalClicks}</span>
               <span>{labels.totalClicks[l]}</span>

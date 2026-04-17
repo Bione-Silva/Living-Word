@@ -39,7 +39,7 @@ function shortLabel(label: string): string {
 function CompareTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white border border-[hsl(30,15%,85%)] rounded-lg px-3 py-2 shadow-md">
+    <div className="bg-white border border-[hsl(270,43%,92%)] rounded-lg px-3 py-2 shadow-md">
       <p className="text-xs font-semibold text-[hsl(220,15%,20%)] mb-1">{payload[0]?.payload?.axis}</p>
       {payload.map((p: any, i: number) => (
         <div key={i} className="flex items-center gap-2">
@@ -77,10 +77,10 @@ export function CompareMindsDialog({ open, onOpenChange, minds, lang, preSelecte
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) setSelected(preSelectedId ? [preSelectedId] : []); onOpenChange(v); }}>
-      <DialogContent className="bg-white border-[hsl(30,15%,85%)] max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-white border-[hsl(270,43%,92%)] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <DialogTitle className="font-display text-xl flex items-center justify-center gap-2 text-[hsl(220,15%,15%)]">
-            <ArrowLeftRight className="h-5 w-5 text-[hsl(35,45%,45%)]" />
+            <ArrowLeftRight className="h-5 w-5 text-[hsl(257,61%,32%)]" />
             {labels.title[lang]}
           </DialogTitle>
           <DialogDescription className="text-[hsl(220,10%,50%)] text-sm">
@@ -98,15 +98,15 @@ export function CompareMindsDialog({ open, onOpenChange, minds, lang, preSelecte
                 onClick={() => toggle(m.id)}
                 className={`flex items-center gap-2 p-2 rounded-xl border transition-all text-left ${
                   isSelected
-                    ? 'border-[hsl(35,50%,50%)] bg-[hsl(35,40%,95%)] ring-1 ring-[hsl(35,50%,50%)]'
-                    : 'border-[hsl(30,15%,90%)] bg-white hover:border-[hsl(35,30%,80%)]'
+                    ? 'border-[hsl(263,70%,50%)] bg-[hsl(252,100%,99%)] ring-1 ring-[hsl(263,70%,50%)]'
+                    : 'border-[hsl(270,43%,92%)] bg-white hover:border-[hsl(270,43%,92%)]'
                 }`}
               >
                 <img src={m.image} alt={m.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-[hsl(220,15%,20%)] truncate">{m.name}</p>
                   {isSelected && (
-                    <span className="text-[10px] font-bold text-[hsl(35,50%,45%)]">
+                    <span className="text-[10px] font-bold text-[hsl(257,61%,32%)]">
                       {selected.indexOf(m.id) === 0 ? '① ' : '② '}
                       {labels.selected[lang]}
                     </span>
@@ -143,7 +143,7 @@ export function CompareMindsDialog({ open, onOpenChange, minds, lang, preSelecte
             <div className="w-full flex justify-center">
               <ResponsiveContainer width="100%" height={280}>
                 <RadarChart cx="50%" cy="50%" outerRadius="65%" data={chartData}>
-                  <PolarGrid stroke="hsl(30,15%,85%)" />
+                  <PolarGrid stroke="hsl(270, 43%, 92%)" />
                   <PolarAngleAxis dataKey="short" tick={{ fill: 'hsl(220,10%,35%)', fontSize: 10, fontWeight: 600 }} />
                   <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
                   <Radar name={mind1.name} dataKey={mind1.name} stroke="hsl(270,40%,55%)" fill="hsl(270,40%,55%)" fillOpacity={0.25} strokeWidth={2} />
@@ -164,10 +164,10 @@ export function CompareMindsDialog({ open, onOpenChange, minds, lang, preSelecte
                     <p className="text-[11px] font-semibold text-[hsl(220,15%,25%)]">{d.axis}</p>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-mono w-6 text-right text-[hsl(270,40%,55%)]">{v1}</span>
-                      <div className="flex-1 flex h-2 rounded-full overflow-hidden bg-[hsl(30,15%,92%)]">
+                      <div className="flex-1 flex h-2 rounded-full overflow-hidden bg-[hsl(252,100%,99%)]">
                         <div className="h-full bg-[hsl(270,40%,55%)] rounded-l-full" style={{ width: `${v1}%` }} />
                       </div>
-                      <div className="flex-1 flex h-2 rounded-full overflow-hidden bg-[hsl(30,15%,92%)]">
+                      <div className="flex-1 flex h-2 rounded-full overflow-hidden bg-[hsl(252,100%,99%)]">
                         <div className="h-full bg-[hsl(145,50%,42%)] rounded-l-full" style={{ width: `${v2}%` }} />
                       </div>
                       <span className="text-[10px] font-mono w-6 text-[hsl(145,50%,35%)]">{v2}</span>

@@ -272,9 +272,9 @@ export function BrandDNAWizard({ workspaceId, initialData, onSaved }: Props) {
                         className="h-28 rounded-lg flex items-center justify-center text-4xl relative overflow-hidden"
                         style={{
                           background: tmpl.id === 'editorial'
-                            ? '#F8F5F0'
+                            ? '#F8F6FF'
                             : tmpl.id === 'swiss'
-                              ? 'linear-gradient(135deg, #1F2937 50%, #F8F5F0 50%)'
+                              ? 'linear-gradient(135deg, #1F2937 50%, #F8F6FF 50%)'
                               : `linear-gradient(135deg, ${brandColor || '#1B3A5C'}, ${brandColor ? brandColor + '88' : '#1B3A5C88'})`,
                         }}
                       >

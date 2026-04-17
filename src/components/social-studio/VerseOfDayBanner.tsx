@@ -67,7 +67,7 @@ function EditorialVerse({ verse, fontFamily, textColor, backgroundImageUrl, them
           </p>
           <div className="h-px w-6" style={{ backgroundColor: dark ? '#C4AE93' : `${txtColor}44` }} />
         </div>
-        <span className="absolute bottom-2 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#D4C5B3' : `${txtColor}33` }}>
+        <span className="absolute bottom-2 text-[7px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: dark ? '#C9BCE8' : `${txtColor}33` }}>
           Living Word
         </span>
       </div>
@@ -78,9 +78,9 @@ function EditorialVerse({ verse, fontFamily, textColor, backgroundImageUrl, them
 /* ── SWISS ── */
 function SwissVerse({ verse, fontFamily, textColor, themeColor }: { verse: VerseData; fontFamily?: string; textColor?: string; themeColor?: string }) {
   const dark = isDarkText(textColor);
-  const bg = dark ? '#F8F5F0' : baseColor(themeColor);
+  const bg = dark ? '#F8F6FF' : baseColor(themeColor);
   const txtColor = textColor || '#FFFFFF';
-  const lineColor = dark ? '#D4C5B3' : `${txtColor}22`;
+  const lineColor = dark ? '#C9BCE8' : `${txtColor}22`;
   const font = fontFamily || "'Montserrat', 'Helvetica Neue', sans-serif";
 
   return (

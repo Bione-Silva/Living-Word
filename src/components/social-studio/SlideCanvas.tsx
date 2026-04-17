@@ -94,9 +94,9 @@ function EditorialTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColo
    ──────────────────────────────────────────── */
 function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl'>) {
   const dark = isDarkText(textColor);
-  const bg = dark ? '#F8F5F0' : baseColor(themeColor);
+  const bg = dark ? '#F8F6FF' : baseColor(themeColor);
   const txtColor = textColor || '#FFFFFF';
-  const lineColor = dark ? '#D4C5B3' : `${txtColor}22`;
+  const lineColor = dark ? '#C9BCE8' : `${txtColor}22`;
   const font = fontFamily || "'Montserrat', 'Helvetica Neue', sans-serif";
 
   return (

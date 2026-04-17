@@ -59,7 +59,7 @@ const typeLabels: Record<string, Record<L, string>> = {
 /* ═══ Color palette rotation ═══ */
 const SLIDE_PALETTES = [
   { bg: '#1E2A3A', bgEnd: '#162030', text: '#E8DCC8', accent: '#6D28D9' },       // dark navy
-  { bg: '#F5E6B2', bgEnd: '#EDE6DA', text: '#3D2E1F', accent: '#B8935A' },       // warm parchment
+  { bg: '#E8E0F5', bgEnd: '#EDE6DA', text: '#3D2E1F', accent: '#B8935A' },       // warm parchment
   { bg: '#1A2F26', bgEnd: '#142820', text: '#D6CFC0', accent: '#8BAF7E' },       // forest dark
   { bg: '#FAF6F0', bgEnd: '#F0EBE2', text: '#4A3728', accent: '#9B7E4F' },       // off-white
   { bg: '#2C1F1A', bgEnd: '#201510', text: '#E3D5C5', accent: '#C89B5E' },       // espresso

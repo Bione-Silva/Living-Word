@@ -65,18 +65,18 @@ export default function MentesBrilhantes() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       {/* ── Hero Header (Clean/Light) ── */}
-      <div className="relative rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-10 overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(35,40%,75%)] to-transparent" />
+      <div className="relative rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-5 sm:p-10 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(270,35%,78%)] to-transparent" />
 
         <div className="relative z-10">
           <div className="flex items-start gap-4 mb-5">
-            <div className="w-12 h-12 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center shrink-0 border border-[hsl(35,25%,85%)]">
-              <Brain className="h-6 w-6 text-[hsl(35,45%,45%)]" />
+            <div className="w-12 h-12 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center shrink-0 border border-[hsl(270,43%,92%)]">
+              <Brain className="h-6 w-6 text-[hsl(257,61%,32%)]" />
             </div>
             <div>
               <h1 className="font-display text-2xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] flex items-center gap-3 tracking-tight">
                 {pageTitle[lang]}
-                <Sparkles className="h-5 w-5 text-[hsl(35,50%,55%)]" />
+                <Sparkles className="h-5 w-5 text-[hsl(263,70%,50%)]" />
               </h1>
               <p className="text-sm text-[hsl(220,10%,50%)] mt-1.5 max-w-2xl leading-relaxed">
                 {pageSubtitle[lang]}
@@ -85,23 +85,23 @@ export default function MentesBrilhantes() {
           </div>
 
           {/* Stats bar */}
-          <div className="flex flex-wrap items-center gap-6 mt-5 pt-5 border-t border-[hsl(30,15%,90%)]">
+          <div className="flex flex-wrap items-center gap-6 mt-5 pt-5 border-t border-[hsl(270,43%,92%)]">
             <div className="flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-[hsl(35,40%,55%)]" />
+              <Cpu className="h-4 w-4 text-[hsl(263,70%,50%)]" />
               <div>
                 <p className="text-lg font-bold text-[hsl(220,15%,20%)] font-mono">{totalTokens}</p>
                 <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Context Tokens' : 'Tokens de Contexto'}</p>
               </div>
             </div>
-            <div className="w-px h-8 bg-[hsl(30,15%,88%)]" />
+            <div className="w-px h-8 bg-[hsl(270,43%,92%)]" />
             <div className="flex items-center gap-2">
-              <Database className="h-4 w-4 text-[hsl(35,40%,55%)]" />
+              <Database className="h-4 w-4 text-[hsl(263,70%,50%)]" />
               <div>
                 <p className="text-lg font-bold text-[hsl(220,15%,20%)] font-mono">{totalPages}</p>
                 <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Pages Processed' : 'Páginas Processadas'}</p>
               </div>
             </div>
-            <div className="w-px h-8 bg-[hsl(30,15%,88%)]" />
+            <div className="w-px h-8 bg-[hsl(270,43%,92%)]" />
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4 text-emerald-500" />
               <div>
@@ -111,12 +111,12 @@ export default function MentesBrilhantes() {
             </div>
             {visibleMinds.length >= 2 && (
               <>
-                <div className="w-px h-8 bg-[hsl(30,15%,88%)]" />
+                <div className="w-px h-8 bg-[hsl(270,43%,92%)]" />
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowCompare(true)}
-                  className="gap-2 border-[hsl(35,30%,80%)] text-[hsl(35,45%,40%)] hover:bg-[hsl(35,40%,95%)]"
+                  className="gap-2 border-[hsl(270,43%,92%)] text-[hsl(257,61%,32%)] hover:bg-[hsl(252,100%,99%)]"
                 >
                   <ArrowLeftRight className="h-4 w-4" />
                   {lang === 'EN' ? 'Compare Minds' : lang === 'ES' ? 'Comparar Mentes' : 'Comparar Mentes'}
@@ -154,12 +154,12 @@ export default function MentesBrilhantes() {
 
       {/* ── Paywall Dialog ── */}
       <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
-        <DialogContent className="bg-white border-[hsl(30,15%,85%)] max-w-md">
+        <DialogContent className="bg-white border-[hsl(270,43%,92%)] max-w-md">
           <DialogHeader className="text-center">
-            <div className="mx-auto w-14 h-14 rounded-2xl bg-[hsl(35,35%,93%)] flex items-center justify-center mb-3 border border-[hsl(35,25%,85%)]">
-              <Lock className="h-6 w-6 text-[hsl(35,45%,45%)]" />
+            <div className="mx-auto w-14 h-14 rounded-2xl bg-[hsl(252,100%,99%)] flex items-center justify-center mb-3 border border-[hsl(270,43%,92%)]">
+              <Lock className="h-6 w-6 text-[hsl(257,61%,32%)]" />
             </div>
-            <DialogTitle className="font-display text-2xl text-[hsl(35,45%,40%)]">
+            <DialogTitle className="font-display text-2xl text-[hsl(257,61%,32%)]">
               {lang === 'EN' ? 'Unlock Historical Wisdom' : lang === 'ES' ? 'Desbloquea la Sabiduría Histórica' : 'Desbloqueie a Sabedoria Histórica'}
             </DialogTitle>
             <DialogDescription className="text-[hsl(220,10%,50%)] mt-2">
@@ -168,7 +168,7 @@ export default function MentesBrilhantes() {
           </DialogHeader>
           <Button
             onClick={() => { setShowPaywall(false); navigate('/upgrade'); }}
-            className="w-full py-5 text-base font-bold bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
+            className="w-full py-5 text-base font-bold bg-gradient-to-r from-[hsl(256,56%,16%)] to-[hsl(256,56%,16%)] hover:from-[hsl(257,61%,32%)] hover:to-[hsl(256,56%,16%)] text-white gap-2 rounded-xl"
           >
             <Crown className="h-5 w-5" />
             {lang === 'EN' ? 'Upgrade Now' : lang === 'ES' ? 'Mejorar Ahora' : 'Fazer Upgrade'}

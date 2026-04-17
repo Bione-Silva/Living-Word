@@ -32,7 +32,7 @@ export function ToolCard({ tool, lang, isFree, onClick, onHelp, index = 0 }: Too
       className={`group relative cursor-pointer border-border/60 bg-card hover:shadow-lg hover:-translate-y-0.5 animate-[fade-in_0.4s_ease-out_both] transition-all duration-200 ${
         isLocked
           ? 'opacity-60 hover:opacity-80'
-          : 'hover:border-accent/50 hover:shadow-[0_0_20px_-5px_hsl(44,65%,58%,0.25)]'
+          : 'hover:border-accent/50 hover:shadow-[0_0_20px_-5px_hsl(263, 70%, 50%, 0.25)]'
       }`}
       style={{ animationDelay: animDelay }}
     >
