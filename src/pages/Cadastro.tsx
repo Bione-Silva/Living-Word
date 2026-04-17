@@ -17,7 +17,7 @@ type L = 'PT' | 'EN' | 'ES';
 
 const copy = {
   title: { PT: 'Crie sua conta grátis', EN: 'Create your free account', ES: 'Crea tu cuenta gratis' } as Record<L, string>,
-  subtitle: { PT: 'Comece a produzir conteúdo pastoral com IA em minutos.', EN: 'Start producing pastoral content with AI in minutes.', ES: 'Comienza a producir contenido pastoral con IA en minutos.' } as Record<L, string>,
+  subtitle: { PT: 'Sua plataforma bíblica inteligente.', EN: 'Your intelligent Bible platform.', ES: 'Tu plataforma bíblica inteligente.' } as Record<L, string>,
   name: { PT: 'Nome completo', EN: 'Full name', ES: 'Nombre completo' } as Record<L, string>,
   email: { PT: 'E-mail', EN: 'Email', ES: 'Correo electrónico' } as Record<L, string>,
   password: { PT: 'Senha', EN: 'Password', ES: 'Contraseña' } as Record<L, string>,
