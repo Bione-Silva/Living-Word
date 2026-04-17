@@ -227,7 +227,6 @@ Deno.serve(async (req) => {
     });
 
     // Update generations_used
-    await supabaseAdmin.rpc("", {}).catch(() => {});
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("generations_used")
