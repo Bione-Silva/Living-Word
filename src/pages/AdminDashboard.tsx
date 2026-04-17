@@ -22,16 +22,15 @@ import { PushMetricsPanel } from '@/components/admin/PushMetricsPanel';
 const MASTER_EMAIL = 'bionicaosilva@gmail.com';
 
 const PROVIDERS = [
-  { id: 'openrouter', label: 'OpenRouter', desc: 'Claude + GPT no mesmo balance' },
-  { id: 'openai', label: 'OpenAI', desc: '' },
-  { id: 'groq', label: 'Groq', desc: '' },
-  { id: 'anthropic', label: 'Anthropic', desc: '' },
+  { id: 'lovable_ai', label: 'Lovable AI Gateway', desc: 'Gemini + GPT (rota oficial)' },
+  { id: 'openai', label: 'OpenAI', desc: 'GPT-4o / GPT-5 family' },
+  { id: 'google', label: 'Google AI', desc: 'Gemini 2.5 / 3.x' },
 ];
 
 const AI_SETTINGS = [
-  { key: 'cfo_analytics_model', label: 'Agente Analista (CFO)', options: ['gpt-4o-mini', 'gemini-2.5-flash', 'claude-3-haiku'], default: 'gpt-4o-mini' },
-  { key: 'support_agent_model', label: 'Agente Suporte', options: ['gpt-4o-mini', 'gemini-2.5-flash', 'claude-3-haiku'], default: 'gemini-2.5-flash' },
-  { key: 'core_generation_model', label: 'Motor Principal', options: ['gpt-4o-mini', 'gpt-4o', 'gemini-pro', 'claude-3-sonnet'], default: 'gpt-4o-mini' },
+  { key: 'cfo_analytics_model', label: 'Agente Analista (CFO)', options: ['gpt-4o-mini', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'], default: 'gpt-4o-mini' },
+  { key: 'support_agent_model', label: 'Agente Suporte', options: ['gpt-4o-mini', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'], default: 'gemini-2.5-flash' },
+  { key: 'core_generation_model', label: 'Motor Principal', options: ['gpt-4o-mini', 'gpt-4o', 'gemini-2.5-pro', 'gemini-3.1-pro-preview'], default: 'gpt-4o-mini' },
 ];
 
 interface KpiData {

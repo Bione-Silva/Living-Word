@@ -10,7 +10,7 @@ export const MOCK_DATA: AIMetrics = {
     { model: 'gpt-4o', cost_usd: 18.72, tokens: 1_840_200, generations: 210 },
     { model: 'gemini-2.5-flash', cost_usd: 8.34, tokens: 2_490_310, generations: 340 },
     { model: 'gemini-2.5-pro', cost_usd: 5.12, tokens: 820_100, generations: 98 },
-    { model: 'claude-3-haiku', cost_usd: 3.20, tokens: 381_500, generations: 56 },
+    { model: 'gemini-2.5-flash-lite', cost_usd: 3.20, tokens: 381_500, generations: 56 },
   ],
   features_usage: [
     { feature: 'Blog Creator', cost_usd: 15.40, tokens: 2_980_000, generations: 420 },
