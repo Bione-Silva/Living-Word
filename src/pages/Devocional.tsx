@@ -1117,8 +1117,11 @@ export default function Devocional() {
           <button onClick={handleCopy} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
           </button>
-          <button onClick={() => shareDevotionalImage('whatsapp')} disabled={!displayCover} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
+          <button onClick={() => shareDevotionalImage('whatsapp')} disabled={shareUrlLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
             <WhatsAppIcon /> {labels.shareWa[lang]}
+          </button>
+          <button onClick={copyShareLink} disabled={shareUrlLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-50" style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}>
+            <Link2 className="h-3.5 w-3.5" /> {labels.copyLink[lang]}
           </button>
           <button
             onClick={() => shareDevotionalImage('share')}
