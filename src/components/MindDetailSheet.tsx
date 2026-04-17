@@ -87,7 +87,18 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-2xl p-0 bg-[hsl(252,100%,99%)] border-l border-[hsl(270,43%,92%)] overflow-y-auto">
-        <div className="px-6 sm:px-10 py-8 space-y-8">
+        {/* Visible "Voltar" pill at top-left, below iOS safe-area — guarantees the user can always go back on mobile */}
+        <button
+          onClick={() => onOpenChange(false)}
+          aria-label={lang === 'PT' ? 'Voltar' : lang === 'EN' ? 'Back' : 'Volver'}
+          className="absolute left-3 z-10 inline-flex items-center gap-1.5 h-11 px-4 rounded-full bg-background/95 text-foreground text-sm font-medium shadow-md ring-1 ring-border backdrop-blur-sm hover:bg-background transition-colors"
+          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {lang === 'PT' ? 'Voltar' : lang === 'EN' ? 'Back' : 'Volver'}
+        </button>
+
+        <div className="px-6 sm:px-10 py-8 space-y-8 pt-[calc(env(safe-area-inset-top,0px)+4.5rem)]">
 
           {/* ── A. HERO ── */}
           <section className="text-center pt-4">
