@@ -15,21 +15,22 @@ const CATEGORIES: Record<Lang, string[]> = {
 }
 
 function getSystemPrompt(_lang: Lang): string {
-  // Restrição de produto: o devocional inteiro (título + versículo + corpo + oração)
-  // deve durar entre 1min30s e 2min em leitura em voz alta natural (~150 palavras/min).
-  // Isso significa um TOTAL de ~225–300 palavras somando TODOS os campos lidos no áudio.
-  // Por isso o body_text é curto (140–190 palavras) e a oração final é enxuta (2–3 frases).
+  // Restrição de produto: o devocional inteiro (título + versículo + corpo + oração + transições do TTS)
+  // DEVE ser lido em voz alta em MENOS de 2 minutos (~150 palavras/min naturais).
+  // Como o áudio injeta frases de transição ("O versículo base...", "E agora, vamos orar", "Amém"),
+  // o JSON gerado precisa ficar enxuto: 200–280 palavras no TOTAL somando todos os campos.
   return `Você é um redator cristão experiente de devocionais diários em Português (Brasil).
 Escreva sempre em Português do Brasil, com tom pastoral, reverente, sóbrio, acolhedor e profundo.
 Linguagem clara, sem jargão, fiel à Escritura. Nunca invente versículos.
 
-RESTRIÇÃO DE DURAÇÃO (OBRIGATÓRIA — não relaxe):
-- O devocional será lido em voz alta como podcast curto.
-- Duração total do áudio: ENTRE 1 minuto e 30 segundos e, no máximo, 2 minutos.
-- Ritmo natural de ~150 palavras por minuto.
-- O TOTAL somado de título + versículo âncora (texto) + corpo + oração final
-  DEVE ficar entre 240 e 290 palavras. Nunca menos que 225, nunca mais que 300.
-- Se ficar abaixo de 240, EXPANDA o corpo com mais profundidade pastoral até atingir o piso.
+ATENÇÃO OBRIGATÓRIA — RESTRIÇÃO DE DURAÇÃO (não relaxe em nenhuma hipótese):
+- Todo o devocional, se lido em voz alta, DEVE levar MENOS DE 2 MINUTOS.
+- O JSON completo gerado (incluindo título, versículo, reflexão, oração e tudo mais)
+  deve ficar estritamente na faixa de 200 a 280 palavras NO TOTAL.
+- Limite o "body_text" a no máximo 120–160 palavras, para garantir que exista tempo
+  suficiente no áudio para a leitura verbal do versículo âncora e da oração final.
+- A "closing_prayer" deve ser enxuta: 2–3 frases, 25–40 palavras.
+- Se o conteúdo ficar acima do limite, REESCREVA mais conciso. Profundidade > volume.
 
 Retorne APENAS JSON válido (sem cercas markdown) neste schema exato:
 {
@@ -37,10 +38,10 @@ Retorne APENAS JSON válido (sem cercas markdown) neste schema exato:
   "category": "string (uma das categorias fornecidas)",
   "anchor_verse": "string (livro capítulo:versículo, ex: Filipenses 4:6-7)",
   "anchor_verse_text": "string (texto completo do versículo em Português do Brasil)",
-  "body_text": "string (corpo do devocional com 180-220 palavras, denso, pastoral, sem repetições)",
-  "daily_practice": "string (uma ação prática para hoje, 1 frase)",
-  "reflection_question": "string (uma pergunta reflexiva, 1 frase)",
-  "closing_prayer": "string (oração final sincera, 3-4 frases, 35-55 palavras)"
+  "body_text": "string (corpo do devocional com 120-160 palavras, denso, pastoral, sem repetições)",
+  "daily_practice": "string (uma ação prática para hoje, 1 frase curta)",
+  "reflection_question": "string (uma pergunta reflexiva, 1 frase curta)",
+  "closing_prayer": "string (oração final sincera, 2-3 frases, 25-40 palavras)"
 }`
 }
 
@@ -50,7 +51,7 @@ function getUserPrompt(lang: Lang, dateStr: string): string {
   return `Escreva o devocional do dia ${dateStr} em Português (Brasil).
 Tema/categoria: "${category}".
 Escolha um versículo bíblico que se conecte com o tema.
-Lembre-se: a soma total de título + versículo + corpo + oração precisa caber em 1m30s a 2min de áudio (225–300 palavras no total). Seja conciso, pastoral e profundo.
+Lembre-se: o áudio final TEM que durar MENOS de 2 minutos. Soma total de todos os campos: 200–280 palavras. body_text entre 120 e 160 palavras. Oração curta (25–40 palavras). Seja conciso, pastoral e profundo.
 Retorne APENAS o objeto JSON.`
 }
 
@@ -243,9 +244,11 @@ Deno.serve(async (req) => {
         let audioOnyxUrl: string | null = null
 
         if (openaiKey) {
-          const fullText = `${devotional.title}.\n\n${devotional.anchor_verse_text}\n\n${devotional.body_text}\n\n${devotional.closing_prayer || ''}`
+          // Script narrado: anuncia o tema, lê literalmente o versículo, narra a meditação,
+          // faz transição falada antes da oração e fecha com "Amém".
+          const audioScript = `${devotional.title}. O versículo base da nossa reflexão está em ${devotional.anchor_verse}, que diz: ${devotional.anchor_verse_text}. ${devotional.body_text} E agora, vamos orar. ${devotional.closing_prayer || ''} Amém.`
           console.log(`[${lang}] Generating TTS audio (onyx)...`)
-          const onyxData = await generateAudio(openaiKey, fullText, 'onyx')
+          const onyxData = await generateAudio(openaiKey, audioScript, 'onyx')
           if (onyxData) {
             audioOnyxUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-onyx.mp3`, onyxData, 'audio/mpeg')
             console.log(`[${lang}] Audio onyx: ${audioOnyxUrl ? 'OK' : 'FAILED'}`)
