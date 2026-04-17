@@ -1011,27 +1011,40 @@ export default function Devocional() {
                 formattedDate={formattedDisplayDate}
               />
             </div>
+            {/* Primary CTA: WhatsApp with link + sender invitation */}
+            <button
+              onClick={() => shareDevotionalImage('whatsapp')}
+              disabled={shareUrlLoading}
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90 shadow-sm disabled:opacity-60"
+              style={{ backgroundColor: '#25D366', color: '#fff' }}
+            >
+              <WhatsAppIcon />
+              {shareUrlLoading ? labels.preparingLink[lang] : (lang === 'PT' ? 'Enviar pelo WhatsApp' : lang === 'ES' ? 'Enviar por WhatsApp' : 'Send via WhatsApp')}
+            </button>
+
+            {/* Secondary actions */}
             <div className="grid grid-cols-3 gap-2">
               <button
+                onClick={copyShareLink}
+                disabled={shareUrlLoading}
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-medium transition-colors hover:opacity-80 disabled:opacity-60"
+                style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
+              >
+                <Link2 className="h-4 w-4" /> {labels.copyLink[lang]}
+              </button>
+              <button
                 onClick={() => shareDevotionalImage('download')}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Download className="h-4 w-4" /> {labels.saveImage[lang]}
               </button>
               <button
                 onClick={() => shareDevotionalImage('share')}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
               >
                 <Share2 className="h-4 w-4" /> {labels.share[lang]}
-              </button>
-              <button
-                onClick={() => shareDevotionalImage('whatsapp')}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
-                style={{ borderColor: colors.border, color: colors.text, backgroundColor: colors.cardBg }}
-              >
-                <WhatsAppIcon /> {labels.shareWa[lang]}
               </button>
             </div>
             <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-0" aria-hidden="true">
