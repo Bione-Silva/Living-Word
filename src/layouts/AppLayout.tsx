@@ -116,7 +116,7 @@ function ToolLockBadge({ userPlan, toolId }: { userPlan: PlanSlug; toolId: strin
 }
 
 export default function AppLayout() {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, loading } = useAuth();
   const { t, lang } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
@@ -226,22 +226,22 @@ export default function AppLayout() {
      ═══════════════════════════════════════════════════════════════ */
   if (isMobile) {
     return (
-      <div className="theme-app h-screen bg-background flex flex-col">
+      <div className="theme-app h-[100dvh] bg-background flex flex-col">
         <ThemeInjector />
-        <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-2 min-w-0">
+        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border px-4 pt-[max(env(safe-area-inset-top),0.875rem)] pb-3 min-h-[calc(3.5rem+env(safe-area-inset-top))] flex items-center justify-between shadow-sm safe-area-top">
+          <div className="flex items-center gap-2 min-w-0 flex-1 pr-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Abrir menu"
-              className="h-9 w-9 -ml-1 rounded-lg flex items-center justify-center text-foreground hover:bg-primary/10 active:bg-primary/15 transition-colors"
+              className="h-10 w-10 -ml-1 rounded-lg flex items-center justify-center text-foreground hover:bg-primary/10 active:bg-primary/15 transition-colors shrink-0"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate">Living Word</Link>
+            <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate leading-none">Living Word</Link>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0 self-center">
             <SupportChatBubble />
-            {profile?.blog_handle && (
+            {!loading && profile?.blog_handle && (
               <Link to={`/blog/${profile.blog_handle}`} target="_blank" className="text-primary">
                 <ExternalLink className="h-4 w-4" />
               </Link>
@@ -254,7 +254,7 @@ export default function AppLayout() {
           <PWAInstallBanner />
         </div>
 
-        <main className="flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-20">
+        <main className="flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-[calc(5rem+env(safe-area-inset-bottom))]">
           <Outlet />
         </main>
 

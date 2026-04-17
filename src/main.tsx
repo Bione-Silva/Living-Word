@@ -2,6 +2,26 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
+const AUTH_STORAGE_MATCHERS = [/^sb-/, /^supabase\.auth\./, /-auth-token/];
+
+function clearPreviewAuthStorage() {
+  try {
+    [window.localStorage, window.sessionStorage].forEach((storage) => {
+      const keys: string[] = [];
+      for (let i = 0; i < storage.length; i++) {
+        const key = storage.key(i);
+        if (!key) continue;
+        if (AUTH_STORAGE_MATCHERS.some((matcher) => matcher.test(key))) {
+          keys.push(key);
+        }
+      }
+      keys.forEach((key) => storage.removeItem(key));
+    });
+  } catch {
+    // noop
+  }
+}
+
 // PWA: Prevent service worker registration inside iframes or Lovable preview
 const isInIframe = (() => {
   try {
@@ -16,6 +36,7 @@ const isPreviewHost =
   window.location.hostname.includes("lovableproject.com");
 
 if (isPreviewHost || isInIframe) {
+  clearPreviewAuthStorage();
   // Only unregister non-push service workers in preview/iframe; keep /sw-push.js for testing
   navigator.serviceWorker?.getRegistrations().then((registrations) => {
     registrations.forEach((r) => {
@@ -23,6 +44,12 @@ if (isPreviewHost || isInIframe) {
       if (!scriptUrl.includes('/sw-push.js')) {
         r.unregister();
       }
+    });
+  });
+
+  window.caches?.keys?.().then((cacheNames) => {
+    cacheNames.forEach((cacheName) => {
+      void window.caches.delete(cacheName);
     });
   });
 }
