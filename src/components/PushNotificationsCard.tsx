@@ -25,20 +25,21 @@ const COPY = {
   disable: { PT: 'Desativar', EN: 'Disable', ES: 'Desactivar' },
   hour: { PT: 'Horário', EN: 'Time', ES: 'Hora' },
   tz: { PT: 'Fuso horário', EN: 'Timezone', ES: 'Zona horaria' },
-  test: { PT: 'Enviar teste agora', EN: 'Send test now', ES: 'Enviar prueba ahora' },
+  test: { PT: 'Enviar 3 testes agora', EN: 'Send 3 test notifications', ES: 'Enviar 3 pruebas ahora' },
   unsupported: {
     PT: 'Seu navegador não suporta notificações push. Tente em outro dispositivo.',
     EN: 'Your browser does not support push notifications. Try another device.',
     ES: 'Tu navegador no admite notificaciones push. Prueba en otro dispositivo.',
   },
-  denied: {
-    PT: 'Você bloqueou as notificações. Ative pelas configurações do navegador.',
-    EN: 'You blocked notifications. Enable them via browser settings.',
-    ES: 'Bloqueaste las notificaciones. Actívalas en los ajustes del navegador.',
+  deniedHint: {
+    PT: 'Se as notificações estiverem bloqueadas, libere nas configurações do navegador (ícone de cadeado na barra de endereço → Notificações → Permitir) e clique em "Tentar novamente".',
+    EN: 'If notifications appear blocked, allow them in browser settings (lock icon → Notifications → Allow) and click "Try again".',
+    ES: 'Si están bloqueadas, permítelas en los ajustes del navegador (icono de candado → Notificaciones → Permitir) y pulsa "Reintentar".',
   },
+  retry: { PT: 'Tentar novamente', EN: 'Try again', ES: 'Reintentar' },
   active: { PT: 'Ativo', EN: 'Active', ES: 'Activo' },
   saved: { PT: 'Preferências salvas', EN: 'Preferences saved', ES: 'Preferencias guardadas' },
-  testSent: { PT: 'Notificação enviada! Verifique sua tela.', EN: 'Notification sent! Check your screen.', ES: '¡Notificación enviada! Verifica tu pantalla.' },
+  testSent: { PT: '3 notificações enviadas! Verifique sua tela.', EN: '3 notifications sent! Check your screen.', ES: '¡3 notificaciones enviadas! Verifica tu pantalla.' },
 } as const;
 
 const TIMEZONES = [
