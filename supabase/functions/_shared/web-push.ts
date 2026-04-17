@@ -28,10 +28,10 @@ function concatBytes(...arrs: Uint8Array[]): Uint8Array {
 }
 
 async function hkdf(salt: Uint8Array, ikm: Uint8Array, info: Uint8Array, length: number) {
-  const key = await crypto.subtle.importKey('raw', salt, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const prk = new Uint8Array(await crypto.subtle.sign('HMAC', key, ikm));
-  const prkKey = await crypto.subtle.importKey('raw', prk, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const t = new Uint8Array(await crypto.subtle.sign('HMAC', prkKey, concatBytes(info, new Uint8Array([0x01]))));
+  const key = await crypto.subtle.importKey('raw', salt as BufferSource, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const prk = new Uint8Array(await crypto.subtle.sign('HMAC', key, ikm as BufferSource));
+  const prkKey = await crypto.subtle.importKey('raw', prk as BufferSource, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const t = new Uint8Array(await crypto.subtle.sign('HMAC', prkKey, concatBytes(info, new Uint8Array([0x01])) as BufferSource));
   return t.slice(0, length);
 }
 
@@ -111,9 +111,9 @@ export async function sendWebPush(
   // Plaintext + 0x02 padding delimiter (no extra padding bytes)
   const plaintext = concatBytes(payloadBytes, new Uint8Array([0x02]));
 
-  const aesKey = await crypto.subtle.importKey('raw', cek, { name: 'AES-GCM' }, false, ['encrypt']);
+  const aesKey = await crypto.subtle.importKey('raw', cek as BufferSource, { name: 'AES-GCM' }, false, ['encrypt']);
   const ciphertext = new Uint8Array(
-    await crypto.subtle.encrypt({ name: 'AES-GCM', iv: nonce }, aesKey, plaintext)
+    await crypto.subtle.encrypt({ name: 'AES-GCM', iv: nonce as BufferSource }, aesKey, plaintext as BufferSource)
   );
 
   // Build aes128gcm body: salt(16) || rs(4 BE) || idlen(1) || keyid(idlen) || ciphertext
@@ -141,7 +141,7 @@ export async function sendWebPush(
     ['sign']
   );
   const sig = new Uint8Array(
-    await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, privKey, new TextEncoder().encode(signingInput))
+    await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, privKey, new TextEncoder().encode(signingInput) as BufferSource)
   );
   const jwt = `${signingInput}.${bytesToB64u(sig)}`;
 
@@ -158,5 +158,5 @@ export async function sendWebPush(
     Authorization: `vapid t=${jwt}, k=${bytesToB64u(vapidRawPub)}`,
   });
 
-  return await fetch(sub.endpoint, { method: 'POST', headers, body });
+  return await fetch(sub.endpoint, { method: 'POST', headers, body: body as BodyInit });
 }
