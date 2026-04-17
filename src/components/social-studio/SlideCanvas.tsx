@@ -536,16 +536,16 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
             <EditorialTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'swiss' && (
-            <SwissTemplate slide={slide} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+            <SwissTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'cinematic' && (
             <CinematicTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'gradient' && (
-            <GradientTemplate slide={slide} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <GradientTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'lw-amber' && (
-            <LwAmberTemplate slide={slide} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <LwAmberTemplate slide={slide} bgImageUrl={bgImageUrl} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
         </div>
       </div>
