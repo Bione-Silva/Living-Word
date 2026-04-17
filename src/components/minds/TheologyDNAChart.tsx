@@ -66,13 +66,13 @@ function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const { axis, value } = payload[0].payload;
   return (
-    <div className="bg-white border border-[hsl(30,15%,85%)] rounded-lg px-3 py-2 shadow-md">
+    <div className="bg-white border border-[hsl(270,43%,92%)] rounded-lg px-3 py-2 shadow-md">
       <p className="text-sm font-semibold text-[hsl(220,15%,20%)]">{axis}</p>
       <div className="flex items-center gap-2 mt-1">
-        <div className="w-16 h-1.5 rounded-full bg-[hsl(30,15%,90%)] overflow-hidden">
+        <div className="w-16 h-1.5 rounded-full bg-[hsl(270,43%,92%)] overflow-hidden">
           <div className="h-full rounded-full bg-[hsl(270,40%,55%)]" style={{ width: `${value}%` }} />
         </div>
-        <p className="text-xs text-[hsl(35,50%,45%)] font-mono font-bold">{value}%</p>
+        <p className="text-xs text-[hsl(257,61%,32%)] font-mono font-bold">{value}%</p>
       </div>
     </div>
   );
@@ -80,7 +80,7 @@ function CustomTooltip({ active, payload }: any) {
 
 function getStrengthColor(value: number): string {
   if (value >= 85) return 'bg-[hsl(145,50%,42%)]'; // green — dominant
-  if (value >= 65) return 'bg-[hsl(35,50%,50%)]';   // amber — strong
+  if (value >= 65) return 'bg-[hsl(263,70%,50%)]';   // amber — strong
   if (value >= 45) return 'bg-[hsl(220,10%,65%)]';  // gray — moderate
   return 'bg-[hsl(220,10%,80%)]';                   // light — low
 }
@@ -94,7 +94,7 @@ function getStrengthLabel(value: number, lang: L): string {
 
 function getStrengthTextColor(value: number): string {
   if (value >= 85) return 'text-[hsl(145,50%,35%)]';
-  if (value >= 65) return 'text-[hsl(35,50%,40%)]';
+  if (value >= 65) return 'text-[hsl(257,61%,32%)]';
   return 'text-[hsl(220,10%,55%)]';
 }
 
@@ -138,10 +138,10 @@ export function TheologyDNAChart({ data, lang }: Props) {
   }, []);
 
   return (
-    <section ref={sectionRef} className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 sm:p-7 md:p-10">
+    <section ref={sectionRef} className="rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-5 sm:p-7 md:p-10">
       <div className="flex items-center gap-3 mb-4 sm:mb-5">
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-          <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(35,45%,45%)]" />
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+          <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(257,61%,32%)]" />
         </div>
         <div>
           <h2 className="text-base sm:text-lg font-bold text-[hsl(220,15%,20%)]">{labels.title[lang]}</h2>
@@ -153,7 +153,7 @@ export function TheologyDNAChart({ data, lang }: Props) {
       <div className="w-full flex justify-center -mx-2 sm:mx-0">
         <ResponsiveContainer width="100%" height={250} minWidth={260}>
           <RadarChart cx="50%" cy="50%" outerRadius="65%" data={chartData}>
-            <PolarGrid stroke="hsl(30,15%,85%)" />
+            <PolarGrid stroke="hsl(270, 43%, 92%)" />
             <PolarAngleAxis
               dataKey="short"
               tick={{ fill: 'hsl(220,10%,35%)', fontSize: 10, fontWeight: 600 }}
@@ -162,7 +162,7 @@ export function TheologyDNAChart({ data, lang }: Props) {
             <Radar
               name="DNA"
               dataKey="value"
-              stroke="hsl(35,50%,45%)"
+              stroke="hsl(257, 61%, 32%)"
               fill="hsl(270,40%,55%)"
               fillOpacity={0.3}
               strokeWidth={2}
@@ -173,8 +173,8 @@ export function TheologyDNAChart({ data, lang }: Props) {
       </div>
 
       {/* Profile summary */}
-      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-xl bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)] text-center">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[hsl(35,40%,50%)] mb-1">{labels.profileLabel[lang]}</p>
+      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-xl bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)] text-center">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[hsl(263,70%,50%)] mb-1">{labels.profileLabel[lang]}</p>
         <p className="text-[13px] text-[hsl(220,10%,30%)] leading-relaxed">{summary}</p>
       </div>
 
@@ -192,7 +192,7 @@ export function TheologyDNAChart({ data, lang }: Props) {
               </div>
               {/* Bar */}
               <div className="flex-1 flex items-center gap-2">
-                <div className="flex-1 h-2.5 rounded-full bg-[hsl(30,15%,92%)] overflow-hidden">
+                <div className="flex-1 h-2.5 rounded-full bg-[hsl(252,100%,99%)] overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-700 ease-out ${getStrengthColor(d.value)}`}
                     style={{

@@ -55,7 +55,7 @@ export default function HelpArticlePage() {
     <div className="max-w-4xl mx-auto pb-16 space-y-6">
       {/* ── Breadcrumb ── */}
       <div className="flex items-center gap-1.5 text-xs text-[hsl(220,10%,55%)] flex-wrap">
-        <button onClick={() => navigate('/ajuda')} className="hover:text-[hsl(35,45%,45%)] transition-colors">
+        <button onClick={() => navigate('/ajuda')} className="hover:text-[hsl(257,61%,32%)] transition-colors">
           {lang === 'EN' ? 'Help Center' : lang === 'ES' ? 'Centro de Ayuda' : 'Central de Ajuda'}
         </button>
         <ChevronRight className="h-3 w-3" />
@@ -70,14 +70,14 @@ export default function HelpArticlePage() {
 
       {/* ── Back + Actions ── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/ajuda')} className="text-[hsl(24,30%,30%)] hover:text-[hsl(24,30%,15%)] gap-2 -ml-2">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/ajuda')} className="text-[hsl(256,56%,16%)] hover:text-[hsl(261,41%,7%)] gap-2 -ml-2">
           <ArrowLeft className="h-4 w-4" />
           {labels.back[lang]}
         </Button>
         <Button
           onClick={handleOpenTool}
           size="sm"
-          className="bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
+          className="bg-gradient-to-r from-[hsl(256,56%,16%)] to-[hsl(256,56%,16%)] hover:from-[hsl(257,61%,32%)] hover:to-[hsl(256,56%,16%)] text-white gap-2 rounded-xl"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           {labels.useTool[lang]}
@@ -85,29 +85,29 @@ export default function HelpArticlePage() {
       </div>
 
       {/* ── Hero Header ── */}
-      <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-8 sm:p-10 overflow-hidden relative">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(35,40%,75%)] to-transparent" />
+      <section className="rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-8 sm:p-10 overflow-hidden relative">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(270,35%,78%)] to-transparent" />
         <div className="flex items-start gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-[hsl(35,35%,93%)] flex items-center justify-center shrink-0 border border-[hsl(35,25%,85%)]">
-            <Icon className="h-8 w-8 text-[hsl(35,45%,45%)]" />
+          <div className="w-16 h-16 rounded-2xl bg-[hsl(252,100%,99%)] flex items-center justify-center shrink-0 border border-[hsl(270,43%,92%)]">
+            <Icon className="h-8 w-8 text-[hsl(257,61%,32%)]" />
           </div>
           <div className="flex-1">
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-[hsl(220,15%,15%)] tracking-tight">
               {article.title[lang]}
             </h1>
-            <p className="text-base italic text-[hsl(35,40%,45%)] mt-1 font-display">
+            <p className="text-base italic text-[hsl(257,61%,32%)] mt-1 font-display">
               {article.subtitle[lang]}
             </p>
           </div>
         </div>
 
-        <div className="mt-6 pt-6 border-t border-[hsl(30,15%,92%)]">
+        <div className="mt-6 pt-6 border-t border-[hsl(252,100%,99%)]">
           <p className="text-[15px] leading-[1.8] text-[hsl(220,10%,35%)]">{article.heroSummary[lang]}</p>
           {article.heroBullets.length > 0 && (
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
               {article.heroBullets.map((bullet, i) => (
-                <div key={i} className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)]">
-                  <Zap className="h-3.5 w-3.5 text-[hsl(35,50%,50%)] shrink-0" />
+                <div key={i} className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)]">
+                  <Zap className="h-3.5 w-3.5 text-[hsl(263,70%,50%)] shrink-0" />
                   <span className="text-xs font-medium text-[hsl(220,10%,30%)]">{bullet[lang]}</span>
                 </div>
               ))}
@@ -122,10 +122,10 @@ export default function HelpArticlePage() {
           {article.quickSummary.map((card, i) => {
             const SummaryIcon = summaryIcons[i] || Target;
             return (
-              <div key={i} className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-5 space-y-3">
+              <div key={i} className="rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-5 space-y-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-                    <SummaryIcon className="h-4 w-4 text-[hsl(35,45%,45%)]" />
+                  <div className="w-8 h-8 rounded-lg bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+                    <SummaryIcon className="h-4 w-4 text-[hsl(257,61%,32%)]" />
                   </div>
                   <h3 className="text-sm font-bold text-[hsl(220,15%,20%)]">{card.label[lang]}</h3>
                 </div>
@@ -145,7 +145,7 @@ export default function HelpArticlePage() {
               ? 'border-emerald-200 bg-emerald-50/50'
               : section.type === 'warning'
                 ? 'border-amber-200 bg-amber-50/50'
-                : 'border-[hsl(30,15%,88%)] bg-white'
+                : 'border-[hsl(270,43%,92%)] bg-white'
           }`}
         >
           <div className="flex items-center gap-3 mb-4">
@@ -174,7 +174,7 @@ export default function HelpArticlePage() {
               <div className="space-y-3">
                 {section.content[lang].split('\n').filter(Boolean).map((line, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-[hsl(35,35%,90%)] flex items-center justify-center shrink-0 text-xs font-bold text-[hsl(35,45%,40%)] border border-[hsl(35,25%,82%)]">
+                    <span className="w-6 h-6 rounded-full bg-[hsl(270,43%,92%)] flex items-center justify-center shrink-0 text-xs font-bold text-[hsl(257,61%,32%)] border border-[hsl(270,43%,92%)]">
                       {i + 1}
                     </span>
                     <p className="text-sm text-[hsl(220,10%,35%)] leading-relaxed pt-0.5">{line.replace(/^\d+\.\s*/, '')}</p>
@@ -184,8 +184,8 @@ export default function HelpArticlePage() {
             ) : section.type === 'list' ? (
               <div className="space-y-2">
                 {section.content[lang].split('\n').filter(Boolean).map((line, i) => (
-                  <div key={i} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,93%)]">
-                    <Zap className="h-3 w-3 text-[hsl(35,50%,50%)] shrink-0 mt-0.5" />
+                  <div key={i} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)]">
+                    <Zap className="h-3 w-3 text-[hsl(263,70%,50%)] shrink-0 mt-0.5" />
                     <span className="text-sm text-[hsl(220,10%,30%)]">{line.replace(/^[•\-]\s*/, '')}</span>
                   </div>
                 ))}
@@ -196,7 +196,7 @@ export default function HelpArticlePage() {
                   if (line.startsWith('•') || line.startsWith('-')) {
                     return (
                       <div key={i} className="flex items-start gap-2 mb-1.5">
-                        <span className="text-[hsl(35,50%,50%)] mt-1">•</span>
+                        <span className="text-[hsl(263,70%,50%)] mt-1">•</span>
                         <span>{line.replace(/^[•\-]\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1')}</span>
                       </div>
                     );
@@ -211,7 +211,7 @@ export default function HelpArticlePage() {
 
       {/* ── Related Tools ── */}
       {relatedTools.length > 0 && (
-        <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-[hsl(35,30%,96%)] p-6 sm:p-8">
+        <section className="rounded-2xl border border-[hsl(270,43%,92%)] bg-[hsl(252,100%,99%)] p-6 sm:p-8">
           <h2 className="text-lg font-bold text-[hsl(220,15%,20%)] mb-4 flex items-center gap-2">
             🔗 {labels.related[lang]}
           </h2>
@@ -223,12 +223,12 @@ export default function HelpArticlePage() {
                 <button
                   key={tool.id}
                   onClick={() => navigate(`/ajuda/${tool.id}`)}
-                  className="group flex items-center gap-3 p-4 rounded-xl bg-white border border-[hsl(30,15%,90%)] hover:border-[hsl(35,30%,75%)] hover:shadow-sm transition-all"
+                  className="group flex items-center gap-3 p-4 rounded-xl bg-white border border-[hsl(270,43%,92%)] hover:border-[hsl(270,35%,78%)] hover:shadow-sm transition-all"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-                    <ToolIcon className="h-4 w-4 text-[hsl(35,45%,45%)]" />
+                  <div className="w-9 h-9 rounded-lg bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+                    <ToolIcon className="h-4 w-4 text-[hsl(257,61%,32%)]" />
                   </div>
-                  <span className="text-sm font-semibold text-[hsl(220,15%,20%)] group-hover:text-[hsl(35,45%,40%)] transition-colors">{tool.name[lang]}</span>
+                  <span className="text-sm font-semibold text-[hsl(220,15%,20%)] group-hover:text-[hsl(257,61%,32%)] transition-colors">{tool.name[lang]}</span>
                 </button>
               );
             })}
@@ -237,7 +237,7 @@ export default function HelpArticlePage() {
       )}
 
       {/* ── Final CTA ── */}
-      <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-8 text-center space-y-4">
+      <section className="rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-8 text-center space-y-4">
         <p className="text-lg font-display font-bold text-[hsl(220,15%,20%)]">
           {lang === 'EN' ? 'Ready to create?' : lang === 'ES' ? '¿Listo para crear?' : 'Pronto para criar?'}
         </p>
@@ -247,12 +247,12 @@ export default function HelpArticlePage() {
         <div className="flex items-center justify-center gap-3 flex-wrap">
           <Button
             onClick={handleOpenTool}
-            className="px-8 py-5 text-sm font-bold bg-gradient-to-r from-[hsl(28,45%,32%)] to-[hsl(25,40%,26%)] hover:from-[hsl(28,45%,38%)] hover:to-[hsl(25,40%,32%)] text-white gap-2 rounded-xl"
+            className="px-8 py-5 text-sm font-bold bg-gradient-to-r from-[hsl(256,56%,16%)] to-[hsl(256,56%,16%)] hover:from-[hsl(257,61%,32%)] hover:to-[hsl(256,56%,16%)] text-white gap-2 rounded-xl"
           >
             <Icon className="h-4 w-4" />
             {article.ctaLabel[lang]}
           </Button>
-          <Button variant="outline" onClick={() => navigate('/ajuda')} className="rounded-xl gap-2 text-[hsl(24,30%,20%)] border-[hsl(30,15%,78%)]">
+          <Button variant="outline" onClick={() => navigate('/ajuda')} className="rounded-xl gap-2 text-[hsl(256,56%,16%)] border-[hsl(270,35%,78%)]">
             <ArrowLeft className="h-4 w-4" />
             {labels.backCta[lang]}
           </Button>

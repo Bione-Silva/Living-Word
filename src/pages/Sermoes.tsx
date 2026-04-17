@@ -200,9 +200,9 @@ function ChipGroup({ items, selected, onSelect, lang }: { items: Record<L, strin
 /* ═══ Markdown → clean HTML for PDF ═══ */
 function markdownToHtml(md: string): string {
   let html = md;
-  html = html.replace(/\[([^\]]+)\]\(bible:\/\/[^)]+\)/g, '<strong style="color:#8B6914;">$1</strong>');
+  html = html.replace(/\[([^\]]+)\]\(bible:\/\/[^)]+\)/g, '<strong style="color:#5B21B6;">$1</strong>');
   html = html.replace(/^### (.+)$/gm, '<h3 style="font-size:15px;font-weight:700;margin:18px 0 8px;color:#333;">$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2 style="font-size:17px;font-weight:700;margin:24px 0 10px;color:#222;border-left:3px solid #8B6914;padding-left:10px;">$1</h2>');
+  html = html.replace(/^## (.+)$/gm, '<h2 style="font-size:17px;font-weight:700;margin:24px 0 10px;color:#222;border-left:3px solid #5B21B6;padding-left:10px;">$1</h2>');
   html = html.replace(/^# (.+)$/gm, '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;color:#111;">$1</h1>');
   html = html.replace(/^> (.+)$/gm, '<blockquote style="border-left:3px solid #6D28D9;padding:10px 16px;margin:16px 0;background:#FFFDF5;font-style:italic;color:#555;border-radius:0 6px 6px 0;">$1</blockquote>');
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -363,7 +363,7 @@ export default function Sermoes() {
     border-bottom: 2px solid #6D28D9; padding-bottom: 10px; margin-bottom: 24px;
   }
   .pdf-body h1 { font-size: 22px; font-weight: 700; margin: 0 0 6px; color: #111; page-break-after: avoid; }
-  .pdf-body h2 { font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: #222; border-left: 3px solid #8B6914; padding-left: 10px; page-break-after: avoid; }
+  .pdf-body h2 { font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: #222; border-left: 3px solid #5B21B6; padding-left: 10px; page-break-after: avoid; }
   .pdf-body h3 { font-size: 15px; font-weight: 700; margin: 18px 0 8px; color: #333; page-break-after: avoid; }
   .pdf-body blockquote { border-left: 3px solid #6D28D9; padding: 10px 16px; margin: 16px 0; background: #FFFDF5; font-style: italic; color: #555; border-radius: 0 6px 6px 0; page-break-inside: avoid; }
   .pdf-body p { margin: 8px 0; line-height: 1.8; font-size: 13px; }
@@ -377,7 +377,7 @@ export default function Sermoes() {
 <div style="font-family:'Georgia','Palatino Linotype',serif;max-width:680px;margin:0 auto;padding:0;color:#333;">
   <div class="pdf-page-header">
     <div>
-      <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8B6914;font-weight:700;">Living Word</span>
+      <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5B21B6;font-weight:700;">Living Word</span>
       <span style="font-size:10px;color:#999;margin-left:8px;">✝</span>
     </div>
     <span style="font-size:9px;color:#999;">${dateStr}</span>

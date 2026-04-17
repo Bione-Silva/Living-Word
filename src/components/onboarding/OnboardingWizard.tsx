@@ -42,7 +42,7 @@ const TONES = [
 ];
 
 const COLORS = [
-  { id: 'amber', label: 'Âmbar', color: '#8B6914' },
+  { id: 'amber', label: 'Âmbar', color: '#5B21B6' },
   { id: 'blue', label: 'Azul', color: '#2563EB' },
   { id: 'green', label: 'Verde', color: '#16A34A' },
   { id: 'rose', label: 'Rosa', color: '#E11D48' },

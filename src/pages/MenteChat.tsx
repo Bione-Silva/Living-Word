@@ -384,7 +384,7 @@ export default function MenteChat() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         {mind && (
-          <div className="w-10 h-10 rounded-full border-2 border-[hsl(43,55%,58%)]/40 overflow-hidden">
+          <div className="w-10 h-10 rounded-full border-2 border-[hsl(263,70%,50%)]/40 overflow-hidden">
             <img src={mind.image} alt={name} className="w-full h-full object-cover" />
           </div>
         )}
@@ -412,7 +412,7 @@ export default function MenteChat() {
                 data-msg-index={i}
                 className={`rounded-2xl px-5 py-4 text-sm leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-[hsl(43,55%,58%)] text-[hsl(210,40%,6%)] rounded-br-md'
+                    ? 'bg-[hsl(263,70%,50%)] text-[hsl(210,40%,6%)] rounded-br-md'
                     : 'bg-muted/40 border border-border/40 text-foreground rounded-bl-md'
                 }`}
               >
@@ -461,7 +461,7 @@ export default function MenteChat() {
                       className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ml-1 ${
                         savedIndexes.has(i)
                           ? 'text-emerald-500 bg-emerald-500/10 cursor-default'
-                          : 'text-[hsl(43,55%,58%)] hover:bg-[hsl(43,55%,58%)]/10 hover:text-[hsl(43,55%,65%)]'
+                          : 'text-[hsl(263,70%,50%)] hover:bg-[hsl(263,70%,50%)]/10 hover:text-[hsl(270,35%,78%)]'
                       }`}
                       title={lang === 'PT' ? 'Salvar na Biblioteca' : lang === 'EN' ? 'Save to Library' : 'Guardar en Biblioteca'}
                     >
@@ -491,7 +491,7 @@ export default function MenteChat() {
         {isLoading && messages[messages.length - 1]?.role === 'user' && (
           <div className="flex justify-start">
             <div className="bg-muted/40 border border-border/40 rounded-2xl rounded-bl-md px-5 py-4">
-              <Loader2 className="h-4 w-4 animate-spin text-[hsl(43,55%,58%)]" />
+              <Loader2 className="h-4 w-4 animate-spin text-[hsl(263,70%,50%)]" />
             </div>
           </div>
         )}
@@ -543,13 +543,13 @@ export default function MenteChat() {
             onKeyDown={handleKeyDown}
             placeholder={placeholder[lang]}
             disabled={isLoading}
-            className="flex-1 rounded-xl border border-border bg-muted/30 px-4 py-3 text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[hsl(43,55%,58%)]/30 disabled:opacity-50"
+            className="flex-1 rounded-xl border border-border bg-muted/30 px-4 py-3 text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[hsl(263,70%,50%)]/30 disabled:opacity-50"
           />
           <Button
             size="icon"
             onClick={send}
             disabled={isLoading || !input.trim()}
-            className="h-11 w-11 rounded-xl bg-[hsl(43,55%,58%)] hover:bg-[hsl(43,55%,65%)] text-[hsl(210,40%,6%)] disabled:opacity-50"
+            className="h-11 w-11 rounded-xl bg-[hsl(263,70%,50%)] hover:bg-[hsl(270,35%,78%)] text-[hsl(210,40%,6%)] disabled:opacity-50"
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>

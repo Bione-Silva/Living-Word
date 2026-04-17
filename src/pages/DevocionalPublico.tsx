@@ -99,7 +99,7 @@ export default function DevocionalPublico() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[hsl(36,30%,96%)]">
+      <div className="min-h-screen bg-[hsl(252,100%,99%)]">
         <Header l={l} shareToken={shareToken} />
         <div className="max-w-2xl mx-auto px-5 py-12 space-y-4">
           <Skeleton className="h-8 w-3/4" />
@@ -112,7 +112,7 @@ export default function DevocionalPublico() {
 
   if (!devotional || !share) {
     return (
-      <div className="min-h-screen bg-[hsl(36,30%,96%)]">
+      <div className="min-h-screen bg-[hsl(252,100%,99%)]">
         <Header l={l} shareToken={shareToken} />
         <div className="max-w-2xl mx-auto px-5 py-20 text-center">
           <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -130,40 +130,40 @@ export default function DevocionalPublico() {
   const sharerName = sharer?.full_name || 'Living Word';
 
   return (
-    <div className="min-h-screen bg-[hsl(36,30%,96%)]">
+    <div className="min-h-screen bg-[hsl(252,100%,99%)]">
       {/* Header */}
       <Header l={l} shareToken={shareToken} />
 
       {/* Shared by banner */}
-      <div className="bg-[hsl(38,52%,58%)]/10 border-b border-[hsl(38,40%,80%)] px-5 py-3">
+      <div className="bg-[hsl(263,70%,50%)]/10 border-b border-[hsl(270,43%,92%)] px-5 py-3">
         <div className="max-w-2xl mx-auto flex items-center gap-2 text-sm">
           <span>📖</span>
-          <span className="font-semibold text-[hsl(24,30%,25%)]">{sharerName}</span>
-          <span className="text-[hsl(24,30%,25%)]/70">{labels.sharedBy[l]}</span>
-          <span className="text-[hsl(24,30%,25%)]/50 hidden sm:inline">|</span>
-          <span className="text-[hsl(38,52%,58%)] font-medium hidden sm:inline">{labels.joinFree[l]}</span>
+          <span className="font-semibold text-[hsl(256,56%,16%)]">{sharerName}</span>
+          <span className="text-[hsl(256,56%,16%)]/70">{labels.sharedBy[l]}</span>
+          <span className="text-[hsl(256,56%,16%)]/50 hidden sm:inline">|</span>
+          <span className="text-[hsl(263,70%,50%)] font-medium hidden sm:inline">{labels.joinFree[l]}</span>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-5 py-8 space-y-8">
         {/* Cover image */}
         {devotional.cover_image_url && (
-          <div className="rounded-2xl overflow-hidden border border-[hsl(38,40%,80%)]">
+          <div className="rounded-2xl overflow-hidden border border-[hsl(270,43%,92%)]">
             <img src={devotional.cover_image_url} alt={devotional.title} className="w-full h-auto" />
           </div>
         )}
 
         {/* Title & verse */}
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[hsl(38,52%,58%)]">
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[hsl(263,70%,50%)]">
             {devotional.category}
           </span>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[hsl(24,30%,20%)] mt-1 leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[hsl(256,56%,16%)] mt-1 leading-tight">
             {devotional.title}
           </h1>
-          <div className="mt-4 pl-4 border-l-[3px] border-[hsl(38,52%,58%)]">
-            <p className="text-sm font-medium text-[hsl(38,52%,48%)]">{devotional.anchor_verse}</p>
-            <p className="text-base italic text-[hsl(24,30%,30%)] mt-1 font-serif leading-relaxed">
+          <div className="mt-4 pl-4 border-l-[3px] border-[hsl(263,70%,50%)]">
+            <p className="text-sm font-medium text-[hsl(263,70%,50%)]">{devotional.anchor_verse}</p>
+            <p className="text-base italic text-[hsl(256,56%,16%)] mt-1 font-serif leading-relaxed">
               "{devotional.anchor_verse_text}"
             </p>
           </div>
@@ -171,27 +171,27 @@ export default function DevocionalPublico() {
 
         {/* Audio: locked */}
         {devotional.audio_url_onyx && (
-          <div className="relative rounded-2xl border border-[hsl(38,40%,80%)] p-6 overflow-hidden">
-            <div className="absolute inset-0 bg-[hsl(36,30%,94%)]/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
-              <div className="w-14 h-14 rounded-full bg-[hsl(38,52%,58%)] flex items-center justify-center mb-3 shadow-lg">
+          <div className="relative rounded-2xl border border-[hsl(270,43%,92%)] p-6 overflow-hidden">
+            <div className="absolute inset-0 bg-[hsl(252,100%,99%)]/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+              <div className="w-14 h-14 rounded-full bg-[hsl(263,70%,50%)] flex items-center justify-center mb-3 shadow-lg">
                 <Play className="h-6 w-6 text-white ml-0.5" />
               </div>
-              <p className="text-sm font-semibold text-[hsl(24,30%,25%)]">{labels.listenFull[l]}</p>
+              <p className="text-sm font-semibold text-[hsl(256,56%,16%)]">{labels.listenFull[l]}</p>
               <Link to={`/cadastro?ref=${shareToken}`}>
-                <Button variant="link" className="text-[hsl(38,52%,48%)] mt-1 text-xs">
+                <Button variant="link" className="text-[hsl(263,70%,50%)] mt-1 text-xs">
                   {labels.signUpFree[l]} →
                 </Button>
               </Link>
             </div>
             {/* Fake player behind blur */}
             <div className="h-20 flex items-center gap-4 opacity-40">
-              <div className="w-10 h-10 rounded-full bg-[hsl(38,52%,58%)] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-[hsl(263,70%,50%)] flex items-center justify-center">
                 <Play className="h-4 w-4 text-white" />
               </div>
-              <div className="flex-1 h-2 bg-[hsl(38,40%,85%)] rounded-full">
-                <div className="h-full w-1/3 bg-[hsl(38,52%,58%)] rounded-full" />
+              <div className="flex-1 h-2 bg-[hsl(270,43%,92%)] rounded-full">
+                <div className="h-full w-1/3 bg-[hsl(263,70%,50%)] rounded-full" />
               </div>
-              <span className="text-xs text-[hsl(24,30%,50%)]">0:00 / 5:42</span>
+              <span className="text-xs text-[hsl(263,70%,50%)]">0:00 / 5:42</span>
             </div>
           </div>
         )}
@@ -199,14 +199,14 @@ export default function DevocionalPublico() {
         {/* Meditation - visible paragraphs */}
         <div>
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-[hsl(38,52%,58%)]/10">
-              <BookOpen className="h-4 w-4 text-[hsl(38,52%,58%)]" />
+            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-[hsl(263,70%,50%)]/10">
+              <BookOpen className="h-4 w-4 text-[hsl(263,70%,50%)]" />
             </div>
-            <h2 className="text-[11px] font-bold tracking-[0.15em] uppercase text-[hsl(38,52%,58%)]">
+            <h2 className="text-[11px] font-bold tracking-[0.15em] uppercase text-[hsl(263,70%,50%)]">
               {labels.meditation[l]}
             </h2>
           </div>
-          <div className="space-y-4 font-serif text-base leading-relaxed text-[hsl(24,30%,25%)]">
+          <div className="space-y-4 font-serif text-base leading-relaxed text-[hsl(256,56%,16%)]">
             {visibleParagraphs.map((p, i) => (
               <p key={i}>{p}</p>
             ))}
@@ -216,32 +216,32 @@ export default function DevocionalPublico() {
         {/* Blur overlay for remaining content */}
         {hasMore && (
           <div className="relative">
-            <div className="space-y-4 font-serif text-base leading-relaxed text-[hsl(24,30%,25%)]">
+            <div className="space-y-4 font-serif text-base leading-relaxed text-[hsl(256,56%,16%)]">
               <p className="line-clamp-3">{paragraphs[2]}</p>
             </div>
             {/* Gradient blur */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[hsl(36,30%,96%)]/70 to-[hsl(36,30%,96%)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[hsl(252,100%,99%)]/70 to-[hsl(252,100%,99%)]" />
             <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center pb-4">
-              <Lock className="h-5 w-5 text-[hsl(38,52%,58%)] mb-2" />
-              <p className="text-sm font-semibold text-[hsl(24,30%,25%)]">{labels.readFull[l]}</p>
-              <p className="text-xs text-[hsl(38,52%,48%)]">{labels.itsFree[l]}</p>
+              <Lock className="h-5 w-5 text-[hsl(263,70%,50%)] mb-2" />
+              <p className="text-sm font-semibold text-[hsl(256,56%,16%)]">{labels.readFull[l]}</p>
+              <p className="text-xs text-[hsl(263,70%,50%)]">{labels.itsFree[l]}</p>
             </div>
           </div>
         )}
 
         {/* CTA Card */}
-        <div className="rounded-2xl border-2 border-[hsl(38,52%,58%)]/30 bg-gradient-to-br from-[hsl(38,52%,58%)]/5 to-[hsl(36,30%,94%)] p-8 text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-[hsl(38,52%,58%)]/10 flex items-center justify-center mx-auto">
-            <BookOpen className="h-7 w-7 text-[hsl(38,52%,58%)]" />
+        <div className="rounded-2xl border-2 border-[hsl(263,70%,50%)]/30 bg-gradient-to-br from-[hsl(263,70%,50%)]/5 to-[hsl(252,100%,99%)] p-8 text-center space-y-4">
+          <div className="w-16 h-16 rounded-full bg-[hsl(263,70%,50%)]/10 flex items-center justify-center mx-auto">
+            <BookOpen className="h-7 w-7 text-[hsl(263,70%,50%)]" />
           </div>
-          <h3 className="text-xl font-serif font-bold text-[hsl(24,30%,20%)]">
+          <h3 className="text-xl font-serif font-bold text-[hsl(256,56%,16%)]">
             {labels.ctaTitle[l]}
           </h3>
-          <p className="text-sm text-[hsl(24,30%,40%)] max-w-md mx-auto">
+          <p className="text-sm text-[hsl(257,61%,32%)] max-w-md mx-auto">
             {labels.ctaDesc[l]}
           </p>
           <Link to={`/cadastro?ref=${shareToken}`}>
-            <Button className="bg-[hsl(38,52%,58%)] hover:bg-[hsl(38,52%,48%)] text-white px-8 py-3 text-base rounded-xl shadow-lg mt-2">
+            <Button className="bg-[hsl(263,70%,50%)] hover:bg-[hsl(263,70%,50%)] text-white px-8 py-3 text-base rounded-xl shadow-lg mt-2">
               {labels.ctaButton[l]} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </Link>
@@ -249,8 +249,8 @@ export default function DevocionalPublico() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-[hsl(38,40%,85%)] py-6 text-center">
-        <p className="text-xs text-[hsl(24,30%,50%)]">Living Word © {new Date().getFullYear()}</p>
+      <footer className="border-t border-[hsl(270,43%,92%)] py-6 text-center">
+        <p className="text-xs text-[hsl(263,70%,50%)]">Living Word © {new Date().getFullYear()}</p>
       </footer>
     </div>
   );
@@ -258,14 +258,14 @@ export default function DevocionalPublico() {
 
 function Header({ l, shareToken }: { l: L; shareToken?: string }) {
   return (
-    <header className="border-b border-[hsl(38,40%,85%)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+    <header className="border-b border-[hsl(270,43%,92%)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-[hsl(38,52%,58%)]" />
-          <span className="text-lg font-serif font-bold text-[hsl(24,30%,20%)]">Living Word</span>
+          <BookOpen className="h-5 w-5 text-[hsl(263,70%,50%)]" />
+          <span className="text-lg font-serif font-bold text-[hsl(256,56%,16%)]">Living Word</span>
         </Link>
         <Link to={`/cadastro${shareToken ? `?ref=${shareToken}` : ''}`}>
-          <Button size="sm" className="bg-[hsl(38,52%,58%)] hover:bg-[hsl(38,52%,48%)] text-white rounded-lg text-xs">
+          <Button size="sm" className="bg-[hsl(263,70%,50%)] hover:bg-[hsl(263,70%,50%)] text-white rounded-lg text-xs">
             {l === 'PT' ? 'Criar conta grátis' : l === 'ES' ? 'Crear cuenta gratis' : 'Create free account'}
           </Button>
         </Link>

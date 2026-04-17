@@ -103,17 +103,17 @@ export default function MindProfile() {
       </Button>
 
       {/* ── A. HERO ── */}
-      <section className="relative rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-8 sm:p-14 text-center overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(35,40%,75%)] to-transparent" />
+      <section className="relative rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-8 sm:p-14 text-center overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(270,35%,78%)] to-transparent" />
 
         <div className="relative z-10">
-          <div className="mx-auto w-36 h-36 sm:w-44 sm:h-44 rounded-full border-[3px] border-[hsl(35,30%,80%)] overflow-hidden shadow-lg mb-6">
+          <div className="mx-auto w-36 h-36 sm:w-44 sm:h-44 rounded-full border-[3px] border-[hsl(270,43%,92%)] overflow-hidden shadow-lg mb-6">
             <img src={mind.image} alt={mind.name} className="w-full h-full object-cover" width={176} height={176} />
           </div>
           <span className="text-3xl">{mind.flag}</span>
 
           <h1 className="font-display text-4xl sm:text-5xl font-bold text-[hsl(220,15%,15%)] tracking-tight mt-3">{mind.name}</h1>
-          <p className="text-lg sm:text-xl italic text-[hsl(35,40%,45%)] mt-2 font-display">{mind.subtitle[lang]}</p>
+          <p className="text-lg sm:text-xl italic text-[hsl(257,61%,32%)] mt-2 font-display">{mind.subtitle[lang]}</p>
 
           {/* Online indicator */}
           <div className="flex items-center justify-center gap-2 mt-4">
@@ -127,8 +127,8 @@ export default function MindProfile() {
           {/* Data badges */}
           <div className="flex flex-wrap justify-center gap-2.5 mt-7">
             {mind.badges.map((badge, i) => (
-              <Badge key={i} variant="outline" className="text-[11px] border-[hsl(35,25%,82%)] text-[hsl(220,10%,45%)] bg-white px-3 py-1 gap-1.5 font-mono">
-                <Database className="h-3 w-3 text-[hsl(35,40%,55%)]" />
+              <Badge key={i} variant="outline" className="text-[11px] border-[hsl(270,43%,92%)] text-[hsl(220,10%,45%)] bg-white px-3 py-1 gap-1.5 font-mono">
+                <Database className="h-3 w-3 text-[hsl(263,70%,50%)]" />
                 {badge[lang]}
               </Badge>
             ))}
@@ -137,10 +137,10 @@ export default function MindProfile() {
       </section>
 
       {/* ── B. BIOGRAPHY ── */}
-      <section className="mt-5 rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-7 sm:p-10">
+      <section className="mt-5 rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-7 sm:p-10">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-            <Fingerprint className="h-5 w-5 text-[hsl(35,45%,45%)]" />
+          <div className="w-10 h-10 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+            <Fingerprint className="h-5 w-5 text-[hsl(257,61%,32%)]" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-[hsl(220,15%,20%)]">{sectionLabels.bio[lang]}</h2>
@@ -152,34 +152,34 @@ export default function MindProfile() {
 
       {/* ── C. SPECIALTIES & SIGNATURES ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-        <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-7">
+        <section className="rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-7">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-              <Cpu className="h-5 w-5 text-[hsl(35,45%,45%)]" />
+            <div className="w-10 h-10 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+              <Cpu className="h-5 w-5 text-[hsl(257,61%,32%)]" />
             </div>
             <h2 className="text-lg font-bold text-[hsl(220,15%,20%)]">{sectionLabels.specialties[lang]}</h2>
           </div>
           <div className="space-y-2.5">
             {mind.specialties.map((s, i) => (
-              <div key={i} className="flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)]">
-                <Zap className="h-3.5 w-3.5 text-[hsl(35,50%,50%)] shrink-0" />
+              <div key={i} className="flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)]">
+                <Zap className="h-3.5 w-3.5 text-[hsl(263,70%,50%)] shrink-0" />
                 <span className="text-sm text-[hsl(220,10%,30%)] font-medium">{s[lang]}</span>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-7">
+        <section className="rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-7">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-              <ScrollText className="h-5 w-5 text-[hsl(35,45%,45%)]" />
+            <div className="w-10 h-10 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+              <ScrollText className="h-5 w-5 text-[hsl(257,61%,32%)]" />
             </div>
             <h2 className="text-lg font-bold text-[hsl(220,15%,20%)]">{sectionLabels.signatures[lang]}</h2>
           </div>
           <div className="space-y-2.5">
             {mind.signatures.map((s, i) => (
-              <div key={i} className="flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)]">
-                <Sparkles className="h-3.5 w-3.5 text-[hsl(35,50%,50%)] shrink-0" />
+              <div key={i} className="flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)]">
+                <Sparkles className="h-3.5 w-3.5 text-[hsl(263,70%,50%)] shrink-0" />
                 <span className="text-sm text-[hsl(220,10%,35%)] italic">{s[lang]}</span>
               </div>
             ))}
@@ -191,10 +191,10 @@ export default function MindProfile() {
       <TheologyDNAChart data={mind.theologyDNA} lang={lang} />
 
 
-      <section className="mt-5 rounded-2xl border border-[hsl(30,15%,88%)] bg-[hsl(35,30%,96%)] p-7 sm:p-10">
+      <section className="mt-5 rounded-2xl border border-[hsl(270,43%,92%)] bg-[hsl(252,100%,99%)] p-7 sm:p-10">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-[hsl(35,35%,90%)] flex items-center justify-center border border-[hsl(35,25%,82%)]">
-            <Shield className="h-5 w-5 text-[hsl(35,45%,45%)]" />
+          <div className="w-10 h-10 rounded-xl bg-[hsl(270,43%,92%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+            <Shield className="h-5 w-5 text-[hsl(257,61%,32%)]" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-[hsl(220,15%,20%)]">{sectionLabels.theology[lang]}</h2>
@@ -205,10 +205,10 @@ export default function MindProfile() {
       </section>
 
       {/* ── D. REFERENCE WORKS ── */}
-      <section className="mt-5 rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-7 sm:p-10">
+      <section className="mt-5 rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-7 sm:p-10">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-            <BookMarked className="h-5 w-5 text-[hsl(35,45%,45%)]" />
+          <div className="w-10 h-10 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+            <BookMarked className="h-5 w-5 text-[hsl(257,61%,32%)]" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-[hsl(220,15%,20%)]">{sectionLabels.works[lang]}</h2>
@@ -217,8 +217,8 @@ export default function MindProfile() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {mind.works.map((work, i) => (
-            <div key={i} className="flex items-center gap-4 px-5 py-4 rounded-xl bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)] hover:border-[hsl(35,30%,80%)] transition-colors">
-              <BookOpen className="h-4 w-4 text-[hsl(35,50%,50%)] shrink-0" />
+            <div key={i} className="flex items-center gap-4 px-5 py-4 rounded-xl bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)] hover:border-[hsl(270,43%,92%)] transition-colors">
+              <BookOpen className="h-4 w-4 text-[hsl(263,70%,50%)] shrink-0" />
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-[hsl(220,10%,25%)] truncate">{work.title[lang]}</p>
                 {work.year && <p className="text-[11px] text-[hsl(220,10%,55%)] mt-0.5 font-mono">{work.year}</p>}
@@ -229,17 +229,17 @@ export default function MindProfile() {
       </section>
 
       {/* ── E. ENGAGEMENT MODULE ── */}
-      <section className="mt-5 rounded-2xl border border-[hsl(30,15%,88%)] bg-white p-8 sm:p-10">
+      <section className="mt-5 rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-8 sm:p-10">
         {isLocked ? (
           <div className="text-center space-y-5 py-8">
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-[hsl(35,35%,93%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-              <Lock className="h-8 w-8 text-[hsl(35,45%,45%)]" />
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+              <Lock className="h-8 w-8 text-[hsl(257,61%,32%)]" />
             </div>
-            <h2 className="font-display text-3xl font-bold text-[hsl(35,45%,40%)]">{sectionLabels.unlock[lang]}</h2>
+            <h2 className="font-display text-3xl font-bold text-[hsl(257,61%,32%)]">{sectionLabels.unlock[lang]}</h2>
             <p className="text-sm text-[hsl(220,10%,50%)] max-w-md mx-auto">{sectionLabels.upgradePrice[lang]}</p>
             <Button
               onClick={() => navigate('/upgrade')}
-              className="px-10 py-6 text-base font-bold bg-gradient-to-r from-[hsl(35,50%,45%)] to-[hsl(30,40%,38%)] hover:from-[hsl(35,50%,52%)] hover:to-[hsl(30,40%,45%)] text-white gap-2 rounded-xl"
+              className="px-10 py-6 text-base font-bold bg-gradient-to-r from-[hsl(257,61%,32%)] to-[hsl(257,61%,32%)] hover:from-[hsl(263,70%,50%)] hover:to-[hsl(257,61%,32%)] text-white gap-2 rounded-xl"
             >
               <Crown className="h-5 w-5" />
               {sectionLabels.upgradeBtn[lang]}

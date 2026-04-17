@@ -131,7 +131,7 @@ function SoundWaves({ active }: { active: boolean }) {
           style={{
             animationDelay: active ? `${i * 0.12}s` : undefined,
             height: active ? undefined : '4px',
-            backgroundColor: 'hsl(38, 52%, 58%)',
+            backgroundColor: 'hsl(263, 70%, 50%)',
           }}
         />
       ))}
@@ -179,7 +179,7 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
   if (!audioSrc) return <AudioPlaceholder title={data.title} lang={lang} />;
 
   return (
-    <div className="rounded-2xl border p-5 sm:p-6 space-y-5" style={{ borderColor: 'hsl(38, 40%, 80%)', background: 'linear-gradient(135deg, hsl(38, 40%, 96%), hsl(36, 30%, 94%))' }}>
+    <div className="rounded-2xl border p-5 sm:p-6 space-y-5" style={{ borderColor: 'hsl(270, 43%, 92%)', background: 'linear-gradient(135deg, hsl(252, 100%, 99%), hsl(252, 100%, 99%))' }}>
       <audio
         ref={audioRef}
         src={audioSrc}
@@ -192,14 +192,14 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
       {/* Header with waves */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(38, 52%, 58%, 0.15)' }}>
+          <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(263, 70%, 50%, 0.15)' }}>
             <SoundWaves active={playing} />
           </div>
           <div>
-            <p className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ color: 'hsl(38, 52%, 48%)' }}>
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ color: 'hsl(263, 70%, 50%)' }}>
               {labels.listenLabel[lang]}
             </p>
-            <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: 'hsl(24, 30%, 15%)' }}>{data.title}</p>
+            <p className="text-sm font-medium leading-snug line-clamp-1" style={{ color: 'hsl(261, 41%, 7%)' }}>{data.title}</p>
           </div>
         </div>
       </div>
@@ -210,18 +210,18 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
           ref={progressRef}
           onClick={handleSeek}
           className="w-full h-2 rounded-full cursor-pointer relative group"
-          style={{ backgroundColor: 'hsl(36, 20%, 88%)' }}
+          style={{ backgroundColor: 'hsl(270, 43%, 92%)' }}
         >
           <div
             className="absolute inset-y-0 left-0 rounded-full transition-all"
-            style={{ width: `${progressPct}%`, backgroundColor: 'hsl(38, 52%, 48%)' }}
+            style={{ width: `${progressPct}%`, backgroundColor: 'hsl(263, 70%, 50%)' }}
           />
           <div
             className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full shadow-md border-2 opacity-0 group-hover:opacity-100 transition-opacity"
-            style={{ left: `calc(${progressPct}% - 8px)`, backgroundColor: 'hsl(38, 52%, 48%)', borderColor: '#fff' }}
+            style={{ left: `calc(${progressPct}% - 8px)`, backgroundColor: 'hsl(263, 70%, 50%)', borderColor: '#fff' }}
           />
         </div>
-        <div className="flex justify-between text-[11px] font-medium tabular-nums" style={{ color: 'hsl(24, 18%, 50%)' }}>
+        <div className="flex justify-between text-[11px] font-medium tabular-nums" style={{ color: 'hsl(263, 70%, 50%)' }}>
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
@@ -232,21 +232,21 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
         <button
           onClick={() => setMuted(!muted)}
           className="h-10 w-10 rounded-full flex items-center justify-center transition-all hover:bg-accent/10"
-          style={{ color: 'hsl(24, 18%, 50%)' }}
+          style={{ color: 'hsl(263, 70%, 50%)' }}
         >
           {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
         </button>
         <button
           onClick={togglePlay}
           className="h-16 w-16 rounded-full flex items-center justify-center transition-all active:scale-95"
-          style={{ backgroundColor: 'hsl(38, 52%, 48%)', color: '#fff', boxShadow: '0 8px 24px hsl(38, 52%, 48%, 0.35)' }}
+          style={{ backgroundColor: 'hsl(263, 70%, 50%)', color: '#fff', boxShadow: '0 8px 24px hsl(263, 70%, 50%, 0.35)' }}
         >
           {playing ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7 ml-0.5" />}
         </button>
         <button
           onClick={cycleSpeed}
           className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold transition-all hover:bg-accent/10"
-          style={{ color: 'hsl(24, 18%, 50%)' }}
+          style={{ color: 'hsl(263, 70%, 50%)' }}
         >
           {speed}x
         </button>
@@ -258,31 +258,31 @@ function AudioPlayer({ data, lang }: { data: DevotionalData; lang: L }) {
 /* ─── Audio Placeholder (no audio yet) ─── */
 function AudioPlaceholder({ title, lang }: { title: string; lang: L }) {
   return (
-    <div className="rounded-2xl border p-5 sm:p-6 space-y-5" style={{ borderColor: 'hsl(38, 40%, 85%)', background: 'hsl(38, 30%, 96%)' }}>
+    <div className="rounded-2xl border p-5 sm:p-6 space-y-5" style={{ borderColor: 'hsl(270, 43%, 92%)', background: 'hsl(252, 100%, 99%)' }}>
       <div className="flex items-center gap-3">
-        <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(38, 52%, 58%, 0.12)' }}>
+        <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(263, 70%, 50%, 0.12)' }}>
           <SoundWaves active={false} />
         </div>
         <div>
-          <p className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ color: 'hsl(38, 40%, 60%)' }}>
+          <p className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ color: 'hsl(263, 70%, 50%)' }}>
             {labels.listenLabel[lang]}
           </p>
-          <p className="text-sm font-medium leading-snug" style={{ color: 'hsl(24, 30%, 15%)' }}>{title}</p>
+          <p className="text-sm font-medium leading-snug" style={{ color: 'hsl(261, 41%, 7%)' }}>{title}</p>
         </div>
       </div>
-      <div className="w-full h-2 rounded-full" style={{ backgroundColor: 'hsl(38, 30%, 90%)' }} />
+      <div className="w-full h-2 rounded-full" style={{ backgroundColor: 'hsl(270, 43%, 92%)' }} />
       <div className="flex items-center justify-center gap-8">
-        <div className="h-10 w-10 rounded-full flex items-center justify-center" style={{ color: 'hsl(38, 40%, 70%)' }}>
+        <div className="h-10 w-10 rounded-full flex items-center justify-center" style={{ color: 'hsl(270, 35%, 78%)' }}>
           <Volume2 className="h-5 w-5" />
         </div>
-        <div className="h-16 w-16 rounded-full flex items-center justify-center shadow-md" style={{ backgroundColor: 'hsl(38, 40%, 85%)', color: 'hsl(38, 40%, 55%)' }}>
+        <div className="h-16 w-16 rounded-full flex items-center justify-center shadow-md" style={{ backgroundColor: 'hsl(270, 43%, 92%)', color: 'hsl(263, 70%, 50%)' }}>
           <Play className="h-7 w-7 ml-0.5" />
         </div>
-        <div className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold" style={{ color: 'hsl(38, 40%, 65%)' }}>
+        <div className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold" style={{ color: 'hsl(270, 35%, 78%)' }}>
           1x
         </div>
       </div>
-      <p className="text-center text-[11px] italic" style={{ color: 'hsl(38, 30%, 60%)' }}>
+      <p className="text-center text-[11px] italic" style={{ color: 'hsl(263, 70%, 50%)' }}>
         {labels.audioSoon[lang]}
       </p>
     </div>
@@ -304,10 +304,10 @@ function BibleRichText({ text, className }: { text: string; className?: string }
     <span className={className}>
       {parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i} className="font-bold" style={{ color: 'hsl(24, 30%, 12%)' }}>{part.slice(2, -2)}</strong>;
+          return <strong key={i} className="font-bold" style={{ color: 'hsl(261, 41%, 7%)' }}>{part.slice(2, -2)}</strong>;
         }
         if (part.startsWith('*') && part.endsWith('*')) {
-          return <em key={i} className="italic" style={{ color: 'hsl(24, 30%, 20%, 0.85)' }}>{part.slice(1, -1)}</em>;
+          return <em key={i} className="italic" style={{ color: 'hsl(256, 56%, 16%, 0.85)' }}>{part.slice(1, -1)}</em>;
         }
         const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
         if (linkMatch) {
@@ -603,16 +603,16 @@ export default function Devocional() {
 
   /* ─── Styles ─── */
   const colors = {
-    bg: '#F5E6B2',
-    text: '#2C2416',
-    textMuted: 'hsl(24, 18%, 45%)',
-    gold: '#C9A84C',
-    goldLight: 'hsl(38, 52%, 92%)',
-    goldMuted: 'hsl(38, 40%, 75%)',
-    cardBg: '#FFFDF9',
-    verseBg: '#FEFCF5',
-    prayerBg: '#F0EBE1',
-    border: 'hsl(30, 20%, 85%)',
+    bg: '#E8E0F5',
+    text: '#0F0A18',
+    textMuted: 'hsl(257, 61%, 32%)',
+    gold: '#7C3AED',
+    goldLight: 'hsl(252, 100%, 99%)',
+    goldMuted: 'hsl(270, 35%, 78%)',
+    cardBg: '#F8F6FF',
+    verseBg: '#F8F6FF',
+    prayerBg: '#E8E0F5',
+    border: 'hsl(270, 43%, 92%)',
   };
 
   if (loading) {
@@ -678,7 +678,7 @@ export default function Devocional() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-2" style={{ color: colors.gold }}>
                   {labels.prayer[lang]}
                 </p>
-                <p className="font-serif text-[1.05rem] italic leading-[1.9]" style={{ color: 'hsl(24, 30%, 20%, 0.85)' }}>
+                <p className="font-serif text-[1.05rem] italic leading-[1.9]" style={{ color: 'hsl(256, 56%, 16%, 0.85)' }}>
                   <BibleRichText text={prayerText} />
                 </p>
               </div>
@@ -704,7 +704,7 @@ export default function Devocional() {
                 ? 'first-letter:text-4xl first-letter:font-playfair first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
                 : 'mt-5'
             }`}
-            style={{ color: 'hsl(24, 30%, 18%, 0.92)' }}
+            style={{ color: 'hsl(261, 41%, 7%, 0.92)' }}
           >
             <BibleRichText text={trimmed} />
           </p>
@@ -722,7 +722,7 @@ export default function Devocional() {
           <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-2" style={{ color: colors.gold }}>
             {labels.prayer[lang]}
           </p>
-          <p className="font-serif text-[1.05rem] italic leading-[1.9]" style={{ color: 'hsl(24, 30%, 20%, 0.85)' }}>
+          <p className="font-serif text-[1.05rem] italic leading-[1.9]" style={{ color: 'hsl(256, 56%, 16%, 0.85)' }}>
             <BibleRichText text={data.closing_prayer} />
           </p>
         </div>
@@ -903,7 +903,7 @@ export default function Devocional() {
             <div className="flex gap-3">
               <span className="text-3xl font-playfair font-black leading-none shrink-0 select-none" style={{ color: colors.goldMuted }}>&ldquo;</span>
               <div>
-                <blockquote className="font-serif text-base sm:text-lg italic leading-relaxed" style={{ color: 'hsl(24, 30%, 18%, 0.9)' }}>
+                <blockquote className="font-serif text-base sm:text-lg italic leading-relaxed" style={{ color: 'hsl(261, 41%, 7%, 0.9)' }}>
                   {displayVerseText}
                 </blockquote>
                 <p className="text-xs font-bold mt-3" style={{ color: colors.gold }}>&mdash; {displayVerse}</p>
@@ -998,7 +998,7 @@ export default function Devocional() {
           {/* Reflection question */}
           {!isViewingPast && data.reflection_question && (
             <div className="mt-8 pl-5 py-2" style={{ borderLeft: `3px solid ${colors.goldMuted}` }}>
-              <p className="font-serif text-base italic leading-relaxed" style={{ color: 'hsl(24, 30%, 20%, 0.8)' }}>
+              <p className="font-serif text-base italic leading-relaxed" style={{ color: 'hsl(256, 56%, 16%, 0.8)' }}>
                 💭 {data.reflection_question}
               </p>
             </div>
@@ -1089,7 +1089,7 @@ export default function Devocional() {
 
           {/* Show reflection question as prompt */}
           {data.reflection_question && (
-            <p className="text-sm italic pl-3" style={{ color: 'hsl(24, 30%, 30%, 0.75)', borderLeft: `2px solid ${colors.goldMuted}` }}>
+            <p className="text-sm italic pl-3" style={{ color: 'hsl(256, 56%, 16%, 0.75)', borderLeft: `2px solid ${colors.goldMuted}` }}>
               {data.reflection_question}
             </p>
           )}

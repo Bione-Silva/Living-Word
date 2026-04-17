@@ -249,11 +249,11 @@ export default function Upgrade() {
       ES: 'Preparando tu suscripción Living Word…',
     };
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4" style={{ backgroundColor: 'hsl(37, 33%, 96%)' }}>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(28, 42%, 42%, 0.1)' }}>
-          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(28, 42%, 42%)' }} />
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4" style={{ backgroundColor: 'hsl(252, 100%, 99%)' }}>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(257, 61%, 32%, 0.1)' }}>
+          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(257, 61%, 32%)' }} />
         </div>
-        <p className="text-lg font-medium animate-pulse" style={{ color: 'hsl(24, 30%, 30%)' }}>{loadingLabels[lang]}</p>
+        <p className="text-lg font-medium animate-pulse" style={{ color: 'hsl(256, 56%, 16%)' }}>{loadingLabels[lang]}</p>
       </div>
     );
   }

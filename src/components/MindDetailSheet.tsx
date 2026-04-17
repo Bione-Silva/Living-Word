@@ -86,19 +86,19 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 bg-[hsl(40,30%,98%)] border-l border-[hsl(30,15%,88%)] overflow-y-auto">
+      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 bg-[hsl(252,100%,99%)] border-l border-[hsl(270,43%,92%)] overflow-y-auto">
         <div className="px-6 sm:px-10 py-8 space-y-8">
 
           {/* ── A. HERO ── */}
           <section className="text-center pt-4">
             <div className="relative mx-auto w-32 h-32 sm:w-40 sm:h-40 mb-5">
-              <div className="w-full h-full rounded-full border-[3px] border-[hsl(35,30%,80%)] overflow-hidden shadow-lg">
+              <div className="w-full h-full rounded-full border-[3px] border-[hsl(270,43%,92%)] overflow-hidden shadow-lg">
                 <img src={mind.image} alt={mind.name} className="w-full h-full object-cover" width={160} height={160} />
               </div>
               <span className="absolute -bottom-1 -right-1 text-2xl drop-shadow">{mind.flag}</span>
             </div>
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] tracking-tight">{mind.name}</h2>
-            <p className="text-base italic text-[hsl(35,40%,45%)] mt-1 font-display">{mind.subtitle[lang]}</p>
+            <p className="text-base italic text-[hsl(257,61%,32%)] mt-1 font-display">{mind.subtitle[lang]}</p>
             <div className="flex items-center justify-center gap-2 mt-3">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
@@ -110,7 +110,7 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
                variant="outline"
                size="sm"
                onClick={() => setShowCompare(true)}
-               className="mt-3 gap-2 border-[hsl(35,25%,82%)] text-[hsl(220,10%,40%)] hover:border-[hsl(35,50%,50%)] hover:text-[hsl(35,50%,45%)]"
+               className="mt-3 gap-2 border-[hsl(270,43%,92%)] text-[hsl(220,10%,40%)] hover:border-[hsl(263,70%,50%)] hover:text-[hsl(257,61%,32%)]"
              >
                <ArrowLeftRight className="h-3.5 w-3.5" />
                {compareLabel[lang]}
@@ -118,8 +118,8 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
             {/* Data badges */}
             <div className="flex flex-wrap justify-center gap-2 mt-5">
               {mind.badges.map((badge, i) => (
-                <Badge key={i} variant="outline" className="text-[11px] border-[hsl(35,25%,82%)] text-[hsl(220,10%,45%)] bg-white px-3 py-1 gap-1.5 font-mono">
-                  <Database className="h-3 w-3 text-[hsl(35,40%,55%)]" />
+                <Badge key={i} variant="outline" className="text-[11px] border-[hsl(270,43%,92%)] text-[hsl(220,10%,45%)] bg-white px-3 py-1 gap-1.5 font-mono">
+                  <Database className="h-3 w-3 text-[hsl(263,70%,50%)]" />
                   {badge[lang]}
                 </Badge>
               ))}
@@ -127,13 +127,13 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
           </section>
 
           {/* Divider */}
-          <hr className="border-[hsl(30,15%,88%)]" />
+          <hr className="border-[hsl(270,43%,92%)]" />
 
           {/* ── B. BIOGRAPHY ── */}
           <section>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-[hsl(35,35%,92%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-                <Fingerprint className="h-4.5 w-4.5 text-[hsl(35,45%,45%)]" />
+              <div className="w-9 h-9 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+                <Fingerprint className="h-4.5 w-4.5 text-[hsl(257,61%,32%)]" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-[hsl(220,15%,20%)]">{labels.bio[lang]}</h3>
@@ -146,17 +146,17 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
           {/* ── C. SPECIALTIES & SIGNATURES ── */}
           <div className="grid grid-cols-1 gap-5">
             {/* Specialties */}
-            <section className="rounded-xl border border-[hsl(30,15%,88%)] bg-white p-5">
+            <section className="rounded-xl border border-[hsl(270,43%,92%)] bg-white p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[hsl(35,35%,92%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-                  <Cpu className="h-4 w-4 text-[hsl(35,45%,45%)]" />
+                <div className="w-8 h-8 rounded-lg bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+                  <Cpu className="h-4 w-4 text-[hsl(257,61%,32%)]" />
                 </div>
                 <h3 className="text-base font-bold text-[hsl(220,15%,20%)]">{labels.specialties[lang]}</h3>
               </div>
               <div className="space-y-2">
                 {mind.specialties.map((s, i) => (
-                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)]">
-                    <Zap className="h-3.5 w-3.5 text-[hsl(35,50%,50%)] shrink-0" />
+                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)]">
+                    <Zap className="h-3.5 w-3.5 text-[hsl(263,70%,50%)] shrink-0" />
                     <span className="text-sm text-[hsl(220,10%,30%)]">{s[lang]}</span>
                   </div>
                 ))}
@@ -168,17 +168,17 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
           <TheologyDNAChart data={mind.theologyDNA} lang={lang} />
 
           <div className="grid grid-cols-1 gap-5">
-            <section className="rounded-xl border border-[hsl(30,15%,88%)] bg-white p-5">
+            <section className="rounded-xl border border-[hsl(270,43%,92%)] bg-white p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[hsl(35,35%,92%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-                  <ScrollText className="h-4 w-4 text-[hsl(35,45%,45%)]" />
+                <div className="w-8 h-8 rounded-lg bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+                  <ScrollText className="h-4 w-4 text-[hsl(257,61%,32%)]" />
                 </div>
                 <h3 className="text-base font-bold text-[hsl(220,15%,20%)]">{labels.signatures[lang]}</h3>
               </div>
               <div className="space-y-2">
                 {mind.signatures.map((s, i) => (
-                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)]">
-                    <Sparkles className="h-3.5 w-3.5 text-[hsl(35,50%,50%)] shrink-0" />
+                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)]">
+                    <Sparkles className="h-3.5 w-3.5 text-[hsl(263,70%,50%)] shrink-0" />
                     <span className="text-sm text-[hsl(220,10%,35%)] italic">{s[lang]}</span>
                   </div>
                 ))}
@@ -187,10 +187,10 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
           </div>
 
           {/* ── THEOLOGY MATRIX ── */}
-          <section className="rounded-xl border border-[hsl(30,15%,88%)] bg-[hsl(35,30%,96%)] p-5">
+          <section className="rounded-xl border border-[hsl(270,43%,92%)] bg-[hsl(252,100%,99%)] p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(35,35%,90%)] flex items-center justify-center border border-[hsl(35,25%,82%)]">
-                <Shield className="h-4 w-4 text-[hsl(35,45%,45%)]" />
+              <div className="w-8 h-8 rounded-lg bg-[hsl(270,43%,92%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+                <Shield className="h-4 w-4 text-[hsl(257,61%,32%)]" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-[hsl(220,15%,20%)]">{labels.theology[lang]}</h3>
@@ -201,10 +201,10 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
           </section>
 
           {/* ── D. REFERENCE WORKS ── */}
-          <section className="rounded-xl border border-[hsl(30,15%,88%)] bg-white p-5">
+          <section className="rounded-xl border border-[hsl(270,43%,92%)] bg-white p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(35,35%,92%)] flex items-center justify-center border border-[hsl(35,25%,85%)]">
-                <BookMarked className="h-4 w-4 text-[hsl(35,45%,45%)]" />
+              <div className="w-8 h-8 rounded-lg bg-[hsl(252,100%,99%)] flex items-center justify-center border border-[hsl(270,43%,92%)]">
+                <BookMarked className="h-4 w-4 text-[hsl(257,61%,32%)]" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-[hsl(220,15%,20%)]">{labels.works[lang]}</h3>
@@ -213,8 +213,8 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
             </div>
             <div className="grid grid-cols-1 gap-2">
               {mind.works.map((work, i) => (
-                <div key={i} className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[hsl(40,30%,97%)] border border-[hsl(30,15%,92%)] hover:border-[hsl(35,30%,80%)] transition-colors">
-                  <BookOpen className="h-4 w-4 text-[hsl(35,50%,50%)] shrink-0" />
+                <div key={i} className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[hsl(252,100%,99%)] border border-[hsl(252,100%,99%)] hover:border-[hsl(270,43%,92%)] transition-colors">
+                  <BookOpen className="h-4 w-4 text-[hsl(263,70%,50%)] shrink-0" />
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-[hsl(220,10%,25%)] truncate">{work.title[lang]}</p>
                     {work.year && <p className="text-[11px] text-[hsl(220,10%,55%)] font-mono">{work.year}</p>}
@@ -225,7 +225,7 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
           </section>
 
           {/* Divider */}
-          <hr className="border-[hsl(30,15%,88%)]" />
+          <hr className="border-[hsl(270,43%,92%)]" />
 
           {/* ── E. ENGAGEMENT MODULE ── */}
           <section className="pb-4">

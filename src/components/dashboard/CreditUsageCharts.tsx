@@ -46,13 +46,13 @@ const FEATURE_LABELS: Record<string, Record<L, string>> = {
 
 // Platform palette: primary (café), accent (gold), warm earth tones
 const PIE_COLORS = [
-  'hsl(28, 42%, 42%)',   // primary café
-  'hsl(28, 42%, 55%)',   // accent gold
-  'hsl(24, 30%, 32%)',   // dark café
-  'hsl(36, 30%, 60%)',   // warm sand
-  'hsl(24, 18%, 38%)',   // muted brown
-  'hsl(30, 25%, 50%)',   // medium earth
-  'hsl(45, 35%, 48%)',   // olive gold
+  'hsl(257, 61%, 32%)',   // primary café
+  'hsl(263, 70%, 50%)',   // accent gold
+  'hsl(256, 56%, 16%)',   // dark café
+  'hsl(263, 70%, 50%)',   // warm sand
+  'hsl(257, 61%, 32%)',   // muted brown
+  'hsl(263, 70%, 50%)',   // medium earth
+  'hsl(263, 70%, 50%)',   // olive gold
   'hsl(20, 35%, 35%)',   // deep brown
 ];
 
@@ -180,7 +180,7 @@ export function CreditUsageCharts({ entries }: Props) {
               iconType="circle"
               iconSize={8}
               wrapperStyle={{ fontSize: '10px', paddingTop: '8px' }}
-              formatter={(value: string) => <span style={{ color: 'hsl(24, 18%, 38%)' }}>{value}</span>}
+              formatter={(value: string) => <span style={{ color: 'hsl(257, 61%, 32%)' }}>{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>

@@ -96,15 +96,15 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
   };
 
   const colors = {
-    bg: '#FFFDF9',
-    text: '#2C2416',
-    textMuted: 'hsl(24, 18%, 45%)',
-    gold: '#C9A84C',
-    goldLight: 'hsl(38, 52%, 92%)',
-    goldMuted: 'hsl(38, 40%, 75%)',
-    verseBg: '#FEFCF5',
-    prayerBg: '#F0EBE1',
-    border: 'hsl(30, 20%, 85%)',
+    bg: '#F8F6FF',
+    text: '#0F0A18',
+    textMuted: 'hsl(257, 61%, 32%)',
+    gold: '#7C3AED',
+    goldLight: 'hsl(252, 100%, 99%)',
+    goldMuted: 'hsl(270, 35%, 78%)',
+    verseBg: '#F8F6FF',
+    prayerBg: '#E8E0F5',
+    border: 'hsl(270, 43%, 92%)',
   };
 
   return (
@@ -156,7 +156,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
                 <div className="flex gap-3">
                   <span className="text-3xl font-playfair font-black leading-none shrink-0 select-none" style={{ color: colors.goldMuted }}>&ldquo;</span>
                   <div>
-                    <blockquote className="font-serif text-base italic leading-relaxed" style={{ color: 'hsl(24, 30%, 18%, 0.9)' }}>
+                    <blockquote className="font-serif text-base italic leading-relaxed" style={{ color: 'hsl(261, 41%, 7%, 0.9)' }}>
                       {data.anchor_verse_text}
                     </blockquote>
                     <p className="text-xs font-bold mt-3" style={{ color: colors.gold }}>&mdash; {data.anchor_verse}</p>
@@ -170,7 +170,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
               <SectionHeader icon={<BookOpen className="h-4 w-4" />} label={labels.meditation[lang]} color={colors.gold} bg={colors.goldLight} />
               <div className="mt-3 space-y-4">
                 {data.body_text.split('\n\n').filter(p => p.trim()).map((p, i) => (
-                  <p key={i} className="font-serif text-[1.05rem] leading-[1.85]" style={{ color: 'hsl(24, 30%, 18%, 0.92)' }}>
+                  <p key={i} className="font-serif text-[1.05rem] leading-[1.85]" style={{ color: 'hsl(261, 41%, 7%, 0.92)' }}>
                     {p.trim()}
                   </p>
                 ))}
@@ -181,7 +181,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
             {data.closing_prayer && (
               <section className="rounded-xl p-5" style={{ backgroundColor: colors.prayerBg }}>
                 <SectionHeader icon={<span className="text-base">🙏</span>} label={labels.prayer[lang]} color={colors.gold} bg="transparent" />
-                <p className="mt-3 font-serif text-[1.05rem] italic leading-[1.85]" style={{ color: 'hsl(24, 30%, 20%, 0.85)' }}>
+                <p className="mt-3 font-serif text-[1.05rem] italic leading-[1.85]" style={{ color: 'hsl(256, 56%, 16%, 0.85)' }}>
                   {data.closing_prayer}
                 </p>
               </section>
@@ -201,7 +201,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
             {data.reflection_question && (
               <section className="pl-5 py-3" style={{ borderLeft: `3px solid ${colors.goldMuted}` }}>
                 <SectionHeader icon={<MessageCircle className="h-4 w-4" />} label={labels.reflection[lang]} color={colors.gold} bg={colors.goldLight} />
-                <p className="mt-3 font-serif text-base italic leading-relaxed" style={{ color: 'hsl(24, 30%, 20%, 0.8)' }}>
+                <p className="mt-3 font-serif text-base italic leading-relaxed" style={{ color: 'hsl(256, 56%, 16%, 0.8)' }}>
                   {data.reflection_question}
                 </p>
               </section>
