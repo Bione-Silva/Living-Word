@@ -244,9 +244,11 @@ Deno.serve(async (req) => {
         let audioOnyxUrl: string | null = null
 
         if (openaiKey) {
-          const fullText = `${devotional.title}.\n\n${devotional.anchor_verse_text}\n\n${devotional.body_text}\n\n${devotional.closing_prayer || ''}`
+          // Script narrado: anuncia o tema, lê literalmente o versículo, narra a meditação,
+          // faz transição falada antes da oração e fecha com "Amém".
+          const audioScript = `${devotional.title}. O versículo base da nossa reflexão está em ${devotional.anchor_verse}, que diz: ${devotional.anchor_verse_text}. ${devotional.body_text} E agora, vamos orar. ${devotional.closing_prayer || ''} Amém.`
           console.log(`[${lang}] Generating TTS audio (onyx)...`)
-          const onyxData = await generateAudio(openaiKey, fullText, 'onyx')
+          const onyxData = await generateAudio(openaiKey, audioScript, 'onyx')
           if (onyxData) {
             audioOnyxUrl = await uploadToStorage(supabaseAdmin, `audio/${targetDate}-${lang}-onyx.mp3`, onyxData, 'audio/mpeg')
             console.log(`[${lang}] Audio onyx: ${audioOnyxUrl ? 'OK' : 'FAILED'}`)
