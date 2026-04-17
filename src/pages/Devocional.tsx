@@ -407,11 +407,12 @@ export default function Devocional() {
     const load = async () => {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('language, bible_version')
+        .select('language, bible_version, full_name')
         .eq('id', user.id)
         .single();
       const userLang = profile?.language || lang;
       setPreferredBibleVersion(profile?.bible_version || 'NVI');
+      setSenderName(profile?.full_name?.trim() || (lang === 'PT' ? 'Um amigo' : lang === 'ES' ? 'Un amigo' : 'A friend'));
       const { data } = await supabase
         .from('devotionals')
         .select('id, title, category, anchor_verse, anchor_verse_text, scheduled_date, body_text, cover_image_url, audio_url_nova, audio_url_alloy, audio_url_onyx')
