@@ -6,7 +6,7 @@ import {
   BookOpen, ArrowLeft, Calendar, MessageCircle,
   Play, Pause, Volume2, VolumeX, Share2, Copy, ListChecks,
   PenLine, Send, Download, Image as ImageIcon, Clock, Check,
-  Mic, User, UserRound
+  Mic, User, UserRound, Link2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -71,6 +71,14 @@ const labels = {
   saveImage: { PT: 'Baixar arte', EN: 'Download art', ES: 'Descargar arte' },
   share: { PT: 'Enviar', EN: 'Send', ES: 'Enviar' },
   shareWa: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
+  copyLink: { PT: 'Copiar link', EN: 'Copy link', ES: 'Copiar enlace' },
+  linkCopied: { PT: 'Link copiado! Cole no WhatsApp ou onde quiser.', EN: 'Link copied! Paste it in WhatsApp or anywhere.', ES: '¡Enlace copiado! Pégalo en WhatsApp o donde quieras.' },
+  preparingLink: { PT: 'Preparando link...', EN: 'Preparing link...', ES: 'Preparando enlace...' },
+  whatsAppInvite: {
+    PT: '✨ *{title}*\n📖 {verse}\n\n_{sender} enviou este devocional pra você através da Living Word — sua dose diária de Palavra._\n\n👉 Abra e leia: {url}',
+    EN: '✨ *{title}*\n📖 {verse}\n\n_{sender} sent you this devotional through Living Word — your daily dose of the Word._\n\n👉 Open and read: {url}',
+    ES: '✨ *{title}*\n📖 {verse}\n\n_{sender} te envió este devocional a través de Living Word — tu dosis diaria de la Palabra._\n\n👉 Abre y lee: {url}',
+  },
   deepenChat: { PT: 'Continuar no Chat', EN: 'Continue in Chat', ES: 'Continuar en el Chat' },
   journal: { PT: '✍️ Minha Reflexão Pessoal', EN: '✍️ My Personal Reflection', ES: '✍️ Mi Reflexión Personal' },
   journalSub: {
