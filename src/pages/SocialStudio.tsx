@@ -81,9 +81,11 @@ const headings: Record<L, Record<string, string>> = {
 
 export default function SocialStudio() {
   const { lang } = useLanguage();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const location = useLocation();
   const h = headings[lang];
+  const userPlan = (profile?.plan || 'free') as 'free' | 'starter' | 'pro' | 'igreja';
+  const hasAccess = userPlan !== 'free';
 
   const [activeTab, setActiveTab] = useState<string>('studio');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('4:5');
