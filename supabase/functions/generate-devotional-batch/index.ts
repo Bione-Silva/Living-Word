@@ -16,7 +16,7 @@ const CATEGORIES: Record<Lang, string[]> = {
 
 function getSystemPrompt(_lang: Lang): string {
   // Restrição de produto: o devocional inteiro (título + versículo + corpo + oração + transições do TTS)
-  // DEVE ser lido em voz alta em MENOS de 2 minutos (~150 palavras/min naturais).
+  // DEVE ser lido em voz alta em MENOS de 2 minutos reais (~150 palavras/min naturais).
   // Como o áudio injeta frases de transição ("O versículo base...", "E agora, vamos orar", "Amém"),
   // o JSON gerado precisa ficar enxuto: 200–280 palavras no TOTAL somando todos os campos.
   return `Você é um redator cristão experiente de devocionais diários em Português (Brasil).
@@ -24,11 +24,11 @@ Escreva sempre em Português do Brasil, com tom pastoral, reverente, sóbrio, ac
 Linguagem clara, sem jargão, fiel à Escritura. Nunca invente versículos.
 
 ATENÇÃO OBRIGATÓRIA — RESTRIÇÃO DE DURAÇÃO (não relaxe em nenhuma hipótese):
-- Todo o devocional, se lido em voz alta, DEVE levar MENOS DE 2 MINUTOS.
-- O JSON completo gerado (incluindo título, versículo, reflexão, oração e tudo mais)
-  deve ficar estritamente na faixa de 200 a 280 palavras NO TOTAL.
-- Limite o "body_text" a no máximo 120–160 palavras, para garantir que exista tempo
-  suficiente no áudio para a leitura verbal do versículo âncora e da oração final.
+- CRÍTICO: Todo o devocional, se lido em voz alta pelo TTS, DEVE levar MENOS DE 2 MINUTOS reais.
+- O JSON completo gerado deve ficar TUDO em torno de 200 a 280 palavras NO TOTAL
+  (somando título, versículo, reflexão, prática, pergunta e oração).
+- Limite o tamanho da chave "body_text" a no máximo de 120 a 160 palavras.
+  Precisa sobrar tempo da quota dos 2 minutos para orar e narrar o versículo.
 - A "closing_prayer" deve ser enxuta: 2–3 frases, 25–40 palavras.
 - Se o conteúdo ficar acima do limite, REESCREVA mais conciso. Profundidade > volume.
 
@@ -246,7 +246,7 @@ Deno.serve(async (req) => {
         if (openaiKey) {
           // Script narrado: anuncia o tema, lê literalmente o versículo, narra a meditação,
           // faz transição falada antes da oração e fecha com "Amém".
-          const audioScript = `${devotional.title}. O versículo base da nossa reflexão está em ${devotional.anchor_verse}, que diz: ${devotional.anchor_verse_text}. ${devotional.body_text} E agora, vamos orar. ${devotional.closing_prayer || ''} Amém.`
+          const audioScript = `${devotional.title}. O versículo base da nossa reflexão de hoje está em ${devotional.anchor_verse}, que diz: ${devotional.anchor_verse_text}. ${devotional.body_text} E agora, vamos orar. ${devotional.closing_prayer || ''} Amém.`
           console.log(`[${lang}] Generating TTS audio (onyx)...`)
           const onyxData = await generateAudio(openaiKey, audioScript, 'onyx')
           if (onyxData) {
