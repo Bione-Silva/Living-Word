@@ -134,7 +134,7 @@ function EditorialTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColo
 /* ────────────────────────────────────────────
    TEMPLATE 2 — SWISS TYPOGRAPHY (centered verse, grid lines)
    ──────────────────────────────────────────── */
-function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl'>) {
+function SwissTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
   const dark = isDarkText(textColor);
   const bg = dark ? '#F8F6FF' : baseColor(themeColor);
   const txtColor = textColor || '#FFFFFF';
@@ -147,6 +147,18 @@ function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark
       className="relative h-full w-full overflow-hidden flex items-center justify-center"
       style={{ backgroundColor: bg, fontFamily: font, containerType: 'size' }}
     >
+      {/* Optional background image with soft tint for readability */}
+      {bgImageUrl && (
+        <>
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundColor: dark ? 'rgba(248,246,255,0.82)' : `${baseColor(themeColor)}D9`,
+            }}
+          />
+        </>
+      )}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 bottom-0" style={{ left: '10%', width: '1px', backgroundColor: lineColor }} />
         <div className="absolute top-0 bottom-0" style={{ right: '10%', width: '1px', backgroundColor: lineColor }} />
