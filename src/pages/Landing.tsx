@@ -591,7 +591,7 @@ export default function Landing() {
                       </div>
                     ))}
                     {/* Generate button */}
-                    <div className="rounded-lg px-3 py-2 text-center text-[10px] font-semibold" style={{ background: '#6D28D9', color: '#0F0A18' }}>
+                    <div className="rounded-lg px-3 py-2 text-center text-[10px] font-semibold" style={{ background: '#6D28D9', color: '#FFFFFF' }}>
                       {lang === 'PT' ? 'Gerar conteúdo →' : lang === 'EN' ? 'Generate content →' : 'Generar contenido →'}
                     </div>
                     {/* Output chips */}
@@ -751,7 +751,7 @@ export default function Landing() {
                           <span key={l} className="text-[7px] font-semibold px-2 py-0.5 rounded" style={{ background: l === lang ? '#0F0A18' : 'rgba(15,10,24,0.1)', color: l === lang ? '#E8E0F5' : '#0F0A18' }}>{l}</span>
                         ))}
                       </div>
-                      <div className="rounded px-3 py-1.5 text-center text-[9px] font-semibold" style={{ background: '#6D28D9', color: '#0F0A18' }}>
+                      <div className="rounded px-3 py-1.5 text-center text-[9px] font-semibold" style={{ background: '#6D28D9', color: '#FFFFFF' }}>
                         {lang === 'PT' ? 'Gerar conteúdo →' : lang === 'EN' ? 'Generate content →' : 'Generar contenido →'}
                       </div>
                     </div>
