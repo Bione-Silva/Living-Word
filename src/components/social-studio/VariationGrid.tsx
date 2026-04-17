@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Download, Image as ImageIcon, FileImage, Loader2, Archive, Presentation, Sparkles } from 'lucide-react';
 import { captureNodeAsPng, compressToJpeg } from './export-utils';
 import { toast } from 'sonner';
+import { DownloadSuccessDialog } from '@/components/DownloadSuccessDialog';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -101,6 +102,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
     const [busyKey, setBusyKey] = useState<string | null>(null);
     const [zipBusy, setZipBusy] = useState(false);
     const [pptxBusy, setPptxBusy] = useState(false);
+    const [savedDialog, setSavedDialog] = useState<{ open: boolean; fileName: string }>({ open: false, fileName: '' });
 
     // Build a flat matrix of variations: each slide × each template
     const items: VariationItem[] = useMemo(() => {
@@ -137,12 +139,13 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           blob = dataUrlToBlob(pngDataUrl);
           ext = 'png';
         }
+        const fname = `living-word-${item.template}-${item.slideIdx + 1}.${ext}`;
         const link = document.createElement('a');
-        link.download = `living-word-${item.template}-${item.slideIdx + 1}.${ext}`;
+        link.download = fname;
         link.href = URL.createObjectURL(blob);
         link.click();
         URL.revokeObjectURL(link.href);
-        toast.success(l.saved);
+        setSavedDialog({ open: true, fileName: fname });
       } catch (err) {
         console.error(err);
         toast.error('Erro ao baixar');
@@ -164,12 +167,13 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           zip.file(`${folder}/${item.template}.png`, dataUrlToBlob(dataUrl));
         }
         const blob = await zip.generateAsync({ type: 'blob' });
+        const fname = `living-word-artes-${Date.now()}.zip`;
         const link = document.createElement('a');
-        link.download = `living-word-artes-${Date.now()}.zip`;
+        link.download = fname;
         link.href = URL.createObjectURL(blob);
         link.click();
         URL.revokeObjectURL(link.href);
-        toast.success(l.zipReady);
+        setSavedDialog({ open: true, fileName: fname });
       } catch (err) {
         console.error(err);
         toast.error('Erro ao gerar ZIP');
@@ -216,8 +220,9 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           });
         }
 
-        await pptx.writeFile({ fileName: `living-word-apresentacao-${Date.now()}.pptx` });
-        toast.success(l.pptxReady);
+        const pptxName = `living-word-apresentacao-${Date.now()}.pptx`;
+        await pptx.writeFile({ fileName: pptxName });
+        setSavedDialog({ open: true, fileName: pptxName });
       } catch (err) {
         console.error(err);
         toast.error('Erro ao gerar PPTX');
@@ -358,6 +363,13 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
             </div>
           ))}
         </div>
+
+        <DownloadSuccessDialog
+          open={savedDialog.open}
+          onOpenChange={(open) => setSavedDialog((s) => ({ ...s, open }))}
+          fileName={savedDialog.fileName}
+          lang={lang}
+        />
       </div>
     );
   }
