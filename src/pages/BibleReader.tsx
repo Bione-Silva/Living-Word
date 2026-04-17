@@ -329,7 +329,7 @@ export default function BibleReader() {
       </div>
 
       {/* Main tabs */}
-      <div className="flex items-center gap-1 bg-muted/50 rounded-xl p-1">
+      <div className="flex items-center gap-1 rounded-2xl border border-border bg-background p-1">
         {mainTabs.map(t => (
           <button
             key={t.key}
@@ -347,7 +347,7 @@ export default function BibleReader() {
       </div>
 
       {/* Tab content */}
-      <div className="rounded-xl border border-border bg-white p-4 md:p-6">
+       <div className="rounded-2xl border border-border bg-card p-4 md:p-6">
         {activeTab === 'read' && (
           <>
             {readView === 'books' && (
@@ -375,7 +375,7 @@ export default function BibleReader() {
 
       {/* Favorites & Notes */}
       {activeTab === 'read' && (
-        <div className="rounded-xl border border-border bg-white p-4">
+         <div className="rounded-2xl border border-border bg-card p-4">
           <BibleTabs ref={tabsRef} refreshKey={tabsRefreshKey} onNavigate={handleNavigate} defaultTab={tabsDefaultTab} />
         </div>
       )}

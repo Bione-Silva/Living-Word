@@ -50,8 +50,8 @@ export const BibleTabs = forwardRef<HTMLDivElement, BibleTabsProps>(
 
     return (
       <div ref={ref}>
-        <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full space-y-3">
+          <TabsList className="w-full rounded-2xl border border-border bg-background p-1">
             <TabsTrigger value="favorites" className="flex-1 gap-1.5 text-xs">
               <Heart className="h-3.5 w-3.5" /> {labels.favorites[lang]}
               {favorites.length > 0 && (
@@ -75,7 +75,7 @@ export const BibleTabs = forwardRef<HTMLDivElement, BibleTabsProps>(
                   {favorites.map(f => (
                     <div
                       key={f.id}
-                      className="flex items-start gap-2 p-3 rounded-xl border border-border bg-card/50 group cursor-pointer hover:bg-muted/50 transition-colors"
+                      className="flex items-start gap-2 p-3 rounded-xl border border-border bg-card group cursor-pointer hover:bg-muted/40 transition-colors"
                       onClick={() => onNavigate?.(f.book_id, f.chapter_number)}
                     >
                       <Heart className="h-3.5 w-3.5 text-red-500 fill-red-500 mt-0.5 shrink-0" />
@@ -104,7 +104,7 @@ export const BibleTabs = forwardRef<HTMLDivElement, BibleTabsProps>(
                   {notes.map(n => (
                     <div
                       key={n.id}
-                      className="flex items-start gap-2 p-3 rounded-xl border border-border bg-card/50 group cursor-pointer hover:bg-muted/50 transition-colors"
+                      className="flex items-start gap-2 p-3 rounded-xl border border-border bg-card group cursor-pointer hover:bg-muted/40 transition-colors"
                       onClick={() => onNavigate?.(n.book_id, n.chapter_number)}
                     >
                       <StickyNote className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
