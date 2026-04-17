@@ -162,6 +162,14 @@
     overflow-x: hidden;
   }
 
+  /* Force lavender-white surface on the html element when in app/blog mode
+     so iOS Safari overscroll, PWA safe areas and address bar all match. */
+  html.light,
+  html:has(.theme-app),
+  html:has(.theme-blog) {
+    background-color: hsl(270 50% 98%);
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Montserrat', sans-serif;
