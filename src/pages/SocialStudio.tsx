@@ -7,6 +7,8 @@ import { AspectRatioSelector, type AspectRatio } from '@/components/social-studi
 import { type SlideData } from '@/components/social-studio/SlideCanvas';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
 import { VersePalettePicker, type VersePalette } from '@/components/social-studio/VersePalettePicker';
+import { SlideCountPicker, type SlideCount } from '@/components/social-studio/SlideCountPicker';
+import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGallery';
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
 import { VariationGrid } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
@@ -31,8 +33,9 @@ const headings: Record<L, Record<string, string>> = {
     inputDesc: 'Busque um versículo ou gere texto pastoral',
     designTitle: 'Estilo Visual',
     designDesc: 'Cor de fundo, fonte e cor do texto',
+    sceneTitle: 'Cenas Bíblicas',
     generateCarousel: 'Gerar Carrossel Devocional',
-    carouselFromVerse: 'Cria 5 slides automáticos a partir do versículo',
+    carouselFromVerse: 'Cria slides automáticos a partir do versículo',
     carouselGenerated: 'Carrossel gerado!',
     carouselError: 'Erro ao gerar carrossel',
     generating: 'Gerando devocional...',
@@ -48,8 +51,9 @@ const headings: Record<L, Record<string, string>> = {
     inputDesc: 'Search a verse or generate pastoral text',
     designTitle: 'Visual Style',
     designDesc: 'Background color, font and text color',
+    sceneTitle: 'Biblical Scenes',
     generateCarousel: 'Generate Devotional Carousel',
-    carouselFromVerse: 'Auto-creates 5 slides from the verse',
+    carouselFromVerse: 'Auto-creates slides from the verse',
     carouselGenerated: 'Carousel generated!',
     carouselError: 'Error generating carousel',
     generating: 'Generating devotional...',
@@ -65,8 +69,9 @@ const headings: Record<L, Record<string, string>> = {
     inputDesc: 'Busca un versículo o genera texto pastoral',
     designTitle: 'Estilo Visual',
     designDesc: 'Color de fondo, fuente y color del texto',
+    sceneTitle: 'Escenas Bíblicas',
     generateCarousel: 'Generar Carrusel Devocional',
-    carouselFromVerse: 'Crea 5 slides automáticos del versículo',
+    carouselFromVerse: 'Crea slides automáticos del versículo',
     carouselGenerated: '¡Carrusel generado!',
     carouselError: 'Error al generar carrusel',
     generating: 'Generando devocional...',
@@ -82,11 +87,13 @@ export default function SocialStudio() {
 
   const [activeTab, setActiveTab] = useState<string>('studio');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('4:5');
+  const [slideCount, setSlideCount] = useState<SlideCount>(1);
   const [slides, setSlides] = useState<SlideData[]>([]);
   const [verseContext, setVerseContext] = useState<{ text: string; book: string } | null>(null);
   const [loadingDevotional, setLoadingDevotional] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
   const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
+  const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
@@ -98,6 +105,7 @@ export default function SocialStudio() {
 
   const handlePaletteSelect = useCallback((p: VersePalette) => {
     setActivePaletteId(p.id);
+    setActiveSceneId(null);
     setTheme((prev) => ({
       ...prev,
       gradient: p.gradient,
@@ -105,6 +113,13 @@ export default function SocialStudio() {
       backgroundImageUrl: undefined,
     }));
   }, []);
+
+  const handleSceneSelect = useCallback((imageUrl: string, sceneId: string) => {
+    setActiveSceneId(sceneId);
+    setActivePaletteId(null);
+    setTheme((prev) => ({ ...prev, backgroundImageUrl: imageUrl }));
+    toast.success(lang === 'PT' ? 'Cena aplicada!' : lang === 'EN' ? 'Scene applied!' : '¡Escena aplicada!');
+  }, [lang]);
 
   // Workspace defaults
   useEffect(() => {
@@ -130,25 +145,54 @@ export default function SocialStudio() {
     load();
   }, [user]);
 
-  // Router state (e.g. coming from sermon → "create art")
+  // Router state — handles 3 entry points:
+  //  1) Bible verse selected → { verseText, passage }
+  //  2) Devotional → { devotionalSlides, slideCount, presentationMode }
+  //  3) Sermon → { prefilledSlides, defaultAspectRatio, presentationMode }
   useEffect(() => {
     const state = location.state as {
       prefilledSlides?: SlideData[];
       defaultAspectRatio?: AspectRatio;
       presentationMode?: boolean;
+      verseText?: string;
+      passage?: string;
+      slideCount?: SlideCount;
     } | null;
-    if (state?.prefilledSlides && state.prefilledSlides.length > 0) {
+    if (!state) return;
+
+    if (state.prefilledSlides && state.prefilledSlides.length > 0) {
       setSlides(state.prefilledSlides);
       if (state.defaultAspectRatio) setAspectRatio(state.defaultAspectRatio);
       if (state.presentationMode) setPresentationMode(true);
+      if (state.slideCount) setSlideCount(state.slideCount);
       window.history.replaceState({}, document.title);
+      return;
     }
-  }, [location.state]);
+
+    if (state.verseText && state.passage) {
+      setVerseContext({ text: state.verseText, book: state.passage });
+      setSlides([{
+        text: `"${state.verseText}"`,
+        subtitle: state.passage,
+        slideNumber: 1,
+        totalSlides: 1,
+      }]);
+      setSlideCount(1);
+      setPresentationMode(false);
+      window.history.replaceState({}, document.title);
+      toast.success(
+        lang === 'PT' ? 'Versículo carregado no Estúdio!'
+          : lang === 'EN' ? 'Verse loaded in Studio!'
+          : '¡Versículo cargado en el Estudio!'
+      );
+    }
+  }, [location.state, lang]);
 
   const handleBackgroundUpload = useCallback((file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
       setTheme((prev) => ({ ...prev, backgroundImageUrl: reader.result as string }));
+      setActiveSceneId(null);
       toast.success(lang === 'PT' ? 'Imagem aplicada' : lang === 'EN' ? 'Image applied' : 'Imagen aplicada');
     };
     reader.readAsDataURL(file);
@@ -157,6 +201,7 @@ export default function SocialStudio() {
   const handleVerseGenerated = useCallback((v: { text: string; book: string; topic_image: string }) => {
     setVerseContext({ text: v.text, book: v.book });
     setSlides([{ text: `"${v.text}"`, subtitle: v.book, slideNumber: 1, totalSlides: 1 }]);
+    setSlideCount(1);
     setPresentationMode(false);
   }, []);
 
@@ -164,6 +209,7 @@ export default function SocialStudio() {
     const truncated = text.length > 280 ? text.slice(0, 277) + '…' : text;
     setVerseContext(null);
     setSlides([{ text: truncated, slideNumber: 1, totalSlides: 1 }]);
+    setSlideCount(1);
     setPresentationMode(false);
   }, []);
 
@@ -176,6 +222,7 @@ export default function SocialStudio() {
           verse: `${verseContext.book} — "${verseContext.text}"`,
           topic: verseContext.book,
           language: lang,
+          slideCount,
         },
       });
       if (error) throw error;
@@ -203,6 +250,9 @@ export default function SocialStudio() {
     setSlides([]);
     setVerseContext(null);
     setPresentationMode(false);
+    setSlideCount(1);
+    setActivePaletteId(null);
+    setActiveSceneId(null);
   };
 
   return (
@@ -245,6 +295,27 @@ export default function SocialStudio() {
                 </CardContent>
               </Card>
 
+              {/* Slide count selector */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <SlideCountPicker
+                    value={slideCount}
+                    onChange={(v) => {
+                      setSlideCount(v);
+                      // If verse loaded and user picks > 1, hint to generate carousel
+                      if (v > 1 && verseContext && slides.length === 1) {
+                        toast.info(
+                          lang === 'PT' ? 'Clique em "Gerar Carrossel" abaixo para criar os slides'
+                          : lang === 'EN' ? 'Click "Generate Carousel" below to create slides'
+                          : 'Haz clic en "Generar Carrusel" abajo para crear los slides'
+                        );
+                      }
+                    }}
+                    lang={lang}
+                  />
+                </CardContent>
+              </Card>
+
               {/* Content input */}
               <div>
                 <div className="flex items-center gap-2 mb-2 px-1">
@@ -258,15 +329,15 @@ export default function SocialStudio() {
                 />
               </div>
 
-              {/* Devotional carousel CTA (only when verse loaded) */}
-              {verseContext && slides.length === 1 && (
+              {/* Devotional carousel CTA (only when verse loaded + slideCount > 1) */}
+              {verseContext && slideCount > 1 && (
                 <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30">
                   <CardContent className="p-4 space-y-2">
                     <div className="flex items-start gap-2">
                       <Layers className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <div className="flex-1">
                         <h4 className="text-sm font-bold text-foreground">{h.generateCarousel}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{h.carouselFromVerse}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{h.carouselFromVerse} ({slideCount})</p>
                       </div>
                     </div>
                     <Button
@@ -276,13 +347,13 @@ export default function SocialStudio() {
                       className="w-full gap-1.5"
                     >
                       {loadingDevotional ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                      {loadingDevotional ? h.generating : h.generateCarousel}
+                      {loadingDevotional ? h.generating : `${h.generateCarousel} (${slideCount})`}
                     </Button>
                   </CardContent>
                 </Card>
               )}
 
-              {/* Verse palette gallery — only when a verse is loaded */}
+              {/* Verse palette gallery */}
               {verseContext && (
                 <Card className="bg-card border-border">
                   <CardContent className="p-4">
@@ -295,6 +366,17 @@ export default function SocialStudio() {
                 </Card>
               )}
 
+              {/* Biblical Scene Gallery — always available */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <BiblicalSceneGallery
+                    onPick={handleSceneSelect}
+                    lang={lang}
+                    activeId={activeSceneId}
+                  />
+                </CardContent>
+              </Card>
+
               {/* Visual style — custom background + colors */}
               <div>
                 <div className="flex items-center gap-2 mb-2 px-1">
@@ -304,7 +386,7 @@ export default function SocialStudio() {
                 <p className="text-xs text-muted-foreground mb-3 px-1">{h.designDesc}</p>
                 <ThemeCustomizer
                   value={theme}
-                  onChange={(v) => { setTheme(v); setActivePaletteId(null); }}
+                  onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
                   lang={lang}
                   onUploadBackground={handleBackgroundUpload}
                 />
