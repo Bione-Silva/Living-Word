@@ -54,11 +54,11 @@ Retorne APENAS o objeto JSON.`
 }
 
 async function generateDevotionalText(apiKey: string, lang: Lang, dateStr: string): Promise<Record<string, string>> {
-  const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+  const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'gemini-2.5-flash',
+      model: 'google/gemini-2.5-flash',
       messages: [
         { role: 'system', content: getSystemPrompt(lang) },
         { role: 'user', content: getUserPrompt(lang, dateStr) },
@@ -76,11 +76,11 @@ async function generateDevotionalText(apiKey: string, lang: Lang, dateStr: strin
 async function generateCoverImage(apiKey: string, title: string, category: string): Promise<Uint8Array | null> {
   try {
     const prompt = `Create a breathtaking, museum-quality devotional artwork in a painterly Renaissance-meets-Romantic style. Theme: "${category}", inspired by "${title}". The scene should evoke deep spiritual emotion — golden ethereal light pouring through ancient stone architecture, mystical pathways, serene water reflections, dramatic skies. Use a warm palette of amber, gold, sepia, and deep earth tones. Oil painting texture, impasto brushstrokes, chiaroscuro lighting. Absolutely NO text, NO letters, NO words, NO typography anywhere in the image. Portrait orientation (3:4 ratio). The image should feel like a masterpiece from a sacred art gallery.`
-    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-image-preview',
         messages: [{ role: 'user', content: prompt }],
         modalities: ['image', 'text'],
       }),
@@ -91,6 +91,17 @@ async function generateCoverImage(apiKey: string, title: string, category: strin
     }
     const data = await resp.json()
     const msgContent = data.choices?.[0]?.message?.content
+    const images = data.choices?.[0]?.message?.images
+
+    if (Array.isArray(images)) {
+      for (const img of images) {
+        const url = img?.image_url?.url || img?.url
+        if (typeof url === 'string' && url.startsWith('data:image')) {
+          const b64 = url.replace(/^data:image\/[^;]+;base64,/, '')
+          return Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+        }
+      }
+    }
 
     if (Array.isArray(msgContent)) {
       for (const part of msgContent) {
