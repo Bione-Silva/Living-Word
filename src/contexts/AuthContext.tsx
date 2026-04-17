@@ -385,7 +385,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
+    if (user) {
+      setLoading(true);
+      await fetchProfile(user.id, 'manual-refresh', user.email);
+    }
   };
 
   return (
