@@ -134,7 +134,7 @@ function EditorialTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColo
 /* ────────────────────────────────────────────
    TEMPLATE 2 — SWISS TYPOGRAPHY (centered verse, grid lines)
    ──────────────────────────────────────────── */
-function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl'>) {
+function SwissTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
   const dark = isDarkText(textColor);
   const bg = dark ? '#F8F6FF' : baseColor(themeColor);
   const txtColor = textColor || '#FFFFFF';
@@ -147,6 +147,18 @@ function SwissTemplate({ slide, themeColor, fontFamily, textColor, showWatermark
       className="relative h-full w-full overflow-hidden flex items-center justify-center"
       style={{ backgroundColor: bg, fontFamily: font, containerType: 'size' }}
     >
+      {/* Optional background image with soft tint for readability */}
+      {bgImageUrl && (
+        <>
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundColor: dark ? 'rgba(248,246,255,0.82)' : `${baseColor(themeColor)}D9`,
+            }}
+          />
+        </>
+      )}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 bottom-0" style={{ left: '10%', width: '1px', backgroundColor: lineColor }} />
         <div className="absolute top-0 bottom-0" style={{ right: '10%', width: '1px', backgroundColor: lineColor }} />
@@ -311,7 +323,7 @@ function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWate
 /* ────────────────────────────────────────────
    TEMPLATE 4 — GRADIENT POSTER (centered verse, geometric accents)
    ──────────────────────────────────────────── */
-function GradientTemplate({ slide, themeColor, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl' | 'textColor'>) {
+function GradientTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'textColor'>) {
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
   const gradient = themeColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)';
   const verseSize = autoVerseSize(slide.text);
@@ -319,8 +331,15 @@ function GradientTemplate({ slide, themeColor, fontFamily, showWatermark }: Omit
   return (
     <div
       className="relative h-full w-full overflow-hidden flex items-center justify-center"
-      style={{ backgroundImage: gradient, containerType: 'size' }}
+      style={{ backgroundImage: bgImageUrl ? undefined : gradient, containerType: 'size' }}
     >
+      {/* Optional background image with gradient overlay for color cohesion */}
+      {bgImageUrl && (
+        <>
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+          <div className="absolute inset-0" style={{ backgroundImage: gradient, opacity: 0.78, mixBlendMode: 'multiply' }} />
+        </>
+      )}
       {/* Geometric decorative elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute rounded-full" style={{ top: '-8%', left: '-6%', width: '35%', height: '35%', border: '1px solid rgba(255,255,255,0.12)' }} />
@@ -405,18 +424,26 @@ function GradientTemplate({ slide, themeColor, fontFamily, showWatermark }: Omit
 /* ────────────────────────────────────────────
    TEMPLATE 5 — LIVING WORD AMBER (centered verse, warm cross motif)
    ──────────────────────────────────────────── */
-function LwAmberTemplate({ slide, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'bgImageUrl' | 'textColor'>) {
+function LwAmberTemplate({ slide, bgImageUrl, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'textColor'>) {
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
   const verseSize = autoVerseSize(slide.text);
+  const amberGradient = 'linear-gradient(145deg, #1a0f05 0%, #2d1a0a 25%, #4a2c17 50%, #1E1240 75%, #6D28D9 100%)';
 
   return (
     <div
       className="relative h-full w-full overflow-hidden flex items-center justify-center"
       style={{
-        background: 'linear-gradient(145deg, #1a0f05 0%, #2d1a0a 25%, #4a2c17 50%, #1E1240 75%, #6D28D9 100%)',
+        background: bgImageUrl ? undefined : amberGradient,
         containerType: 'size',
       }}
     >
+      {/* Optional background image with amber overlay for warm cohesion */}
+      {bgImageUrl && (
+        <>
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+          <div className="absolute inset-0" style={{ background: amberGradient, opacity: 0.75, mixBlendMode: 'multiply' }} />
+        </>
+      )}
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute" style={{ top: '8%', left: '50%', width: '1px', height: '14%', backgroundColor: 'rgba(245,230,200,0.2)', transform: 'translateX(-50%)' }} />
@@ -509,16 +536,16 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
             <EditorialTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'swiss' && (
-            <SwissTemplate slide={slide} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+            <SwissTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'cinematic' && (
             <CinematicTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'gradient' && (
-            <GradientTemplate slide={slide} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <GradientTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'lw-amber' && (
-            <LwAmberTemplate slide={slide} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <LwAmberTemplate slide={slide} bgImageUrl={bgImageUrl} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
         </div>
       </div>
