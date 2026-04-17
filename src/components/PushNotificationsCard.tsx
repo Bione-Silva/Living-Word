@@ -191,46 +191,4 @@ export function PushNotificationsCard() {
     </Card>
   );
 }
-          <>
-            <div className="flex items-center justify-between border rounded-lg p-3">
-              <Label className="cursor-pointer">{enabled ? COPY.disable[l] : COPY.enable[l]}</Label>
-              <Switch checked={enabled} onCheckedChange={handleToggle} disabled={busy} />
-            </div>
 
-            {enabled && (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">{COPY.hour[l]}</Label>
-                    <Select value={String(hour)} onValueChange={(v) => { const h = Number(v); setHour(h); persist({ push_hour: h }); }}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 24 }).map((_, i) => (
-                          <SelectItem key={i} value={String(i)}>{String(i).padStart(2, '0')}:00</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">{COPY.tz[l]}</Label>
-                    <Select value={tz} onValueChange={(v) => { setTz(v); persist({ push_timezone: v }); }}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {TIMEZONES.map((z) => (<SelectItem key={z} value={z}>{z}</SelectItem>))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Button variant="outline" onClick={handleTest} disabled={testing} className="w-full">
-                  {testing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
-                  {COPY.test[l]}
-                </Button>
-              </>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
