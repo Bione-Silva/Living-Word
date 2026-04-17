@@ -3,6 +3,7 @@ import { captureNodeAsPng } from './export-utils';
 import { Button } from '@/components/ui/button';
 import { Download, Loader2, Check } from 'lucide-react';
 import { toast } from 'sonner';
+import { DownloadSuccessDialog } from '@/components/DownloadSuccessDialog';
 
 interface Props {
   targetRef: React.RefObject<HTMLDivElement>;
@@ -19,6 +20,8 @@ const labels = {
 
 export function DownloadButton({ targetRef, fileName = 'social-post', lang, onDownloaded }: Props) {
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle');
+  const [showDialog, setShowDialog] = useState(false);
+  const [savedFileName, setSavedFileName] = useState('');
   const l = labels[lang];
 
   const handleDownload = async () => {
@@ -28,13 +31,15 @@ export function DownloadButton({ targetRef, fileName = 'social-post', lang, onDo
 
     try {
       const dataUrl = await captureNodeAsPng(targetRef.current);
+      const finalName = `${fileName}.png`;
       const link = document.createElement('a');
-      link.download = `${fileName}.png`;
+      link.download = finalName;
       link.href = dataUrl;
       link.click();
 
       setState('done');
-      toast.success(l.done);
+      setSavedFileName(finalName);
+      setShowDialog(true);
       onDownloaded?.();
       setTimeout(() => setState('idle'), 2000);
     } catch (err) {
@@ -45,19 +50,28 @@ export function DownloadButton({ targetRef, fileName = 'social-post', lang, onDo
   };
 
   return (
-    <Button
-      onClick={handleDownload}
-      disabled={state === 'loading'}
-      size="lg"
-      className="gap-2 w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
-    >
-      {state === 'loading' ? (
-        <><Loader2 className="h-4 w-4 animate-spin" /> {l.downloading}</>
-      ) : state === 'done' ? (
-        <><Check className="h-4 w-4" /> {l.done}</>
-      ) : (
-        <><Download className="h-4 w-4" /> {l.download}</>
-      )}
-    </Button>
+    <>
+      <Button
+        onClick={handleDownload}
+        disabled={state === 'loading'}
+        size="lg"
+        className="gap-2 w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+      >
+        {state === 'loading' ? (
+          <><Loader2 className="h-4 w-4 animate-spin" /> {l.downloading}</>
+        ) : state === 'done' ? (
+          <><Check className="h-4 w-4" /> {l.done}</>
+        ) : (
+          <><Download className="h-4 w-4" /> {l.download}</>
+        )}
+      </Button>
+
+      <DownloadSuccessDialog
+        open={showDialog}
+        onOpenChange={setShowDialog}
+        fileName={savedFileName}
+        lang={lang}
+      />
+    </>
   );
 }
