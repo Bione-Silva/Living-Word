@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
 import { type SlideData } from '@/components/social-studio/SlideCanvas';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
+import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { VersePalettePicker, type VersePalette } from '@/components/social-studio/VersePalettePicker';
 import { SlideCountPicker, type SlideCount } from '@/components/social-studio/SlideCountPicker';
 import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGallery';
@@ -96,6 +97,7 @@ export default function SocialStudio() {
   const [presentationMode, setPresentationMode] = useState(false);
   const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
+  const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
@@ -238,7 +240,7 @@ export default function SocialStudio() {
           totalSlides: total,
         }));
         setSlides(built);
-        setPresentationMode(true);
+        setPresentationMode(false); // Devotional carousel is for social, not a presentation
         toast.success(h.carouselGenerated);
       }
     } catch {
@@ -443,6 +445,13 @@ export default function SocialStudio() {
                 />
               </div>
 
+              {/* Poster style picker — single template applied to all slides */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <TemplatePicker value={template} onChange={setTemplate} lang={lang} />
+                </CardContent>
+              </Card>
+
               {slides.length > 0 && (
                 <Button
                   variant="ghost"
@@ -462,6 +471,7 @@ export default function SocialStudio() {
                 aspectRatio={aspectRatio}
                 theme={theme}
                 lang={lang}
+                template={template}
                 presentationMode={presentationMode}
               />
             </div>

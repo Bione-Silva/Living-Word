@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import JSZip from 'jszip';
 import PptxGenJS from 'pptxgenjs';
 import { SlideCanvas, type SlideData } from './SlideCanvas';
@@ -14,58 +14,39 @@ import { DownloadSuccessDialog } from '@/components/DownloadSuccessDialog';
 
 type L = 'PT' | 'EN' | 'ES';
 
-const TEMPLATE_LABELS: Record<CanvasTemplate, Record<L, string>> = {
-  editorial: { PT: 'Editorial', EN: 'Editorial', ES: 'Editorial' },
-  swiss: { PT: 'Tipografia', EN: 'Typography', ES: 'Tipografía' },
-  cinematic: { PT: 'Cinematográfico', EN: 'Cinematic', ES: 'Cinematográfico' },
-  gradient: { PT: 'Gradiente', EN: 'Gradient', ES: 'Gradiente' },
-  'lw-amber': { PT: 'Living Word', EN: 'Living Word', ES: 'Living Word' },
-};
-
-const ALL_TEMPLATES: CanvasTemplate[] = ['editorial', 'cinematic', 'gradient', 'lw-amber', 'swiss'];
-
 const labels = {
   PT: {
     empty: 'Suas artes aparecerão aqui',
-    emptyHint: 'Escolha um conteúdo no painel ao lado e clique em "Gerar Artes" para criar variações em todos os estilos automaticamente.',
+    emptyHint: 'Escolha um conteúdo no painel ao lado e gere os slides. As artes vão aparecer aqui no estilo selecionado.',
     downloadAll: 'Baixar Todas (ZIP)',
     downloadPptx: 'Apresentação PPTX',
     downloading: 'Preparando...',
     png: 'PNG',
     jpg: 'JPG',
-    saved: 'Arte salva!',
-    zipReady: 'ZIP pronto para download',
-    pptxReady: 'Apresentação pronta',
-    variations: 'variações',
-    of: 'de',
+    slides: 'slides',
+    slide: 'slide',
   },
   EN: {
     empty: 'Your artworks will appear here',
-    emptyHint: 'Pick content on the left panel and click "Generate Arts" to create variations in every style automatically.',
+    emptyHint: 'Pick content on the left panel and generate the slides. They will appear here in the selected style.',
     downloadAll: 'Download All (ZIP)',
     downloadPptx: 'PPTX Presentation',
     downloading: 'Preparing...',
     png: 'PNG',
     jpg: 'JPG',
-    saved: 'Art saved!',
-    zipReady: 'ZIP ready',
-    pptxReady: 'Presentation ready',
-    variations: 'variations',
-    of: 'of',
+    slides: 'slides',
+    slide: 'slide',
   },
   ES: {
     empty: 'Tus artes aparecerán aquí',
-    emptyHint: 'Elige un contenido en el panel lateral y haz clic en "Generar Artes" para crear variaciones en todos los estilos.',
+    emptyHint: 'Elige un contenido en el panel lateral y genera los slides. Aparecerán aquí en el estilo seleccionado.',
     downloadAll: 'Descargar Todas (ZIP)',
     downloadPptx: 'Presentación PPTX',
     downloading: 'Preparando...',
     png: 'PNG',
     jpg: 'JPG',
-    saved: '¡Arte guardado!',
-    zipReady: 'ZIP listo',
-    pptxReady: 'Presentación lista',
-    variations: 'variaciones',
-    of: 'de',
+    slides: 'slides',
+    slide: 'slide',
   },
 };
 
@@ -74,17 +55,12 @@ export interface VariationGridProps {
   aspectRatio: AspectRatio;
   theme: ThemeConfig;
   lang: L;
+  template: CanvasTemplate;
   presentationMode?: boolean; // true => PPTX export available (sermão/estudo)
 }
 
 export interface VariationGridHandle {
   refresh: () => void;
-}
-
-interface VariationItem {
-  id: string;
-  template: CanvasTemplate;
-  slideIdx: number;
 }
 
 function dataUrlToBlob(dataUrl: string) {
@@ -97,37 +73,25 @@ function dataUrlToBlob(dataUrl: string) {
 }
 
 export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>(
-  ({ slides, aspectRatio, theme, lang, presentationMode = false }, ref) => {
+  ({ slides, aspectRatio, theme, lang, template, presentationMode = false }, ref) => {
     const l = labels[lang];
     const [busyKey, setBusyKey] = useState<string | null>(null);
     const [zipBusy, setZipBusy] = useState(false);
     const [pptxBusy, setPptxBusy] = useState(false);
     const [savedDialog, setSavedDialog] = useState<{ open: boolean; fileName: string }>({ open: false, fileName: '' });
 
-    // Build a flat matrix of variations: each slide × each template
-    const items: VariationItem[] = useMemo(() => {
-      const list: VariationItem[] = [];
-      slides.forEach((_, slideIdx) => {
-        ALL_TEMPLATES.forEach((tpl) => {
-          list.push({ id: `${slideIdx}-${tpl}`, template: tpl, slideIdx });
-        });
-      });
-      return list;
-    }, [slides]);
-
-    // Map of refs keyed by item id (stable across renders)
-    const refsMap = useRef<Map<string, HTMLDivElement | null>>(new Map());
-    const setRef = (id: string) => (el: HTMLDivElement | null) => {
-      refsMap.current.set(id, el);
+    const refsMap = useRef<Map<number, HTMLDivElement | null>>(new Map());
+    const setRef = (idx: number) => (el: HTMLDivElement | null) => {
+      refsMap.current.set(idx, el);
     };
-    const getNode = (id: string) => refsMap.current.get(id) || null;
+    const getNode = (idx: number) => refsMap.current.get(idx) || null;
 
     useImperativeHandle(ref, () => ({ refresh: () => {} }));
 
-    const handleDownload = async (item: VariationItem, format: 'png' | 'jpg') => {
-      const node = getNode(item.id);
+    const handleDownload = async (slideIdx: number, format: 'png' | 'jpg') => {
+      const node = getNode(slideIdx);
       if (!node) return;
-      setBusyKey(`${item.id}-${format}`);
+      setBusyKey(`${slideIdx}-${format}`);
       try {
         const pngDataUrl = await captureNodeAsPng(node);
         let blob: Blob;
@@ -139,7 +103,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           blob = dataUrlToBlob(pngDataUrl);
           ext = 'png';
         }
-        const fname = `living-word-${item.template}-${item.slideIdx + 1}.${ext}`;
+        const fname = `living-word-${template}-${slideIdx + 1}.${ext}`;
         const link = document.createElement('a');
         link.download = fname;
         link.href = URL.createObjectURL(blob);
@@ -155,16 +119,15 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
     };
 
     const handleDownloadAllZip = async () => {
-      if (items.length === 0) return;
+      if (slides.length === 0) return;
       setZipBusy(true);
       try {
         const zip = new JSZip();
-        for (const item of items) {
-          const node = getNode(item.id);
+        for (let i = 0; i < slides.length; i++) {
+          const node = getNode(i);
           if (!node) continue;
           const dataUrl = await captureNodeAsPng(node);
-          const folder = `slide-${item.slideIdx + 1}`;
-          zip.file(`${folder}/${item.template}.png`, dataUrlToBlob(dataUrl));
+          zip.file(`slide-${i + 1}.png`, dataUrlToBlob(dataUrl));
         }
         const blob = await zip.generateAsync({ type: 'blob' });
         const fname = `living-word-artes-${Date.now()}.zip`;
@@ -190,16 +153,12 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
         pptx.layout = 'LAYOUT_16x9';
         pptx.title = 'Living Word';
 
-        // Use the first template (editorial) for each slide as the presentation base
         for (let i = 0; i < slides.length; i++) {
-          const item = items.find((it) => it.slideIdx === i && it.template === 'cinematic');
-          if (!item) continue;
-          const node = getNode(item.id);
+          const node = getNode(i);
           if (!node) continue;
           const dataUrl = await captureNodeAsPng(node);
           const slide = pptx.addSlide();
           slide.background = { color: '0A0A0A' };
-          // Center the captured image with margin
           slide.addImage({
             data: dataUrl,
             x: 0.5,
@@ -250,24 +209,22 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
         {/* Bulk action bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 rounded-xl bg-card border border-border shadow-sm">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-semibold text-foreground">{items.length}</span>
-            <span className="text-muted-foreground">{l.variations}</span>
-            <span className="text-muted-foreground/60">·</span>
-            <span className="text-muted-foreground">
-              {slides.length} {l.of} {slides.length === 1 ? 'arte' : 'artes'} × {ALL_TEMPLATES.length} estilos
-            </span>
+            <span className="font-semibold text-foreground">{slides.length}</span>
+            <span className="text-muted-foreground">{slides.length === 1 ? l.slide : l.slides}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleDownloadAllZip}
-              disabled={zipBusy || pptxBusy}
-              className="gap-1.5 border-border"
-            >
-              {zipBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Archive className="h-3.5 w-3.5" />}
-              {zipBusy ? l.downloading : l.downloadAll}
-            </Button>
+            {slides.length > 1 && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleDownloadAllZip}
+                disabled={zipBusy || pptxBusy}
+                className="gap-1.5 border-border"
+              >
+                {zipBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Archive className="h-3.5 w-3.5" />}
+                {zipBusy ? l.downloading : l.downloadAll}
+              </Button>
+            )}
             {presentationMode && (
               <Button
                 size="sm"
@@ -282,86 +239,67 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           </div>
         </div>
 
-        {/* Variation grid grouped by slide */}
-        <div className="space-y-8">
-          {slides.map((slide, slideIdx) => (
-            <div key={slideIdx} className="space-y-3">
-              {slides.length > 1 && (
-                <div className="flex items-center gap-2 px-1">
-                  <div className="h-6 w-6 rounded-md bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
-                    {slideIdx + 1}
+        {/* Single-template grid: one card per slide */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {slides.map((slide, slideIdx) => {
+            const downloading = busyKey?.startsWith(`${slideIdx}-`);
+            return (
+              <div key={slideIdx} className="group relative">
+                <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border shadow-sm transition-all hover:shadow-lg hover:border-primary/40">
+                  <SlideCanvas
+                    ref={setRef(slideIdx)}
+                    slide={slide}
+                    aspectRatio={aspectRatio}
+                    template={template}
+                    bgImageUrl={theme.backgroundImageUrl}
+                    themeColor={theme.gradient}
+                    fontFamily={theme.fontFamily}
+                    textColor={theme.textColor}
+                    showWatermark
+                  />
+                  {/* Hover overlay with download buttons */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100">
+                    <div className="flex gap-1.5">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleDownload(slideIdx, 'png')}
+                        disabled={downloading}
+                        className="h-8 px-2.5 text-xs gap-1 shadow-lg"
+                      >
+                        {downloading && busyKey?.endsWith('png') ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <ImageIcon className="h-3 w-3" />
+                        )}
+                        {l.png}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleDownload(slideIdx, 'jpg')}
+                        disabled={downloading}
+                        className="h-8 px-2.5 text-xs gap-1 shadow-lg"
+                      >
+                        {downloading && busyKey?.endsWith('jpg') ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <FileImage className="h-3 w-3" />
+                        )}
+                        {l.jpg}
+                      </Button>
+                    </div>
                   </div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Slide {slideIdx + 1}
-                  </span>
-                  <div className="flex-1 h-px bg-border" />
                 </div>
-              )}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {items
-                  .filter((it) => it.slideIdx === slideIdx)
-                  .map((item) => {
-                    const downloading = busyKey?.startsWith(item.id);
-                    return (
-                      <div key={item.id} className="group relative">
-                        <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border shadow-sm transition-all hover:shadow-lg hover:border-primary/40">
-                          <SlideCanvas
-                            ref={setRef(item.id)}
-                            slide={slide}
-                            aspectRatio={aspectRatio}
-                            template={item.template}
-                            bgImageUrl={theme.backgroundImageUrl}
-                            themeColor={theme.gradient}
-                            fontFamily={theme.fontFamily}
-                            textColor={theme.textColor}
-                            showWatermark
-                          />
-                          {/* Hover overlay with download buttons */}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100">
-                            <div className="flex gap-1.5">
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => handleDownload(item, 'png')}
-                                disabled={downloading}
-                                className="h-8 px-2.5 text-xs gap-1 shadow-lg"
-                              >
-                                {downloading && busyKey?.endsWith('png') ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  <ImageIcon className="h-3 w-3" />
-                                )}
-                                {l.png}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => handleDownload(item, 'jpg')}
-                                disabled={downloading}
-                                className="h-8 px-2.5 text-xs gap-1 shadow-lg"
-                              >
-                                {downloading && busyKey?.endsWith('jpg') ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  <FileImage className="h-3 w-3" />
-                                )}
-                                {l.jpg}
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="mt-2 flex items-center justify-between px-1">
-                          <span className="text-xs font-semibold text-foreground truncate">
-                            {TEMPLATE_LABELS[item.template][lang]}
-                          </span>
-                          <Download className="h-3 w-3 text-muted-foreground/40" />
-                        </div>
-                      </div>
-                    );
-                  })}
+                <div className="mt-2 flex items-center justify-between px-1">
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {l.slide.charAt(0).toUpperCase() + l.slide.slice(1)} {slideIdx + 1}
+                  </span>
+                  <Download className="h-3 w-3 text-muted-foreground/40" />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <DownloadSuccessDialog
