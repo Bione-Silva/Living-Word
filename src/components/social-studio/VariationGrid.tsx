@@ -102,6 +102,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
     const [busyKey, setBusyKey] = useState<string | null>(null);
     const [zipBusy, setZipBusy] = useState(false);
     const [pptxBusy, setPptxBusy] = useState(false);
+    const [savedDialog, setSavedDialog] = useState<{ open: boolean; fileName: string }>({ open: false, fileName: '' });
 
     // Build a flat matrix of variations: each slide × each template
     const items: VariationItem[] = useMemo(() => {
