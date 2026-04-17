@@ -94,6 +94,7 @@ export default function Dashboard() {
       <DevotionalCard />
       <SmartDevotionalRecommender />
       <ToolsCircleGrid onToolClick={handleToolClick} />
+      <SocialStudioHighlightCard />
       <StreakBar />
       <NotificationCenter />
       <MoreToolsAccordion onToolClick={handleToolClick} />
