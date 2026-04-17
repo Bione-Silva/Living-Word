@@ -37,8 +37,8 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md glass-card">
+    <div className="theme-app min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md border-border bg-card text-card-foreground shadow-lg">
         <CardHeader>
           <CardTitle className="font-display text-2xl text-center">Nova senha</CardTitle>
         </CardHeader>

@@ -11,21 +11,20 @@ import { lovable } from '@/integrations/lovable/index';
 import { Eye, EyeOff } from 'lucide-react';
 import loginBg from '@/assets/login-bg.jpg';
 
-// Purple palette (matches brand purple #1a1346 family)
 const C = {
-  bg: 'hsl(250, 30%, 96%)',
-  overlay: 'hsl(250, 30%, 96%)',
-  border: 'hsl(252, 20%, 86%)',
-  inputBg: 'hsl(250, 35%, 98%)',
-  inputBgHover: 'hsl(250, 30%, 95%)',
-  primary: 'hsl(255, 55%, 55%)',
-  primaryHover: 'hsl(255, 55%, 48%)',
-  primaryRing: 'hsl(255, 55%, 55% / 0.2)',
-  text: 'hsl(252, 35%, 18%)',
-  textSoft: 'hsl(252, 20%, 35%)',
-  textMuted: 'hsl(252, 12%, 50%)',
-  textFaint: 'hsl(252, 12%, 60%)',
-  link: 'hsl(255, 55%, 50%)',
+  bg: 'hsl(37, 33%, 96%)',
+  overlay: 'hsl(37, 33%, 96%)',
+  border: 'hsl(30, 15%, 84%)',
+  inputBg: 'hsl(37, 30%, 98%)',
+  inputBgHover: 'hsl(37, 26%, 95%)',
+  primary: 'hsl(25, 29%, 33%)',
+  primaryHover: 'hsl(25, 29%, 28%)',
+  primaryRing: 'hsl(25, 38%, 59% / 0.2)',
+  text: 'hsl(25, 30%, 12%)',
+  textSoft: 'hsl(25, 22%, 28%)',
+  textMuted: 'hsl(25, 15%, 45%)',
+  textFaint: 'hsl(25, 12%, 58%)',
+  link: 'hsl(25, 29%, 33%)',
 };
 
 export default function Login() {
@@ -114,7 +113,7 @@ export default function Login() {
           className="rounded-2xl border bg-white/80 backdrop-blur-sm p-8 sm:p-10"
           style={{
             borderColor: `${C.border}99`,
-            boxShadow: '0 8px 40px hsl(255, 40%, 40%, 0.10)',
+            boxShadow: '0 8px 40px hsl(25 29% 33% / 0.10)',
           }}
         >
           <h2 className="font-display text-2xl font-bold text-center mb-7" style={{ color: C.text }}>
