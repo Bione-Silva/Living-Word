@@ -754,7 +754,7 @@ export default function AppLayout() {
               to="/bible"
               className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname === '/bible'
-                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
               }`}
             >
