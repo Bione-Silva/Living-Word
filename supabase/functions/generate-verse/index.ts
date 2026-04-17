@@ -5,7 +5,7 @@ const corsHeaders = {
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const geminiApiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
 
 const UNSPLASH_TOPICS = [
   'nature', 'sky', 'landscape', 'mountains', 'ocean', 'sunset',
