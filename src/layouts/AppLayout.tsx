@@ -878,14 +878,14 @@ export default function AppLayout() {
                     className="w-8 h-8 rounded-full object-cover shrink-0"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-bold text-sidebar-primary shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-bold text-sidebar-foreground shrink-0">
                     {profile?.full_name?.charAt(0) || 'U'}
                   </div>
                 )}
                 {!collapsed && (
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{profile?.full_name || 'Usuário'}</p>
-                    <p className="text-[11px] text-sidebar-foreground/50 capitalize">
+                    <p className="text-sm font-medium truncate text-sidebar-foreground">{profile?.full_name || 'Usuário'}</p>
+                    <p className="text-[11px] text-sidebar-foreground/60 capitalize">
                       {PLAN_DISPLAY_NAMES[userPlan]?.[lang] || userPlan}
                     </p>
                   </div>
