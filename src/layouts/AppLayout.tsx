@@ -643,10 +643,10 @@ export default function AppLayout() {
         {/* Logo */}
         <div className={`p-4 pb-2 shrink-0 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-sidebar-primary/20 flex items-center justify-center shrink-0">
-              <Wand2 className="h-4 w-4 text-sidebar-primary" />
+            <div className="w-8 h-8 rounded-lg bg-sidebar-foreground/15 flex items-center justify-center shrink-0">
+              <Wand2 className="h-4 w-4 text-sidebar-foreground" />
             </div>
-            {!collapsed && <span className="font-display text-xl font-bold text-sidebar-primary">Living Word</span>}
+            {!collapsed && <span className="font-display text-xl font-bold text-sidebar-foreground">Living Word</span>}
           </Link>
           {!collapsed && (
             <button onClick={toggleCollapsed} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors" title="Recolher sidebar">
