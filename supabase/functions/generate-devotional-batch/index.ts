@@ -5,49 +5,61 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const LANGUAGES = ['PT', 'EN', 'ES'] as const
+// IMPORTANT: Geração diária ATIVA apenas em PT-BR (decisão de produto, abr/2025).
+// EN e ES permanecem suportados pelo schema, mas não são gerados pelo cron.
+const LANGUAGES = ['PT'] as const
 type Lang = typeof LANGUAGES[number]
 
 const CATEGORIES: Record<Lang, string[]> = {
   PT: ['Fé', 'Esperança', 'Amor', 'Paz Interior', 'Gratidão', 'Perdão', 'Sabedoria', 'Coragem', 'Propósito', 'Restauração', 'Confiança', 'Perseverança', 'Humildade', 'Alegria', 'Provisão'],
-  EN: ['Faith', 'Hope', 'Love', 'Inner Peace', 'Gratitude', 'Forgiveness', 'Wisdom', 'Courage', 'Purpose', 'Restoration', 'Trust', 'Perseverance', 'Humility', 'Joy', 'Provision'],
-  ES: ['Fe', 'Esperanza', 'Amor', 'Paz Interior', 'Gratitud', 'Perdón', 'Sabiduría', 'Coraje', 'Propósito', 'Restauración', 'Confianza', 'Perseverancia', 'Humildad', 'Alegría', 'Provisión'],
 }
 
-function getSystemPrompt(lang: Lang): string {
-  const langName = lang === 'PT' ? 'Portuguese (Brazil)' : lang === 'EN' ? 'English' : 'Spanish'
-  return `You are an expert Christian devotional writer. Write in ${langName}.
-You produce warm, deep, practical daily devotionals rooted in Scripture.
-Return ONLY valid JSON with this exact schema (no markdown fences):
+function getSystemPrompt(_lang: Lang): string {
+  // Restrição de produto: o devocional inteiro (título + versículo + corpo + oração)
+  // deve durar entre 1min30s e 2min em leitura em voz alta natural (~150 palavras/min).
+  // Isso significa um TOTAL de ~225–300 palavras somando TODOS os campos lidos no áudio.
+  // Por isso o body_text é curto (140–190 palavras) e a oração final é enxuta (2–3 frases).
+  return `Você é um redator cristão experiente de devocionais diários em Português (Brasil).
+Escreva sempre em Português do Brasil, com tom pastoral, reverente, sóbrio, acolhedor e profundo.
+Linguagem clara, sem jargão, fiel à Escritura. Nunca invente versículos.
+
+RESTRIÇÃO DE DURAÇÃO (OBRIGATÓRIA — não relaxe):
+- O devocional será lido em voz alta como podcast curto.
+- Duração total do áudio: ENTRE 1 minuto e 30 segundos e, no máximo, 2 minutos.
+- Ritmo natural de ~150 palavras por minuto.
+- O TOTAL somado de título + versículo âncora (texto) + corpo + oração final
+  DEVE ficar entre 240 e 290 palavras. Nunca menos que 225, nunca mais que 300.
+- Se ficar abaixo de 240, EXPANDA o corpo com mais profundidade pastoral até atingir o piso.
+
+Retorne APENAS JSON válido (sem cercas markdown) neste schema exato:
 {
-  "title": "string (creative, poetic title)",
-  "category": "string (one of the provided categories)",
-  "anchor_verse": "string (book chapter:verse, e.g. Filipenses 4:6-7)",
-  "anchor_verse_text": "string (full verse text in ${langName})",
-  "body_text": "string (400-600 word devotional body with rich reflection)",
-  "daily_practice": "string (one practical action for today)",
-  "reflection_question": "string (one thought-provoking question)",
-  "closing_prayer": "string (a heartfelt closing prayer, 3-5 sentences)"
+  "title": "string (título poético e curto, máx 8 palavras)",
+  "category": "string (uma das categorias fornecidas)",
+  "anchor_verse": "string (livro capítulo:versículo, ex: Filipenses 4:6-7)",
+  "anchor_verse_text": "string (texto completo do versículo em Português do Brasil)",
+  "body_text": "string (corpo do devocional com 180-220 palavras, denso, pastoral, sem repetições)",
+  "daily_practice": "string (uma ação prática para hoje, 1 frase)",
+  "reflection_question": "string (uma pergunta reflexiva, 1 frase)",
+  "closing_prayer": "string (oração final sincera, 3-4 frases, 35-55 palavras)"
 }`
 }
 
 function getUserPrompt(lang: Lang, dateStr: string): string {
   const categories = CATEGORIES[lang]
   const category = categories[Math.floor(Math.random() * categories.length)]
-  const langLabel = lang === 'PT' ? 'Português (Brasil)' : lang === 'EN' ? 'English' : 'Español'
-  return `Write a devotional for ${dateStr} in ${langLabel}.
-Theme/category: "${category}".
-Choose a Bible verse that fits this theme. Write a rich, pastoral devotional body (400-600 words).
-Include a daily practice, a reflection question, and a closing prayer.
-Return ONLY the JSON object.`
+  return `Escreva o devocional do dia ${dateStr} em Português (Brasil).
+Tema/categoria: "${category}".
+Escolha um versículo bíblico que se conecte com o tema.
+Lembre-se: a soma total de título + versículo + corpo + oração precisa caber em 1m30s a 2min de áudio (225–300 palavras no total). Seja conciso, pastoral e profundo.
+Retorne APENAS o objeto JSON.`
 }
 
 async function generateDevotionalText(apiKey: string, lang: Lang, dateStr: string): Promise<Record<string, string>> {
-  const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+  const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'gemini-2.5-flash',
+      model: 'google/gemini-2.5-flash',
       messages: [
         { role: 'system', content: getSystemPrompt(lang) },
         { role: 'user', content: getUserPrompt(lang, dateStr) },
@@ -65,11 +77,11 @@ async function generateDevotionalText(apiKey: string, lang: Lang, dateStr: strin
 async function generateCoverImage(apiKey: string, title: string, category: string): Promise<Uint8Array | null> {
   try {
     const prompt = `Create a breathtaking, museum-quality devotional artwork in a painterly Renaissance-meets-Romantic style. Theme: "${category}", inspired by "${title}". The scene should evoke deep spiritual emotion — golden ethereal light pouring through ancient stone architecture, mystical pathways, serene water reflections, dramatic skies. Use a warm palette of amber, gold, sepia, and deep earth tones. Oil painting texture, impasto brushstrokes, chiaroscuro lighting. Absolutely NO text, NO letters, NO words, NO typography anywhere in the image. Portrait orientation (3:4 ratio). The image should feel like a masterpiece from a sacred art gallery.`
-    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-image-preview',
         messages: [{ role: 'user', content: prompt }],
         modalities: ['image', 'text'],
       }),
@@ -80,6 +92,17 @@ async function generateCoverImage(apiKey: string, title: string, category: strin
     }
     const data = await resp.json()
     const msgContent = data.choices?.[0]?.message?.content
+    const images = data.choices?.[0]?.message?.images
+
+    if (Array.isArray(images)) {
+      for (const img of images) {
+        const url = img?.image_url?.url || img?.url
+        if (typeof url === 'string' && url.startsWith('data:image')) {
+          const b64 = url.replace(/^data:image\/[^;]+;base64,/, '')
+          return Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+        }
+      }
+    }
 
     if (Array.isArray(msgContent)) {
       for (const part of msgContent) {
@@ -157,8 +180,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const geminiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
-    if (!geminiKey) throw new Error('GEMINI_API_KEY not configured')
+    const aiKey = Deno.env.get('LOVABLE_API_KEY')
+    if (!aiKey) throw new Error('LOVABLE_API_KEY not configured')
     const openaiKey = Deno.env.get('OPENAI_API_KEY') || ''
 
     const supabaseAdmin = createClient(
@@ -203,13 +226,13 @@ Deno.serve(async (req) => {
     for (const lang of missingLangs) {
       try {
         console.log(`[${lang}] Generating text...`)
-        const devotional = await generateDevotionalText(geminiKey, lang, targetDate)
+        const devotional = await generateDevotionalText(aiKey, lang, targetDate)
 
         // Generate cover image (skip if requested for speed)
         let coverUrl: string | null = null
         if (!skipImage) {
           console.log(`[${lang}] Generating cover image...`)
-          const imgData = await generateCoverImage(geminiKey, devotional.title, devotional.category)
+          const imgData = await generateCoverImage(aiKey, devotional.title, devotional.category)
           if (imgData) {
             coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
             console.log(`[${lang}] Cover image: ${coverUrl ? 'OK' : 'FAILED'}`)
