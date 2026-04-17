@@ -97,6 +97,7 @@ export default function SocialStudio() {
   const [presentationMode, setPresentationMode] = useState(false);
   const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
+  const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
