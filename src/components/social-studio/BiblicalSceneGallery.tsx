@@ -1,227 +1,289 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Sparkles, Wand2, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Sparkles, Wand2, Image as ImageIcon, Lock, Crown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
 
-export interface BiblicalScene {
+interface SceneRow {
   id: string;
-  label: Record<L, string>;
-  emoji: string;
-  /** Prompt used when user clicks to generate (cached after first gen) */
   prompt: string;
-  /** Cached data URL once generated */
-  cachedUrl?: string;
+  description: string;
+  keywords: string[];
+  image_url: string;
+  is_curated: boolean;
+  use_count: number;
 }
 
-/** Curated biblical scenes — generated on demand and cached in localStorage. */
-const BASE_SCENES: BiblicalScene[] = [
-  { id: 'cross', emoji: '✝️', label: { PT: 'Cruz', EN: 'Cross', ES: 'Cruz' },
-    prompt: 'A wooden cross silhouetted at golden hour, dramatic warm sunlight piercing through clouds, painterly biblical landscape, cinematic, soft bokeh, no text' },
-  { id: 'ark', emoji: '🚢', label: { PT: 'Arca de Noé', EN: "Noah's Ark", ES: 'Arca de Noé' },
-    prompt: "Noah's wooden ark on calm waters at dawn, rainbow arching across moody sky, painterly biblical scene, soft warm light, no text" },
-  { id: 'lamb', emoji: '🐑', label: { PT: 'Cordeiro', EN: 'Lamb', ES: 'Cordero' },
-    prompt: 'A gentle lamb on a misty hillside at sunrise, soft golden backlight, painterly biblical landscape, peaceful, cinematic, no text' },
-  { id: 'sea-galilee', emoji: '🌊', label: { PT: 'Mar da Galileia', EN: 'Sea of Galilee', ES: 'Mar de Galilea' },
-    prompt: 'The Sea of Galilee at dawn, calm rippling water, distant fishing boat silhouette, warm horizon glow, painterly biblical, no text' },
-  { id: 'desert', emoji: '🏜️', label: { PT: 'Deserto', EN: 'Desert', ES: 'Desierto' },
-    prompt: 'Vast biblical desert at dusk, rolling sand dunes, lone path winding through, warm amber light, cinematic painterly, no text' },
-  { id: 'wheat', emoji: '🌾', label: { PT: 'Searas', EN: 'Wheat fields', ES: 'Trigales' },
-    prompt: 'Golden wheat field swaying in soft wind at golden hour, low warm sun, painterly biblical landscape, cinematic, no text' },
-  { id: 'light', emoji: '🕯️', label: { PT: 'Luz / Vitral', EN: 'Light / Stained glass', ES: 'Luz / Vitral' },
-    prompt: 'Cathedral stained glass window casting warm golden and amber light into a quiet sanctuary, dust particles floating, painterly cinematic, no text' },
-  { id: 'jerusalem', emoji: '🏛️', label: { PT: 'Jerusalém', EN: 'Jerusalem', ES: 'Jerusalén' },
-    prompt: 'Ancient Jerusalem at dawn, warm stone walls, soft golden mist over the old city, painterly biblical landscape, cinematic, no text' },
-  { id: 'manger', emoji: '👶', label: { PT: 'Manjedoura', EN: 'Manger', ES: 'Pesebre' },
-    prompt: 'A humble wooden manger filled with hay, soft warm lantern light, peaceful Christmas night atmosphere, painterly biblical, no text' },
-  { id: 'path', emoji: '🛤️', label: { PT: 'Caminho', EN: 'The Way', ES: 'Camino' },
-    prompt: 'A narrow path through golden grass leading to a glowing horizon at sunrise, painterly biblical landscape, hope and journey, cinematic, no text' },
-];
+interface QuotaInfo {
+  used: number;
+  limit: number;
+  remaining: number;
+  plan: string;
+}
 
 const labels = {
   PT: {
     title: 'Cenas Bíblicas',
-    hint: 'Escolha uma cena pronta ou gere uma personalizada com IA',
-    generating: 'Gerando cena...',
-    customTitle: 'Gerar cena personalizada',
+    hint: 'Imagens compartilhadas pela comunidade — escolha uma ou crie a sua',
+    customTitle: 'Criar nova cena com IA',
     customPlaceholder: 'Ex: Davi e Golias, Jesus caminhando sobre as águas...',
-    generate: 'Gerar com IA',
-    generated: 'Cena pronta!',
-    error: 'Erro ao gerar cena',
+    generate: 'Criar com IA',
+    quotaLabel: (u: number, l: number) => `${u}/${l} novas este mês`,
+    noQuota: 'Cota mensal esgotada — apenas Pro/Igreja podem criar novas',
+    starterQuota: 'Plano Starter usa apenas o banco compartilhado',
+    generated: 'Cena criada e salva no banco!',
+    applied: 'Cena aplicada!',
+    error: 'Erro ao criar cena',
+    quotaError: 'Você atingiu o limite mensal de criações',
     emptyPrompt: 'Descreva a cena bíblica',
+    searchEmpty: 'Nenhuma cena no banco ainda. Crie a primeira!',
+    upgradeStarter: 'Upgrade para Pro',
+    poweredBy: 'Banco compartilhado da comunidade',
   },
   EN: {
     title: 'Biblical Scenes',
-    hint: 'Pick a ready scene or generate a custom one with AI',
-    generating: 'Generating scene...',
-    customTitle: 'Generate custom scene',
+    hint: 'Community-shared images — pick one or create your own',
+    customTitle: 'Create new scene with AI',
     customPlaceholder: 'E.g. David and Goliath, Jesus walking on water...',
-    generate: 'Generate with AI',
-    generated: 'Scene ready!',
-    error: 'Error generating scene',
+    generate: 'Create with AI',
+    quotaLabel: (u: number, l: number) => `${u}/${l} new this month`,
+    noQuota: 'Monthly quota reached — only Pro/Church can create new',
+    starterQuota: 'Starter plan uses the shared library only',
+    generated: 'Scene created and added to library!',
+    applied: 'Scene applied!',
+    error: 'Error creating scene',
+    quotaError: 'You reached the monthly creation limit',
     emptyPrompt: 'Describe the biblical scene',
+    searchEmpty: 'No scenes in library yet. Be the first to create!',
+    upgradeStarter: 'Upgrade to Pro',
+    poweredBy: 'Shared community library',
   },
   ES: {
     title: 'Escenas Bíblicas',
-    hint: 'Elige una escena lista o genera una personalizada con IA',
-    generating: 'Generando escena...',
-    customTitle: 'Generar escena personalizada',
+    hint: 'Imágenes compartidas por la comunidad — elige una o crea la tuya',
+    customTitle: 'Crear nueva escena con IA',
     customPlaceholder: 'Ej: David y Goliat, Jesús caminando sobre las aguas...',
-    generate: 'Generar con IA',
-    generated: '¡Escena lista!',
-    error: 'Error al generar escena',
+    generate: 'Crear con IA',
+    quotaLabel: (u: number, l: number) => `${u}/${l} nuevas este mes`,
+    noQuota: 'Cuota mensual alcanzada — solo Pro/Iglesia pueden crear nuevas',
+    starterQuota: 'Plan Starter usa solo la biblioteca compartida',
+    generated: '¡Escena creada y agregada a la biblioteca!',
+    applied: '¡Escena aplicada!',
+    error: 'Error al crear escena',
+    quotaError: 'Alcanzaste el límite mensual de creaciones',
     emptyPrompt: 'Describe la escena bíblica',
+    searchEmpty: 'Aún no hay escenas. ¡Sé el primero en crear!',
+    upgradeStarter: 'Mejorar a Pro',
+    poweredBy: 'Biblioteca compartida de la comunidad',
   },
 };
-
-const CACHE_KEY = 'lw_biblical_scenes_cache_v1';
-
-function loadCache(): Record<string, string> {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch { return {}; }
-}
-
-function saveCache(cache: Record<string, string>) {
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {}
-}
 
 interface Props {
   onPick: (imageUrl: string, label: string) => void;
   lang: L;
   activeId?: string | null;
+  searchTerm?: string; // optional search/filter (e.g. verse text or theme)
 }
 
-export function BiblicalSceneGallery({ onPick, lang, activeId }: Props) {
+export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm }: Props) {
   const l = labels[lang];
-  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [scenes, setScenes] = useState<SceneRow[]>([]);
+  const [quota, setQuota] = useState<QuotaInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
-  const [cache, setCache] = useState<Record<string, string>>(() => loadCache());
 
-  const generateScene = async (prompt: string, cacheKey: string, label: string) => {
-    // Cache hit: use immediately
-    const cached = cache[cacheKey];
-    if (cached) {
-      onPick(cached, label);
-      return;
-    }
-    setLoadingId(cacheKey);
+  const loadScenes = useCallback(async (term?: string) => {
+    setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
-        body: { prompt },
+        body: { mode: 'search', prompt: term || 'biblical scene' },
       });
       if (error) throw error;
-      const url: string | undefined = data?.imageUrl;
-      if (!url) throw new Error('No image returned');
-      const newCache = { ...cache, [cacheKey]: url };
-      setCache(newCache);
-      saveCache(newCache);
-      onPick(url, label);
-      toast.success(l.generated);
+      setScenes(data?.scenes || []);
+      setQuota(data?.quota || null);
     } catch (e) {
-      console.error(e);
-      toast.error(l.error);
+      console.error('Load scenes error:', e);
+      setScenes([]);
     } finally {
-      setLoadingId(null);
+      setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    loadScenes(searchTerm);
+  }, [loadScenes, searchTerm]);
+
+  const handlePick = (s: SceneRow) => {
+    onPick(s.image_url, s.description || s.prompt.slice(0, 40));
+    toast.success(l.applied);
   };
 
-  const handleCustom = async () => {
+  const handleGenerate = async () => {
     if (!customPrompt.trim()) {
       toast.error(l.emptyPrompt);
       return;
     }
-    const enriched = `${customPrompt.trim()} — painterly biblical landscape, cinematic, soft warm light, no text, no captions`;
-    const key = `custom-${customPrompt.trim().slice(0, 32).toLowerCase().replace(/\s+/g, '-')}`;
-    await generateScene(enriched, key, customPrompt.trim());
-    setCustomPrompt('');
+    if (quota && quota.remaining <= 0) {
+      toast.error(l.quotaError);
+      return;
+    }
+    setGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
+        body: { mode: 'generate', prompt: customPrompt.trim() },
+      });
+      if (error) throw error;
+      if (data?.error === 'quota_exceeded') {
+        toast.error(data.message || l.quotaError);
+        if (data.quota) setQuota(data.quota);
+        return;
+      }
+      const url: string | undefined = data?.imageUrl;
+      if (!url) throw new Error('No image returned');
+      toast.success(l.generated);
+      onPick(url, customPrompt.trim());
+      setCustomPrompt('');
+      // Recarrega banco para incluir a nova cena
+      await loadScenes(searchTerm);
+    } catch (e) {
+      console.error(e);
+      toast.error(l.error);
+    } finally {
+      setGenerating(false);
+    }
   };
+
+  const canGenerate = quota && quota.limit > 0 && quota.remaining > 0;
+  const isStarter = quota?.plan === 'starter';
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 px-1">
-        <ImageIcon className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-bold text-foreground">{l.title}</h3>
+      <div className="flex items-center justify-between gap-2 px-1">
+        <div className="flex items-center gap-2 min-w-0">
+          <ImageIcon className="h-4 w-4 text-primary shrink-0" />
+          <h3 className="text-sm font-bold text-foreground truncate">{l.title}</h3>
+        </div>
+        {quota && quota.limit > 0 && (
+          <Badge variant="secondary" className="text-[10px] font-mono shrink-0">
+            {l.quotaLabel(quota.used, quota.limit)}
+          </Badge>
+        )}
       </div>
       <p className="text-xs text-muted-foreground px-1">{l.hint}</p>
 
-      {/* Scene grid */}
-      <div className="grid grid-cols-2 gap-2">
-        {BASE_SCENES.map((s) => {
-          const isLoading = loadingId === s.id;
-          const isActive = activeId === s.id;
-          const isCached = !!cache[s.id];
-          return (
-            <button
-              key={s.id}
-              type="button"
-              disabled={isLoading}
-              onClick={() => generateScene(s.prompt, s.id, s.label[lang])}
-              className={`relative overflow-hidden rounded-xl border-2 transition-all duration-200 group min-h-[64px] ${
-                isActive
-                  ? 'border-primary ring-2 ring-primary/30 shadow-md'
-                  : 'border-border hover:border-primary/40'
-              } ${isLoading ? 'opacity-70' : ''}`}
-            >
-              {cache[s.id] ? (
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${cache[s.id]})` }}
+      {/* Library grid */}
+      {loading ? (
+        <div className="grid grid-cols-2 gap-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="aspect-[4/3] rounded-xl bg-muted animate-pulse" />
+          ))}
+        </div>
+      ) : scenes.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border p-6 text-center">
+          <Sparkles className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+          <p className="text-xs text-muted-foreground">{l.searchEmpty}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
+          {scenes.map((s) => {
+            const isActive = activeId === s.id;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => handlePick(s)}
+                className={`relative overflow-hidden rounded-xl border-2 transition-all duration-200 group aspect-[4/3] ${
+                  isActive
+                    ? 'border-primary ring-2 ring-primary/30 shadow-md'
+                    : 'border-border hover:border-primary/40'
+                }`}
+                title={s.description || s.prompt}
+              >
+                <img
+                  src={s.image_url}
+                  alt={s.description || 'Biblical scene'}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+                  loading="lazy"
                 />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-secondary to-muted/50" />
-              )}
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
-              <div className="relative flex flex-col items-center justify-center gap-1 py-3 px-2 text-center">
-                <span className="text-xl drop-shadow">{s.emoji}</span>
-                <span className="text-[10px] font-bold text-white uppercase tracking-wider drop-shadow leading-tight">
-                  {s.label[lang]}
-                </span>
-                {isLoading && (
-                  <Loader2 className="h-3 w-3 text-white animate-spin mt-0.5" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                {s.is_curated && (
+                  <div className="absolute top-1.5 left-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-primary-foreground drop-shadow" />
+                  </div>
                 )}
-                {isCached && !isLoading && (
-                  <Sparkles className="absolute top-1.5 right-1.5 h-3 w-3 text-primary-foreground/80" />
-                )}
-              </div>
-            </button>
-          );
-        })}
-      </div>
+                <div className="absolute bottom-1.5 left-1.5 right-1.5">
+                  <p className="text-[10px] font-medium text-white drop-shadow line-clamp-1">
+                    {s.description || s.prompt.slice(0, 30)}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Custom AI prompt */}
+      {/* Caption */}
+      <p className="text-[10px] text-muted-foreground/70 text-center italic px-1">
+        ✨ {l.poweredBy}
+      </p>
+
+      {/* Custom AI prompt — only for plans with quota */}
       <div className="pt-2 border-t border-border space-y-2">
         <div className="flex items-center gap-1.5 px-1">
           <Wand2 className="h-3.5 w-3.5 text-primary" />
           <span className="text-xs font-bold text-foreground">{l.customTitle}</span>
         </div>
-        <div className="flex gap-2">
-          <Input
-            value={customPrompt}
-            onChange={(e) => setCustomPrompt(e.target.value)}
-            placeholder={l.customPlaceholder}
-            className="flex-1 h-9 text-xs bg-background"
-            onKeyDown={(e) => e.key === 'Enter' && handleCustom()}
-          />
-          <Button
-            type="button"
-            size="sm"
-            onClick={handleCustom}
-            disabled={!customPrompt.trim() || loadingId === 'custom'}
-            className="gap-1.5 shrink-0"
-          >
-            {loadingId?.startsWith('custom-') ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Wand2 className="h-3.5 w-3.5" />
-            )}
-            {l.generate}
-          </Button>
-        </div>
+
+        {isStarter ? (
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-center gap-2.5">
+            <Crown className="h-4 w-4 text-primary shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] text-foreground leading-relaxed">{l.starterQuota}</p>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-7 text-[11px] shrink-0"
+              onClick={() => window.location.assign('/upgrade')}
+            >
+              {l.upgradeStarter}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <Input
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              placeholder={l.customPlaceholder}
+              className="flex-1 h-9 text-xs bg-background"
+              disabled={!canGenerate || generating}
+              onKeyDown={(e) => e.key === 'Enter' && canGenerate && !generating && handleGenerate()}
+            />
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleGenerate}
+              disabled={!canGenerate || generating || !customPrompt.trim()}
+              className="gap-1.5 shrink-0"
+            >
+              {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+              {l.generate}
+            </Button>
+          </div>
+        )}
+
+        {quota && quota.limit > 0 && quota.remaining === 0 && !isStarter && (
+          <div className="flex items-center gap-2 text-[11px] text-destructive px-1">
+            <Lock className="h-3 w-3" />
+            <span>{l.noQuota}</span>
+          </div>
+        )}
       </div>
     </div>
   );
