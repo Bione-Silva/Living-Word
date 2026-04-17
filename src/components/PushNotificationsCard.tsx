@@ -57,7 +57,7 @@ export function PushNotificationsCard() {
   const { profile, refreshProfile } = useAuth();
   const { lang } = useLanguage();
   const l = lang as L;
-  const { supported, permission, subscribed, busy, subscribe, unsubscribe, sendTest } = usePushNotifications();
+  const { supported, permission, subscribed, busy, subscribe, unsubscribe, sendTest, refresh } = usePushNotifications();
 
   const [hour, setHour] = useState<number>((profile as any)?.push_hour ?? 6);
   const [tz, setTz] = useState<string>((profile as any)?.push_timezone || detectTz());
@@ -70,6 +70,11 @@ export function PushNotificationsCard() {
       setTz((profile as any).push_timezone || detectTz());
     }
   }, [profile]);
+
+  // Re-checa o estado real no mount (evita estado preso após mudar nas configs do browser)
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const persist = async (patch: Record<string, unknown>) => {
     if (!profile?.id) return;
@@ -85,7 +90,7 @@ export function PushNotificationsCard() {
     if (next) {
       const res = await subscribe();
       if (!res.ok) {
-        toast.error(res.error === 'denied' ? COPY.denied[l] : res.error || 'Error');
+        toast.error(res.error === 'denied' ? COPY.deniedHint[l] : res.error || 'Error');
         return;
       }
       await persist({ push_enabled: true, push_hour: hour, push_timezone: tz });
@@ -93,6 +98,17 @@ export function PushNotificationsCard() {
       await unsubscribe();
       await persist({ push_enabled: false });
     }
+  };
+
+  const handleTryAgain = async () => {
+    // Re-tenta subscribe — se o usuário já liberou nas configs do browser, vai funcionar
+    const res = await subscribe();
+    if (!res.ok) {
+      toast.error(res.error === 'denied' ? COPY.deniedHint[l] : res.error || 'Error');
+      await refresh();
+      return;
+    }
+    await persist({ push_enabled: true, push_hour: hour, push_timezone: tz });
   };
 
   const handleTest = async () => {
@@ -121,9 +137,60 @@ export function PushNotificationsCard() {
 
         {!supported ? (
           <p className="text-sm text-muted-foreground bg-muted/40 rounded-lg p-3">{COPY.unsupported[l]}</p>
-        ) : permission === 'denied' ? (
-          <p className="text-sm text-destructive bg-destructive/10 rounded-lg p-3">{COPY.denied[l]}</p>
         ) : (
+          <>
+            {permission === 'denied' && !subscribed && (
+              <div className="space-y-2 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                <p className="text-sm text-foreground">{COPY.deniedHint[l]}</p>
+                <Button size="sm" variant="outline" onClick={handleTryAgain} disabled={busy}>
+                  {busy ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  {COPY.retry[l]}
+                </Button>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between border rounded-lg p-3">
+              <Label className="cursor-pointer">{enabled ? COPY.disable[l] : COPY.enable[l]}</Label>
+              <Switch checked={enabled} onCheckedChange={handleToggle} disabled={busy} />
+            </div>
+
+            {enabled && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">{COPY.hour[l]}</Label>
+                    <Select value={String(hour)} onValueChange={(v) => { const h = Number(v); setHour(h); persist({ push_hour: h }); }}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 24 }).map((_, i) => (
+                          <SelectItem key={i} value={String(i)}>{String(i).padStart(2, '0')}:00</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">{COPY.tz[l]}</Label>
+                    <Select value={tz} onValueChange={(v) => { setTz(v); persist({ push_timezone: v }); }}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {TIMEZONES.map((z) => (<SelectItem key={z} value={z}>{z}</SelectItem>))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <Button variant="outline" onClick={handleTest} disabled={testing} className="w-full">
+                  {testing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                  {COPY.test[l]}
+                </Button>
+              </>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
           <>
             <div className="flex items-center justify-between border rounded-lg p-3">
               <Label className="cursor-pointer">{enabled ? COPY.disable[l] : COPY.enable[l]}</Label>
