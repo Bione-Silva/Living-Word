@@ -211,9 +211,22 @@ export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm }: Pro
           ))}
         </div>
       ) : scenes.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border p-6 text-center">
-          <Sparkles className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+        <div className="rounded-xl border border-dashed border-border p-6 text-center space-y-3">
+          <Sparkles className="h-6 w-6 text-muted-foreground mx-auto" />
           <p className="text-xs text-muted-foreground">{l.searchEmpty}</p>
+          {isAdmin && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleSeed}
+              disabled={seeding}
+              className="gap-1.5 mx-auto"
+            >
+              {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5" />}
+              {seeding ? 'Gerando 10 cenas...' : 'Popular banco (admin)'}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
