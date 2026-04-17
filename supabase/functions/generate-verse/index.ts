@@ -55,8 +55,8 @@ Deno.serve(async (req) => {
     }
 
     // Use AI to generate a verse recommendation
-    if (!geminiApiKey) {
-      return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not configured' }), {
+    if (!LOVABLE_API_KEY) {
+      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -70,14 +70,14 @@ Return JSON with exactly these fields:
 - "topic": a single english word describing the verse theme (nature, hope, love, peace, light, faith, grace, strength)
 Do NOT repeat common verses like John 3:16 or Psalm 23 frequently. Choose from the full Bible.`
 
-    const aiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${geminiApiKey}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Generate one inspiring verse. Today's date: ${new Date().toISOString().slice(0, 10)}. Surprise me!` },
