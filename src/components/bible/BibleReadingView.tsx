@@ -194,14 +194,21 @@ export function BibleReadingView({
   const pressTriggeredRef = useRef(false);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const MOVE_THRESHOLD = 10; // px
+  const [pressingVerse, setPressingVerse] = useState<number | null>(null);
 
   const startTouchPress = (verseNum: number, e: React.TouchEvent) => {
     pressTriggeredRef.current = false;
     const t = e.touches[0];
     touchStartRef.current = { x: t.clientX, y: t.clientY };
+    setPressingVerse(verseNum);
     if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
     pressTimerRef.current = window.setTimeout(() => {
       pressTriggeredRef.current = true;
+      // Haptic feedback on supported mobile devices
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate(15); } catch { /* noop */ }
+      }
+      setPressingVerse(null);
       toggleVerseSelection(verseNum);
     }, 450);
   };
@@ -214,6 +221,7 @@ export function BibleReadingView({
     if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
       window.clearTimeout(pressTimerRef.current);
       pressTimerRef.current = null;
+      setPressingVerse(null);
     }
   };
 
@@ -223,6 +231,7 @@ export function BibleReadingView({
       pressTimerRef.current = null;
     }
     touchStartRef.current = null;
+    setPressingVerse(null);
   };
 
   const handleMouseToggle = (verseNum: number) => {
@@ -397,7 +406,9 @@ export function BibleReadingView({
                         ? 'bg-primary/10 ring-2 ring-primary/30 animate-pulse'
                         : isSelected
                           ? 'bg-primary/5 ring-1 ring-primary/20'
-                          : hlClass || 'hover:bg-muted/40'
+                          : pressingVerse === v.verse
+                            ? 'bg-primary/5 ring-2 ring-primary/40 animate-pulse'
+                            : hlClass || 'hover:bg-muted/40'
                   }`}
                 >
                   {/* Verse number badge */}
