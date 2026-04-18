@@ -76,11 +76,12 @@ serve(async (req) => {
       );
     }
 
+    const langCode = language === 'PT' ? 'PT' : language === 'ES' ? 'ES' : 'EN';
     const langLabel =
-      language === "PT" ? "Portuguese (Brazilian)" :
-      language === "ES" ? "Spanish" : "English";
+      langCode === 'PT' ? 'Portuguese (Brazilian)' :
+      langCode === 'ES' ? 'Spanish' : 'English';
 
-    const systemPrompt = TOOL_PROMPTS[tool](langLabel);
+    const systemPrompt = TOOL_PROMPTS[tool](langLabel, langCode);
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
