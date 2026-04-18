@@ -259,25 +259,100 @@ export function bolderVerseNumbers(text: string): string {
     .replace(/(?<=[.!?]\s)(\d{1,3})(\s+)/g, '**$1**$2');
 }
 
-/** Renderiza markdown simples (negrito, citações, listas) com tipografia de Púlpito. */
-function PodiumMarkdown({ text, isQuote, fontPx, theme }: { text: string; isQuote: boolean; fontPx: number; theme: PodiumTheme }) {
+/** Mapeamento tom → classe Tailwind para destacar referências bíblicas inline. */
+const VERSE_REF_LIGHT: Record<BlockTone, string> = {
+  idea: 'bg-purple-100 text-purple-800 ring-purple-300',
+  hook: 'bg-orange-100 text-orange-800 ring-orange-300',
+  passage: 'bg-sky-100 text-sky-800 ring-sky-300',
+  illustration: 'bg-emerald-100 text-emerald-800 ring-emerald-300',
+  application: 'bg-orange-100 text-orange-900 ring-orange-400',
+  main: 'bg-blue-100 text-blue-800 ring-blue-300',
+  conclusion: 'bg-rose-100 text-rose-800 ring-rose-300',
+  original: 'bg-amber-100 text-amber-900 ring-amber-400',
+  transition: 'bg-slate-100 text-slate-800 ring-slate-300',
+  quote: 'bg-yellow-100 text-yellow-900 ring-yellow-400',
+  explanation: 'bg-violet-100 text-violet-800 ring-violet-300',
+  doctrine: 'bg-indigo-100 text-indigo-800 ring-indigo-300',
+  objection: 'bg-amber-100 text-amber-900 ring-amber-400',
+  appeal: 'bg-red-100 text-red-800 ring-red-300',
+  generic: 'bg-slate-100 text-slate-800 ring-slate-300',
+};
+
+const VERSE_REF_DARK: Record<BlockTone, string> = {
+  idea: 'bg-purple-500/20 text-purple-200 ring-purple-400/40',
+  hook: 'bg-orange-500/20 text-orange-200 ring-orange-400/40',
+  passage: 'bg-sky-500/20 text-sky-200 ring-sky-400/40',
+  illustration: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
+  application: 'bg-orange-600/25 text-orange-200 ring-orange-500/40',
+  main: 'bg-blue-500/20 text-blue-200 ring-blue-400/40',
+  conclusion: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
+  original: 'bg-amber-700/25 text-amber-200 ring-amber-500/40',
+  transition: 'bg-slate-500/20 text-slate-200 ring-slate-400/40',
+  quote: 'bg-yellow-500/20 text-yellow-200 ring-yellow-400/40',
+  explanation: 'bg-violet-500/20 text-violet-200 ring-violet-400/40',
+  doctrine: 'bg-indigo-500/20 text-indigo-200 ring-indigo-400/40',
+  objection: 'bg-amber-500/20 text-amber-200 ring-amber-400/40',
+  appeal: 'bg-red-500/20 text-red-200 ring-red-400/40',
+  generic: 'bg-slate-500/20 text-slate-200 ring-slate-400/40',
+};
+
+/** Renderiza markdown simples (negrito, citações, listas) com tipografia de Púlpito + destaque de versículos. */
+function PodiumMarkdown({
+  text,
+  isQuote,
+  fontPx,
+  theme,
+  tone = 'generic',
+}: {
+  text: string;
+  isQuote: boolean;
+  fontPx: number;
+  theme: PodiumTheme;
+  tone?: BlockTone;
+}) {
   const processed = bolderVerseNumbers(text);
   const lines = processed.split('\n');
 
   const baseColor = theme === 'dark' ? 'text-slate-100/95' : 'text-slate-800';
   const strongColor = theme === 'dark' ? 'text-white' : 'text-slate-950';
   const bulletColor = theme === 'dark' ? 'text-slate-400' : 'text-slate-500';
+  const refClass = theme === 'dark' ? VERSE_REF_DARK[tone] : VERSE_REF_LIGHT[tone];
 
-  const renderInline = (s: string) => {
+  const renderRefs = (raw: string, keyBase: string) => {
+    const segs = splitByVerseRefs(raw);
+    if (segs.length === 1 && segs[0].type === 'text') return raw;
+    return segs.map((seg, i) =>
+      seg.type === 'ref' ? (
+        <span
+          key={`${keyBase}-r${i}`}
+          className={cn(
+            'inline-flex items-baseline px-1.5 py-0.5 mx-0.5 rounded-md text-[0.92em] font-semibold ring-1',
+            refClass,
+          )}
+        >
+          {seg.value}
+        </span>
+      ) : (
+        <span key={`${keyBase}-t${i}`}>{seg.value}</span>
+      ),
+    );
+  };
+
+  const renderInline = (s: string, keyBase: string) => {
     const parts = s.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
     return parts.map((p, i) => {
+      const k = `${keyBase}-${i}`;
       if (p.startsWith('**') && p.endsWith('**')) {
-        return <strong key={i} className={cn(strongColor, 'font-bold')}>{p.slice(2, -2)}</strong>;
+        return (
+          <strong key={k} className={cn(strongColor, 'font-bold')}>
+            {renderRefs(p.slice(2, -2), k)}
+          </strong>
+        );
       }
       if (p.startsWith('*') && p.endsWith('*') && p.length > 2) {
-        return <em key={i} className="italic">{p.slice(1, -1)}</em>;
+        return <em key={k} className="italic">{renderRefs(p.slice(1, -1), k)}</em>;
       }
-      return <span key={i}>{p}</span>;
+      return <span key={k}>{renderRefs(p, k)}</span>;
     });
   };
 
@@ -293,11 +368,11 @@ function PodiumMarkdown({ text, isQuote, fontPx, theme }: { text: string; isQuot
           return (
             <div key={i} className="flex gap-3 pl-2">
               <span className={bulletColor}>•</span>
-              <span>{renderInline(t.slice(2))}</span>
+              <span>{renderInline(t.slice(2), `l${i}`)}</span>
             </div>
           );
         }
-        return <p key={i} className="tracking-[0.005em]">{renderInline(t)}</p>;
+        return <p key={i} className="tracking-[0.005em]">{renderInline(t, `l${i}`)}</p>;
       })}
     </div>
   );
