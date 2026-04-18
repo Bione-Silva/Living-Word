@@ -45,6 +45,7 @@ import Sermoes from "./pages/Sermoes";
 import SeriesDetail from "./pages/SeriesDetail";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
+import Ferramentas from "./pages/Ferramentas";
 import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
 const queryClient = new QueryClient();
