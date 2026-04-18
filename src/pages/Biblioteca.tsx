@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2, FolderOpen, SearchCheck } from 'lucide-react';
+import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star, Loader2, FolderOpen, SearchCheck, LayoutGrid, List } from 'lucide-react';
 import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
@@ -71,6 +71,13 @@ export default function Biblioteca() {
   const [favFilter, setFavFilter] = useState(false);
   const [viewItem, setViewItem] = useState<any>(null);
   const [saveToWsItem, setSaveToWsItem] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    if (typeof window === 'undefined') return 'grid';
+    return (localStorage.getItem('library_view_mode') as 'grid' | 'list') || 'grid';
+  });
+  useEffect(() => {
+    localStorage.setItem('library_view_mode', viewMode);
+  }, [viewMode]);
   const isFree = profile?.plan === 'free';
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -186,6 +193,28 @@ export default function Biblioteca() {
             className="pl-10"
           />
         </div>
+        <div className="shrink-0 inline-flex items-center rounded-md border border-border bg-card p-0.5 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setViewMode('grid')}
+            aria-label="Grid view"
+            className={`h-8 w-8 inline-flex items-center justify-center rounded-sm transition-colors ${
+              viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('list')}
+            aria-label="List view"
+            className={`h-8 w-8 inline-flex items-center justify-center rounded-sm transition-colors ${
+              viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <List className="h-4 w-4" />
+          </button>
+        </div>
         <Button
           variant={favFilter ? 'default' : 'outline'}
           size="icon"
@@ -222,6 +251,71 @@ export default function Biblioteca() {
         <div className="text-center py-16 text-muted-foreground">
           <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p className="text-sm">{emptyLabel}</p>
+        </div>
+      ) : viewMode === 'list' ? (
+        <div className="divide-y divide-border rounded-lg border border-border bg-card overflow-hidden">
+          {allItems.map((item: any, i: number) => {
+            const typeInfo = typeLabels[item.type];
+            const Icon = typeInfo?.icon || FileText;
+            const isLocked = isFree && i >= 10;
+            return (
+              <div
+                key={item.id}
+                className={`relative flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 hover:bg-secondary/40 transition-colors ${isLocked ? '' : 'cursor-pointer'}`}
+                onClick={() => !isLocked && setViewItem(item)}
+              >
+                {isLocked && (
+                  <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Lock className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">{archivedLabel}</span>
+                      <Button size="sm" className="ml-2 gap-1 bg-primary text-primary-foreground" asChild>
+                        <a href="/upgrade"><Crown className="h-3 w-3" /> {t('upgrade.cta')}</a>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                <div className="h-12 w-12 shrink-0 rounded-md bg-secondary/50 overflow-hidden flex items-center justify-center">
+                  {item.cover_image_url ? (
+                    <img src={item.cover_image_url} alt={item.title} className="h-full w-full object-cover" />
+                  ) : (
+                    <Icon className="h-5 w-5 text-muted-foreground/50" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-display text-sm font-semibold text-foreground truncate">{item.title}</p>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <Badge variant="secondary" className="text-[10px] text-secondary-foreground">
+                      {typeLabels[item.type]?.[lang] || item.type}
+                    </Badge>
+                    <span className="text-[11px] text-muted-foreground">
+                      {new Date(item.created_at).toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </span>
+                    {item.passage && (
+                      <span className="text-[11px] text-muted-foreground truncate hidden sm:inline">· {item.passage}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); toggleFavMutation.mutate({ id: item.id, favorite: item.favorite }); }}>
+                    <Star className={`h-4 w-4 ${item.favorite ? 'fill-primary text-primary' : ''}`} />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 hidden sm:inline-flex" onClick={(e) => { e.stopPropagation(); handleCopy(item.content); }}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 hidden sm:inline-flex" onClick={(e) => { e.stopPropagation(); setSaveToWsItem(item.id); }}>
+                    <FolderOpen className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(item.id); }}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+          <div ref={sentinelRef} className="py-4 flex justify-center">
+            {isFetchingNextPage && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
