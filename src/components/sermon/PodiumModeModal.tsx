@@ -391,7 +391,12 @@ export function PodiumModeModal({
 
   /** Garante que o alerta sonoro/vibração toca uma única vez por countdown. */
   const endAlertFiredRef = useRef(false);
+  /** Pré-aviso aos 5 minutos restantes — dispara uma única vez por ciclo. */
+  const warningAlertFiredRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
+
+  /** Segundos antes do fim para o pré-aviso suave (5 minutos). */
+  const WARNING_THRESHOLD_SECONDS = 5 * 60;
 
   /** Preferência persistida do usuário para o sino + vibração ao bater 00:00. */
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
@@ -456,9 +461,46 @@ export function PodiumModeModal({
     }
   }
 
+  /** Pré-aviso suave (sino único + vibração curta) faltando 5 minutos. */
+  function playWarningAlert() {
+    if (!soundEnabled) return;
+    // Vibração curta — pulso único discreto.
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate(250);
+      }
+    } catch {
+      /* noop */
+    }
+    // Sino único: um toque senoidal suave (E5 ~ 659Hz, mais grave que o final, evita confusão).
+    try {
+      const Ctx = (window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
+      if (!Ctx) return;
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new Ctx();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') void ctx.resume();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 659.25; // E5 — pré-aviso, mais suave que o A5/E6 do fim
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 1.3);
+    } catch {
+      /* audio bloqueado: silencioso por design */
+    }
+  }
+
   useEffect(() => {
     setRunning(false);
     endAlertFiredRef.current = false; // reset ao trocar de modo / duração
+    warningAlertFiredRef.current = false;
     if (mode === 'countdown') setSeconds(limitSeconds);
     else if (mode === 'progressive') setSeconds(0);
   }, [mode, limitSeconds]);
@@ -471,6 +513,16 @@ export function PodiumModeModal({
         setSeconds((s) => {
           if (mode === 'countdown') {
             const next = Math.max(0, s - 1);
+            // Pré-aviso suave aos 5 minutos restantes (apenas se a duração for >5min).
+            if (
+              next === WARNING_THRESHOLD_SECONDS &&
+              s > WARNING_THRESHOLD_SECONDS &&
+              limitSeconds > WARNING_THRESHOLD_SECONDS &&
+              !warningAlertFiredRef.current
+            ) {
+              warningAlertFiredRef.current = true;
+              playWarningAlert();
+            }
             // Disparo único exatamente na transição para 0.
             if (next === 0 && s > 0 && !endAlertFiredRef.current) {
               endAlertFiredRef.current = true;
@@ -490,6 +542,10 @@ export function PodiumModeModal({
   useEffect(() => {
     if (mode !== 'countdown' || seconds > 0) {
       endAlertFiredRef.current = false;
+    }
+    // Pré-aviso: rearma quando o tempo restante volta a ficar acima do limiar (ex: após reset).
+    if (mode !== 'countdown' || seconds > WARNING_THRESHOLD_SECONDS) {
+      warningAlertFiredRef.current = false;
     }
   }, [mode, seconds]);
 
@@ -514,6 +570,7 @@ export function PodiumModeModal({
   function resetTimer() {
     setRunning(false);
     endAlertFiredRef.current = false; // rearma o sino para o próximo ciclo
+    warningAlertFiredRef.current = false; // rearma o pré-aviso de 5min
     if (mode === 'countdown') setSeconds(limitSeconds);
     else setSeconds(0);
   }
