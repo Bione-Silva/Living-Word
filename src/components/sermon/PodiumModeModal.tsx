@@ -80,21 +80,31 @@ interface BlockMeta {
   label: { PT: string; EN: string; ES: string };
   /** classes de cor para a badge (bg + texto + ring), funcionam em dark e light */
   badgeClass: string;
+  /** Modo Claro — fundo vibrante suave do cartão (cor identitária do bloco) */
+  lightCardBg: string;
+  /** Modo Claro — borda esquerda vibrante (faixa identitária) */
+  lightBorderLeft: string;
+  /** Modo Claro — cor do título/heading do bloco */
+  lightHeading: string;
+  /** Modo Escuro — borda esquerda vibrante */
+  darkBorderLeft: string;
+  /** Modo Escuro — cor do título/heading do bloco */
+  darkHeading: string;
 }
 
 const BLOCK_META: Record<BlockTone, BlockMeta> = {
-  idea:         { tone: 'idea',         emoji: '💡', label: { PT: 'Grande Ideia',    EN: 'Big Idea',      ES: 'Gran Idea' },        badgeClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-300 ring-purple-500/30' },
-  hook:         { tone: 'hook',         emoji: '🎣', label: { PT: 'Gancho',          EN: 'Hook',          ES: 'Gancho' },           badgeClass: 'bg-orange-500/15 text-orange-600 dark:text-orange-300 ring-orange-500/30' },
-  passage:      { tone: 'passage',      emoji: '📖', label: { PT: 'Passagem',        EN: 'Passage',       ES: 'Pasaje' },           badgeClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-sky-500/30' },
-  illustration: { tone: 'illustration', emoji: '🖼️', label: { PT: 'Ilustração',      EN: 'Illustration',  ES: 'Ilustración' },      badgeClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-emerald-500/30' },
-  application:  { tone: 'application',  emoji: '🎯', label: { PT: 'Aplicação',       EN: 'Application',   ES: 'Aplicación' },       badgeClass: 'bg-amber-600/20 text-amber-700 dark:text-amber-300 ring-amber-600/40' },
-  main:         { tone: 'main',         emoji: '🔷', label: { PT: 'Ponto Principal', EN: 'Main Point',    ES: 'Punto Principal' },  badgeClass: 'bg-blue-500/15 text-blue-600 dark:text-blue-300 ring-blue-500/30' },
-  conclusion:   { tone: 'conclusion',   emoji: '🙏', label: { PT: 'Conclusão',       EN: 'Conclusion',    ES: 'Conclusión' },       badgeClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-300 ring-rose-500/30' },
-  original:     { tone: 'original',     emoji: '🔍', label: { PT: 'Hebraico/Grego',  EN: 'Hebrew/Greek',  ES: 'Hebreo/Griego' },    badgeClass: 'bg-amber-700/20 text-amber-800 dark:text-amber-400 ring-amber-700/40' },
-  transition:   { tone: 'transition',   emoji: '➰', label: { PT: 'Transição',       EN: 'Transition',    ES: 'Transición' },       badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30' },
-  quote:        { tone: 'quote',        emoji: '📚', label: { PT: 'Citação',         EN: 'Quote',         ES: 'Cita' },             badgeClass: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 ring-yellow-500/30' },
-  explanation:  { tone: 'explanation',  emoji: '📜', label: { PT: 'Explicação',      EN: 'Explanation',   ES: 'Explicación' },      badgeClass: 'bg-violet-500/15 text-violet-600 dark:text-violet-300 ring-violet-500/30' },
-  generic:      { tone: 'generic',      emoji: '✦',  label: { PT: 'Bloco',           EN: 'Block',         ES: 'Bloque' },           badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30' },
+  idea:         { tone: 'idea',         emoji: '💡', label: { PT: 'Grande Ideia',    EN: 'Big Idea',      ES: 'Gran Idea' },        badgeClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-300 ring-purple-500/30',  lightCardBg: 'bg-purple-50 border-purple-200',  lightBorderLeft: 'border-l-4 border-l-purple-500',  lightHeading: 'text-purple-700',  darkBorderLeft: 'border-l-4 border-l-purple-500',  darkHeading: 'text-purple-200' },
+  hook:         { tone: 'hook',         emoji: '🎣', label: { PT: 'Gancho',          EN: 'Hook',          ES: 'Gancho' },           badgeClass: 'bg-orange-500/15 text-orange-600 dark:text-orange-300 ring-orange-500/30',  lightCardBg: 'bg-orange-50 border-orange-200',  lightBorderLeft: 'border-l-4 border-l-orange-500',  lightHeading: 'text-orange-700',  darkBorderLeft: 'border-l-4 border-l-orange-500',  darkHeading: 'text-orange-200' },
+  passage:      { tone: 'passage',      emoji: '📖', label: { PT: 'Passagem',        EN: 'Passage',       ES: 'Pasaje' },           badgeClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-sky-500/30',              lightCardBg: 'bg-sky-50 border-sky-200',        lightBorderLeft: 'border-l-4 border-l-sky-500',     lightHeading: 'text-sky-700',     darkBorderLeft: 'border-l-4 border-l-sky-500',     darkHeading: 'text-sky-200' },
+  illustration: { tone: 'illustration', emoji: '🖼️', label: { PT: 'Ilustração',      EN: 'Illustration',  ES: 'Ilustración' },      badgeClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-emerald-500/30', lightCardBg: 'bg-emerald-50 border-emerald-200', lightBorderLeft: 'border-l-4 border-l-emerald-500', lightHeading: 'text-emerald-700', darkBorderLeft: 'border-l-4 border-l-emerald-500', darkHeading: 'text-emerald-200' },
+  application:  { tone: 'application',  emoji: '🎯', label: { PT: 'Aplicação',       EN: 'Application',   ES: 'Aplicación' },       badgeClass: 'bg-amber-600/20 text-amber-700 dark:text-amber-300 ring-amber-600/40',       lightCardBg: 'bg-orange-50 border-orange-200',  lightBorderLeft: 'border-l-4 border-l-orange-700',  lightHeading: 'text-orange-800', darkBorderLeft: 'border-l-4 border-l-orange-600',  darkHeading: 'text-orange-200' },
+  main:         { tone: 'main',         emoji: '🔷', label: { PT: 'Ponto Principal', EN: 'Main Point',    ES: 'Punto Principal' },  badgeClass: 'bg-blue-500/15 text-blue-600 dark:text-blue-300 ring-blue-500/30',           lightCardBg: 'bg-blue-50 border-blue-200',      lightBorderLeft: 'border-l-4 border-l-blue-600',    lightHeading: 'text-blue-700',    darkBorderLeft: 'border-l-4 border-l-blue-500',    darkHeading: 'text-blue-200' },
+  conclusion:   { tone: 'conclusion',   emoji: '🙏', label: { PT: 'Conclusão',       EN: 'Conclusion',    ES: 'Conclusión' },       badgeClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-300 ring-rose-500/30',           lightCardBg: 'bg-rose-50 border-rose-200',      lightBorderLeft: 'border-l-4 border-l-rose-500',    lightHeading: 'text-rose-700',    darkBorderLeft: 'border-l-4 border-l-rose-500',    darkHeading: 'text-rose-200' },
+  original:     { tone: 'original',     emoji: '🔍', label: { PT: 'Hebraico/Grego',  EN: 'Hebrew/Greek',  ES: 'Hebreo/Griego' },    badgeClass: 'bg-amber-700/20 text-amber-800 dark:text-amber-400 ring-amber-700/40',       lightCardBg: 'bg-amber-50 border-amber-300',    lightBorderLeft: 'border-l-4 border-l-amber-800',   lightHeading: 'text-amber-800',   darkBorderLeft: 'border-l-4 border-l-amber-700',   darkHeading: 'text-amber-300' },
+  transition:   { tone: 'transition',   emoji: '➰', label: { PT: 'Transição',       EN: 'Transition',    ES: 'Transición' },       badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30',       lightCardBg: 'bg-slate-50 border-slate-200',    lightBorderLeft: 'border-l-4 border-l-slate-500',   lightHeading: 'text-slate-700',   darkBorderLeft: 'border-l-4 border-l-slate-500',   darkHeading: 'text-slate-200' },
+  quote:        { tone: 'quote',        emoji: '📚', label: { PT: 'Citação',         EN: 'Quote',         ES: 'Cita' },             badgeClass: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 ring-yellow-500/30',   lightCardBg: 'bg-yellow-50 border-yellow-300',  lightBorderLeft: 'border-l-4 border-l-yellow-600',  lightHeading: 'text-yellow-800',  darkBorderLeft: 'border-l-4 border-l-yellow-500',  darkHeading: 'text-yellow-200' },
+  explanation:  { tone: 'explanation',  emoji: '📜', label: { PT: 'Explicação',      EN: 'Explanation',   ES: 'Explicación' },      badgeClass: 'bg-violet-500/15 text-violet-600 dark:text-violet-300 ring-violet-500/30',   lightCardBg: 'bg-violet-50 border-violet-200',  lightBorderLeft: 'border-l-4 border-l-violet-500',  lightHeading: 'text-violet-700',  darkBorderLeft: 'border-l-4 border-l-violet-500',  darkHeading: 'text-violet-200' },
+  generic:      { tone: 'generic',      emoji: '✦',  label: { PT: 'Bloco',           EN: 'Block',         ES: 'Bloque' },           badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30',       lightCardBg: 'bg-white border-slate-200',       lightBorderLeft: 'border-l-4 border-l-slate-400',   lightHeading: 'text-slate-700',   darkBorderLeft: 'border-l-4 border-l-slate-500',   darkHeading: 'text-amber-200/95' },
 };
 
 function detectBlockTone(heading?: string): BlockTone {
