@@ -415,6 +415,7 @@ export default function Biblioteca() {
         open={!!viewItem}
         onOpenChange={(open) => !open && setViewItem(null)}
         item={viewItem}
+        onReplaceItem={(newItem) => setViewItem(newItem)}
       />
 
       {saveToWsItem && (
