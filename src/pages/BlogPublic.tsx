@@ -193,22 +193,43 @@ export default function BlogPublic() {
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: blogFont }}>
-      {/* Top nav bar */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8 border" style={{ borderColor: `hsl(${primaryHsl} / 0.3)` }}>
+      {/* Top nav bar — respects iOS safe area so it doesn't sit under the status bar */}
+      <header
+        className="bg-white border-b border-gray-100 sticky top-0 z-20"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="h-8 w-8 border shrink-0" style={{ borderColor: `hsl(${primaryHsl} / 0.3)` }}>
               <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
               <AvatarFallback className="text-xs font-bold text-white" style={{ backgroundColor: `hsl(${primaryHsl})` }}>
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <span className="text-base font-bold text-gray-900" style={{ fontFamily: blogFont }}>
+            <span className="text-base font-bold text-gray-900 truncate" style={{ fontFamily: blogFont }}>
               {profile.full_name}
             </span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-gray-500">
-            <span className="hover:text-gray-900 cursor-pointer transition-colors">{langLabels.home}</span>
+          <nav className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {user ? (
+              <Link to="/dashboard">
+                <Button
+                  size="sm"
+                  className="h-9 gap-1.5 text-white shadow-sm"
+                  style={{ backgroundColor: `hsl(${primaryHsl})` }}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="hidden sm:inline">{langLabels.dashboard}</span>
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/">
+                <Button variant="ghost" size="sm" className="h-9 gap-1.5 text-gray-600 hover:text-gray-900">
+                  <Home className="w-4 h-4" />
+                  <span className="hidden sm:inline">{langLabels.home}</span>
+                </Button>
+              </Link>
+            )}
           </nav>
         </div>
       </header>
