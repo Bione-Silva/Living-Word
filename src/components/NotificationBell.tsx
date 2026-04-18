@@ -60,20 +60,89 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
+
+    const isRecent = (n: { scheduled_for: string }) =>
+      new Date(n.scheduled_for).getTime() >= Date.now() - 24 * 60 * 60 * 1000;
+
     const load = async () => {
       const { data } = await supabase
         .from('notification_queue')
-        .select('id, message, type, scheduled_for')
+        .select('id, message, type, scheduled_for, sent')
         .eq('user_id', user.id)
         .eq('sent', false)
         .gte('scheduled_for', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         .order('scheduled_for', { ascending: true })
         .limit(8);
-      if (!cancelled && data) setItems(data as NotificationItem[]);
+      if (!cancelled && data) {
+        setItems(data.map(({ sent: _s, ...rest }) => rest) as NotificationItem[]);
+      }
     };
+
     load();
-    const interval = setInterval(load, 60_000);
-    return () => { cancelled = true; clearInterval(interval); };
+    // Light fallback poll in case realtime drops.
+    const interval = setInterval(load, 120_000);
+
+    // Realtime subscription — listen only to this user's notifications.
+    const channel = supabase
+      .channel(`notifications:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notification_queue',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const n = payload.new as NotificationItem & { sent: boolean };
+          if (n.sent || !isRecent(n)) return;
+          setItems((prev) => {
+            if (prev.some((p) => p.id === n.id)) return prev;
+            const next = [...prev, { id: n.id, message: n.message, type: n.type, scheduled_for: n.scheduled_for }];
+            return next
+              .sort((a, b) => new Date(a.scheduled_for).getTime() - new Date(b.scheduled_for).getTime())
+              .slice(0, 8);
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'notification_queue',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const n = payload.new as NotificationItem & { sent: boolean };
+          // If marked as sent or no longer recent, drop it from the list.
+          if (n.sent || !isRecent(n)) {
+            setItems((prev) => prev.filter((p) => p.id !== n.id));
+            return;
+          }
+          setItems((prev) => prev.map((p) => (p.id === n.id ? { id: n.id, message: n.message, type: n.type, scheduled_for: n.scheduled_for } : p)));
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'notification_queue',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const old = payload.old as { id: string };
+          setItems((prev) => prev.filter((p) => p.id !== old.id));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const unreadCount = items.length;
