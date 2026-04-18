@@ -53,6 +53,12 @@ const tr = {
   totalWords: { PT: 'palavras no total', EN: 'total words', ES: 'palabras en total' },
   blocks: { PT: 'blocos', EN: 'blocks', ES: 'bloques' },
   pickType: { PT: 'Escolha o tipo de bloco', EN: 'Pick a block type', ES: 'Elija el tipo de bloque' },
+  quickAdd: { PT: 'Criação rápida', EN: 'Quick add', ES: 'Creación rápida' },
+  quickAddHint: {
+    PT: 'Clique numa bolinha para adicionar o bloco ao final',
+    EN: 'Click a dot to append a block at the end',
+    ES: 'Haga clic en una bolita para añadir el bloque al final',
+  },
   bulkGen: { PT: 'Gerar Esboço com IA', EN: 'Generate Outline with AI', ES: 'Generar Bosquejo con IA' },
   bulkGenLoading: { PT: 'Construindo no estilo Spurgeon...', EN: 'Building in Spurgeon style...', ES: 'Construyendo al estilo Spurgeon...' },
   spurgeonHint: {
