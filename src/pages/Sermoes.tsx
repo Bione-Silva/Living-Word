@@ -252,6 +252,7 @@ export default function Sermoes() {
   const [carouselOpen, setCarouselOpen] = useState(false);
   const [slidesOpen, setSlidesOpen] = useState(false);
   const [podiumOpen, setPodiumOpen] = useState(false);
+  const [rawTextOpen, setRawTextOpen] = useState(false);
 
   // ─── Studio de Blocos ───
   const [editorMode, setEditorMode] = useState<'ai' | 'blocks'>('ai');
