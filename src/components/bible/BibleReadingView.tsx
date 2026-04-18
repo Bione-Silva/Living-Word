@@ -403,6 +403,19 @@ export function BibleReadingView({
             })}
           </div>
         )}
+        </div>
+
+        {/* Compare column */}
+        {compareCode && (
+          <BibleCompareColumn
+            bookId={bookId}
+            bookName={name}
+            chapter={chapter}
+            versionCode={compareCode}
+            onVersionChange={setCompareCode}
+            onClose={() => setCompareCode(null)}
+          />
+        )}
       </div>
 
       {/* Bottom nav */}
