@@ -126,11 +126,25 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
     if (!item?.id || transforming) return;
     setTransforming(true);
 
+    const styleEmoji: Record<ImageStyle, string> = {
+      watercolor: '🎨',
+      oil: '🖌️',
+      minimalist: '◻️',
+      photographic: '📷',
+    };
+    const styleLabel: Record<ImageStyle, { PT: string; EN: string; ES: string }> = {
+      watercolor: { PT: 'aquarela', EN: 'watercolor', ES: 'acuarela' },
+      oil: { PT: 'óleo', EN: 'oil painting', ES: 'óleo' },
+      minimalist: { PT: 'minimalista', EN: 'minimalist', ES: 'minimalista' },
+      photographic: { PT: 'fotográfico', EN: 'photographic', ES: 'fotográfico' },
+    };
+    const sLabel = styleLabel[imageStyle][lang];
+
     const steps = lang === 'PT'
-      ? ['Analisando o sermão...', 'Reestruturando como artigo...', 'Gerando capa em aquarela 🎨', 'Distribuindo ilustrações nas seções 🖼️', 'Finalizando...']
+      ? ['Analisando o sermão...', 'Reestruturando como artigo...', `Gerando capa em ${sLabel} ${styleEmoji[imageStyle]}`, 'Distribuindo ilustrações nas seções 🖼️', 'Finalizando...']
       : lang === 'EN'
-      ? ['Analyzing sermon...', 'Restructuring as article...', 'Generating watercolor cover 🎨', 'Placing illustrations across sections 🖼️', 'Finishing...']
-      : ['Analizando el sermón...', 'Reestructurando como artículo...', 'Generando portada en acuarela 🎨', 'Distribuyendo ilustraciones 🖼️', 'Finalizando...'];
+      ? ['Analyzing sermon...', 'Restructuring as article...', `Generating ${sLabel} cover ${styleEmoji[imageStyle]}`, 'Placing illustrations across sections 🖼️', 'Finishing...']
+      : ['Analizando el sermón...', 'Reestructurando como artículo...', `Generando portada ${sLabel} ${styleEmoji[imageStyle]}`, 'Distribuyendo ilustraciones 🖼️', 'Finalizando...'];
 
     let stepIdx = 0;
     setTransformStep(steps[0]);
@@ -146,26 +160,34 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
           title: item.title,
           source_content: item.content,
           source_type: item.type || 'sermon',
-          image_style: 'watercolor',
+          image_style: imageStyle,
         },
       });
 
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      // Update local state with new generated artifacts
-      setLiveContent(data.content || liveContent);
-      setLiveTitle(data.title || liveTitle);
-      setCoverUrl(data.cover_image_url || null);
-      setArticleImages((data.article_images || []).filter((u: string) => u !== data.cover_image_url));
-
       toast.success(
-        lang === 'PT' ? 'Artigo de blog gerado com capa e ilustrações!' :
-        lang === 'EN' ? 'Blog article generated with cover and illustrations!' :
-        '¡Artículo de blog generado con portada e ilustraciones!'
+        lang === 'PT' ? 'Artigo de blog criado! Sermão original preservado.' :
+        lang === 'EN' ? 'Blog article created! Original sermon preserved.' :
+        '¡Artículo de blog creado! Sermón original conservado.'
       );
 
       queryClient.invalidateQueries({ queryKey: ['materials'] });
+
+      // Swap to the newly created blog_article so user immediately sees it,
+      // while the original sermon stays untouched in the library.
+      if (onReplaceItem && data?.material_id) {
+        onReplaceItem({
+          id: data.material_id,
+          title: data.title,
+          type: 'blog_article',
+          passage: data.passage,
+          content: data.content,
+          cover_image_url: data.cover_image_url,
+          article_images: data.article_images,
+        });
+      }
     } catch (err: any) {
       console.error('Transform error:', err);
       const msg = err?.message?.includes('insufficient_credits')
@@ -177,7 +199,7 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
       setTransforming(false);
       setTransformStep('');
     }
-  }, [item, lang, liveContent, liveTitle, queryClient, transforming]);
+  }, [item, lang, imageStyle, queryClient, transforming, onReplaceItem]);
 
   if (!item) return null;
 
