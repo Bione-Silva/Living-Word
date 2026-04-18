@@ -671,12 +671,19 @@ export default function Sermoes() {
           </div>
           {isMobile && (
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => { setBibleRef(null); setBibleTranslationCode(undefined); setBibleDrawerOpen(true); }}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={lang === 'PT' ? 'Bíblia' : lang === 'ES' ? 'Biblia' : 'Bible'}
+              >
+                <BookOpen className="h-5 w-5" />
+              </button>
               {showResult && activeSessionId && (
-                <button onClick={() => setMobileNotesOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <button onClick={() => setMobileNotesOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors" aria-label={lang === 'PT' ? 'Anotações' : lang === 'ES' ? 'Notas' : 'Notes'}>
                   <PenLine className="h-5 w-5" />
                 </button>
               )}
-              <button onClick={() => setMobileHistoryOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={() => setMobileHistoryOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors" aria-label={lang === 'PT' ? 'Histórico' : lang === 'ES' ? 'Historial' : 'History'}>
                 <History className="h-5 w-5" />
               </button>
             </div>
