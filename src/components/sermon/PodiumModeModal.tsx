@@ -23,6 +23,8 @@ import {
   Sun,
   Timer,
   BookOpen,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
