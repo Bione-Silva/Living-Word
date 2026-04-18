@@ -173,20 +173,20 @@ export function PodiumLivePreview({
             </p>
           </div>
         ) : (
-          <div className="p-4 sm:p-5 space-y-3">
+          <div className="p-4 sm:p-5 space-y-4">
             {cards.map((card) => {
               const meta = BLOCK_META[card.tone];
               return (
                 <article
                   key={card.id}
                   className={cn(
-                    'rounded-xl border shadow-sm overflow-hidden',
+                    'rounded-xl border shadow-sm overflow-hidden flex flex-col min-h-[220px]',
                     meta.lightCardBg,
                     meta.lightBorderLeft,
                   )}
                 >
                   {card.heading && (
-                    <header className="flex items-center gap-2 px-3.5 pt-3 pb-1.5">
+                    <header className="flex items-center gap-2 px-4 pt-4 pb-2">
                       <span className={cn(
                         'inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider ring-1',
                         meta.badgeClass,
@@ -197,20 +197,28 @@ export function PodiumLivePreview({
                     </header>
                   )}
                   {card.heading && (
-                    <h3 className={cn('px-3.5 text-sm sm:text-base font-bold leading-tight', meta.lightHeading)}>
+                    <h3 className={cn('px-4 text-sm sm:text-base font-bold leading-tight', meta.lightHeading)}>
                       {card.heading.replace(/^[\p{Emoji}\s]+/u, '').trim() || card.heading}
                     </h3>
                   )}
-                  {card.body.trim() && (
-                    <div className="px-3.5 py-3">
+                  <div className="flex-1 px-4 py-3">
+                    {card.body.trim() ? (
                       <InlineMarkdown
                         text={card.body}
                         isQuote={card.isQuote}
                         fontPx={fontPx}
                         refClass={VERSE_REF_CLASS[card.tone]}
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <p className="text-[11px] italic text-slate-400 leading-relaxed">
+                        {lang === 'PT'
+                          ? 'Preencha este bloco no editor para ver o conteúdo aqui…'
+                          : lang === 'ES'
+                          ? 'Complete este bloque en el editor para ver el contenido aquí…'
+                          : 'Fill in this block in the editor to see the content here…'}
+                      </p>
+                    )}
+                  </div>
                 </article>
               );
             })}
