@@ -1192,15 +1192,26 @@ export default function Sermoes() {
       />
 
       {/* ─── Modo Púlpito ─── */}
-      <PodiumModeModal
-        open={podiumOpen}
-        onOpenChange={setPodiumOpen}
-        sermonMarkdown={sermonContent || (blocks.length ? blocksToMarkdown(blocks, lang) : '')}
-        sermonTitle={sermonTitle || bigIdea || 'Sermão'}
-        durationLimitMinutes={duration?.match(/\d+/) ? parseInt(duration.match(/\d+/)![0]) : 30}
-        materialId={activeSessionId}
-        lang={lang}
-      />
+      {/* Boundary local: se algo crashar dentro do Púlpito (ex: parsing
+          de markdown corrompido vindo do histórico), fechamos o modal
+          em vez de derrubar a página inteira de Sermões em Mobile. */}
+      <ErrorBoundary
+        context="Modo Púlpito"
+        onError={() => setPodiumOpen(false)}
+        onReset={() => setPodiumOpen(false)}
+      >
+        <PodiumModeModal
+          open={podiumOpen}
+          onOpenChange={setPodiumOpen}
+          sermonMarkdown={typeof sermonContent === 'string' && sermonContent
+            ? sermonContent
+            : (blocks.length ? blocksToMarkdown(blocks, lang) : '')}
+          sermonTitle={sermonTitle || bigIdea || 'Sermão'}
+          durationLimitMinutes={duration?.match(/\d+/) ? parseInt(duration.match(/\d+/)![0]) : 30}
+          materialId={activeSessionId}
+          lang={lang}
+        />
+      </ErrorBoundary>
       {/* ─── ActionBar fixa inferior — só no Studio de Blocos ─── */}
       {editorMode === 'blocks' && showResult && blocks.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)] pb-[env(safe-area-inset-bottom)]">
