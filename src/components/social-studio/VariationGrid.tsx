@@ -254,6 +254,8 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
                     template={template}
                     bgImageUrl={theme.backgroundImageUrl}
                     themeColor={theme.gradient}
+                    themeColors={getThemePalette(theme.gradient)}
+                    slideIndex={slideIdx}
                     fontFamily={theme.fontFamily}
                     textColor={theme.textColor}
                     showWatermark
