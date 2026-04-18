@@ -337,6 +337,33 @@ export default function Sermoes() {
     setDuration('30 min');
     setStyle(null);
     setTone(null);
+    setBlocks([]);
+    setBigIdea('');
+    setPassageRef('');
+  };
+
+  /* ─── Salvar sermão construído por blocos ─── */
+  const handleSaveBlocks = async () => {
+    if (!user || blocks.length === 0) return;
+    const md = blocksToMarkdown(blocks, lang);
+    const title = bigIdea.trim().slice(0, 80) || passageRef.trim().slice(0, 80) || (lang === 'PT' ? 'Sermão sem título' : 'Untitled sermon');
+    const payload = JSON.stringify({ _type: 'blocks', blocks, bigIdea, passageRef, markdown: md });
+    try {
+      if (activeSessionId) {
+        await (supabase as any).from('materials').update({ title, content: payload, passage: passageRef }).eq('id', activeSessionId);
+      } else {
+        const { data } = await (supabase as any).from('materials').insert({
+          user_id: user.id, type: 'sermon', title, content: payload, language: lang, passage: passageRef,
+        }).select('id').single();
+        if (data) setActiveSessionId(data.id);
+      }
+      setSermonContent(md);
+      setSermonTitle(title);
+      toast.success(labels.saved[lang]);
+      await refreshSessions();
+    } catch (e) {
+      toast.error('Erro ao salvar');
+    }
   };
 
   const handleDeleteSession = async (id: string) => {
