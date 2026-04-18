@@ -471,6 +471,3 @@ export function SermonBlockEditor({
     </div>
   );
 }
-    </div>
-  );
-}
