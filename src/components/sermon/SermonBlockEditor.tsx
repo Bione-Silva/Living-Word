@@ -14,11 +14,12 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
-import { Plus, ChevronDown, ChevronUp, Sparkles, Loader2 } from 'lucide-react';
+import { Plus, ChevronDown, ChevronUp, Sparkles, Loader2, Save, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { SermonBlock } from './SermonBlock';
+import { SermonTemplateDialog } from './SermonTemplateDialog';
 import {
   SERMON_BLOCK_META,
   SERMON_BLOCK_ORDER,
@@ -53,11 +54,11 @@ const tr = {
   totalWords: { PT: 'palavras no total', EN: 'total words', ES: 'palabras en total' },
   blocks: { PT: 'blocos', EN: 'blocks', ES: 'bloques' },
   pickType: { PT: 'Escolha o tipo de bloco', EN: 'Pick a block type', ES: 'Elija el tipo de bloque' },
-  quickAdd: { PT: 'Criação rápida', EN: 'Quick add', ES: 'Creación rápida' },
+  quickAdd: { PT: 'Atalho rápido — adicionar bloco', EN: 'Quick add — append block', ES: 'Atajo rápido — añadir bloque' },
   quickAddHint: {
-    PT: 'Clique numa bolinha para adicionar o bloco ao final',
-    EN: 'Click a dot to append a block at the end',
-    ES: 'Haga clic en una bolita para añadir el bloque al final',
+    PT: 'Cada bolinha representa um tipo de bloco. Clique para adicionar ao final do sermão.',
+    EN: 'Each dot is a block type. Click to append it to the end of the sermon.',
+    ES: 'Cada bolita es un tipo de bloque. Haga clic para añadirlo al final del sermón.',
   },
   bulkGen: { PT: 'Gerar Esboço com IA', EN: 'Generate Outline with AI', ES: 'Generar Bosquejo con IA' },
   bulkGenLoading: { PT: 'Construindo no estilo Spurgeon...', EN: 'Building in Spurgeon style...', ES: 'Construyendo al estilo Spurgeon...' },
@@ -73,6 +74,8 @@ const tr = {
     EN: 'Fill in the Big Idea or Passage before generating.',
     ES: 'Complete la Gran Idea o el Pasaje antes de generar.',
   },
+  saveTpl: { PT: 'Salvar template', EN: 'Save template', ES: 'Guardar plantilla' },
+  loadTpl: { PT: 'Meus templates', EN: 'My templates', ES: 'Mis plantillas' },
 };
 
 /** Esqueleto padrão Spurgeon — auto-carregado quando o studio abre vazio. */
@@ -95,6 +98,7 @@ export function SermonBlockEditor({
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [tplDialog, setTplDialog] = useState<null | 'save' | 'load'>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef(false);
 
