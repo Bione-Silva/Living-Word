@@ -250,21 +250,33 @@ export function BibleReadingView({
           </div>
 
           <div className="flex items-center gap-2">
-            <Select value={translation} onValueChange={(v) => onTranslationChange?.(v)}>
-              <SelectTrigger className="w-auto h-7 px-2.5 gap-1 text-xs font-medium border-border bg-muted/60 rounded-md">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bible-light max-h-[360px]">
-                <SelectGroup>
-                  <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
-                    {lang === 'PT' ? 'Versões em Português' : lang === 'ES' ? 'Versiones en Español' : 'English Versions'}
-                  </SelectLabel>
-                  {primaryVersions.filter(v => v.isAvailable).map(v => (
-                    <SelectItem key={v.code} value={v.code} className="text-xs">{v.shortLabel} — {v.name}</SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <BibleVersionSelector value={translation} onChange={(v) => onTranslationChange?.(v)} compact />
+            <button
+              onClick={() => {
+                if (compareCode) {
+                  setCompareCode(null);
+                } else {
+                  // Pick a sensible second version: language default if different from current, else first other in same language
+                  const currentVer = getBibleVersion(translation);
+                  const langDefault = getDefaultVersionCode(lang);
+                  let pick = langDefault !== translation ? langDefault : '';
+                  if (!pick) {
+                    const same = primaryVersions.find(v => v.code !== translation && v.isAvailable);
+                    pick = same?.code || langDefault;
+                  }
+                  setCompareCode(pick);
+                }
+              }}
+              className={`inline-flex items-center gap-1.5 h-8 px-2.5 text-xs font-medium border rounded-lg transition-colors ${
+                compareCode
+                  ? 'border-primary/40 bg-primary/10 text-primary'
+                  : 'border-border bg-muted/60 text-foreground hover:bg-muted'
+              }`}
+              title={lang === 'PT' ? 'Comparar versões' : lang === 'ES' ? 'Comparar versiones' : 'Compare versions'}
+            >
+              <Columns2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{lang === 'PT' ? 'Comparar' : lang === 'ES' ? 'Comparar' : 'Compare'}</span>
+            </button>
           </div>
         </div>
 
