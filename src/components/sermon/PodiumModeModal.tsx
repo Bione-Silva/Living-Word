@@ -840,8 +840,14 @@ export function PodiumModeModal({
     ? 'text-slate-400 hover:text-white hover:bg-slate-800'
     : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200';
   const timerAlert = mode === 'countdown' && seconds === 0;
+  // Aviso visual sutil: faltando 30s ou menos (mas ainda > 0) — fundo âmbar pulsante.
+  const imminentEnd = mode === 'countdown' && seconds > 0 && seconds <= IMMINENT_END_SECONDS;
   const timerBg = timerAlert
     ? 'bg-red-600 text-white ring-2 ring-red-400 animate-pulse shadow-lg shadow-red-500/40'
+    : imminentEnd
+    ? (isDark
+        ? 'bg-amber-500/25 text-amber-200 ring-1 ring-amber-400/60 animate-pulse shadow-md shadow-amber-500/20'
+        : 'bg-amber-100 text-amber-800 ring-1 ring-amber-400/70 animate-pulse shadow-md shadow-amber-500/20')
     : isDark
     ? (overLimit ? 'bg-red-950/60 text-red-300 ring-1 ring-red-500/50' : 'bg-slate-800 text-slate-100')
     : (overLimit ? 'bg-red-100 text-red-700 ring-1 ring-red-400/60' : 'bg-slate-200 text-slate-800');
