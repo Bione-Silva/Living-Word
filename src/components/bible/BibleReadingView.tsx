@@ -402,10 +402,11 @@ export function BibleReadingView({
                 >
                   {/* Verse number badge */}
                   <button
-                    onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); startPress(v.verse); }}
-                    onPointerUp={cancelPress}
-                    onPointerLeave={cancelPress}
-                    onPointerCancel={cancelPress}
+                    onTouchStart={(e) => { e.stopPropagation(); startTouchPress(v.verse, e); }}
+                    onTouchMove={onTouchMovePress}
+                    onTouchEnd={cancelPress}
+                    onTouchCancel={cancelPress}
+                    onMouseDown={(e) => { e.stopPropagation(); handleMouseToggle(v.verse); }}
                     onContextMenu={(e) => e.preventDefault()}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors select-none ${
                       isSelected
@@ -419,12 +420,12 @@ export function BibleReadingView({
                   {/* Verse text + inline toolbar */}
                   <div className="flex-1 min-w-0">
                     <span
-                      onPointerDown={(e) => { e.stopPropagation(); startPress(v.verse); }}
-                      onPointerUp={cancelPress}
-                      onPointerLeave={cancelPress}
-                      onPointerCancel={cancelPress}
+                      onTouchStart={(e) => { e.stopPropagation(); startTouchPress(v.verse, e); }}
+                      onTouchMove={onTouchMovePress}
+                      onTouchEnd={cancelPress}
+                      onTouchCancel={cancelPress}
                       onContextMenu={(e) => e.preventDefault()}
-                      className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 select-none"
+                      className="leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 select-none"
                     >
                       {v.text.trim()}
                     </span>
