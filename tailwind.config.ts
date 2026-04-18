@@ -4,12 +4,12 @@ export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   safelist: [
-    // Cores dinâmicas dos blocos de sermão (SermonBlockEditor) — manter sincronizado com sermon-block-types.ts
-    // hook (orange-500), passage (sky-500), original (amber-800), big_idea (purple-600), main_point (blue-600),
-    // explanation (violet-500), illustration (emerald-600), application (orange-700), transition (slate-500),
-    // quote (yellow-600), conclusion (rose-500)
-    { pattern: /^(bg|border-l|text)-(orange|sky|amber|purple|blue|violet|emerald|slate|yellow|rose)-(500|600|700|800)(\/10)?$/ },
-    { pattern: /^dark:text-(orange|sky|amber|purple|blue|violet|emerald|slate|yellow|rose)-(400|500|600)$/ },
+    // Cores dinâmicas dos blocos de sermão (SermonBlockEditor + PodiumModeModal Modo Claro)
+    // Inclui: orange, sky, amber, purple, blue, violet, emerald, slate, yellow, rose, indigo, red
+    // Tons usados: 50/100/200/300 (light cards/borders), 500/600/700/800 (vibrant accents)
+    { pattern: /^(bg|border|border-l|text)-(orange|sky|amber|purple|blue|violet|emerald|slate|yellow|rose|indigo|red)-(50|100|200|300|400|500|600|700|800)(\/\d{1,3})?$/ },
+    { pattern: /^dark:text-(orange|sky|amber|purple|blue|violet|emerald|slate|yellow|rose|indigo|red)-(200|300|400|500|600)$/ },
+    { pattern: /^ring-(orange|sky|amber|purple|blue|violet|emerald|slate|yellow|rose|indigo|red)-(300|400|500|600)(\/\d{1,3})?$/ },
   ],
   prefix: "",
   theme: {
