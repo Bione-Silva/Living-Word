@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2, Sparkles, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { GripVertical, Trash2, Sparkles, Loader2, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import {
   SERMON_BLOCK_META,
   countWords,
+  getBlockDisplayLabel,
   type SermonBlockData,
 } from './sermon-block-types';
 
@@ -43,6 +44,12 @@ const tr = {
   expand: { PT: 'Expandir', EN: 'Expand', ES: 'Expandir' },
   remove: { PT: 'Remover bloco', EN: 'Remove block', ES: 'Eliminar bloque' },
   drag: { PT: 'Arrastar', EN: 'Drag', ES: 'Arrastrar' },
+  renameLabel: { PT: 'Renomear rótulo do bloco', EN: 'Rename block label', ES: 'Renombrar etiqueta del bloque' },
+  labelHint: {
+    PT: 'Clique no rótulo para renomear (ex: trocar "Introdução" por "Abertura")',
+    EN: 'Click the label to rename (e.g. swap "Introduction" for "Opening")',
+    ES: 'Haga clic en la etiqueta para renombrar',
+  },
 };
 
 export function SermonBlock({ block, lang, context, onChange, onDelete }: SermonBlockProps) {
@@ -50,6 +57,34 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
   const wordCount = countWords(block.content);
   const [collapsed, setCollapsed] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [editingLabel, setEditingLabel] = useState(false);
+  const [labelDraft, setLabelDraft] = useState('');
+  const labelInputRef = useRef<HTMLInputElement>(null);
+
+  const displayLabel = getBlockDisplayLabel(block, lang);
+
+  useEffect(() => {
+    if (editingLabel) {
+      labelInputRef.current?.focus();
+      labelInputRef.current?.select();
+    }
+  }, [editingLabel]);
+
+  function startEditingLabel() {
+    setLabelDraft(displayLabel);
+    setEditingLabel(true);
+  }
+
+  function commitLabel() {
+    const next = labelDraft.trim();
+    // Se voltar ao default do tipo, limpa o customLabel para evitar redundância
+    const defaultLabel = meta.label[lang];
+    onChange({
+      ...block,
+      customLabel: next && next !== defaultLabel ? next : undefined,
+    });
+    setEditingLabel(false);
+  }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
 
