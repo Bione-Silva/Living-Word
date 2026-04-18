@@ -46,11 +46,11 @@ export function BibleCompareColumn({
   return (
     <div className="rounded-2xl border border-primary/30 bg-card overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between gap-2 px-3 py-2 bg-primary/5 border-b border-border">
+      <div className="flex items-center justify-between gap-2 px-2.5 py-2 bg-primary/5 border-b border-border">
         <BibleVersionSelector value={versionCode} onChange={onVersionChange} compact />
         <button
           onClick={onClose}
-          className="p-1.5 rounded-md hover:bg-muted transition-colors"
+          className="p-1.5 rounded-md hover:bg-muted active:bg-muted/80 transition-colors shrink-0"
           aria-label="Close compare"
         >
           <X className="h-4 w-4 text-muted-foreground" />
@@ -63,7 +63,7 @@ export function BibleCompareColumn({
       </div>
 
       {/* Body */}
-      <div className="flex-1 p-3 overflow-y-auto min-h-[400px]">
+      <div className="flex-1 p-3 overflow-y-auto min-h-[280px] md:min-h-[400px] max-h-[60vh] lg:max-h-none">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-5 w-5 animate-spin text-primary" />

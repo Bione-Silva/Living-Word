@@ -244,27 +244,29 @@ export default function BibleReader() {
   };
 
   return (
-    <div className="bible-light bible-light-surface max-w-4xl mx-auto space-y-5 rounded-2xl border border-border bg-background p-4 md:p-6 shadow-sm">
+    <div className="bible-light bible-light-surface max-w-4xl mx-auto space-y-4 md:space-y-5 rounded-2xl border border-border bg-background p-3 md:p-6 shadow-sm">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between gap-2 md:gap-4">
+        <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
           <button
             onClick={() => { setReadView('books'); setActiveTab('read'); setSelectedBook(''); }}
-            className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 hover:bg-primary/25 transition-colors"
+            className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 hover:bg-primary/25 active:bg-primary/30 transition-colors"
             title={lang === 'PT' ? 'Menu principal' : lang === 'EN' ? 'Main menu' : 'Menú principal'}
+            aria-label={lang === 'PT' ? 'Voltar ao menu da Bíblia' : 'Back to Bible menu'}
           >
-            <BookOpen className="h-6 w-6 text-primary" />
+            <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-primary" />
           </button>
-          <div>
-            <h1 className="font-display text-xl font-bold text-foreground">{pageTitle[lang]}</h1>
-            <p className="text-sm text-muted-foreground">{pageSubtitle[lang]}</p>
+          <div className="min-w-0">
+            <h1 className="font-display text-lg md:text-xl font-bold text-foreground truncate">{pageTitle[lang]}</h1>
+            <p className="text-xs md:text-sm text-muted-foreground truncate">{pageSubtitle[lang]}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
           <button
             onClick={() => setFavSidebarOpen(true)}
-            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 active:bg-primary/15 transition-colors"
             title={lang === 'PT' ? 'Favoritos' : lang === 'EN' ? 'Favorites' : 'Favoritos'}
+            aria-label={lang === 'PT' ? 'Favoritos' : 'Favorites'}
           >
             <Star className="h-4 w-4 text-foreground" />
             {favCount > 0 && (
@@ -275,8 +277,9 @@ export default function BibleReader() {
           </button>
           <button
             onClick={() => scrollToTabs('notes')}
-            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 transition-colors"
+            className="relative p-2 rounded-lg border border-border hover:bg-primary/10 hover:border-primary/30 active:bg-primary/15 transition-colors"
             title={lang === 'PT' ? 'Notas' : lang === 'EN' ? 'Notes' : 'Notas'}
+            aria-label={lang === 'PT' ? 'Notas' : 'Notes'}
           >
             <MessageSquare className="h-4 w-4 text-foreground" />
             {noteCount > 0 && (
@@ -329,25 +332,25 @@ export default function BibleReader() {
       </div>
 
       {/* Main tabs */}
-      <div className="flex items-center gap-1 rounded-2xl border border-border bg-background p-1">
+      <div className="flex items-center gap-0.5 md:gap-1 rounded-2xl border border-border bg-background p-1">
         {mainTabs.map(t => (
           <button
             key={t.key}
             onClick={() => setActiveTab(t.key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors ${
+            className={`flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-3 py-2 md:py-2.5 rounded-lg text-[10px] md:text-xs font-medium transition-colors ${
               activeTab === t.key
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <t.icon className="h-3.5 w-3.5" />
-            {t.label[lang]}
+            <t.icon className="h-4 w-4 md:h-3.5 md:w-3.5" />
+            <span className="leading-none">{t.label[lang]}</span>
           </button>
         ))}
       </div>
 
       {/* Tab content */}
-       <div className="rounded-2xl border border-border bg-card p-4 md:p-6">
+       <div className="rounded-2xl border border-border bg-card p-3 md:p-6">
         {activeTab === 'read' && (
           <>
             {readView === 'books' && (
@@ -375,7 +378,7 @@ export default function BibleReader() {
 
       {/* Favorites & Notes */}
       {activeTab === 'read' && (
-         <div className="rounded-2xl border border-border bg-card p-4">
+         <div className="rounded-2xl border border-border bg-card p-3 md:p-4">
           <BibleTabs ref={tabsRef} refreshKey={tabsRefreshKey} onNavigate={handleNavigate} defaultTab={tabsDefaultTab} />
         </div>
       )}
