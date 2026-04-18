@@ -41,6 +41,54 @@ export class ErrorBoundary extends Component<Props, State> {
     this.props.onError?.(error, info);
   }
 
+  componentDidMount() {
+    // Captura erros assíncronos (edge functions, fetch, supabase.invoke etc.)
+    // que escapam do ciclo de render do React e normalmente causariam tela em branco.
+    window.addEventListener('unhandledrejection', this.handleUnhandledRejection);
+    window.addEventListener('error', this.handleWindowError);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('unhandledrejection', this.handleUnhandledRejection);
+    window.removeEventListener('error', this.handleWindowError);
+  }
+
+  private isFatal(message: string): boolean {
+    // Só promovemos a fallback global erros que realmente quebrariam a UI.
+    // Falhas de rede pontuais (uma chamada Supabase) não devem derrubar o app inteiro.
+    const fatalSignals = [
+      'ChunkLoadError',
+      'Loading chunk',
+      'Loading CSS chunk',
+      'Failed to fetch dynamically imported module',
+      'Importing a module script failed',
+    ];
+    return fatalSignals.some((s) => message.includes(s));
+  }
+
+  handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+    const reason = event.reason;
+    const error =
+      reason instanceof Error
+        ? reason
+        : new Error(typeof reason === 'string' ? reason : 'Erro inesperado em operação assíncrona.');
+    // eslint-disable-next-line no-console
+    console.error(`[ErrorBoundary${this.props.context ? ` · ${this.props.context}` : ''}] unhandledrejection`, error);
+    if (this.isFatal(error.message)) {
+      event.preventDefault();
+      this.setState({ hasError: true, error });
+    }
+  };
+
+  handleWindowError = (event: ErrorEvent) => {
+    const error = event.error instanceof Error ? event.error : new Error(event.message || 'Erro inesperado.');
+    // eslint-disable-next-line no-console
+    console.error(`[ErrorBoundary${this.props.context ? ` · ${this.props.context}` : ''}] window.error`, error);
+    if (this.isFatal(error.message)) {
+      this.setState({ hasError: true, error });
+    }
+  };
+
   reset = () => {
     this.setState({ hasError: false, error: null });
     this.props.onReset?.();
