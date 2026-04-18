@@ -35,7 +35,7 @@ import { Badge } from '@/components/ui/badge';
 import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
 import { ThemeInjector } from '@/components/ThemeInjector';
-import { PWAInstallBanner } from '@/components/PWAInstallBanner';
+import { MobileInstallBanner } from '@/components/MobileInstallBanner';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   PLAN_CREDITS, isToolLockedForPlan, getMinPlanForTool, getUpgradeBadge,
@@ -259,7 +259,7 @@ export default function AppLayout() {
         </header>
 
         <div className="px-4 pt-2">
-          <PWAInstallBanner />
+          <MobileInstallBanner />
         </div>
 
         <main className={`flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-[calc(5rem+env(safe-area-inset-bottom))] ${isBibleRoute ? 'bible-light bible-light-surface' : ''}`}>
