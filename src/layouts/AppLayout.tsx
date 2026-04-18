@@ -299,13 +299,13 @@ export default function AppLayout() {
             </Link>
 
             <Link
-              to="/dashboard/mentes"
+              to="/ferramentas"
               className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                location.pathname.startsWith('/dashboard/mentes') ? 'text-primary' : 'text-muted-foreground'
+                location.pathname === '/ferramentas' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Brain className="h-5 w-5" />
-              <span className="truncate">{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
+              <Package className="h-5 w-5" />
+              <span className="truncate">{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herram.'}</span>
             </Link>
 
             <button
