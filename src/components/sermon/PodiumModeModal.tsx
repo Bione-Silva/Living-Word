@@ -101,6 +101,14 @@ const tr = {
   toneSilent: { PT: 'Silencioso', EN: 'Silent', ES: 'Silencioso' },
   keepScreenOn: { PT: 'Manter tela ligada', EN: 'Keep screen on', ES: 'Mantener pantalla encendida' },
   testTone: { PT: 'Testar', EN: 'Test', ES: 'Probar' },
+  warningTime: { PT: 'Pré-aviso', EN: 'Pre-warning', ES: 'Pre-aviso' },
+  warningTimeHint: {
+    PT: 'Avisar antes do fim do regressivo',
+    EN: 'Warn before countdown ends',
+    ES: 'Avisar antes del final del regresivo',
+  },
+  minutesShort: { PT: 'min', EN: 'min', ES: 'min' },
+  warningOff: { PT: 'Sem aviso', EN: 'No warning', ES: 'Sin aviso' },
 };
 
 /* ─── Detecção de tipo de bloco a partir do heading ─── */
@@ -401,8 +409,28 @@ export function PodiumModeModal({
   const warningAlertFiredRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  /** Segundos antes do fim para o pré-aviso suave (5 minutos). */
-  const WARNING_THRESHOLD_SECONDS = 5 * 60;
+  /** Opções (em minutos) para o pré-aviso suave antes do fim. 0 = desligado. */
+  const WARNING_OPTIONS_MIN = [0, 1, 3, 5, 10] as const;
+  type WarningMinutes = (typeof WARNING_OPTIONS_MIN)[number];
+  /** Minutos antes do fim para o pré-aviso suave (configurável, persistido). */
+  const [warningMinutes, setWarningMinutes] = useState<WarningMinutes>(() => {
+    if (typeof window === 'undefined') return 5;
+    try {
+      const v = window.localStorage.getItem('podium:warningMinutes');
+      const n = v == null ? NaN : parseInt(v, 10);
+      return (WARNING_OPTIONS_MIN as readonly number[]).includes(n) ? (n as WarningMinutes) : 5;
+    } catch {
+      return 5;
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('podium:warningMinutes', String(warningMinutes));
+    } catch {
+      /* noop */
+    }
+  }, [warningMinutes]);
+  const WARNING_THRESHOLD_SECONDS = warningMinutes * 60;
   /** Segundos antes do fim para aviso visual âmbar pulsante (30s). */
   const IMMINENT_END_SECONDS = 30;
 
@@ -626,8 +654,9 @@ export function PodiumModeModal({
         setSeconds((s) => {
           if (mode === 'countdown') {
             const next = Math.max(0, s - 1);
-            // Pré-aviso suave aos 5 minutos restantes (apenas se a duração for >5min).
+            // Pré-aviso suave: apenas se configurado (>0) e a duração total for maior que o limiar.
             if (
+              warningMinutes > 0 &&
               next === WARNING_THRESHOLD_SECONDS &&
               s > WARNING_THRESHOLD_SECONDS &&
               limitSeconds > WARNING_THRESHOLD_SECONDS &&
@@ -1031,6 +1060,31 @@ export function PodiumModeModal({
                   >
                     {opt.icon}
                     {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-[11px] uppercase tracking-wider opacity-70 flex items-center justify-between">
+                <span>{tr.warningTime[lang]}</span>
+                <span className={cn('text-[9px] font-normal normal-case tracking-normal', subtitleColor)}>
+                  {tr.warningTimeHint[lang]}
+                </span>
+              </DropdownMenuLabel>
+              <div className="px-2 pb-2 grid grid-cols-5 gap-1">
+                {WARNING_OPTIONS_MIN.map((m) => (
+                  <button
+                    key={m}
+                    onClick={(e) => { e.preventDefault(); setWarningMinutes(m); }}
+                    className={cn(
+                      'text-[10px] py-1.5 rounded-md tabular-nums transition-colors',
+                      warningMinutes === m
+                        ? 'bg-amber-600 text-white font-bold ring-1 ring-amber-400'
+                        : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                    )}
+                    title={m === 0 ? tr.warningOff[lang] : `${m} ${tr.minutesShort[lang]}`}
+                  >
+                    {m === 0 ? '—' : `${m}${tr.minutesShort[lang]}`}
                   </button>
                 ))}
               </div>
