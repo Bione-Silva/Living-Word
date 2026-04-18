@@ -11,52 +11,55 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    })
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+    // Try to identify the user (optional). Devotionals are public/read-only,
+    // so we never block the request — we just use language preference if available.
+    let language = 'PT'
+    const authHeader = req.headers.get('Authorization')
+
+    if (authHeader) {
+      try {
+        const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+          global: { headers: { Authorization: authHeader } },
+        })
+        const { data: { user } } = await userClient.auth.getUser()
+        if (user) {
+          const { data: profile } = await userClient
+            .from('profiles')
+            .select('language')
+            .eq('id', user.id)
+            .single()
+          if (profile?.language) language = profile.language
+        }
+      } catch (e) {
+        console.warn('Auth lookup failed, continuing as anonymous:', e)
+      }
     }
 
-    // Get user language
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('language')
-      .eq('id', user.id)
-      .single()
-
-    const language = profile?.language || 'PT'
-
-    // Accept date from query string (?date=YYYY-MM-DD) or JSON body ({ date: "YYYY-MM-DD" })
+    // Allow language override via query/body
     const url = new URL(req.url)
+    const langParam = url.searchParams.get('language')
     let dateParam = url.searchParams.get('date')
-    if (!dateParam) {
+    if (!dateParam || !langParam) {
       try {
         const body = await req.json()
         if (body?.date) dateParam = body.date
+        if (body?.language) language = body.language
       } catch { /* no body */ }
     }
+    if (langParam) language = langParam
+
     const today = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)
       ? dateParam
       : new Date().toISOString().slice(0, 10)
 
-    // Read-only: fetch today's devotional from the devotionals table
-    const { data: devotional, error: dbError } = await supabase
+    // Use service role for the read — devotionals are shared content
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey)
+
+    const { data: devotional, error: dbError } = await adminClient
       .from('devotionals')
       .select('*')
       .eq('scheduled_date', today)
@@ -70,7 +73,6 @@ Deno.serve(async (req) => {
     }
 
     if (!devotional) {
-      // No devotional for today — return a friendly fallback
       return new Response(JSON.stringify({
         id: null,
         title: language === 'EN' ? "Today's devotional is being prepared"
