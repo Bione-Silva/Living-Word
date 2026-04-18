@@ -93,8 +93,6 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
     };
 
     load();
-    // Light fallback poll in case realtime drops.
-    const interval = setInterval(load, 120_000);
 
     // Realtime subscription — listen only to this user's notifications + reads.
     const channel = supabase
@@ -170,7 +168,6 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
 
     return () => {
       cancelled = true;
-      clearInterval(interval);
       supabase.removeChannel(channel);
     };
   }, [user]);
