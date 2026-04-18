@@ -17,7 +17,8 @@ export type SermonBlockType =
   | 'transition'     // Transição entre pontos
   | 'quote'          // Citação (autor/livro)
   | 'appeal'         // Apelo / Altar Call (chamado para decisão)
-  | 'conclusion';    // Conclusão / Oração
+  | 'conclusion'     // Conclusão / Oração
+  | 'custom';        // Bloco em Branco (rótulo livre, definido pelo pastor)
 
 export interface SermonBlockData {
   id: string;
@@ -28,6 +29,12 @@ export interface SermonBlockData {
   content: string;
   /** Para bloco "passage": referência bíblica selecionada */
   passageRef?: string;
+  /**
+   * Rótulo customizado do bloco — sobrescreve o label padrão do tipo.
+   * Permite que o pastor renomeie qualquer bloco (ex: trocar "Introdução" por "Abertura").
+   * Para blocos `custom`, é o rótulo principal definido pelo usuário.
+   */
+  customLabel?: string;
 }
 
 /**
