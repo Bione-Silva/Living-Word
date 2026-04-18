@@ -11,6 +11,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
 
+type ImageStyle = 'watercolor' | 'oil' | 'minimalist' | 'photographic';
+
 interface ArticleReaderModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -24,6 +26,10 @@ interface ArticleReaderModalProps {
     article_images?: string[] | null;
     notes?: string | null;
   } | null;
+  /** Called after a sermon is transformed into a NEW blog_article material.
+   *  Parent should swap the viewed item to the new article so the original
+   *  sermon stays intact in the library. */
+  onReplaceItem?: (newItem: any) => void;
 }
 
 /**
@@ -72,7 +78,7 @@ function getBodyImages(item: any): string[] {
   return cover && images[0] === cover ? images.slice(1) : images;
 }
 
-export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderModalProps) {
+export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: ArticleReaderModalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const [exporting, setExporting] = useState(false);
@@ -81,6 +87,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
   const [savingNotes, setSavingNotes] = useState(false);
   const [transforming, setTransforming] = useState(false);
   const [transformStep, setTransformStep] = useState('');
+  const [imageStyle, setImageStyle] = useState<ImageStyle>('watercolor');
   const [saveWsOpen, setSaveWsOpen] = useState(false);
   const [articleImages, setArticleImages] = useState<string[]>([]);
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
@@ -119,11 +126,25 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
     if (!item?.id || transforming) return;
     setTransforming(true);
 
+    const styleEmoji: Record<ImageStyle, string> = {
+      watercolor: '🎨',
+      oil: '🖌️',
+      minimalist: '◻️',
+      photographic: '📷',
+    };
+    const styleLabel: Record<ImageStyle, { PT: string; EN: string; ES: string }> = {
+      watercolor: { PT: 'aquarela', EN: 'watercolor', ES: 'acuarela' },
+      oil: { PT: 'óleo', EN: 'oil painting', ES: 'óleo' },
+      minimalist: { PT: 'minimalista', EN: 'minimalist', ES: 'minimalista' },
+      photographic: { PT: 'fotográfico', EN: 'photographic', ES: 'fotográfico' },
+    };
+    const sLabel = styleLabel[imageStyle][lang];
+
     const steps = lang === 'PT'
-      ? ['Analisando o sermão...', 'Reestruturando como artigo...', 'Gerando capa em aquarela 🎨', 'Distribuindo ilustrações nas seções 🖼️', 'Finalizando...']
+      ? ['Analisando o sermão...', 'Reestruturando como artigo...', `Gerando capa em ${sLabel} ${styleEmoji[imageStyle]}`, 'Distribuindo ilustrações nas seções 🖼️', 'Finalizando...']
       : lang === 'EN'
-      ? ['Analyzing sermon...', 'Restructuring as article...', 'Generating watercolor cover 🎨', 'Placing illustrations across sections 🖼️', 'Finishing...']
-      : ['Analizando el sermón...', 'Reestructurando como artículo...', 'Generando portada en acuarela 🎨', 'Distribuyendo ilustraciones 🖼️', 'Finalizando...'];
+      ? ['Analyzing sermon...', 'Restructuring as article...', `Generating ${sLabel} cover ${styleEmoji[imageStyle]}`, 'Placing illustrations across sections 🖼️', 'Finishing...']
+      : ['Analizando el sermón...', 'Reestructurando como artículo...', `Generando portada ${sLabel} ${styleEmoji[imageStyle]}`, 'Distribuyendo ilustraciones 🖼️', 'Finalizando...'];
 
     let stepIdx = 0;
     setTransformStep(steps[0]);
@@ -139,26 +160,34 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
           title: item.title,
           source_content: item.content,
           source_type: item.type || 'sermon',
-          image_style: 'watercolor',
+          image_style: imageStyle,
         },
       });
 
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      // Update local state with new generated artifacts
-      setLiveContent(data.content || liveContent);
-      setLiveTitle(data.title || liveTitle);
-      setCoverUrl(data.cover_image_url || null);
-      setArticleImages((data.article_images || []).filter((u: string) => u !== data.cover_image_url));
-
       toast.success(
-        lang === 'PT' ? 'Artigo de blog gerado com capa e ilustrações!' :
-        lang === 'EN' ? 'Blog article generated with cover and illustrations!' :
-        '¡Artículo de blog generado con portada e ilustraciones!'
+        lang === 'PT' ? 'Artigo de blog criado! Sermão original preservado.' :
+        lang === 'EN' ? 'Blog article created! Original sermon preserved.' :
+        '¡Artículo de blog creado! Sermón original conservado.'
       );
 
       queryClient.invalidateQueries({ queryKey: ['materials'] });
+
+      // Swap to the newly created blog_article so user immediately sees it,
+      // while the original sermon stays untouched in the library.
+      if (onReplaceItem && data?.material_id) {
+        onReplaceItem({
+          id: data.material_id,
+          title: data.title,
+          type: 'blog_article',
+          passage: data.passage,
+          content: data.content,
+          cover_image_url: data.cover_image_url,
+          article_images: data.article_images,
+        });
+      }
     } catch (err: any) {
       console.error('Transform error:', err);
       const msg = err?.message?.includes('insufficient_credits')
@@ -170,7 +199,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
       setTransforming(false);
       setTransformStep('');
     }
-  }, [item, lang, liveContent, liveTitle, queryClient, transforming]);
+  }, [item, lang, imageStyle, queryClient, transforming, onReplaceItem]);
 
   if (!item) return null;
 
@@ -293,43 +322,81 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
                   {/* Action bar — clear primary actions */}
                   {item.id && (
                     <div
-                      className="mb-8 -mx-2 px-3 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3"
+                      className="mb-8 -mx-2 px-3 py-3 rounded-xl flex flex-col gap-3"
                       style={{ backgroundColor: '#efe7d6', border: '1px solid #e0d4be' }}
                     >
-                      <p className="text-xs sm:text-sm flex-1" style={{ color: '#5a4a35' }}>
-                        {tx(
-                          'O que você quer fazer com este material?',
-                          'What would you like to do with this material?',
-                          '¿Qué quieres hacer con este material?'
-                        )}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setSaveWsOpen(true)}
-                          className="gap-1.5 bg-white/70 hover:bg-white border-[#d4c8b8] text-[#3c2f21]"
-                        >
-                          <FolderOpen className="h-4 w-4" />
-                          {tx('Salvar no Workspace', 'Save to Workspace', 'Guardar en Workspace')}
-                        </Button>
-                        {canTransform && (
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <p className="text-xs sm:text-sm flex-1" style={{ color: '#5a4a35' }}>
+                          {tx(
+                            'O que você quer fazer com este material?',
+                            'What would you like to do with this material?',
+                            '¿Qué quieres hacer con este material?'
+                          )}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2">
                           <Button
                             size="sm"
-                            onClick={handleTransformToBlog}
-                            disabled={transforming}
-                            className="gap-1.5 text-white"
-                            style={{ backgroundColor: '#1E1240' }}
+                            variant="outline"
+                            onClick={() => setSaveWsOpen(true)}
+                            className="gap-1.5 bg-white/70 hover:bg-white border-[#d4c8b8] text-[#3c2f21]"
                           >
-                            {transforming ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Sparkles className="h-4 w-4" />
-                            )}
-                            {tx('Transformar em Artigo de Blog', 'Turn into Blog Article', 'Transformar en Artículo')}
+                            <FolderOpen className="h-4 w-4" />
+                            {tx('Salvar no Workspace', 'Save to Workspace', 'Guardar en Workspace')}
                           </Button>
-                        )}
+                          {canTransform && (
+                            <Button
+                              size="sm"
+                              onClick={handleTransformToBlog}
+                              disabled={transforming}
+                              className="gap-1.5 text-white"
+                              style={{ backgroundColor: '#1E1240' }}
+                            >
+                              {transforming ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Sparkles className="h-4 w-4" />
+                              )}
+                              {tx('Transformar em Artigo de Blog', 'Turn into Blog Article', 'Transformar en Artículo')}
+                            </Button>
+                          )}
+                        </div>
                       </div>
+
+                      {/* Image style picker — only relevant when transforming */}
+                      {canTransform && (
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1 border-t" style={{ borderColor: '#e0d4be' }}>
+                          <span className="text-[11px] font-medium uppercase tracking-wide shrink-0" style={{ color: '#8B7355' }}>
+                            {tx('Estilo das ilustrações', 'Illustration style', 'Estilo de ilustraciones')}
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {([
+                              { key: 'watercolor', pt: 'Aquarela', en: 'Watercolor', es: 'Acuarela', emoji: '🎨' },
+                              { key: 'oil', pt: 'Óleo', en: 'Oil', es: 'Óleo', emoji: '🖌️' },
+                              { key: 'minimalist', pt: 'Minimalista', en: 'Minimalist', es: 'Minimalista', emoji: '◻️' },
+                              { key: 'photographic', pt: 'Fotográfico', en: 'Photo', es: 'Foto', emoji: '📷' },
+                            ] as const).map((s) => {
+                              const active = imageStyle === s.key;
+                              return (
+                                <button
+                                  key={s.key}
+                                  type="button"
+                                  onClick={() => setImageStyle(s.key)}
+                                  disabled={transforming}
+                                  className="px-2.5 py-1 rounded-full text-xs font-medium transition-all border disabled:opacity-50"
+                                  style={
+                                    active
+                                      ? { backgroundColor: '#1E1240', color: '#fff', borderColor: '#1E1240' }
+                                      : { backgroundColor: '#fff', color: '#5a4a35', borderColor: '#d4c8b8' }
+                                  }
+                                >
+                                  <span className="mr-1">{s.emoji}</span>
+                                  {tx(s.pt, s.en, s.es)}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

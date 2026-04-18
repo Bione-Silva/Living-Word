@@ -11,6 +11,9 @@ import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star
 import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
+import { SermonCoverPlaceholder } from '@/components/SermonCoverPlaceholder';
+
+const isSermonLike = (type: string) => type === 'sermon' || type === 'outline';
 
 const PAGE_SIZE = 20;
 
@@ -278,6 +281,8 @@ export default function Biblioteca() {
                 <div className="h-12 w-12 shrink-0 rounded-md bg-secondary/50 overflow-hidden flex items-center justify-center">
                   {item.cover_image_url ? (
                     <img src={item.cover_image_url} alt={item.title} className="h-full w-full object-cover" />
+                  ) : isSermonLike(item.type) ? (
+                    <SermonCoverPlaceholder iconClassName="h-5 w-5" />
                   ) : (
                     <Icon className="h-5 w-5 text-muted-foreground/50" />
                   )}
@@ -352,6 +357,8 @@ export default function Biblioteca() {
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                  ) : isSermonLike(item.type) ? (
+                    <SermonCoverPlaceholder iconClassName="h-12 w-12" />
                   ) : (
                     <Icon className="h-10 w-10 text-muted-foreground/30" />
                   )}
@@ -408,6 +415,7 @@ export default function Biblioteca() {
         open={!!viewItem}
         onOpenChange={(open) => !open && setViewItem(null)}
         item={viewItem}
+        onReplaceItem={(newItem) => setViewItem(newItem)}
       />
 
       {saveToWsItem && (
