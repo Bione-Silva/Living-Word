@@ -41,6 +41,7 @@ import Devocional from "./pages/Devocional";
 import DevocionalPublico from "./pages/DevocionalPublico";
 import BomAmigo from "./pages/BomAmigo";
 import Sermoes from "./pages/Sermoes";
+import SeriesDetail from "./pages/SeriesDetail";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
 import { SubdomainRedirect } from "./components/SubdomainRedirect";
