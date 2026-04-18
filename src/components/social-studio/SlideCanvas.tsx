@@ -544,8 +544,36 @@ function LwAmberTemplate({ slide, bgImageUrl, fontFamily, showWatermark }: Omit<
    EXPORTED COMPONENT
    ──────────────────────────────────────────── */
 export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
-  ({ slide, aspectRatio, template, bgImageUrl, showWatermark = true, themeColor, fontFamily, textColor }, ref) => {
+  (
+    {
+      slide,
+      aspectRatio,
+      template,
+      bgImageUrl,
+      showWatermark = true,
+      themeColor,
+      fontFamily,
+      textColor,
+      slideIndex = 0,
+      themeColors,
+    },
+    ref,
+  ) => {
     const captureSize = captureSizes[aspectRatio];
+
+    // Variação Sequencial — rotaciona o fundo pelo índice do slide
+    // para evitar carrossel monótono. Se a paleta não foi fornecida,
+    // mantém o `themeColor` original (retrocompat).
+    const effectiveThemeColor =
+      themeColors && themeColors.length > 0
+        ? themeColors[slideIndex % themeColors.length]
+        : themeColor;
+
+    // Quando há imagem única, alternamos uma tint suave por índice
+    // para simular variação visual entre slides do mesmo carrossel.
+    const overlayTint = bgImageUrl
+      ? IMAGE_OVERLAY_TINTS[slideIndex % IMAGE_OVERLAY_TINTS.length]
+      : null;
 
     return (
       <div className={`w-full ${aspectClasses[aspectRatio]} mx-auto transition-all duration-500 ease-in-out`}>
@@ -556,19 +584,29 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
           className="relative h-full w-full overflow-hidden rounded-2xl select-none isolate shadow-xl"
         >
           {template === 'editorial' && (
-            <EditorialTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+            <EditorialTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'swiss' && (
-            <SwissTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+            <SwissTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'cinematic' && (
-            <CinematicTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <CinematicTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'gradient' && (
-            <GradientTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={themeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <GradientTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'lw-amber' && (
             <LwAmberTemplate slide={slide} bgImageUrl={bgImageUrl} fontFamily={fontFamily} showWatermark={showWatermark} />
+          )}
+
+          {/* Overlay tonal por índice — só quando há imagem única
+              (cria sensação de variação sem trocar a foto). */}
+          {overlayTint && overlayTint !== 'rgba(0,0,0,0)' && (
+            <div
+              aria-hidden
+              className="absolute inset-0 pointer-events-none"
+              style={{ backgroundColor: overlayTint, mixBlendMode: 'soft-light' }}
+            />
           )}
         </div>
       </div>
