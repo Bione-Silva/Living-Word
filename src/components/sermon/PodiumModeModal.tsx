@@ -101,12 +101,19 @@ const tr = {
   toneSilent: { PT: 'Silencioso', EN: 'Silent', ES: 'Silencioso' },
   keepScreenOn: { PT: 'Manter tela ligada', EN: 'Keep screen on', ES: 'Mantener pantalla encendida' },
   testTone: { PT: 'Testar', EN: 'Test', ES: 'Probar' },
-  warningTime: { PT: 'Pré-aviso', EN: 'Pre-warning', ES: 'Pre-aviso' },
+  warningTime: { PT: 'Pré-aviso sonoro', EN: 'Audible pre-warning', ES: 'Pre-aviso sonoro' },
   warningTimeHint: {
-    PT: 'Avisar antes do fim do regressivo',
-    EN: 'Warn before countdown ends',
-    ES: 'Avisar antes del final del regresivo',
+    PT: 'Antes do fim do regressivo',
+    EN: 'Before countdown ends',
+    ES: 'Antes del final del regresivo',
   },
+  amberAlert: { PT: 'Aviso âmbar', EN: 'Amber warning', ES: 'Aviso ámbar' },
+  amberAlertHint: {
+    PT: 'Quando o cronômetro fica âmbar pulsante',
+    EN: 'When the timer turns pulsing amber',
+    ES: 'Cuándo el cronómetro se vuelve ámbar',
+  },
+  secondsShort: { PT: 's', EN: 's', ES: 's' },
   minutesShort: { PT: 'min', EN: 'min', ES: 'min' },
   warningOff: { PT: 'Sem aviso', EN: 'No warning', ES: 'Sin aviso' },
 };
@@ -410,7 +417,7 @@ export function PodiumModeModal({
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   /** Opções (em minutos) para o pré-aviso suave antes do fim. 0 = desligado. */
-  const WARNING_OPTIONS_MIN = [0, 1, 3, 5, 10] as const;
+  const WARNING_OPTIONS_MIN = [0, 3, 5, 7, 10] as const;
   type WarningMinutes = (typeof WARNING_OPTIONS_MIN)[number];
   /** Minutos antes do fim para o pré-aviso suave (configurável, persistido). */
   const [warningMinutes, setWarningMinutes] = useState<WarningMinutes>(() => {
@@ -418,7 +425,10 @@ export function PodiumModeModal({
     try {
       const v = window.localStorage.getItem('podium:warningMinutes');
       const n = v == null ? NaN : parseInt(v, 10);
-      return (WARNING_OPTIONS_MIN as readonly number[]).includes(n) ? (n as WarningMinutes) : 5;
+      if ((WARNING_OPTIONS_MIN as readonly number[]).includes(n)) return n as WarningMinutes;
+      // Migração: valor antigo 1 vira 3 (opção válida mais próxima)
+      if (n === 1) return 3;
+      return 5;
     } catch {
       return 5;
     }
@@ -431,8 +441,29 @@ export function PodiumModeModal({
     }
   }, [warningMinutes]);
   const WARNING_THRESHOLD_SECONDS = warningMinutes * 60;
-  /** Segundos antes do fim para aviso visual âmbar pulsante (30s). */
-  const IMMINENT_END_SECONDS = 30;
+
+  /** Opções (em segundos) para quando o cronômetro fica âmbar pulsante. */
+  const AMBER_OPTIONS_SEC = [15, 30, 60, 120] as const;
+  type AmberSeconds = (typeof AMBER_OPTIONS_SEC)[number];
+  /** Segundos antes do fim para aviso visual âmbar pulsante (configurável, persistido). */
+  const [amberSeconds, setAmberSeconds] = useState<AmberSeconds>(() => {
+    if (typeof window === 'undefined') return 30;
+    try {
+      const v = window.localStorage.getItem('podium:amberSeconds');
+      const n = v == null ? NaN : parseInt(v, 10);
+      return (AMBER_OPTIONS_SEC as readonly number[]).includes(n) ? (n as AmberSeconds) : 30;
+    } catch {
+      return 30;
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('podium:amberSeconds', String(amberSeconds));
+    } catch {
+      /* noop */
+    }
+  }, [amberSeconds]);
+  const IMMINENT_END_SECONDS = amberSeconds;
 
   /** Tom do alerta sonoro persistido. 'silent' substitui o antigo OFF. */
   type AlertTone = 'bell' | 'gong' | 'silent';
@@ -1137,6 +1168,34 @@ export function PodiumModeModal({
                     {m === 0 ? '—' : `${m}${tr.minutesShort[lang]}`}
                   </button>
                 ))}
+              </div>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-[11px] uppercase tracking-wider opacity-70 flex items-center justify-between">
+                <span>{tr.amberAlert[lang]}</span>
+                <span className={cn('text-[9px] font-normal normal-case tracking-normal', subtitleColor)}>
+                  {tr.amberAlertHint[lang]}
+                </span>
+              </DropdownMenuLabel>
+              <div className="px-2 pb-2 grid grid-cols-4 gap-1">
+                {AMBER_OPTIONS_SEC.map((s) => {
+                  const label = s < 60 ? `${s}${tr.secondsShort[lang]}` : `${s / 60}${tr.minutesShort[lang]}`;
+                  return (
+                    <button
+                      key={s}
+                      onClick={(e) => { e.preventDefault(); setAmberSeconds(s); }}
+                      className={cn(
+                        'text-[10px] py-1.5 rounded-md tabular-nums transition-colors',
+                        amberSeconds === s
+                          ? 'bg-amber-600 text-white font-bold ring-1 ring-amber-400'
+                          : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                      )}
+                      title={label}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
 
               <DropdownMenuSeparator />
