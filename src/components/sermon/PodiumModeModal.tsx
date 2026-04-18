@@ -101,6 +101,14 @@ const tr = {
   toneSilent: { PT: 'Silencioso', EN: 'Silent', ES: 'Silencioso' },
   keepScreenOn: { PT: 'Manter tela ligada', EN: 'Keep screen on', ES: 'Mantener pantalla encendida' },
   testTone: { PT: 'Testar', EN: 'Test', ES: 'Probar' },
+  warningTime: { PT: 'Pré-aviso', EN: 'Pre-warning', ES: 'Pre-aviso' },
+  warningTimeHint: {
+    PT: 'Avisar antes do fim do regressivo',
+    EN: 'Warn before countdown ends',
+    ES: 'Avisar antes del final del regresivo',
+  },
+  minutesShort: { PT: 'min', EN: 'min', ES: 'min' },
+  warningOff: { PT: 'Sem aviso', EN: 'No warning', ES: 'Sin aviso' },
 };
 
 /* ─── Detecção de tipo de bloco a partir do heading ─── */
