@@ -173,7 +173,7 @@ export function SermonBlockEditor({
                     <span
                       className={cn(
                         'h-2.5 w-2.5 rounded-full shrink-0 ring-2 ring-transparent group-hover:ring-current/20',
-                        dotColorClass(meta.borderClass),
+                        meta.dotClass,
                       )}
                     />
                     <span className="text-xs font-semibold uppercase tracking-wide text-foreground/85 group-hover:text-foreground">
