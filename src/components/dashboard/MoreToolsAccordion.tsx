@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { ChevronDown, Crown } from 'lucide-react';
@@ -6,13 +7,24 @@ import { extraOutreachTools, extraFunTools } from '@/components/ExtraToolsSectio
 import type { ToolCardData } from '@/components/ToolCard';
 import {
   Type, Lightbulb, Sparkles, BookOpen, Globe, Quote,
-  ScrollText, Languages, Film
+  ScrollText, Languages, Film, Library, CalendarDays, FolderOpen, Brain
 } from 'lucide-react';
 
 type L = 'PT' | 'EN' | 'ES';
 
-// Additional tools not in the "Start Here" or "Core" blocks
-const additionalTools: ToolCardData[] = [
+// Items with `to` are direct navigation; without `to` use the tool modal flow.
+type ExtendedTool = ToolCardData & { to?: string };
+
+// Sidebar items that should appear here for quick access (Biblioteca, Calendário, Workspaces, Mentes).
+const sidebarShortcuts: ExtendedTool[] = [
+  { id: 'biblioteca', icon: Library, title: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' }, description: { PT: 'Seus materiais salvos', EN: 'Your saved materials', ES: 'Tus materiales guardados' }, hasModal: false, to: '/biblioteca' },
+  { id: 'calendario', icon: CalendarDays, title: { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' }, description: { PT: 'Agenda pastoral', EN: 'Pastoral agenda', ES: 'Agenda pastoral' }, hasModal: false, to: '/calendario' },
+  { id: 'workspaces', icon: FolderOpen, title: { PT: 'Workspaces', EN: 'Workspaces', ES: 'Workspaces' }, description: { PT: 'Espaços por projeto', EN: 'Project spaces', ES: 'Espacios por proyecto' }, hasModal: false, to: '/workspaces' },
+  { id: 'mentes', icon: Brain, title: { PT: 'Mentes Brilhantes', EN: 'Brilliant Minds', ES: 'Mentes Brillantes' }, description: { PT: 'IA pastoral histórica', EN: 'Historical pastoral AI', ES: 'IA pastoral histórica' }, hasModal: false, to: '/dashboard/mentes' },
+];
+
+// Additional content tools not in the "Start Here" or "Core" blocks
+const additionalTools: ExtendedTool[] = [
   { id: 'title-gen', icon: Type, title: { PT: 'Títulos Criativos', EN: 'Creative Titles', ES: 'Títulos Creativos' }, description: { PT: 'Ideias criativas de títulos para sermões', EN: 'Creative title ideas for sermons', ES: 'Ideas creativas de títulos' }, hasModal: true },
   { id: 'metaphor-creator', icon: Lightbulb, title: { PT: 'Criador de Metáforas', EN: 'Metaphor Creator', ES: 'Creador de Metáforas' }, description: { PT: 'Metáforas poderosas para sua mensagem', EN: 'Powerful metaphors for your message', ES: 'Metáforas poderosas para tu mensaje' }, hasModal: true },
   { id: 'bible-modernizer', icon: Sparkles, title: { PT: 'Modernizador Bíblico', EN: 'Bible Modernizer', ES: 'Modernizador Bíblico' }, description: { PT: 'Recontextualize histórias bíblicas', EN: 'Recontextualize Bible stories', ES: 'Recontextualiza historias bíblicas' }, hasModal: true },
@@ -25,7 +37,7 @@ const additionalTools: ToolCardData[] = [
   { id: 'free-article-universal', icon: Type, title: { PT: 'Redator Universal', EN: 'Universal Writer', ES: 'Redactor Universal' }, description: { PT: 'Artigos e textos de qualquer tema', EN: 'Articles on any topic', ES: 'Artículos de cualquier tema' }, hasModal: true },
 ];
 
-const allExtras = [...extraOutreachTools, ...extraFunTools];
+const allExtras = [...extraOutreachTools, ...extraFunTools] as ExtendedTool[];
 
 interface MoreToolsAccordionProps {
   onToolClick: (toolId: string) => void;
@@ -34,6 +46,7 @@ interface MoreToolsAccordionProps {
 export function MoreToolsAccordion({ onToolClick }: MoreToolsAccordionProps) {
   const { lang } = useLanguage();
   const { profile } = useAuth();
+  const navigate = useNavigate();
   const isFree = profile?.plan === 'free';
   const [open, setOpen] = useState(false);
 
@@ -43,7 +56,8 @@ export function MoreToolsAccordion({ onToolClick }: MoreToolsAccordionProps) {
     ES: '📦 Ver más herramientas',
   };
 
-  const combined = [...additionalTools, ...allExtras];
+  // Order: sidebar shortcuts first (Biblioteca, Calendário, Workspaces, Mentes), then content tools, then extras.
+  const combined: ExtendedTool[] = [...sidebarShortcuts, ...additionalTools, ...allExtras];
 
   return (
     <section>
@@ -65,6 +79,10 @@ export function MoreToolsAccordion({ onToolClick }: MoreToolsAccordionProps) {
                 key={tool.id}
                 onClick={() => {
                   if (isLocked) return;
+                  if (tool.to) {
+                    navigate(tool.to);
+                    return;
+                  }
                   onToolClick(tool.id);
                 }}
                 className={`relative flex flex-col items-center gap-1 p-2 rounded-lg border text-center transition-all ${

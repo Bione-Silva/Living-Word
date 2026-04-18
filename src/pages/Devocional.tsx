@@ -713,7 +713,7 @@ export default function Devocional() {
   /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
     const paragraphs = text.split('\n\n').filter(p => p.trim());
-    if (paragraphs.length === 0) return [<p key={0} className="font-serif text-[1.1rem] leading-[1.9]" style={{ color: colors.text }}>{text.trim()}</p>];
+    if (paragraphs.length === 0) return [<p key={0} className="font-serif text-[1.18rem] sm:text-[1.25rem] leading-[2]" style={{ color: colors.text }}>{text.trim()}</p>];
 
     return paragraphs.map((paragraph, idx) => {
       const trimmed = paragraph.trim();
@@ -768,9 +768,9 @@ export default function Devocional() {
             </div>
           )}
           <p
-            className={`font-serif text-[1.05rem] sm:text-[1.1rem] leading-[1.9] ${
+            className={`font-serif text-[1.18rem] sm:text-[1.25rem] leading-[2] ${
               idx === 0
-                ? 'first-letter:text-4xl first-letter:font-playfair first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:leading-none'
+                ? 'first-letter:text-5xl first-letter:font-playfair first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:mt-1 first-letter:leading-none'
                 : 'mt-5'
             }`}
             style={{ color: 'hsl(261, 41%, 7%, 0.92)' }}

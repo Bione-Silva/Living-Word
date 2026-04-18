@@ -76,9 +76,39 @@ async function generateDevotionalText(openaiKey: string, dateStr: string): Promi
 // IMAGEM — Gemini Image via Lovable AI Gateway
 // ============================================================================
 
-async function generateCoverImage(aiKey: string, title: string, category: string): Promise<Uint8Array | null> {
+// 12 estilos visuais bíblicos rotacionados — variedade real entre devocionais.
+// Categorias: paisagem natural, panorâmicas urbanas/aéreas, céu, símbolos sagrados,
+// fotografia documental, artes clássicas, abstrato luminoso. SEM personagens em close.
+const IMAGE_STYLES = [
+  { kind: 'landscape', desc: 'wide cinematic landscape photograph of a vast wheat field at golden hour, dramatic clouds, distant horizon, photorealistic, soft natural light, depth of field' },
+  { kind: 'aerial-city', desc: 'sweeping aerial drone photograph of an ancient walled city in the Middle East at dusk, warm amber lighting on stone walls, distant mountains, photorealistic' },
+  { kind: 'sky', desc: 'majestic dramatic sky photograph — vast cumulus clouds pierced by golden sunbeams (god rays / crepuscular light), cinematic, hopeful, no ground visible' },
+  { kind: 'mountain', desc: 'serene mountain photograph at sunrise, mist rolling through valleys, snow-capped peaks, soft pastel sky, photorealistic, sense of awe and stillness' },
+  { kind: 'desert', desc: 'biblical desert landscape photograph at golden hour, sand dunes with long shadows, lone path, warm earth tones, photorealistic, contemplative mood' },
+  { kind: 'water', desc: 'still lake at dawn photograph, glassy water reflecting pink and gold sky, distant silhouette of trees, peaceful, photorealistic, hopeful' },
+  { kind: 'olive-grove', desc: 'ancient olive grove photograph in the Mediterranean, dappled golden sunlight through silver leaves, weathered tree trunks, warm earthy palette, photorealistic' },
+  { kind: 'oil-painting', desc: 'museum-quality Renaissance oil painting of dramatic biblical landscape — golden light through stone arches, mystical pathway, chiaroscuro, painterly brushstrokes' },
+  { kind: 'watercolor', desc: 'soft watercolor illustration of a winding path leading toward a distant gentle light, pastel washes, hand-painted texture, contemplative and serene' },
+  { kind: 'symbolic', desc: 'symbolic minimalist composition — single shaft of warm divine light descending into darkness, or an open doorway of light, photorealistic, sacred, no figures' },
+  { kind: 'starry-night', desc: 'star-filled night sky photograph over a quiet biblical-era village silhouette, milky way visible, deep blues and warm village lights, awe-inspiring' },
+  { kind: 'jerusalem', desc: 'panoramic photograph of historic Jerusalem old city stone walls and golden dome at sunset, photorealistic, warm lighting, timeless and sacred' },
+];
+
+// Hash determinístico simples — mesmo dia/título sempre gera mesmo estilo (idempotente),
+// mas dias diferentes pegam estilos diferentes da rotação.
+function pickStyle(seed: string): typeof IMAGE_STYLES[number] {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = ((h << 5) - h) + seed.charCodeAt(i);
+    h |= 0;
+  }
+  return IMAGE_STYLES[Math.abs(h) % IMAGE_STYLES.length];
+}
+
+async function generateCoverImage(aiKey: string, title: string, category: string, seed: string): Promise<Uint8Array | null> {
   try {
-    const prompt = `Create a breathtaking, museum-quality devotional artwork in a painterly Renaissance-meets-Romantic style. Theme: "${category}", inspired by "${title}". Golden ethereal light through ancient stone architecture, mystical pathways, dramatic skies. Warm palette: amber, gold, sepia, deep earth tones. Oil painting texture, chiaroscuro lighting. Absolutely NO text anywhere. Portrait orientation (3:4 ratio).`
+    const style = pickStyle(seed);
+    const prompt = `Create a breathtaking biblical-themed devotional image. Visual style: ${style.desc}. Connect visually to the theme "${category}" and the title "${title}", but DO NOT show any modern people, cartoons, anime, comic art, or movie-poster aesthetic. NO text, NO watermarks, NO captions. Portrait orientation (3:4). High quality, evocative, reverent, contemplative — must feel like a real photograph or fine art piece, never illustrated or animated.`;
     const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${aiKey}`, 'Content-Type': 'application/json' },
@@ -270,7 +300,8 @@ Deno.serve(async (req) => {
         let coverUrl: string | null = null
         if (!skipImage) {
           console.log(`[${lang}] Generating cover image...`)
-          const imgData = await generateCoverImage(aiKey, dev.title, dev.category)
+          const seed = `${targetDate}-${lang}-${dev.title || ''}`
+          const imgData = await generateCoverImage(aiKey, dev.title, dev.category, seed)
           if (imgData) {
             coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
           }
