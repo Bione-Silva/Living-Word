@@ -221,6 +221,7 @@ export function BibleReadingView({
     if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
       window.clearTimeout(pressTimerRef.current);
       pressTimerRef.current = null;
+      setPressingVerse(null);
     }
   };
 
@@ -230,6 +231,7 @@ export function BibleReadingView({
       pressTimerRef.current = null;
     }
     touchStartRef.current = null;
+    setPressingVerse(null);
   };
 
   const handleMouseToggle = (verseNum: number) => {
