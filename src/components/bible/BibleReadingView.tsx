@@ -406,7 +406,9 @@ export function BibleReadingView({
                         ? 'bg-primary/10 ring-2 ring-primary/30 animate-pulse'
                         : isSelected
                           ? 'bg-primary/5 ring-1 ring-primary/20'
-                          : hlClass || 'hover:bg-muted/40'
+                          : pressingVerse === v.verse
+                            ? 'bg-primary/5 ring-2 ring-primary/40 animate-pulse'
+                            : hlClass || 'hover:bg-muted/40'
                   }`}
                 >
                   {/* Verse number badge */}
