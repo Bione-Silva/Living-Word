@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { HelpArticleModal } from '@/components/HelpArticleModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GenerationCounter } from '@/components/GenerationCounter';
-import { LanguageToggle } from '@/components/LanguageToggle';
+// LanguageToggle removed from top navbar — language switch lives in Settings now.
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -254,7 +254,6 @@ export default function AppLayout() {
                 <ExternalLink className="h-4 w-4" />
               </Link>
             )}
-            <LanguageToggle />
           </div>
         </header>
 
@@ -963,7 +962,6 @@ export default function AppLayout() {
             </Link>
           )}
           <SupportChatBubble />
-          <LanguageToggle />
           <Link to="/configuracoes" className="shrink-0">
             {profile?.avatar_url ? (
               <img
