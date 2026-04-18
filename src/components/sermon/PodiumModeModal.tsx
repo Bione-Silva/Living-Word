@@ -132,7 +132,7 @@ export interface BlockMeta {
   darkHeading: string;
 }
 
-const BLOCK_META: Record<BlockTone, BlockMeta> = {
+export const BLOCK_META: Record<BlockTone, BlockMeta> = {
   idea:         { tone: 'idea',         emoji: '💡', label: { PT: 'Grande Ideia',    EN: 'Big Idea',      ES: 'Gran Idea' },        badgeClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-300 ring-purple-500/30',  lightCardBg: 'bg-purple-50 border-purple-200',  lightBorderLeft: 'border-l-4 border-l-purple-500',  lightHeading: 'text-purple-700',  darkBorderLeft: 'border-l-4 border-l-purple-500',  darkHeading: 'text-purple-200' },
   hook:         { tone: 'hook',         emoji: '🎣', label: { PT: 'Gancho',          EN: 'Hook',          ES: 'Gancho' },           badgeClass: 'bg-orange-500/15 text-orange-600 dark:text-orange-300 ring-orange-500/30',  lightCardBg: 'bg-orange-50 border-orange-200',  lightBorderLeft: 'border-l-4 border-l-orange-500',  lightHeading: 'text-orange-700',  darkBorderLeft: 'border-l-4 border-l-orange-500',  darkHeading: 'text-orange-200' },
   passage:      { tone: 'passage',      emoji: '📖', label: { PT: 'Passagem',        EN: 'Passage',       ES: 'Pasaje' },           badgeClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-sky-500/30',              lightCardBg: 'bg-sky-50 border-sky-200',        lightBorderLeft: 'border-l-4 border-l-sky-500',     lightHeading: 'text-sky-700',     darkBorderLeft: 'border-l-4 border-l-sky-500',     darkHeading: 'text-sky-200' },
@@ -150,7 +150,7 @@ const BLOCK_META: Record<BlockTone, BlockMeta> = {
   generic:      { tone: 'generic',      emoji: '✦',  label: { PT: 'Bloco',           EN: 'Block',         ES: 'Bloque' },           badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30',       lightCardBg: 'bg-white border-slate-200',       lightBorderLeft: 'border-l-4 border-l-slate-400',   lightHeading: 'text-slate-700',   darkBorderLeft: 'border-l-4 border-l-slate-500',   darkHeading: 'text-amber-200/95' },
 };
 
-function detectBlockTone(heading?: string): BlockTone {
+export function detectBlockTone(heading?: string): BlockTone {
   if (!heading) return 'generic';
   const h = heading.toLowerCase();
   // detecta por emoji primeiro (markdown gerado pelo studio inclui emojis)
@@ -187,7 +187,7 @@ function detectBlockTone(heading?: string): BlockTone {
 }
 
 /** Quebra o markdown em "cartões" — cada heading h1/h2 inicia um novo cartão. */
-interface Card {
+export interface Card {
   id: string;
   heading?: string;
   body: string;
@@ -197,7 +197,7 @@ interface Card {
   range: [number, number];
 }
 
-function splitIntoCards(md: string): Card[] {
+export function splitIntoCards(md: string): Card[] {
   if (!md) return [];
   const lines = md.split('\n');
   const cards: Card[] = [];
@@ -245,7 +245,7 @@ function splitIntoCards(md: string): Card[] {
 }
 
 /** Aplica negrito em números de versículo: "16 Porque..." -> "**16** Porque..." */
-function bolderVerseNumbers(text: string): string {
+export function bolderVerseNumbers(text: string): string {
   return text
     .replace(/^(\s*>?\s*)(\d{1,3})(\s+)/gm, '$1**$2**$3')
     .replace(/(?<=[.!?]\s)(\d{1,3})(\s+)/g, '**$1**$2');
