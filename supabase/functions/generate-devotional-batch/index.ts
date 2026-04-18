@@ -43,10 +43,24 @@ Retorne APENAS JSON válido (sem cercas markdown) neste schema exato:
 
 function getUserPrompt(dateStr: string): string {
   const categories = CATEGORIES.PT
-  const category = categories[Math.floor(Math.random() * categories.length)]
+  // ⚠️ ANTES usávamos Math.random() — em ambientes Deno isolados rodando em paralelo,
+  // a mesma seed gerava categorias idênticas e o GPT produzia "clones" de devocionais.
+  // Agora usamos crypto.randomUUID() como entropia real para garantir variação por execução.
+  const uniquenessToken = crypto.randomUUID()
+  const seedByte = parseInt(uniquenessToken.replace(/-/g, '').slice(0, 8), 16)
+  const category = categories[seedByte % categories.length]
   return `Escreva o devocional do dia ${dateStr} em Português (Brasil).
 Tema/categoria: "${category}".
-Escolha um versículo bíblico que se conecte com o tema.
+Token de unicidade desta execução (use APENAS para garantir originalidade, NÃO inclua na resposta): ${uniquenessToken}.
+
+REGRAS DE ORIGINALIDADE — leia com atenção:
+- Fuja de clichês e aberturas previsíveis ("Hoje é um dia especial...", "A vida é uma jornada...", "Em meio às tempestades...").
+- Não repita versículos batidos como única opção (João 3:16, Jeremias 29:11, Filipenses 4:13) — varie a Escritura.
+- Comece o body_text com uma imagem concreta, uma cena, uma pergunta inesperada ou uma observação fina — nunca com fórmula genérica.
+- A oração final deve soar pessoal, não litúrgica padronizada.
+- Pense como um pastor escrevendo para alguém específico, não como uma máquina produzindo conteúdo em série.
+
+Escolha um versículo bíblico (em Português do Brasil) que se conecte ORGANICAMENTE com o tema "${category}".
 Lembre-se: o áudio final precisa durar ~2.5 minutos. Total ~380 palavras. body_text 220-260 palavras. Oração 40-60 palavras.
 Retorne APENAS o objeto JSON.`
 }
