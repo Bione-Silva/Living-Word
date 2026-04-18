@@ -384,8 +384,27 @@ export function PodiumModeModal({
   const endAlertFiredRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
+  /** Preferência persistida do usuário para o sino + vibração ao bater 00:00. */
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    try {
+      const v = window.localStorage.getItem('podium:alertSound');
+      return v === null ? true : v === '1';
+    } catch {
+      return true;
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('podium:alertSound', soundEnabled ? '1' : '0');
+    } catch {
+      /* storage indisponível: ok */
+    }
+  }, [soundEnabled]);
+
   /** Sino suave via WebAudio (3 toques curtos) + vibração no mobile. Sem assets externos. */
   function playEndAlert() {
+    if (!soundEnabled) return; // respeita preferência do usuário
     // Vibração — Android/Chrome mobile (iOS Safari ignora silenciosamente, ok).
     try {
       if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
