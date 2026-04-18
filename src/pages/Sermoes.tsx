@@ -23,6 +23,7 @@ import { SermonBlockEditor, blocksToMarkdown, type SermonBlockData } from '@/com
 import { SERMON_BLOCK_META } from '@/components/sermon/sermon-block-types';
 import { PodiumLivePreview } from '@/components/sermon/PodiumLivePreview';
 import { exportSermonToPptx } from '@/lib/sermon-pptx';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -426,25 +427,37 @@ export default function Sermoes() {
 
   /* ═══ Restore a saved session (detecta JSON de blocos vs markdown puro) ═══ */
   const handleRestoreSession = (session: SermonSession) => {
-    try {
-      const parsed = JSON.parse(session.content);
-      if (parsed && parsed._type === 'blocks') {
-        setBlocks(parsed.blocks || []);
-        setBigIdea(parsed.bigIdea || '');
-        setPassageRef(parsed.passageRef || '');
-        setSermonContent(parsed.markdown || blocksToMarkdown(parsed.blocks || [], lang));
-        setSermonTitle(session.title);
-        setSermonTopic(session.passage);
-        setActiveSessionId(session.id);
-        setEditorMode('blocks');
-        setShowResult(true);
-        setMobileHistoryOpen(false);
-        return;
-      }
-    } catch { /* fallthrough — markdown puro */ }
-    setSermonContent(session.content);
-    setSermonTitle(session.title);
-    setSermonTopic(session.passage);
+    // Defesa total: conteúdo pode vir null/undefined/vazio do banco em sermões antigos.
+    // Sem isso, ReactMarkdown / split / match em string vazia ou null derruba a árvore inteira
+    // (causa direta do "tela preta da morte" no iOS Mobile ao abrir histórico).
+    const safeContent = typeof session?.content === 'string' ? session.content : '';
+    const safeTitle = typeof session?.title === 'string' && session.title.trim() ? session.title : (lang === 'PT' ? 'Sermão sem título' : lang === 'ES' ? 'Sermón sin título' : 'Untitled sermon');
+    const safePassage = typeof session?.passage === 'string' ? session.passage : '';
+
+    if (safeContent.trim().startsWith('{')) {
+      try {
+        const parsed = JSON.parse(safeContent);
+        if (parsed && parsed._type === 'blocks') {
+          setBlocks(Array.isArray(parsed.blocks) ? parsed.blocks : []);
+          setBigIdea(typeof parsed.bigIdea === 'string' ? parsed.bigIdea : '');
+          setPassageRef(typeof parsed.passageRef === 'string' ? parsed.passageRef : '');
+          const md = typeof parsed.markdown === 'string' && parsed.markdown
+            ? parsed.markdown
+            : blocksToMarkdown(Array.isArray(parsed.blocks) ? parsed.blocks : [], lang);
+          setSermonContent(md || '');
+          setSermonTitle(safeTitle);
+          setSermonTopic(safePassage);
+          setActiveSessionId(session.id);
+          setEditorMode('blocks');
+          setShowResult(true);
+          setMobileHistoryOpen(false);
+          return;
+        }
+      } catch { /* fallthrough — markdown puro */ }
+    }
+    setSermonContent(safeContent);
+    setSermonTitle(safeTitle);
+    setSermonTopic(safePassage);
     setActiveSessionId(session.id);
     setEditorMode('ai');
     setShowResult(true);
@@ -656,16 +669,19 @@ export default function Sermoes() {
   /* ═══ Custom markdown components ═══ */
   const markdownComponents = {
     a: ({ href, children, ...props }: any) => {
-      // Extract plain text from children for version parsing
-      const extractText = (node: any): string => {
+      // Extract plain text from children — guards against circular refs and non-string nodes.
+      const extractText = (node: any, depth = 0): string => {
+        if (depth > 5) return '';
+        if (node == null) return '';
         if (typeof node === 'string') return node;
-        if (Array.isArray(node)) return node.map(extractText).join('');
-        if (node?.props?.children) return extractText(node.props.children);
+        if (typeof node === 'number' || typeof node === 'boolean') return String(node);
+        if (Array.isArray(node)) return node.map((n) => extractText(n, depth + 1)).join('');
+        if (typeof node === 'object' && node?.props?.children) return extractText(node.props.children, depth + 1);
         return '';
       };
       const linkText = extractText(children);
 
-      if (href?.startsWith('bible://')) {
+      if (typeof href === 'string' && href.startsWith('bible://')) {
         const ref = href.replace('bible://', '');
         return (
           <button
@@ -1008,7 +1024,7 @@ export default function Sermoes() {
                     [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:border-l-3 [&_h2]:border-primary [&_h2]:pl-3
                     [&_ul]:space-y-2 [&_li]:text-sm">
                     <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                      {sermonContent}
+                      {typeof sermonContent === 'string' ? sermonContent : ''}
                     </ReactMarkdown>
                   </div>
 
@@ -1176,15 +1192,26 @@ export default function Sermoes() {
       />
 
       {/* ─── Modo Púlpito ─── */}
-      <PodiumModeModal
-        open={podiumOpen}
-        onOpenChange={setPodiumOpen}
-        sermonMarkdown={sermonContent || (blocks.length ? blocksToMarkdown(blocks, lang) : '')}
-        sermonTitle={sermonTitle || bigIdea || 'Sermão'}
-        durationLimitMinutes={duration?.match(/\d+/) ? parseInt(duration.match(/\d+/)![0]) : 30}
-        materialId={activeSessionId}
-        lang={lang}
-      />
+      {/* Boundary local: se algo crashar dentro do Púlpito (ex: parsing
+          de markdown corrompido vindo do histórico), fechamos o modal
+          em vez de derrubar a página inteira de Sermões em Mobile. */}
+      <ErrorBoundary
+        context="Modo Púlpito"
+        onError={() => setPodiumOpen(false)}
+        onReset={() => setPodiumOpen(false)}
+      >
+        <PodiumModeModal
+          open={podiumOpen}
+          onOpenChange={setPodiumOpen}
+          sermonMarkdown={typeof sermonContent === 'string' && sermonContent
+            ? sermonContent
+            : (blocks.length ? blocksToMarkdown(blocks, lang) : '')}
+          sermonTitle={sermonTitle || bigIdea || 'Sermão'}
+          durationLimitMinutes={duration?.match(/\d+/) ? parseInt(duration.match(/\d+/)![0]) : 30}
+          materialId={activeSessionId}
+          lang={lang}
+        />
+      </ErrorBoundary>
       {/* ─── ActionBar fixa inferior — só no Studio de Blocos ─── */}
       {editorMode === 'blocks' && showResult && blocks.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)] pb-[env(safe-area-inset-bottom)]">

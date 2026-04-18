@@ -208,7 +208,8 @@ export interface Card {
 }
 
 export function splitIntoCards(md: string): Card[] {
-  if (!md || !md.trim()) return [];
+  // Defesa: aceita undefined/null sem quebrar (sermões antigos podem ter content nulo).
+  if (typeof md !== 'string' || !md.trim()) return [];
   const lines = md.split('\n');
   const cards: Card[] = [];
   let cur: { heading?: string; bodyStart: number; headingLine: number | null } | null = null;
@@ -267,6 +268,8 @@ export function splitIntoCards(md: string): Card[] {
 
 /** Aplica negrito em números de versículo: "16 Porque..." -> "**16** Porque..." */
 export function bolderVerseNumbers(text: string): string {
+  // Defesa: pode receber undefined/null vindo de cards corrompidos do histórico.
+  if (typeof text !== 'string' || !text) return '';
   return text
     .replace(/^(\s*>?\s*)(\d{1,3})(\s+)/gm, '$1**$2**$3')
     .replace(/(?<=[.!?]\s)(\d{1,3})(\s+)/g, '**$1**$2');
@@ -454,11 +457,22 @@ export function PodiumModeModal({
   const [fontPx, setFontPx] = useState(28);
 
   /* ─── Markdown editável (espelha prop, mas permite edição in-place) ─── */
-  const [localMd, setLocalMd] = useState(sermonMarkdown);
-  useEffect(() => { setLocalMd(sermonMarkdown); }, [sermonMarkdown]);
+  // Defesa: prop pode chegar undefined/null em sermões antigos, vindos do histórico.
+  // Sem coerção, .split() e regex em string vazia/null derrubam o React (tela preta no iOS).
+  const safeMarkdown = typeof sermonMarkdown === 'string' ? sermonMarkdown : '';
+  const [localMd, setLocalMd] = useState<string>(safeMarkdown);
+  useEffect(() => { setLocalMd(safeMarkdown); }, [safeMarkdown]);
 
   /* ─── Cartões do sermão ─── */
-  const cards = useMemo(() => splitIntoCards(localMd), [localMd]);
+  const cards = useMemo(() => {
+    try {
+      return splitIntoCards(localMd);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[PodiumModeModal] splitIntoCards falhou:', e);
+      return [];
+    }
+  }, [localMd]);
 
   /* ─── Edição in-place ─── */
   const [editingId, setEditingId] = useState<string | null>(null);
