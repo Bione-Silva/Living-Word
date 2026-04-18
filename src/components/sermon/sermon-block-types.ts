@@ -63,6 +63,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-orange-500',
     headerBgClass: 'bg-orange-500/10',
     accentClass: 'text-orange-600 dark:text-orange-400',
+    dotClass: 'bg-orange-500',
     emoji: '🎯',
     label: { PT: 'Gancho / Introdução', EN: 'Hook / Introduction', ES: 'Gancho / Introducción' },
     placeholder: {
@@ -76,6 +77,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-sky-500',
     headerBgClass: 'bg-sky-500/10',
     accentClass: 'text-sky-600 dark:text-sky-400',
+    dotClass: 'bg-sky-500',
     emoji: '📖',
     label: { PT: 'Passagem Bíblica', EN: 'Bible Passage', ES: 'Pasaje Bíblico' },
     placeholder: {
@@ -89,6 +91,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-amber-800',
     headerBgClass: 'bg-amber-800/10',
     accentClass: 'text-amber-800 dark:text-amber-600',
+    dotClass: 'bg-amber-800',
     emoji: '🔍',
     label: { PT: 'Hebraico / Grego', EN: 'Hebrew / Greek', ES: 'Hebreo / Griego' },
     placeholder: {
@@ -102,6 +105,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-purple-600',
     headerBgClass: 'bg-purple-600/10',
     accentClass: 'text-purple-600 dark:text-purple-400',
+    dotClass: 'bg-purple-600',
     emoji: '💡',
     label: { PT: 'Grande Ideia', EN: 'Big Idea', ES: 'Gran Idea' },
     placeholder: {
@@ -115,6 +119,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-blue-600',
     headerBgClass: 'bg-blue-600/10',
     accentClass: 'text-blue-600 dark:text-blue-400',
+    dotClass: 'bg-blue-600',
     emoji: '🔷',
     label: { PT: 'Ponto Principal', EN: 'Main Point', ES: 'Punto Principal' },
     placeholder: {
@@ -128,6 +133,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-violet-500',
     headerBgClass: 'bg-violet-500/10',
     accentClass: 'text-violet-600 dark:text-violet-400',
+    dotClass: 'bg-violet-500',
     emoji: '📜',
     label: { PT: 'Explicação', EN: 'Explanation', ES: 'Explicación' },
     placeholder: {
@@ -141,6 +147,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-emerald-600',
     headerBgClass: 'bg-emerald-600/10',
     accentClass: 'text-emerald-600 dark:text-emerald-400',
+    dotClass: 'bg-emerald-600',
     emoji: '🎬',
     label: { PT: 'Ilustração', EN: 'Illustration', ES: 'Ilustración' },
     placeholder: {
@@ -154,6 +161,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-orange-700',
     headerBgClass: 'bg-orange-700/10',
     accentClass: 'text-orange-700 dark:text-orange-500',
+    dotClass: 'bg-orange-700',
     emoji: '✨',
     label: { PT: 'Aplicação Prática', EN: 'Practical Application', ES: 'Aplicación Práctica' },
     placeholder: {
@@ -167,6 +175,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-slate-500',
     headerBgClass: 'bg-slate-500/10',
     accentClass: 'text-slate-600 dark:text-slate-400',
+    dotClass: 'bg-slate-500',
     emoji: '➰',
     label: { PT: 'Transição', EN: 'Transition', ES: 'Transición' },
     placeholder: {
@@ -180,6 +189,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-yellow-600',
     headerBgClass: 'bg-yellow-600/10',
     accentClass: 'text-yellow-700 dark:text-yellow-500',
+    dotClass: 'bg-yellow-600',
     emoji: '📚',
     label: { PT: 'Citação', EN: 'Quote', ES: 'Cita' },
     placeholder: {
@@ -193,6 +203,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     borderClass: 'border-l-rose-500',
     headerBgClass: 'bg-rose-500/10',
     accentClass: 'text-rose-600 dark:text-rose-400',
+    dotClass: 'bg-rose-500',
     emoji: '🙏',
     label: { PT: 'Conclusão / Oração', EN: 'Conclusion / Prayer', ES: 'Conclusión / Oración' },
     placeholder: {
