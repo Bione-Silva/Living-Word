@@ -160,10 +160,40 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <span className={cn('text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 min-w-0 truncate', meta.accentClass)}>
-          <span className="shrink-0">{meta.emoji}</span>
-          <span className="truncate">{meta.label[lang]}</span>
-        </span>
+        {editingLabel ? (
+          <input
+            ref={labelInputRef}
+            value={labelDraft}
+            onChange={(e) => setLabelDraft(e.target.value)}
+            onBlur={commitLabel}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') { e.preventDefault(); commitLabel(); }
+              if (e.key === 'Escape') { e.preventDefault(); setEditingLabel(false); }
+            }}
+            maxLength={48}
+            className={cn(
+              'min-w-0 flex-1 bg-background/70 border border-border rounded-md px-1.5 py-0.5',
+              'text-xs sm:text-sm font-bold outline-none focus:ring-2 focus:ring-primary/40',
+              meta.accentClass,
+            )}
+            aria-label={tr.renameLabel[lang]}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={startEditingLabel}
+            title={tr.labelHint[lang]}
+            className={cn(
+              'group/label text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 min-w-0 truncate',
+              'rounded-md px-1 -mx-1 py-0.5 hover:bg-foreground/5 transition-colors text-left',
+              meta.accentClass,
+            )}
+          >
+            <span className="shrink-0">{meta.emoji}</span>
+            <span className="truncate">{displayLabel}</span>
+            <Pencil className="h-3 w-3 opacity-0 group-hover/label:opacity-60 shrink-0 transition-opacity" />
+          </button>
+        )}
         <div className="flex-1" />
         <button
           onClick={() => setCollapsed((c) => !c)}
