@@ -1064,24 +1064,24 @@ export function PodiumModeModal({
 
           <div className={cn('w-px h-5 mx-1', isDark ? 'bg-slate-800' : 'bg-slate-300')} />
 
-          {/* Quick panels — escondidos individuais em XS, sempre via "More" */}
-          <button onClick={() => setNotesOpen(true)} className={cn('hidden sm:inline-flex p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="notes">
+          {/* Quick panels — botões individuais só em desktop (lg+). Mobile + tablet usam o "More". */}
+          <button onClick={() => setNotesOpen(true)} className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)} aria-label="notes">
             <PenLine className="h-4 w-4" />
           </button>
-          <button onClick={() => setBibleOpen(true)} className={cn('hidden sm:inline-flex p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="bible">
+          <button onClick={() => setBibleOpen(true)} className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)} aria-label="bible">
             <BookOpen className="h-4 w-4" />
           </button>
-          <button onClick={() => setOriginalOpen(true)} className={cn('hidden sm:inline-flex p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="original">
+          <button onClick={() => setOriginalOpen(true)} className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)} aria-label="original">
             <Languages className="h-4 w-4" />
           </button>
-          <button onClick={() => setIllusOpen(true)} className={cn('hidden sm:inline-flex p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="illustrations">
+          <button onClick={() => setIllusOpen(true)} className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)} aria-label="illustrations">
             <ImageIcon className="h-4 w-4" />
           </button>
 
-          {/* Mobile: agrupa todos os painéis num "More" */}
+          {/* Mobile + tablet (até lg): agrupa todos os painéis num "More" */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className={cn('sm:hidden p-1.5 rounded-md transition-colors', iconBtn)} aria-label="more tools">
+              <button className={cn('lg:hidden p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="more tools">
                 <MoreVertical className="h-4 w-4" />
               </button>
             </DropdownMenuTrigger>
