@@ -425,19 +425,61 @@ export default function Configuracoes() {
 
         <TabsContent value="language">
           <Card>
-            <CardHeader><CardTitle className="font-display">{t('settings.language')}</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="font-display flex items-center gap-2">
+                <span>🌐</span> {t('settings.language')}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                {lang === 'PT'
+                  ? 'Escolha o idioma da sua conta. A interface inteira muda imediatamente e a preferência é salva no seu perfil.'
+                  : lang === 'EN'
+                    ? 'Choose your account language. The entire interface updates instantly and the preference is saved to your profile.'
+                    : 'Elige el idioma de tu cuenta. Toda la interfaz cambia al instante y la preferencia se guarda en tu perfil.'}
+              </p>
+            </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>{t('auth.language')}</Label>
-                <Select value={lang} onValueChange={(v) => void handleLanguageChange(v as Language)} disabled={savingLanguage}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="PT">Português</SelectItem>
-                    <SelectItem value="EN">English</SelectItem>
-                    <SelectItem value="ES">Español</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {([
+                  { code: 'PT' as Language, flag: '🇧🇷', name: 'Português', sub: 'Brasil' },
+                  { code: 'EN' as Language, flag: '🇺🇸', name: 'English', sub: 'United States' },
+                  { code: 'ES' as Language, flag: '🇪🇸', name: 'Español', sub: 'Internacional' },
+                ]).map((opt) => {
+                  const active = lang === opt.code;
+                  return (
+                    <button
+                      key={opt.code}
+                      type="button"
+                      onClick={() => void handleLanguageChange(opt.code)}
+                      disabled={savingLanguage}
+                      aria-pressed={active}
+                      className={
+                        'group relative flex flex-col items-center justify-center gap-1 rounded-xl border p-4 transition-all text-left ' +
+                        (active
+                          ? 'border-primary bg-primary/5 ring-2 ring-primary/30 shadow-sm'
+                          : 'border-border bg-card hover:border-primary/40 hover:bg-accent/40') +
+                        (savingLanguage ? ' opacity-60 cursor-wait' : ' cursor-pointer')
+                      }
+                    >
+                      <span className="text-3xl leading-none" aria-hidden="true">{opt.flag}</span>
+                      <span className={'text-sm font-semibold ' + (active ? 'text-primary' : 'text-foreground')}>
+                        {opt.name}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">{opt.sub}</span>
+                      {active && (
+                        <span className="absolute top-2 right-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+              {savingLanguage && (
+                <p className="text-xs text-muted-foreground flex items-center gap-2">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  {lang === 'PT' ? 'Salvando preferência...' : lang === 'EN' ? 'Saving preference...' : 'Guardando preferencia...'}
+                </p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
