@@ -654,8 +654,9 @@ export function PodiumModeModal({
         setSeconds((s) => {
           if (mode === 'countdown') {
             const next = Math.max(0, s - 1);
-            // Pré-aviso suave aos 5 minutos restantes (apenas se a duração for >5min).
+            // Pré-aviso suave: apenas se configurado (>0) e a duração total for maior que o limiar.
             if (
+              warningMinutes > 0 &&
               next === WARNING_THRESHOLD_SECONDS &&
               s > WARNING_THRESHOLD_SECONDS &&
               limitSeconds > WARNING_THRESHOLD_SECONDS &&
