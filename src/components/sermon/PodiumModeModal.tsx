@@ -1225,34 +1225,64 @@ export function PodiumModeModal({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <button onClick={resetTimer} className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="reset">
+          <button
+            onClick={resetTimer}
+            className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
+            aria-label={lang === 'PT' ? 'Reiniciar cronômetro' : lang === 'ES' ? 'Reiniciar temporizador' : 'Reset timer'}
+            title={lang === 'PT' ? 'Reiniciar cronômetro (volta ao tempo inicial)' : lang === 'ES' ? 'Reiniciar temporizador' : 'Reset timer'}
+          >
             <RotateCcw className="h-4 w-4" />
           </button>
 
           <div className={cn('w-px h-5 mx-1', isDark ? 'bg-slate-800' : 'bg-slate-300')} />
 
           {/* Quick panels — botões individuais só em desktop (lg+). Mobile + tablet usam o "More". */}
-          <button onClick={() => setNotesOpen(true)} className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)} aria-label="notes">
+          <button
+            onClick={() => setNotesOpen(true)}
+            className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)}
+            aria-label={tr.preacherNotes[lang]}
+            title={tr.preacherNotes[lang]}
+          >
             <PenLine className="h-4 w-4" />
           </button>
-          <button onClick={() => setBibleOpen(true)} className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)} aria-label="bible">
+          <button
+            onClick={() => setBibleOpen(true)}
+            className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)}
+            aria-label={tr.bibleVersions[lang]}
+            title={tr.bibleVersions[lang]}
+          >
             <BookOpen className="h-4 w-4" />
           </button>
-          <button onClick={() => setOriginalOpen(true)} className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)} aria-label="original">
+          <button
+            onClick={() => setOriginalOpen(true)}
+            className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)}
+            aria-label={tr.originalLang[lang]}
+            title={tr.originalLang[lang]}
+          >
             <Languages className="h-4 w-4" />
           </button>
-          <button onClick={() => setIllusOpen(true)} className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)} aria-label="illustrations">
+          <button
+            onClick={() => setIllusOpen(true)}
+            className={cn('hidden lg:inline-flex p-2 rounded-md transition-colors', iconBtn)}
+            aria-label={tr.illustrations[lang]}
+            title={tr.illustrations[lang]}
+          >
             <ImageIcon className="h-4 w-4" />
           </button>
 
           {/* Mobile + tablet (até lg): agrupa todos os painéis num "More" */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className={cn('lg:hidden p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="more tools">
+              <button
+                type="button"
+                className={cn('lg:hidden p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
+                aria-label={lang === 'PT' ? 'Mais ferramentas' : lang === 'ES' ? 'Más herramientas' : 'More tools'}
+                title={lang === 'PT' ? 'Mais ferramentas (Anotações, Bíblia, Original, Ilustrações)' : lang === 'ES' ? 'Más herramientas' : 'More tools'}
+              >
                 <MoreVertical className="h-4 w-4" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className={dropdownBg}>
+            <DropdownMenuContent align="start" sideOffset={6} className={cn(dropdownBg, 'z-[200]')}>
               <DropdownMenuItem onClick={() => setNotesOpen(true)}>
                 <PenLine className="h-4 w-4 mr-2" /> {tr.preacherNotes[lang]}
               </DropdownMenuItem>
@@ -1273,11 +1303,16 @@ export function PodiumModeModal({
           {/* Settings (font + share) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="settings">
+              <button
+                type="button"
+                className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
+                aria-label={lang === 'PT' ? 'Configurações (fonte, compartilhar, imprimir)' : lang === 'ES' ? 'Ajustes (fuente, compartir, imprimir)' : 'Settings (font, share, print)'}
+                title={lang === 'PT' ? 'Configurações: tamanho da fonte, compartilhar, baixar e imprimir' : lang === 'ES' ? 'Ajustes: tamaño de fuente, compartir, descargar e imprimir' : 'Settings: font size, share, download and print'}
+              >
                 <Settings className="h-4 w-4" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={cn(dropdownBg, 'w-56')}>
+            <DropdownMenuContent align="end" sideOffset={6} className={cn(dropdownBg, 'w-56 z-[200]')}>
               <DropdownMenuLabel>{tr.fontSize[lang]}</DropdownMenuLabel>
               <div className="flex items-center gap-2 px-2 py-1.5">
                 <button onClick={() => setFontPx((f) => Math.max(16, f - 2))} className={cn('flex-1 flex items-center justify-center gap-1 p-2 rounded', isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-100')}>
