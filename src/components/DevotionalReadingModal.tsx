@@ -326,6 +326,33 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
           <button onClick={handlePdf} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 min-h-[44px]" style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}>
             <FileDown className="h-3.5 w-3.5" /> {labels.pdf[lang]}
           </button>
+
+          {/* Share PDF dropdown — Web Share / WhatsApp / Email */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-90 min-h-[44px] text-white"
+                style={{ borderColor: colors.gold, backgroundColor: colors.gold }}
+              >
+                <Send className="h-3.5 w-3.5" /> {labels.sharePdf[lang]}
+                <ChevronDown className="h-3 w-3 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem onClick={handleSharePdfNative} className="gap-2 cursor-pointer">
+                <Smartphone className="h-4 w-4" />
+                <span>{labels.shareDevice[lang]}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleShareWhatsApp} className="gap-2 cursor-pointer">
+                <Share2 className="h-4 w-4 text-green-600" />
+                <span>{labels.shareWhatsapp[lang]}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleShareEmail} className="gap-2 cursor-pointer">
+                <Mail className="h-4 w-4" />
+                <span>{labels.shareEmail[lang]}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Scrollable content — native overflow inside flex column for reliable scrolling */}
