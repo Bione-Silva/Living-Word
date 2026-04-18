@@ -623,11 +623,17 @@ export function PodiumModeModal({
             <DropdownMenuContent align="start" className={cn(dropdownBg, 'w-64')}>
               <DropdownMenuLabel>{lang === 'PT' ? 'Modo do Timer' : 'Timer Mode'}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setMode('countdown')}>
-                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} ({durationMin} min)
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMode('progressive')}>
-                <Timer className="h-4 w-4 mr-2" /> {tr.progressive[lang]}
+                <Timer className="h-4 w-4 mr-2" /> {tr.progressive[lang]} {lang === 'PT' ? '(padrão)' : lang === 'ES' ? '(predet.)' : '(default)'}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setDurationMin(60); setCustomMin('60'); setMode('countdown'); }}>
+                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} — 60 min
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setDurationMin(45); setCustomMin('45'); setMode('countdown'); }}>
+                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} — 45 min
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setDurationMin(30); setCustomMin('30'); setMode('countdown'); }}>
+                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} — 30 min
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMode('clock')}>
                 <Clock className="h-4 w-4 mr-2" /> {tr.clock[lang]}
