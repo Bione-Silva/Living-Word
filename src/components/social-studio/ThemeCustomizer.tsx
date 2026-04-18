@@ -16,23 +16,166 @@ interface Props {
   onUploadBackground?: (file: File) => void;
 }
 
+/**
+ * Cada tema agora carrega uma PALETA de 3 gradientes harmônicos.
+ * O carrossel rotaciona pelo índice do slide (`palette[i % palette.length]`)
+ * para criar ritmo visual em vez de fundo chapado.
+ *
+ * `gradient` (singular) = primeiro item da paleta — mantido para
+ * retrocompat com swatches, picker custom e dados salvos antigos.
+ */
 const colorPresets = [
-  { id: 'midnight', label: 'Midnight Blue', gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 52%, #0f3460 100%)', preview: '#16213e' },
-  { id: 'royal', label: 'Royal Purple', gradient: 'linear-gradient(135deg, #2d1b69 0%, #11001c 52%, #1a0a2e 100%)', preview: '#2d1b69' },
-  { id: 'forest', label: 'Forest Green', gradient: 'linear-gradient(135deg, #1b4332 0%, #081c15 52%, #2d6a4f 100%)', preview: '#1b4332' },
-  { id: 'wine', label: 'Wine Red', gradient: 'linear-gradient(135deg, #3c1518 0%, #1a0000 52%, #69140e 100%)', preview: '#3c1518' },
-  { id: 'charcoal', label: 'Charcoal', gradient: 'linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 52%, #0a0a0a 100%)', preview: '#1c1c1c' },
-  { id: 'ocean', label: 'Ocean Teal', gradient: 'linear-gradient(135deg, #0d3b66 0%, #14283c 52%, #1a535c 100%)', preview: '#0d3b66' },
-  { id: 'sunset', label: 'Sunset Gold', gradient: 'linear-gradient(135deg, #4a3728 0%, #2c1810 52%, #6b4423 100%)', preview: '#4a3728' },
-  { id: 'rose', label: 'Rose', gradient: 'linear-gradient(135deg, #4a1942 0%, #2a0e2e 52%, #6b2d5b 100%)', preview: '#4a1942' },
-  { id: 'terracotta', label: 'Terracotta', gradient: 'linear-gradient(135deg, #B85042 0%, #6b2f26 52%, #3d1a15 100%)', preview: '#B85042' },
-  { id: 'sage', label: 'Sage', gradient: 'linear-gradient(135deg, #3a5a40 0%, #2d4a33 52%, #1a3a20 100%)', preview: '#3a5a40' },
-  { id: 'sunset-pink', label: 'Sunset Rosa', gradient: 'linear-gradient(135deg, #e65c00 0%, #c2185b 52%, #880e4f 100%)', preview: '#e65c00' },
-  { id: 'ocean-green', label: 'Ocean Verde', gradient: 'linear-gradient(135deg, #0077b6 0%, #00838f 52%, #2e7d32 100%)', preview: '#0077b6' },
-  { id: 'royal-gold', label: 'Royal Dourado', gradient: 'linear-gradient(135deg, #4a148c 0%, #6a1b9a 52%, #c5a028 100%)', preview: '#4a148c' },
-  { id: 'aurora', label: 'Aurora', gradient: 'linear-gradient(135deg, #1a237e 0%, #00695c 52%, #1b5e20 100%)', preview: '#1a237e' },
-  { id: 'ember', label: 'Ember', gradient: 'linear-gradient(135deg, #bf360c 0%, #d84315 52%, #ff8f00 100%)', preview: '#bf360c' },
+  {
+    id: 'midnight', label: 'Midnight Blue', preview: '#16213e',
+    gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 52%, #0f3460 100%)',
+    palette: [
+      'linear-gradient(135deg, #1a1a2e 0%, #16213e 52%, #0f3460 100%)',
+      'linear-gradient(135deg, #0f1c3d 0%, #1b2a4e 52%, #233a6b 100%)',
+      'linear-gradient(135deg, #0a1128 0%, #11244d 52%, #1a3a8c 100%)',
+    ],
+  },
+  {
+    id: 'royal', label: 'Royal Purple', preview: '#2d1b69',
+    gradient: 'linear-gradient(135deg, #2d1b69 0%, #11001c 52%, #1a0a2e 100%)',
+    palette: [
+      'linear-gradient(135deg, #2d1b69 0%, #11001c 52%, #1a0a2e 100%)',
+      'linear-gradient(135deg, #3c1e7a 0%, #1a0a2e 52%, #25104a 100%)',
+      'linear-gradient(135deg, #1f0f4a 0%, #0a0014 52%, #2a1659 100%)',
+    ],
+  },
+  {
+    id: 'forest', label: 'Forest Green', preview: '#1b4332',
+    gradient: 'linear-gradient(135deg, #1b4332 0%, #081c15 52%, #2d6a4f 100%)',
+    palette: [
+      'linear-gradient(135deg, #1b4332 0%, #081c15 52%, #2d6a4f 100%)',
+      'linear-gradient(135deg, #14342a 0%, #061612 52%, #245a44 100%)',
+      'linear-gradient(135deg, #25553f 0%, #0c2520 52%, #38805f 100%)',
+    ],
+  },
+  {
+    id: 'wine', label: 'Wine Red', preview: '#3c1518',
+    gradient: 'linear-gradient(135deg, #3c1518 0%, #1a0000 52%, #69140e 100%)',
+    palette: [
+      'linear-gradient(135deg, #3c1518 0%, #1a0000 52%, #69140e 100%)',
+      'linear-gradient(135deg, #4d1a1f 0%, #220404 52%, #7a1a14 100%)',
+      'linear-gradient(135deg, #2d1014 0%, #100000 52%, #500e0a 100%)',
+    ],
+  },
+  {
+    id: 'charcoal', label: 'Charcoal', preview: '#1c1c1c',
+    gradient: 'linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 52%, #0a0a0a 100%)',
+    palette: [
+      'linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 52%, #0a0a0a 100%)',
+      'linear-gradient(135deg, #232323 0%, #363636 52%, #111111 100%)',
+      'linear-gradient(135deg, #141414 0%, #242424 52%, #050505 100%)',
+    ],
+  },
+  {
+    id: 'ocean', label: 'Ocean Teal', preview: '#0d3b66',
+    gradient: 'linear-gradient(135deg, #0d3b66 0%, #14283c 52%, #1a535c 100%)',
+    palette: [
+      'linear-gradient(135deg, #0d3b66 0%, #14283c 52%, #1a535c 100%)',
+      'linear-gradient(135deg, #114a7a 0%, #18324a 52%, #1f6770 100%)',
+      'linear-gradient(135deg, #082f54 0%, #0e2034 52%, #134048 100%)',
+    ],
+  },
+  {
+    id: 'sunset', label: 'Sunset Gold', preview: '#4a3728',
+    gradient: 'linear-gradient(135deg, #4a3728 0%, #2c1810 52%, #6b4423 100%)',
+    palette: [
+      'linear-gradient(135deg, #4a3728 0%, #2c1810 52%, #6b4423 100%)',
+      'linear-gradient(135deg, #5a4332 0%, #361e14 52%, #82542c 100%)',
+      'linear-gradient(135deg, #3a2a1f 0%, #20120a 52%, #54341b 100%)',
+    ],
+  },
+  {
+    id: 'rose', label: 'Rose', preview: '#4a1942',
+    gradient: 'linear-gradient(135deg, #4a1942 0%, #2a0e2e 52%, #6b2d5b 100%)',
+    palette: [
+      'linear-gradient(135deg, #4a1942 0%, #2a0e2e 52%, #6b2d5b 100%)',
+      'linear-gradient(135deg, #5a1e50 0%, #341238 52%, #80376e 100%)',
+      'linear-gradient(135deg, #3a1434 0%, #1f0a23 52%, #542346 100%)',
+    ],
+  },
+  {
+    id: 'terracotta', label: 'Terracotta', preview: '#B85042',
+    gradient: 'linear-gradient(135deg, #B85042 0%, #6b2f26 52%, #3d1a15 100%)',
+    palette: [
+      'linear-gradient(135deg, #B85042 0%, #6b2f26 52%, #3d1a15 100%)',
+      'linear-gradient(135deg, #cc5e4f 0%, #823a2e 52%, #4f221b 100%)',
+      'linear-gradient(135deg, #9d4438 0%, #57271f 52',
+    ].slice(0, 3) as string[],
+  },
+  {
+    id: 'sage', label: 'Sage', preview: '#3a5a40',
+    gradient: 'linear-gradient(135deg, #3a5a40 0%, #2d4a33 52%, #1a3a20 100%)',
+    palette: [
+      'linear-gradient(135deg, #3a5a40 0%, #2d4a33 52%, #1a3a20 100%)',
+      'linear-gradient(135deg, #466b4d 0%, #365840 52%, #21472a 100%)',
+      'linear-gradient(135deg, #2e4a34 0%, #243d2a 52%, #133018 100%)',
+    ],
+  },
+  {
+    id: 'sunset-pink', label: 'Sunset Rosa', preview: '#e65c00',
+    gradient: 'linear-gradient(135deg, #e65c00 0%, #c2185b 52%, #880e4f 100%)',
+    palette: [
+      'linear-gradient(135deg, #e65c00 0%, #c2185b 52%, #880e4f 100%)',
+      'linear-gradient(135deg, #ff7320 0%, #d72370 52%, #a01060 100%)',
+      'linear-gradient(135deg, #c44d00 0%, #a01250 52%, #6f0a3f 100%)',
+    ],
+  },
+  {
+    id: 'ocean-green', label: 'Ocean Verde', preview: '#0077b6',
+    gradient: 'linear-gradient(135deg, #0077b6 0%, #00838f 52%, #2e7d32 100%)',
+    palette: [
+      'linear-gradient(135deg, #0077b6 0%, #00838f 52%, #2e7d32 100%)',
+      'linear-gradient(135deg, #0088cc 0%, #00959f 52%, #388e3c 100%)',
+      'linear-gradient(135deg, #006298 0%, #006d77 52%, #256628 100%)',
+    ],
+  },
+  {
+    id: 'royal-gold', label: 'Royal Dourado', preview: '#4a148c',
+    gradient: 'linear-gradient(135deg, #4a148c 0%, #6a1b9a 52%, #c5a028 100%)',
+    palette: [
+      'linear-gradient(135deg, #4a148c 0%, #6a1b9a 52%, #c5a028 100%)',
+      'linear-gradient(135deg, #5b1aa3 0%, #7b22b0 52%, #d4af3a 100%)',
+      'linear-gradient(135deg, #3a0f70 0%, #56167d 52%, #a8851a 100%)',
+    ],
+  },
+  {
+    id: 'aurora', label: 'Aurora', preview: '#1a237e',
+    gradient: 'linear-gradient(135deg, #1a237e 0%, #00695c 52%, #1b5e20 100%)',
+    palette: [
+      'linear-gradient(135deg, #1a237e 0%, #00695c 52%, #1b5e20 100%)',
+      'linear-gradient(135deg, #232b94 0%, #00786b 52%, #226d28 100%)',
+      'linear-gradient(135deg, #131b66 0%, #00524a 52%, #144d18 100%)',
+    ],
+  },
+  {
+    id: 'ember', label: 'Ember', preview: '#bf360c',
+    gradient: 'linear-gradient(135deg, #bf360c 0%, #d84315 52%, #ff8f00 100%)',
+    palette: [
+      'linear-gradient(135deg, #bf360c 0%, #d84315 52%, #ff8f00 100%)',
+      'linear-gradient(135deg, #d6420f 0%, #e85020 52%, #ffa120 100%)',
+      'linear-gradient(135deg, #a02c0a 0%, #b8360f 52%, #d97a00 100%)',
+    ],
+  },
 ];
+
+/**
+ * Retorna a paleta sequencial associada a um gradient.
+ * - Se o gradient corresponde a um preset → paleta de 3 variações harmônicas.
+ * - Caso contrário (cor custom / upload) → array com o próprio gradient.
+ *
+ * Use para rotacionar fundo entre slides:
+ *   const palette = getThemePalette(theme.gradient);
+ *   const bg = palette[index % palette.length];
+ */
+export function getThemePalette(gradient?: string): string[] {
+  if (!gradient) return [];
+  const preset = colorPresets.find((p) => p.gradient === gradient);
+  return preset?.palette ?? [gradient];
+}
 
 const fontPresets = [
   { id: 'serif', label: 'Clássica (Serif)', family: "'Cormorant Garamond', 'Georgia', serif" },
