@@ -30,8 +30,25 @@ export interface SermonBlockData {
   passageRef?: string;
 }
 
+/**
+ * Paleta HEX espelhando os tons Tailwind -50 / -200 / -700 usados nos cartões do Studio
+ * e do Modo Púlpito Claro. Single source of truth para exports (PDF, PPTX, DOCX).
+ * `bg50`  → fundo do cartão (mesmo `cardBgClass`)
+ * `border200` → borda suave do cartão
+ * `accent700` → tag/título identitário (mesmo `accentClass`)
+ * `accent500` → ponto/dot sólido do seletor
+ */
+export interface SermonBlockHex {
+  bg50: string;
+  border200: string;
+  accent500: string;
+  accent700: string;
+}
+
 export interface SermonBlockTypeMeta {
   type: SermonBlockType;
+  /** Paleta HEX (idêntica à -50/-200/-500/-700 Tailwind) — usada em exports */
+  hex: SermonBlockHex;
   /** Classe Tailwind para borda esquerda colorida */
   borderClass: string;
   /** Classe Tailwind para fundo do header (tom suave da cor) */
