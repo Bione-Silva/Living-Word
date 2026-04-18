@@ -251,6 +251,13 @@ export default function Sermoes() {
   // Modals
   const [carouselOpen, setCarouselOpen] = useState(false);
   const [slidesOpen, setSlidesOpen] = useState(false);
+  const [podiumOpen, setPodiumOpen] = useState(false);
+
+  // ─── Studio de Blocos ───
+  const [editorMode, setEditorMode] = useState<'ai' | 'blocks'>('ai');
+  const [blocks, setBlocks] = useState<SermonBlockData[]>([]);
+  const [bigIdea, setBigIdea] = useState('');
+  const [passageRef, setPassageRef] = useState('');
 
   const resultRef = useRef<HTMLDivElement>(null);
 
