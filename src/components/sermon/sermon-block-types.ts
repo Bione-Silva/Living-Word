@@ -86,6 +86,7 @@ export interface SermonBlockTypeMeta {
 export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   hook: {
     type: 'hook',
+    hex: { bg50: '#FFF7ED', border200: '#FED7AA', accent500: '#F97316', accent700: '#C2410C' },
     borderClass: 'border-l-orange-500',
     headerBgClass: 'bg-orange-500/10',
     cardBgClass: 'bg-orange-50 dark:bg-card',
