@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine, Layers, Zap, MonitorPlay } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine, Layers, Zap, MonitorPlay, Columns2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -20,6 +20,7 @@ import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/b
 import { versionToApiCode, versionAbbrToCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 import { SermonBlockEditor, blocksToMarkdown, type SermonBlockData } from '@/components/sermon/SermonBlockEditor';
+import { PodiumLivePreview } from '@/components/sermon/PodiumLivePreview';
 import { exportSermonToPptx } from '@/lib/sermon-pptx';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -260,6 +261,16 @@ export default function Sermoes() {
   const [blocks, setBlocks] = useState<SermonBlockData[]>([]);
   const [bigIdea, setBigIdea] = useState('');
   const [passageRef, setPassageRef] = useState('');
+  // ─── Modo Comparação Lado-a-Lado (apenas desktop / tablet grande ≥ lg) ───
+  const [compareMode, setCompareMode] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try { return window.localStorage.getItem('sermon:compareMode') === '1'; } catch { return false; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem('sermon:compareMode', compareMode ? '1' : '0'); } catch { /* noop */ }
+  }, [compareMode]);
+  // Markdown sincronizado em tempo real para o preview lado-a-lado
+  const liveMarkdown = useMemo(() => blocksToMarkdown(blocks, lang), [blocks, lang]);
 
   // ─── Bridge: Série de Mensagens → Studio de Blocos ───
   // Aceita: ?mode=blocks&theme=...&passage=...&week=...&seriesTitle=...
@@ -814,7 +825,7 @@ export default function Sermoes() {
             </div>
           ) : (
             /* ═══ RESULT VIEW ═══ */
-            <div className="max-w-3xl mx-auto animate-in fade-in duration-300">
+            <div className={`${editorMode === 'blocks' && compareMode ? 'max-w-7xl' : 'max-w-3xl'} mx-auto animate-in fade-in duration-300`}>
               {/* Back to form */}
               <button
                 onClick={handleNewSermon}
@@ -841,14 +852,40 @@ export default function Sermoes() {
                       className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
                     />
                   </div>
-                  <SermonBlockEditor
-                    blocks={blocks}
-                    onChange={setBlocks}
-                    bigIdea={bigIdea}
-                    passageRef={passageRef}
-                    topic={topic}
-                    lang={lang}
-                  />
+
+                  {compareMode ? (
+                    /* ─── Modo Comparação Lado-a-Lado (apenas lg+) ─── */
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 items-start">
+                      <div className="min-w-0">
+                        <SermonBlockEditor
+                          blocks={blocks}
+                          onChange={setBlocks}
+                          bigIdea={bigIdea}
+                          passageRef={passageRef}
+                          topic={topic}
+                          lang={lang}
+                        />
+                      </div>
+                      <div className="min-w-0 lg:sticky lg:top-4 lg:max-h-[calc(100vh-7rem)]">
+                        <PodiumLivePreview
+                          markdown={liveMarkdown}
+                          title={bigIdea.trim() || passageRef.trim() || sermonTitle}
+                          lang={lang}
+                          className="lg:max-h-[calc(100vh-7rem)]"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <SermonBlockEditor
+                      blocks={blocks}
+                      onChange={setBlocks}
+                      bigIdea={bigIdea}
+                      passageRef={passageRef}
+                      topic={topic}
+                      lang={lang}
+                    />
+                  )}
+
                   {blocks.length > 0 && (
                     <div className="text-center pt-2 pb-24">
                       <button
@@ -1081,6 +1118,22 @@ export default function Sermoes() {
               </button>
             )}
             <span className="md:hidden shrink-0 h-6 w-px bg-border mx-0.5" />
+            {/* Toggle Modo Comparação — só faz sentido em desktop / tablet grande (≥ lg = 1024px) */}
+            <button
+              onClick={() => setCompareMode((v) => !v)}
+              className={`hidden lg:inline-flex shrink-0 items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap ${
+                compareMode
+                  ? 'border-amber-500/50 bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25'
+                  : 'border-border bg-background hover:bg-muted text-foreground'
+              }`}
+              title={lang === 'PT' ? 'Editor + Preview Púlpito lado a lado' : lang === 'ES' ? 'Editor + Vista previa Púlpito lado a lado' : 'Editor + Podium Preview side by side'}
+              aria-pressed={compareMode}
+            >
+              <Columns2 className="h-3.5 w-3.5" />
+              {compareMode
+                ? (lang === 'PT' ? 'Comparando' : lang === 'ES' ? 'Comparando' : 'Comparing')
+                : (lang === 'PT' ? 'Comparar' : lang === 'ES' ? 'Comparar' : 'Compare')}
+            </button>
             <button
               onClick={handleSaveBlocks}
               className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
