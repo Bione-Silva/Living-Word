@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks, X } from 'lucide-react';
+import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
