@@ -250,10 +250,10 @@ export default function Sermoes() {
   const [sidebarTab, setSidebarTab] = useState<'history' | 'notes'>('history');
 
   // Modals
-  const [carouselOpen, setCarouselOpen] = useState(false);
   const [slidesOpen, setSlidesOpen] = useState(false);
   const [podiumOpen, setPodiumOpen] = useState(false);
   const [rawTextOpen, setRawTextOpen] = useState(false);
+  const [exportingPptx, setExportingPptx] = useState(false);
 
   // ─── Studio de Blocos ───
   const [editorMode, setEditorMode] = useState<'ai' | 'blocks'>('ai');
@@ -896,7 +896,22 @@ export default function Sermoes() {
                       <button onClick={handleSendWpp} className={actionBtn}>
                         <Share2 className="h-3.5 w-3.5" /> {labels.sendWpp[lang]}
                       </button>
-                      <button onClick={() => setCarouselOpen(true)} className={actionBtn}>
+                      <button
+                        onClick={() => {
+                          if (!sermonContent.trim()) {
+                            toast.error(lang === 'PT' ? 'Gere o sermão antes' : lang === 'ES' ? 'Genere el sermón antes' : 'Generate the sermon first');
+                            return;
+                          }
+                          navigate('/social-studio', {
+                            state: {
+                              source_content: sermonContent,
+                              source_title: sermonTitle,
+                              source_origin: 'sermon',
+                            },
+                          });
+                        }}
+                        className={actionBtn}
+                      >
                         <Image className="h-3.5 w-3.5" /> {labels.carousel[lang]}
                       </button>
                       <button onClick={() => setSlidesOpen(true)} className={actionBtn}>
@@ -1007,15 +1022,6 @@ export default function Sermoes() {
           </div>
         </SheetContent>
       </Sheet>
-
-      {/* ─── Carousel modal ─── */}
-      <SermonCarouselModal
-        open={carouselOpen}
-        onOpenChange={setCarouselOpen}
-        sermonMarkdown={sermonContent}
-        sermonTitle={sermonTitle}
-        materialId={activeSessionId}
-      />
 
       {/* ─── Slides modal ─── */}
       <SermonSlidesModal
