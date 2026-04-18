@@ -9,8 +9,11 @@ export type SermonBlockType =
   | 'original'       // Escavação Original (Hebraico/Grego)
   | 'big_idea'       // Grande Ideia
   | 'main_point'     // Ponto Principal
-  | 'illustration'   // Ilustração Histórica
+  | 'explanation'    // Explicação (texto em contexto histórico/teológico)
+  | 'illustration'   // Ilustração / História
   | 'application'    // Aplicação Prática
+  | 'transition'     // Transição entre pontos
+  | 'quote'          // Citação (autor/livro)
   | 'conclusion';    // Conclusão / Oração
 
 export interface SermonBlockData {
@@ -118,17 +121,30 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
       ES: 'Desarrolle el punto: tesis + exposición del texto + argumento teológico + transición...',
     },
   },
+  explanation: {
+    type: 'explanation',
+    borderClass: 'border-l-violet-500',
+    headerBgClass: 'bg-violet-500/10',
+    accentClass: 'text-violet-600 dark:text-violet-400',
+    emoji: '📜',
+    label: { PT: 'Explicação', EN: 'Explanation', ES: 'Explicación' },
+    placeholder: {
+      PT: 'Explique o texto bíblico em contexto histórico e teológico...',
+      EN: 'Explain the biblical text in historical and theological context...',
+      ES: 'Explique el texto bíblico en contexto histórico y teológico...',
+    },
+  },
   illustration: {
     type: 'illustration',
     borderClass: 'border-l-emerald-600',
     headerBgClass: 'bg-emerald-600/10',
     accentClass: 'text-emerald-600 dark:text-emerald-400',
     emoji: '🎬',
-    label: { PT: 'Ilustração Histórica', EN: 'Historical Illustration', ES: 'Ilustración Histórica' },
+    label: { PT: 'Ilustração', EN: 'Illustration', ES: 'Ilustración' },
     placeholder: {
-      PT: 'Conte uma história real (histórica, biográfica ou contemporânea) que ilumine o ponto...',
-      EN: 'Tell a real story (historical, biographical or contemporary) that illuminates the point...',
-      ES: 'Cuente una historia real (histórica, biográfica o contemporánea) que ilumine el punto...',
+      PT: 'Conte uma história, analogia ou exemplo prático da vida real...',
+      EN: 'Tell a story, analogy or practical real-life example...',
+      ES: 'Cuente una historia, analogía o ejemplo práctico de la vida real...',
     },
   },
   application: {
@@ -139,9 +155,35 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '✨',
     label: { PT: 'Aplicação Prática', EN: 'Practical Application', ES: 'Aplicación Práctica' },
     placeholder: {
-      PT: 'Como o ouvinte vive isso na segunda-feira? Seja específico, concreto e acionável...',
-      EN: 'How does the listener live this out on Monday? Be specific, concrete and actionable...',
-      ES: '¿Cómo lo vive el oyente el lunes? Sea específico, concreto y accionable...',
+      PT: 'Como esta verdade transforma o dia a dia do ouvinte?...',
+      EN: 'How does this truth transform the listener\'s daily life?...',
+      ES: '¿Cómo transforma esta verdad el día a día del oyente?...',
+    },
+  },
+  transition: {
+    type: 'transition',
+    borderClass: 'border-l-slate-500',
+    headerBgClass: 'bg-slate-500/10',
+    accentClass: 'text-slate-600 dark:text-slate-400',
+    emoji: '➰',
+    label: { PT: 'Transição', EN: 'Transition', ES: 'Transición' },
+    placeholder: {
+      PT: 'Frase-ponte entre o ponto anterior e o próximo. Ex: "Mas se isso é verdade, então..."',
+      EN: 'Bridge sentence between the previous point and the next. E.g.: "But if this is true, then..."',
+      ES: 'Frase-puente entre el punto anterior y el siguiente. Ej: "Pero si esto es verdad, entonces..."',
+    },
+  },
+  quote: {
+    type: 'quote',
+    borderClass: 'border-l-yellow-600',
+    headerBgClass: 'bg-yellow-600/10',
+    accentClass: 'text-yellow-700 dark:text-yellow-500',
+    emoji: '📚',
+    label: { PT: 'Citação', EN: 'Quote', ES: 'Cita' },
+    placeholder: {
+      PT: 'Cite um autor, livro, hino ou pregador. Ex: "Como dizia Spurgeon: ..."',
+      EN: 'Quote an author, book, hymn or preacher. E.g.: "As Spurgeon said: ..."',
+      ES: 'Cite un autor, libro, himno o predicador. Ej: "Como decía Spurgeon: ..."',
     },
   },
   conclusion: {
@@ -152,22 +194,25 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '🙏',
     label: { PT: 'Conclusão / Oração', EN: 'Conclusion / Prayer', ES: 'Conclusión / Oración' },
     placeholder: {
-      PT: 'Recapitulação curta + apelo + oração final. Termine apontando para Cristo...',
-      EN: 'Short recap + appeal + closing prayer. End by pointing to Christ...',
-      ES: 'Recapitulación corta + llamado + oración final. Termine apuntando a Cristo...',
+      PT: 'Amarre a Grande Ideia e faça o apelo final ao coração. Termine apontando para Cristo...',
+      EN: 'Tie back the Big Idea and make the final appeal to the heart. End by pointing to Christ...',
+      ES: 'Amarre la Gran Idea y haga el llamado final al corazón. Termine apuntando a Cristo...',
     },
   },
 };
 
 export const SERMON_BLOCK_ORDER: SermonBlockType[] = [
-  'hook',
   'passage',
-  'original',
-  'big_idea',
+  'hook',
   'main_point',
+  'explanation',
   'illustration',
   'application',
+  'transition',
+  'quote',
   'conclusion',
+  'big_idea',
+  'original',
 ];
 
 /** Conta palavras de uma string (suporta múltiplos idiomas) */
