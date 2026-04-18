@@ -831,7 +831,7 @@ export default function Sermoes() {
                     <input
                       value={bigIdea}
                       onChange={(e) => setBigIdea(e.target.value)}
-                      placeholder={lang === 'PT' ? 'A frase única que resume todo o sermão...' : lang === 'ES' ? 'La frase única que resume todo el sermón...' : 'The single sentence that summarizes the whole sermon...'}
+                      placeholder={lang === 'PT' ? 'Resuma a mensagem inteira em UMA frase. (Ex: Haddon Robinson revolucionou a pregação focando todo o sermão em uma única "Big Idea" memorável.)' : lang === 'ES' ? 'Resuma el mensaje entero en UNA frase. (Ej: Haddon Robinson revolucionó la predicación enfocando todo el sermón en una única "Gran Idea" memorable.)' : 'Sum up the entire message in ONE sentence. (E.g.: Haddon Robinson revolutionized preaching by focusing the whole sermon on a single memorable "Big Idea".)'}
                       className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
                     />
                     <input
