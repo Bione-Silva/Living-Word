@@ -421,67 +421,52 @@ export default function AppLayout() {
             </SheetHeader>
 
             <div className="px-3 py-3 space-y-1">
-              {/* Primary navigation */}
+              {/* Primary navigation — only the 6 essentials */}
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
                   location.pathname === '/dashboard' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
                 }`}
               >
-                <LayoutDashboard className="h-4 w-4 shrink-0" />
-                <span>{t('nav.dashboard')}</span>
+                <LayoutDashboard className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Início' : lang === 'EN' ? 'Home' : 'Inicio'}</span>
               </Link>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setMobileToolsOpen(true); }}
+                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium text-foreground hover:bg-muted transition-colors text-left"
+              >
+                <Sparkles className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear'}</span>
+              </button>
               <Link
                 to="/bible"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
                   location.pathname === '/bible' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
                 }`}
               >
-                <BookOpen className="h-4 w-4 shrink-0" />
+                <BookOpen className="h-[18px] w-[18px] shrink-0" />
                 <span>{lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}</span>
               </Link>
               <Link
                 to="/dashboard/mentes"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
                   location.pathname.startsWith('/dashboard/mentes') ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
                 }`}
               >
-                <Brain className="h-4 w-4 shrink-0" />
+                <Brain className="h-[18px] w-[18px] shrink-0" />
                 <span>{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
               </Link>
               <Link
-                to="/biblioteca"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  location.pathname === '/biblioteca' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
-                }`}
-              >
-                <Library className="h-4 w-4 shrink-0" />
-                <span>{lang === 'PT' ? 'Biblioteca' : lang === 'EN' ? 'Library' : 'Biblioteca'}</span>
-              </Link>
-              <Link
-                to="/calendario"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  location.pathname === '/calendario' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
-                }`}
-              >
-                <CalendarDays className="h-4 w-4 shrink-0" />
-                <span>{lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario'}</span>
-              </Link>
-
-              {/* Ferramentas — single link to dedicated page (no nested groups on mobile) */}
-              <Link
                 to="/ferramentas"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
                   location.pathname === '/ferramentas' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
                 }`}
               >
-                <Package className="h-4 w-4 shrink-0" />
+                <Package className="h-[18px] w-[18px] shrink-0" />
                 <span>{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}</span>
               </Link>
 
