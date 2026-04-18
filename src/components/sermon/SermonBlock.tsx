@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2, Sparkles, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { GripVertical, Trash2, Sparkles, Loader2, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import {
   SERMON_BLOCK_META,
   countWords,
+  getBlockDisplayLabel,
   type SermonBlockData,
 } from './sermon-block-types';
 
@@ -43,6 +44,12 @@ const tr = {
   expand: { PT: 'Expandir', EN: 'Expand', ES: 'Expandir' },
   remove: { PT: 'Remover bloco', EN: 'Remove block', ES: 'Eliminar bloque' },
   drag: { PT: 'Arrastar', EN: 'Drag', ES: 'Arrastrar' },
+  renameLabel: { PT: 'Renomear rótulo do bloco', EN: 'Rename block label', ES: 'Renombrar etiqueta del bloque' },
+  labelHint: {
+    PT: 'Clique no rótulo para renomear (ex: trocar "Introdução" por "Abertura")',
+    EN: 'Click the label to rename (e.g. swap "Introduction" for "Opening")',
+    ES: 'Haga clic en la etiqueta para renombrar',
+  },
 };
 
 export function SermonBlock({ block, lang, context, onChange, onDelete }: SermonBlockProps) {
@@ -50,6 +57,34 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
   const wordCount = countWords(block.content);
   const [collapsed, setCollapsed] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [editingLabel, setEditingLabel] = useState(false);
+  const [labelDraft, setLabelDraft] = useState('');
+  const labelInputRef = useRef<HTMLInputElement>(null);
+
+  const displayLabel = getBlockDisplayLabel(block, lang);
+
+  useEffect(() => {
+    if (editingLabel) {
+      labelInputRef.current?.focus();
+      labelInputRef.current?.select();
+    }
+  }, [editingLabel]);
+
+  function startEditingLabel() {
+    setLabelDraft(displayLabel);
+    setEditingLabel(true);
+  }
+
+  function commitLabel() {
+    const next = labelDraft.trim();
+    // Se voltar ao default do tipo, limpa o customLabel para evitar redundância
+    const defaultLabel = meta.label[lang];
+    onChange({
+      ...block,
+      customLabel: next && next !== defaultLabel ? next : undefined,
+    });
+    setEditingLabel(false);
+  }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
 
@@ -125,10 +160,40 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <span className={cn('text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 min-w-0 truncate', meta.accentClass)}>
-          <span className="shrink-0">{meta.emoji}</span>
-          <span className="truncate">{meta.label[lang]}</span>
-        </span>
+        {editingLabel ? (
+          <input
+            ref={labelInputRef}
+            value={labelDraft}
+            onChange={(e) => setLabelDraft(e.target.value)}
+            onBlur={commitLabel}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') { e.preventDefault(); commitLabel(); }
+              if (e.key === 'Escape') { e.preventDefault(); setEditingLabel(false); }
+            }}
+            maxLength={48}
+            className={cn(
+              'min-w-0 flex-1 bg-background/70 border border-border rounded-md px-1.5 py-0.5',
+              'text-xs sm:text-sm font-bold outline-none focus:ring-2 focus:ring-primary/40',
+              meta.accentClass,
+            )}
+            aria-label={tr.renameLabel[lang]}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={startEditingLabel}
+            title={tr.labelHint[lang]}
+            className={cn(
+              'group/label text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 min-w-0 truncate',
+              'rounded-md px-1 -mx-1 py-0.5 hover:bg-foreground/5 transition-colors text-left',
+              meta.accentClass,
+            )}
+          >
+            <span className="shrink-0">{meta.emoji}</span>
+            <span className="truncate">{displayLabel}</span>
+            <Pencil className="h-3 w-3 opacity-0 group-hover/label:opacity-60 shrink-0 transition-opacity" />
+          </button>
+        )}
         <div className="flex-1" />
         <button
           onClick={() => setCollapsed((c) => !c)}

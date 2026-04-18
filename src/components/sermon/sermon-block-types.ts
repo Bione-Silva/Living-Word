@@ -17,7 +17,8 @@ export type SermonBlockType =
   | 'transition'     // Transição entre pontos
   | 'quote'          // Citação (autor/livro)
   | 'appeal'         // Apelo / Altar Call (chamado para decisão)
-  | 'conclusion';    // Conclusão / Oração
+  | 'conclusion'     // Conclusão / Oração
+  | 'custom';        // Bloco em Branco (rótulo livre, definido pelo pastor)
 
 export interface SermonBlockData {
   id: string;
@@ -28,6 +29,12 @@ export interface SermonBlockData {
   content: string;
   /** Para bloco "passage": referência bíblica selecionada */
   passageRef?: string;
+  /**
+   * Rótulo customizado do bloco — sobrescreve o label padrão do tipo.
+   * Permite que o pastor renomeie qualquer bloco (ex: trocar "Introdução" por "Abertura").
+   * Para blocos `custom`, é o rótulo principal definido pelo usuário.
+   */
+  customLabel?: string;
 }
 
 /**
@@ -308,6 +315,22 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
       ES: '¿Cómo aterrizar el avión? Resuma la Gran Idea con foco y esperanza, y termine con una oración que guíe a la iglesia. (Ej: Billy Graham diseñaba todo el sermón apuntando a este momento de decisión ante el altar.)',
     },
   },
+  custom: {
+    type: 'custom',
+    hex: { bg50: '#F8FAFC', border200: '#E2E8F0', accent500: '#475569', accent700: '#334155' },
+    borderClass: 'border-l-slate-400',
+    headerBgClass: 'bg-slate-400/10',
+    cardBgClass: 'bg-slate-50 dark:bg-card',
+    accentClass: 'text-slate-700 dark:text-slate-300',
+    dotClass: 'bg-slate-400',
+    emoji: '✏️',
+    label: { PT: 'Bloco em Branco', EN: 'Blank Block', ES: 'Bloque en Blanco' },
+    placeholder: {
+      PT: 'Escreva livremente. Renomeie o título acima para o que fizer sentido na sua pregação.',
+      EN: 'Write freely. Rename the title above to whatever fits your sermon.',
+      ES: 'Escriba libremente. Renombre el título arriba a lo que tenga sentido en su predicación.',
+    },
+  },
 };
 
 /**
@@ -342,6 +365,7 @@ export const SERMON_BLOCK_ORDER: SermonBlockType[] = [
   'conclusion',
   'big_idea',
   'original',
+  'custom',
 ];
 
 /** Conta palavras de uma string (suporta múltiplos idiomas) */
@@ -360,6 +384,12 @@ export function createEmptyBlock(type: SermonBlockType): SermonBlockData {
   return { id: newBlockId(), type, title: '', content: '' };
 }
 
+/** Resolve o rótulo a ser exibido no header (customLabel > label do tipo) */
+export function getBlockDisplayLabel(block: SermonBlockData, lang: 'PT' | 'EN' | 'ES'): string {
+  if (block.customLabel?.trim()) return block.customLabel.trim();
+  return SERMON_BLOCK_META[block.type].label[lang];
+}
+
 /**
  * Converte blocos em Markdown unificado (para salvar/exportar/Modo Púlpito).
  */
@@ -367,7 +397,8 @@ export function blocksToMarkdown(blocks: SermonBlockData[], lang: 'PT' | 'EN' | 
   const out: string[] = [];
   for (const b of blocks) {
     const meta = SERMON_BLOCK_META[b.type];
-    const heading = b.title?.trim() || meta.label[lang];
+    const displayLabel = b.customLabel?.trim() || meta.label[lang];
+    const heading = b.title?.trim() || displayLabel;
     out.push(`## ${meta.emoji} ${heading}`);
     if (b.type === 'passage' && b.passageRef) {
       out.push(`**${b.passageRef}**`);

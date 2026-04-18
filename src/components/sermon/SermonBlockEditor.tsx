@@ -14,11 +14,12 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
-import { Plus, ChevronDown, ChevronUp, Sparkles, Loader2 } from 'lucide-react';
+import { Plus, ChevronDown, ChevronUp, Sparkles, Loader2, Save, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { SermonBlock } from './SermonBlock';
+import { SermonTemplateDialog } from './SermonTemplateDialog';
 import {
   SERMON_BLOCK_META,
   SERMON_BLOCK_ORDER,
@@ -53,11 +54,11 @@ const tr = {
   totalWords: { PT: 'palavras no total', EN: 'total words', ES: 'palabras en total' },
   blocks: { PT: 'blocos', EN: 'blocks', ES: 'bloques' },
   pickType: { PT: 'Escolha o tipo de bloco', EN: 'Pick a block type', ES: 'Elija el tipo de bloque' },
-  quickAdd: { PT: 'Criação rápida', EN: 'Quick add', ES: 'Creación rápida' },
+  quickAdd: { PT: 'Atalho rápido — adicionar bloco', EN: 'Quick add — append block', ES: 'Atajo rápido — añadir bloque' },
   quickAddHint: {
-    PT: 'Clique numa bolinha para adicionar o bloco ao final',
-    EN: 'Click a dot to append a block at the end',
-    ES: 'Haga clic en una bolita para añadir el bloque al final',
+    PT: 'Cada bolinha representa um tipo de bloco. Clique para adicionar ao final do sermão.',
+    EN: 'Each dot is a block type. Click to append it to the end of the sermon.',
+    ES: 'Cada bolita es un tipo de bloque. Haga clic para añadirlo al final del sermón.',
   },
   bulkGen: { PT: 'Gerar Esboço com IA', EN: 'Generate Outline with AI', ES: 'Generar Bosquejo con IA' },
   bulkGenLoading: { PT: 'Construindo no estilo Spurgeon...', EN: 'Building in Spurgeon style...', ES: 'Construyendo al estilo Spurgeon...' },
@@ -73,6 +74,8 @@ const tr = {
     EN: 'Fill in the Big Idea or Passage before generating.',
     ES: 'Complete la Gran Idea o el Pasaje antes de generar.',
   },
+  saveTpl: { PT: 'Salvar template', EN: 'Save template', ES: 'Guardar plantilla' },
+  loadTpl: { PT: 'Meus templates', EN: 'My templates', ES: 'Mis plantillas' },
 };
 
 /** Esqueleto padrão Spurgeon — auto-carregado quando o studio abre vazio. */
@@ -95,6 +98,7 @@ export function SermonBlockEditor({
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [tplDialog, setTplDialog] = useState<null | 'save' | 'load'>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef(false);
 
@@ -275,14 +279,14 @@ export function SermonBlockEditor({
     <div className="space-y-4">
       {/* ─── Seletor compacto: bolinhas coloridas com fundo -50 (mesma paleta do Púlpito Claro) ─── */}
       <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2.5">
-        <div className="flex items-center justify-between mb-2 gap-2">
+        <div className="flex items-center justify-between mb-1.5 gap-2">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
             {tr.quickAdd[lang]}
           </span>
-          <span className="hidden sm:inline text-[10px] text-muted-foreground/70 truncate">
-            {tr.quickAddHint[lang]}
-          </span>
         </div>
+        <p className="text-[11px] text-muted-foreground/80 leading-snug mb-2">
+          {tr.quickAddHint[lang]}
+        </p>
         <div className="flex flex-wrap gap-1.5">
           {SERMON_BLOCK_ORDER.map((type) => {
             const meta = SERMON_BLOCK_META[type];
@@ -322,28 +326,49 @@ export function SermonBlockEditor({
         </div>
       </div>
 
-      {/* Botão mestre: Gerar Esboço com IA (modelo Spurgeon) */}
-      <button
-        onClick={handleBulkGenerate}
-        disabled={bulkLoading}
-        className={cn(
-          'w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-all',
-          'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-sm hover:shadow-md',
-          'disabled:opacity-70 disabled:cursor-wait',
-        )}
-      >
-        {bulkLoading ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-sm font-semibold">{tr.bulkGenLoading[lang]}</span>
-          </>
-        ) : (
-          <>
-            <Sparkles className="h-4 w-4" />
-            <span className="text-sm font-semibold">{tr.bulkGen[lang]}</span>
-          </>
-        )}
-      </button>
+      {/* Linha de ações: Gerar com IA (compacto) + Templates */}
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={handleBulkGenerate}
+          disabled={bulkLoading}
+          className={cn(
+            'flex-1 min-w-[180px] inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg transition-all',
+            'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-sm hover:shadow-md',
+            'disabled:opacity-70 disabled:cursor-wait text-xs font-semibold',
+          )}
+        >
+          {bulkLoading ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <span className="truncate">{tr.bulkGenLoading[lang]}</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-3.5 w-3.5" />
+              <span className="truncate">{tr.bulkGen[lang]}</span>
+            </>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => setTplDialog('load')}
+          title={tr.loadTpl[lang]}
+          className="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg border border-border bg-card hover:bg-muted/50 text-xs font-medium text-foreground transition-colors"
+        >
+          <FolderOpen className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">{tr.loadTpl[lang]}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setTplDialog('save')}
+          disabled={blocks.length === 0}
+          title={tr.saveTpl[lang]}
+          className="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg border border-border bg-card hover:bg-muted/50 text-xs font-medium text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Save className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">{tr.saveTpl[lang]}</span>
+        </button>
+      </div>
 
       {/* Hint sobre o esqueleto padrão (mostra só enquanto a tela está com a estrutura inicial vazia) */}
       {isSkeletonOnly && (
@@ -433,6 +458,16 @@ export function SermonBlockEditor({
           </span>
         </div>
       )}
+
+      {/* Dialog de Templates (salvar / carregar) */}
+      <SermonTemplateDialog
+        open={tplDialog !== null}
+        onOpenChange={(v) => { if (!v) setTplDialog(null); }}
+        mode={tplDialog ?? 'load'}
+        lang={lang}
+        currentBlocks={blocks}
+        onApplyTemplate={(next) => onChange(next)}
+      />
     </div>
   );
 }
