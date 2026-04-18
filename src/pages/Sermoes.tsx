@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine, Layers, Zap, MonitorPlay } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -14,10 +14,12 @@ import { toast } from 'sonner';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
+import { PodiumModeModal } from '@/components/sermon/PodiumModeModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
 import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/bible-ref-parser';
 import { versionToApiCode, versionAbbrToCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
+import { SermonBlockEditor, blocksToMarkdown, type SermonBlockData } from '@/components/sermon/SermonBlockEditor';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -249,6 +251,13 @@ export default function Sermoes() {
   // Modals
   const [carouselOpen, setCarouselOpen] = useState(false);
   const [slidesOpen, setSlidesOpen] = useState(false);
+  const [podiumOpen, setPodiumOpen] = useState(false);
+
+  // ─── Studio de Blocos ───
+  const [editorMode, setEditorMode] = useState<'ai' | 'blocks'>('ai');
+  const [blocks, setBlocks] = useState<SermonBlockData[]>([]);
+  const [bigIdea, setBigIdea] = useState('');
+  const [passageRef, setPassageRef] = useState('');
 
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -306,12 +315,29 @@ export default function Sermoes() {
     }
   };
 
-  /* ═══ Restore a saved session ═══ */
+  /* ═══ Restore a saved session (detecta JSON de blocos vs markdown puro) ═══ */
   const handleRestoreSession = (session: SermonSession) => {
+    try {
+      const parsed = JSON.parse(session.content);
+      if (parsed && parsed._type === 'blocks') {
+        setBlocks(parsed.blocks || []);
+        setBigIdea(parsed.bigIdea || '');
+        setPassageRef(parsed.passageRef || '');
+        setSermonContent(parsed.markdown || blocksToMarkdown(parsed.blocks || [], lang));
+        setSermonTitle(session.title);
+        setSermonTopic(session.passage);
+        setActiveSessionId(session.id);
+        setEditorMode('blocks');
+        setShowResult(true);
+        setMobileHistoryOpen(false);
+        return;
+      }
+    } catch { /* fallthrough — markdown puro */ }
     setSermonContent(session.content);
     setSermonTitle(session.title);
     setSermonTopic(session.passage);
     setActiveSessionId(session.id);
+    setEditorMode('ai');
     setShowResult(true);
     setMobileHistoryOpen(false);
   };
@@ -328,6 +354,33 @@ export default function Sermoes() {
     setDuration('30 min');
     setStyle(null);
     setTone(null);
+    setBlocks([]);
+    setBigIdea('');
+    setPassageRef('');
+  };
+
+  /* ─── Salvar sermão construído por blocos ─── */
+  const handleSaveBlocks = async () => {
+    if (!user || blocks.length === 0) return;
+    const md = blocksToMarkdown(blocks, lang);
+    const title = bigIdea.trim().slice(0, 80) || passageRef.trim().slice(0, 80) || (lang === 'PT' ? 'Sermão sem título' : 'Untitled sermon');
+    const payload = JSON.stringify({ _type: 'blocks', blocks, bigIdea, passageRef, markdown: md });
+    try {
+      if (activeSessionId) {
+        await (supabase as any).from('materials').update({ title, content: payload, passage: passageRef }).eq('id', activeSessionId);
+      } else {
+        const { data } = await (supabase as any).from('materials').insert({
+          user_id: user.id, type: 'sermon', title, content: payload, language: lang, passage: passageRef,
+        }).select('id').single();
+        if (data) setActiveSessionId(data.id);
+      }
+      setSermonContent(md);
+      setSermonTitle(title);
+      toast.success(labels.saved[lang]);
+      await refreshSessions();
+    } catch (e) {
+      toast.error('Erro ao salvar');
+    }
   };
 
   const handleDeleteSession = async (id: string) => {
@@ -587,6 +640,25 @@ export default function Sermoes() {
                 <p className="text-sm text-muted-foreground mt-2 max-w-lg mx-auto leading-relaxed">{labels.subtitle[lang]}</p>
               </div>
 
+              {/* ─── Toggle: Gerar com IA  vs  Studio de Blocos ─── */}
+              <div className="flex p-1 bg-muted/50 rounded-xl border border-border mb-6">
+                <button
+                  onClick={() => setEditorMode('ai')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-all ${editorMode === 'ai' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  <Zap className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Gerar com IA' : lang === 'ES' ? 'Generar con IA' : 'Generate with AI'}
+                </button>
+                <button
+                  onClick={() => { setEditorMode('blocks'); setShowResult(true); }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-all ${editorMode === 'blocks' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Studio de Blocos' : lang === 'ES' ? 'Studio de Bloques' : 'Block Studio'}
+                </button>
+              </div>
+
+
               {/* Options */}
               <div className="space-y-4">
                 {/* Tipo de Pregação — full width */}
@@ -687,7 +759,47 @@ export default function Sermoes() {
                 {labels.backToForm[lang]}
               </button>
 
-              {loading ? (
+              {editorMode === 'blocks' ? (
+                /* ─── STUDIO DE BLOCOS ─── */
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-border bg-card/60 p-4 space-y-3">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">💡 {lang === 'PT' ? 'Grande Ideia' : lang === 'ES' ? 'Gran Idea' : 'Big Idea'}</p>
+                    <input
+                      value={bigIdea}
+                      onChange={(e) => setBigIdea(e.target.value)}
+                      placeholder={lang === 'PT' ? 'A frase única que resume todo o sermão...' : lang === 'ES' ? 'La frase única que resume todo el sermón...' : 'The single sentence that summarizes the whole sermon...'}
+                      className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                    <input
+                      value={passageRef}
+                      onChange={(e) => setPassageRef(e.target.value)}
+                      placeholder={lang === 'PT' ? 'Passagem principal (ex: João 3:16)' : 'Main passage (e.g. John 3:16)'}
+                      className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                  </div>
+                  <SermonBlockEditor
+                    blocks={blocks}
+                    onChange={setBlocks}
+                    bigIdea={bigIdea}
+                    passageRef={passageRef}
+                    topic={topic}
+                    lang={lang}
+                  />
+                  {blocks.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
+                      <button onClick={handleSaveBlocks} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
+                        <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+                      </button>
+                      <button
+                        onClick={() => { setSermonContent(blocksToMarkdown(blocks, lang)); setSermonTitle(bigIdea.trim() || passageRef.trim() || 'Sermão'); setPodiumOpen(true); }}
+                        className={`${actionBtn} !border-amber-500/40 !bg-amber-500/10 !text-amber-700 dark:!text-amber-400`}
+                      >
+                        <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : loading ? (
                 <div className="flex flex-col items-center justify-center py-20">
                   <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                     <Loader2 className="h-7 w-7 text-primary animate-spin" />
@@ -717,6 +829,12 @@ export default function Sermoes() {
                     <div className="flex flex-wrap gap-2 mt-6 mb-4 pt-4 border-t border-border justify-start animate-in fade-in duration-300">
                       <button onClick={handleSave} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
                         <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+                      </button>
+                      <button
+                        onClick={() => setPodiumOpen(true)}
+                        className={`${actionBtn} !border-amber-500/40 !bg-amber-500/10 !text-amber-700 dark:!text-amber-400`}
+                      >
+                        <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
                       </button>
                       <button onClick={handleCopy} className={actionBtn}>
                         <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
@@ -861,6 +979,17 @@ export default function Sermoes() {
         initialVerse={bibleRef?.verseStart}
         initialVerseEnd={bibleRef?.verseEnd}
         initialTranslation={bibleTranslationCode}
+      />
+
+      {/* ─── Modo Púlpito ─── */}
+      <PodiumModeModal
+        open={podiumOpen}
+        onOpenChange={setPodiumOpen}
+        sermonMarkdown={sermonContent || (blocks.length ? blocksToMarkdown(blocks, lang) : '')}
+        sermonTitle={sermonTitle || bigIdea || 'Sermão'}
+        durationLimitMinutes={duration?.match(/\d+/) ? parseInt(duration.match(/\d+/)![0]) : 30}
+        materialId={activeSessionId}
+        lang={lang}
       />
     </div>
   );
