@@ -80,21 +80,31 @@ interface BlockMeta {
   label: { PT: string; EN: string; ES: string };
   /** classes de cor para a badge (bg + texto + ring), funcionam em dark e light */
   badgeClass: string;
+  /** Modo Claro — fundo vibrante suave do cartão (cor identitária do bloco) */
+  lightCardBg: string;
+  /** Modo Claro — borda esquerda vibrante (faixa identitária) */
+  lightBorderLeft: string;
+  /** Modo Claro — cor do título/heading do bloco */
+  lightHeading: string;
+  /** Modo Escuro — borda esquerda vibrante */
+  darkBorderLeft: string;
+  /** Modo Escuro — cor do título/heading do bloco */
+  darkHeading: string;
 }
 
 const BLOCK_META: Record<BlockTone, BlockMeta> = {
-  idea:         { tone: 'idea',         emoji: '💡', label: { PT: 'Grande Ideia',    EN: 'Big Idea',      ES: 'Gran Idea' },        badgeClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-300 ring-purple-500/30' },
-  hook:         { tone: 'hook',         emoji: '🎣', label: { PT: 'Gancho',          EN: 'Hook',          ES: 'Gancho' },           badgeClass: 'bg-orange-500/15 text-orange-600 dark:text-orange-300 ring-orange-500/30' },
-  passage:      { tone: 'passage',      emoji: '📖', label: { PT: 'Passagem',        EN: 'Passage',       ES: 'Pasaje' },           badgeClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-sky-500/30' },
-  illustration: { tone: 'illustration', emoji: '🖼️', label: { PT: 'Ilustração',      EN: 'Illustration',  ES: 'Ilustración' },      badgeClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-emerald-500/30' },
-  application:  { tone: 'application',  emoji: '🎯', label: { PT: 'Aplicação',       EN: 'Application',   ES: 'Aplicación' },       badgeClass: 'bg-amber-600/20 text-amber-700 dark:text-amber-300 ring-amber-600/40' },
-  main:         { tone: 'main',         emoji: '🔷', label: { PT: 'Ponto Principal', EN: 'Main Point',    ES: 'Punto Principal' },  badgeClass: 'bg-blue-500/15 text-blue-600 dark:text-blue-300 ring-blue-500/30' },
-  conclusion:   { tone: 'conclusion',   emoji: '🙏', label: { PT: 'Conclusão',       EN: 'Conclusion',    ES: 'Conclusión' },       badgeClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-300 ring-rose-500/30' },
-  original:     { tone: 'original',     emoji: '🔍', label: { PT: 'Hebraico/Grego',  EN: 'Hebrew/Greek',  ES: 'Hebreo/Griego' },    badgeClass: 'bg-amber-700/20 text-amber-800 dark:text-amber-400 ring-amber-700/40' },
-  transition:   { tone: 'transition',   emoji: '➰', label: { PT: 'Transição',       EN: 'Transition',    ES: 'Transición' },       badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30' },
-  quote:        { tone: 'quote',        emoji: '📚', label: { PT: 'Citação',         EN: 'Quote',         ES: 'Cita' },             badgeClass: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 ring-yellow-500/30' },
-  explanation:  { tone: 'explanation',  emoji: '📜', label: { PT: 'Explicação',      EN: 'Explanation',   ES: 'Explicación' },      badgeClass: 'bg-violet-500/15 text-violet-600 dark:text-violet-300 ring-violet-500/30' },
-  generic:      { tone: 'generic',      emoji: '✦',  label: { PT: 'Bloco',           EN: 'Block',         ES: 'Bloque' },           badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30' },
+  idea:         { tone: 'idea',         emoji: '💡', label: { PT: 'Grande Ideia',    EN: 'Big Idea',      ES: 'Gran Idea' },        badgeClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-300 ring-purple-500/30',  lightCardBg: 'bg-purple-50 border-purple-200',  lightBorderLeft: 'border-l-4 border-l-purple-500',  lightHeading: 'text-purple-700',  darkBorderLeft: 'border-l-4 border-l-purple-500',  darkHeading: 'text-purple-200' },
+  hook:         { tone: 'hook',         emoji: '🎣', label: { PT: 'Gancho',          EN: 'Hook',          ES: 'Gancho' },           badgeClass: 'bg-orange-500/15 text-orange-600 dark:text-orange-300 ring-orange-500/30',  lightCardBg: 'bg-orange-50 border-orange-200',  lightBorderLeft: 'border-l-4 border-l-orange-500',  lightHeading: 'text-orange-700',  darkBorderLeft: 'border-l-4 border-l-orange-500',  darkHeading: 'text-orange-200' },
+  passage:      { tone: 'passage',      emoji: '📖', label: { PT: 'Passagem',        EN: 'Passage',       ES: 'Pasaje' },           badgeClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-sky-500/30',              lightCardBg: 'bg-sky-50 border-sky-200',        lightBorderLeft: 'border-l-4 border-l-sky-500',     lightHeading: 'text-sky-700',     darkBorderLeft: 'border-l-4 border-l-sky-500',     darkHeading: 'text-sky-200' },
+  illustration: { tone: 'illustration', emoji: '🖼️', label: { PT: 'Ilustração',      EN: 'Illustration',  ES: 'Ilustración' },      badgeClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-emerald-500/30', lightCardBg: 'bg-emerald-50 border-emerald-200', lightBorderLeft: 'border-l-4 border-l-emerald-500', lightHeading: 'text-emerald-700', darkBorderLeft: 'border-l-4 border-l-emerald-500', darkHeading: 'text-emerald-200' },
+  application:  { tone: 'application',  emoji: '🎯', label: { PT: 'Aplicação',       EN: 'Application',   ES: 'Aplicación' },       badgeClass: 'bg-amber-600/20 text-amber-700 dark:text-amber-300 ring-amber-600/40',       lightCardBg: 'bg-orange-50 border-orange-200',  lightBorderLeft: 'border-l-4 border-l-orange-700',  lightHeading: 'text-orange-800', darkBorderLeft: 'border-l-4 border-l-orange-600',  darkHeading: 'text-orange-200' },
+  main:         { tone: 'main',         emoji: '🔷', label: { PT: 'Ponto Principal', EN: 'Main Point',    ES: 'Punto Principal' },  badgeClass: 'bg-blue-500/15 text-blue-600 dark:text-blue-300 ring-blue-500/30',           lightCardBg: 'bg-blue-50 border-blue-200',      lightBorderLeft: 'border-l-4 border-l-blue-600',    lightHeading: 'text-blue-700',    darkBorderLeft: 'border-l-4 border-l-blue-500',    darkHeading: 'text-blue-200' },
+  conclusion:   { tone: 'conclusion',   emoji: '🙏', label: { PT: 'Conclusão',       EN: 'Conclusion',    ES: 'Conclusión' },       badgeClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-300 ring-rose-500/30',           lightCardBg: 'bg-rose-50 border-rose-200',      lightBorderLeft: 'border-l-4 border-l-rose-500',    lightHeading: 'text-rose-700',    darkBorderLeft: 'border-l-4 border-l-rose-500',    darkHeading: 'text-rose-200' },
+  original:     { tone: 'original',     emoji: '🔍', label: { PT: 'Hebraico/Grego',  EN: 'Hebrew/Greek',  ES: 'Hebreo/Griego' },    badgeClass: 'bg-amber-700/20 text-amber-800 dark:text-amber-400 ring-amber-700/40',       lightCardBg: 'bg-amber-50 border-amber-300',    lightBorderLeft: 'border-l-4 border-l-amber-800',   lightHeading: 'text-amber-800',   darkBorderLeft: 'border-l-4 border-l-amber-700',   darkHeading: 'text-amber-300' },
+  transition:   { tone: 'transition',   emoji: '➰', label: { PT: 'Transição',       EN: 'Transition',    ES: 'Transición' },       badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30',       lightCardBg: 'bg-slate-50 border-slate-200',    lightBorderLeft: 'border-l-4 border-l-slate-500',   lightHeading: 'text-slate-700',   darkBorderLeft: 'border-l-4 border-l-slate-500',   darkHeading: 'text-slate-200' },
+  quote:        { tone: 'quote',        emoji: '📚', label: { PT: 'Citação',         EN: 'Quote',         ES: 'Cita' },             badgeClass: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 ring-yellow-500/30',   lightCardBg: 'bg-yellow-50 border-yellow-300',  lightBorderLeft: 'border-l-4 border-l-yellow-600',  lightHeading: 'text-yellow-800',  darkBorderLeft: 'border-l-4 border-l-yellow-500',  darkHeading: 'text-yellow-200' },
+  explanation:  { tone: 'explanation',  emoji: '📜', label: { PT: 'Explicação',      EN: 'Explanation',   ES: 'Explicación' },      badgeClass: 'bg-violet-500/15 text-violet-600 dark:text-violet-300 ring-violet-500/30',   lightCardBg: 'bg-violet-50 border-violet-200',  lightBorderLeft: 'border-l-4 border-l-violet-500',  lightHeading: 'text-violet-700',  darkBorderLeft: 'border-l-4 border-l-violet-500',  darkHeading: 'text-violet-200' },
+  generic:      { tone: 'generic',      emoji: '✦',  label: { PT: 'Bloco',           EN: 'Block',         ES: 'Bloque' },           badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30',       lightCardBg: 'bg-white border-slate-200',       lightBorderLeft: 'border-l-4 border-l-slate-400',   lightHeading: 'text-slate-700',   darkBorderLeft: 'border-l-4 border-l-slate-500',   darkHeading: 'text-amber-200/95' },
 };
 
 function detectBlockTone(heading?: string): BlockTone {
@@ -531,7 +541,10 @@ export function PodiumModeModal({
   const iconBtn = isDark
     ? 'text-slate-400 hover:text-white hover:bg-slate-800'
     : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200';
-  const timerBg = isDark
+  const timerAlert = mode === 'countdown' && seconds === 0;
+  const timerBg = timerAlert
+    ? 'bg-red-600 text-white ring-2 ring-red-400 animate-pulse shadow-lg shadow-red-500/40'
+    : isDark
     ? (overLimit ? 'bg-red-950/60 text-red-300 ring-1 ring-red-500/50' : 'bg-slate-800 text-slate-100')
     : (overLimit ? 'bg-red-100 text-red-700 ring-1 ring-red-400/60' : 'bg-slate-200 text-slate-800');
   const cardBg = isDark
@@ -610,11 +623,17 @@ export function PodiumModeModal({
             <DropdownMenuContent align="start" className={cn(dropdownBg, 'w-64')}>
               <DropdownMenuLabel>{lang === 'PT' ? 'Modo do Timer' : 'Timer Mode'}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setMode('countdown')}>
-                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} ({durationMin} min)
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMode('progressive')}>
-                <Timer className="h-4 w-4 mr-2" /> {tr.progressive[lang]}
+                <Timer className="h-4 w-4 mr-2" /> {tr.progressive[lang]} {lang === 'PT' ? '(padrão)' : lang === 'ES' ? '(predet.)' : '(default)'}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setDurationMin(60); setCustomMin('60'); setMode('countdown'); }}>
+                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} — 60 min
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setDurationMin(45); setCustomMin('45'); setMode('countdown'); }}>
+                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} — 45 min
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setDurationMin(30); setCustomMin('30'); setMode('countdown'); }}>
+                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} — 30 min
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMode('clock')}>
                 <Clock className="h-4 w-4 mr-2" /> {tr.clock[lang]}
@@ -755,12 +774,18 @@ export function PodiumModeModal({
           {cards.map((c) => {
             const meta = BLOCK_META[c.tone];
             const isEditing = editingId === c.id;
+            // Modo Claro: usa paleta vibrante identitária do bloco. Modo Escuro: mantém superfície dark, só pinta a borda.
+            const cardSurface = isDark
+              ? cn(cardBg, meta.darkBorderLeft)
+              : c.isQuote
+              ? cn(cardQuoteBg, meta.lightBorderLeft)
+              : cn(meta.lightCardBg, meta.lightBorderLeft);
             return (
               <section
                 key={c.id}
                 className={cn(
                   'relative rounded-2xl border shadow-sm transition-shadow w-full min-w-0 break-words',
-                  c.isQuote ? cardQuoteBg : cardBg,
+                  cardSurface,
                   isEditing && (isDark ? 'ring-2 ring-amber-500/60' : 'ring-2 ring-amber-500'),
                 )}
               >
@@ -807,12 +832,12 @@ export function PodiumModeModal({
                   )}
                 </div>
 
-                {/* Heading visual (subtítulo) */}
+                {/* Heading visual (subtítulo) — usa cor identitária do bloco */}
                 {c.heading && (
                   <h3
                     className={cn(
                       'font-sans font-bold tracking-tight px-3 sm:px-6 pt-3 break-words',
-                      isDark ? 'text-amber-200/95' : 'text-amber-700',
+                      isDark ? meta.darkHeading : meta.lightHeading,
                     )}
                     style={{ fontSize: `clamp(16px, ${Math.round(fontPx * 0.85)}px, ${Math.round(fontPx * 0.85)}px)`, lineHeight: 1.2 }}
                   >
