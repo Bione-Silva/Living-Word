@@ -979,7 +979,7 @@ export default function AppLayout() {
           </Link>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
-          <PWAInstallBanner />
+          <MobileInstallBanner />
           <Outlet />
         </main>
       </div>
