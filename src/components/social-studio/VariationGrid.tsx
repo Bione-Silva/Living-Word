@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import JSZip from 'jszip';
 import PptxGenJS from 'pptxgenjs';
 import { SlideCanvas, type SlideData } from './SlideCanvas';
+import { getThemePalette } from './ThemeCustomizer';
 import type { CanvasTemplate } from './TemplatePicker';
 import type { AspectRatio } from './AspectRatioSelector';
 import type { ThemeConfig } from './ThemeCustomizer';
