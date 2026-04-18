@@ -391,7 +391,12 @@ export function PodiumModeModal({
 
   /** Garante que o alerta sonoro/vibração toca uma única vez por countdown. */
   const endAlertFiredRef = useRef(false);
+  /** Pré-aviso aos 5 minutos restantes — dispara uma única vez por ciclo. */
+  const warningAlertFiredRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
+
+  /** Segundos antes do fim para o pré-aviso suave (5 minutos). */
+  const WARNING_THRESHOLD_SECONDS = 5 * 60;
 
   /** Preferência persistida do usuário para o sino + vibração ao bater 00:00. */
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
