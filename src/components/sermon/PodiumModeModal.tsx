@@ -478,11 +478,18 @@ export function PodiumModeModal({
 
   // Wake Lock API: solicita enquanto modal aberto + toggle ligado; reativa ao voltar de background.
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  const [wakeLockActive, setWakeLockActive] = useState(false);
   useEffect(() => {
-    if (!open || !keepScreenOn) return;
+    if (!open || !keepScreenOn) {
+      setWakeLockActive(false);
+      return;
+    }
     let cancelled = false;
     const nav = typeof navigator !== 'undefined' ? (navigator as Navigator & { wakeLock?: { request: (type: 'screen') => Promise<WakeLockSentinel> } }) : null;
-    if (!nav?.wakeLock) return; // iOS Safari < 16.4 não suporta — silencioso
+    if (!nav?.wakeLock) {
+      setWakeLockActive(false);
+      return; // iOS Safari < 16.4 não suporta — silencioso
+    }
 
     const request = async () => {
       try {
@@ -492,13 +499,16 @@ export function PodiumModeModal({
           return;
         }
         wakeLockRef.current = sentinel;
+        setWakeLockActive(true);
         sentinel.addEventListener('release', () => {
+          setWakeLockActive(false);
           // Se ainda devemos manter ligada e o doc estiver visível, re-solicita.
           if (!cancelled && keepScreenOn && document.visibilityState === 'visible') {
             void request();
           }
         });
       } catch {
+        setWakeLockActive(false);
         /* permissão negada ou bateria fraca — silencioso */
       }
     };
@@ -518,6 +528,7 @@ export function PodiumModeModal({
         void wakeLockRef.current.release().catch(() => {});
         wakeLockRef.current = null;
       }
+      setWakeLockActive(false);
     };
   }, [open, keepScreenOn]);
 
@@ -922,6 +933,45 @@ export function PodiumModeModal({
               </button>
             )}
           </div>
+
+          {/* Indicador discreto de Wake Lock ativo (tela não vai apagar) */}
+          {wakeLockActive && (
+            <div
+              className={cn(
+                'relative p-1.5 sm:p-2 rounded-md',
+                isDark ? 'text-amber-300' : 'text-amber-600',
+              )}
+              role="status"
+              aria-live="polite"
+              aria-label={
+                lang === 'EN'
+                  ? 'Screen will stay awake'
+                  : lang === 'ES'
+                  ? 'La pantalla permanecerá encendida'
+                  : 'Tela permanecerá ligada'
+              }
+              title={
+                lang === 'EN'
+                  ? 'Screen wake lock active'
+                  : lang === 'ES'
+                  ? 'Bloqueo de pantalla activo'
+                  : 'Tela travada — não vai apagar'
+              }
+            >
+              <Sun className="h-4 w-4" />
+              <span
+                className={cn(
+                  'absolute top-1 right-1 h-2 w-2 rounded-full bg-emerald-500 ring-2',
+                  isDark ? 'ring-slate-900' : 'ring-white',
+                )}
+                aria-hidden="true"
+              />
+              <span
+                className="absolute top-1 right-1 h-2 w-2 rounded-full bg-emerald-500 animate-ping opacity-60"
+                aria-hidden="true"
+              />
+            </div>
+          )}
 
           {/* Toggle tema (sempre visível) */}
           <button
