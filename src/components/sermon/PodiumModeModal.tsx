@@ -1122,7 +1122,7 @@ export function PodiumModeModal({
                 {mode === 'countdown' && <Hourglass className="h-4 w-4" />}
                 {mode === 'progressive' && <Timer className="h-4 w-4" />}
                 {mode === 'clock' && <Clock className="h-4 w-4" />}
-                <span className="hidden xs:inline sm:inline">
+                <span className="inline">
                   {lang === 'PT' ? 'Configurar Timer' : lang === 'ES' ? 'Configurar Timer' : 'Configure Timer'}
                 </span>
                 <ChevronDown className="h-3 w-3 opacity-70" />
