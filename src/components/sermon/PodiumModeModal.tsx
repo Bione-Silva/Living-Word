@@ -1058,17 +1058,17 @@ export function PodiumModeModal({
               aria-live="polite"
               aria-label={
                 lang === 'EN'
-                  ? 'Screen will stay awake'
+                  ? 'Anti-sleep mode active: your screen will not turn off during preaching'
                   : lang === 'ES'
-                  ? 'La pantalla permanecerá encendida'
-                  : 'Tela permanecerá ligada'
+                  ? 'Modo anti-bloqueo activo: la pantalla no se apagará durante la predicación'
+                  : 'Modo anti-bloqueio ativo: a tela não vai apagar durante a pregação'
               }
               title={
                 lang === 'EN'
-                  ? 'Screen wake lock active — screen will not turn off'
+                  ? '🖥️📱 Anti-sleep mode active\nYour screen (computer or phone) will stay on during the entire sermon — no need to touch it.'
                   : lang === 'ES'
-                  ? 'Bloqueo de pantalla activo — la pantalla no se apagará'
-                  : 'Tela travada ligada — não vai apagar durante a pregação'
+                  ? '🖥️📱 Modo anti-bloqueo activo\nTu pantalla (computadora o móvil) permanecerá encendida durante toda la predicación — sin necesidad de tocarla.'
+                  : '🖥️📱 Modo anti-bloqueio ativo\nSua tela (computador ou celular) ficará ligada durante toda a pregação — sem precisar tocar nela.'
               }
             >
               <MonitorSmartphone className="h-4 w-4" />
@@ -1382,8 +1382,8 @@ export function PodiumModeModal({
               <button
                 type="button"
                 className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
-                aria-label={lang === 'PT' ? 'Configurações (fonte, compartilhar, imprimir)' : lang === 'ES' ? 'Ajustes (fuente, compartir, imprimir)' : 'Settings (font, share, print)'}
-                title={lang === 'PT' ? 'Configurações: tamanho da fonte, compartilhar, baixar e imprimir' : lang === 'ES' ? 'Ajustes: tamaño de fuente, compartir, descargar e imprimir' : 'Settings: font size, share, download and print'}
+                aria-label={lang === 'PT' ? 'Configurações (fonte e compartilhar)' : lang === 'ES' ? 'Ajustes (fuente y compartir)' : 'Settings (font and share)'}
+                title={lang === 'PT' ? 'Configurações: tamanho da fonte e compartilhar link' : lang === 'ES' ? 'Ajustes: tamaño de fuente y compartir enlace' : 'Settings: font size and share link'}
               >
                 <Settings className="h-4 w-4" />
               </button>
@@ -1402,12 +1402,6 @@ export function PodiumModeModal({
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleShare}>
                 <Share2 className="h-4 w-4 mr-2" /> {tr.share[lang]}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDownload}>
-                <Download className="h-4 w-4 mr-2" /> {tr.download[lang]}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handlePrint}>
-                <Printer className="h-4 w-4 mr-2" /> {tr.print[lang]}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
