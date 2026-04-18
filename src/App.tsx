@@ -135,6 +135,7 @@ const App = () => (
                   <Route path="/devocional" element={<Devocional />} />
                   <Route path="/bom-amigo" element={<BomAmigo />} />
                   <Route path="/sermoes" element={<Sermoes />} />
+                  <Route path="/series/:id" element={<SeriesDetail />} />
                   <Route path="/quiz" element={<Quiz />} />
                   <Route path="/kids" element={<Kids />} />
                   <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
