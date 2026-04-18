@@ -13,7 +13,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { openWhatsAppShare } from '@/lib/whatsapp';
-import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
 import { PodiumModeModal } from '@/components/sermon/PodiumModeModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
@@ -21,6 +20,7 @@ import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/b
 import { versionToApiCode, versionAbbrToCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 import { SermonBlockEditor, blocksToMarkdown, type SermonBlockData } from '@/components/sermon/SermonBlockEditor';
+import { exportSermonToPptx } from '@/lib/sermon-pptx';
 
 type L = 'PT' | 'EN' | 'ES';
 
