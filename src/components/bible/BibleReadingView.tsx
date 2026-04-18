@@ -194,14 +194,21 @@ export function BibleReadingView({
   const pressTriggeredRef = useRef(false);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const MOVE_THRESHOLD = 10; // px
+  const [pressingVerse, setPressingVerse] = useState<number | null>(null);
 
   const startTouchPress = (verseNum: number, e: React.TouchEvent) => {
     pressTriggeredRef.current = false;
     const t = e.touches[0];
     touchStartRef.current = { x: t.clientX, y: t.clientY };
+    setPressingVerse(verseNum);
     if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
     pressTimerRef.current = window.setTimeout(() => {
       pressTriggeredRef.current = true;
+      // Haptic feedback on supported mobile devices
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate(15); } catch { /* noop */ }
+      }
+      setPressingVerse(null);
       toggleVerseSelection(verseNum);
     }, 450);
   };
