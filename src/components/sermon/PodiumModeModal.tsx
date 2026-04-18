@@ -543,6 +543,10 @@ export function PodiumModeModal({
     if (mode !== 'countdown' || seconds > 0) {
       endAlertFiredRef.current = false;
     }
+    // Pré-aviso: rearma quando o tempo restante volta a ficar acima do limiar (ex: após reset).
+    if (mode !== 'countdown' || seconds > WARNING_THRESHOLD_SECONDS) {
+      warningAlertFiredRef.current = false;
+    }
   }, [mode, seconds]);
 
 
