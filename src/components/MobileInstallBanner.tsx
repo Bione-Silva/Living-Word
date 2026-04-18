@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useIsStandalone } from '@/hooks/useIsStandalone';
 import { useIsMobile } from '@/hooks/use-mobile';
