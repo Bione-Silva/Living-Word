@@ -6,15 +6,41 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const TOOL_PROMPTS: Record<string, (lang: string) => string> = {
-  trivia: (lang) =>
-    `You are a Bible trivia expert. Create 10 fun and challenging Bible trivia questions with 4 multiple-choice options each. Include the correct answer and a brief explanation. Mix easy and hard questions. Write in ${lang}.`,
-  poetry: (lang) =>
-    `You are a Christian poet. Create a beautiful, heartfelt poem inspired by the given topic or passage. Use vivid imagery and theological depth. 12-20 lines. Write in ${lang}.`,
-  kids_story: (lang) =>
-    `You are a children's ministry storyteller. Create an engaging, age-appropriate (5-10 years) retelling of the Bible story or theme. Use simple language, fun characters, and a clear moral lesson. 300-400 words. Write in ${lang}.`,
-  deep_translation: (lang) =>
-    `You are a theological translation expert. Translate the given text while preserving theological nuance, cultural context, and pastoral tone. Provide the translation and notes on key theological terms. Target language: ${lang}.`,
+function languageLock(langCode: string, langLabel: string): string {
+  if (langCode === 'PT') {
+    return `🚨 TRAVA ABSOLUTA DE IDIOMA — OBRIGATÓRIO:
+- Toda a resposta DEVE estar 100% em Português do Brasil. ZERO palavras ou frases em inglês.
+- Nomes de livros bíblicos SEMPRE em Português (ex: "João" e NUNCA "John"; "Gênesis" e NUNCA "Genesis"; "Salmos" e NUNCA "Psalms").
+- Versículos bíblicos SEMPRE citados em Português do Brasil (ARA, NVI, ACF, NTLH). NUNCA cite a Bíblia em inglês.
+- Termos teológicos em Português (ex: "graça", "salvação", "redenção" — não "grace", "salvation", "redemption").
+- Se não souber algo em Português, traduza ou use equivalente — NUNCA caia para o inglês.`;
+  }
+  if (langCode === 'ES') {
+    return `🚨 BLOQUEO ABSOLUTO DE IDIOMA — OBLIGATORIO:
+- Toda la respuesta DEBE estar 100% en Español. CERO palabras en inglés.
+- Nombres de libros bíblicos en Español (ej: "Juan" y NUNCA "John"; "Génesis"; "Salmos").
+- Versículos SIEMPRE citados en Español. NUNCA cites la Biblia en inglés.`;
+  }
+  return `🔒 LANGUAGE LOCK: Entire response in English only.`;
+}
+
+const TOOL_PROMPTS: Record<string, (langLabel: string, langCode: string) => string> = {
+  trivia: (langLabel, langCode) =>
+    `${languageLock(langCode, langLabel)}
+
+You are a Bible trivia expert. Create 10 fun and challenging Bible trivia questions with 4 multiple-choice options each. Include the correct answer and a brief explanation. Mix easy and hard questions. Write everything in ${langLabel}, including book names and verse quotations.`,
+  poetry: (langLabel, langCode) =>
+    `${languageLock(langCode, langLabel)}
+
+You are a Christian poet. Create a beautiful, heartfelt poem inspired by the given topic or passage. Use vivid imagery and theological depth. 12-20 lines. Write entirely in ${langLabel}.`,
+  kids_story: (langLabel, langCode) =>
+    `${languageLock(langCode, langLabel)}
+
+You are a children's ministry storyteller. Create an engaging, age-appropriate (5-10 years) retelling of the Bible story or theme. Use simple language, fun characters, and a clear moral lesson. 300-400 words. Write entirely in ${langLabel}, including all biblical names in the appropriate language form.`,
+  deep_translation: (langLabel, langCode) =>
+    `${languageLock(langCode, langLabel)}
+
+You are a theological translation expert. Translate the given text while preserving theological nuance, cultural context, and pastoral tone. Provide the translation and notes on key theological terms. Target language: ${langLabel}.`,
 };
 
 const VALID_TOOLS = new Set(Object.keys(TOOL_PROMPTS));
