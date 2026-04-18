@@ -84,6 +84,7 @@ function hexToHsl(hex: string): string {
 
 export default function BlogPublic() {
   const { handle } = useParams<{ handle: string }>();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: profile, isLoading: profileLoading } = useQuery<PublicBlogProfile | null>({
