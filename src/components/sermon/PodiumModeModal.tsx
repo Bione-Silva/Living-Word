@@ -375,8 +375,57 @@ export function PodiumModeModal({
   const [customMin, setCustomMin] = useState<string>(String(durationLimitMinutes));
   const limitSeconds = durationMin * 60;
 
+  /** Garante que o alerta sonoro/vibração toca uma única vez por countdown. */
+  const endAlertFiredRef = useRef(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  /** Sino suave via WebAudio (3 toques curtos) + vibração no mobile. Sem assets externos. */
+  function playEndAlert() {
+    // Vibração — Android/Chrome mobile (iOS Safari ignora silenciosamente, ok).
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate([400, 150, 400, 150, 600]);
+      }
+    } catch {
+      /* noop */
+    }
+
+    // Bell suave: 3 toques senoidais com decaimento exponencial.
+    try {
+      const Ctx = (window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
+      if (!Ctx) return;
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new Ctx();
+      }
+      const ctx = audioCtxRef.current;
+      // iOS exige resume após gesto do usuário — Play/Pause já contou como gesto.
+      if (ctx.state === 'suspended') void ctx.resume();
+
+      const now = ctx.currentTime;
+      const tone = (offset: number, freq: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.exponentialRampToValueAtTime(0.18, now + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.9);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 1.0);
+      };
+      // Acorde de sino: A5 → E6 → A5 (suave, não estridente).
+      tone(0.0, 880);
+      tone(0.55, 1318.5);
+      tone(1.1, 880);
+    } catch {
+      /* audio bloqueado: silencioso por design */
+    }
+  }
+
   useEffect(() => {
     setRunning(false);
+    endAlertFiredRef.current = false; // reset ao trocar de modo / duração
     if (mode === 'countdown') setSeconds(limitSeconds);
     else if (mode === 'progressive') setSeconds(0);
   }, [mode, limitSeconds]);
@@ -387,7 +436,15 @@ export function PodiumModeModal({
       setClockTime(new Date());
       if (running) {
         setSeconds((s) => {
-          if (mode === 'countdown') return Math.max(0, s - 1);
+          if (mode === 'countdown') {
+            const next = Math.max(0, s - 1);
+            // Disparo único exatamente na transição para 0.
+            if (next === 0 && s > 0 && !endAlertFiredRef.current) {
+              endAlertFiredRef.current = true;
+              playEndAlert();
+            }
+            return next;
+          }
           if (mode === 'progressive') return s + 1;
           return s;
         });
@@ -395,6 +452,14 @@ export function PodiumModeModal({
     }, 1000);
     return () => clearInterval(interval);
   }, [running, mode, open]);
+
+  // Reset do flag de alerta quando o usuário reseta ou some do modo countdown.
+  useEffect(() => {
+    if (mode !== 'countdown' || seconds > 0) {
+      endAlertFiredRef.current = false;
+    }
+  }, [mode, seconds]);
+
 
   const overLimit = useMemo(() => {
     if (mode === 'progressive') return seconds > limitSeconds;
