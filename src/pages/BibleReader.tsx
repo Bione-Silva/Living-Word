@@ -292,36 +292,56 @@ export default function BibleReader() {
       </div>
 
       {/* Search */}
-      <div className="relative" ref={searchRef}>
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="relative z-30" ref={searchRef}>
+        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
+          type="search"
+          inputMode="search"
+          enterKeyHint="search"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchResults.length > 0 && setShowResults(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && searchResults[0]) {
+              e.preventDefault();
+              handleSearchSelect(searchResults[0]);
+            }
+          }}
           placeholder={searchPlaceholder[lang]}
-          className="pl-10 pr-8 bg-card border-border"
+          aria-label={searchPlaceholder[lang]}
+          className="h-11 md:h-10 pl-10 pr-10 bg-card border-border text-base md:text-sm rounded-xl"
         />
         {searchQuery && (
-          <button onClick={() => { setSearchQuery(''); setShowResults(false); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted">
-            <X className="h-3.5 w-3.5 text-muted-foreground" />
+          <button
+            type="button"
+            onClick={() => { setSearchQuery(''); setShowResults(false); }}
+            aria-label={lang === 'PT' ? 'Limpar busca' : lang === 'EN' ? 'Clear search' : 'Limpiar búsqueda'}
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/80 transition-colors"
+          >
+            <X className="h-4 w-4" />
           </button>
         )}
         {showResults && searchResults.length > 0 && (
-          <div className="absolute z-20 top-full mt-1 left-0 right-0 bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+          <div className="absolute z-40 top-full mt-2 left-0 right-0 bg-card border border-border rounded-xl shadow-xl overflow-hidden max-h-[60vh] overflow-y-auto">
             {searchResults.map((r, i) => (
               <button
                 key={`${r.bookId}-${r.chapter}-${i}`}
+                type="button"
                 onClick={() => handleSearchSelect(r)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/60 transition-colors border-b border-border last:border-b-0"
+                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/60 active:bg-muted transition-colors border-b border-border last:border-b-0"
               >
-                <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <BookOpen className="h-4 w-4 text-primary" />
                 </span>
-                <div>
-                  <p className="text-sm font-medium text-foreground">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">
                     {r.bookName} {r.chapter}{r.verse ? `:${r.verse}` : ''}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground truncate">
                     {lang === 'PT' ? 'Ir para' : lang === 'EN' ? 'Go to' : 'Ir a'} {r.bookName} {lang === 'PT' ? 'capítulo' : lang === 'EN' ? 'chapter' : 'capítulo'} {r.chapter}
                   </p>
                 </div>
