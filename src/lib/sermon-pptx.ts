@@ -136,7 +136,9 @@ function addCoverSlide(
   addBrandFooter(slide);
 }
 
-/** Slide de conteúdo de bloco — letras grandes, alto contraste. */
+/** Slide de conteúdo de bloco — letras grandes, alto contraste.
+ * Fundo na cor identitária -50 do bloco (espelha Studio + Púlpito Claro).
+ */
 function addBlockSlide(
   pres: pptxgen,
   block: SermonBlockData,
@@ -144,7 +146,6 @@ function addBlockSlide(
   lang: Lang,
 ) {
   const slide = pres.addSlide();
-  slide.background = { color: COLORS.bgDark };
 
   const meta = SERMON_BLOCK_META[block.type];
   const tag = labelFor(block.type, lang);
@@ -153,13 +154,29 @@ function addBlockSlide(
   const isBigIdea = block.type === 'big_idea';
   const isQuote = block.type === 'quote';
 
-  // Tag categoria (topo)
+  // Cores identitárias do bloco (paleta -50 = mesma do Studio e Púlpito Claro)
+  const palette = meta?.hex ?? { bg50: 'F8FAFC', border200: 'E2E8F0', accent500: '64748B', accent700: '334155' };
+  const bg50 = palette.bg50.replace('#', '');
+  const accent700 = palette.accent700.replace('#', '');
+  const accent500 = palette.accent500.replace('#', '');
+  const border200 = palette.border200.replace('#', '');
+
+  slide.background = { color: bg50 };
+
+  // Borda esquerda colorida (faixa identitária — espelha border-l-* do cartão)
+  slide.addShape(pres.ShapeType.rect, {
+    x: 0, y: 0, w: 0.18, h: 7.5,
+    fill: { color: accent500 },
+    line: { type: 'none' },
+  });
+
+  // Tag categoria (topo, accent-700)
   slide.addText(`${meta?.emoji || ''}  ${tag}${block.type === 'main_point' ? ` ${index}` : ''}`.trim(), {
     x: 0.6, y: 0.45, w: 12.1, h: 0.45,
     align: 'left',
     fontFace: FONTS.body,
     fontSize: 16,
-    color: COLORS.accent,
+    color: accent700,
     bold: true,
     charSpacing: 6,
   });
@@ -172,7 +189,7 @@ function addBlockSlide(
       valign: 'top',
       fontFace: FONTS.display,
       fontSize: 44,
-      color: COLORS.textLight,
+      color: COLORS.textDark,
       bold: true,
     });
   }
@@ -184,7 +201,7 @@ function addBlockSlide(
       align: 'left',
       fontFace: FONTS.display,
       fontSize: 40,
-      color: COLORS.accentSoft,
+      color: accent700,
       bold: true,
       italic: true,
     });
@@ -194,7 +211,7 @@ function addBlockSlide(
   const contentText = trimForProjection(block.content || '', isBigIdea || isQuote ? 220 : 380);
   if (contentText) {
     const contentY = isPassage ? 2.2 : (heading && heading !== tag ? 2.6 : 1.6);
-    const contentH = 6.8 - contentY;
+    const contentH = 6.6 - contentY;
 
     slide.addText(
       isPassage || isQuote ? `"${contentText}"` : contentText,
@@ -204,14 +221,29 @@ function addBlockSlide(
         valign: isBigIdea || isQuote ? 'middle' : 'top',
         fontFace: isPassage || isQuote ? FONTS.display : FONTS.body,
         fontSize: isBigIdea ? 48 : isQuote || isPassage ? 36 : 30,
-        color: COLORS.textLight,
+        color: COLORS.textDark,
         italic: isPassage || isQuote || isBigIdea,
         lineSpacingMultiple: 1.3,
       },
     );
   }
 
-  addBrandFooter(slide);
+  // Linha decorativa no rodapé (separador antes do brand footer)
+  slide.addShape(pres.ShapeType.line, {
+    x: 0.6, y: 6.85, w: 12.1, h: 0,
+    line: { color: border200, width: 1 },
+  });
+
+  // Brand footer customizado para slides claros (texto escuro)
+  slide.addText('† LIVING WORD', {
+    x: 0, y: 7.0, w: 13.333, h: 0.4,
+    align: 'center',
+    fontFace: FONTS.body,
+    fontSize: 10,
+    color: accent700,
+    bold: true,
+    charSpacing: 4,
+  });
 }
 
 /**
