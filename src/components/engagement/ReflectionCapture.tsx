@@ -39,15 +39,15 @@ export function ReflectionCapture({ devotionalId, theme, onSaved }: ReflectionCa
     setLoading(true);
 
     try {
-      // Analyze sentiment
-      const { data: sentimentData, error: sentimentError } = await supabase.functions.invoke('analyze-sentiment', {
-        body: { text: text.trim() },
-      });
-
-      const detectedSentiment = sentimentError ? 'mixed' : sentimentData?.sentiment || 'mixed';
+      // Analyze sentiment (graceful degradation if session expired)
+      const { data: sentimentData, unauthorized: sentUnauth } = await safeInvoke<{ sentiment?: string }>(
+        'analyze-sentiment',
+        { body: { text: text.trim() } }
+      );
+      const detectedSentiment = sentUnauth ? 'mixed' : (sentimentData?.sentiment || 'mixed');
 
       // Track the reflection engagement
-      await supabase.functions.invoke('track-engagement', {
+      const { unauthorized: trackUnauth } = await safeInvoke('track-engagement', {
         body: {
           devotionalId,
           action: 'complete_reflection',
@@ -56,6 +56,11 @@ export function ReflectionCapture({ devotionalId, theme, onSaved }: ReflectionCa
           theme,
         },
       });
+
+      if (trackUnauth) {
+        toast.error((labels.error as Record<L, string>)[lang]);
+        return;
+      }
 
       toast.success((labels.saved as Record<L, string>)[lang]);
       onSaved?.(detectedSentiment);
