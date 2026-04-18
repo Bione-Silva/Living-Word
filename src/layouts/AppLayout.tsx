@@ -463,49 +463,17 @@ export default function AppLayout() {
                 <span>{lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario'}</span>
               </Link>
 
-              {/* Tools groups */}
-              <div className="pt-3 mt-2 border-t border-border">
-                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground px-3 mb-1.5">
-                  {lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}
-                </p>
-                {sidebarGroups.map((group) => {
-                  const isOpen = mobileOpenGroups[`menu-${group.key}`] ?? false;
-                  const GroupIcon = group.icon;
-                  return (
-                    <div key={`menu-${group.key}`} className="mb-1">
-                      <button
-                        onClick={() => setMobileOpenGroups(p => ({ ...p, [`menu-${group.key}`]: !isOpen }))}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
-                      >
-                        <GroupIcon className="h-4 w-4 shrink-0 text-primary" />
-                        <span className="flex-1 text-left">{group.label[lang]}</span>
-                        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isOpen ? '' : '-rotate-90'}`} />
-                      </button>
-                      {isOpen && (
-                        <div className="pl-3 pr-1 py-1 space-y-0.5">
-                          {group.tools.map((tool) => {
-                            const ToolIcon = tool.icon;
-                            const isLocked = isToolLockedForPlan(tool.id, userPlan);
-                            return (
-                              <button
-                                key={tool.id}
-                                onClick={() => { setMobileMenuOpen(false); handleToolClick(tool); }}
-                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-xs transition-colors text-left ${
-                                  isLocked ? 'text-muted-foreground' : 'text-foreground/85 hover:bg-primary/5 hover:text-primary'
-                                }`}
-                              >
-                                <ToolIcon className="h-3.5 w-3.5 shrink-0" />
-                                <span className="flex-1 truncate">{tool.label[lang]}</span>
-                                {isLocked && <ToolLockBadge userPlan={userPlan} toolId={tool.id} />}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              {/* Ferramentas — single link to dedicated page (no nested groups on mobile) */}
+              <Link
+                to="/ferramentas"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === '/ferramentas' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Package className="h-4 w-4 shrink-0" />
+                <span>{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}</span>
+              </Link>
 
               {/* Account */}
               <div className="pt-3 mt-2 border-t border-border">
