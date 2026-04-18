@@ -461,9 +461,46 @@ export function PodiumModeModal({
     }
   }
 
+  /** Pré-aviso suave (sino único + vibração curta) faltando 5 minutos. */
+  function playWarningAlert() {
+    if (!soundEnabled) return;
+    // Vibração curta — pulso único discreto.
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate(250);
+      }
+    } catch {
+      /* noop */
+    }
+    // Sino único: um toque senoidal suave (E5 ~ 659Hz, mais grave que o final, evita confusão).
+    try {
+      const Ctx = (window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
+      if (!Ctx) return;
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new Ctx();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') void ctx.resume();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 659.25; // E5 — pré-aviso, mais suave que o A5/E6 do fim
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 1.3);
+    } catch {
+      /* audio bloqueado: silencioso por design */
+    }
+  }
+
   useEffect(() => {
     setRunning(false);
     endAlertFiredRef.current = false; // reset ao trocar de modo / duração
+    warningAlertFiredRef.current = false;
     if (mode === 'countdown') setSeconds(limitSeconds);
     else if (mode === 'progressive') setSeconds(0);
   }, [mode, limitSeconds]);
