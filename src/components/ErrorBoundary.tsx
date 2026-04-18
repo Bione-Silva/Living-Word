@@ -55,8 +55,8 @@ export class ErrorBoundary extends Component<Props, State> {
     return (
       <div className="min-h-[60vh] w-full flex items-center justify-center px-4 py-10 bg-background text-foreground">
         <div className="max-w-md w-full rounded-2xl border border-border bg-card p-6 sm:p-8 text-center shadow-sm">
-          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-amber-500/15 flex items-center justify-center">
-            <AlertTriangle className="h-7 w-7 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-muted flex items-center justify-center">
+            <AlertTriangle className="h-7 w-7 text-foreground/80" aria-hidden="true" />
           </div>
           <h2 className="text-base sm:text-lg font-semibold text-foreground mb-1">
             Algo travou por aqui
