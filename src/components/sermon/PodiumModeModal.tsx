@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   X, Play, Pause, RotateCcw, Settings, Plus, Minus, Share2, Download, Printer,
   PenLine, BookOpen, Languages, ImageIcon, Clock, Timer, Hourglass, Maximize2,
+  Sun, Moon, Pencil, Check, MoreVertical,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 type Lang = 'PT' | 'EN' | 'ES';
 type TimerMode = 'countdown' | 'progressive' | 'clock';
+type PodiumTheme = 'dark' | 'light';
 
 interface PodiumModeModalProps {
   open: boolean;
@@ -29,6 +31,8 @@ interface PodiumModeModalProps {
   durationLimitMinutes?: number;
   /** ID do material para salvar/carregar notas */
   materialId?: string | null;
+  /** Callback opcional quando o pregador edita o sermão in-place */
+  onMarkdownChange?: (next: string) => void;
   lang?: Lang;
 }
 
@@ -60,74 +64,151 @@ const tr = {
   loading: { PT: 'Buscando...', EN: 'Loading...', ES: 'Buscando...' },
   notesSaved: { PT: 'Anotações salvas', EN: 'Notes saved', ES: 'Notas guardadas' },
   saveNotes: { PT: 'Salvar', EN: 'Save', ES: 'Guardar' },
+  themeLight: { PT: 'Modo claro', EN: 'Light mode', ES: 'Modo claro' },
+  themeDark: { PT: 'Modo escuro', EN: 'Dark mode', ES: 'Modo oscuro' },
+  editBlock: { PT: 'Editar bloco', EN: 'Edit block', ES: 'Editar bloque' },
+  saveEdit: { PT: 'Salvar edição', EN: 'Save edit', ES: 'Guardar edición' },
+  doubleClickHint: { PT: 'Toque duplo para editar', EN: 'Double-tap to edit', ES: 'Toque doble para editar' },
 };
 
-/** Quebra o markdown em "cartões" — cada heading h2 inicia um novo cartão. */
-function splitIntoCards(md: string): { heading?: string; body: string; isQuote: boolean }[] {
+/* ─── Detecção de tipo de bloco a partir do heading ─── */
+type BlockTone = 'idea' | 'hook' | 'passage' | 'illustration' | 'application' | 'main' | 'conclusion' | 'original' | 'transition' | 'quote' | 'explanation' | 'generic';
+
+interface BlockMeta {
+  tone: BlockTone;
+  emoji: string;
+  label: { PT: string; EN: string; ES: string };
+  /** classes de cor para a badge (bg + texto + ring), funcionam em dark e light */
+  badgeClass: string;
+}
+
+const BLOCK_META: Record<BlockTone, BlockMeta> = {
+  idea:         { tone: 'idea',         emoji: '💡', label: { PT: 'Grande Ideia',    EN: 'Big Idea',      ES: 'Gran Idea' },        badgeClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-300 ring-purple-500/30' },
+  hook:         { tone: 'hook',         emoji: '🎣', label: { PT: 'Gancho',          EN: 'Hook',          ES: 'Gancho' },           badgeClass: 'bg-orange-500/15 text-orange-600 dark:text-orange-300 ring-orange-500/30' },
+  passage:      { tone: 'passage',      emoji: '📖', label: { PT: 'Passagem',        EN: 'Passage',       ES: 'Pasaje' },           badgeClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-sky-500/30' },
+  illustration: { tone: 'illustration', emoji: '🖼️', label: { PT: 'Ilustração',      EN: 'Illustration',  ES: 'Ilustración' },      badgeClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-emerald-500/30' },
+  application:  { tone: 'application',  emoji: '🎯', label: { PT: 'Aplicação',       EN: 'Application',   ES: 'Aplicación' },       badgeClass: 'bg-amber-600/20 text-amber-700 dark:text-amber-300 ring-amber-600/40' },
+  main:         { tone: 'main',         emoji: '🔷', label: { PT: 'Ponto Principal', EN: 'Main Point',    ES: 'Punto Principal' },  badgeClass: 'bg-blue-500/15 text-blue-600 dark:text-blue-300 ring-blue-500/30' },
+  conclusion:   { tone: 'conclusion',   emoji: '🙏', label: { PT: 'Conclusão',       EN: 'Conclusion',    ES: 'Conclusión' },       badgeClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-300 ring-rose-500/30' },
+  original:     { tone: 'original',     emoji: '🔍', label: { PT: 'Hebraico/Grego',  EN: 'Hebrew/Greek',  ES: 'Hebreo/Griego' },    badgeClass: 'bg-amber-700/20 text-amber-800 dark:text-amber-400 ring-amber-700/40' },
+  transition:   { tone: 'transition',   emoji: '➰', label: { PT: 'Transição',       EN: 'Transition',    ES: 'Transición' },       badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30' },
+  quote:        { tone: 'quote',        emoji: '📚', label: { PT: 'Citação',         EN: 'Quote',         ES: 'Cita' },             badgeClass: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 ring-yellow-500/30' },
+  explanation:  { tone: 'explanation',  emoji: '📜', label: { PT: 'Explicação',      EN: 'Explanation',   ES: 'Explicación' },      badgeClass: 'bg-violet-500/15 text-violet-600 dark:text-violet-300 ring-violet-500/30' },
+  generic:      { tone: 'generic',      emoji: '✦',  label: { PT: 'Bloco',           EN: 'Block',         ES: 'Bloque' },           badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30' },
+};
+
+function detectBlockTone(heading?: string): BlockTone {
+  if (!heading) return 'generic';
+  const h = heading.toLowerCase();
+  // detecta por emoji primeiro (markdown gerado pelo studio inclui emojis)
+  if (heading.includes('💡')) return 'idea';
+  if (heading.includes('🎯') || heading.includes('🚀')) return h.includes('aplica') ? 'application' : 'hook';
+  if (heading.includes('📖')) return 'passage';
+  if (heading.includes('🎬') || heading.includes('🖼')) return 'illustration';
+  if (heading.includes('✨')) return 'application';
+  if (heading.includes('🙏') || heading.includes('🌹')) return 'conclusion';
+  if (heading.includes('🔷')) return 'main';
+  if (heading.includes('🔍')) return 'original';
+  if (heading.includes('➰')) return 'transition';
+  if (heading.includes('📚')) return 'quote';
+  if (heading.includes('📜')) return 'explanation';
+  // fallback por palavras-chave
+  if (/grande ideia|big idea|gran idea/.test(h)) return 'idea';
+  if (/gancho|hook|introdu|introducc?ión/.test(h)) return 'hook';
+  if (/passagem|passage|pasaje/.test(h)) return 'passage';
+  if (/ilustra/.test(h)) return 'illustration';
+  if (/aplica/.test(h)) return 'application';
+  if (/conclus|oração|prayer|oración/.test(h)) return 'conclusion';
+  if (/hebraic|grego|hebrew|greek|hebreo|griego/.test(h)) return 'original';
+  if (/transi/.test(h)) return 'transition';
+  if (/cita|quote/.test(h)) return 'quote';
+  if (/explica|explanation/.test(h)) return 'explanation';
+  if (/ponto|point|punto/.test(h)) return 'main';
+  return 'generic';
+}
+
+/** Quebra o markdown em "cartões" — cada heading h1/h2 inicia um novo cartão. */
+interface Card {
+  id: string;
+  heading?: string;
+  body: string;
+  isQuote: boolean;
+  tone: BlockTone;
+  /** índice das linhas originais [start, end) para reescrever o markdown ao editar */
+  range: [number, number];
+}
+
+function splitIntoCards(md: string): Card[] {
   if (!md) return [];
   const lines = md.split('\n');
-  const cards: { heading?: string; body: string; isQuote: boolean }[] = [];
-  let current: { heading?: string; body: string[]; isQuote: boolean } | null = null;
+  const cards: Card[] = [];
+  let cur: { heading?: string; bodyStart: number; headingLine: number | null } | null = null;
+  let counter = 0;
 
-  const flush = () => {
-    if (current) {
+  const push = (endIdx: number) => {
+    if (!cur) return;
+    const bodyLines = lines.slice(cur.bodyStart, endIdx);
+    const body = bodyLines.join('\n').trim();
+    const startLine = cur.headingLine !== null ? cur.headingLine : cur.bodyStart;
+    if (cur.heading || body) {
+      const trimmed = body;
+      const isQuote = trimmed.startsWith('>') || trimmed.split('\n').every((l) => l.startsWith('>') || !l.trim());
       cards.push({
-        heading: current.heading,
-        body: current.body.join('\n').trim(),
-        isQuote: current.isQuote,
+        id: `card_${counter++}`,
+        heading: cur.heading,
+        body,
+        isQuote,
+        tone: detectBlockTone(cur.heading),
+        range: [startLine, endIdx],
       });
     }
-    current = null;
+    cur = null;
   };
 
-  for (const raw of lines) {
-    const line = raw;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     const h1 = line.match(/^#\s+(.+)$/);
     const h2 = line.match(/^##\s+(.+)$/);
     if (h1) {
-      flush();
-      current = { heading: h1[1].trim(), body: [], isQuote: false };
+      push(i);
+      cur = { heading: h1[1].trim(), bodyStart: i + 1, headingLine: i };
       continue;
     }
     if (h2) {
-      flush();
-      current = { heading: h2[1].trim(), body: [], isQuote: false };
+      push(i);
+      cur = { heading: h2[1].trim(), bodyStart: i + 1, headingLine: i };
       continue;
     }
-    if (!current) current = { heading: undefined, body: [], isQuote: false };
-    current.body.push(line);
+    if (!cur) cur = { heading: undefined, bodyStart: i, headingLine: null };
   }
-  flush();
-
-  // Detecta cartões inteiros que são citações bíblicas (começam com >)
-  return cards
-    .filter((c) => c.heading || c.body.trim())
-    .map((c) => {
-      const trimmed = c.body.trim();
-      const isQuote = trimmed.startsWith('>') || trimmed.split('\n').every((l) => l.startsWith('>') || !l.trim());
-      return { ...c, isQuote };
-    });
+  push(lines.length);
+  return cards;
 }
 
 /** Aplica negrito em números de versículo: "16 Porque..." -> "**16** Porque..." */
 function bolderVerseNumbers(text: string): string {
-  // Inicio de linha OU após citação ">" — número 1-3 dígitos seguido de espaço
   return text
     .replace(/^(\s*>?\s*)(\d{1,3})(\s+)/gm, '$1**$2**$3')
     .replace(/(?<=[.!?]\s)(\d{1,3})(\s+)/g, '**$1**$2');
 }
 
 /** Renderiza markdown simples (negrito, citações, listas) com tipografia de Púlpito. */
-function PodiumMarkdown({ text, isQuote, fontPx }: { text: string; isQuote: boolean; fontPx: number }) {
+function PodiumMarkdown({ text, isQuote, fontPx, theme }: { text: string; isQuote: boolean; fontPx: number; theme: PodiumTheme }) {
   const processed = bolderVerseNumbers(text);
   const lines = processed.split('\n');
 
+  const baseColor = theme === 'dark' ? 'text-slate-100/95' : 'text-slate-800';
+  const strongColor = theme === 'dark' ? 'text-white' : 'text-slate-950';
+  const bulletColor = theme === 'dark' ? 'text-slate-400' : 'text-slate-500';
+
   const renderInline = (s: string) => {
-    // ** ** -> <strong>
-    const parts = s.split(/(\*\*[^*]+\*\*)/g);
+    const parts = s.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
     return parts.map((p, i) => {
       if (p.startsWith('**') && p.endsWith('**')) {
-        return <strong key={i} className="text-white font-bold">{p.slice(2, -2)}</strong>;
+        return <strong key={i} className={cn(strongColor, 'font-bold')}>{p.slice(2, -2)}</strong>;
+      }
+      if (p.startsWith('*') && p.endsWith('*') && p.length > 2) {
+        return <em key={i} className="italic">{p.slice(1, -1)}</em>;
       }
       return <span key={i}>{p}</span>;
     });
@@ -135,24 +216,21 @@ function PodiumMarkdown({ text, isQuote, fontPx }: { text: string; isQuote: bool
 
   return (
     <div
-      className={cn(
-        isQuote ? 'font-serif italic' : 'font-sans',
-        'text-white/90 leading-relaxed space-y-4',
-      )}
-      style={{ fontSize: `${fontPx}px`, lineHeight: 1.5 }}
+      className={cn(isQuote ? 'font-serif italic' : 'font-sans', baseColor, 'space-y-5 sm:space-y-6')}
+      style={{ fontSize: `${fontPx}px`, lineHeight: 1.75 }}
     >
       {lines.map((line, i) => {
         const t = line.replace(/^>\s?/, '').trimEnd();
-        if (!t) return <div key={i} style={{ height: fontPx * 0.5 }} />;
+        if (!t) return <div key={i} style={{ height: fontPx * 0.4 }} />;
         if (line.startsWith('- ')) {
           return (
-            <div key={i} className="flex gap-3 pl-4">
-              <span className="text-white/50">•</span>
+            <div key={i} className="flex gap-3 pl-2">
+              <span className={bulletColor}>•</span>
               <span>{renderInline(t.slice(2))}</span>
             </div>
           );
         }
-        return <p key={i}>{renderInline(t)}</p>;
+        return <p key={i} className="tracking-[0.005em]">{renderInline(t)}</p>;
       })}
     </div>
   );
@@ -160,7 +238,7 @@ function PodiumMarkdown({ text, isQuote, fontPx }: { text: string; isQuote: bool
 
 /* ─── Painel deslizante reutilizável ─── */
 function SlidePanel({
-  open, onClose, title, side = 'right', widthClass = 'w-[380px]', children,
+  open, onClose, title, side = 'right', widthClass = 'w-[380px]', children, theme,
 }: {
   open: boolean;
   onClose: () => void;
@@ -168,27 +246,32 @@ function SlidePanel({
   side?: 'left' | 'right';
   widthClass?: string;
   children: React.ReactNode;
+  theme: PodiumTheme;
 }) {
+  const isDark = theme === 'dark';
   return (
     <>
       {open && (
         <button
           aria-label="close-overlay"
           onClick={onClose}
-          className="fixed inset-0 z-[110] bg-black/40"
+          className="fixed inset-0 z-[110] bg-black/50"
         />
       )}
       <aside
         className={cn(
-          'fixed top-0 bottom-0 z-[120] transform transition-transform duration-300 bg-zinc-950 border-zinc-800 text-white flex flex-col max-w-[92vw]',
+          'fixed top-0 bottom-0 z-[120] transform transition-transform duration-300 flex flex-col max-w-[92vw]',
           widthClass,
           side === 'right' ? 'right-0 border-l' : 'left-0 border-r',
+          isDark
+            ? 'bg-slate-900 border-slate-800 text-white'
+            : 'bg-white border-slate-200 text-slate-900',
           open ? 'translate-x-0' : side === 'right' ? 'translate-x-full' : '-translate-x-full',
         )}
       >
-        <header className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 shrink-0">
+        <header className={cn('flex items-center justify-between px-4 py-3 border-b shrink-0', isDark ? 'border-slate-800' : 'border-slate-200')}>
           <h3 className="text-sm font-bold">{title}</h3>
-          <button onClick={onClose} className="text-zinc-400 hover:text-white">
+          <button onClick={onClose} className={cn(isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900')}>
             <X className="h-5 w-5" />
           </button>
         </header>
@@ -205,31 +288,68 @@ export function PodiumModeModal({
   sermonTitle,
   durationLimitMinutes = 30,
   materialId,
+  onMarkdownChange,
   lang = 'PT',
 }: PodiumModeModalProps) {
+  /* ─── Tema do Púlpito (independente do tema global) ─── */
+  const [theme, setTheme] = useState<PodiumTheme>('dark');
+  const isDark = theme === 'dark';
+
   /* ─── Tipografia ─── */
   const [fontPx, setFontPx] = useState(28);
 
+  /* ─── Markdown editável (espelha prop, mas permite edição in-place) ─── */
+  const [localMd, setLocalMd] = useState(sermonMarkdown);
+  useEffect(() => { setLocalMd(sermonMarkdown); }, [sermonMarkdown]);
+
   /* ─── Cartões do sermão ─── */
-  const cards = useMemo(() => splitIntoCards(sermonMarkdown), [sermonMarkdown]);
+  const cards = useMemo(() => splitIntoCards(localMd), [localMd]);
+
+  /* ─── Edição in-place ─── */
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingDraft, setEditingDraft] = useState('');
+
+  function startEdit(card: Card) {
+    setEditingId(card.id);
+    setEditingDraft(card.body);
+  }
+
+  function commitEdit(card: Card) {
+    const lines = localMd.split('\n');
+    const [start, end] = card.range;
+    // Mantém o heading (start), substitui apenas as linhas do corpo
+    const headOffset = card.heading ? 1 : 0;
+    const before = lines.slice(0, start + headOffset);
+    const after = lines.slice(end);
+    const newBodyLines = editingDraft.split('\n');
+    const next = [...before, ...newBodyLines, ...after].join('\n');
+    setLocalMd(next);
+    onMarkdownChange?.(next);
+    setEditingId(null);
+    setEditingDraft('');
+    toast.success(lang === 'PT' ? 'Bloco atualizado' : lang === 'ES' ? 'Bloque actualizado' : 'Block updated');
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditingDraft('');
+  }
 
   /* ─── Timer ─── */
   const [mode, setMode] = useState<TimerMode>('progressive');
   const [running, setRunning] = useState(false);
-  const [seconds, setSeconds] = useState(0); // segundos decorridos (progressivo) ou restantes (regressivo)
+  const [seconds, setSeconds] = useState(0);
   const [clockTime, setClockTime] = useState(new Date());
   const [durationMin, setDurationMin] = useState(durationLimitMinutes);
   const [customMin, setCustomMin] = useState<string>(String(durationLimitMinutes));
   const limitSeconds = durationMin * 60;
 
-  // Reset timer ao mudar de modo ou de duração
   useEffect(() => {
     setRunning(false);
     if (mode === 'countdown') setSeconds(limitSeconds);
     else if (mode === 'progressive') setSeconds(0);
   }, [mode, limitSeconds]);
 
-  // Tick
   useEffect(() => {
     if (!open) return;
     const interval = setInterval(() => {
@@ -254,7 +374,7 @@ export function PodiumModeModal({
   const timerDisplay = useMemo(() => {
     if (mode === 'clock') {
       return clockTime.toLocaleTimeString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', {
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour: '2-digit', minute: '2-digit',
       });
     }
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -319,7 +439,7 @@ export function PodiumModeModal({
     }
   }
 
-  /* ─── Consulta IA — versões bíblicas / hebraico-grego / ilustrações ─── */
+  /* ─── Consulta IA ─── */
   const [bibleQuery, setBibleQuery] = useState('');
   const [bibleResult, setBibleResult] = useState('');
   const [bibleLoading, setBibleLoading] = useState(false);
@@ -386,7 +506,7 @@ export function PodiumModeModal({
   }
 
   function handleDownload() {
-    const blob = new Blob([`# ${sermonTitle}\n\n${sermonMarkdown}`], { type: 'text/markdown' });
+    const blob = new Blob([`# ${sermonTitle}\n\n${localMd}`], { type: 'text/markdown' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `${sermonTitle.slice(0, 60) || 'sermao'}.md`;
@@ -398,46 +518,110 @@ export function PodiumModeModal({
     window.print();
   }
 
-  /* ─── Scroll do sermão ─── */
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   if (!open) return null;
 
+  /* ─── Tokens de tema ─── */
+  const bgRoot = isDark ? 'bg-slate-900' : 'bg-slate-50';
+  const headerBorder = isDark ? 'border-slate-800' : 'border-slate-200';
+  const headerBg = isDark ? 'bg-slate-900/95' : 'bg-white/95';
+  const titleColor = isDark ? 'text-white' : 'text-slate-900';
+  const subtitleColor = isDark ? 'text-slate-500' : 'text-slate-500';
+  const iconBtn = isDark
+    ? 'text-slate-400 hover:text-white hover:bg-slate-800'
+    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200';
+  const timerBg = isDark
+    ? (overLimit ? 'bg-red-950/60 text-red-300 ring-1 ring-red-500/50' : 'bg-slate-800 text-slate-100')
+    : (overLimit ? 'bg-red-100 text-red-700 ring-1 ring-red-400/60' : 'bg-slate-200 text-slate-800');
+  const cardBg = isDark
+    ? 'bg-slate-800 border-slate-700/60'
+    : 'bg-white border-slate-200';
+  const cardQuoteBg = isDark
+    ? 'bg-slate-800/80 border-amber-700/40'
+    : 'bg-amber-50/70 border-amber-300';
+  const dropdownBg = isDark
+    ? 'bg-slate-900 border-slate-800 text-white'
+    : 'bg-white border-slate-200 text-slate-900';
+
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: '#080808' }}>
-      {/* ─── Top Bar ─── */}
-      <header className="flex items-center gap-2 px-4 py-2.5 border-b border-zinc-900 shrink-0">
-        {/* Title */}
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] uppercase tracking-widest text-zinc-500">Modo Púlpito</p>
-          <h2 className="text-sm font-semibold text-white truncate">{sermonTitle || 'Sermão'}</h2>
+    <div className={cn('fixed inset-0 z-[100] flex flex-col overflow-x-hidden', bgRoot)}>
+      {/* ─── Top Bar (mobile-first, colapsável) ─── */}
+      <header className={cn('shrink-0 border-b backdrop-blur-md', headerBorder, headerBg)}>
+        {/* Linha 1 — sempre visível: título + timer + sair */}
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-2">
+          <div className="min-w-0 flex-1">
+            <p className={cn('text-[9px] sm:text-[10px] uppercase tracking-widest', subtitleColor)}>Modo Púlpito</p>
+            <h2 className={cn('text-sm sm:text-base font-semibold truncate', titleColor)}>{sermonTitle || 'Sermão'}</h2>
+          </div>
+
+          {/* Timer display + play/pause sempre visível */}
+          <div className="flex items-center gap-1">
+            <div
+              className={cn(
+                'tabular-nums font-mono text-sm sm:text-base font-bold px-2.5 sm:px-3 py-1 rounded-md min-w-[68px] sm:min-w-[80px] text-center transition-colors',
+                timerBg,
+              )}
+            >
+              {timerDisplay}
+            </div>
+            {mode !== 'clock' && (
+              <button
+                onClick={() => setRunning((r) => !r)}
+                className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
+                aria-label={running ? 'pause' : 'play'}
+              >
+                {running ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </button>
+            )}
+          </div>
+
+          {/* Toggle tema (sempre visível) */}
+          <button
+            onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+            className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
+            aria-label={isDark ? tr.themeLight[lang] : tr.themeDark[lang]}
+            title={isDark ? tr.themeLight[lang] : tr.themeDark[lang]}
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+
+          {/* Sair (sempre visível) */}
+          <button
+            onClick={() => onOpenChange(false)}
+            className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
+            aria-label={tr.exit[lang]}
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
-        {/* Timer */}
-        <div className="flex items-center gap-1.5">
+        {/* Linha 2 — ações secundárias (compactam em mobile dentro de "More") */}
+        <div className={cn('flex items-center gap-1 px-3 sm:px-4 pb-2 -mt-1 border-t pt-2', headerBorder)}>
+          {/* Timer mode dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="text-zinc-400 hover:text-white p-2 rounded-md" aria-label="timer mode">
+              <button className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="timer mode">
                 {mode === 'countdown' && <Hourglass className="h-4 w-4" />}
                 {mode === 'progressive' && <Timer className="h-4 w-4" />}
                 {mode === 'clock' && <Clock className="h-4 w-4" />}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800 text-white w-64">
+            <DropdownMenuContent align="start" className={cn(dropdownBg, 'w-64')}>
               <DropdownMenuLabel>{lang === 'PT' ? 'Modo do Timer' : 'Timer Mode'}</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-zinc-800" />
-              <DropdownMenuItem onClick={() => setMode('countdown')} className="focus:bg-zinc-800 focus:text-white">
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setMode('countdown')}>
                 <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} ({durationMin} min)
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setMode('progressive')} className="focus:bg-zinc-800 focus:text-white">
+              <DropdownMenuItem onClick={() => setMode('progressive')}>
                 <Timer className="h-4 w-4 mr-2" /> {tr.progressive[lang]}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setMode('clock')} className="focus:bg-zinc-800 focus:text-white">
+              <DropdownMenuItem onClick={() => setMode('clock')}>
                 <Clock className="h-4 w-4 mr-2" /> {tr.clock[lang]}
               </DropdownMenuItem>
 
-              <DropdownMenuSeparator className="bg-zinc-800" />
-              <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-zinc-500">
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-[11px] uppercase tracking-wider opacity-70">
                 {tr.duration[lang]}
               </DropdownMenuLabel>
               <div className="px-2 pb-2 space-y-2">
@@ -445,16 +629,12 @@ export function PodiumModeModal({
                   {[15, 30, 45, 60, 75, 90].map((m) => (
                     <button
                       key={m}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setDurationMin(m);
-                        setCustomMin(String(m));
-                      }}
+                      onClick={(e) => { e.preventDefault(); setDurationMin(m); setCustomMin(String(m)); }}
                       className={cn(
                         'text-xs py-1.5 rounded-md tabular-nums transition-colors',
                         durationMin === m
                           ? 'bg-amber-600 text-white font-bold'
-                          : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700',
+                          : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
                       )}
                     >
                       {m}
@@ -463,163 +643,228 @@ export function PodiumModeModal({
                 </div>
                 <div className="flex items-center gap-1.5">
                   <input
-                    type="number"
-                    min={1}
-                    max={300}
+                    type="number" min={1} max={300}
                     value={customMin}
                     onChange={(e) => setCustomMin(e.target.value)}
                     onBlur={() => {
                       const n = Math.max(1, Math.min(300, parseInt(customMin || '0', 10) || 0));
-                      if (n > 0) {
-                        setDurationMin(n);
-                        setCustomMin(String(n));
-                      } else {
-                        setCustomMin(String(durationMin));
-                      }
+                      if (n > 0) { setDurationMin(n); setCustomMin(String(n)); }
+                      else setCustomMin(String(durationMin));
                     }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
-                    }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                     placeholder={tr.custom[lang]}
-                    className="flex-1 bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-xs text-white tabular-nums focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className={cn(
+                      'flex-1 rounded px-2 py-1.5 text-xs tabular-nums focus:outline-none focus:ring-1 focus:ring-amber-500',
+                      isDark ? 'bg-slate-950 border border-slate-700 text-white' : 'bg-white border border-slate-300 text-slate-900',
+                    )}
                   />
-                  <span className="text-[11px] text-zinc-500">{tr.minutes[lang]}</span>
+                  <span className={cn('text-[11px]', subtitleColor)}>{tr.minutes[lang]}</span>
                 </div>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <div
-            className={cn(
-              'tabular-nums font-mono text-base font-bold px-3 py-1 rounded-md min-w-[90px] text-center transition-colors',
-              overLimit ? 'bg-red-900/40 text-red-400 ring-1 ring-red-500/50' : 'bg-zinc-900 text-zinc-200',
-            )}
-          >
-            {timerDisplay}
-          </div>
+          <button onClick={resetTimer} className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="reset">
+            <RotateCcw className="h-4 w-4" />
+          </button>
 
-          {mode !== 'clock' && (
-            <>
-              <button
-                onClick={() => setRunning((r) => !r)}
-                className="text-zinc-400 hover:text-white p-2 rounded-md"
-                aria-label={running ? 'pause' : 'play'}
-              >
-                {running ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          <div className={cn('w-px h-5 mx-1', isDark ? 'bg-slate-800' : 'bg-slate-300')} />
+
+          {/* Quick panels — escondidos individuais em XS, sempre via "More" */}
+          <button onClick={() => setNotesOpen(true)} className={cn('hidden sm:inline-flex p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="notes">
+            <PenLine className="h-4 w-4" />
+          </button>
+          <button onClick={() => setBibleOpen(true)} className={cn('hidden sm:inline-flex p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="bible">
+            <BookOpen className="h-4 w-4" />
+          </button>
+          <button onClick={() => setOriginalOpen(true)} className={cn('hidden sm:inline-flex p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="original">
+            <Languages className="h-4 w-4" />
+          </button>
+          <button onClick={() => setIllusOpen(true)} className={cn('hidden sm:inline-flex p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="illustrations">
+            <ImageIcon className="h-4 w-4" />
+          </button>
+
+          {/* Mobile: agrupa todos os painéis num "More" */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={cn('sm:hidden p-1.5 rounded-md transition-colors', iconBtn)} aria-label="more tools">
+                <MoreVertical className="h-4 w-4" />
               </button>
-              <button onClick={resetTimer} className="text-zinc-400 hover:text-white p-2 rounded-md" aria-label="reset">
-                <RotateCcw className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className={dropdownBg}>
+              <DropdownMenuItem onClick={() => setNotesOpen(true)}>
+                <PenLine className="h-4 w-4 mr-2" /> {tr.preacherNotes[lang]}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setBibleOpen(true)}>
+                <BookOpen className="h-4 w-4 mr-2" /> {tr.bibleVersions[lang]}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setOriginalOpen(true)}>
+                <Languages className="h-4 w-4 mr-2" /> {tr.originalLang[lang]}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIllusOpen(true)}>
+                <ImageIcon className="h-4 w-4 mr-2" /> {tr.illustrations[lang]}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="flex-1" />
+
+          {/* Settings (font + share) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="settings">
+                <Settings className="h-4 w-4" />
               </button>
-            </>
-          )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className={cn(dropdownBg, 'w-56')}>
+              <DropdownMenuLabel>{tr.fontSize[lang]}</DropdownMenuLabel>
+              <div className="flex items-center gap-2 px-2 py-1.5">
+                <button onClick={() => setFontPx((f) => Math.max(16, f - 2))} className={cn('flex-1 flex items-center justify-center gap-1 p-2 rounded', isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-100')}>
+                  <Minus className="h-3 w-3" /> <span className="text-sm">a</span>
+                </button>
+                <span className={cn('text-xs tabular-nums w-10 text-center', subtitleColor)}>{fontPx}px</span>
+                <button onClick={() => setFontPx((f) => Math.min(64, f + 2))} className={cn('flex-1 flex items-center justify-center gap-1 p-2 rounded', isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-100')}>
+                  <Plus className="h-3 w-3" /> <span className="text-base font-bold">A</span>
+                </button>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleShare}>
+                <Share2 className="h-4 w-4 mr-2" /> {tr.share[lang]}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDownload}>
+                <Download className="h-4 w-4 mr-2" /> {tr.download[lang]}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handlePrint}>
+                <Printer className="h-4 w-4 mr-2" /> {tr.print[lang]}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-
-        <div className="w-px h-6 bg-zinc-800 mx-1" />
-
-        {/* Quick panels */}
-        <button onClick={() => setNotesOpen(true)} className="text-zinc-400 hover:text-white p-2 rounded-md" aria-label="notes">
-          <PenLine className="h-4 w-4" />
-        </button>
-        <button onClick={() => setBibleOpen(true)} className="text-zinc-400 hover:text-white p-2 rounded-md" aria-label="bible">
-          <BookOpen className="h-4 w-4" />
-        </button>
-        <button onClick={() => setOriginalOpen(true)} className="text-zinc-400 hover:text-white p-2 rounded-md" aria-label="original">
-          <Languages className="h-4 w-4" />
-        </button>
-        <button onClick={() => setIllusOpen(true)} className="text-zinc-400 hover:text-white p-2 rounded-md" aria-label="illustrations">
-          <ImageIcon className="h-4 w-4" />
-        </button>
-
-        {/* Settings */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="text-zinc-400 hover:text-white p-2 rounded-md" aria-label="settings">
-              <Settings className="h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800 text-white w-56">
-            <DropdownMenuLabel>{tr.fontSize[lang]}</DropdownMenuLabel>
-            <div className="flex items-center gap-2 px-2 py-1.5">
-              <button onClick={() => setFontPx((f) => Math.max(16, f - 2))} className="flex-1 flex items-center justify-center gap-1 p-2 rounded hover:bg-zinc-800">
-                <Minus className="h-3 w-3" /> <span className="text-sm">a</span>
-              </button>
-              <span className="text-xs text-zinc-400 tabular-nums w-10 text-center">{fontPx}px</span>
-              <button onClick={() => setFontPx((f) => Math.min(64, f + 2))} className="flex-1 flex items-center justify-center gap-1 p-2 rounded hover:bg-zinc-800">
-                <Plus className="h-3 w-3" /> <span className="text-base font-bold">A</span>
-              </button>
-            </div>
-            <DropdownMenuSeparator className="bg-zinc-800" />
-            <DropdownMenuItem onClick={handleShare} className="focus:bg-zinc-800 focus:text-white">
-              <Share2 className="h-4 w-4 mr-2" /> {tr.share[lang]}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDownload} className="focus:bg-zinc-800 focus:text-white">
-              <Download className="h-4 w-4 mr-2" /> {tr.download[lang]}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handlePrint} className="focus:bg-zinc-800 focus:text-white">
-              <Printer className="h-4 w-4 mr-2" /> {tr.print[lang]}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <button
-          onClick={() => onOpenChange(false)}
-          className="text-zinc-400 hover:text-white p-2 rounded-md ml-1"
-          aria-label={tr.exit[lang]}
-        >
-          <X className="h-5 w-5" />
-        </button>
       </header>
 
       {/* ─── Sermão em cartões ─── */}
-      <main ref={scrollerRef} className="flex-1 overflow-y-auto px-6 md:px-12 py-10">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <main ref={scrollerRef} className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-10 py-6 sm:py-10 space-y-5 sm:space-y-7">
           {cards.length === 0 && (
-            <div className="text-center text-zinc-500 py-20">
+            <div className={cn('text-center py-20', isDark ? 'text-slate-500' : 'text-slate-400')}>
               <Maximize2 className="h-10 w-10 mx-auto mb-4 opacity-40" />
               <p>{lang === 'PT' ? 'Sermão vazio.' : 'Empty sermon.'}</p>
             </div>
           )}
-          {cards.map((c, i) => (
-            <section
-              key={i}
-              className={cn(
-                'rounded-2xl border p-6 md:p-10',
-                c.isQuote
-                  ? 'bg-zinc-950 border-amber-700/30'
-                  : 'bg-zinc-950/60 border-zinc-900',
-              )}
-            >
-              {c.heading && (
-                <h3
-                  className="font-sans font-bold text-amber-200/90 mb-6 tracking-tight"
-                  style={{ fontSize: `${Math.round(fontPx * 0.95)}px`, lineHeight: 1.2 }}
+
+          {cards.map((c) => {
+            const meta = BLOCK_META[c.tone];
+            const isEditing = editingId === c.id;
+            return (
+              <section
+                key={c.id}
+                className={cn(
+                  'relative rounded-2xl border shadow-sm transition-shadow w-full',
+                  c.isQuote ? cardQuoteBg : cardBg,
+                  isEditing && (isDark ? 'ring-2 ring-amber-500/60' : 'ring-2 ring-amber-500'),
+                )}
+              >
+                {/* Badge flutuante + ações */}
+                <div className="flex items-start justify-between gap-2 px-4 sm:px-6 pt-4 sm:pt-5">
+                  <span className={cn(
+                    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ring-1',
+                    meta.badgeClass,
+                  )}>
+                    <span className="text-sm leading-none">{meta.emoji}</span>
+                    <span>{meta.label[lang]}</span>
+                  </span>
+
+                  {/* Botão lápis (sempre visível em hover desktop, sempre em mobile) */}
+                  {!isEditing ? (
+                    <button
+                      onClick={() => startEdit(c)}
+                      className={cn(
+                        'p-1.5 rounded-md opacity-60 hover:opacity-100 transition-opacity',
+                        iconBtn,
+                      )}
+                      aria-label={tr.editBlock[lang]}
+                      title={`${tr.editBlock[lang]} — ${tr.doubleClickHint[lang]}`}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={cancelEdit}
+                        className={cn('p-1.5 rounded-md', iconBtn)}
+                        aria-label="cancel"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => commitEdit(c)}
+                        className="p-1.5 rounded-md bg-amber-600 text-white hover:bg-amber-500"
+                        aria-label={tr.saveEdit[lang]}
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Heading visual (subtítulo) */}
+                {c.heading && (
+                  <h3
+                    className={cn(
+                      'font-sans font-bold tracking-tight px-4 sm:px-6 pt-3',
+                      isDark ? 'text-amber-200/95' : 'text-amber-700',
+                    )}
+                    style={{ fontSize: `${Math.round(fontPx * 0.85)}px`, lineHeight: 1.2 }}
+                  >
+                    {c.heading.replace(/^[\p{Emoji}\s]+/u, '').trim() || c.heading}
+                  </h3>
+                )}
+
+                {/* Corpo: leitura ou edição */}
+                <div
+                  className="px-4 sm:px-6 py-4 sm:py-5"
+                  onDoubleClick={() => !isEditing && startEdit(c)}
                 >
-                  {c.heading}
-                </h3>
-              )}
-              <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} />
-            </section>
-          ))}
+                  {isEditing ? (
+                    <Textarea
+                      value={editingDraft}
+                      onChange={(e) => setEditingDraft(e.target.value)}
+                      autoFocus
+                      className={cn(
+                        'w-full min-h-[200px] resize-y border-0 focus-visible:ring-0 px-0 font-sans',
+                        isDark ? 'bg-transparent text-white placeholder:text-slate-500' : 'bg-transparent text-slate-900',
+                      )}
+                      style={{ fontSize: `${fontPx}px`, lineHeight: 1.7 }}
+                    />
+                  ) : (
+                    <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} theme={theme} />
+                  )}
+                </div>
+              </section>
+            );
+          })}
           <div className="h-32" />
         </div>
       </main>
 
-      {/* ─── Painel: Anotações do Pregador ─── */}
-      <SlidePanel open={notesOpen} onClose={() => setNotesOpen(false)} title={tr.preacherNotes[lang]}>
+      {/* ─── Painéis flutuantes ─── */}
+      <SlidePanel open={notesOpen} onClose={() => setNotesOpen(false)} title={tr.preacherNotes[lang]} theme={theme}>
         <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder={tr.notesPlaceholder[lang]}
           rows={20}
-          className="bg-zinc-900 border-zinc-800 text-white text-base resize-none min-h-[60vh]"
+          className={cn(
+            'text-base resize-none min-h-[60vh]',
+            isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900',
+          )}
         />
         <Button onClick={saveNotes} disabled={savingNotes} className="mt-3 w-full bg-amber-600 hover:bg-amber-500 text-white">
           {savingNotes ? '...' : tr.saveNotes[lang]}
         </Button>
       </SlidePanel>
 
-      {/* ─── Painel: Múltiplas Versões Bíblicas ─── */}
-      <SlidePanel open={bibleOpen} onClose={() => setBibleOpen(false)} title={tr.bibleVersions[lang]}>
+      <SlidePanel open={bibleOpen} onClose={() => setBibleOpen(false)} title={tr.bibleVersions[lang]} theme={theme}>
         <div className="space-y-3">
           <div className="flex gap-2">
             <input
@@ -627,22 +872,24 @@ export function PodiumModeModal({
               onChange={(e) => setBibleQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && consultBible()}
               placeholder={tr.searchVerse[lang]}
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className={cn(
+                'flex-1 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500',
+                isDark ? 'bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500' : 'bg-white border border-slate-300 text-slate-900',
+              )}
             />
             <Button onClick={consultBible} disabled={bibleLoading} className="bg-amber-600 hover:bg-amber-500 text-white">
               {bibleLoading ? tr.loading[lang] : tr.consult[lang]}
             </Button>
           </div>
           {bibleResult && (
-            <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-4 text-sm text-zinc-200 whitespace-pre-wrap leading-relaxed">
+            <div className={cn('rounded-lg p-4 text-sm whitespace-pre-wrap leading-relaxed', isDark ? 'bg-slate-950 border border-slate-800 text-slate-200' : 'bg-slate-50 border border-slate-200 text-slate-800')}>
               {bibleResult}
             </div>
           )}
         </div>
       </SlidePanel>
 
-      {/* ─── Painel: Hebraico/Grego ─── */}
-      <SlidePanel open={originalOpen} onClose={() => setOriginalOpen(false)} title={tr.originalLang[lang]}>
+      <SlidePanel open={originalOpen} onClose={() => setOriginalOpen(false)} title={tr.originalLang[lang]} theme={theme}>
         <div className="space-y-3">
           <div className="flex gap-2">
             <input
@@ -650,22 +897,24 @@ export function PodiumModeModal({
               onChange={(e) => setOrigQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && consultOriginal()}
               placeholder={tr.searchOriginal[lang]}
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className={cn(
+                'flex-1 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500',
+                isDark ? 'bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500' : 'bg-white border border-slate-300 text-slate-900',
+              )}
             />
             <Button onClick={consultOriginal} disabled={origLoading} className="bg-amber-600 hover:bg-amber-500 text-white">
               {origLoading ? tr.loading[lang] : tr.consult[lang]}
             </Button>
           </div>
           {origResult && (
-            <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-4 text-sm text-zinc-200 whitespace-pre-wrap leading-relaxed font-serif">
+            <div className={cn('rounded-lg p-4 text-sm whitespace-pre-wrap leading-relaxed font-serif', isDark ? 'bg-slate-950 border border-slate-800 text-slate-200' : 'bg-slate-50 border border-slate-200 text-slate-800')}>
               {origResult}
             </div>
           )}
         </div>
       </SlidePanel>
 
-      {/* ─── Painel: Ilustrações da Época ─── */}
-      <SlidePanel open={illusOpen} onClose={() => setIllusOpen(false)} title={tr.illustrations[lang]}>
+      <SlidePanel open={illusOpen} onClose={() => setIllusOpen(false)} title={tr.illustrations[lang]} theme={theme}>
         <div className="space-y-3">
           <div className="flex gap-2">
             <input
@@ -673,14 +922,17 @@ export function PodiumModeModal({
               onChange={(e) => setIllusQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && consultIllus()}
               placeholder={tr.searchIllus[lang]}
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className={cn(
+                'flex-1 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500',
+                isDark ? 'bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500' : 'bg-white border border-slate-300 text-slate-900',
+              )}
             />
             <Button onClick={consultIllus} disabled={illusLoading} className="bg-amber-600 hover:bg-amber-500 text-white">
               {illusLoading ? tr.loading[lang] : tr.consult[lang]}
             </Button>
           </div>
           {illusResult && (
-            <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-4 text-sm text-zinc-200 whitespace-pre-wrap leading-relaxed">
+            <div className={cn('rounded-lg p-4 text-sm whitespace-pre-wrap leading-relaxed', isDark ? 'bg-slate-950 border border-slate-800 text-slate-200' : 'bg-slate-50 border border-slate-200 text-slate-800')}>
               {illusResult}
             </div>
           )}
