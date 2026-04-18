@@ -1348,101 +1348,141 @@ export function PodiumModeModal({
             </div>
           )}
 
-          {cards.map((c) => {
+          {cards.map((c, idx) => {
             const meta = BLOCK_META[c.tone];
             const isEditing = editingId === c.id;
+            const stepNumber = idx + 1;
             // Modo Claro: usa paleta vibrante identitária do bloco. Modo Escuro: mantém superfície dark, só pinta a borda.
             const cardSurface = isDark
               ? cn(cardBg, meta.darkBorderLeft)
               : c.isQuote
               ? cn(cardQuoteBg, meta.lightBorderLeft)
               : cn(meta.lightCardBg, meta.lightBorderLeft);
+            // Sanitiza heading: remove "### N.", "## N.", "N." ou "N -" do início para evitar
+            // que numeração injetada pela IA polua o subtítulo (numeração agora vem do frontend).
+            const cleanHeading = c.heading
+              ? c.heading
+                  .replace(/^[\p{Emoji}\s]+/u, '')
+                  .replace(/^#{1,6}\s*/, '')
+                  .replace(/^\d+\s*[.\-—:)]\s*/, '')
+                  .trim()
+              : '';
             return (
-              <section
-                key={c.id}
-                className={cn(
-                  'relative rounded-2xl border shadow-sm transition-shadow w-full min-w-0 break-words',
-                  cardSurface,
-                  isEditing && (isDark ? 'ring-2 ring-amber-500/60' : 'ring-2 ring-amber-500'),
-                )}
-              >
-                {/* Badge flutuante + ações */}
-                <div className="flex items-start justify-between gap-2 px-3 sm:px-6 pt-3 sm:pt-5">
-                  <span className={cn(
-                    'inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider ring-1',
-                    meta.badgeClass,
-                  )}>
-                    <span className="text-sm leading-none">{meta.emoji}</span>
-                    <span>{meta.label[lang]}</span>
-                  </span>
-
-                  {/* Botão lápis (sempre visível em hover desktop, sempre em mobile) */}
-                  {!isEditing ? (
-                    <button
-                      onClick={() => startEdit(c)}
-                      className={cn(
-                        'p-1.5 rounded-md opacity-60 hover:opacity-100 transition-opacity shrink-0',
-                        iconBtn,
-                      )}
-                      aria-label={tr.editBlock[lang]}
-                      title={`${tr.editBlock[lang]} — ${tr.doubleClickHint[lang]}`}
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1 shrink-0">
-                      <button
-                        onClick={cancelEdit}
-                        className={cn('p-1.5 rounded-md', iconBtn)}
-                        aria-label="cancel"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => commitEdit(c)}
-                        className="p-1.5 rounded-md bg-amber-600 text-white hover:bg-amber-500"
-                        aria-label={tr.saveEdit[lang]}
-                      >
-                        <Check className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Heading visual (subtítulo) — usa cor identitária do bloco */}
-                {c.heading && (
-                  <h3
-                    className={cn(
-                      'font-sans font-bold tracking-tight px-3 sm:px-6 pt-3 break-words',
-                      isDark ? meta.darkHeading : meta.lightHeading,
-                    )}
-                    style={{ fontSize: `clamp(16px, ${Math.round(fontPx * 0.85)}px, ${Math.round(fontPx * 0.85)}px)`, lineHeight: 1.2 }}
-                  >
-                    {c.heading.replace(/^[\p{Emoji}\s]+/u, '').trim() || c.heading}
-                  </h3>
-                )}
-
-                {/* Corpo: leitura ou edição */}
+              <div key={c.id} className="relative">
+                {/* ─── Mobile: índice discreto na cabeceira (entre cards) ─── */}
                 <div
-                  className="px-3 sm:px-6 py-3 sm:py-5 min-w-0"
-                  onDoubleClick={() => !isEditing && startEdit(c)}
-                >
-                  {isEditing ? (
-                    <Textarea
-                      value={editingDraft}
-                      onChange={(e) => setEditingDraft(e.target.value)}
-                      autoFocus
-                      className={cn(
-                        'w-full min-h-[200px] resize-y border-0 focus-visible:ring-0 px-0 font-sans',
-                        isDark ? 'bg-transparent text-white placeholder:text-slate-500' : 'bg-transparent text-slate-900',
-                      )}
-                      style={{ fontSize: `${Math.min(fontPx, 22)}px`, lineHeight: 1.7 }}
-                    />
-                  ) : (
-                    <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} theme={theme} />
+                  className={cn(
+                    'lg:hidden flex items-center gap-2 mb-2 px-1',
+                    isDark ? 'text-slate-500' : 'text-slate-400',
                   )}
+                  aria-hidden="true"
+                >
+                  <span className="font-mono text-[11px] font-bold tabular-nums tracking-widest">
+                    {String(stepNumber).padStart(2, '0')}
+                  </span>
+                  <span className={cn('h-px flex-1', isDark ? 'bg-slate-800' : 'bg-slate-200')} />
                 </div>
-              </section>
+
+                {/* ─── Desktop/iPad: numeral grande à esquerda, fora do card ─── */}
+                <span
+                  className={cn(
+                    'hidden lg:block absolute -left-16 xl:-left-20 top-3 select-none pointer-events-none font-serif font-bold tabular-nums leading-none',
+                    isDark ? 'text-slate-700/70' : 'text-slate-300',
+                  )}
+                  style={{ fontSize: 'clamp(48px, 5.5vw, 72px)' }}
+                  aria-hidden="true"
+                >
+                  {stepNumber}
+                </span>
+
+                <section
+                  className={cn(
+                    'relative rounded-2xl border shadow-sm transition-shadow w-full min-w-0 break-words',
+                    cardSurface,
+                    isEditing && (isDark ? 'ring-2 ring-amber-500/60' : 'ring-2 ring-amber-500'),
+                  )}
+                  aria-label={lang === 'PT' ? `Bloco ${stepNumber}` : lang === 'ES' ? `Bloque ${stepNumber}` : `Block ${stepNumber}`}
+                >
+                  {/* Badge flutuante + ações */}
+                  <div className="flex items-start justify-between gap-2 px-3 sm:px-6 pt-3 sm:pt-5">
+                    <span className={cn(
+                      'inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider ring-1',
+                      meta.badgeClass,
+                    )}>
+                      <span className="text-sm leading-none">{meta.emoji}</span>
+                      <span>{meta.label[lang]}</span>
+                    </span>
+
+                    {/* Botão lápis (sempre visível em hover desktop, sempre em mobile) */}
+                    {!isEditing ? (
+                      <button
+                        onClick={() => startEdit(c)}
+                        className={cn(
+                          'p-1.5 rounded-md opacity-60 hover:opacity-100 transition-opacity shrink-0',
+                          iconBtn,
+                        )}
+                        aria-label={tr.editBlock[lang]}
+                        title={`${tr.editBlock[lang]} — ${tr.doubleClickHint[lang]}`}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={cancelEdit}
+                          className={cn('p-1.5 rounded-md', iconBtn)}
+                          aria-label={lang === 'PT' ? 'Cancelar edição' : lang === 'ES' ? 'Cancelar' : 'Cancel'}
+                          title={lang === 'PT' ? 'Cancelar edição' : lang === 'ES' ? 'Cancelar' : 'Cancel'}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => commitEdit(c)}
+                          className="p-1.5 rounded-md bg-amber-600 text-white hover:bg-amber-500"
+                          aria-label={tr.saveEdit[lang]}
+                          title={tr.saveEdit[lang]}
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Heading visual (subtítulo) — usa cor identitária do bloco */}
+                  {cleanHeading && (
+                    <h3
+                      className={cn(
+                        'font-sans font-bold tracking-tight px-3 sm:px-6 pt-3 break-words',
+                        isDark ? meta.darkHeading : meta.lightHeading,
+                      )}
+                      style={{ fontSize: `clamp(16px, ${Math.round(fontPx * 0.85)}px, ${Math.round(fontPx * 0.85)}px)`, lineHeight: 1.2 }}
+                    >
+                      {cleanHeading}
+                    </h3>
+                  )}
+
+                  {/* Corpo: leitura ou edição */}
+                  <div
+                    className="px-3 sm:px-6 py-3 sm:py-5 min-w-0"
+                    onDoubleClick={() => !isEditing && startEdit(c)}
+                  >
+                    {isEditing ? (
+                      <Textarea
+                        value={editingDraft}
+                        onChange={(e) => setEditingDraft(e.target.value)}
+                        autoFocus
+                        className={cn(
+                          'w-full min-h-[200px] resize-y border-0 focus-visible:ring-0 px-0 font-sans',
+                          isDark ? 'bg-transparent text-white placeholder:text-slate-500' : 'bg-transparent text-slate-900',
+                        )}
+                        style={{ fontSize: `${Math.min(fontPx, 22)}px`, lineHeight: 1.7 }}
+                      />
+                    ) : (
+                      <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} theme={theme} />
+                    )}
+                  </div>
+                </section>
+              </div>
             );
           })}
           <div className="h-32" />
