@@ -71,6 +71,13 @@ export default function Biblioteca() {
   const [favFilter, setFavFilter] = useState(false);
   const [viewItem, setViewItem] = useState<any>(null);
   const [saveToWsItem, setSaveToWsItem] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    if (typeof window === 'undefined') return 'grid';
+    return (localStorage.getItem('library_view_mode') as 'grid' | 'list') || 'grid';
+  });
+  useEffect(() => {
+    localStorage.setItem('library_view_mode', viewMode);
+  }, [viewMode]);
   const isFree = profile?.plan === 'free';
   const sentinelRef = useRef<HTMLDivElement>(null);
 
