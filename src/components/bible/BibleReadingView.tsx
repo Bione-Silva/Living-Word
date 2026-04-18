@@ -239,6 +239,14 @@ export function BibleReadingView({
     toggleVerseSelection(verseNum);
   };
 
+  // Helper: clear selection with subtle haptic feedback
+  const clearSelection = useCallback(() => {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try { navigator.vibrate([10, 30, 10]); } catch { /* noop */ }
+    }
+    setSelectedVerses(new Set());
+  }, []);
+
   // ─── Auto-dismiss: outside click + scroll closes the floating toolbar ───
   useEffect(() => {
     if (selectedVerses.size === 0) return;
@@ -251,13 +259,13 @@ export function BibleReadingView({
       if (target.closest('[data-verse-toolbar]')) return;
       if (target.closest('[role="dialog"]')) return;
       if (target.closest('[data-radix-popper-content-wrapper]')) return;
-      setSelectedVerses(new Set());
+      clearSelection();
     };
 
     let scrollStartY = window.scrollY;
     const handleScroll = () => {
       if (Math.abs(window.scrollY - scrollStartY) > 30) {
-        setSelectedVerses(new Set());
+        clearSelection();
       }
     };
 
@@ -267,7 +275,65 @@ export function BibleReadingView({
       document.removeEventListener('pointerdown', handleOutside);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [selectedVerses.size]);
+  }, [selectedVerses.size, clearSelection]);
+
+  // ─── Keyboard shortcuts (desktop power users) ───
+  // H = highlight yellow, F = favorite, Esc = clear selection
+  useEffect(() => {
+    if (selectedVerses.size === 0) return;
+
+    const handleKey = async (e: KeyboardEvent) => {
+      // Skip when typing in inputs / editable surfaces
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      const key = e.key.toLowerCase();
+      const verseNums = Array.from(selectedVerses);
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        clearSelection();
+        return;
+      }
+
+      if (key === 'h') {
+        e.preventDefault();
+        await handleHighlight('yellow', verseNums);
+        return;
+      }
+
+      if (key === 'f') {
+        e.preventDefault();
+        if (!user) return;
+        for (const vn of verseNums) {
+          const v = verses.find(vv => vv.verse === vn);
+          if (!v) continue;
+          const isFav = favoritedVerses.has(vn);
+          if (isFav) {
+            await supabase.from('bible_favorites').delete()
+              .eq('user_id', user.id).eq('book_id', bookId)
+              .eq('chapter_number', chapter).eq('verse_number', vn);
+          } else {
+            await supabase.from('bible_favorites').insert({
+              user_id: user.id, book_id: bookId, chapter_number: chapter,
+              verse_number: vn, verse_text: v.text.trim(),
+              translation_code: translation, language: lang,
+            });
+          }
+          setFavoritedVerses(p => {
+            const n = new Set(p);
+            if (n.has(vn)) n.delete(vn); else n.add(vn);
+            return n;
+          });
+        }
+        onTabsRefresh();
+      }
+    };
+
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [selectedVerses, clearSelection, verses, favoritedVerses, user, bookId, chapter, translation, lang, onTabsRefresh]);
 
   const chapterNumbers = Array.from({ length: totalChapters }, (_, i) => i + 1);
 
@@ -458,7 +524,7 @@ export function BibleReadingView({
                           }}
                           onHighlight={handleHighlight}
                           onNoteSaved={onTabsRefresh}
-                          onClose={() => setSelectedVerses(new Set())}
+                          onClose={clearSelection}
                           onStudySidebar={handleOpenStudy}
                         />
                       </div>
