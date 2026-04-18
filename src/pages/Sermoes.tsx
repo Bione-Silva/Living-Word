@@ -671,12 +671,19 @@ export default function Sermoes() {
           </div>
           {isMobile && (
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => { setBibleRef(null); setBibleTranslationCode(undefined); setBibleDrawerOpen(true); }}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={lang === 'PT' ? 'Bíblia' : lang === 'ES' ? 'Biblia' : 'Bible'}
+              >
+                <BookOpen className="h-5 w-5" />
+              </button>
               {showResult && activeSessionId && (
-                <button onClick={() => setMobileNotesOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <button onClick={() => setMobileNotesOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors" aria-label={lang === 'PT' ? 'Anotações' : lang === 'ES' ? 'Notas' : 'Notes'}>
                   <PenLine className="h-5 w-5" />
                 </button>
               )}
-              <button onClick={() => setMobileHistoryOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={() => setMobileHistoryOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors" aria-label={lang === 'PT' ? 'Histórico' : lang === 'ES' ? 'Historial' : 'History'}>
                 <History className="h-5 w-5" />
               </button>
             </div>
@@ -1127,6 +1134,50 @@ export default function Sermoes() {
               className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all bg-gradient-to-r from-primary via-purple-600 to-fuchsia-600 hover:scale-[1.02] whitespace-nowrap"
             >
               <Sparkles className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Gerar Arte / Carrossel' : lang === 'ES' ? 'Generar Arte / Carrusel' : 'Generate Art / Carousel'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ─── ActionBar fixa inferior — modo IA (markdown) ─── */}
+      {editorMode === 'ai' && showResult && sermonContent && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)] pb-[env(safe-area-inset-bottom)]">
+          <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2 overflow-x-auto sm:overflow-visible sm:flex-wrap sm:justify-end scrollbar-hide [-webkit-overflow-scrolling:touch]">
+            <button
+              onClick={handleSave}
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
+            >
+              <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+            </button>
+            <button
+              onClick={() => setSlidesOpen(true)}
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
+            >
+              <Presentation className="h-3.5 w-3.5" /> {labels.slides[lang]}
+            </button>
+            <button
+              onClick={() => setPodiumOpen(true)}
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold border border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-colors uppercase tracking-wide whitespace-nowrap"
+            >
+              <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
+            </button>
+            <button
+              onClick={() => {
+                if (!sermonContent.trim()) {
+                  toast.error(lang === 'PT' ? 'Gere o sermão antes' : lang === 'ES' ? 'Genere el sermón antes' : 'Generate the sermon first');
+                  return;
+                }
+                navigate('/social-studio', {
+                  state: {
+                    source_content: sermonContent,
+                    source_title: sermonTitle,
+                    source_origin: 'sermon',
+                  },
+                });
+              }}
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all bg-gradient-to-r from-primary via-purple-600 to-fuchsia-600 hover:scale-[1.02] whitespace-nowrap"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Gerar Arte' : lang === 'ES' ? 'Generar Arte' : 'Generate Art'}
             </button>
           </div>
         </div>
