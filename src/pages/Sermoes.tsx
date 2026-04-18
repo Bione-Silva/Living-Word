@@ -759,7 +759,47 @@ export default function Sermoes() {
                 {labels.backToForm[lang]}
               </button>
 
-              {loading ? (
+              {editorMode === 'blocks' ? (
+                /* ─── STUDIO DE BLOCOS ─── */
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-border bg-card/60 p-4 space-y-3">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">💡 {lang === 'PT' ? 'Grande Ideia' : lang === 'ES' ? 'Gran Idea' : 'Big Idea'}</p>
+                    <input
+                      value={bigIdea}
+                      onChange={(e) => setBigIdea(e.target.value)}
+                      placeholder={lang === 'PT' ? 'A frase única que resume todo o sermão...' : lang === 'ES' ? 'La frase única que resume todo el sermón...' : 'The single sentence that summarizes the whole sermon...'}
+                      className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                    <input
+                      value={passageRef}
+                      onChange={(e) => setPassageRef(e.target.value)}
+                      placeholder={lang === 'PT' ? 'Passagem principal (ex: João 3:16)' : 'Main passage (e.g. John 3:16)'}
+                      className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                  </div>
+                  <SermonBlockEditor
+                    blocks={blocks}
+                    onChange={setBlocks}
+                    bigIdea={bigIdea}
+                    passageRef={passageRef}
+                    topic={topic}
+                    lang={lang}
+                  />
+                  {blocks.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
+                      <button onClick={handleSaveBlocks} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
+                        <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+                      </button>
+                      <button
+                        onClick={() => { setSermonContent(blocksToMarkdown(blocks, lang)); setSermonTitle(bigIdea.trim() || passageRef.trim() || 'Sermão'); setPodiumOpen(true); }}
+                        className={`${actionBtn} !border-amber-500/40 !bg-amber-500/10 !text-amber-700 dark:!text-amber-400`}
+                      >
+                        <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : loading ? (
                 <div className="flex flex-col items-center justify-center py-20">
                   <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                     <Loader2 className="h-7 w-7 text-primary animate-spin" />
@@ -789,6 +829,12 @@ export default function Sermoes() {
                     <div className="flex flex-wrap gap-2 mt-6 mb-4 pt-4 border-t border-border justify-start animate-in fade-in duration-300">
                       <button onClick={handleSave} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
                         <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+                      </button>
+                      <button
+                        onClick={() => setPodiumOpen(true)}
+                        className={`${actionBtn} !border-amber-500/40 !bg-amber-500/10 !text-amber-700 dark:!text-amber-400`}
+                      >
+                        <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
                       </button>
                       <button onClick={handleCopy} className={actionBtn}>
                         <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
