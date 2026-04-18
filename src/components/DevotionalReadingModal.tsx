@@ -71,87 +71,123 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
   };
 
   const handlePdf = async () => {
-    let wrapper: HTMLDivElement | null = null;
     const loadingToast = toast.loading(lang === 'PT' ? 'Gerando PDF...' : lang === 'ES' ? 'Generando PDF...' : 'Generating PDF...');
     try {
-      const html2pdf = (await import('html2pdf.js')).default;
-      const { BRAND } = await import('@/lib/export-branding');
+      // Native jsPDF text rendering — guaranteed text content (no canvas race conditions).
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
 
+      const PAGE_W = 210;
+      const PAGE_H = 297;
+      const MARGIN_X = 18;
+      const MARGIN_TOP = 20;
+      const MARGIN_BOTTOM = 20;
+      const CONTENT_W = PAGE_W - MARGIN_X * 2;
+      const GOLD: [number, number, number] = [124, 58, 237]; // #7C3AED
+      const TEXT: [number, number, number] = [26, 20, 48];   // #1a1430
+      const MUTED: [number, number, number] = [107, 91, 138];
+
+      let y = MARGIN_TOP;
+
+      const ensureSpace = (needed: number) => {
+        if (y + needed > PAGE_H - MARGIN_BOTTOM) {
+          doc.addPage();
+          y = MARGIN_TOP;
+        }
+      };
+
+      const addText = (
+        text: string,
+        opts: { size?: number; style?: 'normal' | 'bold' | 'italic' | 'bolditalic'; color?: [number, number, number]; lineHeight?: number; spaceAfter?: number; align?: 'left' | 'center'; font?: 'helvetica' | 'times' } = {}
+      ) => {
+        const { size = 11, style = 'normal', color = TEXT, lineHeight = 1.45, spaceAfter = 3, align = 'left', font = 'times' } = opts;
+        doc.setFont(font, style);
+        doc.setFontSize(size);
+        doc.setTextColor(color[0], color[1], color[2]);
+        const lines = doc.splitTextToSize(text, CONTENT_W);
+        const lineH = (size * 0.3528) * lineHeight; // pt→mm
+        for (const line of lines) {
+          ensureSpace(lineH);
+          const x = align === 'center' ? PAGE_W / 2 : MARGIN_X;
+          doc.text(line, x, y, { align });
+          y += lineH;
+        }
+        y += spaceAfter;
+      };
+
+      const addDivider = (color: [number, number, number] = GOLD, thickness = 0.6) => {
+        ensureSpace(4);
+        doc.setDrawColor(color[0], color[1], color[2]);
+        doc.setLineWidth(thickness);
+        doc.line(MARGIN_X, y, PAGE_W - MARGIN_X, y);
+        y += 4;
+      };
+
+      // Header brand
+      addText(`✦ Living Word`, { size: 13, style: 'bold', color: GOLD, font: 'times', spaceAfter: 2 });
+      addDivider(GOLD, 0.8);
+
+      // Title
+      addText(data.title, { size: 22, style: 'bold', color: TEXT, lineHeight: 1.2, spaceAfter: 3 });
+
+      // Date + category
       const dateStr = formatDate(data.scheduled_date, lang);
-      const esc = (s: string) =>
-        (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      const paragraphs = (data.body_text || '')
-        .split('\n\n')
-        .filter(p => p.trim())
-        .map(p => `<p style="margin:0 0 14px 0;font-family:Georgia,serif;font-size:13px;line-height:1.85;color:#1a1430;">${esc(p.trim())}</p>`)
-        .join('');
+      addText(dateStr, { size: 10, style: 'italic', color: MUTED, font: 'helvetica', spaceAfter: data.category ? 1 : 5 });
+      if (data.category) addText(`✦ ${data.category.toUpperCase()}`, { size: 9, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 6 });
 
-      const sectionTitle = (label: string) =>
-        `<h3 style="font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${BRAND.colors.gold};margin:0 0 10px 0;">${esc(label)}</h3>`;
+      // Anchor verse
+      if (data.anchor_verse_text) {
+        ensureSpace(20);
+        const verseStartY = y;
+        addText(`"${data.anchor_verse_text}"`, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.55, spaceAfter: 2 });
+        addText(`— ${data.anchor_verse}`, { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 6 });
+        // Left border
+        doc.setDrawColor(GOLD[0], GOLD[1], GOLD[2]);
+        doc.setLineWidth(1.2);
+        doc.line(MARGIN_X - 4, verseStartY - 2, MARGIN_X - 4, y - 4);
+      }
 
-      const verseBlock = data.anchor_verse_text
-        ? `<div style="border-left:4px solid ${BRAND.colors.gold};background:#F8F6FF;padding:14px 18px;margin:18px 0 22px 0;border-radius:6px;">
-             <blockquote style="margin:0;font-family:Georgia,serif;font-size:13px;font-style:italic;line-height:1.7;color:#1a1430;">&ldquo;${esc(data.anchor_verse_text)}&rdquo;</blockquote>
-             <p style="margin:8px 0 0 0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:${BRAND.colors.gold};">— ${esc(data.anchor_verse)}</p>
-           </div>` : '';
+      // Meditation section
+      addText(labels.meditation[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
+      const bodyParas = (data.body_text || '').split('\n\n').filter(p => p.trim());
+      for (const p of bodyParas) {
+        addText(p.trim(), { size: 12, style: 'normal', color: TEXT, lineHeight: 1.6, spaceAfter: 4 });
+      }
 
-      const prayerBlock = data.closing_prayer
-        ? `<div style="background:#E8E0F5;padding:14px 18px;margin:18px 0;border-radius:6px;page-break-inside:avoid;">
-             ${sectionTitle(labels.prayer[lang])}
-             <p style="margin:0;font-family:Georgia,serif;font-size:13px;font-style:italic;line-height:1.8;color:#2a1f4d;">${esc(data.closing_prayer)}</p>
-           </div>` : '';
+      // Closing prayer
+      if (data.closing_prayer) {
+        y += 2;
+        addText(labels.prayer[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
+        addText(data.closing_prayer, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.6, spaceAfter: 5 });
+      }
 
-      const practiceBlock = data.daily_practice
-        ? `<div style="background:#F8F6FF;border:1px solid #d6c8f0;padding:14px 18px;margin:18px 0;border-radius:6px;page-break-inside:avoid;">
-             ${sectionTitle(labels.practice[lang])}
-             <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;line-height:1.7;color:#1a1430;">${esc(data.daily_practice)}</p>
-           </div>` : '';
+      // Daily practice
+      if (data.daily_practice) {
+        addText(labels.practice[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
+        addText(data.daily_practice, { size: 11, style: 'normal', color: TEXT, font: 'helvetica', lineHeight: 1.5, spaceAfter: 5 });
+      }
 
-      const reflectionBlock = data.reflection_question
-        ? `<div style="border-left:3px solid #b9a3e0;padding:8px 0 8px 16px;margin:18px 0;page-break-inside:avoid;">
-             ${sectionTitle(labels.reflection[lang])}
-             <p style="margin:0;font-family:Georgia,serif;font-size:13px;font-style:italic;line-height:1.7;color:#2a1f4d;">${esc(data.reflection_question)}</p>
-           </div>` : '';
+      // Reflection
+      if (data.reflection_question) {
+        addText(labels.reflection[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
+        addText(data.reflection_question, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.55, spaceAfter: 6 });
+      }
 
-      // Render visible-but-hidden (under the modal) so html2canvas can measure it.
-      // Offscreen positioning (`left:-10000px`) sometimes results in zero-height capture → blank PDF.
-      wrapper = document.createElement('div');
-      wrapper.style.cssText = 'position:fixed;left:0;top:0;width:794px;background:#ffffff;z-index:-1;opacity:0;pointer-events:none;';
-      wrapper.innerHTML = `
-        <div style="width:794px;background:#ffffff;color:#1a1430;">
-          <div style="padding:20px 32px 14px 32px;border-bottom:2px solid ${BRAND.colors.gold};">
-            <div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:${BRAND.colors.brown};letter-spacing:0.5px;">✦ ${BRAND.name}</div>
-          </div>
-          <div style="padding:28px 32px 20px 32px;">
-            <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:900;line-height:1.2;color:#0F0A18;margin:0 0 8px 0;">${esc(data.title)}</h1>
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#6b5b8a;margin:0 0 6px 0;text-transform:capitalize;">${esc(dateStr)}</p>
-            ${data.category ? `<span style="display:inline-block;font-family:Arial,sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${BRAND.colors.gold};background:#F8F6FF;padding:4px 10px;border-radius:999px;">✦ ${esc(data.category)}</span>` : ''}
-            ${verseBlock}
-            <div style="margin-top:8px;">
-              ${sectionTitle(labels.meditation[lang])}
-              ${paragraphs}
-            </div>
-            ${prayerBlock}
-            ${practiceBlock}
-            ${reflectionBlock}
-          </div>
-          <div style="margin:20px 32px 24px 32px;padding-top:14px;border-top:1px solid #e5dff0;text-align:center;font-family:Arial,sans-serif;font-size:10px;color:#999;">
-            ${BRAND.name} • ${BRAND.site}
-          </div>
-        </div>`;
-      document.body.appendChild(wrapper);
+      // Footer brand on every page
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setDrawColor(229, 223, 240);
+        doc.setLineWidth(0.2);
+        doc.line(MARGIN_X, PAGE_H - 14, PAGE_W - MARGIN_X, PAGE_H - 14);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
+        doc.text(`Living Word • livingwordgo.com`, PAGE_W / 2, PAGE_H - 9, { align: 'center' });
+        doc.text(`${i} / ${totalPages}`, PAGE_W - MARGIN_X, PAGE_H - 9, { align: 'right' });
+      }
 
-      // Give the browser a tick to layout the wrapper before capture.
-      await new Promise(r => setTimeout(r, 80));
-
-      await html2pdf().set({
-        margin: [10, 0, 12, 0],
-        filename: `devocional-${data.scheduled_date}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 794, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-        pagebreak: { mode: ['css', 'legacy'] },
-      }).from(wrapper).save();
+      doc.save(`devocional-LW-${data.scheduled_date}.pdf`);
 
       toast.dismiss(loadingToast);
       toast.success(lang === 'PT' ? 'PDF salvo!' : lang === 'ES' ? '¡PDF guardado!' : 'PDF saved!');
@@ -159,8 +195,6 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
       console.error('[DevotionalPDF]', err);
       toast.dismiss(loadingToast);
       toast.error(lang === 'PT' ? 'Erro ao gerar PDF' : lang === 'ES' ? 'Error al generar PDF' : 'Error generating PDF');
-    } finally {
-      if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
     }
   };
 
