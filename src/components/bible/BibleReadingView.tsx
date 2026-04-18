@@ -222,33 +222,31 @@ export function BibleReadingView({
   };
 
   // ─── Double-tap activation (mobile + desktop) ───
-  // Two quick taps within 300ms toggle the verse selection.
-  // Single tap does nothing → eliminates conflict with scroll.
-  const lastTapRef = useRef<{ verse: number; time: number } | null>(null);
+  const lastTouchTapRef = useRef<{ verse: number; time: number } | null>(null);
   const DOUBLE_TAP_MS = 300;
 
-  const handleDoubleActivate = (verseNum: number) => {
-    // Haptic feedback on supported mobile devices
+  const handleDoubleActivate = useCallback((verseNum: number) => {
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       try { navigator.vibrate(15); } catch { /* noop */ }
     }
     toggleVerseSelection(verseNum);
-  };
+  }, []);
 
-  // Manual double-tap detection for touch devices (onDoubleClick is unreliable on mobile)
-  const handleVerseTap = (verseNum: number) => {
+  const handleTouchDoubleTap = useCallback((verseNum: number) => {
     const now = Date.now();
-    const last = lastTapRef.current;
-    if (last && last.verse === verseNum && now - last.time < DOUBLE_TAP_MS) {
-      lastTapRef.current = null;
-      handleDoubleActivate(verseNum);
-    } else {
-      lastTapRef.current = { verse: verseNum, time: now };
-    }
-  };
+    const last = lastTouchTapRef.current;
 
-  // Helper: clear selection with subtle haptic feedback
+    if (last && last.verse === verseNum && now - last.time < DOUBLE_TAP_MS) {
+      lastTouchTapRef.current = null;
+      handleDoubleActivate(verseNum);
+      return;
+    }
+
+    lastTouchTapRef.current = { verse: verseNum, time: now };
+  }, [handleDoubleActivate]);
+
   const clearSelection = useCallback(() => {
+    lastTouchTapRef.current = null;
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       try { navigator.vibrate([10, 30, 10]); } catch { /* noop */ }
     }
@@ -527,18 +525,15 @@ export function BibleReadingView({
                           : hlClass || 'hover:bg-muted/40'
                   } ${isDragging ? 'select-none' : ''}`}
                 >
-                  {/* Verse number badge — double-tap (touch) / drag (mouse) to select */}
+                  {/* Verse number badge — double-tap/double-click only */}
                   <button
                     onPointerDown={(e) => handleDragStart(e, v.verse)}
-                    onClick={(e) => {
-                      // Suppress click after a drag-range selection
-                      if (selectedVerses.size > 1 && selectedVerses.has(v.verse)) {
-                        e.preventDefault();
-                        return;
-                      }
-                      handleVerseTap(v.verse);
+                    onDoubleClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleVerseSelection(v.verse);
                     }}
-                    onDoubleClick={(e) => { e.preventDefault(); handleDoubleActivate(v.verse); }}
+                    onTouchEnd={() => handleTouchDoubleTap(v.verse)}
                     onContextMenu={(e) => e.preventDefault()}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors select-none ${
                       isSelected
@@ -552,15 +547,19 @@ export function BibleReadingView({
                   {/* Verse text + inline toolbar */}
                   <div className="flex-1 min-w-0">
                     <span
-                      onClick={() => handleVerseTap(v.verse)}
-                      onDoubleClick={(e) => { e.preventDefault(); handleDoubleActivate(v.verse); }}
+                      onDoubleClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleVerseSelection(v.verse);
+                      }}
+                      onTouchEnd={() => handleTouchDoubleTap(v.verse)}
                       onContextMenu={(e) => e.preventDefault()}
                       className="leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 cursor-pointer"
                     >
                       {v.text.trim()}
                     </span>
                     {isLastSelected && selectedVerses.size > 0 && (
-                      <div data-verse-toolbar onPointerDown={(e) => e.stopPropagation()}>
+                      <div data-verse-toolbar>
                         <InlineVerseToolbar
                           selectedVerses={verses.filter(vv => selectedVerses.has(vv.verse))}
                           bookId={bookId}
@@ -577,7 +576,7 @@ export function BibleReadingView({
                           }}
                           onHighlight={handleHighlight}
                           onNoteSaved={onTabsRefresh}
-                          onClose={clearSelection}
+                          onClose={() => setSelectedVerses(new Set())}
                           onStudySidebar={handleOpenStudy}
                         />
                       </div>

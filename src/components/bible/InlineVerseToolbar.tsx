@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Star, Copy, Share2, Pencil, BookOpen, Palette, FileText } from 'lucide-react';
+import { Star, Copy, Share2, Pencil, BookOpen, Palette, FileText, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getBookName, type L } from '@/lib/bible-data';
 
@@ -152,62 +152,70 @@ export function InlineVerseToolbar({
   }
 
   return (
-    <div className="flex items-center gap-1.5 mt-2 flex-wrap animate-in fade-in duration-200">
-      {/* Highlight colors */}
-      {highlightColors.map(c => (
+    <div className="mt-2 flex items-start gap-2 flex-wrap animate-in fade-in duration-200">
+      <div className="flex items-center gap-1.5 flex-wrap">
+        {highlightColors.map(c => (
+          <button
+            key={c.key}
+            onClick={() => onHighlight(c.key, verseNums)}
+            className={`w-5 h-5 rounded-full ${c.class} hover:scale-125 transition-transform active:scale-95`}
+          />
+        ))}
+
+        <div className="w-px h-4 bg-border mx-1" />
+
+        <button onClick={handleFavorite} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+          <Star className={`h-4 w-4 ${allFavorited ? 'text-primary fill-primary' : 'text-muted-foreground'}`} />
+        </button>
+        <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+          <Copy className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <button onClick={handleShare} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+          <Share2 className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <button onClick={() => setShowNote(true)} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+          <Pencil className="h-4 w-4 text-muted-foreground" />
+        </button>
+
+        <div className="w-px h-4 bg-border mx-1" />
+
         <button
-          key={c.key}
-          onClick={() => onHighlight(c.key, verseNums)}
-          className={`w-5 h-5 rounded-full ${c.class} hover:scale-125 transition-transform active:scale-95`}
-        />
-      ))}
+          onClick={() => {
+            if (onStudySidebar) {
+              onStudySidebar(verseRef, combinedText);
+            } else {
+              navigate('/estudo-biblico', { state: { passage: verseRef } });
+              onClose();
+            }
+          }}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          <BookOpen className="h-3.5 w-3.5" />
+          <span className="text-[11px] font-semibold">{labels.study[lang]}</span>
+        </button>
+        <button
+          onClick={() => { navigate('/social-studio', { state: { verseText: combinedText, passage: verseRef } }); onClose(); }}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          <Palette className="h-3.5 w-3.5" />
+          <span className="text-[11px] font-semibold">{labels.art[lang]}</span>
+        </button>
+        <button
+          onClick={() => { navigate('/blog', { state: { passage: verseRef, verseText: combinedText } }); onClose(); }}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          <FileText className="h-3.5 w-3.5" />
+          <span className="text-[11px] font-semibold">{labels.blog[lang]}</span>
+        </button>
+      </div>
 
-      <div className="w-px h-4 bg-border mx-1" />
-
-      {/* Actions */}
-      <button onClick={handleFavorite} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Star className={`h-4 w-4 ${allFavorited ? 'text-primary fill-primary' : 'text-muted-foreground'}`} />
-      </button>
-      <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Copy className="h-4 w-4 text-muted-foreground" />
-      </button>
-      <button onClick={handleShare} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Share2 className="h-4 w-4 text-muted-foreground" />
-      </button>
-      <button onClick={() => setShowNote(true)} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-        <Pencil className="h-4 w-4 text-muted-foreground" />
-      </button>
-
-      <div className="w-px h-4 bg-border mx-1" />
-
-      {/* Study, Art & Blog buttons */}
       <button
-        onClick={() => {
-          if (onStudySidebar) {
-            onStudySidebar(verseRef, combinedText);
-          } else {
-            navigate('/estudo-biblico', { state: { passage: verseRef } });
-            onClose();
-          }
-        }}
-        className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+        type="button"
+        onClick={onClose}
+        aria-label="Close verse toolbar"
+        className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       >
-        <BookOpen className="h-3.5 w-3.5" />
-        <span className="text-[11px] font-semibold">{labels.study[lang]}</span>
-      </button>
-      <button
-        onClick={() => { navigate('/social-studio', { state: { verseText: combinedText, passage: verseRef } }); onClose(); }}
-        className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-      >
-        <Palette className="h-3.5 w-3.5" />
-        <span className="text-[11px] font-semibold">{labels.art[lang]}</span>
-      </button>
-      <button
-        onClick={() => { navigate('/blog', { state: { passage: verseRef, verseText: combinedText } }); onClose(); }}
-        className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-      >
-        <FileText className="h-3.5 w-3.5" />
-        <span className="text-[11px] font-semibold">{labels.blog[lang]}</span>
+        <X className="h-4 w-4" />
       </button>
     </div>
   );
