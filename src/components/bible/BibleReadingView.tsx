@@ -187,18 +187,34 @@ export function BibleReadingView({
     });
   };
 
-  // Long-press handlers — require holding for 1s before selection toggles.
-  // Prevents accidental opens on every tap while reading.
+  // ─── Long-press handlers (Touch UI best practices) ───
+  // • Mobile: 450ms hold opens toolbar. Movement > 10px cancels (= scroll, not press).
+  // • Desktop: simple click toggles selection.
   const pressTimerRef = useRef<number | null>(null);
   const pressTriggeredRef = useRef(false);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const MOVE_THRESHOLD = 10; // px
 
-  const startPress = (verseNum: number) => {
+  const startTouchPress = (verseNum: number, e: React.TouchEvent) => {
     pressTriggeredRef.current = false;
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
     if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
     pressTimerRef.current = window.setTimeout(() => {
       pressTriggeredRef.current = true;
       toggleVerseSelection(verseNum);
-    }, 1000);
+    }, 450);
+  };
+
+  const onTouchMovePress = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || !pressTimerRef.current) return;
+    const t = e.touches[0];
+    const dx = Math.abs(t.clientX - touchStartRef.current.x);
+    const dy = Math.abs(t.clientY - touchStartRef.current.y);
+    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
+      window.clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
   };
 
   const cancelPress = () => {
@@ -206,7 +222,43 @@ export function BibleReadingView({
       window.clearTimeout(pressTimerRef.current);
       pressTimerRef.current = null;
     }
+    touchStartRef.current = null;
   };
+
+  const handleMouseToggle = (verseNum: number) => {
+    // Desktop quick-toggle (no long press needed)
+    toggleVerseSelection(verseNum);
+  };
+
+  // ─── Auto-dismiss: outside click + scroll closes the floating toolbar ───
+  useEffect(() => {
+    if (selectedVerses.size === 0) return;
+
+    const handleOutside = (e: PointerEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      // Ignore clicks inside any verse row, the toolbar itself, or popovers/dialogs
+      if (target.closest('[id^="verse-"]')) return;
+      if (target.closest('[data-verse-toolbar]')) return;
+      if (target.closest('[role="dialog"]')) return;
+      if (target.closest('[data-radix-popper-content-wrapper]')) return;
+      setSelectedVerses(new Set());
+    };
+
+    let scrollStartY = window.scrollY;
+    const handleScroll = () => {
+      if (Math.abs(window.scrollY - scrollStartY) > 30) {
+        setSelectedVerses(new Set());
+      }
+    };
+
+    document.addEventListener('pointerdown', handleOutside);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener('pointerdown', handleOutside);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [selectedVerses.size]);
 
   const chapterNumbers = Array.from({ length: totalChapters }, (_, i) => i + 1);
 
@@ -350,10 +402,11 @@ export function BibleReadingView({
                 >
                   {/* Verse number badge */}
                   <button
-                    onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); startPress(v.verse); }}
-                    onPointerUp={cancelPress}
-                    onPointerLeave={cancelPress}
-                    onPointerCancel={cancelPress}
+                    onTouchStart={(e) => { e.stopPropagation(); startTouchPress(v.verse, e); }}
+                    onTouchMove={onTouchMovePress}
+                    onTouchEnd={cancelPress}
+                    onTouchCancel={cancelPress}
+                    onMouseDown={(e) => { e.stopPropagation(); handleMouseToggle(v.verse); }}
                     onContextMenu={(e) => e.preventDefault()}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors select-none ${
                       isSelected
@@ -367,35 +420,37 @@ export function BibleReadingView({
                   {/* Verse text + inline toolbar */}
                   <div className="flex-1 min-w-0">
                     <span
-                      onPointerDown={(e) => { e.stopPropagation(); startPress(v.verse); }}
-                      onPointerUp={cancelPress}
-                      onPointerLeave={cancelPress}
-                      onPointerCancel={cancelPress}
+                      onTouchStart={(e) => { e.stopPropagation(); startTouchPress(v.verse, e); }}
+                      onTouchMove={onTouchMovePress}
+                      onTouchEnd={cancelPress}
+                      onTouchCancel={cancelPress}
                       onContextMenu={(e) => e.preventDefault()}
-                      className="cursor-pointer leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 select-none"
+                      className="leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 select-none"
                     >
                       {v.text.trim()}
                     </span>
                     {isLastSelected && selectedVerses.size > 0 && (
-                      <InlineVerseToolbar
-                        selectedVerses={verses.filter(vv => selectedVerses.has(vv.verse))}
-                        bookId={bookId}
-                        chapter={chapter}
-                        translationCode={translation}
-                        favoritedVerses={favoritedVerses}
-                        onFavoriteToggle={(vn) => {
-                          setFavoritedVerses(p => {
-                            const n = new Set(p);
-                            if (n.has(vn)) n.delete(vn); else n.add(vn);
-                            return n;
-                          });
-                          onTabsRefresh();
-                        }}
-                        onHighlight={handleHighlight}
-                        onNoteSaved={onTabsRefresh}
-                        onClose={() => setSelectedVerses(new Set())}
-                        onStudySidebar={handleOpenStudy}
-                      />
+                      <div data-verse-toolbar onPointerDown={(e) => e.stopPropagation()}>
+                        <InlineVerseToolbar
+                          selectedVerses={verses.filter(vv => selectedVerses.has(vv.verse))}
+                          bookId={bookId}
+                          chapter={chapter}
+                          translationCode={translation}
+                          favoritedVerses={favoritedVerses}
+                          onFavoriteToggle={(vn) => {
+                            setFavoritedVerses(p => {
+                              const n = new Set(p);
+                              if (n.has(vn)) n.delete(vn); else n.add(vn);
+                              return n;
+                            });
+                            onTabsRefresh();
+                          }}
+                          onHighlight={handleHighlight}
+                          onNoteSaved={onTabsRefresh}
+                          onClose={() => setSelectedVerses(new Set())}
+                          onStudySidebar={handleOpenStudy}
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
