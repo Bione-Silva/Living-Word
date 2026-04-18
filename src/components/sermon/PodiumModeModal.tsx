@@ -489,6 +489,7 @@ export function PodiumModeModal({
 
   function resetTimer() {
     setRunning(false);
+    endAlertFiredRef.current = false; // rearma o sino para o próximo ciclo
     if (mode === 'countdown') setSeconds(limitSeconds);
     else setSeconds(0);
   }
