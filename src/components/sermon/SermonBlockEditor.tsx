@@ -458,6 +458,19 @@ export function SermonBlockEditor({
           </span>
         </div>
       )}
+
+      {/* Dialog de Templates (salvar / carregar) */}
+      <SermonTemplateDialog
+        open={tplDialog !== null}
+        onOpenChange={(v) => { if (!v) setTplDialog(null); }}
+        mode={tplDialog ?? 'load'}
+        lang={lang}
+        currentBlocks={blocks}
+        onApplyTemplate={(next) => onChange(next)}
+      />
+    </div>
+  );
+}
     </div>
   );
 }
