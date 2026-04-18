@@ -78,6 +78,26 @@ export function BibleReadingView({
   const [activeHighlightVerses, setActiveHighlightVerses] = useState<Set<number>>(new Set());
   const [compareCode, setCompareCode] = useState<string | null>(null);
 
+  // Drag-to-select (desktop only)
+  const dragAnchorRef = useRef<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // First-time hint toast (once per user/browser)
+  useEffect(() => {
+    try {
+      if (typeof window === 'undefined') return;
+      if (localStorage.getItem(HINT_STORAGE_KEY)) return;
+      const t = setTimeout(() => {
+        toast(doubleTapHint[lang], {
+          description: dragHintLabel[lang],
+          duration: 6000,
+        });
+        localStorage.setItem(HINT_STORAGE_KEY, '1');
+      }, 1200);
+      return () => clearTimeout(t);
+    } catch { /* noop */ }
+  }, [lang]);
+
   // Parse highlightVerse param (e.g. "22", "22-23") into a set of verse numbers
   useEffect(() => {
     if (!highlightVerse || verses.length === 0) {
