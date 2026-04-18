@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useIsStandalone } from '@/hooks/useIsStandalone';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -35,7 +35,6 @@ const COPY = {
 
 const STORAGE_KEY = 'lw_mobile_install_dismissed_at';
 const SUPPRESS_DAYS = 7;
-const AUTO_HIDE_MS = 8000;
 
 function isIos() {
   if (typeof navigator === 'undefined') return false;
@@ -62,18 +61,17 @@ export function MobileInstallBanner() {
     }
   });
 
-  // Auto-hide after AUTO_HIDE_MS so it doesn't disturb generation flows
-  useEffect(() => {
-    if (hidden) return;
-    const t = setTimeout(() => setHidden(true), AUTO_HIDE_MS);
-    return () => clearTimeout(t);
-  }, [hidden]);
+  // Banner is persistent: it only disappears when the user dismisses it,
+  // installs the app, or the app is launched in standalone mode.
+  // No auto-hide timer — that interrupts the install nudge.
 
-  if (!isMobile || isStandalone || hidden) return null;
+  if (isStandalone || hidden) return null;
 
   const ios = isIos();
-  // On Android (Chrome/Edge), wait for beforeinstallprompt; on iOS show manual instructions.
-  if (!isInstallable && !ios) return null;
+  // On iOS we always show manual instructions when not standalone.
+  // On Android/desktop Chrome we need the beforeinstallprompt event.
+  // If we have neither, hide.
+  if (!isInstallable && !(ios && isMobile)) return null;
 
   const handleDismiss = () => {
     setHidden(true);
