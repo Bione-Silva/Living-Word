@@ -35,6 +35,8 @@ export interface SermonBlockTypeMeta {
   headerBgClass: string;
   /** Classe Tailwind para a cor do ícone/título */
   accentClass: string;
+  /** Classe Tailwind para a bolinha sólida no seletor (bg-{cor}) */
+  dotClass: string;
   /** Emoji indicativo */
   emoji: string;
   /** Labels trilíngues */
