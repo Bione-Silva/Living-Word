@@ -1554,7 +1554,7 @@ export function PodiumModeModal({
                         style={{ fontSize: `${Math.min(fontPx, 22)}px`, lineHeight: 1.7 }}
                       />
                     ) : (
-                      <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} theme={theme} />
+                      <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} theme={theme} tone={c.tone} />
                     )}
                   </div>
                 </section>
