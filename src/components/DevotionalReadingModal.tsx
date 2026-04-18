@@ -201,7 +201,12 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
         doc.text(`${i} / ${totalPages}`, PAGE_W - MARGIN_X, PAGE_H - 9, { align: 'right' });
       }
 
-      doc.save(`devocional-LW-${data.scheduled_date}.pdf`);
+      const fileName = lang === 'EN'
+        ? `Devotional Living Word - ${data.scheduled_date}.pdf`
+        : lang === 'ES'
+        ? `Devocional Living Word - ${data.scheduled_date}.pdf`
+        : `Devocional Living Word - ${data.scheduled_date}.pdf`;
+      doc.save(fileName);
 
       toast.dismiss(loadingToast);
       toast.success(lang === 'PT' ? 'PDF salvo!' : lang === 'ES' ? '¡PDF guardado!' : 'PDF saved!');
