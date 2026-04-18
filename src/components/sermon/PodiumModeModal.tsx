@@ -95,6 +95,12 @@ const tr = {
   alertSound: { PT: 'Som do alerta', EN: 'Alert sound', ES: 'Sonido de alerta' },
   on: { PT: 'Ligado', EN: 'On', ES: 'Activado' },
   off: { PT: 'Desligado', EN: 'Off', ES: 'Desactivado' },
+  alertTone: { PT: 'Tom do alerta', EN: 'Alert tone', ES: 'Tono de alerta' },
+  toneBell: { PT: 'Sino suave', EN: 'Soft bell', ES: 'Campana suave' },
+  toneGong: { PT: 'Gongo', EN: 'Gong', ES: 'Gong' },
+  toneSilent: { PT: 'Silencioso', EN: 'Silent', ES: 'Silencioso' },
+  keepScreenOn: { PT: 'Manter tela ligada', EN: 'Keep screen on', ES: 'Mantener pantalla encendida' },
+  testTone: { PT: 'Testar', EN: 'Test', ES: 'Probar' },
 };
 
 /* ─── Detecção de tipo de bloco a partir do heading ─── */
@@ -397,12 +403,38 @@ export function PodiumModeModal({
 
   /** Segundos antes do fim para o pré-aviso suave (5 minutos). */
   const WARNING_THRESHOLD_SECONDS = 5 * 60;
+  /** Segundos antes do fim para aviso visual âmbar pulsante (30s). */
+  const IMMINENT_END_SECONDS = 30;
 
-  /** Preferência persistida do usuário para o sino + vibração ao bater 00:00. */
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+  /** Tom do alerta sonoro persistido. 'silent' substitui o antigo OFF. */
+  type AlertTone = 'bell' | 'gong' | 'silent';
+  const [alertTone, setAlertTone] = useState<AlertTone>(() => {
+    if (typeof window === 'undefined') return 'bell';
+    try {
+      const v = window.localStorage.getItem('podium:alertTone');
+      if (v === 'bell' || v === 'gong' || v === 'silent') return v;
+      // Migração do toggle antigo: '0' = silencioso, '1' (ou ausente) = bell
+      const legacy = window.localStorage.getItem('podium:alertSound');
+      if (legacy === '0') return 'silent';
+      return 'bell';
+    } catch {
+      return 'bell';
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('podium:alertTone', alertTone);
+    } catch {
+      /* storage indisponível: ok */
+    }
+  }, [alertTone]);
+  const soundEnabled = alertTone !== 'silent';
+
+  /** Wake Lock — mantém a tela ligada durante a pregação. Persistido em localStorage. */
+  const [keepScreenOn, setKeepScreenOn] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
     try {
-      const v = window.localStorage.getItem('podium:alertSound');
+      const v = window.localStorage.getItem('podium:keepScreenOn');
       return v === null ? true : v === '1';
     } catch {
       return true;
@@ -410,16 +442,119 @@ export function PodiumModeModal({
   });
   useEffect(() => {
     try {
-      window.localStorage.setItem('podium:alertSound', soundEnabled ? '1' : '0');
+      window.localStorage.setItem('podium:keepScreenOn', keepScreenOn ? '1' : '0');
     } catch {
-      /* storage indisponível: ok */
+      /* noop */
     }
-  }, [soundEnabled]);
+  }, [keepScreenOn]);
 
-  /** Sino suave via WebAudio (3 toques curtos) + vibração no mobile. Sem assets externos. */
+  // Wake Lock API: solicita enquanto modal aberto + toggle ligado; reativa ao voltar de background.
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  useEffect(() => {
+    if (!open || !keepScreenOn) return;
+    let cancelled = false;
+    const nav = typeof navigator !== 'undefined' ? (navigator as Navigator & { wakeLock?: { request: (type: 'screen') => Promise<WakeLockSentinel> } }) : null;
+    if (!nav?.wakeLock) return; // iOS Safari < 16.4 não suporta — silencioso
+
+    const request = async () => {
+      try {
+        const sentinel = await nav.wakeLock!.request('screen');
+        if (cancelled) {
+          void sentinel.release().catch(() => {});
+          return;
+        }
+        wakeLockRef.current = sentinel;
+        sentinel.addEventListener('release', () => {
+          // Se ainda devemos manter ligada e o doc estiver visível, re-solicita.
+          if (!cancelled && keepScreenOn && document.visibilityState === 'visible') {
+            void request();
+          }
+        });
+      } catch {
+        /* permissão negada ou bateria fraca — silencioso */
+      }
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible' && keepScreenOn && !wakeLockRef.current) {
+        void request();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    void request();
+
+    return () => {
+      cancelled = true;
+      document.removeEventListener('visibilitychange', onVisibility);
+      if (wakeLockRef.current) {
+        void wakeLockRef.current.release().catch(() => {});
+        wakeLockRef.current = null;
+      }
+    };
+  }, [open, keepScreenOn]);
+
+  /** Garante AudioContext criado/retomado (iOS exige após gesto). */
+  function ensureAudioCtx(): AudioContext | null {
+    try {
+      const Ctx = (window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
+      if (!Ctx) return null;
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new Ctx();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') void ctx.resume();
+      return ctx;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Sino suave: 3 toques senoidais (A5 → E6 → A5). */
+  function playBellSequence() {
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const tone = (offset: number, freq: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.18, now + offset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.9);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 1.0);
+    };
+    tone(0.0, 880);
+    tone(0.55, 1318.5);
+    tone(1.1, 880);
+  }
+
+  /** Gongo: tom grave (110Hz) com harmônicos e decay longo, ressonante. */
+  function playGongSequence() {
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const fundamentals = [110, 165, 220]; // A2, E3, A3
+    fundamentals.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = i === 0 ? 'sine' : 'triangle';
+      osc.frequency.value = freq;
+      const peak = i === 0 ? 0.28 : 0.12;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(peak, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.5);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 3.6);
+    });
+  }
+
+  /** Alerta de fim do regressivo. Respeita tom + dispara vibração. */
   function playEndAlert() {
-    if (!soundEnabled) return; // respeita preferência do usuário
-    // Vibração — Android/Chrome mobile (iOS Safari ignora silenciosamente, ok).
+    if (alertTone === 'silent') return;
     try {
       if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
         navigator.vibrate([400, 150, 400, 150, 600]);
@@ -427,44 +562,17 @@ export function PodiumModeModal({
     } catch {
       /* noop */
     }
-
-    // Bell suave: 3 toques senoidais com decaimento exponencial.
     try {
-      const Ctx = (window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
-      if (!Ctx) return;
-      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
-        audioCtxRef.current = new Ctx();
-      }
-      const ctx = audioCtxRef.current;
-      // iOS exige resume após gesto do usuário — Play/Pause já contou como gesto.
-      if (ctx.state === 'suspended') void ctx.resume();
-
-      const now = ctx.currentTime;
-      const tone = (offset: number, freq: number) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now + offset);
-        gain.gain.exponentialRampToValueAtTime(0.18, now + offset + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.9);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(now + offset);
-        osc.stop(now + offset + 1.0);
-      };
-      // Acorde de sino: A5 → E6 → A5 (suave, não estridente).
-      tone(0.0, 880);
-      tone(0.55, 1318.5);
-      tone(1.1, 880);
+      if (alertTone === 'gong') playGongSequence();
+      else playBellSequence();
     } catch {
       /* audio bloqueado: silencioso por design */
     }
   }
 
-  /** Pré-aviso suave (sino único + vibração curta) faltando 5 minutos. */
+  /** Pré-aviso suave aos 5 minutos: sino único discreto + vibração curta. */
   function playWarningAlert() {
-    if (!soundEnabled) return;
-    // Vibração curta — pulso único discreto.
+    if (alertTone === 'silent') return;
     try {
       if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
         navigator.vibrate(250);
@@ -472,20 +580,15 @@ export function PodiumModeModal({
     } catch {
       /* noop */
     }
-    // Sino único: um toque senoidal suave (E5 ~ 659Hz, mais grave que o final, evita confusão).
     try {
-      const Ctx = (window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
-      if (!Ctx) return;
-      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
-        audioCtxRef.current = new Ctx();
-      }
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') void ctx.resume();
+      const ctx = ensureAudioCtx();
+      if (!ctx) return;
       const now = ctx.currentTime;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+      // Gongo usa freq mais grave de pré-aviso; sino usa E5.
       osc.type = 'sine';
-      osc.frequency.value = 659.25; // E5 — pré-aviso, mais suave que o A5/E6 do fim
+      osc.frequency.value = alertTone === 'gong' ? 220 : 659.25;
       gain.gain.setValueAtTime(0.0001, now);
       gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
@@ -495,6 +598,16 @@ export function PodiumModeModal({
     } catch {
       /* audio bloqueado: silencioso por design */
     }
+  }
+
+  /** Toca um teste curto do tom selecionado para o pastor conferir. */
+  function testCurrentTone() {
+    if (alertTone === 'silent') {
+      try { navigator.vibrate?.(120); } catch { /* noop */ }
+      return;
+    }
+    if (alertTone === 'gong') playGongSequence();
+    else playBellSequence();
   }
 
   useEffect(() => {
@@ -727,8 +840,14 @@ export function PodiumModeModal({
     ? 'text-slate-400 hover:text-white hover:bg-slate-800'
     : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200';
   const timerAlert = mode === 'countdown' && seconds === 0;
+  // Aviso visual sutil: faltando 30s ou menos (mas ainda > 0) — fundo âmbar pulsante.
+  const imminentEnd = mode === 'countdown' && seconds > 0 && seconds <= IMMINENT_END_SECONDS;
   const timerBg = timerAlert
     ? 'bg-red-600 text-white ring-2 ring-red-400 animate-pulse shadow-lg shadow-red-500/40'
+    : imminentEnd
+    ? (isDark
+        ? 'bg-amber-500/25 text-amber-200 ring-1 ring-amber-400/60 animate-pulse shadow-md shadow-amber-500/20'
+        : 'bg-amber-100 text-amber-800 ring-1 ring-amber-400/70 animate-pulse shadow-md shadow-amber-500/20')
     : isDark
     ? (overLimit ? 'bg-red-950/60 text-red-300 ring-1 ring-red-500/50' : 'bg-slate-800 text-slate-100')
     : (overLimit ? 'bg-red-100 text-red-700 ring-1 ring-red-400/60' : 'bg-slate-200 text-slate-800');
@@ -881,23 +1000,59 @@ export function PodiumModeModal({
               </div>
 
               <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-[11px] uppercase tracking-wider opacity-70 flex items-center justify-between">
+                <span>{tr.alertTone[lang]}</span>
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); testCurrentTone(); }}
+                  className={cn(
+                    'text-[10px] font-semibold normal-case tracking-normal px-2 py-0.5 rounded-md transition-colors',
+                    isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                  )}
+                >
+                  {tr.testTone[lang]}
+                </button>
+              </DropdownMenuLabel>
+              <div className="px-2 pb-2 grid grid-cols-3 gap-1">
+                {([
+                  { key: 'bell' as const, label: tr.toneBell[lang], icon: <Volume2 className="h-3 w-3" /> },
+                  { key: 'gong' as const, label: tr.toneGong[lang], icon: <Volume2 className="h-3 w-3" /> },
+                  { key: 'silent' as const, label: tr.toneSilent[lang], icon: <VolumeX className="h-3 w-3 opacity-70" /> },
+                ]).map((opt) => (
+                  <button
+                    key={opt.key}
+                    onClick={(e) => { e.preventDefault(); setAlertTone(opt.key); }}
+                    className={cn(
+                      'flex flex-col items-center gap-1 text-[10px] py-1.5 rounded-md transition-colors',
+                      alertTone === opt.key
+                        ? 'bg-amber-600 text-white font-bold ring-1 ring-amber-400'
+                        : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                    )}
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              <DropdownMenuSeparator />
               <DropdownMenuItem
-                onSelect={(e) => { e.preventDefault(); setSoundEnabled((v) => !v); }}
+                onSelect={(e) => { e.preventDefault(); setKeepScreenOn((v) => !v); }}
                 className="flex items-center justify-between gap-2 cursor-pointer"
               >
                 <span className="flex items-center gap-2 text-xs">
-                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4 opacity-60" />}
-                  {tr.alertSound[lang]}
+                  <Sun className="h-4 w-4" />
+                  {tr.keepScreenOn[lang]}
                 </span>
                 <span
                   className={cn(
                     'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full',
-                    soundEnabled
+                    keepScreenOn
                       ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/40'
                       : 'bg-slate-500/15 text-slate-500 dark:text-slate-400 ring-1 ring-slate-500/30',
                   )}
                 >
-                  {soundEnabled ? tr.on[lang] : tr.off[lang]}
+                  {keepScreenOn ? tr.on[lang] : tr.off[lang]}
                 </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
