@@ -355,16 +355,16 @@ export default function SocialStudio() {
   }
 
   return (
-    <div className="theme-app">
+    <div className="theme-app overflow-x-hidden">
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-5 sm:mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-md">
-            <Wand2 className="h-5 w-5 text-primary-foreground" />
+          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-md shrink-0">
+            <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground tracking-tight">{h.title}</h1>
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight break-words min-w-0">{h.title}</h1>
         </div>
-        <p className="text-muted-foreground text-sm sm:text-base max-w-2xl leading-relaxed">{h.subtitle}</p>
+        <p className="text-muted-foreground text-xs sm:text-sm md:text-base max-w-2xl leading-relaxed">{h.subtitle}</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -380,9 +380,9 @@ export default function SocialStudio() {
         </TabsList>
 
         <TabsContent value="studio" className="mt-0">
-          <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-4 sm:gap-6">
             {/* ── LEFT: INPUT PANEL ── */}
-            <div className="space-y-4 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1">
+            <div className="space-y-4 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 min-w-0">
               {/* Format selector */}
               <Card className="bg-card border-border">
                 <CardContent className="p-4 space-y-3">
