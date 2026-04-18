@@ -100,37 +100,37 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group rounded-xl border border-border border-l-4 bg-card shadow-sm transition-shadow',
+        'group rounded-xl border border-border border-l-4 bg-card shadow-sm transition-shadow w-full min-w-0 overflow-hidden',
         meta.borderClass,
         isDragging && 'shadow-lg ring-2 ring-primary/30',
       )}
     >
       {/* Header */}
-      <div className={cn('flex items-center gap-2 px-3 py-2 rounded-t-xl', meta.headerBgClass)}>
+      <div className={cn('flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 rounded-t-xl', meta.headerBgClass)}>
         <button
           {...attributes}
           {...listeners}
           aria-label={tr.drag[lang]}
-          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none shrink-0"
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <span className={cn('text-sm font-bold flex items-center gap-1.5', meta.accentClass)}>
-          <span>{meta.emoji}</span>
-          <span>{meta.label[lang]}</span>
+        <span className={cn('text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 min-w-0 truncate', meta.accentClass)}>
+          <span className="shrink-0">{meta.emoji}</span>
+          <span className="truncate">{meta.label[lang]}</span>
         </span>
         <div className="flex-1" />
         <button
           onClick={() => setCollapsed((c) => !c)}
           aria-label={collapsed ? tr.expand[lang] : tr.collapse[lang]}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground shrink-0"
         >
           {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
         </button>
         <button
           onClick={() => onDelete(block.id)}
           aria-label={tr.remove[lang]}
-          className="text-muted-foreground hover:text-destructive"
+          className="text-muted-foreground hover:text-destructive shrink-0"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -138,12 +138,12 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
 
       {/* Body */}
       {!collapsed && (
-        <div className="p-3 space-y-2">
+        <div className="p-2.5 sm:p-3 space-y-2 min-w-0">
           <Input
             value={block.title || ''}
             onChange={(e) => onChange({ ...block, title: e.target.value })}
             placeholder={tr.titlePlaceholder[lang]}
-            className="h-9 text-sm font-medium"
+            className="h-9 text-sm font-medium w-full"
           />
 
           {block.type === 'passage' && (
@@ -151,7 +151,7 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
               value={block.passageRef || ''}
               onChange={(e) => onChange({ ...block, passageRef: e.target.value })}
               placeholder={lang === 'PT' ? 'Referência (ex: João 3:16-21)' : lang === 'ES' ? 'Referencia (ej: Juan 3:16-21)' : 'Reference (e.g. John 3:16-21)'}
-              className="h-9 text-sm"
+              className="h-9 text-sm w-full"
             />
           )}
 
@@ -160,12 +160,12 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
             onChange={(e) => onChange({ ...block, content: e.target.value })}
             placeholder={meta.placeholder[lang]}
             rows={5}
-            className="text-sm leading-relaxed resize-y min-h-[120px]"
+            className="text-sm leading-relaxed resize-y min-h-[120px] w-full break-words"
           />
 
           {/* Footer: word count + AI suggest */}
-          <div className="flex items-center justify-between gap-2 pt-1">
-            <span className="text-[11px] text-muted-foreground tabular-nums">
+          <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
+            <span className="text-[11px] text-muted-foreground tabular-nums shrink-0">
               {wordCount} {tr.words[lang]}
             </span>
             <Button
@@ -173,10 +173,11 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
               variant="outline"
               onClick={handleSuggestWithAI}
               disabled={aiLoading}
-              className={cn('h-8 gap-1.5 text-xs', meta.accentClass, 'border-current/30 hover:bg-current/5')}
+              className={cn('h-8 gap-1.5 text-xs shrink-0', meta.accentClass, 'border-current/30 hover:bg-current/5')}
             >
               {aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-              {aiLoading ? tr.suggesting[lang] : tr.suggest[lang]}
+              <span className="hidden xs:inline">{aiLoading ? tr.suggesting[lang] : tr.suggest[lang]}</span>
+              <span className="xs:hidden">{aiLoading ? '...' : 'IA'}</span>
             </Button>
           </div>
         </div>

@@ -216,8 +216,8 @@ function PodiumMarkdown({ text, isQuote, fontPx, theme }: { text: string; isQuot
 
   return (
     <div
-      className={cn(isQuote ? 'font-serif italic' : 'font-sans', baseColor, 'space-y-5 sm:space-y-6')}
-      style={{ fontSize: `${fontPx}px`, lineHeight: 1.75 }}
+      className={cn(isQuote ? 'font-serif italic' : 'font-sans', baseColor, 'space-y-5 sm:space-y-6 break-words')}
+      style={{ fontSize: `clamp(15px, ${fontPx}px, ${fontPx}px)`, lineHeight: 1.75, wordBreak: 'break-word', overflowWrap: 'anywhere' }}
     >
       {lines.map((line, i) => {
         const t = line.replace(/^>\s?/, '').trimEnd();
@@ -744,7 +744,7 @@ export function PodiumModeModal({
 
       {/* ─── Sermão em cartões ─── */}
       <main ref={scrollerRef} className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-10 py-6 sm:py-10 space-y-5 sm:space-y-7">
+        <div className="w-full max-w-3xl mx-auto px-3 sm:px-6 md:px-10 py-5 sm:py-10 space-y-4 sm:space-y-7">
           {cards.length === 0 && (
             <div className={cn('text-center py-20', isDark ? 'text-slate-500' : 'text-slate-400')}>
               <Maximize2 className="h-10 w-10 mx-auto mb-4 opacity-40" />
@@ -759,15 +759,15 @@ export function PodiumModeModal({
               <section
                 key={c.id}
                 className={cn(
-                  'relative rounded-2xl border shadow-sm transition-shadow w-full',
+                  'relative rounded-2xl border shadow-sm transition-shadow w-full min-w-0 break-words',
                   c.isQuote ? cardQuoteBg : cardBg,
                   isEditing && (isDark ? 'ring-2 ring-amber-500/60' : 'ring-2 ring-amber-500'),
                 )}
               >
                 {/* Badge flutuante + ações */}
-                <div className="flex items-start justify-between gap-2 px-4 sm:px-6 pt-4 sm:pt-5">
+                <div className="flex items-start justify-between gap-2 px-3 sm:px-6 pt-3 sm:pt-5">
                   <span className={cn(
-                    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ring-1',
+                    'inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider ring-1',
                     meta.badgeClass,
                   )}>
                     <span className="text-sm leading-none">{meta.emoji}</span>
@@ -779,7 +779,7 @@ export function PodiumModeModal({
                     <button
                       onClick={() => startEdit(c)}
                       className={cn(
-                        'p-1.5 rounded-md opacity-60 hover:opacity-100 transition-opacity',
+                        'p-1.5 rounded-md opacity-60 hover:opacity-100 transition-opacity shrink-0',
                         iconBtn,
                       )}
                       aria-label={tr.editBlock[lang]}
@@ -788,7 +788,7 @@ export function PodiumModeModal({
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
                   ) : (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={cancelEdit}
                         className={cn('p-1.5 rounded-md', iconBtn)}
@@ -811,10 +811,10 @@ export function PodiumModeModal({
                 {c.heading && (
                   <h3
                     className={cn(
-                      'font-sans font-bold tracking-tight px-4 sm:px-6 pt-3',
+                      'font-sans font-bold tracking-tight px-3 sm:px-6 pt-3 break-words',
                       isDark ? 'text-amber-200/95' : 'text-amber-700',
                     )}
-                    style={{ fontSize: `${Math.round(fontPx * 0.85)}px`, lineHeight: 1.2 }}
+                    style={{ fontSize: `clamp(16px, ${Math.round(fontPx * 0.85)}px, ${Math.round(fontPx * 0.85)}px)`, lineHeight: 1.2 }}
                   >
                     {c.heading.replace(/^[\p{Emoji}\s]+/u, '').trim() || c.heading}
                   </h3>
@@ -822,7 +822,7 @@ export function PodiumModeModal({
 
                 {/* Corpo: leitura ou edição */}
                 <div
-                  className="px-4 sm:px-6 py-4 sm:py-5"
+                  className="px-3 sm:px-6 py-3 sm:py-5 min-w-0"
                   onDoubleClick={() => !isEditing && startEdit(c)}
                 >
                   {isEditing ? (
@@ -834,7 +834,7 @@ export function PodiumModeModal({
                         'w-full min-h-[200px] resize-y border-0 focus-visible:ring-0 px-0 font-sans',
                         isDark ? 'bg-transparent text-white placeholder:text-slate-500' : 'bg-transparent text-slate-900',
                       )}
-                      style={{ fontSize: `${fontPx}px`, lineHeight: 1.7 }}
+                      style={{ fontSize: `${Math.min(fontPx, 22)}px`, lineHeight: 1.7 }}
                     />
                   ) : (
                     <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} theme={theme} />

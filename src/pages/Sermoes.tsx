@@ -1053,23 +1053,24 @@ export default function Sermoes() {
       />
       {/* ─── ActionBar fixa inferior — só no Studio de Blocos ─── */}
       {editorMode === 'blocks' && showResult && blocks.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)]">
-          <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2.5 flex items-center gap-2 flex-wrap justify-end">
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)] pb-[env(safe-area-inset-bottom)]">
+          {/* Mobile: horizontal scroll carousel; Desktop (sm+): wrap right-aligned */}
+          <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2 overflow-x-auto sm:overflow-visible sm:flex-wrap sm:justify-end scrollbar-hide [-webkit-overflow-scrolling:touch]">
             <button
               onClick={handleSaveBlocks}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
             >
               <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
             </button>
             <button
               onClick={() => setRawTextOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
             >
               <FileText className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Ver como texto' : lang === 'ES' ? 'Ver como texto' : 'View as text'}
             </button>
             <button
               onClick={() => { setSermonContent(blocksToMarkdown(blocks, lang)); setSermonTitle(bigIdea.trim() || passageRef.trim() || 'Sermão'); setPodiumOpen(true); }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold border border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-colors uppercase tracking-wide"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-bold border border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-colors uppercase tracking-wide whitespace-nowrap"
             >
               <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
             </button>
@@ -1101,7 +1102,7 @@ export default function Sermoes() {
                 }
               }}
               disabled={exportingPptx}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors disabled:opacity-50"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors disabled:opacity-50 whitespace-nowrap"
             >
               {exportingPptx
                 ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -1123,7 +1124,7 @@ export default function Sermoes() {
                   },
                 });
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all bg-gradient-to-r from-primary via-purple-600 to-fuchsia-600 hover:scale-[1.02]"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all bg-gradient-to-r from-primary via-purple-600 to-fuchsia-600 hover:scale-[1.02] whitespace-nowrap"
             >
               <Sparkles className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Gerar Arte / Carrossel' : lang === 'ES' ? 'Generar Arte / Carrusel' : 'Generate Art / Carousel'}
             </button>

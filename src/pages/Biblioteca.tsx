@@ -365,8 +365,8 @@ export default function Biblioteca() {
                 </div>
 
                 {/* Content */}
-                <CardContent className="p-4 space-y-2" onClick={() => !isLocked && setViewItem(item)}>
-                  <p className="font-display text-sm font-bold text-foreground line-clamp-2 leading-snug">
+                <CardContent className="p-3 sm:p-4 space-y-2 min-w-0" onClick={() => !isLocked && setViewItem(item)}>
+                  <p className="font-display text-sm font-bold text-foreground line-clamp-2 leading-snug break-words">
                     {item.title}
                   </p>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -378,7 +378,7 @@ export default function Biblioteca() {
                     </span>
                   </div>
                   {excerpt && (
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{excerpt}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 break-words whitespace-normal">{excerpt}</p>
                   )}
                 </CardContent>
 

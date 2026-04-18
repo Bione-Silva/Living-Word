@@ -297,10 +297,10 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="dark max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col min-h-0 p-0 border border-border rounded-2xl shadow-2xl bg-background text-foreground"
+          className="dark max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[95vh] overflow-hidden flex flex-col min-h-0 p-0 border-0 sm:border sm:border-border rounded-none sm:rounded-2xl shadow-2xl bg-background text-foreground"
         >
           {/* Top bar — discrete utility actions */}
-          <div className="absolute right-3 top-3 z-20 flex items-center gap-1">
+          <div className="absolute right-2 sm:right-3 top-2 sm:top-3 z-20 flex items-center gap-1">
             {item.id && (
               <button
                 onClick={() => setShowNotes(!showNotes)}
@@ -329,21 +329,21 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
 
           {/* Transform progress banner */}
           {transforming && transformStep && (
-            <div className="mx-4 mt-14 mb-2 px-4 py-3 rounded-xl flex items-center gap-3 bg-primary/15 text-foreground border border-primary/30">
+            <div className="mx-3 sm:mx-4 mt-14 mb-2 px-3 sm:px-4 py-3 rounded-xl flex items-center gap-3 bg-primary/15 text-foreground border border-primary/30">
               <Loader2 className="h-4 w-4 animate-spin shrink-0 text-primary" />
-              <span className="text-sm font-medium">{transformStep}</span>
+              <span className="text-sm font-medium break-words">{transformStep}</span>
             </div>
           )}
 
           <DialogTitle className="sr-only">{liveTitle || item.title}</DialogTitle>
 
-          <div className="flex-1 min-h-0 flex overflow-hidden">
+          <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden">
             {/* Main content */}
-            <div className={`flex-1 min-w-0 overflow-y-auto ${showNotes ? 'border-r border-border' : ''}`}>
+            <div className={`flex-1 min-w-0 overflow-y-auto ${showNotes ? 'md:border-r md:border-border' : ''}`}>
               <div ref={contentRef} className="bg-background">
                 {/* Cover image */}
                 {coverUrl && (
-                  <div className="w-full h-56 md:h-72 overflow-hidden rounded-t-2xl relative">
+                  <div className="w-full h-44 sm:h-56 md:h-72 overflow-hidden sm:rounded-t-2xl relative">
                     <img
                       src={coverUrl}
                       alt={liveTitle || item.title}
@@ -354,9 +354,9 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                 )}
 
                 {/* Article content */}
-                <div className="px-6 md:px-12 py-8 md:py-10 max-w-3xl mx-auto">
+                <div className="px-4 sm:px-6 md:px-12 py-6 sm:py-8 md:py-10 max-w-3xl mx-auto">
                   <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
-                    <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-foreground">
+                    <h1 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-foreground break-words min-w-0 flex-1">
                       {liveTitle || item.title}
                     </h1>
                     {isBlogArticle && (
@@ -386,24 +386,24 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
 
                   {/* Action bar — clear primary actions */}
                   {item.id && (
-                    <div className="mb-8 -mx-2 px-3 py-3 rounded-xl flex flex-col gap-3 bg-card border border-border">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <p className="text-xs sm:text-sm flex-1 text-muted-foreground">
+                    <div className="mb-8 -mx-1 sm:-mx-2 px-2.5 sm:px-3 py-3 rounded-xl flex flex-col gap-3 bg-card border border-border">
+                      <div className="flex flex-col gap-2 sm:gap-3">
+                        <p className="text-xs sm:text-sm text-muted-foreground break-words">
                           {tx(
                             'O que você quer fazer com este material?',
                             'What would you like to do with this material?',
                             '¿Qué quieres hacer con este material?'
                           )}
                         </p>
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => setSaveWsOpen(true)}
-                            className="gap-1.5"
+                            className="gap-1.5 flex-1 sm:flex-none min-w-0"
                           >
-                            <FolderOpen className="h-4 w-4" />
-                            {tx('Salvar no Workspace', 'Save to Workspace', 'Guardar en Workspace')}
+                            <FolderOpen className="h-4 w-4 shrink-0" />
+                            <span className="truncate">{tx('Salvar', 'Save', 'Guardar')}</span>
                           </Button>
 
                           {isBlogArticle && !isPublished && (
@@ -411,14 +411,14 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                               size="sm"
                               onClick={handlePublish}
                               disabled={publishing}
-                              className="gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/30"
+                              className="gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/30 flex-1 sm:flex-none min-w-0"
                             >
                               {publishing ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2 className="h-4 w-4 animate-spin shrink-0" />
                               ) : (
-                                <Globe className="h-4 w-4" />
+                                <Globe className="h-4 w-4 shrink-0" />
                               )}
-                              {tx('🌍 Publicar Artigo', '🌍 Publish Article', '🌍 Publicar Artículo')}
+                              <span className="truncate">{tx('🌍 Publicar', '🌍 Publish', '🌍 Publicar')}</span>
                             </Button>
                           )}
 
@@ -434,14 +434,14 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                               size="sm"
                               onClick={handleTransformToBlog}
                               disabled={transforming}
-                              className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
+                              className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 flex-1 sm:flex-none min-w-0"
                             >
                               {transforming ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2 className="h-4 w-4 animate-spin shrink-0" />
                               ) : (
-                                <Sparkles className="h-4 w-4" />
+                                <Sparkles className="h-4 w-4 shrink-0" />
                               )}
-                              {tx('Transformar em Artigo de Blog', 'Turn into Blog Article', 'Transformar en Artículo')}
+                              <span className="truncate">{tx('Virar Artigo', 'To Article', 'A Artículo')}</span>
                             </Button>
                           )}
                         </div>
@@ -485,15 +485,16 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                   )}
 
                   <div
-                    className="prose prose-invert prose-lg max-w-none
-                      prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground
-                      prose-p:leading-relaxed prose-p:text-foreground/90
-                      prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:bg-card prose-blockquote:text-foreground/95
-                      prose-img:rounded-xl prose-img:shadow-2xl prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-8 prose-img:border prose-img:border-border
-                      prose-a:text-primary prose-a:underline
+                    className="prose prose-invert prose-sm sm:prose-base lg:prose-lg max-w-none break-words
+                      prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground prose-headings:break-words
+                      prose-p:leading-relaxed prose-p:text-foreground/90 prose-p:break-words
+                      prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:py-2 prose-blockquote:px-3 sm:prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:bg-card prose-blockquote:text-foreground/95
+                      prose-img:rounded-xl prose-img:shadow-2xl prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-6 sm:prose-img:my-8 prose-img:border prose-img:border-border
+                      prose-a:text-primary prose-a:underline prose-a:break-words
                       prose-li:leading-relaxed prose-li:text-foreground/90
                       prose-strong:font-bold prose-strong:text-foreground
-                      prose-code:text-primary prose-code:bg-card prose-code:px-1 prose-code:rounded
+                      prose-code:text-primary prose-code:bg-card prose-code:px-1 prose-code:rounded prose-code:break-words
+                      prose-pre:overflow-x-auto
                     "
                   >
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -510,7 +511,7 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
 
             {/* Notes sidebar */}
             {showNotes && (
-              <div className="w-[280px] md:w-[320px] shrink-0 flex flex-col p-4 overflow-y-auto bg-card border-l border-border">
+              <div className="w-full md:w-[280px] lg:w-[320px] shrink-0 flex flex-col p-4 overflow-y-auto bg-card border-t md:border-t-0 md:border-l border-border max-h-[40vh] md:max-h-none">
                 <div className="flex items-center gap-2 mb-3">
                   <StickyNote className="h-4 w-4 text-primary" />
                   <h3 className="text-sm font-semibold text-foreground">
@@ -521,7 +522,7 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={tx('Escreva suas anotações pessoais aqui...', 'Write your personal notes here...', 'Escribe tus notas personales aquí...')}
-                  className="flex-1 min-h-[200px] resize-none text-sm bg-background border-border text-foreground placeholder:text-muted-foreground"
+                  className="flex-1 min-h-[150px] sm:min-h-[200px] resize-none text-sm bg-background border-border text-foreground placeholder:text-muted-foreground"
                 />
                 <Button
                   size="sm"
