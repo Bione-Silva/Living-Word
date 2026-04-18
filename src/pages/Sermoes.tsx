@@ -1118,6 +1118,22 @@ export default function Sermoes() {
               </button>
             )}
             <span className="md:hidden shrink-0 h-6 w-px bg-border mx-0.5" />
+            {/* Toggle Modo Comparação — só faz sentido em desktop / tablet grande (≥ lg = 1024px) */}
+            <button
+              onClick={() => setCompareMode((v) => !v)}
+              className={`hidden lg:inline-flex shrink-0 items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap ${
+                compareMode
+                  ? 'border-amber-500/50 bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25'
+                  : 'border-border bg-background hover:bg-muted text-foreground'
+              }`}
+              title={lang === 'PT' ? 'Editor + Preview Púlpito lado a lado' : lang === 'ES' ? 'Editor + Vista previa Púlpito lado a lado' : 'Editor + Podium Preview side by side'}
+              aria-pressed={compareMode}
+            >
+              <Columns2 className="h-3.5 w-3.5" />
+              {compareMode
+                ? (lang === 'PT' ? 'Comparando' : lang === 'ES' ? 'Comparando' : 'Comparing')
+                : (lang === 'PT' ? 'Comparar' : lang === 'ES' ? 'Comparar' : 'Compare')}
+            </button>
             <button
               onClick={handleSaveBlocks}
               className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
