@@ -73,7 +73,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
   const handlePdf = async () => {
     const loadingToast = toast.loading(lang === 'PT' ? 'Gerando PDF...' : lang === 'ES' ? 'Generando PDF...' : 'Generating PDF...');
     try {
-      // Native jsPDF text rendering — guaranteed text content (no canvas race conditions).
+      // Native jsPDF text rendering — uses helvetica (built-in WinAnsi support for accents).
       const { jsPDF } = await import('jspdf');
       const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
 
@@ -89,6 +89,17 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
 
       let y = MARGIN_TOP;
 
+      // Sanitize text — remove smart quotes/dashes that can cause WinAnsi gaps and any non-printable chars.
+      const sanitize = (s: string): string =>
+        (s ?? '')
+          .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+          .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+          .replace(/[\u2013\u2014]/g, '-')
+          .replace(/\u2026/g, '...')
+          .replace(/\u00A0/g, ' ')
+          .replace(/[\u200B-\u200F\uFEFF]/g, '')
+          .trim();
+
       const ensureSpace = (needed: number) => {
         if (y + needed > PAGE_H - MARGIN_BOTTOM) {
           doc.addPage();
@@ -97,11 +108,14 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
       };
 
       const addText = (
-        text: string,
+        rawText: string,
         opts: { size?: number; style?: 'normal' | 'bold' | 'italic' | 'bolditalic'; color?: [number, number, number]; lineHeight?: number; spaceAfter?: number; align?: 'left' | 'center'; font?: 'helvetica' | 'times' } = {}
       ) => {
-        const { size = 11, style = 'normal', color = TEXT, lineHeight = 1.45, spaceAfter = 3, align = 'left', font = 'times' } = opts;
-        doc.setFont(font, style);
+        // Force helvetica everywhere — built-in support for Latin-1 accents (PT/ES).
+        const { size = 11, style = 'normal', color = TEXT, lineHeight = 1.5, spaceAfter = 3, align = 'left' } = opts;
+        const text = sanitize(rawText);
+        if (!text) return;
+        doc.setFont('helvetica', style);
         doc.setFontSize(size);
         doc.setTextColor(color[0], color[1], color[2]);
         const lines = doc.splitTextToSize(text, CONTENT_W);
