@@ -1107,15 +1107,6 @@ export default function Sermoes() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* ─── Carousel modal ─── */}
-      <SermonCarouselModal
-        open={carouselOpen}
-        onOpenChange={setCarouselOpen}
-        sermonMarkdown={sermonContent || (blocks.length ? blocksToMarkdown(blocks, lang) : '')}
-        sermonTitle={sermonTitle || bigIdea || 'Sermão'}
-        materialId={activeSessionId}
-      />
     </div>
   );
 }
