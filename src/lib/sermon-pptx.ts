@@ -13,16 +13,10 @@ import {
 
 type Lang = 'PT' | 'EN' | 'ES';
 
-/** Tipos de bloco que viram slide próprio na projeção. */
-const PROJECTABLE: Record<string, boolean> = {
-  passage: true,
-  big_idea: true,
-  main_point: true,
-  illustration: true,
-  application: true,
-  quote: true,
-  conclusion: true,
-};
+/**
+ * Mapeamento 1:1 — TODO bloco ativo do Studio vira um slide do PPTX,
+ * na mesma ordem cronológica. Nenhum tipo é filtrado.
+ */
 
 /** Paleta neutra premium — fundo escuro elegante, alto contraste para datashow. */
 const COLORS = {
