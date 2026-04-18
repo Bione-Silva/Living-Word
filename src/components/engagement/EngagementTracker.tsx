@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { safeInvoke } from '@/lib/safe-invoke';
 
 interface EngagementTrackerProps {
   devotionalId?: string;
@@ -21,21 +21,16 @@ export function EngagementTracker({ devotionalId, theme, seriesNumber, onEngagem
     if (!user) return;
     const durationSeconds = Math.round((Date.now() - startTime.current) / 1000);
 
-    try {
-      await supabase.functions.invoke('track-engagement', {
-        body: {
-          devotionalId,
-          action,
-          durationSeconds,
-          theme,
-          seriesNumber,
-          ...extra,
-        },
-      });
-      onEngagement?.(action);
-    } catch (e) {
-      console.error('Engagement tracking error:', e);
+    // safeInvoke never throws; silently no-ops if session expired
+    const { unauthorized, error } = await safeInvoke('track-engagement', {
+      body: { devotionalId, action, durationSeconds, theme, seriesNumber, ...extra },
+    });
+    if (unauthorized) return;
+    if (error) {
+      console.error('Engagement tracking error:', error);
+      return;
     }
+    onEngagement?.(action);
   }, [user, devotionalId, theme, seriesNumber, onEngagement]);
 
   // Track view on mount

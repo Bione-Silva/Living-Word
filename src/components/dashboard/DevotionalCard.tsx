@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { safeInvoke } from '@/lib/safe-invoke';
 import { BookOpen, ChevronRight, Headphones, Calendar, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -195,15 +196,19 @@ export function DevotionalCard() {
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      try {
-        const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today');
-        if (err || !result) throw err;
-        setData(result);
-      } catch {
-        setError(true);
-      } finally {
+      const { data: result, unauthorized, error: err } = await safeInvoke<DevotionalData>('get-devotional-today');
+      if (unauthorized) {
+        // Session missing/expired — render empty state silently, don't break dashboard
+        setData(null);
         setLoading(false);
+        return;
       }
+      if (err || !result) {
+        setError(true);
+      } else {
+        setData(result);
+      }
+      setLoading(false);
     };
     load();
   }, [user]);

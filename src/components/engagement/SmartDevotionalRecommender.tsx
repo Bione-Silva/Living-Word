@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, Loader2, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { safeInvoke } from '@/lib/safe-invoke';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
@@ -37,16 +38,17 @@ export function SmartDevotionalRecommender() {
   useEffect(() => {
     if (!user) return;
     const fetchRec = async () => {
-      try {
-        const { data: resp } = await supabase.functions.invoke('recommend-devotional', {
-          body: { language: lang },
-        });
-        if (resp && !resp.error) setData(resp);
-      } catch {
-        // silent
-      } finally {
+      const { data: resp, unauthorized } = await safeInvoke<RecommendationData & { error?: string }>(
+        'recommend-devotional',
+        { body: { language: lang } }
+      );
+      if (unauthorized) {
+        // Session expired — silent empty state
         setLoading(false);
+        return;
       }
+      if (resp && !resp.error) setData(resp as RecommendationData);
+      setLoading(false);
     };
     fetchRec();
   }, [user, lang]);
