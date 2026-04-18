@@ -2,13 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen } from 'lucide-react';
-import { getBookName, getTranslationLabelByCode, getVersionsForUserLanguage, fetchBibleChapter, type L } from '@/lib/bible-data';
+import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen, Columns2 } from 'lucide-react';
+import { getBookName, getTranslationLabelByCode, getVersionsForUserLanguage, getDefaultVersionCode, getBibleVersion, fetchBibleChapter, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
-import {
-  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import { BibleVersionSelector } from './BibleVersionSelector';
+import { BibleCompareColumn } from './BibleCompareColumn';
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
