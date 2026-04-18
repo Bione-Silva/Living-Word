@@ -284,8 +284,16 @@ export async function exportSermonToPptx(opts: {
     .replace(/^-+|-+$/g, '')
     .slice(0, 60) || 'sermao';
 
-  await pres.writeFile({ fileName: `${safeName}.pptx` });
-
   // Total de slides = capa + projetáveis (+ closing se gerada)
-  return pres.slides?.length || 0;
+  const projectableCount = blocks.filter((b) => {
+    if (!PROJECTABLE[b.type]) return false;
+    const hasContent = (b.content?.trim().length || 0) > 0
+      || (b.title?.trim().length || 0) > 0
+      || (b.type === 'passage' && (b.passageRef?.trim().length || 0) > 0);
+    return hasContent;
+  }).length;
+  const total = 1 + projectableCount + (hasConclusion ? 0 : 1);
+
+  await pres.writeFile({ fileName: `${safeName}.pptx` });
+  return total;
 }
