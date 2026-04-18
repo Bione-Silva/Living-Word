@@ -36,6 +36,12 @@ export interface SermonBlockTypeMeta {
   borderClass: string;
   /** Classe Tailwind para fundo do header (tom suave da cor) */
   headerBgClass: string;
+  /**
+   * Classe Tailwind para o fundo do CARTÃO inteiro no Modo Claro — paleta -50
+   * da cor identitária do bloco (mesma usada no Púlpito Modo Claro).
+   * Em dark mode, sobrescrevemos com `dark:bg-card` para manter a superfície neutra.
+   */
+  cardBgClass: string;
   /** Classe Tailwind para a cor do ícone/título */
   accentClass: string;
   /** Classe Tailwind para a bolinha sólida no seletor (bg-{cor}) */
