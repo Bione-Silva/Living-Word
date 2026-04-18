@@ -1063,6 +1063,24 @@ export default function Sermoes() {
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)] pb-[env(safe-area-inset-bottom)]">
           {/* Mobile: horizontal scroll carousel; Desktop (sm+): wrap right-aligned */}
           <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2 overflow-x-auto sm:overflow-visible sm:flex-wrap sm:justify-end scrollbar-hide [-webkit-overflow-scrolling:touch]">
+            {/* Mobile-only quick access: Bible + Notes */}
+            <button
+              onClick={() => { setBibleRef(null); setBibleTranslationCode(undefined); setBibleDrawerOpen(true); }}
+              className="md:hidden shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 transition-colors whitespace-nowrap"
+              aria-label={lang === 'PT' ? 'Bíblia' : lang === 'ES' ? 'Biblia' : 'Bible'}
+            >
+              <BookOpen className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Bíblia' : lang === 'ES' ? 'Biblia' : 'Bible'}
+            </button>
+            {activeSessionId && (
+              <button
+                onClick={() => setMobileNotesOpen(true)}
+                className="md:hidden shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
+                aria-label={lang === 'PT' ? 'Anotações' : lang === 'ES' ? 'Notas' : 'Notes'}
+              >
+                <PenLine className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Notas' : lang === 'ES' ? 'Notas' : 'Notes'}
+              </button>
+            )}
+            <span className="md:hidden shrink-0 h-6 w-px bg-border mx-0.5" />
             <button
               onClick={handleSaveBlocks}
               className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
@@ -1143,6 +1161,24 @@ export default function Sermoes() {
       {editorMode === 'ai' && showResult && sermonContent && (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)] pb-[env(safe-area-inset-bottom)]">
           <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2 overflow-x-auto sm:overflow-visible sm:flex-wrap sm:justify-end scrollbar-hide [-webkit-overflow-scrolling:touch]">
+            {/* Mobile-only quick access: Bible + Notes */}
+            <button
+              onClick={() => { setBibleRef(null); setBibleTranslationCode(undefined); setBibleDrawerOpen(true); }}
+              className="md:hidden shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 transition-colors whitespace-nowrap"
+              aria-label={lang === 'PT' ? 'Bíblia' : lang === 'ES' ? 'Biblia' : 'Bible'}
+            >
+              <BookOpen className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Bíblia' : lang === 'ES' ? 'Biblia' : 'Bible'}
+            </button>
+            {activeSessionId && (
+              <button
+                onClick={() => setMobileNotesOpen(true)}
+                className="md:hidden shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
+                aria-label={lang === 'PT' ? 'Anotações' : lang === 'ES' ? 'Notas' : 'Notes'}
+              >
+                <PenLine className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Notas' : lang === 'ES' ? 'Notas' : 'Notes'}
+              </button>
+            )}
+            <span className="md:hidden shrink-0 h-6 w-px bg-border mx-0.5" />
             <button
               onClick={handleSave}
               className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
