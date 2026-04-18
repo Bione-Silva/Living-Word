@@ -430,25 +430,27 @@ export function BibleReadingView({
                       {v.text.trim()}
                     </span>
                     {isLastSelected && selectedVerses.size > 0 && (
-                      <InlineVerseToolbar
-                        selectedVerses={verses.filter(vv => selectedVerses.has(vv.verse))}
-                        bookId={bookId}
-                        chapter={chapter}
-                        translationCode={translation}
-                        favoritedVerses={favoritedVerses}
-                        onFavoriteToggle={(vn) => {
-                          setFavoritedVerses(p => {
-                            const n = new Set(p);
-                            if (n.has(vn)) n.delete(vn); else n.add(vn);
-                            return n;
-                          });
-                          onTabsRefresh();
-                        }}
-                        onHighlight={handleHighlight}
-                        onNoteSaved={onTabsRefresh}
-                        onClose={() => setSelectedVerses(new Set())}
-                        onStudySidebar={handleOpenStudy}
-                      />
+                      <div data-verse-toolbar onPointerDown={(e) => e.stopPropagation()}>
+                        <InlineVerseToolbar
+                          selectedVerses={verses.filter(vv => selectedVerses.has(vv.verse))}
+                          bookId={bookId}
+                          chapter={chapter}
+                          translationCode={translation}
+                          favoritedVerses={favoritedVerses}
+                          onFavoriteToggle={(vn) => {
+                            setFavoritedVerses(p => {
+                              const n = new Set(p);
+                              if (n.has(vn)) n.delete(vn); else n.add(vn);
+                              return n;
+                            });
+                            onTabsRefresh();
+                          }}
+                          onHighlight={handleHighlight}
+                          onNoteSaved={onTabsRefresh}
+                          onClose={() => setSelectedVerses(new Set())}
+                          onStudySidebar={handleOpenStudy}
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
