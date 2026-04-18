@@ -825,7 +825,7 @@ export default function Sermoes() {
             </div>
           ) : (
             /* ═══ RESULT VIEW ═══ */
-            <div className="max-w-3xl mx-auto animate-in fade-in duration-300">
+            <div className={`${editorMode === 'blocks' && compareMode ? 'max-w-7xl' : 'max-w-3xl'} mx-auto animate-in fade-in duration-300`}>
               {/* Back to form */}
               <button
                 onClick={handleNewSermon}
@@ -852,14 +852,40 @@ export default function Sermoes() {
                       className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
                     />
                   </div>
-                  <SermonBlockEditor
-                    blocks={blocks}
-                    onChange={setBlocks}
-                    bigIdea={bigIdea}
-                    passageRef={passageRef}
-                    topic={topic}
-                    lang={lang}
-                  />
+
+                  {compareMode ? (
+                    /* ─── Modo Comparação Lado-a-Lado (apenas lg+) ─── */
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 items-start">
+                      <div className="min-w-0">
+                        <SermonBlockEditor
+                          blocks={blocks}
+                          onChange={setBlocks}
+                          bigIdea={bigIdea}
+                          passageRef={passageRef}
+                          topic={topic}
+                          lang={lang}
+                        />
+                      </div>
+                      <div className="min-w-0 lg:sticky lg:top-4 lg:max-h-[calc(100vh-7rem)]">
+                        <PodiumLivePreview
+                          markdown={liveMarkdown}
+                          title={bigIdea.trim() || passageRef.trim() || sermonTitle}
+                          lang={lang}
+                          className="lg:max-h-[calc(100vh-7rem)]"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <SermonBlockEditor
+                      blocks={blocks}
+                      onChange={setBlocks}
+                      bigIdea={bigIdea}
+                      passageRef={passageRef}
+                      topic={topic}
+                      lang={lang}
+                    />
+                  )}
+
                   {blocks.length > 0 && (
                     <div className="text-center pt-2 pb-24">
                       <button
