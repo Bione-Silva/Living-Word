@@ -18,7 +18,30 @@ interface Props {
   themeColor?: string;
   fontFamily?: string;
   textColor?: string;
+  /**
+   * Posição do slide no carrossel (0-based).
+   * Quando `themeColors` tem múltiplos itens, rotaciona o fundo para criar
+   * ritmo visual (`themeColors[slideIndex % themeColors.length]`).
+   * Quando há `bgImageUrl` única, alterna a tonalidade da overlay.
+   */
+  slideIndex?: number;
+  /**
+   * Paleta sequencial do tema atual (3+ gradientes harmônicos).
+   * Se omitida, comportamento legado: `themeColor` aplicado em todos os slides.
+   */
+  themeColors?: string[];
 }
+
+/**
+ * Overlays sutis (R/G/B com alpha baixo) para alternar a "vibe" de uma
+ * mesma imagem ao longo do carrossel — quente, frio, neutro, neutro escuro.
+ */
+const IMAGE_OVERLAY_TINTS = [
+  'rgba(0,0,0,0)',
+  'rgba(212,168,83,0.18)',   // gold warm
+  'rgba(13,59,102,0.22)',    // ocean cool
+  'rgba(0,0,0,0.18)',        // neutral deepen
+];
 
 const aspectClasses: Record<AspectRatio, string> = {
   '9:16': 'aspect-[9/16] max-w-[360px]',
