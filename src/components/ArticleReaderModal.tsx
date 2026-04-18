@@ -1,11 +1,13 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { BookOpen, Download, Loader2, X, StickyNote, Save, FolderOpen, Sparkles } from 'lucide-react';
+import { BookOpen, Download, Loader2, X, StickyNote, Save, FolderOpen, Sparkles, Globe, CheckCircle2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -34,7 +36,6 @@ interface ArticleReaderModalProps {
 
 /**
  * Distribute images evenly between H2/H3 section headings.
- * Avoids clustering all images at the top — spaces them across the article body.
  */
 function intercalateImages(markdown: string, images: string[]): string {
   if (!images.length) return markdown;
@@ -44,27 +45,22 @@ function intercalateImages(markdown: string, images: string[]): string {
     if (/^#{2,3}\s/.test(line.trim())) headingIndices.push(i);
   });
 
-  // Skip the first heading (image goes after, not before intro)
-  // and pick evenly spaced insertion points among the remaining headings
   const candidates = headingIndices.slice(1);
   if (candidates.length === 0) return markdown;
 
   const insertPoints: number[] = [];
   const N = Math.min(images.length, candidates.length);
   for (let i = 0; i < N; i++) {
-    // even spacing across candidates
     const idx = Math.floor((i * candidates.length) / N);
     const point = candidates[idx];
     if (!insertPoints.includes(point)) insertPoints.push(point);
   }
 
-  // Insert in reverse order so earlier indices stay valid
   const result = [...lines];
   insertPoints
     .map((point, i) => ({ point, img: images[i] }))
     .reverse()
     .forEach(({ point, img }) => {
-      // Insert after the heading line and any directly following blank line
       const insertAt = point + 1;
       result.splice(insertAt, 0, '', `![Ilustração](${img})`, '');
     });
@@ -81,6 +77,7 @@ function getBodyImages(item: any): string[] {
 export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: ArticleReaderModalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [exporting, setExporting] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState('');
@@ -93,6 +90,8 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const [liveContent, setLiveContent] = useState<string>('');
   const [liveTitle, setLiveTitle] = useState<string>('');
+  const [publishStatus, setPublishStatus] = useState<'draft' | 'published' | 'archived'>('draft');
+  const [publishing, setPublishing] = useState(false);
   const { lang } = useLanguage();
 
   useEffect(() => {
@@ -102,11 +101,31 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
       setCoverUrl(item.cover_image_url || null);
       setLiveContent(item.content || '');
       setLiveTitle(item.title || '');
+      setPublishStatus('draft');
     }
   }, [item?.id]);
 
   const isBlogArticle = item?.type === 'blog_article';
   const canTransform = !!item?.id && !isBlogArticle;
+
+  // Load current publish status for blog articles
+  useEffect(() => {
+    if (!item?.id || !isBlogArticle) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from('editorial_queue')
+        .select('status')
+        .eq('material_id', item.id!)
+        .maybeSingle();
+      if (cancelled) return;
+      const s = (data?.status as 'draft' | 'published' | 'archived') || 'draft';
+      setPublishStatus(s);
+    })();
+    return () => { cancelled = true; };
+  }, [item?.id, isBlogArticle]);
+
+  const tx = (pt: string, en: string, es: string) => (lang === 'PT' ? pt : lang === 'EN' ? en : es);
 
   const saveNotes = useCallback(async () => {
     if (!item?.id) return;
@@ -114,23 +133,58 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
     try {
       const { error } = await supabase.from('materials').update({ notes }).eq('id', item.id);
       if (error) throw error;
-      toast.success(lang === 'PT' ? 'Anotações salvas!' : lang === 'EN' ? 'Notes saved!' : '¡Notas guardadas!');
+      toast.success(tx('Anotações salvas!', 'Notes saved!', '¡Notas guardadas!'));
     } catch {
-      toast.error(lang === 'PT' ? 'Erro ao salvar' : 'Error saving');
+      toast.error(tx('Erro ao salvar', 'Error saving', 'Error al guardar'));
     } finally {
       setSavingNotes(false);
     }
   }, [item?.id, notes, lang]);
+
+  const handlePublish = useCallback(async () => {
+    if (!item?.id || !user || publishing) return;
+    setPublishing(true);
+    try {
+      const { data: existing } = await supabase
+        .from('editorial_queue')
+        .select('id, status')
+        .eq('material_id', item.id)
+        .maybeSingle();
+
+      if (existing?.id) {
+        const { error } = await supabase
+          .from('editorial_queue')
+          .update({ status: 'published', published_at: new Date().toISOString() })
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('editorial_queue').insert({
+          user_id: user.id,
+          material_id: item.id,
+          status: 'published',
+          published_at: new Date().toISOString(),
+        });
+        if (error) throw error;
+      }
+
+      setPublishStatus('published');
+      queryClient.invalidateQueries({ queryKey: ['materials'] });
+      queryClient.invalidateQueries({ queryKey: ['blog-articles'] });
+      toast.success(tx('Artigo publicado! 🌍', 'Article published! 🌍', '¡Artículo publicado! 🌍'));
+    } catch (err: any) {
+      console.error('Publish error:', err);
+      toast.error(tx('Erro ao publicar', 'Error publishing', 'Error al publicar'));
+    } finally {
+      setPublishing(false);
+    }
+  }, [item?.id, user, publishing, queryClient, lang]);
 
   const handleTransformToBlog = useCallback(async () => {
     if (!item?.id || transforming) return;
     setTransforming(true);
 
     const styleEmoji: Record<ImageStyle, string> = {
-      watercolor: '🎨',
-      oil: '🖌️',
-      minimalist: '◻️',
-      photographic: '📷',
+      watercolor: '🎨', oil: '🖌️', minimalist: '◻️', photographic: '📷',
     };
     const styleLabel: Record<ImageStyle, { PT: string; EN: string; ES: string }> = {
       watercolor: { PT: 'aquarela', EN: 'watercolor', ES: 'acuarela' },
@@ -154,10 +208,11 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
     }, 9000);
 
     try {
+      // Do NOT pass `title` so the edge function generates a clean topic-based title
+      // (the source sermon's title can have prefixes like "Blog & Artigos" we don't want)
       const { data, error } = await supabase.functions.invoke('generate-blog-article', {
         body: {
           passage: item.passage || item.title,
-          title: item.title,
           source_content: item.content,
           source_type: item.type || 'sermon',
           image_style: imageStyle,
@@ -168,15 +223,14 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
       if (data?.error) throw new Error(data.error);
 
       toast.success(
-        lang === 'PT' ? 'Artigo de blog criado! Sermão original preservado.' :
-        lang === 'EN' ? 'Blog article created! Original sermon preserved.' :
-        '¡Artículo de blog creado! Sermón original conservado.'
+        tx('Artigo de blog criado! Sermão original preservado.',
+           'Blog article created! Original sermon preserved.',
+           '¡Artículo de blog creado! Sermón original conservado.')
       );
 
       queryClient.invalidateQueries({ queryKey: ['materials'] });
 
-      // Swap to the newly created blog_article so user immediately sees it,
-      // while the original sermon stays untouched in the library.
+      // Use the title returned by the edge function — never inherit the sermon's title
       if (onReplaceItem && data?.material_id) {
         onReplaceItem({
           id: data.material_id,
@@ -191,8 +245,8 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
     } catch (err: any) {
       console.error('Transform error:', err);
       const msg = err?.message?.includes('insufficient_credits')
-        ? (lang === 'PT' ? 'Créditos insuficientes (15 necessários)' : 'Insufficient credits (15 needed)')
-        : (lang === 'PT' ? 'Erro ao transformar em artigo' : 'Error transforming to article');
+        ? tx('Créditos insuficientes (15 necessários)', 'Insufficient credits (15 needed)', 'Créditos insuficientes (15 necesarios)')
+        : tx('Erro ao transformar em artigo', 'Error transforming to article', 'Error al transformar');
       toast.error(msg);
     } finally {
       clearInterval(interval);
@@ -216,12 +270,15 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
       wrapper.innerHTML = pdfBrandHeader();
       wrapper.appendChild(contentRef.current.cloneNode(true));
       wrapper.insertAdjacentHTML('beforeend', pdfBrandFooter());
+      // Force light surface for PDF export readability
+      wrapper.style.background = '#ffffff';
+      wrapper.style.color = '#1a1208';
       document.body.appendChild(wrapper);
       const opt = {
         margin: [10, 10, 10, 10],
         filename: `${(liveTitle || item.title).replace(/[^a-zA-Z0-9À-ú ]/g, '').substring(0, 60)}.pdf`,
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
       };
@@ -234,22 +291,20 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
     }
   };
 
-  const tx = (pt: string, en: string, es: string) => (lang === 'PT' ? pt : lang === 'EN' ? en : es);
+  const isPublished = publishStatus === 'published';
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col min-h-0 p-0 border-none rounded-2xl shadow-2xl [color-scheme:light]"
-          style={{ backgroundColor: '#f7f5f0', color: '#1e1710' }}
+          className="dark max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col min-h-0 p-0 border border-border rounded-2xl shadow-2xl bg-background text-foreground"
         >
           {/* Top bar — discrete utility actions */}
-          <div className="absolute right-4 top-4 z-20 flex items-center gap-1">
+          <div className="absolute right-3 top-3 z-20 flex items-center gap-1">
             {item.id && (
               <button
                 onClick={() => setShowNotes(!showNotes)}
-                className={`rounded-full p-2 hover:bg-black/5 transition-colors ${showNotes ? 'bg-black/5' : ''}`}
-                style={{ color: '#1E1240' }}
+                className={`rounded-full p-2 transition-colors text-foreground/80 hover:text-foreground hover:bg-foreground/10 ${showNotes ? 'bg-foreground/10' : ''}`}
                 title={tx('Anotações do Pregador', 'Preacher Notes', 'Notas del Predicador')}
               >
                 <StickyNote className="h-5 w-5" />
@@ -258,16 +313,14 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
             <button
               onClick={handleExportPDF}
               disabled={exporting}
-              className="rounded-full p-2 hover:bg-black/5 transition-colors"
-              style={{ color: '#1E1240' }}
+              className="rounded-full p-2 transition-colors text-foreground/80 hover:text-foreground hover:bg-foreground/10"
               title="Exportar PDF"
             >
               {exporting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}
             </button>
             <button
               onClick={() => onOpenChange(false)}
-              className="rounded-full p-2 hover:bg-black/5 transition-colors"
-              style={{ color: '#1E1240' }}
+              className="rounded-full p-2 transition-colors text-foreground/80 hover:text-foreground hover:bg-foreground/10"
             >
               <X className="h-5 w-5" />
               <span className="sr-only">Fechar</span>
@@ -276,11 +329,8 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
 
           {/* Transform progress banner */}
           {transforming && transformStep && (
-            <div
-              className="mx-4 mt-14 mb-2 px-4 py-3 rounded-xl flex items-center gap-3"
-              style={{ backgroundColor: '#ede6d8', color: '#3c2f21' }}
-            >
-              <Loader2 className="h-4 w-4 animate-spin shrink-0" style={{ color: '#C4956A' }} />
+            <div className="mx-4 mt-14 mb-2 px-4 py-3 rounded-xl flex items-center gap-3 bg-primary/15 text-foreground border border-primary/30">
+              <Loader2 className="h-4 w-4 animate-spin shrink-0 text-primary" />
               <span className="text-sm font-medium">{transformStep}</span>
             </div>
           )}
@@ -289,44 +339,56 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
 
           <div className="flex-1 min-h-0 flex overflow-hidden">
             {/* Main content */}
-            <div className={`flex-1 min-w-0 overflow-y-auto ${showNotes ? 'border-r' : ''}`} style={{ borderColor: '#d4c8b8' }}>
-              <div ref={contentRef} style={{ backgroundColor: '#f7f5f0' }}>
+            <div className={`flex-1 min-w-0 overflow-y-auto ${showNotes ? 'border-r border-border' : ''}`}>
+              <div ref={contentRef} className="bg-background">
                 {/* Cover image */}
                 {coverUrl && (
-                  <div className="w-full h-56 md:h-72 overflow-hidden rounded-t-2xl">
+                  <div className="w-full h-56 md:h-72 overflow-hidden rounded-t-2xl relative">
                     <img
                       src={coverUrl}
                       alt={liveTitle || item.title}
                       className="w-full h-full object-cover"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent pointer-events-none" />
                   </div>
                 )}
 
                 {/* Article content */}
                 <div className="px-6 md:px-12 py-8 md:py-10 max-w-3xl mx-auto">
-                  <h1
-                    className="font-display text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4"
-                    style={{ color: '#3c2f21' }}
-                  >
-                    {liveTitle || item.title}
-                  </h1>
+                  <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
+                    <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-foreground">
+                      {liveTitle || item.title}
+                    </h1>
+                    {isBlogArticle && (
+                      <Badge
+                        variant="outline"
+                        className={`mt-2 shrink-0 gap-1.5 ${
+                          isPublished
+                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40'
+                            : 'bg-amber-500/15 text-amber-300 border-amber-500/40'
+                        }`}
+                      >
+                        {isPublished ? <CheckCircle2 className="h-3 w-3" /> : null}
+                        {isPublished
+                          ? tx('Publicado', 'Published', 'Publicado')
+                          : tx('Rascunho', 'Draft', 'Borrador')}
+                      </Badge>
+                    )}
+                  </div>
 
                   {item.passage && (
-                    <p className="text-sm flex items-center gap-1.5 mb-6" style={{ color: '#8B7355' }}>
+                    <p className="text-sm flex items-center gap-1.5 mb-6 text-muted-foreground">
                       <BookOpen className="w-4 h-4" /> {item.passage}
                     </p>
                   )}
 
-                  <div className="w-16 h-0.5 mb-6" style={{ backgroundColor: '#C4956A' }} />
+                  <div className="w-16 h-0.5 mb-6 bg-primary" />
 
                   {/* Action bar — clear primary actions */}
                   {item.id && (
-                    <div
-                      className="mb-8 -mx-2 px-3 py-3 rounded-xl flex flex-col gap-3"
-                      style={{ backgroundColor: '#efe7d6', border: '1px solid #e0d4be' }}
-                    >
+                    <div className="mb-8 -mx-2 px-3 py-3 rounded-xl flex flex-col gap-3 bg-card border border-border">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <p className="text-xs sm:text-sm flex-1" style={{ color: '#5a4a35' }}>
+                        <p className="text-xs sm:text-sm flex-1 text-muted-foreground">
                           {tx(
                             'O que você quer fazer com este material?',
                             'What would you like to do with this material?',
@@ -338,18 +400,41 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                             size="sm"
                             variant="outline"
                             onClick={() => setSaveWsOpen(true)}
-                            className="gap-1.5 bg-white/70 hover:bg-white border-[#d4c8b8] text-[#3c2f21]"
+                            className="gap-1.5"
                           >
                             <FolderOpen className="h-4 w-4" />
                             {tx('Salvar no Workspace', 'Save to Workspace', 'Guardar en Workspace')}
                           </Button>
+
+                          {isBlogArticle && !isPublished && (
+                            <Button
+                              size="sm"
+                              onClick={handlePublish}
+                              disabled={publishing}
+                              className="gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/30"
+                            >
+                              {publishing ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Globe className="h-4 w-4" />
+                              )}
+                              {tx('🌍 Publicar Artigo', '🌍 Publish Article', '🌍 Publicar Artículo')}
+                            </Button>
+                          )}
+
+                          {isBlogArticle && isPublished && (
+                            <Badge className="gap-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 px-3 py-1">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              {tx('Publicado', 'Published', 'Publicado')}
+                            </Badge>
+                          )}
+
                           {canTransform && (
                             <Button
                               size="sm"
                               onClick={handleTransformToBlog}
                               disabled={transforming}
-                              className="gap-1.5 text-white"
-                              style={{ backgroundColor: '#1E1240' }}
+                              className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
                             >
                               {transforming ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -364,8 +449,8 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
 
                       {/* Image style picker — only relevant when transforming */}
                       {canTransform && (
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1 border-t" style={{ borderColor: '#e0d4be' }}>
-                          <span className="text-[11px] font-medium uppercase tracking-wide shrink-0" style={{ color: '#8B7355' }}>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-2 border-t border-border">
+                          <span className="text-[11px] font-medium uppercase tracking-wide shrink-0 text-muted-foreground">
                             {tx('Estilo das ilustrações', 'Illustration style', 'Estilo de ilustraciones')}
                           </span>
                           <div className="flex flex-wrap gap-1.5">
@@ -382,12 +467,11 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                                   type="button"
                                   onClick={() => setImageStyle(s.key)}
                                   disabled={transforming}
-                                  className="px-2.5 py-1 rounded-full text-xs font-medium transition-all border disabled:opacity-50"
-                                  style={
+                                  className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all border disabled:opacity-50 ${
                                     active
-                                      ? { backgroundColor: '#1E1240', color: '#fff', borderColor: '#1E1240' }
-                                      : { backgroundColor: '#fff', color: '#5a4a35', borderColor: '#d4c8b8' }
-                                  }
+                                      ? 'bg-primary text-primary-foreground border-primary'
+                                      : 'bg-card text-foreground/80 border-border hover:border-primary/50'
+                                  }`}
                                 >
                                   <span className="mr-1">{s.emoji}</span>
                                   {tx(s.pt, s.en, s.es)}
@@ -401,39 +485,23 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                   )}
 
                   <div
-                    className="prose prose-lg max-w-none
-                      prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight
-                      prose-p:leading-relaxed
-                      prose-blockquote:border-l-4 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-                      prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-8
-                      prose-a:underline
-                      prose-li:leading-relaxed
-                      prose-strong:font-bold
+                    className="prose prose-invert prose-lg max-w-none
+                      prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground
+                      prose-p:leading-relaxed prose-p:text-foreground/90
+                      prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:bg-card prose-blockquote:text-foreground/95
+                      prose-img:rounded-xl prose-img:shadow-2xl prose-img:mx-auto prose-img:max-h-96 prose-img:w-full prose-img:object-cover prose-img:my-8 prose-img:border prose-img:border-border
+                      prose-a:text-primary prose-a:underline
+                      prose-li:leading-relaxed prose-li:text-foreground/90
+                      prose-strong:font-bold prose-strong:text-foreground
+                      prose-code:text-primary prose-code:bg-card prose-code:px-1 prose-code:rounded
                     "
-                    style={{
-                      '--tw-prose-headings': '#1a1208',
-                      '--tw-prose-body': '#1e1710',
-                      '--tw-prose-bold': '#1a1208',
-                      '--tw-prose-quotes': '#2a1f14',
-                      '--tw-prose-quote-borders': '#C4956A',
-                      '--tw-prose-links': '#4a3218',
-                      '--tw-prose-bullets': '#1E1240',
-                      '--tw-prose-counters': '#1E1240',
-                      '--tw-prose-hr': '#d4c8b8',
-                      '--tw-prose-th-borders': '#d4c8b8',
-                      '--tw-prose-td-borders': '#e7dfd5',
-                      '--tw-prose-code': '#1a1208',
-                      '--tw-prose-pre-bg': '#eae4d9',
-                      '--tw-prose-pre-code': '#1e1710',
-                      color: '#1e1710',
-                    } as React.CSSProperties}
                   >
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {finalContent}
                     </ReactMarkdown>
                   </div>
 
-                  <div className="mt-10 pt-6 border-t text-center text-xs" style={{ borderColor: '#d4c8b8', color: '#a0906e' }}>
+                  <div className="mt-10 pt-6 border-t border-border text-center text-xs text-muted-foreground">
                     Feito com ❤️ pela Living Word
                   </div>
                 </div>
@@ -442,10 +510,10 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
 
             {/* Notes sidebar */}
             {showNotes && (
-              <div className="w-[280px] md:w-[320px] shrink-0 flex flex-col p-4 overflow-y-auto" style={{ backgroundColor: '#faf8f3' }}>
+              <div className="w-[280px] md:w-[320px] shrink-0 flex flex-col p-4 overflow-y-auto bg-card border-l border-border">
                 <div className="flex items-center gap-2 mb-3">
-                  <StickyNote className="h-4 w-4" style={{ color: '#1E1240' }} />
-                  <h3 className="text-sm font-semibold" style={{ color: '#3c2f21' }}>
+                  <StickyNote className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-foreground">
                     {tx('Anotações do Pregador', 'Preacher Notes', 'Notas del Predicador')}
                   </h3>
                 </div>
@@ -453,8 +521,7 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={tx('Escreva suas anotações pessoais aqui...', 'Write your personal notes here...', 'Escribe tus notas personales aquí...')}
-                  className="flex-1 min-h-[200px] resize-none text-sm border-0 shadow-none focus-visible:ring-0 p-0"
-                  style={{ backgroundColor: 'transparent', color: '#1e1710' }}
+                  className="flex-1 min-h-[200px] resize-none text-sm bg-background border-border text-foreground placeholder:text-muted-foreground"
                 />
                 <Button
                   size="sm"
