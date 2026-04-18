@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -106,16 +107,17 @@ function SyncLanguageWithProfile() {
 
 // eslint-disable-next-line react-refresh/only-export-components
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <AuthProvider>
-        <SyncLanguageWithProfile />
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <>
-              <Routes>
+  <ErrorBoundary context="Aplicação Living Word">
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <AuthProvider>
+          <SyncLanguageWithProfile />
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <>
+                <Routes>
                 {/* Subdomain detection: pastorjoao.livingwordgo.com → /blog/pastorjoao */}
                 <Route path="/" element={<><SubdomainRedirect /><Landing /></>} />
                 <Route path="/login" element={<Login />} />
