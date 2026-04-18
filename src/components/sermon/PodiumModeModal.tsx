@@ -1065,6 +1065,31 @@ export function PodiumModeModal({
               </div>
 
               <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-[11px] uppercase tracking-wider opacity-70 flex items-center justify-between">
+                <span>{tr.warningTime[lang]}</span>
+                <span className={cn('text-[9px] font-normal normal-case tracking-normal', subtitleColor)}>
+                  {tr.warningTimeHint[lang]}
+                </span>
+              </DropdownMenuLabel>
+              <div className="px-2 pb-2 grid grid-cols-5 gap-1">
+                {WARNING_OPTIONS_MIN.map((m) => (
+                  <button
+                    key={m}
+                    onClick={(e) => { e.preventDefault(); setWarningMinutes(m); }}
+                    className={cn(
+                      'text-[10px] py-1.5 rounded-md tabular-nums transition-colors',
+                      warningMinutes === m
+                        ? 'bg-amber-600 text-white font-bold ring-1 ring-amber-400'
+                        : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                    )}
+                    title={m === 0 ? tr.warningOff[lang] : `${m} ${tr.minutesShort[lang]}`}
+                  >
+                    {m === 0 ? '—' : `${m}${tr.minutesShort[lang]}`}
+                  </button>
+                ))}
+              </div>
+
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={(e) => { e.preventDefault(); setKeepScreenOn((v) => !v); }}
                 className="flex items-center justify-between gap-2 cursor-pointer"
