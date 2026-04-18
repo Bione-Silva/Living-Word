@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine, Layers, Zap, MonitorPlay } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -14,10 +14,12 @@ import { toast } from 'sonner';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 import { SermonCarouselModal } from '@/components/sermon/SermonCarouselModal';
 import { SermonSlidesModal } from '@/components/sermon/SermonSlidesModal';
+import { PodiumModeModal } from '@/components/sermon/PodiumModeModal';
 import { BibleDrawer } from '@/components/BibleDrawer';
 import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/bible-ref-parser';
 import { versionToApiCode, versionAbbrToCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
+import { SermonBlockEditor, blocksToMarkdown, type SermonBlockData } from '@/components/sermon/SermonBlockEditor';
 
 type L = 'PT' | 'EN' | 'ES';
 
