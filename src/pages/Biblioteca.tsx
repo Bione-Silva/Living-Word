@@ -193,6 +193,28 @@ export default function Biblioteca() {
             className="pl-10"
           />
         </div>
+        <div className="shrink-0 inline-flex items-center rounded-md border border-border bg-card p-0.5 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setViewMode('grid')}
+            aria-label="Grid view"
+            className={`h-8 w-8 inline-flex items-center justify-center rounded-sm transition-colors ${
+              viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('list')}
+            aria-label="List view"
+            className={`h-8 w-8 inline-flex items-center justify-center rounded-sm transition-colors ${
+              viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <List className="h-4 w-4" />
+          </button>
+        </div>
         <Button
           variant={favFilter ? 'default' : 'outline'}
           size="icon"
