@@ -159,7 +159,7 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
             <Input
               value={block.passageRef || ''}
               onChange={(e) => onChange({ ...block, passageRef: e.target.value })}
-              placeholder={lang === 'PT' ? 'Referência (ex: João 3:16-21)' : lang === 'ES' ? 'Referencia (ej: Juan 3:16-21)' : 'Reference (e.g. John 3:16-21)'}
+              placeholder={tr.passageRefPlaceholder[lang]}
               className="h-9 text-sm w-full"
             />
           )}
