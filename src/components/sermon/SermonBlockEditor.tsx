@@ -53,6 +53,12 @@ const tr = {
   totalWords: { PT: 'palavras no total', EN: 'total words', ES: 'palabras en total' },
   blocks: { PT: 'blocos', EN: 'blocks', ES: 'bloques' },
   pickType: { PT: 'Escolha o tipo de bloco', EN: 'Pick a block type', ES: 'Elija el tipo de bloque' },
+  quickAdd: { PT: 'Criação rápida', EN: 'Quick add', ES: 'Creación rápida' },
+  quickAddHint: {
+    PT: 'Clique numa bolinha para adicionar o bloco ao final',
+    EN: 'Click a dot to append a block at the end',
+    ES: 'Haga clic en una bolita para añadir el bloque al final',
+  },
   bulkGen: { PT: 'Gerar Esboço com IA', EN: 'Generate Outline with AI', ES: 'Generar Bosquejo con IA' },
   bulkGenLoading: { PT: 'Construindo no estilo Spurgeon...', EN: 'Building in Spurgeon style...', ES: 'Construyendo al estilo Spurgeon...' },
   spurgeonHint: {
@@ -249,6 +255,55 @@ export function SermonBlockEditor({
 
   return (
     <div className="space-y-4">
+      {/* ─── Seletor compacto: bolinhas coloridas com fundo -50 (mesma paleta do Púlpito Claro) ─── */}
+      <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2.5">
+        <div className="flex items-center justify-between mb-2 gap-2">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+            {tr.quickAdd[lang]}
+          </span>
+          <span className="hidden sm:inline text-[10px] text-muted-foreground/70 truncate">
+            {tr.quickAddHint[lang]}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {SERMON_BLOCK_ORDER.map((type) => {
+            const meta = SERMON_BLOCK_META[type];
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => addBlock(type)}
+                title={`${meta.emoji} ${meta.label[lang]}`}
+                aria-label={`${tr.addBlock[lang]}: ${meta.label[lang]}`}
+                className={cn(
+                  // Fundo -50 (paleta identitária) — extraído do cardBgClass via prefixo "bg-...-50"
+                  meta.cardBgClass.split(' ').find((c) => /^bg-[a-z]+-50$/.test(c)) ?? 'bg-muted',
+                  'group relative h-8 w-8 sm:h-9 sm:w-9 rounded-full',
+                  'flex items-center justify-center',
+                  'ring-1 ring-border/50 hover:ring-2 hover:ring-foreground/30',
+                  'shadow-sm hover:shadow-md hover:scale-110 active:scale-95',
+                  'transition-all duration-150',
+                )}
+              >
+                {/* Dot sólido central — identidade colorida da paleta */}
+                <span className={cn('h-2.5 w-2.5 rounded-full', meta.dotClass)} />
+                {/* Tooltip flutuante na hover (desktop) */}
+                <span
+                  className={cn(
+                    'pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 z-10',
+                    'opacity-0 group-hover:opacity-100 transition-opacity',
+                    'whitespace-nowrap rounded-md bg-foreground/90 px-1.5 py-0.5',
+                    'text-[10px] font-medium text-background',
+                  )}
+                >
+                  {meta.label[lang]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Botão mestre: Gerar Esboço com IA (modelo Spurgeon) */}
       <button
         onClick={handleBulkGenerate}
