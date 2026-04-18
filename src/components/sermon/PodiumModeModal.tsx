@@ -409,8 +409,28 @@ export function PodiumModeModal({
   const warningAlertFiredRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  /** Segundos antes do fim para o pré-aviso suave (5 minutos). */
-  const WARNING_THRESHOLD_SECONDS = 5 * 60;
+  /** Opções (em minutos) para o pré-aviso suave antes do fim. 0 = desligado. */
+  const WARNING_OPTIONS_MIN = [0, 1, 3, 5, 10] as const;
+  type WarningMinutes = (typeof WARNING_OPTIONS_MIN)[number];
+  /** Minutos antes do fim para o pré-aviso suave (configurável, persistido). */
+  const [warningMinutes, setWarningMinutes] = useState<WarningMinutes>(() => {
+    if (typeof window === 'undefined') return 5;
+    try {
+      const v = window.localStorage.getItem('podium:warningMinutes');
+      const n = v == null ? NaN : parseInt(v, 10);
+      return (WARNING_OPTIONS_MIN as readonly number[]).includes(n) ? (n as WarningMinutes) : 5;
+    } catch {
+      return 5;
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('podium:warningMinutes', String(warningMinutes));
+    } catch {
+      /* noop */
+    }
+  }, [warningMinutes]);
+  const WARNING_THRESHOLD_SECONDS = warningMinutes * 60;
   /** Segundos antes do fim para aviso visual âmbar pulsante (30s). */
   const IMMINENT_END_SECONDS = 30;
 
