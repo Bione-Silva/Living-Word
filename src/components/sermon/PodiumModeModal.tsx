@@ -1033,14 +1033,15 @@ export function PodiumModeModal({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
+                type="button"
                 className={cn(
-                  'flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-md transition-colors text-xs font-semibold',
+                  'flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-md transition-colors text-xs font-semibold cursor-pointer',
                   isDark
                     ? 'text-slate-300 hover:text-white hover:bg-slate-800 ring-1 ring-slate-700/60'
                     : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200 ring-1 ring-slate-300',
                 )}
-                aria-label="timer mode"
-                title={lang === 'PT' ? 'Configurar Timer' : lang === 'ES' ? 'Configurar Timer' : 'Configure Timer'}
+                aria-label={lang === 'PT' ? 'Configurar Timer' : lang === 'ES' ? 'Configurar Temporizador' : 'Configure Timer'}
+                title={lang === 'PT' ? 'Configurar Timer — modo, duração, alertas sonoros e wake lock' : lang === 'ES' ? 'Configurar Temporizador — modo, duración, alertas sonoras' : 'Configure Timer — mode, duration, sound alerts'}
               >
                 {mode === 'countdown' && <Hourglass className="h-4 w-4" />}
                 {mode === 'progressive' && <Timer className="h-4 w-4" />}
@@ -1051,7 +1052,7 @@ export function PodiumModeModal({
                 <ChevronDown className="h-3 w-3 opacity-70" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className={cn(dropdownBg, 'w-64')}>
+            <DropdownMenuContent align="start" sideOffset={6} className={cn(dropdownBg, 'w-64 z-[200]')}>
               <DropdownMenuLabel>{lang === 'PT' ? 'Modo do Timer' : 'Timer Mode'}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setMode('progressive')}>
