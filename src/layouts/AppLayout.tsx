@@ -299,13 +299,13 @@ export default function AppLayout() {
             </Link>
 
             <Link
-              to="/dashboard/mentes"
+              to="/ferramentas"
               className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
-                location.pathname.startsWith('/dashboard/mentes') ? 'text-primary' : 'text-muted-foreground'
+                location.pathname === '/ferramentas' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Brain className="h-5 w-5" />
-              <span className="truncate">{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
+              <Package className="h-5 w-5" />
+              <span className="truncate">{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herram.'}</span>
             </Link>
 
             <button
@@ -320,101 +320,84 @@ export default function AppLayout() {
           </div>
         </nav>
 
-        {/* ─── Mobile "Criar" bottom sheet ─── */}
+        {/* ─── Mobile "Criar" bottom sheet — only the 3 main actions ─── */}
         <Sheet open={mobileToolsOpen} onOpenChange={setMobileToolsOpen}>
-          <SheetContent side="bottom" className="theme-app max-h-[80vh] overflow-y-auto rounded-t-2xl">
-            <SheetHeader className="pb-2">
-              <SheetTitle className="font-display text-lg">
-                {lang === 'PT' ? '⚡ Ferramentas' : lang === 'EN' ? '⚡ Tools' : '⚡ Herramientas'}
+          <SheetContent side="bottom" className="theme-app max-h-[70vh] overflow-y-auto rounded-t-2xl">
+            <SheetHeader className="pb-3">
+              <SheetTitle className="font-display text-xl">
+                {lang === 'PT' ? 'O que você quer criar?' : lang === 'EN' ? 'What do you want to create?' : '¿Qué quieres crear?'}
               </SheetTitle>
-              <SheetDescription className="sr-only">
-                {lang === 'PT' ? 'Selecione uma ferramenta' : lang === 'EN' ? 'Select a tool' : 'Selecciona una herramienta'}
+              <SheetDescription className="text-sm">
+                {lang === 'PT'
+                  ? 'Escolha uma ação principal para começar.'
+                  : lang === 'EN'
+                  ? 'Choose a main action to get started.'
+                  : 'Elige una acción principal para empezar.'}
               </SheetDescription>
             </SheetHeader>
 
-            <div className="space-y-3 mt-2">
-              {sidebarGroups.map((group) => {
-                const isOpen = mobileOpenGroups[group.key] ?? false;
-                const GroupIcon = group.icon;
-
+            <div className="space-y-2.5 mt-2">
+              {[
+                {
+                  to: '/sermoes',
+                  icon: Mic,
+                  label: { PT: 'Sermão', EN: 'Sermon', ES: 'Sermón' },
+                  desc: {
+                    PT: 'Esboços, ilustrações e fechamentos pastorais.',
+                    EN: 'Outlines, illustrations and pastoral closings.',
+                    ES: 'Esquemas, ilustraciones y cierres pastorales.',
+                  },
+                },
+                {
+                  to: '/estudos/novo',
+                  icon: GraduationCap,
+                  label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' },
+                  desc: {
+                    PT: 'Exposição, contexto e aplicação prática.',
+                    EN: 'Exposition, context and practical application.',
+                    ES: 'Exposición, contexto y aplicación práctica.',
+                  },
+                },
+                {
+                  to: '/social-studio',
+                  icon: Palette,
+                  label: { PT: 'Post Social', EN: 'Social Post', ES: 'Post Social' },
+                  desc: {
+                    PT: 'Artes bíblicas e carrosséis para redes.',
+                    EN: 'Biblical art and carousels for social.',
+                    ES: 'Arte bíblico y carruseles para redes.',
+                  },
+                },
+              ].map((item) => {
+                const ItemIcon = item.icon;
                 return (
-                  <div key={group.key}>
-                    <button
-                      onClick={() => toggleMobileGroup(group.key)}
-                      className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm font-semibold text-foreground"
-                    >
-                      <GroupIcon className="h-4 w-4 text-primary" />
-                      <span className="flex-1 text-left">{group.label[lang]}</span>
-                      <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isOpen ? '' : '-rotate-90'}`} />
-                    </button>
-
-                    {isOpen && (
-                      <div className="grid grid-cols-3 gap-2 px-1 pb-2">
-                        {group.tools.map((tool) => {
-                          const Icon = tool.icon;
-                          const isLocked = isToolLockedForPlan(tool.id, userPlan);
-                          return (
-                            <button
-                              key={tool.id}
-                              onClick={() => handleToolClick(tool)}
-                              className={`relative flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-colors text-center ${
-                                isLocked
-                                  ? 'border-border/40 opacity-50'
-                                  : 'border-border/60 hover:border-primary/30 hover:bg-primary/5 active:bg-primary/10'
-                              }`}
-                            >
-                              {isLocked && <ToolLockBadge userPlan={userPlan} toolId={tool.id} />}
-                              <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                                isLocked ? 'bg-muted/50' : 'bg-primary/10'
-                              }`}>
-                                <Icon className={`h-4 w-4 ${isLocked ? 'text-muted-foreground' : 'text-primary'}`} />
-                              </div>
-                              <span className="text-[11px] leading-tight font-medium line-clamp-2 text-foreground">
-                                {tool.label[lang]}
-                              </span>
-                            </button>
-                          );
-                        })}
+                  <button
+                    key={item.to}
+                    onClick={() => { setMobileToolsOpen(false); navigate(item.to); }}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/40 hover:bg-primary/5 active:scale-[0.99] transition-all text-left"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <ItemIcon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-[15px] text-foreground leading-tight">
+                        {item.label[lang]}
                       </div>
-                    )}
-                  </div>
+                      <div className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                        {item.desc[lang]}
+                      </div>
+                    </div>
+                  </button>
                 );
               })}
 
-              {/* Navigation shortcuts in mobile tools sheet */}
-              <div className="pt-3 border-t border-border mt-2">
-                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground px-2 mb-2">
-                  {lang === 'PT' ? 'NAVEGAÇÃO' : lang === 'EN' ? 'NAVIGATION' : 'NAVEGACIÓN'}
-                </p>
-                <div className="grid grid-cols-3 gap-2 px-1">
-                  {[
-                    { to: '/biblioteca', icon: Library, label: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' } },
-                    { to: '/calendario', icon: CalendarDays, label: { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' } },
-                    { to: '/bible', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' } },
-                  ].map((nav) => {
-                    const NavIcon = nav.icon;
-                    return (
-                      <Link
-                        key={nav.to}
-                        to={nav.to}
-                        onClick={() => setMobileToolsOpen(false)}
-                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-colors text-center ${
-                          location.pathname === nav.to
-                            ? 'border-primary/30 bg-primary/5'
-                            : 'border-border/60 hover:border-primary/30 hover:bg-primary/5'
-                        }`}
-                      >
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10">
-                          <NavIcon className="h-4 w-4 text-primary" />
-                        </div>
-                        <span className="text-[11px] leading-tight font-medium line-clamp-2 text-foreground">
-                          {nav.label[lang]}
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
+              <button
+                onClick={() => { setMobileToolsOpen(false); navigate('/ferramentas'); }}
+                className="w-full mt-2 flex items-center justify-center gap-2 py-3 rounded-xl border border-border/60 bg-muted/40 hover:bg-muted/70 transition-colors text-sm font-medium text-foreground/80"
+              >
+                <Package className="h-4 w-4" />
+                {lang === 'PT' ? 'Ver todas as ferramentas' : lang === 'EN' ? 'See all tools' : 'Ver todas las herramientas'}
+              </button>
             </div>
           </SheetContent>
         </Sheet>
@@ -480,49 +463,17 @@ export default function AppLayout() {
                 <span>{lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario'}</span>
               </Link>
 
-              {/* Tools groups */}
-              <div className="pt-3 mt-2 border-t border-border">
-                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground px-3 mb-1.5">
-                  {lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}
-                </p>
-                {sidebarGroups.map((group) => {
-                  const isOpen = mobileOpenGroups[`menu-${group.key}`] ?? false;
-                  const GroupIcon = group.icon;
-                  return (
-                    <div key={`menu-${group.key}`} className="mb-1">
-                      <button
-                        onClick={() => setMobileOpenGroups(p => ({ ...p, [`menu-${group.key}`]: !isOpen }))}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
-                      >
-                        <GroupIcon className="h-4 w-4 shrink-0 text-primary" />
-                        <span className="flex-1 text-left">{group.label[lang]}</span>
-                        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isOpen ? '' : '-rotate-90'}`} />
-                      </button>
-                      {isOpen && (
-                        <div className="pl-3 pr-1 py-1 space-y-0.5">
-                          {group.tools.map((tool) => {
-                            const ToolIcon = tool.icon;
-                            const isLocked = isToolLockedForPlan(tool.id, userPlan);
-                            return (
-                              <button
-                                key={tool.id}
-                                onClick={() => { setMobileMenuOpen(false); handleToolClick(tool); }}
-                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-xs transition-colors text-left ${
-                                  isLocked ? 'text-muted-foreground' : 'text-foreground/85 hover:bg-primary/5 hover:text-primary'
-                                }`}
-                              >
-                                <ToolIcon className="h-3.5 w-3.5 shrink-0" />
-                                <span className="flex-1 truncate">{tool.label[lang]}</span>
-                                {isLocked && <ToolLockBadge userPlan={userPlan} toolId={tool.id} />}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              {/* Ferramentas — single link to dedicated page (no nested groups on mobile) */}
+              <Link
+                to="/ferramentas"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === '/ferramentas' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Package className="h-4 w-4 shrink-0" />
+                <span>{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herramientas'}</span>
+              </Link>
 
               {/* Account */}
               <div className="pt-3 mt-2 border-t border-border">
