@@ -29,7 +29,16 @@ const tr = {
   words: { PT: 'palavras', EN: 'words', ES: 'palabras' },
   suggest: { PT: 'Sugerir com IA', EN: 'Suggest with AI', ES: 'Sugerir con IA' },
   suggesting: { PT: 'Pensando...', EN: 'Thinking...', ES: 'Pensando...' },
-  titlePlaceholder: { PT: 'Título do bloco (opcional)', EN: 'Block title (optional)', ES: 'Título del bloque (opcional)' },
+  titlePlaceholder: {
+    PT: 'Subtítulo opcional do bloco (ex: "Ponto 1 — A Graça que Salva")',
+    EN: 'Optional block subtitle (e.g.: "Point 1 — The Grace that Saves")',
+    ES: 'Subtítulo opcional del bloque (ej: "Punto 1 — La Gracia que Salva")',
+  },
+  passageRefPlaceholder: {
+    PT: 'Referência bíblica exata — livro capítulo:versículo (ex: João 3:16-21)',
+    EN: 'Exact biblical reference — book chapter:verse (e.g.: John 3:16-21)',
+    ES: 'Referencia bíblica exacta — libro capítulo:versículo (ej: Juan 3:16-21)',
+  },
   collapse: { PT: 'Recolher', EN: 'Collapse', ES: 'Contraer' },
   expand: { PT: 'Expandir', EN: 'Expand', ES: 'Expandir' },
   remove: { PT: 'Remover bloco', EN: 'Remove block', ES: 'Eliminar bloque' },
@@ -150,7 +159,7 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
             <Input
               value={block.passageRef || ''}
               onChange={(e) => onChange({ ...block, passageRef: e.target.value })}
-              placeholder={lang === 'PT' ? 'Referência (ex: João 3:16-21)' : lang === 'ES' ? 'Referencia (ej: Juan 3:16-21)' : 'Reference (e.g. John 3:16-21)'}
+              placeholder={tr.passageRefPlaceholder[lang]}
               className="h-9 text-sm w-full"
             />
           )}
