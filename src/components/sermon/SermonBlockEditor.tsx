@@ -14,12 +14,15 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
-import { Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, ChevronDown, ChevronUp, Sparkles, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 import { SermonBlock } from './SermonBlock';
 import {
   SERMON_BLOCK_META,
   SERMON_BLOCK_ORDER,
+  SPURGEON_MODEL_ORDER,
   createEmptyBlock,
   countWords,
   type SermonBlockData,
@@ -50,9 +53,26 @@ const tr = {
   totalWords: { PT: 'palavras no total', EN: 'total words', ES: 'palabras en total' },
   blocks: { PT: 'blocos', EN: 'blocks', ES: 'bloques' },
   pickType: { PT: 'Escolha o tipo de bloco', EN: 'Pick a block type', ES: 'Elija el tipo de bloque' },
+  bulkGen: { PT: 'Gerar Esboço com IA', EN: 'Generate Outline with AI', ES: 'Generar Bosquejo con IA' },
+  bulkGenLoading: { PT: 'Construindo no estilo Spurgeon...', EN: 'Building in Spurgeon style...', ES: 'Construyendo al estilo Spurgeon...' },
+  spurgeonHint: {
+    PT: 'Esqueleto homilético padrão (modelo Spurgeon expositivo). Edite, reordene ou apague o que não usar.',
+    EN: 'Default homiletic skeleton (Spurgeon expository model). Edit, reorder or delete what you don\'t use.',
+    ES: 'Esqueleto homilético estándar (modelo Spurgeon expositivo). Edite, reordene o elimine lo que no use.',
+  },
+  bulkSuccess: { PT: 'Esboço Spurgeon gerado!', EN: 'Spurgeon outline generated!', ES: '¡Bosquejo Spurgeon generado!' },
+  bulkError: { PT: 'Não foi possível gerar o esboço', EN: 'Could not generate the outline', ES: 'No se pudo generar el bosquejo' },
+  bulkNeedsContext: {
+    PT: 'Preencha a Grande Ideia ou a Passagem antes de gerar.',
+    EN: 'Fill in the Big Idea or Passage before generating.',
+    ES: 'Complete la Gran Idea o el Pasaje antes de generar.',
+  },
 };
 
-// (cor da bolinha vem direto de meta.dotClass para o Tailwind detectar as classes literais)
+/** Esqueleto padrão Spurgeon — auto-carregado quando o studio abre vazio. */
+function buildSpurgeonSkeleton(): SermonBlockData[] {
+  return SPURGEON_MODEL_ORDER.map((type) => createEmptyBlock(type));
+}
 
 export function SermonBlockEditor({
   blocks,
@@ -68,7 +88,21 @@ export function SermonBlockEditor({
   );
 
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [bulkLoading, setBulkLoading] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const seededRef = useRef(false);
+
+  // ─── Auto-seed: ao abrir o studio do zero, carrega o esqueleto Spurgeon ───
+  useEffect(() => {
+    if (seededRef.current) return;
+    if (blocks.length === 0) {
+      seededRef.current = true;
+      onChange(buildSpurgeonSkeleton());
+    } else {
+      seededRef.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fecha o picker ao clicar fora
   useEffect(() => {
@@ -113,10 +147,138 @@ export function SermonBlockEditor({
     onChange(blocks.filter((b) => b.id !== id));
   }
 
+  /* ═══ Gerar Esboço com IA — preenche TODOS os blocos no modelo Spurgeon ═══ */
+  async function handleBulkGenerate() {
+    const ctxBigIdea = (bigIdea || '').trim();
+    const ctxPassage = (passageRef || '').trim();
+    const ctxTopic = (topic || '').trim();
+
+    if (!ctxBigIdea && !ctxPassage && !ctxTopic) {
+      toast.error(tr.bulkNeedsContext[lang]);
+      return;
+    }
+
+    setBulkLoading(true);
+    try {
+      const langFull = lang === 'EN' ? 'English' : lang === 'ES' ? 'Spanish' : 'Portuguese';
+
+      // Garante que a tela tenha o esqueleto Spurgeon ANTES de gerar
+      const targetBlocks: SermonBlockData[] =
+        blocks.length === 0 ? buildSpurgeonSkeleton() : blocks;
+
+      // Mapa dos tipos que a IA deve preencher, na ordem Spurgeon
+      const spurgeonKeys = SPURGEON_MODEL_ORDER.join(' > ');
+
+      const systemPrompt = [
+        `You are a master Christian homiletician trained in the expository style of Charles H. Spurgeon, with the doctrinal anchor of John Wesley and the evangelistic appeal of Billy Graham.`,
+        `You will produce a complete sermon outline organized as JSON, STRICTLY following the Spurgeon Expository Model in this exact order of blocks:`,
+        spurgeonKeys + '.',
+        ``,
+        `Return ONLY a JSON object — no preamble, no markdown fences — matching this schema exactly:`,
+        `{ "blocks": [ { "type": "<one of: hook|passage|doctrine|objection|main_point|explanation|illustration|application|appeal|conclusion>", "title": "<short title>", "content": "<80-160 words of pastoral prose>" } ] }`,
+        ``,
+        `Rules:`,
+        `- Output the blocks in the EXACT order listed above. Never skip a block. Never add extra blocks.`,
+        `- Each "content" must be plain pastoral prose (no markdown headers, no lists), 80-160 words.`,
+        `- "passage" content must include the literal Bible text and reference (book chapter:verse).`,
+        `- "doctrine" must state ONE clear theological truth from the text.`,
+        `- "objection" must voice a real skeptic's doubt and refute it briefly.`,
+        `- "appeal" must invite a concrete decision (Billy Graham style altar call).`,
+        `- "conclusion" must restate the Big Idea + a closing prayer.`,
+        `- Write everything in ${langFull}.`,
+      ].join('\n');
+
+      const userPromptParts: string[] = [];
+      if (ctxTopic) userPromptParts.push(`Sermon topic: ${ctxTopic}`);
+      if (ctxPassage) userPromptParts.push(`Main biblical passage: ${ctxPassage}`);
+      if (ctxBigIdea) userPromptParts.push(`Big idea: ${ctxBigIdea}`);
+      userPromptParts.push(`\nGenerate the full Spurgeon-model outline now as JSON.`);
+
+      const { data, error } = await supabase.functions.invoke('ai-tool', {
+        body: {
+          systemPrompt,
+          userPrompt: userPromptParts.join('\n'),
+          toolId: 'sermon-bulk-spurgeon',
+        },
+      });
+      if (error) throw error;
+      const raw = (data?.content || '').trim();
+      if (!raw) throw new Error('Empty response');
+
+      // Robust JSON parse — strip code fences if present
+      const cleaned = raw
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/```$/i, '')
+        .trim();
+      const jsonStart = cleaned.indexOf('{');
+      const jsonEnd = cleaned.lastIndexOf('}');
+      const jsonStr = jsonStart >= 0 && jsonEnd > jsonStart ? cleaned.slice(jsonStart, jsonEnd + 1) : cleaned;
+      const parsed = JSON.parse(jsonStr) as { blocks?: Array<{ type: SermonBlockType; title?: string; content?: string }> };
+      const aiBlocks = Array.isArray(parsed.blocks) ? parsed.blocks : [];
+
+      // Funde a saída da IA com o esqueleto Spurgeon (preserva qualquer conteúdo já digitado)
+      const merged: SermonBlockData[] = SPURGEON_MODEL_ORDER.map((type) => {
+        const existing = targetBlocks.find((b) => b.type === type);
+        const ai = aiBlocks.find((b) => b.type === type);
+        const base = existing ?? createEmptyBlock(type);
+        // Se já tem conteúdo do usuário, NÃO sobrescreve.
+        if (existing && existing.content?.trim()) return base;
+        return {
+          ...base,
+          title: ai?.title?.trim() || base.title || '',
+          content: ai?.content?.trim() || base.content || '',
+          ...(type === 'passage' && ctxPassage ? { passageRef: ctxPassage } : {}),
+        };
+      });
+
+      // Mantém quaisquer blocos extras (ex: quote, transition) que o usuário tenha adicionado fora do modelo
+      const extras = targetBlocks.filter((b) => !SPURGEON_MODEL_ORDER.includes(b.type));
+      onChange([...merged, ...extras]);
+      toast.success(tr.bulkSuccess[lang]);
+    } catch (err) {
+      console.error('[handleBulkGenerate]', err);
+      toast.error(tr.bulkError[lang]);
+    } finally {
+      setBulkLoading(false);
+    }
+  }
+
   const context = { bigIdea, passage: passageRef, topic };
+  const isSkeletonOnly = blocks.length > 0 && blocks.every((b) => !b.content?.trim() && !b.title?.trim());
 
   return (
     <div className="space-y-4">
+      {/* Botão mestre: Gerar Esboço com IA (modelo Spurgeon) */}
+      <button
+        onClick={handleBulkGenerate}
+        disabled={bulkLoading}
+        className={cn(
+          'w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-all',
+          'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-sm hover:shadow-md',
+          'disabled:opacity-70 disabled:cursor-wait',
+        )}
+      >
+        {bulkLoading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-sm font-semibold">{tr.bulkGenLoading[lang]}</span>
+          </>
+        ) : (
+          <>
+            <Sparkles className="h-4 w-4" />
+            <span className="text-sm font-semibold">{tr.bulkGen[lang]}</span>
+          </>
+        )}
+      </button>
+
+      {/* Hint sobre o esqueleto padrão (mostra só enquanto a tela está com a estrutura inicial vazia) */}
+      {isSkeletonOnly && (
+        <p className="text-[11px] text-muted-foreground text-center px-2">
+          ✶ {tr.spurgeonHint[lang]}
+        </p>
+      )}
+
       {/* Lista de blocos com DnD */}
       {blocks.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border bg-muted/20 p-8 text-center">
