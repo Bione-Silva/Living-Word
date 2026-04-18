@@ -646,6 +646,75 @@ export type Database = {
         }
         Relationships: []
       }
+      kb_ingestion_jobs: {
+        Row: {
+          attempts: number
+          batch_id: string | null
+          bible_refs: string[] | null
+          chunks_count: number | null
+          created_at: string
+          document_id: string | null
+          finished_at: string | null
+          id: string
+          language: string
+          last_error: string | null
+          metadata: Json | null
+          mind: string
+          source_format: string
+          source_url: string
+          started_at: string | null
+          status: string
+          target_language: string
+          themes: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          batch_id?: string | null
+          bible_refs?: string[] | null
+          chunks_count?: number | null
+          created_at?: string
+          document_id?: string | null
+          finished_at?: string | null
+          id?: string
+          language?: string
+          last_error?: string | null
+          metadata?: Json | null
+          mind: string
+          source_format?: string
+          source_url: string
+          started_at?: string | null
+          status?: string
+          target_language?: string
+          themes?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          batch_id?: string | null
+          bible_refs?: string[] | null
+          chunks_count?: number | null
+          created_at?: string
+          document_id?: string | null
+          finished_at?: string | null
+          id?: string
+          language?: string
+          last_error?: string | null
+          metadata?: Json | null
+          mind?: string
+          source_format?: string
+          source_url?: string
+          started_at?: string | null
+          status?: string
+          target_language?: string
+          themes?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       master_api_vault: {
         Row: {
           api_key: string
