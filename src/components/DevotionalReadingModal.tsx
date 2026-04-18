@@ -1,6 +1,12 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks, Send, Mail, Smartphone, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
