@@ -1716,6 +1716,7 @@ export function PodiumModeModal({
           )}
         </div>
       </SlidePanel>
-    </div>
+    </div>,
+    document.body,
   );
 }
