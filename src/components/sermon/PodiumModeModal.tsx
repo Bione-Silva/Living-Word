@@ -417,7 +417,7 @@ export function PodiumModeModal({
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   /** Opções (em minutos) para o pré-aviso suave antes do fim. 0 = desligado. */
-  const WARNING_OPTIONS_MIN = [0, 1, 3, 5, 10] as const;
+  const WARNING_OPTIONS_MIN = [0, 3, 5, 7, 10] as const;
   type WarningMinutes = (typeof WARNING_OPTIONS_MIN)[number];
   /** Minutos antes do fim para o pré-aviso suave (configurável, persistido). */
   const [warningMinutes, setWarningMinutes] = useState<WarningMinutes>(() => {
@@ -425,7 +425,10 @@ export function PodiumModeModal({
     try {
       const v = window.localStorage.getItem('podium:warningMinutes');
       const n = v == null ? NaN : parseInt(v, 10);
-      return (WARNING_OPTIONS_MIN as readonly number[]).includes(n) ? (n as WarningMinutes) : 5;
+      if ((WARNING_OPTIONS_MIN as readonly number[]).includes(n)) return n as WarningMinutes;
+      // Migração: valor antigo 1 vira 3 (opção válida mais próxima)
+      if (n === 1) return 3;
+      return 5;
     } catch {
       return 5;
     }
@@ -438,8 +441,29 @@ export function PodiumModeModal({
     }
   }, [warningMinutes]);
   const WARNING_THRESHOLD_SECONDS = warningMinutes * 60;
-  /** Segundos antes do fim para aviso visual âmbar pulsante (30s). */
-  const IMMINENT_END_SECONDS = 30;
+
+  /** Opções (em segundos) para quando o cronômetro fica âmbar pulsante. */
+  const AMBER_OPTIONS_SEC = [15, 30, 60, 120] as const;
+  type AmberSeconds = (typeof AMBER_OPTIONS_SEC)[number];
+  /** Segundos antes do fim para aviso visual âmbar pulsante (configurável, persistido). */
+  const [amberSeconds, setAmberSeconds] = useState<AmberSeconds>(() => {
+    if (typeof window === 'undefined') return 30;
+    try {
+      const v = window.localStorage.getItem('podium:amberSeconds');
+      const n = v == null ? NaN : parseInt(v, 10);
+      return (AMBER_OPTIONS_SEC as readonly number[]).includes(n) ? (n as AmberSeconds) : 30;
+    } catch {
+      return 30;
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('podium:amberSeconds', String(amberSeconds));
+    } catch {
+      /* noop */
+    }
+  }, [amberSeconds]);
+  const IMMINENT_END_SECONDS = amberSeconds;
 
   /** Tom do alerta sonoro persistido. 'silent' substitui o antigo OFF. */
   type AlertTone = 'bell' | 'gong' | 'silent';
