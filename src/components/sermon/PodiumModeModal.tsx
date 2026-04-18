@@ -1022,7 +1022,10 @@ export function PodiumModeModal({
     ? 'bg-slate-900 border-slate-800 text-white'
     : 'bg-white border-slate-200 text-slate-900';
 
-  return (
+  // Renderiza via portal no document.body para escapar contenções de layout do
+  // AppLayout (overflow:auto no <main>, transforms herdados, etc.) que em iOS Safari
+  // podem fazer o modal `fixed` aparecer em branco/preto sem cabeçalho.
+  return createPortal(
     <div
       className={cn('fixed inset-0 z-[200] flex flex-col overflow-x-hidden', bgRoot)}
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
