@@ -942,8 +942,11 @@ export default function Sermoes() {
 
                   {compareMode ? (
                     /* ─── Modo Comparação Lado-a-Lado (apenas lg+) ─── */
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 items-start">
-                      <div className="min-w-0">
+                    /* items-stretch + h-full garante que ambos os blocos tenham
+                       a mesma altura visual no desktop, com o preview rolando
+                       internamente quando o conteúdo passar do viewport. */
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 items-stretch">
+                      <div className="min-w-0 flex flex-col">
                         <SermonBlockEditor
                           blocks={blocks}
                           onChange={setBlocks}
@@ -953,12 +956,12 @@ export default function Sermoes() {
                           lang={lang}
                         />
                       </div>
-                      <div className="min-w-0 lg:sticky lg:top-4 lg:max-h-[calc(100vh-7rem)]">
+                      <div className="min-w-0 flex lg:sticky lg:top-4 lg:h-[calc(100vh-7rem)]">
                         <PodiumLivePreview
                           markdown={liveMarkdown}
                           title={bigIdea.trim() || passageRef.trim() || sermonTitle}
                           lang={lang}
-                          className="lg:max-h-[calc(100vh-7rem)]"
+                          className="flex-1 h-full lg:h-[calc(100vh-7rem)]"
                         />
                       </div>
                     </div>
