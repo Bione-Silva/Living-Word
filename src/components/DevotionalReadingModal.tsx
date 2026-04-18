@@ -240,8 +240,8 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
         files: [file],
       };
 
-      // @ts-expect-error canShare exists in modern browsers
-      const canShareFiles = typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] });
+      const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+      const canShareFiles = typeof nav !== 'undefined' && typeof nav.canShare === 'function' && nav.canShare({ files: [file] });
 
       if (canShareFiles) {
         toast.dismiss(loadingToast);
