@@ -3,6 +3,14 @@ import type { Config } from "tailwindcss";
 export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  safelist: [
+    // Cores dinâmicas dos blocos de sermão (SermonBlockEditor) — manter sincronizado com sermon-block-types.ts
+    // hook (orange-500), passage (sky-500), original (amber-800), big_idea (purple-600), main_point (blue-600),
+    // explanation (violet-500), illustration (emerald-600), application (orange-700), transition (slate-500),
+    // quote (yellow-600), conclusion (rose-500)
+    { pattern: /^(bg|border-l|text)-(orange|sky|amber|purple|blue|violet|emerald|slate|yellow|rose)-(500|600|700|800)(\/10)?$/ },
+    { pattern: /^dark:text-(orange|sky|amber|purple|blue|violet|emerald|slate|yellow|rose)-(400|500|600)$/ },
+  ],
   prefix: "",
   theme: {
     container: {
