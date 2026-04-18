@@ -476,13 +476,55 @@ export default function Sermoes() {
     const html2pdf = (await import('html2pdf.js')).default;
     const dateStr = new Date().toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' });
     const platformLabel = lang === 'PT' ? 'Plataforma Pastoral com IA' : lang === 'ES' ? 'Plataforma Pastoral con IA' : 'AI Pastoral Platform';
+
+    // Detecta se temos blocos preenchidos para renderizar com cores identitárias (-50)
+    const filledBlocks = blocks.filter((b) =>
+      (b.content?.trim().length || 0) > 0
+      || (b.title?.trim().length || 0) > 0
+      || (b.type === 'passage' && (b.passageRef?.trim().length || 0) > 0),
+    );
+
+    /* Renderiza cada bloco como cartão com paleta -50 (espelha Studio + Púlpito Claro) */
+    const renderBlocksHtml = (): string => {
+      let mainPointIdx = 0;
+      return filledBlocks.map((b) => {
+        const meta = SERMON_BLOCK_META[b.type];
+        const { bg50, border200, accent700, accent500 } = meta.hex;
+        if (b.type === 'main_point') mainPointIdx += 1;
+        const tagSuffix = b.type === 'main_point' ? ` ${mainPointIdx}` : '';
+        const heading = b.title?.trim() || meta.label[lang];
+        const showHeading = heading && heading !== meta.label[lang];
+
+        let bodyHtml = '';
+        if (b.type === 'passage' && b.passageRef?.trim()) {
+          bodyHtml += `<div style="font-family:Georgia,serif;font-size:15px;font-weight:700;color:${accent700};margin:0 0 10px;font-style:italic;">${b.passageRef.trim()}</div>`;
+        }
+        if (b.content?.trim()) {
+          const isQuoteOrPassage = b.type === 'passage' || b.type === 'quote';
+          bodyHtml += `<div style="font-family:${isQuoteOrPassage ? 'Georgia,serif' : 'inherit'};font-size:13px;line-height:1.75;color:#222;${isQuoteOrPassage ? 'font-style:italic;' : ''}white-space:pre-wrap;">${markdownToHtml(b.content)}</div>`;
+        }
+
+        return `<section style="background:${bg50};border:1px solid ${border200};border-left:4px solid ${accent500};border-radius:8px;padding:14px 18px;margin:0 0 14px;page-break-inside:avoid;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${accent700};margin:0 0 ${showHeading ? '8' : '10'}px;">
+            <span style="font-size:13px;letter-spacing:0;">${meta.emoji}</span>
+            <span>${meta.label[lang]}${tagSuffix}</span>
+          </div>
+          ${showHeading ? `<h2 style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#111;margin:0 0 10px;line-height:1.3;page-break-after:avoid;">${heading}</h2>` : ''}
+          ${bodyHtml}
+        </section>`;
+      }).join('');
+    };
+
+    const useBlockLayout = filledBlocks.length > 0;
+    const bodyContent = useBlockLayout ? renderBlocksHtml() : `<div class="pdf-body">${markdownToHtml(sermonContent)}</div>`;
+
     const el = document.createElement('div');
     el.innerHTML = `
 <style>
   @page { margin: 20mm 15mm 25mm 15mm; }
   .pdf-page-header {
     display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 2px solid #6D28D9; padding-bottom: 10px; margin-bottom: 24px;
+    border-bottom: 2px solid #6D28D9; padding-bottom: 10px; margin-bottom: 20px;
   }
   .pdf-body h1 { font-size: 22px; font-weight: 700; margin: 0 0 6px; color: #111; page-break-after: avoid; }
   .pdf-body h2 { font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: #222; border-left: 3px solid #5B21B6; padding-left: 10px; page-break-after: avoid; }
@@ -494,7 +536,9 @@ export default function Sermoes() {
   .pdf-body strong { font-weight: 700; }
   .pdf-body em { font-style: italic; }
   .pdf-divider { text-align: center; margin: 24px 0; color: #6D28D9; font-size: 14px; page-break-after: avoid; }
-  .pdf-footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid #E8E0D0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .pdf-footer { margin-top: 32px; padding-top: 14px; border-top: 1px solid #E8E0D0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .sermon-title { font-family:Georgia,serif; font-size:22px; font-weight:700; color:#111; margin:0 0 4px; line-height:1.25; }
+  .sermon-subtitle { font-size:12px; color:#6D28D9; font-style:italic; margin:0 0 18px; }
 </style>
 <div style="font-family:'Georgia','Palatino Linotype',serif;max-width:680px;margin:0 auto;padding:0;color:#333;">
   <div class="pdf-page-header">
@@ -504,9 +548,11 @@ export default function Sermoes() {
     </div>
     <span style="font-size:9px;color:#999;">${dateStr}</span>
   </div>
-  <div class="pdf-body">
-    ${markdownToHtml(sermonContent)}
-  </div>
+  ${useBlockLayout ? `
+    <h1 class="sermon-title">${sermonTitle || (lang === 'PT' ? 'Sermão' : lang === 'ES' ? 'Sermón' : 'Sermon')}</h1>
+    ${bigIdea?.trim() ? `<p class="sermon-subtitle">"${bigIdea.trim()}"</p>` : ''}
+  ` : ''}
+  ${bodyContent}
   <div class="pdf-footer">
     <span style="font-size:12px;color:#6D28D9;font-weight:700;">✝</span>
     <span style="font-size:10px;color:#999;letter-spacing:1.5px;font-weight:600;">LIVING WORD</span>
@@ -517,10 +563,10 @@ export default function Sermoes() {
     document.body.appendChild(el);
     await html2pdf().from(el).set({
       margin: [18, 12, 22, 12],
-      filename: `${sermonTitle.slice(0, 40)}.pdf`,
+      filename: `${sermonTitle.slice(0, 40) || 'sermao'}.pdf`,
       html2canvas: { scale: 2, useCORS: true, logging: false },
       jsPDF: { format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'], avoid: ['h1', 'h2', 'h3', 'blockquote', '.pdf-divider'] },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['h1', 'h2', 'h3', 'blockquote', '.pdf-divider', 'section'] },
     }).save();
     document.body.removeChild(el);
     toast.success('PDF!');
