@@ -218,9 +218,11 @@ export function PodiumModeModal({
   const [running, setRunning] = useState(false);
   const [seconds, setSeconds] = useState(0); // segundos decorridos (progressivo) ou restantes (regressivo)
   const [clockTime, setClockTime] = useState(new Date());
-  const limitSeconds = durationLimitMinutes * 60;
+  const [durationMin, setDurationMin] = useState(durationLimitMinutes);
+  const [customMin, setCustomMin] = useState<string>(String(durationLimitMinutes));
+  const limitSeconds = durationMin * 60;
 
-  // Reset timer ao mudar de modo
+  // Reset timer ao mudar de modo ou de duração
   useEffect(() => {
     setRunning(false);
     if (mode === 'countdown') setSeconds(limitSeconds);
