@@ -52,15 +52,7 @@ const tr = {
   pickType: { PT: 'Escolha o tipo de bloco', EN: 'Pick a block type', ES: 'Elija el tipo de bloque' },
 };
 
-/**
- * Mapeia o token Tailwind `border-l-{cor}-{tom}` para `bg-{cor}-{tom}` (cor da bolinha).
- * Mantém PurgeCSS feliz porque os utilitários originais já existem em sermon-block-types.
- */
-function dotColorClass(borderClass: string): string {
-  return borderClass
-    .replace('border-l-', 'bg-')
-    .trim();
-}
+// (cor da bolinha vem direto de meta.dotClass para o Tailwind detectar as classes literais)
 
 export function SermonBlockEditor({
   blocks,
