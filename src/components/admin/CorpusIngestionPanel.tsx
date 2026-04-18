@@ -122,8 +122,8 @@ export function CorpusIngestionPanel() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs flex gap-2">
-        <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+      <div className="rounded-lg border border-warning/30 bg-warning/5 p-3 text-xs flex gap-2">
+        <AlertTriangle className="h-4 w-4 text-warning shrink-0 mt-0.5" />
         <div>
           <strong>Billy Graham:</strong> sem corpus textual em domínio público.
           Apenas áudios no BGEA. Marcado como pendente até obter transcrições oficiais.

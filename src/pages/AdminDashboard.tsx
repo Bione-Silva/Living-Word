@@ -18,6 +18,7 @@ import { FeedbackPanel } from '@/components/admin/FeedbackPanel';
 import { MindToggleSection } from '@/components/admin/MindToggleSection';
 import { ReflectionSentimentPanel } from '@/components/admin/ReflectionSentimentPanel';
 import { PushMetricsPanel } from '@/components/admin/PushMetricsPanel';
+import { CorpusIngestionPanel } from '@/components/admin/CorpusIngestionPanel';
 
 const MASTER_EMAIL = 'bionicaosilva@gmail.com';
 
@@ -206,6 +207,8 @@ export default function AdminDashboard() {
         </div>
         <ConversionFunnel />
       </div>
+
+      <CorpusIngestionPanel />
 
       <TrafficChart />
       <GeographyChart />
