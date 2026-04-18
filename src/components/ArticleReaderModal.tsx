@@ -11,6 +11,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
 
+type ImageStyle = 'watercolor' | 'oil' | 'minimalist' | 'photographic';
+
 interface ArticleReaderModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -24,6 +26,10 @@ interface ArticleReaderModalProps {
     article_images?: string[] | null;
     notes?: string | null;
   } | null;
+  /** Called after a sermon is transformed into a NEW blog_article material.
+   *  Parent should swap the viewed item to the new article so the original
+   *  sermon stays intact in the library. */
+  onReplaceItem?: (newItem: any) => void;
 }
 
 /**
@@ -72,7 +78,7 @@ function getBodyImages(item: any): string[] {
   return cover && images[0] === cover ? images.slice(1) : images;
 }
 
-export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderModalProps) {
+export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: ArticleReaderModalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const [exporting, setExporting] = useState(false);
@@ -81,6 +87,7 @@ export function ArticleReaderModal({ open, onOpenChange, item }: ArticleReaderMo
   const [savingNotes, setSavingNotes] = useState(false);
   const [transforming, setTransforming] = useState(false);
   const [transformStep, setTransformStep] = useState('');
+  const [imageStyle, setImageStyle] = useState<ImageStyle>('watercolor');
   const [saveWsOpen, setSaveWsOpen] = useState(false);
   const [articleImages, setArticleImages] = useState<string[]>([]);
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
