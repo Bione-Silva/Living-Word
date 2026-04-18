@@ -842,15 +842,12 @@ export default function Sermoes() {
                     lang={lang}
                   />
                   {blocks.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
-                      <button onClick={handleSaveBlocks} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
-                        <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
-                      </button>
+                    <div className="text-center pt-2 pb-24">
                       <button
-                        onClick={() => { setSermonContent(blocksToMarkdown(blocks, lang)); setSermonTitle(bigIdea.trim() || passageRef.trim() || 'Sermão'); setPodiumOpen(true); }}
-                        className={`${actionBtn} !border-amber-500/40 !bg-amber-500/10 !text-amber-700 dark:!text-amber-400`}
+                        onClick={() => { setBlocks([]); setBigIdea(''); setPassageRef(''); }}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
                       >
-                        <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
+                        {lang === 'PT' ? 'Reiniciar com outro template' : lang === 'ES' ? 'Reiniciar con otra plantilla' : 'Restart with another template'}
                       </button>
                     </div>
                   )}
