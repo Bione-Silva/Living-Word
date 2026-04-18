@@ -36,6 +36,7 @@ import { ToolSheet } from '@/components/ToolSheet';
 import { SupportChatBubble } from '@/components/SupportChatBubble';
 import { ThemeInjector } from '@/components/ThemeInjector';
 import { MobileInstallBanner } from '@/components/MobileInstallBanner';
+import { NotificationBell } from '@/components/NotificationBell';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   PLAN_CREDITS, isToolLockedForPlan, getMinPlanForTool, getUpgradeBadge,
@@ -248,6 +249,7 @@ export default function AppLayout() {
             <Link to="/dashboard" className="font-display text-lg font-bold text-foreground truncate leading-none">Living Word</Link>
           </div>
           <div className="flex items-center gap-1.5 shrink-0 self-center">
+            <NotificationBell variant="mobile" />
             <SupportChatBubble />
             {!loading && profile?.blog_handle && (
               <Link to={`/blog/${profile.blog_handle}`} target="_blank" className="text-primary">
@@ -907,6 +909,7 @@ export default function AppLayout() {
               {lang === 'PT' ? 'Acessar Portal' : lang === 'EN' ? 'Open Portal' : 'Abrir Portal'}
             </Link>
           )}
+          <NotificationBell variant="desktop" />
           <SupportChatBubble />
           <Link to="/configuracoes" className="shrink-0">
             {profile?.avatar_url ? (

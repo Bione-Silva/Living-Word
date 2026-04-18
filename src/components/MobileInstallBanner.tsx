@@ -34,11 +34,25 @@ const COPY = {
 } as const;
 
 const STORAGE_KEY = 'lw_mobile_install_dismissed_at';
+const FIRST_VISIT_KEY = 'lw_first_visit_at';
 const SUPPRESS_DAYS = 7;
+const SHOW_WINDOW_DAYS = 7; // banner only shows during first 7 days of usage
 
 function isIos() {
   if (typeof navigator === 'undefined') return false;
   return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function getOrSetFirstVisit(): number {
+  try {
+    const existing = localStorage.getItem(FIRST_VISIT_KEY);
+    if (existing) return Number(existing);
+    const now = Date.now();
+    localStorage.setItem(FIRST_VISIT_KEY, String(now));
+    return now;
+  } catch {
+    return Date.now();
+  }
 }
 
 export function MobileInstallBanner() {
@@ -61,16 +75,14 @@ export function MobileInstallBanner() {
     }
   });
 
-  // Banner is persistent: it only disappears when the user dismisses it,
-  // installs the app, or the app is launched in standalone mode.
-  // No auto-hide timer — that interrupts the install nudge.
+  // 7-day welcome window: only show banner during user's first week.
+  const firstVisit = getOrSetFirstVisit();
+  const withinWelcomeWindow = Date.now() - firstVisit < SHOW_WINDOW_DAYS * 24 * 60 * 60 * 1000;
 
-  if (isStandalone || hidden) return null;
+  if (isStandalone || hidden || !withinWelcomeWindow) return null;
 
   const ios = isIos();
-  // On iOS we always show manual instructions when not standalone.
-  // On Android/desktop Chrome we need the beforeinstallprompt event.
-  // If we have neither, hide.
+  // Show on iOS mobile (manual instructions) OR when beforeinstallprompt is available.
   if (!isInstallable && !(ios && isMobile)) return null;
 
   const handleDismiss = () => {
