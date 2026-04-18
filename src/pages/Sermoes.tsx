@@ -1074,14 +1074,56 @@ export default function Sermoes() {
               <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
             </button>
             <button
+              onClick={async () => {
+                if (!blocks.length) {
+                  toast.error(lang === 'PT' ? 'Adicione blocos primeiro' : lang === 'ES' ? 'Añada bloques primero' : 'Add blocks first');
+                  return;
+                }
+                setExportingPptx(true);
+                try {
+                  const total = await exportSermonToPptx({
+                    blocks,
+                    title: bigIdea.trim() || passageRef.trim() || (lang === 'PT' ? 'Sermão' : lang === 'ES' ? 'Sermón' : 'Sermon'),
+                    bigIdea,
+                    passageRef,
+                    lang,
+                  });
+                  toast.success(
+                    lang === 'PT' ? `PPTX gerado com ${total} slides` :
+                    lang === 'ES' ? `PPTX generado con ${total} diapositivas` :
+                    `PPTX generated with ${total} slides`
+                  );
+                } catch (err) {
+                  console.error('pptx export', err);
+                  toast.error(lang === 'PT' ? 'Erro ao gerar PPTX' : lang === 'ES' ? 'Error al generar PPTX' : 'PPTX export error');
+                } finally {
+                  setExportingPptx(false);
+                }
+              }}
+              disabled={exportingPptx}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors disabled:opacity-50"
+            >
+              {exportingPptx
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : <Presentation className="h-3.5 w-3.5" />}
+              {lang === 'PT' ? 'Exportar PPTX' : lang === 'ES' ? 'Exportar PPTX' : 'Export PPTX'}
+            </button>
+            <button
               onClick={() => {
                 const md = blocksToMarkdown(blocks, lang);
-                if (!md.trim()) { toast.error(lang === 'PT' ? 'Adicione conteúdo aos blocos primeiro' : 'Add content to blocks first'); return; }
-                setSermonContent(md);
-                setSermonTitle(bigIdea.trim() || passageRef.trim() || 'Sermão');
-                setCarouselOpen(true);
+                if (!md.trim()) {
+                  toast.error(lang === 'PT' ? 'Adicione conteúdo aos blocos primeiro' : lang === 'ES' ? 'Añada contenido primero' : 'Add content to blocks first');
+                  return;
+                }
+                navigate('/social-studio', {
+                  state: {
+                    source_content: md,
+                    source_title: bigIdea.trim() || passageRef.trim() || 'Sermão',
+                    source_origin: 'sermon-blocks',
+                  },
+                });
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold text-white shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all bg-gradient-to-r from-primary via-purple-600 to-fuchsia-600 hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all bg-gradient-to-r from-primary via-purple-600 to-fuchsia-600 hover:scale-[1.02]"
             >
               <Sparkles className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Gerar Arte / Carrossel' : lang === 'ES' ? 'Generar Arte / Carrusel' : 'Generate Art / Carousel'}
             </button>
