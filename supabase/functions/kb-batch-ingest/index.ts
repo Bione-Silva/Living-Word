@@ -96,34 +96,40 @@ async function fetchSource(url: string, format: string): Promise<string> {
 }
 
 // Embedding via Gemini text-embedding-004 (768 dim) usando GEMINI_API_KEY
-async function embedBatch(texts: string[], apiKey: string): Promise<number[][]> {
-  // chamada batchEmbedContents
+// Faz chamadas individuais em paralelo (a API batchEmbedContents tem comportamento
+// inconsistente em algumas regiões; embedContent é o endpoint estável).
+async function embedOne(text: string, apiKey: string): Promise<number[]> {
   const url =
-    `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents?key=${apiKey}`;
-  const body = {
-    requests: texts.map((t) => ({
-      model: "models/text-embedding-004",
-      content: { parts: [{ text: t }] },
-      outputDimensionality: EMBEDDING_DIMS,
-    })),
-  };
+    `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${apiKey}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      model: "models/text-embedding-004",
+      content: { parts: [{ text }] },
+      outputDimensionality: EMBEDDING_DIMS,
+    }),
   });
   if (!res.ok) {
     const errText = await res.text();
     throw new Error(`Embedding API ${res.status}: ${errText.slice(0, 300)}`);
   }
   const data = await res.json();
-  const out: number[][] = (data.embeddings ?? []).map(
-    (e: { values: number[] }) => e.values,
-  );
-  if (out.length !== texts.length || out.some((v) => v.length !== EMBEDDING_DIMS)) {
-    throw new Error(
-      `Embedding shape mismatch: got ${out.length} vectors, dims=${out[0]?.length}`,
-    );
+  const values = data?.embedding?.values as number[] | undefined;
+  if (!values || values.length !== EMBEDDING_DIMS) {
+    throw new Error(`Embedding shape mismatch: dims=${values?.length}`);
+  }
+  return values;
+}
+
+async function embedBatch(texts: string[], apiKey: string): Promise<number[][]> {
+  // paraleliza em sub-lotes de 8 pra não estourar rate limit do Gemini
+  const out: number[][] = [];
+  const CONCURRENCY = 8;
+  for (let i = 0; i < texts.length; i += CONCURRENCY) {
+    const slice = texts.slice(i, i + CONCURRENCY);
+    const results = await Promise.all(slice.map((t) => embedOne(t, apiKey)));
+    out.push(...results);
   }
   return out;
 }
