@@ -518,17 +518,26 @@ export function BibleReadingView({
                 <div
                   key={v.verse}
                   id={`verse-${v.verse}`}
+                  onPointerEnter={() => handleDragEnter(v.verse)}
                   className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
                       isUrlHighlight
                         ? 'bg-primary/10 ring-2 ring-primary/30 animate-pulse'
                         : isSelected
                           ? 'bg-primary/5 ring-1 ring-primary/20'
                           : hlClass || 'hover:bg-muted/40'
-                  }`}
+                  } ${isDragging ? 'select-none' : ''}`}
                 >
-                  {/* Verse number badge — double-tap / double-click to activate */}
+                  {/* Verse number badge — double-tap (touch) / drag (mouse) to select */}
                   <button
-                    onClick={() => handleVerseTap(v.verse)}
+                    onPointerDown={(e) => handleDragStart(e, v.verse)}
+                    onClick={(e) => {
+                      // Suppress click after a drag-range selection
+                      if (selectedVerses.size > 1 && selectedVerses.has(v.verse)) {
+                        e.preventDefault();
+                        return;
+                      }
+                      handleVerseTap(v.verse);
+                    }}
                     onDoubleClick={(e) => { e.preventDefault(); handleDoubleActivate(v.verse); }}
                     onContextMenu={(e) => e.preventDefault()}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors select-none ${
