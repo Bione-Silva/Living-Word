@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ChevronDown,
   Check,
@@ -1021,8 +1022,14 @@ export function PodiumModeModal({
     ? 'bg-slate-900 border-slate-800 text-white'
     : 'bg-white border-slate-200 text-slate-900';
 
-  return (
-    <div className={cn('fixed inset-0 z-[100] flex flex-col overflow-x-hidden', bgRoot)}>
+  // Renderiza via portal no document.body para escapar contenções de layout do
+  // AppLayout (overflow:auto no <main>, transforms herdados, etc.) que em iOS Safari
+  // podem fazer o modal `fixed` aparecer em branco/preto sem cabeçalho.
+  return createPortal(
+    <div
+      className={cn('fixed inset-0 z-[200] flex flex-col overflow-x-hidden', bgRoot)}
+      style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
       {/* ─── Top Bar (mobile-first, colapsável) ─── */}
       <header className={cn('shrink-0 border-b backdrop-blur-md', headerBorder, headerBg)}>
         {/* Linha 1 — sempre visível: título + timer + sair */}
@@ -1443,9 +1450,30 @@ export function PodiumModeModal({
       <main ref={scrollerRef} className="flex-1 overflow-y-auto overflow-x-hidden">
         <div className="w-full max-w-3xl mx-auto px-3 sm:px-6 md:px-10 py-5 sm:py-10 space-y-4 sm:space-y-7">
           {cards.length === 0 && (
-            <div className={cn('text-center py-20', isDark ? 'text-slate-500' : 'text-slate-400')}>
+            <div className={cn('text-center py-20 px-4', isDark ? 'text-slate-400' : 'text-slate-500')}>
               <Maximize2 className="h-10 w-10 mx-auto mb-4 opacity-40" />
-              <p>{lang === 'PT' ? 'Sermão vazio.' : 'Empty sermon.'}</p>
+              <p className="text-base font-semibold mb-2">
+                {lang === 'PT' ? 'Sermão vazio' : lang === 'ES' ? 'Sermón vacío' : 'Empty sermon'}
+              </p>
+              <p className="text-sm opacity-80 mb-6 max-w-sm mx-auto">
+                {lang === 'PT'
+                  ? 'Não foi possível carregar o conteúdo deste sermão. Volte ao editor e verifique se há texto salvo.'
+                  : lang === 'ES'
+                  ? 'No se pudo cargar el contenido. Vuelva al editor y verifique si hay texto guardado.'
+                  : 'Could not load this sermon content. Go back to the editor and check if there is saved text.'}
+              </p>
+              <button
+                onClick={() => onOpenChange(false)}
+                className={cn(
+                  'inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors',
+                  isDark
+                    ? 'bg-slate-800 hover:bg-slate-700 text-white ring-1 ring-slate-700'
+                    : 'bg-slate-200 hover:bg-slate-300 text-slate-900 ring-1 ring-slate-300',
+                )}
+              >
+                <X className="h-4 w-4" />
+                {tr.exit[lang]}
+              </button>
             </div>
           )}
 
@@ -1688,6 +1716,7 @@ export function PodiumModeModal({
           )}
         </div>
       </SlidePanel>
-    </div>
+    </div>,
+    document.body,
   );
 }
