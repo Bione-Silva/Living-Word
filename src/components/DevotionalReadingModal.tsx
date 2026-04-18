@@ -72,11 +72,11 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
 
   const handlePdf = async () => {
     let wrapper: HTMLDivElement | null = null;
+    const loadingToast = toast.loading(lang === 'PT' ? 'Gerando PDF...' : lang === 'ES' ? 'Generando PDF...' : 'Generating PDF...');
     try {
       const html2pdf = (await import('html2pdf.js')).default;
       const { BRAND } = await import('@/lib/export-branding');
 
-      // Build the full document HTML inline so we control sizing, fonts and brand chrome.
       const dateStr = formatDate(data.scheduled_date, lang);
       const esc = (s: string) =>
         (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -113,14 +113,14 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
              <p style="margin:0;font-family:Georgia,serif;font-size:13px;font-style:italic;line-height:1.7;color:#2a1f4d;">${esc(data.reflection_question)}</p>
            </div>` : '';
 
+      // Render visible-but-hidden (under the modal) so html2canvas can measure it.
+      // Offscreen positioning (`left:-10000px`) sometimes results in zero-height capture → blank PDF.
       wrapper = document.createElement('div');
-      // Render offscreen at A4-ish width so html2canvas captures full layout (not the modal's narrow viewport)
-      wrapper.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;background:#ffffff;padding:0;';
+      wrapper.style.cssText = 'position:fixed;left:0;top:0;width:794px;background:#ffffff;z-index:-1;opacity:0;pointer-events:none;';
       wrapper.innerHTML = `
         <div style="width:794px;background:#ffffff;color:#1a1430;">
-          <div style="display:flex;align-items:center;gap:12px;padding:20px 32px 14px 32px;border-bottom:2px solid ${BRAND.colors.gold};">
-            <img src="${BRAND.logoPath}" crossorigin="anonymous" style="height:40px;width:40px;object-fit:contain;" alt="Living Word" />
-            <span style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:${BRAND.colors.brown};letter-spacing:0.5px;">${BRAND.name}</span>
+          <div style="padding:20px 32px 14px 32px;border-bottom:2px solid ${BRAND.colors.gold};">
+            <div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:${BRAND.colors.brown};letter-spacing:0.5px;">✦ ${BRAND.name}</div>
           </div>
           <div style="padding:28px 32px 20px 32px;">
             <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:900;line-height:1.2;color:#0F0A18;margin:0 0 8px 0;">${esc(data.title)}</h1>
@@ -141,18 +141,23 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
         </div>`;
       document.body.appendChild(wrapper);
 
+      // Give the browser a tick to layout the wrapper before capture.
+      await new Promise(r => setTimeout(r, 80));
+
       await html2pdf().set({
         margin: [10, 0, 12, 0],
         filename: `devocional-${data.scheduled_date}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 794 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 794, logging: false },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+        pagebreak: { mode: ['css', 'legacy'] },
       }).from(wrapper).save();
 
+      toast.dismiss(loadingToast);
       toast.success(lang === 'PT' ? 'PDF salvo!' : lang === 'ES' ? '¡PDF guardado!' : 'PDF saved!');
     } catch (err) {
       console.error('[DevotionalPDF]', err);
+      toast.dismiss(loadingToast);
       toast.error(lang === 'PT' ? 'Erro ao gerar PDF' : lang === 'ES' ? 'Error al generar PDF' : 'Error generating PDF');
     } finally {
       if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
