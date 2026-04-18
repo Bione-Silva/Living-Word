@@ -101,12 +101,19 @@ const tr = {
   toneSilent: { PT: 'Silencioso', EN: 'Silent', ES: 'Silencioso' },
   keepScreenOn: { PT: 'Manter tela ligada', EN: 'Keep screen on', ES: 'Mantener pantalla encendida' },
   testTone: { PT: 'Testar', EN: 'Test', ES: 'Probar' },
-  warningTime: { PT: 'Pré-aviso', EN: 'Pre-warning', ES: 'Pre-aviso' },
+  warningTime: { PT: 'Pré-aviso sonoro', EN: 'Audible pre-warning', ES: 'Pre-aviso sonoro' },
   warningTimeHint: {
-    PT: 'Avisar antes do fim do regressivo',
-    EN: 'Warn before countdown ends',
-    ES: 'Avisar antes del final del regresivo',
+    PT: 'Antes do fim do regressivo',
+    EN: 'Before countdown ends',
+    ES: 'Antes del final del regresivo',
   },
+  amberAlert: { PT: 'Aviso âmbar', EN: 'Amber warning', ES: 'Aviso ámbar' },
+  amberAlertHint: {
+    PT: 'Quando o cronômetro fica âmbar pulsante',
+    EN: 'When the timer turns pulsing amber',
+    ES: 'Cuándo el cronómetro se vuelve ámbar',
+  },
+  secondsShort: { PT: 's', EN: 's', ES: 's' },
   minutesShort: { PT: 'min', EN: 'min', ES: 'min' },
   warningOff: { PT: 'Sem aviso', EN: 'No warning', ES: 'Sin aviso' },
 };
