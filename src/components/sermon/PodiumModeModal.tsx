@@ -460,9 +460,17 @@ export function PodiumModeModal({
   const [illusResult, setIllusResult] = useState('');
   const [illusLoading, setIllusLoading] = useState(false);
 
+  /** Idioma humano-legível para travar a saída da IA — evita alucinação de idiomas. */
+  const langFull = lang === 'EN' ? 'English' : lang === 'ES' ? 'Spanish (español neutro)' : 'Brazilian Portuguese (português do Brasil)';
+  const langDirective = `CRITICAL LANGUAGE LOCK: Respond ONLY in ${langFull}. Never mix languages. Do not output English unless the user's selected language is English. Do not output Spanish unless selected. All headings, labels, transliterations explanations, and prose must be in ${langFull}.`;
+
   async function aiQuery(systemPrompt: string, userPrompt: string) {
     const { data, error } = await supabase.functions.invoke('ai-tool', {
-      body: { systemPrompt, userPrompt, toolId: 'podium-quick-consult' },
+      body: {
+        systemPrompt: `${langDirective}\n\n${systemPrompt}`,
+        userPrompt: `${userPrompt}\n\n[Output language: ${langFull}]`,
+        toolId: 'podium-quick-consult',
+      },
     });
     if (error) throw error;
     return (data?.content || '').trim();
@@ -473,7 +481,7 @@ export function PodiumModeModal({
     setBibleLoading(true);
     try {
       const r = await aiQuery(
-        `You are a biblical reference assistant. Given a Bible reference, return the verse text in 4 versions (ARA, NVI, ESV, KJV) in a compact, scannable format. Use plain text, no markdown headers. Keep it short.`,
+        `You are a biblical reference assistant. Given a Bible reference, return the verse text in 4 versions (ARA, NVI, ESV, KJV) in a compact, scannable format. Use plain text, no markdown headers. Keep it short. The reference label and any commentary must be in ${langFull}; the verse text itself follows the version (ARA/NVI in Portuguese, ESV/KJV in English).`,
         `Reference: ${bibleQuery.trim()}. Show the same verse(s) in ARA, NVI, ESV and KJV.`,
       );
       setBibleResult(r);
@@ -485,7 +493,7 @@ export function PodiumModeModal({
     setOrigLoading(true);
     try {
       const r = await aiQuery(
-        `You are a Hebrew/Greek biblical languages assistant. Provide a quick original-language analysis in plain text (no markdown headers). Include: original word(s), transliteration, gloss, brief semantic range, and one quick exegetical insight. Keep it under 150 words.`,
+        `You are a Hebrew/Greek biblical languages assistant. Provide a quick original-language analysis in plain text (no markdown headers). Include: original word(s) (in Hebrew/Greek script), transliteration, gloss, brief semantic range, and one quick exegetical insight. Keep it under 150 words. ALL explanatory prose, glosses and insights MUST be written in ${langFull}.`,
         `Term/concept: ${origQuery.trim()}`,
       );
       setOrigResult(r);
@@ -497,7 +505,7 @@ export function PodiumModeModal({
     setIllusLoading(true);
     try {
       const r = await aiQuery(
-        `You are a historical illustrations assistant for preachers. Given a topic, return 3 short historical/biographical illustrations (each 60-100 words) usable in a sermon. Plain text, separated by blank lines, no markdown headers.`,
+        `You are a historical illustrations assistant for preachers. Given a topic, return 3 short historical/biographical illustrations (each 60-100 words) usable in a sermon. Plain text, separated by blank lines, no markdown headers. Write the entire response in ${langFull}.`,
         `Topic: ${illusQuery.trim()}`,
       );
       setIllusResult(r);
@@ -611,13 +619,26 @@ export function PodiumModeModal({
 
         {/* Linha 2 — ações secundárias (compactam em mobile dentro de "More") */}
         <div className={cn('flex items-center gap-1 px-3 sm:px-4 pb-2 -mt-1 border-t pt-2', headerBorder)}>
-          {/* Timer mode dropdown */}
+          {/* Timer mode dropdown — botão obvio com texto "Configurar Timer" */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)} aria-label="timer mode">
+              <button
+                className={cn(
+                  'flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-md transition-colors text-xs font-semibold',
+                  isDark
+                    ? 'text-slate-300 hover:text-white hover:bg-slate-800 ring-1 ring-slate-700/60'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200 ring-1 ring-slate-300',
+                )}
+                aria-label="timer mode"
+                title={lang === 'PT' ? 'Configurar Timer' : lang === 'ES' ? 'Configurar Timer' : 'Configure Timer'}
+              >
                 {mode === 'countdown' && <Hourglass className="h-4 w-4" />}
                 {mode === 'progressive' && <Timer className="h-4 w-4" />}
                 {mode === 'clock' && <Clock className="h-4 w-4" />}
+                <span className="hidden xs:inline sm:inline">
+                  {lang === 'PT' ? 'Configurar Timer' : lang === 'ES' ? 'Configurar Timer' : 'Configure Timer'}
+                </span>
+                <ChevronDown className="h-3 w-3 opacity-70" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className={cn(dropdownBg, 'w-64')}>
@@ -884,7 +905,14 @@ export function PodiumModeModal({
             isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900',
           )}
         />
-        <Button onClick={saveNotes} disabled={savingNotes} className="mt-3 w-full bg-amber-600 hover:bg-amber-500 text-white">
+        <Button
+          onClick={async () => {
+            await saveNotes();
+            setNotesOpen(false);
+          }}
+          disabled={savingNotes}
+          className="mt-3 w-full bg-amber-600 hover:bg-amber-500 text-white"
+        >
           {savingNotes ? '...' : tr.saveNotes[lang]}
         </Button>
       </SlidePanel>
