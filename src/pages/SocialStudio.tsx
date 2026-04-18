@@ -161,10 +161,11 @@ export default function SocialStudio() {
     load();
   }, [user]);
 
-  // Router state — handles 3 entry points:
+  // Router state — handles 4 entry points:
   //  1) Bible verse selected → { verseText, passage }
   //  2) Devotional → { devotionalSlides, slideCount, presentationMode }
-  //  3) Sermon → { prefilledSlides, defaultAspectRatio, presentationMode }
+  //  3) Sermon (legacy) → { prefilledSlides, defaultAspectRatio, presentationMode }
+  //  4) Sermon (Studio de Blocos / sermão pronto) → { source_content, source_title, source_origin }
   useEffect(() => {
     const state = location.state as {
       prefilledSlides?: SlideData[];
@@ -173,8 +174,42 @@ export default function SocialStudio() {
       verseText?: string;
       passage?: string;
       slideCount?: SlideCount;
+      source_content?: string;
+      source_title?: string;
+      source_origin?: string;
     } | null;
     if (!state) return;
+
+    // 4) Sermão completo vindo do Studio de Blocos / Sermões.
+    //    Pré-popula o canvas com a Grande Ideia/Título e abre uma aba focada
+    //    para o pregador rodar Carrossel Devocional sem colar nada de novo.
+    if (state.source_content && state.source_content.trim()) {
+      const raw = state.source_content.trim();
+      const firstHeading = raw.match(/^#+\s+(.+)$/m)?.[1]?.trim();
+      const headline = (state.source_title || firstHeading || 'Sermão').slice(0, 120);
+      // Extrai o primeiro parágrafo significativo como subtítulo
+      const firstParagraph = raw
+        .split('\n')
+        .map((l) => l.replace(/^[#>*\-\s]+/, '').trim())
+        .find((l) => l.length > 30 && l.length < 280) || '';
+
+      setSlides([{
+        text: headline,
+        subtitle: firstParagraph,
+        slideNumber: 1,
+        totalSlides: 1,
+      }]);
+      setVerseContext({ text: firstParagraph || headline, book: headline });
+      setSlideCount(1);
+      setPresentationMode(false);
+      window.history.replaceState({}, document.title);
+      toast.success(
+        lang === 'PT' ? 'Sermão carregado! Pronto para gerar carrossel.'
+          : lang === 'EN' ? 'Sermon loaded! Ready to generate carousel.'
+          : '¡Sermón cargado! Listo para generar carrusel.'
+      );
+      return;
+    }
 
     if (state.prefilledSlides && state.prefilledSlides.length > 0) {
       setSlides(state.prefilledSlides);
