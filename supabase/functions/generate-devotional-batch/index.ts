@@ -300,7 +300,8 @@ Deno.serve(async (req) => {
         let coverUrl: string | null = null
         if (!skipImage) {
           console.log(`[${lang}] Generating cover image...`)
-          const imgData = await generateCoverImage(aiKey, dev.title, dev.category)
+          const seed = `${targetDate}-${lang}-${dev.title || ''}`
+          const imgData = await generateCoverImage(aiKey, dev.title, dev.category, seed)
           if (imgData) {
             coverUrl = await uploadToStorage(supabaseAdmin, `covers/${targetDate}-${lang}.jpg`, imgData, 'image/jpeg')
           }
