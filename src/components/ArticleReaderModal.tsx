@@ -322,43 +322,81 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                   {/* Action bar — clear primary actions */}
                   {item.id && (
                     <div
-                      className="mb-8 -mx-2 px-3 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3"
+                      className="mb-8 -mx-2 px-3 py-3 rounded-xl flex flex-col gap-3"
                       style={{ backgroundColor: '#efe7d6', border: '1px solid #e0d4be' }}
                     >
-                      <p className="text-xs sm:text-sm flex-1" style={{ color: '#5a4a35' }}>
-                        {tx(
-                          'O que você quer fazer com este material?',
-                          'What would you like to do with this material?',
-                          '¿Qué quieres hacer con este material?'
-                        )}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setSaveWsOpen(true)}
-                          className="gap-1.5 bg-white/70 hover:bg-white border-[#d4c8b8] text-[#3c2f21]"
-                        >
-                          <FolderOpen className="h-4 w-4" />
-                          {tx('Salvar no Workspace', 'Save to Workspace', 'Guardar en Workspace')}
-                        </Button>
-                        {canTransform && (
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <p className="text-xs sm:text-sm flex-1" style={{ color: '#5a4a35' }}>
+                          {tx(
+                            'O que você quer fazer com este material?',
+                            'What would you like to do with this material?',
+                            '¿Qué quieres hacer con este material?'
+                          )}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2">
                           <Button
                             size="sm"
-                            onClick={handleTransformToBlog}
-                            disabled={transforming}
-                            className="gap-1.5 text-white"
-                            style={{ backgroundColor: '#1E1240' }}
+                            variant="outline"
+                            onClick={() => setSaveWsOpen(true)}
+                            className="gap-1.5 bg-white/70 hover:bg-white border-[#d4c8b8] text-[#3c2f21]"
                           >
-                            {transforming ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Sparkles className="h-4 w-4" />
-                            )}
-                            {tx('Transformar em Artigo de Blog', 'Turn into Blog Article', 'Transformar en Artículo')}
+                            <FolderOpen className="h-4 w-4" />
+                            {tx('Salvar no Workspace', 'Save to Workspace', 'Guardar en Workspace')}
                           </Button>
-                        )}
+                          {canTransform && (
+                            <Button
+                              size="sm"
+                              onClick={handleTransformToBlog}
+                              disabled={transforming}
+                              className="gap-1.5 text-white"
+                              style={{ backgroundColor: '#1E1240' }}
+                            >
+                              {transforming ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Sparkles className="h-4 w-4" />
+                              )}
+                              {tx('Transformar em Artigo de Blog', 'Turn into Blog Article', 'Transformar en Artículo')}
+                            </Button>
+                          )}
+                        </div>
                       </div>
+
+                      {/* Image style picker — only relevant when transforming */}
+                      {canTransform && (
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1 border-t" style={{ borderColor: '#e0d4be' }}>
+                          <span className="text-[11px] font-medium uppercase tracking-wide shrink-0" style={{ color: '#8B7355' }}>
+                            {tx('Estilo das ilustrações', 'Illustration style', 'Estilo de ilustraciones')}
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {([
+                              { key: 'watercolor', pt: 'Aquarela', en: 'Watercolor', es: 'Acuarela', emoji: '🎨' },
+                              { key: 'oil', pt: 'Óleo', en: 'Oil', es: 'Óleo', emoji: '🖌️' },
+                              { key: 'minimalist', pt: 'Minimalista', en: 'Minimalist', es: 'Minimalista', emoji: '◻️' },
+                              { key: 'photographic', pt: 'Fotográfico', en: 'Photo', es: 'Foto', emoji: '📷' },
+                            ] as const).map((s) => {
+                              const active = imageStyle === s.key;
+                              return (
+                                <button
+                                  key={s.key}
+                                  type="button"
+                                  onClick={() => setImageStyle(s.key)}
+                                  disabled={transforming}
+                                  className="px-2.5 py-1 rounded-full text-xs font-medium transition-all border disabled:opacity-50"
+                                  style={
+                                    active
+                                      ? { backgroundColor: '#1E1240', color: '#fff', borderColor: '#1E1240' }
+                                      : { backgroundColor: '#fff', color: '#5a4a35', borderColor: '#d4c8b8' }
+                                  }
+                                >
+                                  <span className="mr-1">{s.emoji}</span>
+                                  {tx(s.pt, s.en, s.es)}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
