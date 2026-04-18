@@ -315,12 +315,29 @@ export default function Sermoes() {
     }
   };
 
-  /* ═══ Restore a saved session ═══ */
+  /* ═══ Restore a saved session (detecta JSON de blocos vs markdown puro) ═══ */
   const handleRestoreSession = (session: SermonSession) => {
+    try {
+      const parsed = JSON.parse(session.content);
+      if (parsed && parsed._type === 'blocks') {
+        setBlocks(parsed.blocks || []);
+        setBigIdea(parsed.bigIdea || '');
+        setPassageRef(parsed.passageRef || '');
+        setSermonContent(parsed.markdown || blocksToMarkdown(parsed.blocks || [], lang));
+        setSermonTitle(session.title);
+        setSermonTopic(session.passage);
+        setActiveSessionId(session.id);
+        setEditorMode('blocks');
+        setShowResult(true);
+        setMobileHistoryOpen(false);
+        return;
+      }
+    } catch { /* fallthrough — markdown puro */ }
     setSermonContent(session.content);
     setSermonTitle(session.title);
     setSermonTopic(session.passage);
     setActiveSessionId(session.id);
+    setEditorMode('ai');
     setShowResult(true);
     setMobileHistoryOpen(false);
   };
