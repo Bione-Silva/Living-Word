@@ -16,17 +16,50 @@ import {
 
 type L = 'PT' | 'EN' | 'ES';
 
-/* ── PWA install button ── */
+/* ── PWA install button (always visible in footer) ── */
 function PWAFooterInstallButton({ lang }: { lang: L }) {
   const { isInstallable, install } = usePWAInstall();
   const [isStandalone, setIsStandalone] = useState(false);
+  const [showIosHint, setShowIosHint] = useState(false);
   useEffect(() => { setIsStandalone(window.matchMedia('(display-mode: standalone)').matches); }, []);
-  if (isStandalone || !isInstallable) return null;
-  const label = { PT: '📱 Instale o App Agora', EN: '📱 Install the App Now', ES: '📱 Instala la App Ahora' };
+  if (isStandalone) return null;
+
+  const isIos = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const label = { PT: '📱 Baixe o nosso App', EN: '📱 Download our App', ES: '📱 Descarga nuestra App' };
+  const iosHint = {
+    PT: 'No iPhone: toque em Compartilhar e em "Adicionar à Tela de Início" para instalar.',
+    EN: 'On iPhone: tap Share, then "Add to Home Screen" to install.',
+    ES: 'En iPhone: toca Compartir y "Añadir a pantalla de inicio" para instalar.',
+  };
+
+  const handleClick = async () => {
+    if (isInstallable) {
+      await install();
+      return;
+    }
+    if (isIos) {
+      setShowIosHint(true);
+      return;
+    }
+    // Desktop browser without install prompt — guide to use browser menu
+    setShowIosHint(true);
+  };
+
   return (
-    <button onClick={() => void install()} className="text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-all hover:scale-[1.03]" style={{ background: '#6D28D9', color: '#0F0A18' }}>
-      {label[lang]}
-    </button>
+    <div className="flex flex-col items-center gap-2">
+      <button
+        onClick={handleClick}
+        className="text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-all hover:scale-[1.03]"
+        style={{ background: '#6D28D9', color: '#FFFFFF' }}
+      >
+        {label[lang]}
+      </button>
+      {showIosHint && (
+        <p className="text-[11px] max-w-xs text-center leading-relaxed" style={{ color: 'rgba(232,224,245,0.55)' }}>
+          {isIos ? iosHint[lang] : (lang === 'PT' ? 'Use o menu do seu navegador para instalar como aplicativo.' : lang === 'EN' ? 'Use your browser menu to install as an app.' : 'Usa el menú de tu navegador para instalar como aplicación.')}
+        </p>
+      )}
+    </div>
   );
 }
 
