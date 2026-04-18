@@ -980,6 +980,17 @@ export default function Sermoes() {
         initialVerseEnd={bibleRef?.verseEnd}
         initialTranslation={bibleTranslationCode}
       />
+
+      {/* ─── Modo Púlpito ─── */}
+      <PodiumModeModal
+        open={podiumOpen}
+        onOpenChange={setPodiumOpen}
+        sermonMarkdown={sermonContent || (blocks.length ? blocksToMarkdown(blocks, lang) : '')}
+        sermonTitle={sermonTitle || bigIdea || 'Sermão'}
+        durationLimitMinutes={duration?.match(/\d+/) ? parseInt(duration.match(/\d+/)![0]) : 30}
+        materialId={activeSessionId}
+        lang={lang}
+      />
     </div>
   );
 }
