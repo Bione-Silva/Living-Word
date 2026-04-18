@@ -1,8 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen, Columns2 } from 'lucide-react';
+
+const HINT_STORAGE_KEY = 'bible_double_tap_hint_seen_v1';
+const doubleTapHint: Record<L, string> = {
+  PT: 'Toque duas vezes em um versículo para abrir as ferramentas',
+  EN: 'Double-tap a verse to open the tools',
+  ES: 'Toca dos veces un versículo para abrir las herramientas',
+};
+const dragHintLabel: Record<L, string> = {
+  PT: 'Dica: arraste do versículo N até o M para selecionar um trecho',
+  EN: 'Tip: drag from verse N to M to select a range',
+  ES: 'Consejo: arrastra del versículo N al M para seleccionar un rango',
+};
 import { getBookName, getTranslationLabelByCode, getVersionsForUserLanguage, getDefaultVersionCode, getBibleVersion, fetchBibleChapter, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
