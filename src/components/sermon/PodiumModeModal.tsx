@@ -513,6 +513,16 @@ export function PodiumModeModal({
         setSeconds((s) => {
           if (mode === 'countdown') {
             const next = Math.max(0, s - 1);
+            // Pré-aviso suave aos 5 minutos restantes (apenas se a duração for >5min).
+            if (
+              next === WARNING_THRESHOLD_SECONDS &&
+              s > WARNING_THRESHOLD_SECONDS &&
+              limitSeconds > WARNING_THRESHOLD_SECONDS &&
+              !warningAlertFiredRef.current
+            ) {
+              warningAlertFiredRef.current = true;
+              playWarningAlert();
+            }
             // Disparo único exatamente na transição para 0.
             if (next === 0 && s > 0 && !endAlertFiredRef.current) {
               endAlertFiredRef.current = true;
