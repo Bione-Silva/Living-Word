@@ -9,8 +9,11 @@ export type SermonBlockType =
   | 'original'       // Escavação Original (Hebraico/Grego)
   | 'big_idea'       // Grande Ideia
   | 'main_point'     // Ponto Principal
-  | 'illustration'   // Ilustração Histórica
+  | 'explanation'    // Explicação (texto em contexto histórico/teológico)
+  | 'illustration'   // Ilustração / História
   | 'application'    // Aplicação Prática
+  | 'transition'     // Transição entre pontos
+  | 'quote'          // Citação (autor/livro)
   | 'conclusion';    // Conclusão / Oração
 
 export interface SermonBlockData {
