@@ -20,6 +20,7 @@ import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/b
 import { versionToApiCode, versionAbbrToCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 import { SermonBlockEditor, blocksToMarkdown, type SermonBlockData } from '@/components/sermon/SermonBlockEditor';
+import { SERMON_BLOCK_META } from '@/components/sermon/sermon-block-types';
 import { PodiumLivePreview } from '@/components/sermon/PodiumLivePreview';
 import { exportSermonToPptx } from '@/lib/sermon-pptx';
 
