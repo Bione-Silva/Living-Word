@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Star, Copy, Share2, Pencil, BookOpen, Palette, FileText } from 'lucide-react';
+import { Star, Copy, Share2, Pencil, BookOpen, Palette, FileText, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getBookName, type L } from '@/lib/bible-data';
 
