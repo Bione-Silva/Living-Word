@@ -23,6 +23,7 @@ import { SermonBlockEditor, blocksToMarkdown, type SermonBlockData } from '@/com
 import { SERMON_BLOCK_META } from '@/components/sermon/sermon-block-types';
 import { PodiumLivePreview } from '@/components/sermon/PodiumLivePreview';
 import { exportSermonToPptx } from '@/lib/sermon-pptx';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 type L = 'PT' | 'EN' | 'ES';
 
