@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { splitByVerseRefs } from '@/lib/verse-highlighter';
 
 type Lang = 'PT' | 'EN' | 'ES';
 type TimerMode = 'countdown' | 'progressive' | 'clock';
