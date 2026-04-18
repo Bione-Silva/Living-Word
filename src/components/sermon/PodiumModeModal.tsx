@@ -93,7 +93,7 @@ const tr = {
 };
 
 /* ─── Detecção de tipo de bloco a partir do heading ─── */
-type BlockTone = 'idea' | 'hook' | 'passage' | 'illustration' | 'application' | 'main' | 'conclusion' | 'original' | 'transition' | 'quote' | 'explanation' | 'generic';
+type BlockTone = 'idea' | 'hook' | 'passage' | 'illustration' | 'application' | 'main' | 'conclusion' | 'original' | 'transition' | 'quote' | 'explanation' | 'doctrine' | 'objection' | 'appeal' | 'generic';
 
 interface BlockMeta {
   tone: BlockTone;
@@ -125,6 +125,9 @@ const BLOCK_META: Record<BlockTone, BlockMeta> = {
   transition:   { tone: 'transition',   emoji: '➰', label: { PT: 'Transição',       EN: 'Transition',    ES: 'Transición' },       badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30',       lightCardBg: 'bg-slate-50 border-slate-200',    lightBorderLeft: 'border-l-4 border-l-slate-500',   lightHeading: 'text-slate-700',   darkBorderLeft: 'border-l-4 border-l-slate-500',   darkHeading: 'text-slate-200' },
   quote:        { tone: 'quote',        emoji: '📚', label: { PT: 'Citação',         EN: 'Quote',         ES: 'Cita' },             badgeClass: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 ring-yellow-500/30',   lightCardBg: 'bg-yellow-50 border-yellow-300',  lightBorderLeft: 'border-l-4 border-l-yellow-600',  lightHeading: 'text-yellow-800',  darkBorderLeft: 'border-l-4 border-l-yellow-500',  darkHeading: 'text-yellow-200' },
   explanation:  { tone: 'explanation',  emoji: '📜', label: { PT: 'Explicação',      EN: 'Explanation',   ES: 'Explicación' },      badgeClass: 'bg-violet-500/15 text-violet-600 dark:text-violet-300 ring-violet-500/30',   lightCardBg: 'bg-violet-50 border-violet-200',  lightBorderLeft: 'border-l-4 border-l-violet-500',  lightHeading: 'text-violet-700',  darkBorderLeft: 'border-l-4 border-l-violet-500',  darkHeading: 'text-violet-200' },
+  doctrine:     { tone: 'doctrine',     emoji: '📘', label: { PT: 'Doutrina',        EN: 'Doctrine',      ES: 'Doctrina' },         badgeClass: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 ring-indigo-500/30',   lightCardBg: 'bg-indigo-50 border-indigo-200',  lightBorderLeft: 'border-l-4 border-l-indigo-600',  lightHeading: 'text-indigo-700',  darkBorderLeft: 'border-l-4 border-l-indigo-500',  darkHeading: 'text-indigo-200' },
+  objection:    { tone: 'objection',    emoji: '⚖️', label: { PT: 'Objeção',         EN: 'Objection',     ES: 'Objeción' },         badgeClass: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 ring-amber-500/30',       lightCardBg: 'bg-amber-50 border-amber-200',    lightBorderLeft: 'border-l-4 border-l-amber-600',   lightHeading: 'text-amber-800',   darkBorderLeft: 'border-l-4 border-l-amber-500',   darkHeading: 'text-amber-200' },
+  appeal:       { tone: 'appeal',       emoji: '🔥', label: { PT: 'Apelo',           EN: 'Appeal',        ES: 'Llamado' },          badgeClass: 'bg-red-500/15 text-red-700 dark:text-red-300 ring-red-500/30',               lightCardBg: 'bg-red-50 border-red-200',        lightBorderLeft: 'border-l-4 border-l-red-600',     lightHeading: 'text-red-700',     darkBorderLeft: 'border-l-4 border-l-red-500',     darkHeading: 'text-red-200' },
   generic:      { tone: 'generic',      emoji: '✦',  label: { PT: 'Bloco',           EN: 'Block',         ES: 'Bloque' },           badgeClass: 'bg-slate-500/15 text-slate-600 dark:text-slate-300 ring-slate-500/30',       lightCardBg: 'bg-white border-slate-200',       lightBorderLeft: 'border-l-4 border-l-slate-400',   lightHeading: 'text-slate-700',   darkBorderLeft: 'border-l-4 border-l-slate-500',   darkHeading: 'text-amber-200/95' },
 };
 
@@ -143,6 +146,9 @@ function detectBlockTone(heading?: string): BlockTone {
   if (heading.includes('➰')) return 'transition';
   if (heading.includes('📚')) return 'quote';
   if (heading.includes('📜')) return 'explanation';
+  if (heading.includes('📘')) return 'doctrine';
+  if (heading.includes('⚖')) return 'objection';
+  if (heading.includes('🔥')) return 'appeal';
   // fallback por palavras-chave
   if (/grande ideia|big idea|gran idea/.test(h)) return 'idea';
   if (/gancho|hook|introdu|introducc?ión/.test(h)) return 'hook';
@@ -154,6 +160,9 @@ function detectBlockTone(heading?: string): BlockTone {
   if (/transi/.test(h)) return 'transition';
   if (/cita|quote/.test(h)) return 'quote';
   if (/explica|explanation/.test(h)) return 'explanation';
+  if (/doutrina|doctrine|doctrina/.test(h)) return 'doctrine';
+  if (/obje[cç][aã]o|objection|objeci[óo]n|refuta/.test(h)) return 'objection';
+  if (/apelo|appeal|altar call|llamado|chamado/.test(h)) return 'appeal';
   if (/ponto|point|punto/.test(h)) return 'main';
   return 'generic';
 }
@@ -644,9 +653,10 @@ export function PodiumModeModal({
   const cardBg = isDark
     ? 'bg-slate-800 border-slate-700/60'
     : 'bg-white border-slate-200';
+  // ⚠️ Bege global REMOVIDO. Quote no modo claro agora também usa meta.lightCardBg (yellow-50).
   const cardQuoteBg = isDark
     ? 'bg-slate-800/80 border-amber-700/40'
-    : 'bg-amber-50/70 border-amber-300';
+    : 'bg-yellow-50 border-yellow-300';
   const dropdownBg = isDark
     ? 'bg-slate-900 border-slate-800 text-white'
     : 'bg-white border-slate-200 text-slate-900';
