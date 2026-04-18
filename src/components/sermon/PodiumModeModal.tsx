@@ -50,6 +50,9 @@ const tr = {
   countdown: { PT: 'Regressivo', EN: 'Countdown', ES: 'Regresivo' },
   progressive: { PT: 'Progressivo', EN: 'Progressive', ES: 'Progresivo' },
   clock: { PT: 'Relógio', EN: 'Clock', ES: 'Reloj' },
+  duration: { PT: 'Duração da pregação', EN: 'Sermon duration', ES: 'Duración del sermón' },
+  minutes: { PT: 'min', EN: 'min', ES: 'min' },
+  custom: { PT: 'Personalizado', EN: 'Custom', ES: 'Personalizado' },
   searchVerse: { PT: 'Digite a referência (ex: João 3:16)', EN: 'Type the reference (e.g. John 3:16)', ES: 'Escriba la referencia' },
   searchOriginal: { PT: 'Palavra/conceito para análise original...', EN: 'Word/concept for original analysis...', ES: 'Palabra/concepto para análisis original...' },
   searchIllus: { PT: 'Tema histórico (ex: Império Romano)', EN: 'Historical theme (e.g. Roman Empire)', ES: 'Tema histórico (ej: Imperio Romano)' },
@@ -215,9 +218,11 @@ export function PodiumModeModal({
   const [running, setRunning] = useState(false);
   const [seconds, setSeconds] = useState(0); // segundos decorridos (progressivo) ou restantes (regressivo)
   const [clockTime, setClockTime] = useState(new Date());
-  const limitSeconds = durationLimitMinutes * 60;
+  const [durationMin, setDurationMin] = useState(durationLimitMinutes);
+  const [customMin, setCustomMin] = useState<string>(String(durationLimitMinutes));
+  const limitSeconds = durationMin * 60;
 
-  // Reset timer ao mudar de modo
+  // Reset timer ao mudar de modo ou de duração
   useEffect(() => {
     setRunning(false);
     if (mode === 'countdown') setSeconds(limitSeconds);
@@ -418,11 +423,11 @@ export function PodiumModeModal({
                 {mode === 'clock' && <Clock className="h-4 w-4" />}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800 text-white">
+            <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800 text-white w-64">
               <DropdownMenuLabel>{lang === 'PT' ? 'Modo do Timer' : 'Timer Mode'}</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-zinc-800" />
               <DropdownMenuItem onClick={() => setMode('countdown')} className="focus:bg-zinc-800 focus:text-white">
-                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} ({durationLimitMinutes} min)
+                <Hourglass className="h-4 w-4 mr-2" /> {tr.countdown[lang]} ({durationMin} min)
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMode('progressive')} className="focus:bg-zinc-800 focus:text-white">
                 <Timer className="h-4 w-4 mr-2" /> {tr.progressive[lang]}
@@ -430,6 +435,57 @@ export function PodiumModeModal({
               <DropdownMenuItem onClick={() => setMode('clock')} className="focus:bg-zinc-800 focus:text-white">
                 <Clock className="h-4 w-4 mr-2" /> {tr.clock[lang]}
               </DropdownMenuItem>
+
+              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-zinc-500">
+                {tr.duration[lang]}
+              </DropdownMenuLabel>
+              <div className="px-2 pb-2 space-y-2">
+                <div className="grid grid-cols-3 gap-1">
+                  {[15, 30, 45, 60, 75, 90].map((m) => (
+                    <button
+                      key={m}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setDurationMin(m);
+                        setCustomMin(String(m));
+                      }}
+                      className={cn(
+                        'text-xs py-1.5 rounded-md tabular-nums transition-colors',
+                        durationMin === m
+                          ? 'bg-amber-600 text-white font-bold'
+                          : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700',
+                      )}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min={1}
+                    max={300}
+                    value={customMin}
+                    onChange={(e) => setCustomMin(e.target.value)}
+                    onBlur={() => {
+                      const n = Math.max(1, Math.min(300, parseInt(customMin || '0', 10) || 0));
+                      if (n > 0) {
+                        setDurationMin(n);
+                        setCustomMin(String(n));
+                      } else {
+                        setCustomMin(String(durationMin));
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                    }}
+                    placeholder={tr.custom[lang]}
+                    className="flex-1 bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-xs text-white tabular-nums focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  />
+                  <span className="text-[11px] text-zinc-500">{tr.minutes[lang]}</span>
+                </div>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
 
