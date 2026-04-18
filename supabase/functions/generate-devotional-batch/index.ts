@@ -221,10 +221,10 @@ Deno.serve(async (req) => {
   try {
     const aiKey = Deno.env.get('LOVABLE_API_KEY')
     const openaiKey = Deno.env.get('OPENAI_API_KEY')
-    const googleKey = Deno.env.get('GOOGLE_CLOUD_API_KEY')
+    const googleKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
     if (!aiKey) throw new Error('LOVABLE_API_KEY not configured')
     if (!openaiKey) throw new Error('OPENAI_API_KEY not configured')
-    if (!googleKey) throw new Error('GOOGLE_CLOUD_API_KEY not configured')
+    if (!googleKey) throw new Error('GEMINI_API_KEY not configured')
 
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL')!,
