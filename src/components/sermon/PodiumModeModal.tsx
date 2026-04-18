@@ -832,12 +832,12 @@ export function PodiumModeModal({
                   )}
                 </div>
 
-                {/* Heading visual (subtítulo) */}
+                {/* Heading visual (subtítulo) — usa cor identitária do bloco */}
                 {c.heading && (
                   <h3
                     className={cn(
                       'font-sans font-bold tracking-tight px-3 sm:px-6 pt-3 break-words',
-                      isDark ? 'text-amber-200/95' : 'text-amber-700',
+                      isDark ? meta.darkHeading : meta.lightHeading,
                     )}
                     style={{ fontSize: `clamp(16px, ${Math.round(fontPx * 0.85)}px, ${Math.round(fontPx * 0.85)}px)`, lineHeight: 1.2 }}
                   >
