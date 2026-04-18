@@ -541,7 +541,10 @@ export function PodiumModeModal({
   const iconBtn = isDark
     ? 'text-slate-400 hover:text-white hover:bg-slate-800'
     : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200';
-  const timerBg = isDark
+  const timerAlert = mode === 'countdown' && seconds === 0;
+  const timerBg = timerAlert
+    ? 'bg-red-600 text-white ring-2 ring-red-400 animate-pulse shadow-lg shadow-red-500/40'
+    : isDark
     ? (overLimit ? 'bg-red-950/60 text-red-300 ring-1 ring-red-500/50' : 'bg-slate-800 text-slate-100')
     : (overLimit ? 'bg-red-100 text-red-700 ring-1 ring-red-400/60' : 'bg-slate-200 text-slate-800');
   const cardBg = isDark
