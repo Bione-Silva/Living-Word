@@ -109,7 +109,8 @@ export function SermonBlock({ block, lang, context, onChange, onDelete }: Sermon
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group rounded-xl border border-border border-l-4 bg-card shadow-sm transition-shadow w-full min-w-0 overflow-hidden',
+        'group rounded-xl border border-border border-l-4 shadow-sm transition-shadow w-full min-w-0 overflow-hidden',
+        meta.cardBgClass,
         meta.borderClass,
         isDragging && 'shadow-lg ring-2 ring-primary/30',
       )}

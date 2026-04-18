@@ -36,6 +36,12 @@ export interface SermonBlockTypeMeta {
   borderClass: string;
   /** Classe Tailwind para fundo do header (tom suave da cor) */
   headerBgClass: string;
+  /**
+   * Classe Tailwind para o fundo do CARTÃO inteiro no Modo Claro — paleta -50
+   * da cor identitária do bloco (mesma usada no Púlpito Modo Claro).
+   * Em dark mode, sobrescrevemos com `dark:bg-card` para manter a superfície neutra.
+   */
+  cardBgClass: string;
   /** Classe Tailwind para a cor do ícone/título */
   accentClass: string;
   /** Classe Tailwind para a bolinha sólida no seletor (bg-{cor}) */
@@ -65,6 +71,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'hook',
     borderClass: 'border-l-orange-500',
     headerBgClass: 'bg-orange-500/10',
+    cardBgClass: 'bg-orange-50 dark:bg-card',
     accentClass: 'text-orange-600 dark:text-orange-400',
     dotClass: 'bg-orange-500',
     emoji: '🎯',
@@ -79,6 +86,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'passage',
     borderClass: 'border-l-sky-500',
     headerBgClass: 'bg-sky-500/10',
+    cardBgClass: 'bg-sky-50 dark:bg-card',
     accentClass: 'text-sky-600 dark:text-sky-400',
     dotClass: 'bg-sky-500',
     emoji: '📖',
@@ -93,6 +101,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'original',
     borderClass: 'border-l-amber-800',
     headerBgClass: 'bg-amber-800/10',
+    cardBgClass: 'bg-amber-50 dark:bg-card',
     accentClass: 'text-amber-800 dark:text-amber-600',
     dotClass: 'bg-amber-800',
     emoji: '🔍',
@@ -105,11 +114,12 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   doctrine: {
     type: 'doctrine',
-    borderClass: 'border-l-slate-700',
-    headerBgClass: 'bg-slate-700/10',
-    accentClass: 'text-slate-700 dark:text-slate-300',
-    dotClass: 'bg-slate-700',
-    emoji: '⚓',
+    borderClass: 'border-l-indigo-600',
+    headerBgClass: 'bg-indigo-600/10',
+    cardBgClass: 'bg-indigo-50 dark:bg-card',
+    accentClass: 'text-indigo-700 dark:text-indigo-300',
+    dotClass: 'bg-indigo-600',
+    emoji: '📘',
     label: { PT: 'Doutrina', EN: 'Doctrine', ES: 'Doctrina' },
     placeholder: {
       PT: 'Qual a verdade teológica absoluta por trás deste texto? (Ex: John Wesley ancorava toda a mensagem em doutrina pura antes de aplicá-la à vida — sem doutrina, não há sermão.)',
@@ -121,9 +131,10 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'objection',
     borderClass: 'border-l-amber-600',
     headerBgClass: 'bg-amber-600/10',
+    cardBgClass: 'bg-amber-50 dark:bg-card',
     accentClass: 'text-amber-700 dark:text-amber-500',
     dotClass: 'bg-amber-600',
-    emoji: '🛡️',
+    emoji: '⚖️',
     label: { PT: 'Objeção / Refutação', EN: 'Objection / Refutation', ES: 'Objeción / Refutación' },
     placeholder: {
       PT: 'Qual dúvida cética seu ouvinte pode estar pensando agora? (Ex: Charles Spurgeon antecipava as objeções da plateia para desarmá-las antes que virassem barreira ao Evangelho.)',
@@ -133,10 +144,11 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   big_idea: {
     type: 'big_idea',
-    borderClass: 'border-l-purple-600',
-    headerBgClass: 'bg-purple-600/10',
-    accentClass: 'text-purple-600 dark:text-purple-400',
-    dotClass: 'bg-purple-600',
+    borderClass: 'border-l-purple-500',
+    headerBgClass: 'bg-purple-500/10',
+    cardBgClass: 'bg-purple-50 dark:bg-card',
+    accentClass: 'text-purple-700 dark:text-purple-300',
+    dotClass: 'bg-purple-500',
     emoji: '💡',
     label: { PT: 'Grande Ideia', EN: 'Big Idea', ES: 'Gran Idea' },
     placeholder: {
@@ -149,7 +161,8 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'main_point',
     borderClass: 'border-l-blue-600',
     headerBgClass: 'bg-blue-600/10',
-    accentClass: 'text-blue-600 dark:text-blue-400',
+    cardBgClass: 'bg-blue-50 dark:bg-card',
+    accentClass: 'text-blue-700 dark:text-blue-300',
     dotClass: 'bg-blue-600',
     emoji: '🔷',
     label: { PT: 'Ponto Principal', EN: 'Main Point', ES: 'Punto Principal' },
@@ -163,7 +176,8 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'explanation',
     borderClass: 'border-l-violet-500',
     headerBgClass: 'bg-violet-500/10',
-    accentClass: 'text-violet-600 dark:text-violet-400',
+    cardBgClass: 'bg-violet-50 dark:bg-card',
+    accentClass: 'text-violet-700 dark:text-violet-300',
     dotClass: 'bg-violet-500',
     emoji: '📜',
     label: { PT: 'Explicação', EN: 'Explanation', ES: 'Explicación' },
@@ -177,9 +191,10 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'illustration',
     borderClass: 'border-l-emerald-600',
     headerBgClass: 'bg-emerald-600/10',
-    accentClass: 'text-emerald-600 dark:text-emerald-400',
+    cardBgClass: 'bg-emerald-50 dark:bg-card',
+    accentClass: 'text-emerald-700 dark:text-emerald-300',
     dotClass: 'bg-emerald-600',
-    emoji: '🎬',
+    emoji: '🖼️',
     label: { PT: 'Ilustração', EN: 'Illustration', ES: 'Ilustración' },
     placeholder: {
       PT: 'Conte uma história, metáfora ou testemunho que ilumine a verdade. (Ex: Spurgeon era chamado de "Príncipe dos Pregadores" justamente por suas ilustrações vívidas e inesquecíveis.)',
@@ -191,7 +206,8 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'application',
     borderClass: 'border-l-orange-700',
     headerBgClass: 'bg-orange-700/10',
-    accentClass: 'text-orange-700 dark:text-orange-500',
+    cardBgClass: 'bg-orange-50 dark:bg-card',
+    accentClass: 'text-orange-800 dark:text-orange-300',
     dotClass: 'bg-orange-700',
     emoji: '✨',
     label: { PT: 'Aplicação Prática', EN: 'Practical Application', ES: 'Aplicación Práctica' },
@@ -205,7 +221,8 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'transition',
     borderClass: 'border-l-slate-500',
     headerBgClass: 'bg-slate-500/10',
-    accentClass: 'text-slate-600 dark:text-slate-400',
+    cardBgClass: 'bg-slate-50 dark:bg-card',
+    accentClass: 'text-slate-700 dark:text-slate-300',
     dotClass: 'bg-slate-500',
     emoji: '➰',
     label: { PT: 'Transição', EN: 'Transition', ES: 'Transición' },
@@ -219,7 +236,8 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'quote',
     borderClass: 'border-l-yellow-600',
     headerBgClass: 'bg-yellow-600/10',
-    accentClass: 'text-yellow-700 dark:text-yellow-500',
+    cardBgClass: 'bg-yellow-50 dark:bg-card',
+    accentClass: 'text-yellow-800 dark:text-yellow-300',
     dotClass: 'bg-yellow-600',
     emoji: '📚',
     label: { PT: 'Citação', EN: 'Quote', ES: 'Cita' },
@@ -233,7 +251,8 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'appeal',
     borderClass: 'border-l-red-600',
     headerBgClass: 'bg-red-600/10',
-    accentClass: 'text-red-600 dark:text-red-400',
+    cardBgClass: 'bg-red-50 dark:bg-card',
+    accentClass: 'text-red-700 dark:text-red-300',
     dotClass: 'bg-red-600',
     emoji: '🔥',
     label: { PT: 'Apelo / Altar Call', EN: 'Appeal / Altar Call', ES: 'Llamado / Altar Call' },
@@ -247,7 +266,8 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     type: 'conclusion',
     borderClass: 'border-l-rose-500',
     headerBgClass: 'bg-rose-500/10',
-    accentClass: 'text-rose-600 dark:text-rose-400',
+    cardBgClass: 'bg-rose-50 dark:bg-card',
+    accentClass: 'text-rose-700 dark:text-rose-300',
     dotClass: 'bg-rose-500',
     emoji: '🙏',
     label: { PT: 'Conclusão / Oração', EN: 'Conclusion / Prayer', ES: 'Conclusión / Oración' },
