@@ -39,8 +39,14 @@ const labels = {
   copy: { PT: 'Copiar tudo', EN: 'Copy all', ES: 'Copiar todo' },
   share: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
   pdf: { PT: 'Salvar PDF', EN: 'Save PDF', ES: 'Guardar PDF' },
+  sharePdf: { PT: 'Compartilhar PDF', EN: 'Share PDF', ES: 'Compartir PDF' },
+  shareWhatsapp: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
+  shareEmail: { PT: 'E-mail', EN: 'Email', ES: 'Correo' },
+  shareDevice: { PT: 'Dispositivo', EN: 'Device', ES: 'Dispositivo' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
   verse: { PT: 'Versículo-âncora', EN: 'Anchor verse', ES: 'Versículo ancla' },
+  pdfReady: { PT: 'PDF pronto para envio', EN: 'PDF ready to send', ES: 'PDF listo para enviar' },
+  pdfShareUnsupported: { PT: 'Seu dispositivo não permite envio direto. Baixando o PDF — anexe manualmente.', EN: 'Your device does not allow direct sending. Downloading the PDF — attach it manually.', ES: 'Tu dispositivo no permite envío directo. Descargando el PDF — adjúntalo manualmente.' },
 } satisfies Record<string, Record<L, string>>;
 
 function formatDate(dateStr: string, lang: L): string {
