@@ -640,6 +640,25 @@ export default function Sermoes() {
                 <p className="text-sm text-muted-foreground mt-2 max-w-lg mx-auto leading-relaxed">{labels.subtitle[lang]}</p>
               </div>
 
+              {/* ─── Toggle: Gerar com IA  vs  Studio de Blocos ─── */}
+              <div className="flex p-1 bg-muted/50 rounded-xl border border-border mb-6">
+                <button
+                  onClick={() => setEditorMode('ai')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-all ${editorMode === 'ai' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  <Zap className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Gerar com IA' : lang === 'ES' ? 'Generar con IA' : 'Generate with AI'}
+                </button>
+                <button
+                  onClick={() => { setEditorMode('blocks'); setShowResult(true); }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-all ${editorMode === 'blocks' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Studio de Blocos' : lang === 'ES' ? 'Studio de Bloques' : 'Block Studio'}
+                </button>
+              </div>
+
+
               {/* Options */}
               <div className="space-y-4">
                 {/* Tipo de Pregação — full width */}
