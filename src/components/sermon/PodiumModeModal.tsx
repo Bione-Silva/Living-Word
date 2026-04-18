@@ -95,6 +95,12 @@ const tr = {
   alertSound: { PT: 'Som do alerta', EN: 'Alert sound', ES: 'Sonido de alerta' },
   on: { PT: 'Ligado', EN: 'On', ES: 'Activado' },
   off: { PT: 'Desligado', EN: 'Off', ES: 'Desactivado' },
+  alertTone: { PT: 'Tom do alerta', EN: 'Alert tone', ES: 'Tono de alerta' },
+  toneBell: { PT: 'Sino suave', EN: 'Soft bell', ES: 'Campana suave' },
+  toneGong: { PT: 'Gongo', EN: 'Gong', ES: 'Gong' },
+  toneSilent: { PT: 'Silencioso', EN: 'Silent', ES: 'Silencioso' },
+  keepScreenOn: { PT: 'Manter tela ligada', EN: 'Keep screen on', ES: 'Mantener pantalla encendida' },
+  testTone: { PT: 'Testar', EN: 'Test', ES: 'Probar' },
 };
 
 /* ─── Detecção de tipo de bloco a partir do heading ─── */
