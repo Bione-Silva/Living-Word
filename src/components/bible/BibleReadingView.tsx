@@ -187,56 +187,30 @@ export function BibleReadingView({
     });
   };
 
-  // ─── Long-press handlers (Touch UI best practices) ───
-  // • Mobile: 450ms hold opens toolbar. Movement > 10px cancels (= scroll, not press).
-  // • Desktop: simple click toggles selection.
-  const pressTimerRef = useRef<number | null>(null);
-  const pressTriggeredRef = useRef(false);
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
-  const MOVE_THRESHOLD = 10; // px
-  const [pressingVerse, setPressingVerse] = useState<number | null>(null);
+  // ─── Double-tap activation (mobile + desktop) ───
+  // Two quick taps within 300ms toggle the verse selection.
+  // Single tap does nothing → eliminates conflict with scroll.
+  const lastTapRef = useRef<{ verse: number; time: number } | null>(null);
+  const DOUBLE_TAP_MS = 300;
 
-  const startTouchPress = (verseNum: number, e: React.TouchEvent) => {
-    pressTriggeredRef.current = false;
-    const t = e.touches[0];
-    touchStartRef.current = { x: t.clientX, y: t.clientY };
-    setPressingVerse(verseNum);
-    if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
-    pressTimerRef.current = window.setTimeout(() => {
-      pressTriggeredRef.current = true;
-      // Haptic feedback on supported mobile devices
-      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-        try { navigator.vibrate(15); } catch { /* noop */ }
-      }
-      setPressingVerse(null);
-      toggleVerseSelection(verseNum);
-    }, 450);
-  };
-
-  const onTouchMovePress = (e: React.TouchEvent) => {
-    if (!touchStartRef.current || !pressTimerRef.current) return;
-    const t = e.touches[0];
-    const dx = Math.abs(t.clientX - touchStartRef.current.x);
-    const dy = Math.abs(t.clientY - touchStartRef.current.y);
-    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
-      window.clearTimeout(pressTimerRef.current);
-      pressTimerRef.current = null;
-      setPressingVerse(null);
+  const handleDoubleActivate = (verseNum: number) => {
+    // Haptic feedback on supported mobile devices
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try { navigator.vibrate(15); } catch { /* noop */ }
     }
-  };
-
-  const cancelPress = () => {
-    if (pressTimerRef.current) {
-      window.clearTimeout(pressTimerRef.current);
-      pressTimerRef.current = null;
-    }
-    touchStartRef.current = null;
-    setPressingVerse(null);
-  };
-
-  const handleMouseToggle = (verseNum: number) => {
-    // Desktop quick-toggle (no long press needed)
     toggleVerseSelection(verseNum);
+  };
+
+  // Manual double-tap detection for touch devices (onDoubleClick is unreliable on mobile)
+  const handleVerseTap = (verseNum: number) => {
+    const now = Date.now();
+    const last = lastTapRef.current;
+    if (last && last.verse === verseNum && now - last.time < DOUBLE_TAP_MS) {
+      lastTapRef.current = null;
+      handleDoubleActivate(verseNum);
+    } else {
+      lastTapRef.current = { verse: verseNum, time: now };
+    }
   };
 
   // Helper: clear selection with subtle haptic feedback
@@ -472,18 +446,13 @@ export function BibleReadingView({
                         ? 'bg-primary/10 ring-2 ring-primary/30 animate-pulse'
                         : isSelected
                           ? 'bg-primary/5 ring-1 ring-primary/20'
-                          : pressingVerse === v.verse
-                            ? 'bg-primary/5 ring-2 ring-primary/40 animate-pulse'
-                            : hlClass || 'hover:bg-muted/40'
+                          : hlClass || 'hover:bg-muted/40'
                   }`}
                 >
-                  {/* Verse number badge */}
+                  {/* Verse number badge — double-tap / double-click to activate */}
                   <button
-                    onTouchStart={(e) => { e.stopPropagation(); startTouchPress(v.verse, e); }}
-                    onTouchMove={onTouchMovePress}
-                    onTouchEnd={cancelPress}
-                    onTouchCancel={cancelPress}
-                    onMouseDown={(e) => { e.stopPropagation(); handleMouseToggle(v.verse); }}
+                    onClick={() => handleVerseTap(v.verse)}
+                    onDoubleClick={(e) => { e.preventDefault(); handleDoubleActivate(v.verse); }}
                     onContextMenu={(e) => e.preventDefault()}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors select-none ${
                       isSelected
@@ -497,12 +466,10 @@ export function BibleReadingView({
                   {/* Verse text + inline toolbar */}
                   <div className="flex-1 min-w-0">
                     <span
-                      onTouchStart={(e) => { e.stopPropagation(); startTouchPress(v.verse, e); }}
-                      onTouchMove={onTouchMovePress}
-                      onTouchEnd={cancelPress}
-                      onTouchCancel={cancelPress}
+                      onClick={() => handleVerseTap(v.verse)}
+                      onDoubleClick={(e) => { e.preventDefault(); handleDoubleActivate(v.verse); }}
                       onContextMenu={(e) => e.preventDefault()}
-                      className="leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 select-none"
+                      className="leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 cursor-pointer"
                     >
                       {v.text.trim()}
                     </span>
