@@ -187,18 +187,34 @@ export function BibleReadingView({
     });
   };
 
-  // Long-press handlers — require holding for 1s before selection toggles.
-  // Prevents accidental opens on every tap while reading.
+  // ─── Long-press handlers (Touch UI best practices) ───
+  // • Mobile: 450ms hold opens toolbar. Movement > 10px cancels (= scroll, not press).
+  // • Desktop: simple click toggles selection.
   const pressTimerRef = useRef<number | null>(null);
   const pressTriggeredRef = useRef(false);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const MOVE_THRESHOLD = 10; // px
 
-  const startPress = (verseNum: number) => {
+  const startTouchPress = (verseNum: number, e: React.TouchEvent) => {
     pressTriggeredRef.current = false;
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
     if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
     pressTimerRef.current = window.setTimeout(() => {
       pressTriggeredRef.current = true;
       toggleVerseSelection(verseNum);
-    }, 1000);
+    }, 450);
+  };
+
+  const onTouchMovePress = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || !pressTimerRef.current) return;
+    const t = e.touches[0];
+    const dx = Math.abs(t.clientX - touchStartRef.current.x);
+    const dy = Math.abs(t.clientY - touchStartRef.current.y);
+    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
+      window.clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
   };
 
   const cancelPress = () => {
@@ -206,7 +222,43 @@ export function BibleReadingView({
       window.clearTimeout(pressTimerRef.current);
       pressTimerRef.current = null;
     }
+    touchStartRef.current = null;
   };
+
+  const handleMouseToggle = (verseNum: number) => {
+    // Desktop quick-toggle (no long press needed)
+    toggleVerseSelection(verseNum);
+  };
+
+  // ─── Auto-dismiss: outside click + scroll closes the floating toolbar ───
+  useEffect(() => {
+    if (selectedVerses.size === 0) return;
+
+    const handleOutside = (e: PointerEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      // Ignore clicks inside any verse row, the toolbar itself, or popovers/dialogs
+      if (target.closest('[id^="verse-"]')) return;
+      if (target.closest('[data-verse-toolbar]')) return;
+      if (target.closest('[role="dialog"]')) return;
+      if (target.closest('[data-radix-popper-content-wrapper]')) return;
+      setSelectedVerses(new Set());
+    };
+
+    let scrollStartY = window.scrollY;
+    const handleScroll = () => {
+      if (Math.abs(window.scrollY - scrollStartY) > 30) {
+        setSelectedVerses(new Set());
+      }
+    };
+
+    document.addEventListener('pointerdown', handleOutside);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener('pointerdown', handleOutside);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [selectedVerses.size]);
 
   const chapterNumbers = Array.from({ length: totalChapters }, (_, i) => i + 1);
 
