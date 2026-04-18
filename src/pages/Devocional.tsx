@@ -713,7 +713,7 @@ export default function Devocional() {
   /* ─── Body text renderer ─── */
   const renderBodyText = (text: string) => {
     const paragraphs = text.split('\n\n').filter(p => p.trim());
-    if (paragraphs.length === 0) return [<p key={0} className="font-serif text-[1.1rem] leading-[1.9]" style={{ color: colors.text }}>{text.trim()}</p>];
+    if (paragraphs.length === 0) return [<p key={0} className="font-serif text-[1.18rem] sm:text-[1.25rem] leading-[2]" style={{ color: colors.text }}>{text.trim()}</p>];
 
     return paragraphs.map((paragraph, idx) => {
       const trimmed = paragraph.trim();
