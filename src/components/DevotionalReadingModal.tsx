@@ -1,6 +1,12 @@
 import { useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks, Send, Mail, Smartphone, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -33,8 +39,14 @@ const labels = {
   copy: { PT: 'Copiar tudo', EN: 'Copy all', ES: 'Copiar todo' },
   share: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
   pdf: { PT: 'Salvar PDF', EN: 'Save PDF', ES: 'Guardar PDF' },
+  sharePdf: { PT: 'Compartilhar PDF', EN: 'Share PDF', ES: 'Compartir PDF' },
+  shareWhatsapp: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
+  shareEmail: { PT: 'E-mail', EN: 'Email', ES: 'Correo' },
+  shareDevice: { PT: 'Dispositivo', EN: 'Device', ES: 'Dispositivo' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
   verse: { PT: 'Versículo-âncora', EN: 'Anchor verse', ES: 'Versículo ancla' },
+  pdfReady: { PT: 'PDF pronto para envio', EN: 'PDF ready to send', ES: 'PDF listo para enviar' },
+  pdfShareUnsupported: { PT: 'Seu dispositivo não permite envio direto. Baixando o PDF — anexe manualmente.', EN: 'Your device does not allow direct sending. Downloading the PDF — attach it manually.', ES: 'Tu dispositivo no permite envío directo. Descargando el PDF — adjúntalo manualmente.' },
 } satisfies Record<string, Record<L, string>>;
 
 function formatDate(dateStr: string, lang: L): string {
@@ -70,143 +82,142 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
     }
   };
 
+  const buildPdfFileName = () =>
+    `${lang === 'EN' ? 'Devotional' : 'Devocional'} Living Word - ${data.scheduled_date}.pdf`;
+
+  /** Builds the PDF and returns { blob, fileName }. Used by both download + share. */
+  const buildPdfBlob = async (): Promise<{ blob: Blob; fileName: string }> => {
+    const { jsPDF } = await import('jspdf');
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+
+    const PAGE_W = 210;
+    const PAGE_H = 297;
+    const MARGIN_X = 18;
+    const MARGIN_TOP = 20;
+    const MARGIN_BOTTOM = 20;
+    const CONTENT_W = PAGE_W - MARGIN_X * 2;
+    const GOLD: [number, number, number] = [124, 58, 237];
+    const TEXT: [number, number, number] = [26, 20, 48];
+    const MUTED: [number, number, number] = [107, 91, 138];
+
+    let y = MARGIN_TOP;
+
+    const sanitize = (s: string): string =>
+      (s ?? '')
+        .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+        .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+        .replace(/[\u2013\u2014]/g, '-')
+        .replace(/\u2026/g, '...')
+        .replace(/\u00A0/g, ' ')
+        .replace(/[\u200B-\u200F\uFEFF]/g, '')
+        .trim();
+
+    const ensureSpace = (needed: number) => {
+      if (y + needed > PAGE_H - MARGIN_BOTTOM) {
+        doc.addPage();
+        y = MARGIN_TOP;
+      }
+    };
+
+    const addText = (
+      rawText: string,
+      opts: { size?: number; style?: 'normal' | 'bold' | 'italic' | 'bolditalic'; color?: [number, number, number]; lineHeight?: number; spaceAfter?: number; align?: 'left' | 'center'; font?: 'helvetica' | 'times' } = {}
+    ) => {
+      const { size = 11, style = 'normal', color = TEXT, lineHeight = 1.5, spaceAfter = 3, align = 'left' } = opts;
+      const text = sanitize(rawText);
+      if (!text) return;
+      doc.setFont('helvetica', style);
+      doc.setFontSize(size);
+      doc.setTextColor(color[0], color[1], color[2]);
+      const lines = doc.splitTextToSize(text, CONTENT_W);
+      const lineH = (size * 0.3528) * lineHeight;
+      for (const line of lines) {
+        ensureSpace(lineH);
+        const x = align === 'center' ? PAGE_W / 2 : MARGIN_X;
+        doc.text(line, x, y, { align });
+        y += lineH;
+      }
+      y += spaceAfter;
+    };
+
+    const addDivider = (color: [number, number, number] = GOLD, thickness = 0.6) => {
+      ensureSpace(4);
+      doc.setDrawColor(color[0], color[1], color[2]);
+      doc.setLineWidth(thickness);
+      doc.line(MARGIN_X, y, PAGE_W - MARGIN_X, y);
+      y += 4;
+    };
+
+    addText(`✦ Living Word`, { size: 13, style: 'bold', color: GOLD, font: 'times', spaceAfter: 2 });
+    addDivider(GOLD, 0.8);
+    addText(data.title, { size: 22, style: 'bold', color: TEXT, lineHeight: 1.2, spaceAfter: 3 });
+
+    const dateStr = formatDate(data.scheduled_date, lang);
+    addText(dateStr, { size: 10, style: 'italic', color: MUTED, font: 'helvetica', spaceAfter: data.category ? 1 : 5 });
+    if (data.category) addText(`✦ ${data.category.toUpperCase()}`, { size: 9, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 6 });
+
+    if (data.anchor_verse_text) {
+      ensureSpace(20);
+      const verseStartY = y;
+      addText(`"${data.anchor_verse_text}"`, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.55, spaceAfter: 2 });
+      addText(`— ${data.anchor_verse}`, { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 6 });
+      doc.setDrawColor(GOLD[0], GOLD[1], GOLD[2]);
+      doc.setLineWidth(1.2);
+      doc.line(MARGIN_X - 4, verseStartY - 2, MARGIN_X - 4, y - 4);
+    }
+
+    addText(labels.meditation[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
+    const bodyParas = (data.body_text || '').split('\n\n').filter(p => p.trim());
+    for (const p of bodyParas) {
+      addText(p.trim(), { size: 12, style: 'normal', color: TEXT, lineHeight: 1.6, spaceAfter: 4 });
+    }
+
+    if (data.closing_prayer) {
+      y += 2;
+      addText(labels.prayer[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
+      addText(data.closing_prayer, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.6, spaceAfter: 5 });
+    }
+
+    if (data.daily_practice) {
+      addText(labels.practice[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
+      addText(data.daily_practice, { size: 11, style: 'normal', color: TEXT, font: 'helvetica', lineHeight: 1.5, spaceAfter: 5 });
+    }
+
+    if (data.reflection_question) {
+      addText(labels.reflection[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
+      addText(data.reflection_question, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.55, spaceAfter: 6 });
+    }
+
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(229, 223, 240);
+      doc.setLineWidth(0.2);
+      doc.line(MARGIN_X, PAGE_H - 14, PAGE_W - MARGIN_X, PAGE_H - 14);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
+      doc.text(`Living Word • livingwordgo.com`, PAGE_W / 2, PAGE_H - 9, { align: 'center' });
+      doc.text(`${i} / ${totalPages}`, PAGE_W - MARGIN_X, PAGE_H - 9, { align: 'right' });
+    }
+
+    const blob = doc.output('blob');
+    return { blob, fileName: buildPdfFileName() };
+  };
+
   const handlePdf = async () => {
     const loadingToast = toast.loading(lang === 'PT' ? 'Gerando PDF...' : lang === 'ES' ? 'Generando PDF...' : 'Generating PDF...');
     try {
-      // Native jsPDF text rendering — uses helvetica (built-in WinAnsi support for accents).
-      const { jsPDF } = await import('jspdf');
-      const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
-
-      const PAGE_W = 210;
-      const PAGE_H = 297;
-      const MARGIN_X = 18;
-      const MARGIN_TOP = 20;
-      const MARGIN_BOTTOM = 20;
-      const CONTENT_W = PAGE_W - MARGIN_X * 2;
-      const GOLD: [number, number, number] = [124, 58, 237]; // #7C3AED
-      const TEXT: [number, number, number] = [26, 20, 48];   // #1a1430
-      const MUTED: [number, number, number] = [107, 91, 138];
-
-      let y = MARGIN_TOP;
-
-      // Sanitize text — remove smart quotes/dashes that can cause WinAnsi gaps and any non-printable chars.
-      const sanitize = (s: string): string =>
-        (s ?? '')
-          .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
-          .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
-          .replace(/[\u2013\u2014]/g, '-')
-          .replace(/\u2026/g, '...')
-          .replace(/\u00A0/g, ' ')
-          .replace(/[\u200B-\u200F\uFEFF]/g, '')
-          .trim();
-
-      const ensureSpace = (needed: number) => {
-        if (y + needed > PAGE_H - MARGIN_BOTTOM) {
-          doc.addPage();
-          y = MARGIN_TOP;
-        }
-      };
-
-      const addText = (
-        rawText: string,
-        opts: { size?: number; style?: 'normal' | 'bold' | 'italic' | 'bolditalic'; color?: [number, number, number]; lineHeight?: number; spaceAfter?: number; align?: 'left' | 'center'; font?: 'helvetica' | 'times' } = {}
-      ) => {
-        // Force helvetica everywhere — built-in support for Latin-1 accents (PT/ES).
-        const { size = 11, style = 'normal', color = TEXT, lineHeight = 1.5, spaceAfter = 3, align = 'left' } = opts;
-        const text = sanitize(rawText);
-        if (!text) return;
-        doc.setFont('helvetica', style);
-        doc.setFontSize(size);
-        doc.setTextColor(color[0], color[1], color[2]);
-        const lines = doc.splitTextToSize(text, CONTENT_W);
-        const lineH = (size * 0.3528) * lineHeight; // pt→mm
-        for (const line of lines) {
-          ensureSpace(lineH);
-          const x = align === 'center' ? PAGE_W / 2 : MARGIN_X;
-          doc.text(line, x, y, { align });
-          y += lineH;
-        }
-        y += spaceAfter;
-      };
-
-      const addDivider = (color: [number, number, number] = GOLD, thickness = 0.6) => {
-        ensureSpace(4);
-        doc.setDrawColor(color[0], color[1], color[2]);
-        doc.setLineWidth(thickness);
-        doc.line(MARGIN_X, y, PAGE_W - MARGIN_X, y);
-        y += 4;
-      };
-
-      // Header brand
-      addText(`✦ Living Word`, { size: 13, style: 'bold', color: GOLD, font: 'times', spaceAfter: 2 });
-      addDivider(GOLD, 0.8);
-
-      // Title
-      addText(data.title, { size: 22, style: 'bold', color: TEXT, lineHeight: 1.2, spaceAfter: 3 });
-
-      // Date + category
-      const dateStr = formatDate(data.scheduled_date, lang);
-      addText(dateStr, { size: 10, style: 'italic', color: MUTED, font: 'helvetica', spaceAfter: data.category ? 1 : 5 });
-      if (data.category) addText(`✦ ${data.category.toUpperCase()}`, { size: 9, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 6 });
-
-      // Anchor verse
-      if (data.anchor_verse_text) {
-        ensureSpace(20);
-        const verseStartY = y;
-        addText(`"${data.anchor_verse_text}"`, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.55, spaceAfter: 2 });
-        addText(`— ${data.anchor_verse}`, { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 6 });
-        // Left border
-        doc.setDrawColor(GOLD[0], GOLD[1], GOLD[2]);
-        doc.setLineWidth(1.2);
-        doc.line(MARGIN_X - 4, verseStartY - 2, MARGIN_X - 4, y - 4);
-      }
-
-      // Meditation section
-      addText(labels.meditation[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
-      const bodyParas = (data.body_text || '').split('\n\n').filter(p => p.trim());
-      for (const p of bodyParas) {
-        addText(p.trim(), { size: 12, style: 'normal', color: TEXT, lineHeight: 1.6, spaceAfter: 4 });
-      }
-
-      // Closing prayer
-      if (data.closing_prayer) {
-        y += 2;
-        addText(labels.prayer[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
-        addText(data.closing_prayer, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.6, spaceAfter: 5 });
-      }
-
-      // Daily practice
-      if (data.daily_practice) {
-        addText(labels.practice[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
-        addText(data.daily_practice, { size: 11, style: 'normal', color: TEXT, font: 'helvetica', lineHeight: 1.5, spaceAfter: 5 });
-      }
-
-      // Reflection
-      if (data.reflection_question) {
-        addText(labels.reflection[lang].replace(/^[^\w]+/, '').toUpperCase(), { size: 10, style: 'bold', color: GOLD, font: 'helvetica', spaceAfter: 3 });
-        addText(data.reflection_question, { size: 12, style: 'italic', color: TEXT, lineHeight: 1.55, spaceAfter: 6 });
-      }
-
-      // Footer brand on every page
-      const totalPages = doc.getNumberOfPages();
-      for (let i = 1; i <= totalPages; i++) {
-        doc.setPage(i);
-        doc.setDrawColor(229, 223, 240);
-        doc.setLineWidth(0.2);
-        doc.line(MARGIN_X, PAGE_H - 14, PAGE_W - MARGIN_X, PAGE_H - 14);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8);
-        doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
-        doc.text(`Living Word • livingwordgo.com`, PAGE_W / 2, PAGE_H - 9, { align: 'center' });
-        doc.text(`${i} / ${totalPages}`, PAGE_W - MARGIN_X, PAGE_H - 9, { align: 'right' });
-      }
-
-      const fileName = lang === 'EN'
-        ? `Devotional Living Word - ${data.scheduled_date}.pdf`
-        : lang === 'ES'
-        ? `Devocional Living Word - ${data.scheduled_date}.pdf`
-        : `Devocional Living Word - ${data.scheduled_date}.pdf`;
-      doc.save(fileName);
+      const { blob, fileName } = await buildPdfBlob();
+      // Trigger download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       toast.dismiss(loadingToast);
       toast.success(lang === 'PT' ? 'PDF salvo!' : lang === 'ES' ? '¡PDF guardado!' : 'PDF saved!');
@@ -216,6 +227,69 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
       toast.error(lang === 'PT' ? 'Erro ao gerar PDF' : lang === 'ES' ? 'Error al generar PDF' : 'Error generating PDF');
     }
   };
+
+  /** Share PDF via Web Share API (system picker → WhatsApp/email/etc.) with safe fallback. */
+  const handleSharePdfNative = async () => {
+    const loadingToast = toast.loading(lang === 'PT' ? 'Preparando PDF...' : lang === 'ES' ? 'Preparando PDF...' : 'Preparing PDF...');
+    try {
+      const { blob, fileName } = await buildPdfBlob();
+      const file = new File([blob], fileName, { type: 'application/pdf' });
+      const shareData: ShareData = {
+        title: data.title,
+        text: `${data.title} — Living Word`,
+        files: [file],
+      };
+
+      const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+      const canShareFiles = typeof nav !== 'undefined' && typeof nav.canShare === 'function' && nav.canShare({ files: [file] });
+
+      if (canShareFiles) {
+        toast.dismiss(loadingToast);
+        await navigator.share(shareData);
+        return;
+      }
+
+      // Fallback: download the file and warn the user to attach manually.
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.dismiss(loadingToast);
+      toast.message(labels.pdfShareUnsupported[lang]);
+    } catch (err) {
+      // AbortError is normal when user closes the share sheet
+      if ((err as DOMException)?.name !== 'AbortError') {
+        console.error('[DevotionalSharePDF]', err);
+        toast.error(lang === 'PT' ? 'Erro ao compartilhar' : lang === 'ES' ? 'Error al compartir' : 'Error sharing');
+      }
+      toast.dismiss(loadingToast);
+    }
+  };
+
+  /** WhatsApp deep-link with the devotional summary text (PDF must be attached manually). */
+  const handleShareWhatsApp = async () => {
+    // Generate PDF download alongside the deep-link so user can attach it.
+    await handlePdf();
+    const text = encodeURIComponent(
+      `*${data.title}* — Living Word\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${lang === 'PT' ? 'Devocional do dia em PDF anexo.' : lang === 'ES' ? 'Devocional del día en PDF adjunto.' : "Today's devotional PDF attached."}`
+    );
+    window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer');
+  };
+
+  /** Mailto link prefilled with subject + body (PDF must be attached manually). */
+  const handleShareEmail = async () => {
+    await handlePdf();
+    const subject = encodeURIComponent(`${data.title} — Living Word`);
+    const body = encodeURIComponent(
+      `${data.title}\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${lang === 'PT' ? 'Devocional do dia em PDF anexo.' : lang === 'ES' ? 'Devocional del día en PDF adjunto.' : "Today's devotional PDF attached."}\n\nLiving Word • livingwordgo.com`
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
 
   const colors = {
     bg: '#F8F6FF',
@@ -252,6 +326,33 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
           <button onClick={handlePdf} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-80 min-h-[44px]" style={{ borderColor: colors.gold + '50', color: colors.gold, backgroundColor: colors.goldLight }}>
             <FileDown className="h-3.5 w-3.5" /> {labels.pdf[lang]}
           </button>
+
+          {/* Share PDF dropdown — Web Share / WhatsApp / Email */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-colors hover:opacity-90 min-h-[44px] text-white"
+                style={{ borderColor: colors.gold, backgroundColor: colors.gold }}
+              >
+                <Send className="h-3.5 w-3.5" /> {labels.sharePdf[lang]}
+                <ChevronDown className="h-3 w-3 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem onClick={handleSharePdfNative} className="gap-2 cursor-pointer">
+                <Smartphone className="h-4 w-4" />
+                <span>{labels.shareDevice[lang]}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleShareWhatsApp} className="gap-2 cursor-pointer">
+                <Share2 className="h-4 w-4 text-green-600" />
+                <span>{labels.shareWhatsapp[lang]}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleShareEmail} className="gap-2 cursor-pointer">
+                <Mail className="h-4 w-4" />
+                <span>{labels.shareEmail[lang]}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Scrollable content — native overflow inside flex column for reliable scrolling */}
