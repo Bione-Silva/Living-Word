@@ -265,57 +265,67 @@ export default function AppLayout() {
           <Outlet />
         </main>
 
-        {/* ─── Mobile BottomNavBar: 5 items ─── */}
-        <nav className={`fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border px-2 py-1 safe-area-bottom ${isBibleRoute ? 'bible-light' : ''}`}>
+        {/* ─── Mobile BottomNavBar: 6 essential items ─── */}
+        <nav className={`fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border px-1 py-1 safe-area-bottom ${isBibleRoute ? 'bible-light' : ''}`}>
           <div className="flex justify-around items-center">
             <Link
               to="/dashboard"
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
                 location.pathname === '/dashboard' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <LayoutDashboard className="h-5 w-5" />
-              <span className="truncate">{t('nav.dashboard')}</span>
+              <LayoutDashboard className="h-[18px] w-[18px]" />
+              <span className="truncate leading-tight">{lang === 'PT' ? 'Início' : lang === 'EN' ? 'Home' : 'Inicio'}</span>
             </Link>
 
             <button
               onClick={() => { setMobileToolsOpen(true); setMobileAccountOpen(false); }}
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
                 mobileToolsOpen ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Sparkles className="h-5 w-5" />
-              <span className="truncate">{lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear'}</span>
+              <Sparkles className="h-[18px] w-[18px]" />
+              <span className="truncate leading-tight">{lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear'}</span>
             </button>
 
             <Link
               to="/bible"
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
                 location.pathname === '/bible' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <BookOpen className="h-5 w-5" />
-              <span className="truncate">{lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}</span>
+              <BookOpen className="h-[18px] w-[18px]" />
+              <span className="truncate leading-tight">{lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}</span>
+            </Link>
+
+            <Link
+              to="/dashboard/mentes"
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
+                location.pathname.startsWith('/dashboard/mentes') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Brain className="h-[18px] w-[18px]" />
+              <span className="truncate leading-tight">{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
             </Link>
 
             <Link
               to="/ferramentas"
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
                 location.pathname === '/ferramentas' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Package className="h-5 w-5" />
-              <span className="truncate">{lang === 'PT' ? 'Ferramentas' : lang === 'EN' ? 'Tools' : 'Herram.'}</span>
+              <Package className="h-[18px] w-[18px]" />
+              <span className="truncate leading-tight">{lang === 'PT' ? 'Tools' : lang === 'EN' ? 'Tools' : 'Tools'}</span>
             </Link>
 
             <button
               onClick={() => { setMobileAccountOpen(true); setMobileToolsOpen(false); }}
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-2 min-w-[48px] text-[10px] transition-colors ${
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
                 mobileAccountOpen ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <User className="h-5 w-5" />
-              <span className="truncate">{lang === 'PT' ? 'Conta' : lang === 'EN' ? 'Account' : 'Cuenta'}</span>
+              <User className="h-[18px] w-[18px]" />
+              <span className="truncate leading-tight">{lang === 'PT' ? 'Conta' : lang === 'EN' ? 'Account' : 'Cuenta'}</span>
             </button>
           </div>
         </nav>
