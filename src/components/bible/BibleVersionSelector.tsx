@@ -121,7 +121,11 @@ export function BibleVersionSelector({ value, onChange, compact }: Props) {
             <span>{current?.shortLabel || value}</span>
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-72 p-0 bible-light" align="end">
+        <PopoverContent
+          className="w-[calc(100vw-2rem)] sm:w-72 p-0 bible-light"
+          align="end"
+          collisionPadding={12}
+        >
           {VersionList}
         </PopoverContent>
       </Popover>
@@ -152,7 +156,7 @@ export function BibleVersionSelector({ value, onChange, compact }: Props) {
               {changeLabel[lang]}
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-72 p-0 bible-light" align="end">
+          <PopoverContent className="w-[calc(100vw-2rem)] sm:w-72 p-0 bible-light" align="end" collisionPadding={12}>
             {VersionList}
           </PopoverContent>
         </Popover>
