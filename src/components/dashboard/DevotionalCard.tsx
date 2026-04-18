@@ -195,15 +195,19 @@ export function DevotionalCard() {
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      try {
-        const { data: result, error: err } = await supabase.functions.invoke('get-devotional-today');
-        if (err || !result) throw err;
-        setData(result);
-      } catch {
-        setError(true);
-      } finally {
+      const { data: result, unauthorized, error: err } = await safeInvoke<DevotionalData>('get-devotional-today');
+      if (unauthorized) {
+        // Session missing/expired — render empty state silently, don't break dashboard
+        setData(null);
         setLoading(false);
+        return;
       }
+      if (err || !result) {
+        setError(true);
+      } else {
+        setData(result);
+      }
+      setLoading(false);
     };
     load();
   }, [user]);
