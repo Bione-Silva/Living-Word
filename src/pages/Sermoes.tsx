@@ -1045,6 +1045,77 @@ export default function Sermoes() {
         materialId={activeSessionId}
         lang={lang}
       />
+      {/* ─── ActionBar fixa inferior — só no Studio de Blocos ─── */}
+      {editorMode === 'blocks' && showResult && blocks.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)]">
+          <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2.5 flex items-center gap-2 flex-wrap justify-end">
+            <button
+              onClick={handleSaveBlocks}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors"
+            >
+              <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+            </button>
+            <button
+              onClick={() => setRawTextOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors"
+            >
+              <FileText className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Ver como texto' : lang === 'ES' ? 'Ver como texto' : 'View as text'}
+            </button>
+            <button
+              onClick={() => { setSermonContent(blocksToMarkdown(blocks, lang)); setSermonTitle(bigIdea.trim() || passageRef.trim() || 'Sermão'); setPodiumOpen(true); }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold border border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-colors uppercase tracking-wide"
+            >
+              <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
+            </button>
+            <button
+              onClick={() => {
+                const md = blocksToMarkdown(blocks, lang);
+                if (!md.trim()) { toast.error(lang === 'PT' ? 'Adicione conteúdo aos blocos primeiro' : 'Add content to blocks first'); return; }
+                setSermonContent(md);
+                setSermonTitle(bigIdea.trim() || passageRef.trim() || 'Sermão');
+                setCarouselOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold text-white shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all bg-gradient-to-r from-primary via-purple-600 to-fuchsia-600 hover:scale-[1.02]"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Gerar Arte / Carrossel' : lang === 'ES' ? 'Generar Arte / Carrusel' : 'Generate Art / Carousel'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Modal: Ver como texto (raw markdown) ─── */}
+      <Dialog open={rawTextOpen} onOpenChange={setRawTextOpen}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              {lang === 'PT' ? 'Sermão em texto puro (Markdown)' : lang === 'ES' ? 'Sermón en texto puro (Markdown)' : 'Sermon as raw text (Markdown)'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-auto rounded-lg border border-border bg-muted/30 p-4">
+            <pre className="text-xs leading-relaxed whitespace-pre-wrap font-mono text-foreground/90">
+              {blocksToMarkdown(blocks, lang) || (lang === 'PT' ? '(vazio)' : '(empty)')}
+            </pre>
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              onClick={async () => { await navigator.clipboard.writeText(blocksToMarkdown(blocks, lang)); toast.success(labels.copied[lang]); }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors"
+            >
+              <Copy className="h-3.5 w-3.5" /> {labels.copy[lang]}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Carousel modal ─── */}
+      <SermonCarouselModal
+        open={carouselOpen}
+        onOpenChange={setCarouselOpen}
+        sermonMarkdown={sermonContent || (blocks.length ? blocksToMarkdown(blocks, lang) : '')}
+        sermonTitle={sermonTitle || bigIdea || 'Sermão'}
+        materialId={activeSessionId}
+      />
     </div>
   );
 }
