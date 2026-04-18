@@ -259,6 +259,61 @@ export default function Sermoes() {
   const [bigIdea, setBigIdea] = useState('');
   const [passageRef, setPassageRef] = useState('');
 
+  // ─── Bridge: Série de Mensagens → Studio de Blocos ───
+  // Aceita: ?mode=blocks&theme=...&passage=...&week=...&seriesTitle=...
+  const [searchParams, setSearchParams] = useSearchParams();
+  const bridgeApplied = useRef(false);
+  useEffect(() => {
+    if (bridgeApplied.current) return;
+    const mode = searchParams.get('mode');
+    const theme = searchParams.get('theme') || '';
+    const passage = searchParams.get('passage') || '';
+    const week = searchParams.get('week') || '';
+    const seriesTitle = searchParams.get('seriesTitle') || '';
+    if (mode !== 'blocks' && !theme && !passage && !week && !seriesTitle) return;
+    bridgeApplied.current = true;
+
+    if (mode === 'blocks') {
+      setEditorMode('blocks');
+      setShowResult(true);
+    }
+    if (theme) setBigIdea(theme);
+    if (passage) setPassageRef(passage);
+
+    // Pré-popula o primeiro bloco do tipo "main_point" com título contextual
+    if (theme || week || seriesTitle) {
+      const titleParts: string[] = [];
+      if (seriesTitle) titleParts.push(seriesTitle);
+      if (week) titleParts.push(`Semana ${week}`);
+      if (theme && !seriesTitle) titleParts.push(theme);
+      const blockTitle = titleParts.join(' — ');
+
+      // Importa dinamicamente para evitar dependência circular
+      import('@/components/sermon/sermon-block-types').then(({ createEmptyBlock }) => {
+        setBlocks((prev) => {
+          if (prev.length > 0) return prev;
+          const seed = [];
+          if (passage) {
+            const passageBlock = createEmptyBlock('passage');
+            passageBlock.title = passage;
+            passageBlock.passageRef = passage;
+            seed.push(passageBlock);
+          }
+          const mainBlock = createEmptyBlock('main_point');
+          mainBlock.title = blockTitle || theme || 'Ponto principal';
+          seed.push(mainBlock);
+          return seed;
+        });
+      });
+    }
+
+    // Limpa os params para não re-aplicar em F5
+    const next = new URLSearchParams(searchParams);
+    ['mode', 'theme', 'passage', 'week', 'seriesTitle'].forEach((k) => next.delete(k));
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+
   const resultRef = useRef<HTMLDivElement>(null);
 
   const refreshSessions = useCallback(async () => {
