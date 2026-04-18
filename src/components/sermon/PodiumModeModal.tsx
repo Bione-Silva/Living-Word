@@ -9,6 +9,7 @@ import {
   Languages,
   Maximize2,
   Minus,
+  MonitorSmartphone,
   Moon,
   MoreVertical,
   Pause,
