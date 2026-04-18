@@ -53,6 +53,17 @@ if (isPreviewHost || isInIframe) {
       void window.caches.delete(cacheName);
     });
   });
+} else {
+  // Production / installable PWA: register the shell service worker so
+  // beforeinstallprompt fires on Android/desktop Chrome and the app is installable.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/sw.js', { scope: '/' })
+        .catch((err) => console.warn('SW registration failed:', err));
+    });
+  }
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
+
