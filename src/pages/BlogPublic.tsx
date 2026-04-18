@@ -165,6 +165,7 @@ export default function BlogPublic() {
       home: lang === 'EN' ? 'Home' : lang === 'ES' ? 'Inicio' : 'Início',
       readMore: lang === 'EN' ? 'Read more' : lang === 'ES' ? 'Leer más' : 'Ler mais',
       backHome: lang === 'EN' ? 'Back to home' : lang === 'ES' ? 'Volver al inicio' : 'Voltar ao início',
+      dashboard: lang === 'EN' ? 'Dashboard' : lang === 'ES' ? 'Panel' : 'Dashboard',
     };
   }, [profile?.language]);
 
