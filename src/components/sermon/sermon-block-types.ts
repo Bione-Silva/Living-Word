@@ -30,8 +30,25 @@ export interface SermonBlockData {
   passageRef?: string;
 }
 
+/**
+ * Paleta HEX espelhando os tons Tailwind -50 / -200 / -700 usados nos cartões do Studio
+ * e do Modo Púlpito Claro. Single source of truth para exports (PDF, PPTX, DOCX).
+ * `bg50`  → fundo do cartão (mesmo `cardBgClass`)
+ * `border200` → borda suave do cartão
+ * `accent700` → tag/título identitário (mesmo `accentClass`)
+ * `accent500` → ponto/dot sólido do seletor
+ */
+export interface SermonBlockHex {
+  bg50: string;
+  border200: string;
+  accent500: string;
+  accent700: string;
+}
+
 export interface SermonBlockTypeMeta {
   type: SermonBlockType;
+  /** Paleta HEX (idêntica à -50/-200/-500/-700 Tailwind) — usada em exports */
+  hex: SermonBlockHex;
   /** Classe Tailwind para borda esquerda colorida */
   borderClass: string;
   /** Classe Tailwind para fundo do header (tom suave da cor) */
@@ -69,6 +86,7 @@ export interface SermonBlockTypeMeta {
 export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   hook: {
     type: 'hook',
+    hex: { bg50: '#FFF7ED', border200: '#FED7AA', accent500: '#F97316', accent700: '#C2410C' },
     borderClass: 'border-l-orange-500',
     headerBgClass: 'bg-orange-500/10',
     cardBgClass: 'bg-orange-50 dark:bg-card',
@@ -84,6 +102,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   passage: {
     type: 'passage',
+    hex: { bg50: '#F0F9FF', border200: '#BAE6FD', accent500: '#0EA5E9', accent700: '#0369A1' },
     borderClass: 'border-l-sky-500',
     headerBgClass: 'bg-sky-500/10',
     cardBgClass: 'bg-sky-50 dark:bg-card',
@@ -99,6 +118,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   original: {
     type: 'original',
+    hex: { bg50: '#FFFBEB', border200: '#FDE68A', accent500: '#92400E', accent700: '#78350F' },
     borderClass: 'border-l-amber-800',
     headerBgClass: 'bg-amber-800/10',
     cardBgClass: 'bg-amber-50 dark:bg-card',
@@ -114,6 +134,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   doctrine: {
     type: 'doctrine',
+    hex: { bg50: '#EEF2FF', border200: '#C7D2FE', accent500: '#4F46E5', accent700: '#4338CA' },
     borderClass: 'border-l-indigo-600',
     headerBgClass: 'bg-indigo-600/10',
     cardBgClass: 'bg-indigo-50 dark:bg-card',
@@ -129,6 +150,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   objection: {
     type: 'objection',
+    hex: { bg50: '#FFFBEB', border200: '#FDE68A', accent500: '#D97706', accent700: '#B45309' },
     borderClass: 'border-l-amber-600',
     headerBgClass: 'bg-amber-600/10',
     cardBgClass: 'bg-amber-50 dark:bg-card',
@@ -144,6 +166,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   big_idea: {
     type: 'big_idea',
+    hex: { bg50: '#FAF5FF', border200: '#E9D5FF', accent500: '#A855F7', accent700: '#7E22CE' },
     borderClass: 'border-l-purple-500',
     headerBgClass: 'bg-purple-500/10',
     cardBgClass: 'bg-purple-50 dark:bg-card',
@@ -159,6 +182,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   main_point: {
     type: 'main_point',
+    hex: { bg50: '#EFF6FF', border200: '#BFDBFE', accent500: '#2563EB', accent700: '#1D4ED8' },
     borderClass: 'border-l-blue-600',
     headerBgClass: 'bg-blue-600/10',
     cardBgClass: 'bg-blue-50 dark:bg-card',
@@ -174,6 +198,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   explanation: {
     type: 'explanation',
+    hex: { bg50: '#F5F3FF', border200: '#DDD6FE', accent500: '#8B5CF6', accent700: '#6D28D9' },
     borderClass: 'border-l-violet-500',
     headerBgClass: 'bg-violet-500/10',
     cardBgClass: 'bg-violet-50 dark:bg-card',
@@ -189,6 +214,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   illustration: {
     type: 'illustration',
+    hex: { bg50: '#ECFDF5', border200: '#A7F3D0', accent500: '#059669', accent700: '#047857' },
     borderClass: 'border-l-emerald-600',
     headerBgClass: 'bg-emerald-600/10',
     cardBgClass: 'bg-emerald-50 dark:bg-card',
@@ -204,6 +230,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   application: {
     type: 'application',
+    hex: { bg50: '#FFF7ED', border200: '#FED7AA', accent500: '#C2410C', accent700: '#9A3412' },
     borderClass: 'border-l-orange-700',
     headerBgClass: 'bg-orange-700/10',
     cardBgClass: 'bg-orange-50 dark:bg-card',
@@ -219,6 +246,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   transition: {
     type: 'transition',
+    hex: { bg50: '#F8FAFC', border200: '#E2E8F0', accent500: '#64748B', accent700: '#334155' },
     borderClass: 'border-l-slate-500',
     headerBgClass: 'bg-slate-500/10',
     cardBgClass: 'bg-slate-50 dark:bg-card',
@@ -234,6 +262,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   quote: {
     type: 'quote',
+    hex: { bg50: '#FEFCE8', border200: '#FEF08A', accent500: '#CA8A04', accent700: '#A16207' },
     borderClass: 'border-l-yellow-600',
     headerBgClass: 'bg-yellow-600/10',
     cardBgClass: 'bg-yellow-50 dark:bg-card',
@@ -249,6 +278,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   appeal: {
     type: 'appeal',
+    hex: { bg50: '#FEF2F2', border200: '#FECACA', accent500: '#DC2626', accent700: '#B91C1C' },
     borderClass: 'border-l-red-600',
     headerBgClass: 'bg-red-600/10',
     cardBgClass: 'bg-red-50 dark:bg-card',
@@ -264,6 +294,7 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
   conclusion: {
     type: 'conclusion',
+    hex: { bg50: '#FFF1F2', border200: '#FECDD3', accent500: '#F43F5E', accent700: '#BE123C' },
     borderClass: 'border-l-rose-500',
     headerBgClass: 'bg-rose-500/10',
     cardBgClass: 'bg-rose-50 dark:bg-card',
