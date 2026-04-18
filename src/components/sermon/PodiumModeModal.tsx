@@ -960,18 +960,23 @@ export function PodiumModeModal({
                 onClick={() => setRunning((r) => !r)}
                 className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
                 aria-label={running ? 'pause' : 'play'}
+                title={
+                  running
+                    ? (lang === 'EN' ? 'Pause timer' : lang === 'ES' ? 'Pausar temporizador' : 'Pausar cronômetro')
+                    : (lang === 'EN' ? 'Start timer' : lang === 'ES' ? 'Iniciar temporizador' : 'Iniciar cronômetro')
+                }
               >
                 {running ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </button>
             )}
           </div>
 
-          {/* Indicador discreto de Wake Lock ativo (tela não vai apagar) */}
+          {/* Indicador discreto de Wake Lock ativo (tela não vai apagar) — ícone próprio (MonitorSmartphone) para NÃO confundir com toggle de tema */}
           {wakeLockActive && (
             <div
               className={cn(
                 'relative p-1.5 sm:p-2 rounded-md',
-                isDark ? 'text-amber-300' : 'text-amber-600',
+                isDark ? 'text-emerald-300' : 'text-emerald-600',
               )}
               role="status"
               aria-live="polite"
@@ -984,22 +989,18 @@ export function PodiumModeModal({
               }
               title={
                 lang === 'EN'
-                  ? 'Screen wake lock active'
+                  ? 'Screen wake lock active — screen will not turn off'
                   : lang === 'ES'
-                  ? 'Bloqueo de pantalla activo'
-                  : 'Tela travada — não vai apagar'
+                  ? 'Bloqueo de pantalla activo — la pantalla no se apagará'
+                  : 'Tela travada ligada — não vai apagar durante a pregação'
               }
             >
-              <Sun className="h-4 w-4" />
+              <MonitorSmartphone className="h-4 w-4" />
               <span
                 className={cn(
-                  'absolute top-1 right-1 h-2 w-2 rounded-full bg-emerald-500 ring-2',
+                  'absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-2',
                   isDark ? 'ring-slate-900' : 'ring-white',
                 )}
-                aria-hidden="true"
-              />
-              <span
-                className="absolute top-1 right-1 h-2 w-2 rounded-full bg-emerald-500 animate-ping opacity-60"
                 aria-hidden="true"
               />
             </div>
@@ -1020,6 +1021,7 @@ export function PodiumModeModal({
             onClick={() => onOpenChange(false)}
             className={cn('p-1.5 sm:p-2 rounded-md transition-colors', iconBtn)}
             aria-label={tr.exit[lang]}
+            title={tr.exit[lang]}
           >
             <X className="h-5 w-5" />
           </button>
