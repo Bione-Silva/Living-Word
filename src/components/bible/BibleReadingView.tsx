@@ -2,13 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen } from 'lucide-react';
-import { getBookName, getTranslationLabelByCode, getVersionsForUserLanguage, fetchBibleChapter, type L } from '@/lib/bible-data';
+import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen, Columns2 } from 'lucide-react';
+import { getBookName, getTranslationLabelByCode, getVersionsForUserLanguage, getDefaultVersionCode, getBibleVersion, fetchBibleChapter, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
-import {
-  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import { BibleVersionSelector } from './BibleVersionSelector';
+import { BibleCompareColumn } from './BibleCompareColumn';
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
@@ -63,6 +62,7 @@ export function BibleReadingView({
   const [studyPassage, setStudyPassage] = useState('');
   const [studyVerseText, setStudyVerseText] = useState('');
   const [activeHighlightVerses, setActiveHighlightVerses] = useState<Set<number>>(new Set());
+  const [compareCode, setCompareCode] = useState<string | null>(null);
 
   // Parse highlightVerse param (e.g. "22", "22-23") into a set of verse numbers
   useEffect(() => {
@@ -251,21 +251,33 @@ export function BibleReadingView({
           </div>
 
           <div className="flex items-center gap-2">
-            <Select value={translation} onValueChange={(v) => onTranslationChange?.(v)}>
-              <SelectTrigger className="w-auto h-7 px-2.5 gap-1 text-xs font-medium border-border bg-muted/60 rounded-md">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bible-light max-h-[360px]">
-                <SelectGroup>
-                  <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
-                    {lang === 'PT' ? 'Versões em Português' : lang === 'ES' ? 'Versiones en Español' : 'English Versions'}
-                  </SelectLabel>
-                  {primaryVersions.filter(v => v.isAvailable).map(v => (
-                    <SelectItem key={v.code} value={v.code} className="text-xs">{v.shortLabel} — {v.name}</SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <BibleVersionSelector value={translation} onChange={(v) => onTranslationChange?.(v)} compact />
+            <button
+              onClick={() => {
+                if (compareCode) {
+                  setCompareCode(null);
+                } else {
+                  // Pick a sensible second version: language default if different from current, else first other in same language
+                  const currentVer = getBibleVersion(translation);
+                  const langDefault = getDefaultVersionCode(lang);
+                  let pick = langDefault !== translation ? langDefault : '';
+                  if (!pick) {
+                    const same = primaryVersions.find(v => v.code !== translation && v.isAvailable);
+                    pick = same?.code || langDefault;
+                  }
+                  setCompareCode(pick);
+                }
+              }}
+              className={`inline-flex items-center gap-1.5 h-8 px-2.5 text-xs font-medium border rounded-lg transition-colors ${
+                compareCode
+                  ? 'border-primary/40 bg-primary/10 text-primary'
+                  : 'border-border bg-muted/60 text-foreground hover:bg-muted'
+              }`}
+              title={lang === 'PT' ? 'Comparar versões' : lang === 'ES' ? 'Comparar versiones' : 'Compare versions'}
+            >
+              <Columns2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{lang === 'PT' ? 'Comparar' : lang === 'ES' ? 'Comparar' : 'Compare'}</span>
+            </button>
           </div>
         </div>
 
@@ -296,9 +308,10 @@ export function BibleReadingView({
         </button>
       </div>
 
-      {/* Verses */}
-      <div className="min-h-[400px] rounded-2xl border border-border bg-card p-3 md:p-4">
-        {(loading || retrying) ? (
+      {/* Verses (with optional compare column) */}
+      <div className={compareCode ? 'grid grid-cols-1 lg:grid-cols-2 gap-3' : ''}>
+        <div className="min-h-[400px] rounded-2xl border border-border bg-card p-3 md:p-4">
+          {(loading || retrying) ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
             {retrying && <p className="text-xs text-muted-foreground">{retryLabels[lang].retrying}</p>}
@@ -389,6 +402,19 @@ export function BibleReadingView({
               );
             })}
           </div>
+        )}
+        </div>
+
+        {/* Compare column */}
+        {compareCode && (
+          <BibleCompareColumn
+            bookId={bookId}
+            bookName={name}
+            chapter={chapter}
+            versionCode={compareCode}
+            onVersionChange={setCompareCode}
+            onClose={() => setCompareCode(null)}
+          />
         )}
       </div>
 
