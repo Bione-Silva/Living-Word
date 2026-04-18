@@ -298,6 +298,7 @@ export function BibleReadingView({
     };
   }, [isDragging, selectedVerses.size]);
 
+  // ─── Auto-dismiss: outside click + scroll closes the floating toolbar ───
   useEffect(() => {
     if (selectedVerses.size === 0) return;
 
