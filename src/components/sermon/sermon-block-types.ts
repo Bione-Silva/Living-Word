@@ -67,9 +67,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '🎯',
     label: { PT: 'Gancho / Introdução', EN: 'Hook / Introduction', ES: 'Gancho / Introducción' },
     placeholder: {
-      PT: 'Comece com uma pergunta provocadora, uma história curta ou uma estatística que prenda a atenção...',
-      EN: 'Open with a provocative question, a short story or a striking statistic...',
-      ES: 'Comience con una pregunta provocadora, una historia corta o una estadística...',
+      PT: 'Qual pergunta ou dilema vai capturar a atenção nos primeiros 30 segundos? (Ex: Timothy Keller usava dilemas da cultura moderna como isca para o Evangelho.)',
+      EN: 'What question or dilemma will capture attention in the first 30 seconds? (E.g.: Timothy Keller used modern cultural dilemmas as bait for the Gospel.)',
+      ES: '¿Qué pregunta o dilema captará la atención en los primeros 30 segundos? (Ej: Timothy Keller usaba dilemas de la cultura moderna como anzuelo para el Evangelio.)',
     },
   },
   passage: {
@@ -81,9 +81,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '📖',
     label: { PT: 'Passagem Bíblica', EN: 'Bible Passage', ES: 'Pasaje Bíblico' },
     placeholder: {
-      PT: 'Cole o texto bíblico completo (ex: João 3:16-21)...',
-      EN: 'Paste the full biblical text (e.g. John 3:16-21)...',
-      ES: 'Pegue el texto bíblico completo (ej: Juan 3:16-21)...',
+      PT: 'Cole o texto bíblico completo. (Ex: Os Puritanos sempre abriam discursos proclamando a Palavra pura antes de qualquer argumento humano.)',
+      EN: 'Paste the full biblical text. (E.g.: The Puritans always opened discourses by proclaiming the pure Word before any human argument.)',
+      ES: 'Pegue el texto bíblico completo. (Ej: Los Puritanos siempre abrían discursos proclamando la Palabra pura antes de cualquier argumento humano.)',
     },
   },
   original: {
@@ -95,9 +95,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '🔍',
     label: { PT: 'Hebraico / Grego', EN: 'Hebrew / Greek', ES: 'Hebreo / Griego' },
     placeholder: {
-      PT: 'Análise da palavra original. Ex: ἀγάπη (agapē) — amor sacrificial e voluntário...',
-      EN: 'Original word analysis. E.g.: ἀγάπη (agapē) — sacrificial, willful love...',
-      ES: 'Análisis de la palabra original. Ej: ἀγάπη (agapē) — amor sacrificial y voluntario...',
+      PT: 'Qual a raiz da palavra original? (Ex: Pregadores expositivos usam o idioma original — como ἀγάπη (agapē) — para revelar mistérios perdidos na tradução.)',
+      EN: 'What is the root of the original word? (E.g.: Expository preachers use the original language — like ἀγάπη (agapē) — to reveal mysteries lost in translation.)',
+      ES: '¿Cuál es la raíz de la palabra original? (Ej: Los predicadores expositivos usan el idioma original — como ἀγάπη (agapē) — para revelar misterios perdidos en la traducción.)',
     },
   },
   big_idea: {
@@ -109,9 +109,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '💡',
     label: { PT: 'Grande Ideia', EN: 'Big Idea', ES: 'Gran Idea' },
     placeholder: {
-      PT: 'A frase única que resume todo o sermão. Ex: "Deus salva quem não merece para mostrar quem Ele é."',
-      EN: 'The single sentence that summarizes the whole sermon. E.g.: "God saves the undeserving to reveal who He is."',
-      ES: 'La frase única que resume todo el sermón. Ej: "Dios salva al inmerecido para mostrar quién es."',
+      PT: 'Resuma a mensagem inteira em UMA frase. (Ex: Haddon Robinson revolucionou a pregação focando todo o sermão em uma única "Big Idea" memorável.)',
+      EN: 'Sum up the entire message in ONE sentence. (E.g.: Haddon Robinson revolutionized preaching by focusing the whole sermon on a single memorable "Big Idea".)',
+      ES: 'Resuma el mensaje entero en UNA frase. (Ej: Haddon Robinson revolucionó la predicación enfocando todo el sermón en una única "Gran Idea" memorable.)',
     },
   },
   main_point: {
@@ -123,9 +123,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '🔷',
     label: { PT: 'Ponto Principal', EN: 'Main Point', ES: 'Punto Principal' },
     placeholder: {
-      PT: 'Desenvolva o ponto: tese + exposição do texto + argumento teológico + transição para o próximo ponto...',
-      EN: 'Develop the point: thesis + text exposition + theological argument + transition to next point...',
-      ES: 'Desarrolle el punto: tesis + exposición del texto + argumento teológico + transición...',
+      PT: 'Crie um título lógico e memorável para este ponto. (Ex: Pregadores clássicos usavam divisões numeradas e simétricas para que a igreja conseguisse anotar e lembrar.)',
+      EN: 'Create a logical, memorable title for this point. (E.g.: Classic preachers used numbered, symmetrical divisions so the church could take notes and remember.)',
+      ES: 'Cree un título lógico y memorable para este punto. (Ej: Los predicadores clásicos usaban divisiones numeradas y simétricas para que la iglesia pudiera anotar y recordar.)',
     },
   },
   explanation: {
@@ -137,9 +137,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '📜',
     label: { PT: 'Explicação', EN: 'Explanation', ES: 'Explicación' },
     placeholder: {
-      PT: 'Explique o texto bíblico em contexto histórico e teológico...',
-      EN: 'Explain the biblical text in historical and theological context...',
-      ES: 'Explique el texto bíblico en contexto histórico y teológico...',
+      PT: 'Explique o contexto histórico e literário. O que o autor original queria dizer à igreja da época? (Esta é a base da pregação expositiva — Calvino, Lloyd-Jones e MacArthur começavam por aqui.)',
+      EN: 'Explain the historical and literary context. What did the original author mean to the church of his time? (This is the foundation of expository preaching — Calvin, Lloyd-Jones and MacArthur all started here.)',
+      ES: 'Explique el contexto histórico y literario. ¿Qué quería decir el autor original a la iglesia de su época? (Esta es la base de la predicación expositiva — Calvino, Lloyd-Jones y MacArthur comenzaban aquí.)',
     },
   },
   illustration: {
@@ -151,9 +151,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '🎬',
     label: { PT: 'Ilustração', EN: 'Illustration', ES: 'Ilustración' },
     placeholder: {
-      PT: 'Conte uma história, analogia ou exemplo prático da vida real...',
-      EN: 'Tell a story, analogy or practical real-life example...',
-      ES: 'Cuente una historia, analogía o ejemplo práctico de la vida real...',
+      PT: 'Conte uma história, metáfora ou testemunho que ilumine a verdade. (Ex: Spurgeon era chamado de "Príncipe dos Pregadores" justamente por suas ilustrações vívidas e inesquecíveis.)',
+      EN: 'Tell a story, metaphor or testimony that illuminates the truth. (E.g.: Spurgeon was called the "Prince of Preachers" precisely because of his vivid, unforgettable illustrations.)',
+      ES: 'Cuente una historia, metáfora o testimonio que ilumine la verdad. (Ej: Spurgeon era llamado el "Príncipe de los Predicadores" precisamente por sus ilustraciones vívidas e inolvidables.)',
     },
   },
   application: {
@@ -165,9 +165,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '✨',
     label: { PT: 'Aplicação Prática', EN: 'Practical Application', ES: 'Aplicación Práctica' },
     placeholder: {
-      PT: 'Como esta verdade transforma o dia a dia do ouvinte?...',
-      EN: 'How does this truth transform the listener\'s daily life?...',
-      ES: '¿Cómo transforma esta verdad el día a día del oyente?...',
+      PT: 'O que a igreja deve fazer na segunda-feira de manhã? (Ex: Os Puritanos chamavam isso de "Os Usos" — o dever prático e concreto que nasce da doutrina.)',
+      EN: 'What should the church actually do on Monday morning? (E.g.: The Puritans called this "The Uses" — the practical, concrete duty born out of doctrine.)',
+      ES: '¿Qué debe hacer la iglesia el lunes por la mañana? (Ej: Los Puritanos llamaban a esto "Los Usos" — el deber práctico y concreto que nace de la doctrina.)',
     },
   },
   transition: {
@@ -179,9 +179,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '➰',
     label: { PT: 'Transição', EN: 'Transition', ES: 'Transición' },
     placeholder: {
-      PT: 'Frase-ponte entre o ponto anterior e o próximo. Ex: "Mas se isso é verdade, então..."',
-      EN: 'Bridge sentence between the previous point and the next. E.g.: "But if this is true, then..."',
-      ES: 'Frase-puente entre el punto anterior y el siguiente. Ej: "Pero si esto es verdad, entonces..."',
+      PT: 'Frase-ponte que conecta o ponto anterior ao próximo. (Ex: "Mas se isso é verdade, então..." — Wesley dizia que boas transições mantêm o ouvinte respirando junto com o pregador.)',
+      EN: 'A bridge sentence connecting the previous point to the next. (E.g.: "But if this is true, then..." — Wesley said good transitions keep the listener breathing along with the preacher.)',
+      ES: 'Frase-puente que conecta el punto anterior con el siguiente. (Ej: "Pero si esto es verdad, entonces..." — Wesley decía que las buenas transiciones mantienen al oyente respirando con el predicador.)',
     },
   },
   quote: {
@@ -193,9 +193,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '📚',
     label: { PT: 'Citação', EN: 'Quote', ES: 'Cita' },
     placeholder: {
-      PT: 'Cite um autor, livro, hino ou pregador. Ex: "Como dizia Spurgeon: ..."',
-      EN: 'Quote an author, book, hymn or preacher. E.g.: "As Spurgeon said: ..."',
-      ES: 'Cite un autor, libro, himno o predicador. Ej: "Como decía Spurgeon: ..."',
+      PT: 'Traga o peso de um gigante da fé para reforçar sua tese. (Ex: C.S. Lewis, Agostinho, Lutero, Tozer — uma boa citação é um martelo que crava a verdade.)',
+      EN: 'Bring the weight of a giant of the faith to reinforce your thesis. (E.g.: C.S. Lewis, Augustine, Luther, Tozer — a good quote is a hammer that drives truth home.)',
+      ES: 'Traiga el peso de un gigante de la fe para reforzar su tesis. (Ej: C.S. Lewis, Agustín, Lutero, Tozer — una buena cita es un martillo que clava la verdad.)',
     },
   },
   conclusion: {
@@ -207,9 +207,9 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
     emoji: '🙏',
     label: { PT: 'Conclusão / Oração', EN: 'Conclusion / Prayer', ES: 'Conclusión / Oración' },
     placeholder: {
-      PT: 'Amarre a Grande Ideia e faça o apelo final ao coração. Termine apontando para Cristo...',
-      EN: 'Tie back the Big Idea and make the final appeal to the heart. End by pointing to Christ...',
-      ES: 'Amarre la Gran Idea y haga el llamado final al corazón. Termine apuntando a Cristo...',
+      PT: 'Como pousar o avião? Resuma a Grande Ideia com foco e esperança, e termine com uma oração que guie a igreja. (Ex: Billy Graham desenhava todo o sermão apontando para este momento de decisão diante do altar.)',
+      EN: 'How do you land the plane? Restate the Big Idea with focus and hope, and end with a prayer that guides the church. (E.g.: Billy Graham designed every sermon to point toward this moment of decision before the altar.)',
+      ES: '¿Cómo aterrizar el avión? Resuma la Gran Idea con foco y esperanza, y termine con una oración que guíe a la iglesia. (Ej: Billy Graham diseñaba todo el sermón apuntando a este momento de decisión ante el altar.)',
     },
   },
 };
