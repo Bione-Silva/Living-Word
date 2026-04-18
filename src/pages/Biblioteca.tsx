@@ -11,6 +11,9 @@ import { Search, Lock, Crown, BookOpen, FileText, Heart, Eye, Trash2, Copy, Star
 import { toast } from 'sonner';
 import { ArticleReaderModal } from '@/components/ArticleReaderModal';
 import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
+import { SermonCoverPlaceholder } from '@/components/SermonCoverPlaceholder';
+
+const isSermonLike = (type: string) => type === 'sermon' || type === 'outline';
 
 const PAGE_SIZE = 20;
 
