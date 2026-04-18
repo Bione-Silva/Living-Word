@@ -207,7 +207,7 @@ export interface Card {
 }
 
 export function splitIntoCards(md: string): Card[] {
-  if (!md) return [];
+  if (!md || !md.trim()) return [];
   const lines = md.split('\n');
   const cards: Card[] = [];
   let cur: { heading?: string; bodyStart: number; headingLine: number | null } | null = null;
@@ -235,21 +235,32 @@ export function splitIntoCards(md: string): Card[] {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const h1 = line.match(/^#\s+(.+)$/);
-    const h2 = line.match(/^##\s+(.+)$/);
-    if (h1) {
+    // Aceita headings de qualquer nível (#, ##, ###, ####) — sermões IA frequentemente usam ###
+    const hMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (hMatch) {
       push(i);
-      cur = { heading: h1[1].trim(), bodyStart: i + 1, headingLine: i };
-      continue;
-    }
-    if (h2) {
-      push(i);
-      cur = { heading: h2[1].trim(), bodyStart: i + 1, headingLine: i };
+      cur = { heading: hMatch[2].trim(), bodyStart: i + 1, headingLine: i };
       continue;
     }
     if (!cur) cur = { heading: undefined, bodyStart: i, headingLine: null };
   }
   push(lines.length);
+
+  // Fallback robusto: se markdown é puro texto sem headings, ainda renderiza 1 card único
+  // — evita que o púlpito apareça vazio (tela escura) com sermões IA antigos.
+  if (cards.length === 0) {
+    const body = md.trim();
+    if (body) {
+      cards.push({
+        id: 'card_0',
+        heading: undefined,
+        body,
+        isQuote: body.split('\n').every((l) => l.startsWith('>') || !l.trim()),
+        tone: 'generic',
+        range: [0, lines.length],
+      });
+    }
+  }
   return cards;
 }
 
@@ -1105,7 +1116,7 @@ export function PodiumModeModal({
 
         {/* Linha 2 — ações secundárias (compactam em mobile dentro de "More") */}
         <div className={cn('flex items-center gap-1 px-3 sm:px-4 pb-2 -mt-1 border-t pt-2', headerBorder)}>
-          {/* Timer mode dropdown — botão obvio com texto "Configurar Timer" */}
+          {/* Timer mode dropdown — botão obvio com texto "Configurar Timer" + indicador do valor atual */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -1123,7 +1134,27 @@ export function PodiumModeModal({
                 {mode === 'progressive' && <Timer className="h-4 w-4" />}
                 {mode === 'clock' && <Clock className="h-4 w-4" />}
                 <span className="inline">
-                  {lang === 'PT' ? 'Configurar Timer' : lang === 'ES' ? 'Configurar Timer' : 'Configure Timer'}
+                  {lang === 'PT' ? 'Timer' : lang === 'ES' ? 'Timer' : 'Timer'}
+                </span>
+                {/* Indicador visual do valor atual configurado */}
+                <span
+                  className={cn(
+                    'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold tabular-nums leading-none',
+                    isDark
+                      ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30'
+                      : 'bg-amber-500/15 text-amber-700 ring-1 ring-amber-500/40',
+                  )}
+                  aria-label={
+                    mode === 'countdown'
+                      ? `${durationMin} ${tr.minutes[lang]}`
+                      : mode === 'progressive'
+                      ? tr.progressive[lang]
+                      : tr.clock[lang]
+                  }
+                >
+                  {mode === 'countdown' && `${durationMin}m`}
+                  {mode === 'progressive' && (lang === 'PT' ? 'Prog.' : lang === 'ES' ? 'Prog.' : 'Prog.')}
+                  {mode === 'clock' && (lang === 'PT' ? 'Hora' : lang === 'ES' ? 'Hora' : 'Time')}
                 </span>
                 <ChevronDown className="h-3 w-3 opacity-70" />
               </button>

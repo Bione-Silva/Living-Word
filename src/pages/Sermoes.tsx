@@ -1234,7 +1234,18 @@ export default function Sermoes() {
               <FileText className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Ver como texto' : lang === 'ES' ? 'Ver como texto' : 'View as text'}
             </button>
             <button
-              onClick={() => { setSermonContent(blocksToMarkdown(blocks, lang)); setSermonTitle(bigIdea.trim() || passageRef.trim() || 'Sermão'); setPodiumOpen(true); }}
+              onClick={() => {
+                // Garante markdown válido para o púlpito mesmo quando blocks foi recém-restaurado:
+                // prioriza markdown gerado dos blocos atuais; se vazio, cai no sermonContent existente.
+                const md = blocks.length ? blocksToMarkdown(blocks, lang) : sermonContent;
+                if (!md.trim()) {
+                  toast.error(lang === 'PT' ? 'Adicione conteúdo aos blocos primeiro' : lang === 'ES' ? 'Añada contenido primero' : 'Add content to blocks first');
+                  return;
+                }
+                setSermonContent(md);
+                setSermonTitle(bigIdea.trim() || passageRef.trim() || sermonTitle || 'Sermão');
+                setPodiumOpen(true);
+              }}
               className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-bold border border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-colors uppercase tracking-wide whitespace-nowrap"
             >
               <MonitorPlay className="h-3.5 w-3.5" /> {lang === 'PT' ? 'Modo Púlpito' : lang === 'ES' ? 'Modo Púlpito' : 'Podium Mode'}
