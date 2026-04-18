@@ -1,8 +1,29 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  X, Play, Pause, RotateCcw, Settings, Plus, Minus, Share2, Download, Printer,
-  PenLine, BookOpen, Languages, ImageIcon, Clock, Timer, Hourglass, Maximize2,
-  Sun, Moon, Pencil, Check, MoreVertical, ChevronDown,
+  ChevronDown,
+  Check,
+  Clock,
+  Download,
+  Hourglass,
+  ImageIcon,
+  Languages,
+  Maximize2,
+  Minus,
+  Moon,
+  MoreVertical,
+  Pause,
+  Pencil,
+  PenLine,
+  Play,
+  Plus,
+  Printer,
+  RotateCcw,
+  Settings,
+  Share2,
+  Sun,
+  Timer,
+  BookOpen,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
