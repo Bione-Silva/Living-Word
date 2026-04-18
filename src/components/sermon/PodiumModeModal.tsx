@@ -112,9 +112,9 @@ const tr = {
 };
 
 /* ─── Detecção de tipo de bloco a partir do heading ─── */
-type BlockTone = 'idea' | 'hook' | 'passage' | 'illustration' | 'application' | 'main' | 'conclusion' | 'original' | 'transition' | 'quote' | 'explanation' | 'doctrine' | 'objection' | 'appeal' | 'generic';
+export type BlockTone = 'idea' | 'hook' | 'passage' | 'illustration' | 'application' | 'main' | 'conclusion' | 'original' | 'transition' | 'quote' | 'explanation' | 'doctrine' | 'objection' | 'appeal' | 'generic';
 
-interface BlockMeta {
+export interface BlockMeta {
   tone: BlockTone;
   emoji: string;
   label: { PT: string; EN: string; ES: string };
