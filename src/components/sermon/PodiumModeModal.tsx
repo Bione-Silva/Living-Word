@@ -774,12 +774,18 @@ export function PodiumModeModal({
           {cards.map((c) => {
             const meta = BLOCK_META[c.tone];
             const isEditing = editingId === c.id;
+            // Modo Claro: usa paleta vibrante identitária do bloco. Modo Escuro: mantém superfície dark, só pinta a borda.
+            const cardSurface = isDark
+              ? cn(cardBg, meta.darkBorderLeft)
+              : c.isQuote
+              ? cn(cardQuoteBg, meta.lightBorderLeft)
+              : cn(meta.lightCardBg, meta.lightBorderLeft);
             return (
               <section
                 key={c.id}
                 className={cn(
                   'relative rounded-2xl border shadow-sm transition-shadow w-full min-w-0 break-words',
-                  c.isQuote ? cardQuoteBg : cardBg,
+                  cardSurface,
                   isEditing && (isDark ? 'ring-2 ring-amber-500/60' : 'ring-2 ring-amber-500'),
                 )}
               >
