@@ -524,7 +524,7 @@ export function BibleReadingView({
                           }}
                           onHighlight={handleHighlight}
                           onNoteSaved={onTabsRefresh}
-                          onClose={() => setSelectedVerses(new Set())}
+                          onClose={clearSelection}
                           onStudySidebar={handleOpenStudy}
                         />
                       </div>
