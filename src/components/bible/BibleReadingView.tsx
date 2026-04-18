@@ -255,7 +255,49 @@ export function BibleReadingView({
     setSelectedVerses(new Set());
   }, []);
 
-  // ─── Auto-dismiss: outside click + scroll closes the floating toolbar ───
+  // ─── Drag-to-select range (desktop only, via mouse) ───
+  // Mousedown on a verse # → start anchor; mouseenter on others while dragging extends the range.
+  // Touch devices keep the double-tap flow (pointerType filter).
+  const selectRange = useCallback((from: number, to: number) => {
+    const lo = Math.min(from, to);
+    const hi = Math.max(from, to);
+    const next = new Set<number>();
+    for (let i = lo; i <= hi; i++) next.add(i);
+    setSelectedVerses(next);
+  }, []);
+
+  const handleDragStart = (e: React.PointerEvent, verseNum: number) => {
+    if (e.pointerType !== 'mouse') return;
+    if (e.button !== 0) return;
+    dragAnchorRef.current = verseNum;
+    setIsDragging(true);
+  };
+
+  const handleDragEnter = (verseNum: number) => {
+    if (!isDragging || dragAnchorRef.current == null) return;
+    if (dragAnchorRef.current === verseNum) return;
+    selectRange(dragAnchorRef.current, verseNum);
+  };
+
+  // Global mouseup ends the drag. If a real range was made, suppress the imminent click.
+  useEffect(() => {
+    if (!isDragging) return;
+    const end = () => {
+      const wasRange = selectedVerses.size > 1;
+      setIsDragging(false);
+      dragAnchorRef.current = null;
+      if (wasRange && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate(20); } catch { /* noop */ }
+      }
+    };
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    return () => {
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+    };
+  }, [isDragging, selectedVerses.size]);
+
   useEffect(() => {
     if (selectedVerses.size === 0) return;
 
