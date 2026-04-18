@@ -8,12 +8,15 @@ export type SermonBlockType =
   | 'passage'        // Passagem Bíblica
   | 'original'       // Escavação Original (Hebraico/Grego)
   | 'big_idea'       // Grande Ideia
+  | 'doctrine'       // Doutrina (verdade teológica raiz)
+  | 'objection'      // Objeção / Refutação (antecipa a dúvida do ouvinte)
   | 'main_point'     // Ponto Principal
   | 'explanation'    // Explicação (texto em contexto histórico/teológico)
   | 'illustration'   // Ilustração / História
   | 'application'    // Aplicação Prática
   | 'transition'     // Transição entre pontos
   | 'quote'          // Citação (autor/livro)
+  | 'appeal'         // Apelo / Altar Call (chamado para decisão)
   | 'conclusion';    // Conclusão / Oração
 
 export interface SermonBlockData {
