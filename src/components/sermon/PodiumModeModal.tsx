@@ -811,6 +811,27 @@ export function PodiumModeModal({
                   <span className={cn('text-[11px]', subtitleColor)}>{tr.minutes[lang]}</span>
                 </div>
               </div>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={(e) => { e.preventDefault(); setSoundEnabled((v) => !v); }}
+                className="flex items-center justify-between gap-2 cursor-pointer"
+              >
+                <span className="flex items-center gap-2 text-xs">
+                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4 opacity-60" />}
+                  {tr.alertSound[lang]}
+                </span>
+                <span
+                  className={cn(
+                    'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full',
+                    soundEnabled
+                      ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/40'
+                      : 'bg-slate-500/15 text-slate-500 dark:text-slate-400 ring-1 ring-slate-500/30',
+                  )}
+                >
+                  {soundEnabled ? tr.on[lang] : tr.off[lang]}
+                </span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
