@@ -208,11 +208,13 @@ export function SermonBlockEditor({
         `Rules:`,
         `- Output the blocks in the EXACT order listed above. Never skip a block. Never add extra blocks.`,
         `- Each "content" must be PLAIN pastoral prose (no markdown headers, no numbered lists, no bullet lists), 80-160 words.`,
-        `- "passage" content must include the literal Bible text and reference (book chapter:verse).`,
-        `- "doctrine" must state ONE clear theological truth from the text.`,
-        `- "objection" must voice a real skeptic's doubt and refute it briefly.`,
-        `- "appeal" must invite a concrete decision (Billy Graham style altar call).`,
-        `- "conclusion" must restate the Big Idea + a closing prayer.`,
+        `- "passage" content MUST include the LITERAL Bible text quoted in full from a faithful translation in ${langFull} (PT: ARA/NVI; EN: ESV/NIV; ES: RVR/NVI), followed by the reference (book chapter:verse).`,
+        `- "doctrine" must state ONE clear theological truth and cite at least ONE supporting verse with full reference (book chapter:verse).`,
+        `- "objection" must voice a real skeptic's doubt and refute it briefly, citing Scripture (book chapter:verse).`,
+        `- "main_point", "explanation", "illustration", "application" — each MUST anchor the argument with at least ONE explicit Bible reference (book chapter:verse) written in ${langFull} (e.g. PT "João 3:16"; EN "John 3:16"; ES "Juan 3:16").`,
+        `- "appeal" must invite a concrete decision (Billy Graham style altar call) supported by a verse reference.`,
+        `- "conclusion" must restate the Big Idea + a closing prayer, with a final verse reference.`,
+        `- EVERY block (except pure transitions) must contain at least one biblical reference. NO BLOCK without Scripture support.`,
         `- Write everything in ${langFull}.`,
       ].join('\n');
 

@@ -6,9 +6,30 @@ import {
   BLOCK_META,
   bolderVerseNumbers,
   type Card,
+  type BlockTone,
 } from './PodiumModeModal';
+import { splitByVerseRefs } from '@/lib/verse-highlighter';
 
 type Lang = 'PT' | 'EN' | 'ES';
+
+/** Mapeamento tom → classe Tailwind para destacar referências bíblicas inline. */
+const VERSE_REF_CLASS: Record<BlockTone, string> = {
+  idea: 'bg-purple-100 text-purple-800 ring-purple-300',
+  hook: 'bg-orange-100 text-orange-800 ring-orange-300',
+  passage: 'bg-sky-100 text-sky-800 ring-sky-300',
+  illustration: 'bg-emerald-100 text-emerald-800 ring-emerald-300',
+  application: 'bg-orange-100 text-orange-900 ring-orange-400',
+  main: 'bg-blue-100 text-blue-800 ring-blue-300',
+  conclusion: 'bg-rose-100 text-rose-800 ring-rose-300',
+  original: 'bg-amber-100 text-amber-900 ring-amber-400',
+  transition: 'bg-slate-100 text-slate-800 ring-slate-300',
+  quote: 'bg-yellow-100 text-yellow-900 ring-yellow-400',
+  explanation: 'bg-violet-100 text-violet-800 ring-violet-300',
+  doctrine: 'bg-indigo-100 text-indigo-800 ring-indigo-300',
+  objection: 'bg-amber-100 text-amber-900 ring-amber-400',
+  appeal: 'bg-red-100 text-red-800 ring-red-300',
+  generic: 'bg-slate-100 text-slate-800 ring-slate-300',
+};
 
 interface PodiumLivePreviewProps {
   /** Markdown gerado em tempo real a partir dos blocos do Studio */
@@ -31,21 +52,56 @@ const tr = {
   },
 };
 
-/** Renderiza markdown inline com negritos/itálicos, no estilo Púlpito Claro. */
-function InlineMarkdown({ text, isQuote, fontPx }: { text: string; isQuote: boolean; fontPx: number }) {
+/** Renderiza markdown inline com negritos/itálicos + destaque de versículos, no estilo Púlpito Claro. */
+function InlineMarkdown({
+  text,
+  isQuote,
+  fontPx,
+  refClass,
+}: {
+  text: string;
+  isQuote: boolean;
+  fontPx: number;
+  refClass: string;
+}) {
   const processed = bolderVerseNumbers(text);
   const lines = processed.split('\n');
 
-  const renderInline = (s: string) => {
+  const renderRefs = (raw: string, keyBase: string) => {
+    const segs = splitByVerseRefs(raw);
+    if (segs.length === 1 && segs[0].type === 'text') return raw;
+    return segs.map((seg, i) =>
+      seg.type === 'ref' ? (
+        <span
+          key={`${keyBase}-r${i}`}
+          className={cn(
+            'inline-flex items-baseline px-1.5 py-0.5 mx-0.5 rounded-md text-[0.92em] font-semibold ring-1',
+            refClass,
+          )}
+        >
+          {seg.value}
+        </span>
+      ) : (
+        <span key={`${keyBase}-t${i}`}>{seg.value}</span>
+      ),
+    );
+  };
+
+  const renderInline = (s: string, keyBase: string) => {
     const parts = s.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
     return parts.map((p, i) => {
+      const k = `${keyBase}-${i}`;
       if (p.startsWith('**') && p.endsWith('**')) {
-        return <strong key={i} className="font-bold text-slate-950">{p.slice(2, -2)}</strong>;
+        return (
+          <strong key={k} className="font-bold text-slate-950">
+            {renderRefs(p.slice(2, -2), k)}
+          </strong>
+        );
       }
       if (p.startsWith('*') && p.endsWith('*') && p.length > 2) {
-        return <em key={i} className="italic">{p.slice(1, -1)}</em>;
+        return <em key={k} className="italic">{renderRefs(p.slice(1, -1), k)}</em>;
       }
-      return <span key={i}>{p}</span>;
+      return <span key={k}>{renderRefs(p, k)}</span>;
     });
   };
 
@@ -61,11 +117,11 @@ function InlineMarkdown({ text, isQuote, fontPx }: { text: string; isQuote: bool
           return (
             <div key={i} className="flex gap-2 pl-1">
               <span className="text-slate-400">•</span>
-              <span>{renderInline(t.slice(2))}</span>
+              <span>{renderInline(t.slice(2), `l${i}`)}</span>
             </div>
           );
         }
-        return <p key={i} className="tracking-[0.005em]">{renderInline(t)}</p>;
+        return <p key={i} className="tracking-[0.005em]">{renderInline(t, `l${i}`)}</p>;
       })}
     </div>
   );
@@ -147,7 +203,12 @@ export function PodiumLivePreview({
                   )}
                   {card.body.trim() && (
                     <div className="px-3.5 py-3">
-                      <InlineMarkdown text={card.body} isQuote={card.isQuote} fontPx={fontPx} />
+                      <InlineMarkdown
+                        text={card.body}
+                        isQuote={card.isQuote}
+                        fontPx={fontPx}
+                        refClass={VERSE_REF_CLASS[card.tone]}
+                      />
                     </div>
                   )}
                 </article>
