@@ -72,26 +72,91 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
   };
 
   const handlePdf = async () => {
+    let wrapper: HTMLDivElement | null = null;
     try {
       const html2pdf = (await import('html2pdf.js')).default;
-      const { pdfBrandHeader, pdfBrandFooter } = await import('@/lib/export-branding');
-      const el = contentRef.current;
-      if (!el) return;
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = pdfBrandHeader();
-      wrapper.appendChild(el.cloneNode(true));
-      wrapper.insertAdjacentHTML('beforeend', pdfBrandFooter());
+      const { BRAND } = await import('@/lib/export-branding');
+
+      // Build the full document HTML inline so we control sizing, fonts and brand chrome.
+      const dateStr = formatDate(data.scheduled_date, lang);
+      const esc = (s: string) =>
+        (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const paragraphs = (data.body_text || '')
+        .split('\n\n')
+        .filter(p => p.trim())
+        .map(p => `<p style="margin:0 0 14px 0;font-family:Georgia,serif;font-size:13px;line-height:1.85;color:#1a1430;">${esc(p.trim())}</p>`)
+        .join('');
+
+      const sectionTitle = (label: string) =>
+        `<h3 style="font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${BRAND.colors.gold};margin:0 0 10px 0;">${esc(label)}</h3>`;
+
+      const verseBlock = data.anchor_verse_text
+        ? `<div style="border-left:4px solid ${BRAND.colors.gold};background:#F8F6FF;padding:14px 18px;margin:18px 0 22px 0;border-radius:6px;">
+             <blockquote style="margin:0;font-family:Georgia,serif;font-size:13px;font-style:italic;line-height:1.7;color:#1a1430;">&ldquo;${esc(data.anchor_verse_text)}&rdquo;</blockquote>
+             <p style="margin:8px 0 0 0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:${BRAND.colors.gold};">— ${esc(data.anchor_verse)}</p>
+           </div>` : '';
+
+      const prayerBlock = data.closing_prayer
+        ? `<div style="background:#E8E0F5;padding:14px 18px;margin:18px 0;border-radius:6px;page-break-inside:avoid;">
+             ${sectionTitle(labels.prayer[lang])}
+             <p style="margin:0;font-family:Georgia,serif;font-size:13px;font-style:italic;line-height:1.8;color:#2a1f4d;">${esc(data.closing_prayer)}</p>
+           </div>` : '';
+
+      const practiceBlock = data.daily_practice
+        ? `<div style="background:#F8F6FF;border:1px solid #d6c8f0;padding:14px 18px;margin:18px 0;border-radius:6px;page-break-inside:avoid;">
+             ${sectionTitle(labels.practice[lang])}
+             <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;line-height:1.7;color:#1a1430;">${esc(data.daily_practice)}</p>
+           </div>` : '';
+
+      const reflectionBlock = data.reflection_question
+        ? `<div style="border-left:3px solid #b9a3e0;padding:8px 0 8px 16px;margin:18px 0;page-break-inside:avoid;">
+             ${sectionTitle(labels.reflection[lang])}
+             <p style="margin:0;font-family:Georgia,serif;font-size:13px;font-style:italic;line-height:1.7;color:#2a1f4d;">${esc(data.reflection_question)}</p>
+           </div>` : '';
+
+      wrapper = document.createElement('div');
+      // Render offscreen at A4-ish width so html2canvas captures full layout (not the modal's narrow viewport)
+      wrapper.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;background:#ffffff;padding:0;';
+      wrapper.innerHTML = `
+        <div style="width:794px;background:#ffffff;color:#1a1430;">
+          <div style="display:flex;align-items:center;gap:12px;padding:20px 32px 14px 32px;border-bottom:2px solid ${BRAND.colors.gold};">
+            <img src="${BRAND.logoPath}" crossorigin="anonymous" style="height:40px;width:40px;object-fit:contain;" alt="Living Word" />
+            <span style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:${BRAND.colors.brown};letter-spacing:0.5px;">${BRAND.name}</span>
+          </div>
+          <div style="padding:28px 32px 20px 32px;">
+            <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:900;line-height:1.2;color:#0F0A18;margin:0 0 8px 0;">${esc(data.title)}</h1>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#6b5b8a;margin:0 0 6px 0;text-transform:capitalize;">${esc(dateStr)}</p>
+            ${data.category ? `<span style="display:inline-block;font-family:Arial,sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${BRAND.colors.gold};background:#F8F6FF;padding:4px 10px;border-radius:999px;">✦ ${esc(data.category)}</span>` : ''}
+            ${verseBlock}
+            <div style="margin-top:8px;">
+              ${sectionTitle(labels.meditation[lang])}
+              ${paragraphs}
+            </div>
+            ${prayerBlock}
+            ${practiceBlock}
+            ${reflectionBlock}
+          </div>
+          <div style="margin:20px 32px 24px 32px;padding-top:14px;border-top:1px solid #e5dff0;text-align:center;font-family:Arial,sans-serif;font-size:10px;color:#999;">
+            ${BRAND.name} • ${BRAND.site}
+          </div>
+        </div>`;
       document.body.appendChild(wrapper);
+
       await html2pdf().set({
-        margin: [12, 12, 12, 12],
+        margin: [10, 0, 12, 0],
         filename: `devocional-${data.scheduled_date}.pdf`,
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 794 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
       }).from(wrapper).save();
-      document.body.removeChild(wrapper);
+
       toast.success(lang === 'PT' ? 'PDF salvo!' : lang === 'ES' ? '¡PDF guardado!' : 'PDF saved!');
-    } catch {
+    } catch (err) {
+      console.error('[DevotionalPDF]', err);
       toast.error(lang === 'PT' ? 'Erro ao gerar PDF' : lang === 'ES' ? 'Error al generar PDF' : 'Error generating PDF');
+    } finally {
+      if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
     }
   };
 
@@ -132,8 +197,8 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
           </button>
         </div>
 
-        {/* Scrollable content */}
-        <ScrollArea className="flex-1 min-h-0 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 160px)' }}>
+        {/* Scrollable content — flex-1 fills remaining modal height; ScrollArea handles overflow */}
+        <ScrollArea className="flex-1 min-h-0">
           <div ref={contentRef} className="px-5 sm:px-8 py-6 space-y-6" style={{ backgroundColor: colors.bg }}>
             {/* Title + date + category */}
             <div>
