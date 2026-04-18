@@ -92,6 +92,9 @@ const tr = {
   editBlock: { PT: 'Editar bloco', EN: 'Edit block', ES: 'Editar bloque' },
   saveEdit: { PT: 'Salvar edição', EN: 'Save edit', ES: 'Guardar edición' },
   doubleClickHint: { PT: 'Toque duplo para editar', EN: 'Double-tap to edit', ES: 'Toque doble para editar' },
+  alertSound: { PT: 'Som do alerta', EN: 'Alert sound', ES: 'Sonido de alerta' },
+  on: { PT: 'Ligado', EN: 'On', ES: 'Activado' },
+  off: { PT: 'Desligado', EN: 'Off', ES: 'Desactivado' },
 };
 
 /* ─── Detecção de tipo de bloco a partir do heading ─── */
