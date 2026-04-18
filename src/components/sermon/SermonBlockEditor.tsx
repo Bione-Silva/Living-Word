@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -14,8 +14,7 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SermonBlock } from './SermonBlock';
 import {
@@ -47,10 +46,21 @@ const tr = {
     EN: 'Start by adding blocks to build your sermon.',
     ES: 'Comience añadiendo bloques para construir su sermón.',
   },
-  addBlock: { PT: 'Adicionar bloco', EN: 'Add block', ES: 'Añadir bloque' },
+  addBlock: { PT: 'Adicionar Bloco', EN: 'Add Block', ES: 'Añadir Bloque' },
   totalWords: { PT: 'palavras no total', EN: 'total words', ES: 'palabras en total' },
   blocks: { PT: 'blocos', EN: 'blocks', ES: 'bloques' },
+  pickType: { PT: 'Escolha o tipo de bloco', EN: 'Pick a block type', ES: 'Elija el tipo de bloque' },
 };
+
+/**
+ * Mapeia o token Tailwind `border-l-{cor}-{tom}` para `bg-{cor}-{tom}` (cor da bolinha).
+ * Mantém PurgeCSS feliz porque os utilitários originais já existem em sermon-block-types.
+ */
+function dotColorClass(borderClass: string): string {
+  return borderClass
+    .replace('border-l-', 'bg-')
+    .trim();
+}
 
 export function SermonBlockEditor({
   blocks,
@@ -64,6 +74,21 @@ export function SermonBlockEditor({
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  // Fecha o picker ao clicar fora
+  useEffect(() => {
+    if (!pickerOpen) return;
+    function handler(e: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setPickerOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [pickerOpen]);
 
   const totalWords = useMemo(
     () => blocks.reduce((sum, b) => sum + countWords(b.content), 0),
@@ -81,6 +106,11 @@ export function SermonBlockEditor({
 
   function addBlock(type: SermonBlockType) {
     onChange([...blocks, createEmptyBlock(type)]);
+    setPickerOpen(false);
+    // Scroll suave para o final
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 80);
   }
 
   function updateBlock(next: SermonBlockData) {
@@ -95,36 +125,10 @@ export function SermonBlockEditor({
 
   return (
     <div className="space-y-4">
-      {/* Toolbar — Adicionar bloco por tipo */}
-      <div className="rounded-xl border border-border bg-card/60 p-3">
-        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
-          {tr.addBlock[lang]}
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {SERMON_BLOCK_ORDER.map((type) => {
-            const meta = SERMON_BLOCK_META[type];
-            return (
-              <button
-                key={type}
-                onClick={() => addBlock(type)}
-                className={cn(
-                  'inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium border-l-4 border-y border-r border-border bg-background hover:bg-muted/40 transition-colors',
-                  meta.borderClass,
-                )}
-              >
-                <span>{meta.emoji}</span>
-                <span className="text-foreground/90">{meta.label[lang]}</span>
-                <Plus className={cn('h-3 w-3 ml-0.5', meta.accentClass)} />
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Lista de blocos com DnD */}
       {blocks.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border bg-muted/20 p-8 text-center">
-          <p className="text-sm text-muted-foreground">{tr.empty[lang]}</p>
+          <p className="text-sm text-muted-foreground mb-4">{tr.empty[lang]}</p>
         </div>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -144,6 +148,52 @@ export function SermonBlockEditor({
           </SortableContext>
         </DndContext>
       )}
+
+      {/* + Adicionar Bloco — botão expansível com grid de tipos */}
+      <div ref={pickerRef} className="relative">
+        <button
+          onClick={() => setPickerOpen((o) => !o)}
+          className={cn(
+            'w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed transition-all',
+            'border-primary/40 bg-primary/5 text-primary hover:bg-primary/10 hover:border-primary/60',
+            pickerOpen && 'border-primary bg-primary/10',
+          )}
+        >
+          <Plus className="h-4 w-4" />
+          <span className="text-sm font-semibold">{tr.addBlock[lang]}</span>
+          {pickerOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        </button>
+
+        {pickerOpen && (
+          <div className="mt-2 rounded-xl border border-border bg-card shadow-lg p-4 animate-in fade-in slide-in-from-top-2 duration-150">
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-3">
+              {tr.pickType[lang]}
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2.5">
+              {SERMON_BLOCK_ORDER.map((type) => {
+                const meta = SERMON_BLOCK_META[type];
+                return (
+                  <button
+                    key={type}
+                    onClick={() => addBlock(type)}
+                    className="group flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-muted/50 transition-colors text-left"
+                  >
+                    <span
+                      className={cn(
+                        'h-2.5 w-2.5 rounded-full shrink-0 ring-2 ring-transparent group-hover:ring-current/20',
+                        dotColorClass(meta.borderClass),
+                      )}
+                    />
+                    <span className="text-xs font-semibold uppercase tracking-wide text-foreground/85 group-hover:text-foreground">
+                      {meta.label[lang]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Estatísticas globais */}
       {blocks.length > 0 && (
