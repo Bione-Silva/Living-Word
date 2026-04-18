@@ -1022,7 +1022,10 @@ export function PodiumModeModal({
     : 'bg-white border-slate-200 text-slate-900';
 
   return (
-    <div className={cn('fixed inset-0 z-[100] flex flex-col overflow-x-hidden', bgRoot)}>
+    <div
+      className={cn('fixed inset-0 z-[200] flex flex-col overflow-x-hidden', bgRoot)}
+      style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
       {/* ─── Top Bar (mobile-first, colapsável) ─── */}
       <header className={cn('shrink-0 border-b backdrop-blur-md', headerBorder, headerBg)}>
         {/* Linha 1 — sempre visível: título + timer + sair */}
