@@ -37,16 +37,17 @@ export function SmartDevotionalRecommender() {
   useEffect(() => {
     if (!user) return;
     const fetchRec = async () => {
-      try {
-        const { data: resp } = await supabase.functions.invoke('recommend-devotional', {
-          body: { language: lang },
-        });
-        if (resp && !resp.error) setData(resp);
-      } catch {
-        // silent
-      } finally {
+      const { data: resp, unauthorized } = await safeInvoke<RecommendationData & { error?: string }>(
+        'recommend-devotional',
+        { body: { language: lang } }
+      );
+      if (unauthorized) {
+        // Session expired — silent empty state
         setLoading(false);
+        return;
       }
+      if (resp && !resp.error) setData(resp as RecommendationData);
+      setLoading(false);
     };
     fetchRec();
   }, [user, lang]);

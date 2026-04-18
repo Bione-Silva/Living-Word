@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { safeInvoke } from '@/lib/safe-invoke';
 import { BookOpen, ChevronRight, Headphones, Calendar, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
