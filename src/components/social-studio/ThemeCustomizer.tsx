@@ -103,8 +103,8 @@ const colorPresets = [
     palette: [
       'linear-gradient(135deg, #B85042 0%, #6b2f26 52%, #3d1a15 100%)',
       'linear-gradient(135deg, #cc5e4f 0%, #823a2e 52%, #4f221b 100%)',
-      'linear-gradient(135deg, #9d4438 0%, #57271f 52',
-    ].slice(0, 3) as string[],
+      'linear-gradient(135deg, #9d4438 0%, #57271f 52%, #2f140f 100%)',
+    ],
   },
   {
     id: 'sage', label: 'Sage', preview: '#3a5a40',
