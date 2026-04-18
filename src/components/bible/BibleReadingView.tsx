@@ -62,6 +62,7 @@ export function BibleReadingView({
   const [studyPassage, setStudyPassage] = useState('');
   const [studyVerseText, setStudyVerseText] = useState('');
   const [activeHighlightVerses, setActiveHighlightVerses] = useState<Set<number>>(new Set());
+  const [compareCode, setCompareCode] = useState<string | null>(null);
 
   // Parse highlightVerse param (e.g. "22", "22-23") into a set of verse numbers
   useEffect(() => {
@@ -307,9 +308,10 @@ export function BibleReadingView({
         </button>
       </div>
 
-      {/* Verses */}
-      <div className="min-h-[400px] rounded-2xl border border-border bg-card p-3 md:p-4">
-        {(loading || retrying) ? (
+      {/* Verses (with optional compare column) */}
+      <div className={compareCode ? 'grid grid-cols-1 lg:grid-cols-2 gap-3' : ''}>
+        <div className="min-h-[400px] rounded-2xl border border-border bg-card p-3 md:p-4">
+          {(loading || retrying) ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
             {retrying && <p className="text-xs text-muted-foreground">{retryLabels[lang].retrying}</p>}
