@@ -166,7 +166,7 @@ export function SermonBlockEditor({
 
     setBulkLoading(true);
     try {
-      const langFull = lang === 'EN' ? 'English' : lang === 'ES' ? 'Spanish' : 'Portuguese';
+      const langFull = lang === 'EN' ? 'English' : lang === 'ES' ? 'Spanish' : 'Brazilian Portuguese (PT-BR)';
 
       // Garante que a tela tenha o esqueleto Spurgeon ANTES de gerar
       const targetBlocks: SermonBlockData[] =
@@ -183,9 +183,27 @@ export function SermonBlockEditor({
         `Return ONLY a JSON object — no preamble, no markdown fences — matching this schema exactly:`,
         `{ "blocks": [ { "type": "<one of: hook|passage|doctrine|objection|main_point|explanation|illustration|application|appeal|conclusion>", "title": "<short title>", "content": "<80-160 words of pastoral prose>" } ] }`,
         ``,
+        `══════════════════════════════════════════════════════════`,
+        `ABSOLUTE LANGUAGE LOCK — ZERO TOLERANCE:`,
+        `══════════════════════════════════════════════════════════`,
+        `- ALL "title" and "content" fields MUST be written in ${langFull}.`,
+        lang === 'PT'
+          ? `- NUNCA use termos estruturais em inglês dentro do "title" ou "content" (proibidos: "Main Points", "Hook", "Big Idea", "Conclusion", "Outline", "Introduction", "Application", "Appeal").`
+          : `- NEVER use structural English jargon inside "title" or "content" when language is not English.`,
+        lang === 'PT'
+          ? `- O "title" deve ser uma frase pastoral PURA em Português do Brasil (ex: "A Graça que Restaura"). NÃO o tipo do bloco.`
+          : `- The "title" must be a pure pastoral phrase in ${langFull} — NOT the block type label.`,
+        ``,
+        `══════════════════════════════════════════════════════════`,
+        `NUMBERING LOCK — DO NOT ADD NUMBERS TO TITLES:`,
+        `══════════════════════════════════════════════════════════`,
+        `- NEVER prefix the "title" with numbers like "1. ...", "1) ...", "I. ...", "### 1. ...".`,
+        `- NEVER add markdown headers (#, ##, ###) inside "title" or "content" fields. They are plain prose.`,
+        `- The visual numbering (1, 2, 3...) is rendered automatically by the frontend.`,
+        ``,
         `Rules:`,
         `- Output the blocks in the EXACT order listed above. Never skip a block. Never add extra blocks.`,
-        `- Each "content" must be plain pastoral prose (no markdown headers, no lists), 80-160 words.`,
+        `- Each "content" must be PLAIN pastoral prose (no markdown headers, no numbered lists, no bullet lists), 80-160 words.`,
         `- "passage" content must include the literal Bible text and reference (book chapter:verse).`,
         `- "doctrine" must state ONE clear theological truth from the text.`,
         `- "objection" must voice a real skeptic's doubt and refute it briefly.`,
