@@ -332,25 +332,25 @@ export default function BibleReader() {
       </div>
 
       {/* Main tabs */}
-      <div className="flex items-center gap-1 rounded-2xl border border-border bg-background p-1">
+      <div className="flex items-center gap-0.5 md:gap-1 rounded-2xl border border-border bg-background p-1">
         {mainTabs.map(t => (
           <button
             key={t.key}
             onClick={() => setActiveTab(t.key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors ${
+            className={`flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-3 py-2 md:py-2.5 rounded-lg text-[10px] md:text-xs font-medium transition-colors ${
               activeTab === t.key
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <t.icon className="h-3.5 w-3.5" />
-            {t.label[lang]}
+            <t.icon className="h-4 w-4 md:h-3.5 md:w-3.5" />
+            <span className="leading-none">{t.label[lang]}</span>
           </button>
         ))}
       </div>
 
       {/* Tab content */}
-       <div className="rounded-2xl border border-border bg-card p-4 md:p-6">
+       <div className="rounded-2xl border border-border bg-card p-3 md:p-6">
         {activeTab === 'read' && (
           <>
             {readView === 'books' && (
@@ -378,7 +378,7 @@ export default function BibleReader() {
 
       {/* Favorites & Notes */}
       {activeTab === 'read' && (
-         <div className="rounded-2xl border border-border bg-card p-4">
+         <div className="rounded-2xl border border-border bg-card p-3 md:p-4">
           <BibleTabs ref={tabsRef} refreshKey={tabsRefreshKey} onNavigate={handleNavigate} defaultTab={tabsDefaultTab} />
         </div>
       )}
