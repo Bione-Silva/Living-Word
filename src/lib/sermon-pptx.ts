@@ -13,16 +13,10 @@ import {
 
 type Lang = 'PT' | 'EN' | 'ES';
 
-/** Tipos de bloco que viram slide próprio na projeção. */
-const PROJECTABLE: Record<string, boolean> = {
-  passage: true,
-  big_idea: true,
-  main_point: true,
-  illustration: true,
-  application: true,
-  quote: true,
-  conclusion: true,
-};
+/**
+ * Mapeamento 1:1 — TODO bloco ativo do Studio vira um slide do PPTX,
+ * na mesma ordem cronológica. Nenhum tipo é filtrado.
+ */
 
 /** Paleta neutra premium — fundo escuro elegante, alto contraste para datashow. */
 const COLORS = {
@@ -242,40 +236,18 @@ export async function exportSermonToPptx(opts: {
   // Capa
   addCoverSlide(pres, title || passageRef || 'Sermão', bigIdea, lang);
 
-  // Slides de conteúdo
+  // Slides de conteúdo — 1 slide para CADA bloco ativo, na ordem original.
+  // Pula apenas blocos 100% vazios (sem título, conteúdo ou referência).
   let mainPointIndex = 0;
+  let contentSlides = 0;
   for (const block of blocks) {
-    if (!PROJECTABLE[block.type]) continue;
     const hasContent = (block.content?.trim().length || 0) > 0
       || (block.title?.trim().length || 0) > 0
       || (block.type === 'passage' && (block.passageRef?.trim().length || 0) > 0);
     if (!hasContent) continue;
     if (block.type === 'main_point') mainPointIndex += 1;
     addBlockSlide(pres, block, mainPointIndex, lang);
-  }
-
-  // Slide final de oração se ainda não houver conclusion
-  const hasConclusion = blocks.some((b) => b.type === 'conclusion' && b.content?.trim());
-  if (!hasConclusion) {
-    const closing = pres.addSlide();
-    closing.background = { color: COLORS.bgDark };
-    closing.addText('🙏', {
-      x: 0, y: 2.0, w: 13.333, h: 1.2,
-      align: 'center',
-      fontSize: 72,
-    });
-    closing.addText(
-      lang === 'PT' ? 'Oremos' : lang === 'ES' ? 'Oremos' : 'Let us pray',
-      {
-        x: 0, y: 3.4, w: 13.333, h: 1.2,
-        align: 'center',
-        fontFace: FONTS.display,
-        fontSize: 64,
-        color: COLORS.textLight,
-        bold: true,
-      },
-    );
-    addBrandFooter(closing);
+    contentSlides += 1;
   }
 
   const safeName = (title || 'sermao')
@@ -284,16 +256,7 @@ export async function exportSermonToPptx(opts: {
     .replace(/^-+|-+$/g, '')
     .slice(0, 60) || 'sermao';
 
-  // Total de slides = capa + projetáveis (+ closing se gerada)
-  const projectableCount = blocks.filter((b) => {
-    if (!PROJECTABLE[b.type]) return false;
-    const hasContent = (b.content?.trim().length || 0) > 0
-      || (b.title?.trim().length || 0) > 0
-      || (b.type === 'passage' && (b.passageRef?.trim().length || 0) > 0);
-    return hasContent;
-  }).length;
-  const total = 1 + projectableCount + (hasConclusion ? 0 : 1);
-
   await pres.writeFile({ fileName: `${safeName}.pptx` });
-  return total;
+  // Total = capa + 1 slide por bloco ativo
+  return 1 + contentSlides;
 }
