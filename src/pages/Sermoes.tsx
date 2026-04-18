@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine, Layers, Zap, MonitorPlay } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Trash2, Plus, History, Copy, Share2, FileText, Image, RefreshCw, BookOpen, Save, Presentation, Mic, Sparkles, PenLine, Layers, Zap, MonitorPlay, Columns2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
@@ -20,6 +20,7 @@ import { parseBibleUri, parseBibleRefString, type ParsedBibleRef } from '@/lib/b
 import { versionToApiCode, versionAbbrToCode } from '@/lib/bible-data';
 import { PreacherNotes } from '@/components/sermon/PreacherNotes';
 import { SermonBlockEditor, blocksToMarkdown, type SermonBlockData } from '@/components/sermon/SermonBlockEditor';
+import { PodiumLivePreview } from '@/components/sermon/PodiumLivePreview';
 import { exportSermonToPptx } from '@/lib/sermon-pptx';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -260,6 +261,16 @@ export default function Sermoes() {
   const [blocks, setBlocks] = useState<SermonBlockData[]>([]);
   const [bigIdea, setBigIdea] = useState('');
   const [passageRef, setPassageRef] = useState('');
+  // ─── Modo Comparação Lado-a-Lado (apenas desktop / tablet grande ≥ lg) ───
+  const [compareMode, setCompareMode] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try { return window.localStorage.getItem('sermon:compareMode') === '1'; } catch { return false; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem('sermon:compareMode', compareMode ? '1' : '0'); } catch { /* noop */ }
+  }, [compareMode]);
+  // Markdown sincronizado em tempo real para o preview lado-a-lado
+  const liveMarkdown = useMemo(() => blocksToMarkdown(blocks, lang), [blocks, lang]);
 
   // ─── Bridge: Série de Mensagens → Studio de Blocos ───
   // Aceita: ?mode=blocks&theme=...&passage=...&week=...&seriesTitle=...
