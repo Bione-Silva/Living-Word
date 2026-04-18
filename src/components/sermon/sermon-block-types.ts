@@ -103,6 +103,34 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
       ES: '¿Cuál es la raíz de la palabra original? (Ej: Los predicadores expositivos usan el idioma original — como ἀγάπη (agapē) — para revelar misterios perdidos en la traducción.)',
     },
   },
+  doctrine: {
+    type: 'doctrine',
+    borderClass: 'border-l-slate-700',
+    headerBgClass: 'bg-slate-700/10',
+    accentClass: 'text-slate-700 dark:text-slate-300',
+    dotClass: 'bg-slate-700',
+    emoji: '⚓',
+    label: { PT: 'Doutrina', EN: 'Doctrine', ES: 'Doctrina' },
+    placeholder: {
+      PT: 'Qual a verdade teológica absoluta por trás deste texto? (Ex: John Wesley ancorava toda a mensagem em doutrina pura antes de aplicá-la à vida — sem doutrina, não há sermão.)',
+      EN: 'What is the absolute theological truth behind this text? (E.g.: John Wesley anchored every message in pure doctrine before applying it to life — no doctrine, no sermon.)',
+      ES: '¿Cuál es la verdad teológica absoluta detrás de este texto? (Ej: John Wesley anclaba todo mensaje en doctrina pura antes de aplicarlo a la vida — sin doctrina, no hay sermón.)',
+    },
+  },
+  objection: {
+    type: 'objection',
+    borderClass: 'border-l-amber-600',
+    headerBgClass: 'bg-amber-600/10',
+    accentClass: 'text-amber-700 dark:text-amber-500',
+    dotClass: 'bg-amber-600',
+    emoji: '🛡️',
+    label: { PT: 'Objeção / Refutação', EN: 'Objection / Refutation', ES: 'Objeción / Refutación' },
+    placeholder: {
+      PT: 'Qual dúvida cética seu ouvinte pode estar pensando agora? (Ex: Charles Spurgeon antecipava as objeções da plateia para desarmá-las antes que virassem barreira ao Evangelho.)',
+      EN: 'What skeptical doubt might your listener be thinking right now? (E.g.: Charles Spurgeon would anticipate audience objections to disarm them before they became barriers to the Gospel.)',
+      ES: '¿Qué duda escéptica podría estar pensando su oyente ahora? (Ej: Charles Spurgeon anticipaba las objeciones de la audiencia para desarmarlas antes que se volvieran barreras al Evangelio.)',
+    },
+  },
   big_idea: {
     type: 'big_idea',
     borderClass: 'border-l-purple-600',
@@ -201,6 +229,20 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
       ES: 'Traiga el peso de un gigante de la fe para reforzar su tesis. (Ej: C.S. Lewis, Agustín, Lutero, Tozer — una buena cita es un martillo que clava la verdad.)',
     },
   },
+  appeal: {
+    type: 'appeal',
+    borderClass: 'border-l-red-600',
+    headerBgClass: 'bg-red-600/10',
+    accentClass: 'text-red-600 dark:text-red-400',
+    dotClass: 'bg-red-600',
+    emoji: '🔥',
+    label: { PT: 'Apelo / Altar Call', EN: 'Appeal / Altar Call', ES: 'Llamado / Altar Call' },
+    placeholder: {
+      PT: 'Ouvintes à beira da decisão. O que eles precisam fazer AGORA? (Ex: Billy Graham desenhava todo o sermão apontando para este momento de decisão diante do altar — sem apelo, a verdade fica solta no ar.)',
+      EN: 'Listeners on the edge of decision. What do they need to do RIGHT NOW? (E.g.: Billy Graham designed every sermon to point toward this moment of decision before the altar — without an appeal, truth is left dangling in the air.)',
+      ES: 'Oyentes al borde de la decisión. ¿Qué necesitan hacer AHORA? (Ej: Billy Graham diseñaba todo el sermón apuntando a este momento de decisión ante el altar — sin llamado, la verdad queda suelta en el aire.)',
+    },
+  },
   conclusion: {
     type: 'conclusion',
     borderClass: 'border-l-rose-500',
@@ -217,15 +259,35 @@ export const SERMON_BLOCK_META: Record<SermonBlockType, SermonBlockTypeMeta> = {
   },
 };
 
-export const SERMON_BLOCK_ORDER: SermonBlockType[] = [
-  'passage',
+/**
+ * Ordem oficial do Modelo Spurgeon (Expositivo) — esqueleto padrão da plataforma.
+ * Esta é a sequência homilética raiz que guia tanto a UI (auto-seed) quanto a IA (bulk-generate).
+ */
+export const SPURGEON_MODEL_ORDER: SermonBlockType[] = [
   'hook',
+  'passage',
+  'doctrine',
+  'objection',
+  'main_point',
+  'explanation',
+  'illustration',
+  'application',
+  'appeal',
+  'conclusion',
+];
+
+export const SERMON_BLOCK_ORDER: SermonBlockType[] = [
+  'hook',
+  'passage',
+  'doctrine',
+  'objection',
   'main_point',
   'explanation',
   'illustration',
   'application',
   'transition',
   'quote',
+  'appeal',
   'conclusion',
   'big_idea',
   'original',
