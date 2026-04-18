@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen, Columns2 } from 'lucide-react';
+
 import { getBookName, getTranslationLabelByCode, getVersionsForUserLanguage, getDefaultVersionCode, getBibleVersion, fetchBibleChapter, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
@@ -11,6 +13,18 @@ import { BibleCompareColumn } from './BibleCompareColumn';
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
+
+const HINT_STORAGE_KEY = 'bible_double_tap_hint_seen_v1';
+const doubleTapHint: Record<L, string> = {
+  PT: 'Toque duas vezes em um versículo para abrir as ferramentas',
+  EN: 'Double-tap a verse to open the tools',
+  ES: 'Toca dos veces un versículo para abrir las herramientas',
+};
+const dragHintLabel: Record<L, string> = {
+  PT: 'Arraste do versículo N até M para selecionar um trecho',
+  EN: 'Drag from verse N to M to select a range',
+  ES: 'Arrastra del versículo N al M para seleccionar un rango',
+};
 
 interface Verse { verse: number; text: string; }
 
@@ -63,6 +77,26 @@ export function BibleReadingView({
   const [studyVerseText, setStudyVerseText] = useState('');
   const [activeHighlightVerses, setActiveHighlightVerses] = useState<Set<number>>(new Set());
   const [compareCode, setCompareCode] = useState<string | null>(null);
+
+  // Drag-to-select (desktop only)
+  const dragAnchorRef = useRef<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // First-time hint toast (once per user/browser)
+  useEffect(() => {
+    try {
+      if (typeof window === 'undefined') return;
+      if (localStorage.getItem(HINT_STORAGE_KEY)) return;
+      const t = setTimeout(() => {
+        toast(doubleTapHint[lang], {
+          description: dragHintLabel[lang],
+          duration: 6000,
+        });
+        localStorage.setItem(HINT_STORAGE_KEY, '1');
+      }, 1200);
+      return () => clearTimeout(t);
+    } catch { /* noop */ }
+  }, [lang]);
 
   // Parse highlightVerse param (e.g. "22", "22-23") into a set of verse numbers
   useEffect(() => {
@@ -220,6 +254,49 @@ export function BibleReadingView({
     }
     setSelectedVerses(new Set());
   }, []);
+
+  // ─── Drag-to-select range (desktop only, via mouse) ───
+  // Mousedown on a verse # → start anchor; mouseenter on others while dragging extends the range.
+  // Touch devices keep the double-tap flow (pointerType filter).
+  const selectRange = useCallback((from: number, to: number) => {
+    const lo = Math.min(from, to);
+    const hi = Math.max(from, to);
+    const next = new Set<number>();
+    for (let i = lo; i <= hi; i++) next.add(i);
+    setSelectedVerses(next);
+  }, []);
+
+  const handleDragStart = (e: React.PointerEvent, verseNum: number) => {
+    if (e.pointerType !== 'mouse') return;
+    if (e.button !== 0) return;
+    dragAnchorRef.current = verseNum;
+    setIsDragging(true);
+  };
+
+  const handleDragEnter = (verseNum: number) => {
+    if (!isDragging || dragAnchorRef.current == null) return;
+    if (dragAnchorRef.current === verseNum) return;
+    selectRange(dragAnchorRef.current, verseNum);
+  };
+
+  // Global mouseup ends the drag. If a real range was made, suppress the imminent click.
+  useEffect(() => {
+    if (!isDragging) return;
+    const end = () => {
+      const wasRange = selectedVerses.size > 1;
+      setIsDragging(false);
+      dragAnchorRef.current = null;
+      if (wasRange && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate(20); } catch { /* noop */ }
+      }
+    };
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    return () => {
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+    };
+  }, [isDragging, selectedVerses.size]);
 
   // ─── Auto-dismiss: outside click + scroll closes the floating toolbar ───
   useEffect(() => {
@@ -441,17 +518,26 @@ export function BibleReadingView({
                 <div
                   key={v.verse}
                   id={`verse-${v.verse}`}
+                  onPointerEnter={() => handleDragEnter(v.verse)}
                   className={`flex items-start gap-3 py-2.5 px-2 rounded-lg transition-all ${
                       isUrlHighlight
                         ? 'bg-primary/10 ring-2 ring-primary/30 animate-pulse'
                         : isSelected
                           ? 'bg-primary/5 ring-1 ring-primary/20'
                           : hlClass || 'hover:bg-muted/40'
-                  }`}
+                  } ${isDragging ? 'select-none' : ''}`}
                 >
-                  {/* Verse number badge — double-tap / double-click to activate */}
+                  {/* Verse number badge — double-tap (touch) / drag (mouse) to select */}
                   <button
-                    onClick={() => handleVerseTap(v.verse)}
+                    onPointerDown={(e) => handleDragStart(e, v.verse)}
+                    onClick={(e) => {
+                      // Suppress click after a drag-range selection
+                      if (selectedVerses.size > 1 && selectedVerses.has(v.verse)) {
+                        e.preventDefault();
+                        return;
+                      }
+                      handleVerseTap(v.verse);
+                    }}
                     onDoubleClick={(e) => { e.preventDefault(); handleDoubleActivate(v.verse); }}
                     onContextMenu={(e) => e.preventDefault()}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors select-none ${
