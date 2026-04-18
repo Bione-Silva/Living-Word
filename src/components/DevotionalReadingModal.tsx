@@ -196,8 +196,8 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
           </button>
         </div>
 
-        {/* Scrollable content — flex-1 fills remaining modal height; ScrollArea handles overflow */}
-        <ScrollArea className="flex-1 min-h-0">
+        {/* Scrollable content — native overflow inside flex column for reliable scrolling */}
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
           <div ref={contentRef} className="px-5 sm:px-8 py-6 space-y-6" style={{ backgroundColor: colors.bg }}>
             {/* Title + date + category */}
             <div>
@@ -272,13 +272,13 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
             )}
 
             {/* Footer brand */}
-            <div className="flex items-center justify-center gap-3 pt-4">
+            <div className="flex items-center justify-center gap-3 pt-4 pb-2">
               <span className="h-px w-8" style={{ backgroundColor: colors.goldMuted + '40' }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: colors.goldMuted }}>Living Word</span>
               <span className="h-px w-8" style={{ backgroundColor: colors.goldMuted + '40' }} />
             </div>
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
