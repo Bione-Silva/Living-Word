@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Home, Loader2, ChevronDown, Star, RefreshCw, BookOpen } from 'lucide-react';
-import { getBookName, getApiBookName, getApiCodeForVersion, getTranslationLabelByCode, getVersionsForUserLanguage, type L } from '@/lib/bible-data';
+import { getBookName, getTranslationLabelByCode, getVersionsForUserLanguage, fetchBibleChapter, type L } from '@/lib/bible-data';
 import { InlineVerseToolbar } from './InlineVerseToolbar';
 import { StudySidebar } from './StudySidebar';
 import {
@@ -42,27 +42,7 @@ const retryLabels: Record<L, { retrying: string; failed: string; retry: string }
   ES: { retrying: 'Reintentando...', failed: 'No se pudo cargar este capítulo.', retry: 'Intentar de nuevo' },
 };
 
-const fallbackTranslation: Record<string, string> = {
-  PT: 'almeida', EN: 'web', ES: 'almeida',
-};
-const fallbackBookLang: Record<string, string> = {
-  PT: 'almeida', EN: 'web', ES: 'almeida',
-};
-
-async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response | null> {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const res = await fetch(url);
-      if (res.ok) return res;
-      // Don't retry 404 — translation doesn't exist
-      if (res.status === 404) return null;
-      if (i < maxRetries - 1) await new Promise(r => setTimeout(r, 1000 * (i + 1)));
-    } catch {
-      if (i < maxRetries - 1) await new Promise(r => setTimeout(r, 1000 * (i + 1)));
-    }
-  }
-  return null;
-}
+// Unified fetcher (Bolls + bible-api fallback) lives in bible-data.ts
 
 export function BibleReadingView({
   bookId, chapter, totalChapters, translation,
@@ -130,24 +110,10 @@ export function BibleReadingView({
     if (isRetry) setRetrying(true); else setLoading(true);
     setError(''); setVerses([]); setSelectedVerses(new Set());
     try {
-      const apiTranslation = getApiCodeForVersion(translation);
-      const apiBook = getApiBookName(bookId, translation);
-      const ref = `${apiBook} ${chapter}`;
-      const baseUrl = `https://bible-api.com/${encodeURIComponent(ref)}`;
-      let res = await fetchWithRetry(`${baseUrl}?translation=${apiTranslation}`);
-      let data = res ? await res.json() : null;
-
-      // If API returned error/empty, try language-appropriate fallback
-      const fb = fallbackTranslation[lang] || 'almeida';
-      if ((!data || (!data.verses && !data.text)) && apiTranslation !== fb) {
-        const fbBook = getApiBookName(bookId, fb === 'almeida' ? 'ara' : 'web');
-        const fbRef = `${fbBook} ${chapter}`;
-        res = await fetchWithRetry(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
-        data = res ? await res.json() : null;
-      }
-
-      if (data?.verses) setVerses(data.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
-      else if (data?.text) setVerses([{ verse: 1, text: data.text }]);
+      const rows = await fetchBibleChapter({
+        bookId, chapter, versionCode: translation, fallbackLang: lang,
+      });
+      if (rows.length > 0) setVerses(rows);
       else setError(retryLabels[lang].failed);
     } catch {
       setError(retryLabels[lang].failed);
@@ -289,25 +255,15 @@ export function BibleReadingView({
               <SelectTrigger className="w-auto h-7 px-2.5 gap-1 text-xs font-medium border-border bg-muted/60 rounded-md">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bible-light">
+              <SelectContent className="bible-light max-h-[360px]">
                 <SelectGroup>
                   <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
-                    {lang === 'PT' ? 'Recomendadas' : lang === 'ES' ? 'Recomendadas' : 'Recommended'}
+                    {lang === 'PT' ? 'Versões em Português' : lang === 'ES' ? 'Versiones en Español' : 'English Versions'}
                   </SelectLabel>
                   {primaryVersions.filter(v => v.isAvailable).map(v => (
                     <SelectItem key={v.code} value={v.code} className="text-xs">{v.shortLabel} — {v.name}</SelectItem>
                   ))}
                 </SelectGroup>
-                {secondaryVersions.length > 0 && (
-                  <SelectGroup>
-                    <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold px-2 py-1">
-                      {lang === 'PT' ? 'Outras' : lang === 'ES' ? 'Otras' : 'Others'}
-                    </SelectLabel>
-                    {secondaryVersions.filter(v => v.isAvailable).map(v => (
-                      <SelectItem key={v.code} value={v.code} className="text-xs">{v.shortLabel} — {v.name} ({v.language})</SelectItem>
-                    ))}
-                  </SelectGroup>
-                )}
               </SelectContent>
             </Select>
           </div>

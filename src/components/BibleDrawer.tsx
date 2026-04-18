@@ -7,7 +7,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { bibleBooks, getBookName, getApiBookName, getApiCodeForVersion, getTranslation, getTranslationLabelByCode, translationOptions, getVersionsByLanguage, getVersionsForUserLanguage, getBibleVersion, type L } from '@/lib/bible-data';
+import { bibleBooks, getBookName, getTranslation, getTranslationLabelByCode, getVersionsForUserLanguage, getBibleVersion, fetchBibleChapter, type L } from '@/lib/bible-data';
 
 interface Props {
   open: boolean;
@@ -54,26 +54,10 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
     setLoading(true);
     setVerses([]);
     try {
-      const apiTranslation = getApiCodeForVersion(translation);
-      const apiBook = getApiBookName(book, translation);
-      const ref = `${apiBook} ${chapter}`;
-      const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=${apiTranslation}`);
-      let data = res.ok ? await res.json() : null;
-      
-      // If failed, fallback to language-appropriate version
-      if ((!data || (!data.verses && !data.text))) {
-        const fb = lang === 'EN' ? 'web' : 'almeida';
-        if (apiTranslation !== fb) {
-          const fbBook = getApiBookName(book, fb === 'almeida' ? 'ara' : 'web');
-          const fbRef = `${fbBook} ${chapter}`;
-          const fbRes = await fetch(`https://bible-api.com/${encodeURIComponent(fbRef)}?translation=${fb}`);
-          data = fbRes.ok ? await fbRes.json() : null;
-        }
-      }
-      
-      if (data?.verses) {
-        setVerses(data.verses.map((v: any) => ({ verse: v.verse, text: v.text })));
-      }
+      const rows = await fetchBibleChapter({
+        bookId: book, chapter, versionCode: translation, fallbackLang: lang,
+      });
+      setVerses(rows);
     } catch {
       setVerses([]);
     } finally {

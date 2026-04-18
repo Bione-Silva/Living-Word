@@ -72,8 +72,28 @@ export function getBookName(id: string, lang: L): string {
 }
 
 /**
- * Returns the book name to use with bible-api.com based on version code.
- * The 'almeida' API translation requires Portuguese book names.
+ * Bolls.life uses numeric book IDs (1=Genesis ... 66=Revelation, canonical Protestant order).
+ */
+export const bollsBookNumber: Record<string, number> = {
+  'Genesis': 1, 'Exodus': 2, 'Leviticus': 3, 'Numbers': 4, 'Deuteronomy': 5,
+  'Joshua': 6, 'Judges': 7, 'Ruth': 8, '1 Samuel': 9, '2 Samuel': 10,
+  '1 Kings': 11, '2 Kings': 12, '1 Chronicles': 13, '2 Chronicles': 14,
+  'Ezra': 15, 'Nehemiah': 16, 'Esther': 17, 'Job': 18, 'Psalms': 19,
+  'Proverbs': 20, 'Ecclesiastes': 21, 'Song of Solomon': 22, 'Isaiah': 23,
+  'Jeremiah': 24, 'Lamentations': 25, 'Ezekiel': 26, 'Daniel': 27,
+  'Hosea': 28, 'Joel': 29, 'Amos': 30, 'Obadiah': 31, 'Jonah': 32,
+  'Micah': 33, 'Nahum': 34, 'Habakkuk': 35, 'Zephaniah': 36, 'Haggai': 37,
+  'Zechariah': 38, 'Malachi': 39, 'Matthew': 40, 'Mark': 41, 'Luke': 42,
+  'John': 43, 'Acts': 44, 'Romans': 45, '1 Corinthians': 46, '2 Corinthians': 47,
+  'Galatians': 48, 'Ephesians': 49, 'Philippians': 50, 'Colossians': 51,
+  '1 Thessalonians': 52, '2 Thessalonians': 53, '1 Timothy': 54, '2 Timothy': 55,
+  'Titus': 56, 'Philemon': 57, 'Hebrews': 58, 'James': 59, '1 Peter': 60,
+  '2 Peter': 61, '1 John': 62, '2 John': 63, '3 John': 64, 'Jude': 65, 'Revelation': 66,
+};
+
+/**
+ * Returns the book name for use with bible-api.com (legacy fallback).
+ * Bolls uses numeric IDs and does NOT need this.
  */
 export function getApiBookName(id: string, versionCode: string): string {
   const apiCode = getApiCodeForVersion(versionCode);
@@ -88,40 +108,65 @@ export interface BibleVersion {
   name: string;
   shortLabel: string;
   language: 'PT' | 'EN' | 'ES';
-  source: 'api' | 'supabase' | 'both';
-  apiCode: string; // bible-api.com translation code
+  /** Source for fetching: 'bolls' (bolls.life) or 'biblapi' (bible-api.com legacy) */
+  source: 'bolls' | 'biblapi';
+  /** ID for the chosen API */
+  apiCode: string;
   isAvailable: boolean;
   isPremium: boolean;
   isDefault?: boolean;
 }
 
+/**
+ * Catálogo completo de versões.
+ * • Português: 7 versões via Bolls.life (ARA, NAA, NVT, NVI-PT, NTLH, ARC09, ACF11)
+ * • Inglês: 7 versões via Bolls.life (KJV, NKJV, NIV, ESV, NASB, WEB, YLT)
+ * • Espanhol: 6 versões via Bolls.life (RV1960, RV2004, NVI, NTV, LBLA, PDT)
+ */
 export const bibleVersions: BibleVersion[] = [
-  // Português
-  { code: 'ara', name: 'Almeida Revista e Atualizada', shortLabel: 'ARA', language: 'PT', source: 'api', apiCode: 'almeida', isAvailable: true, isPremium: false, isDefault: true },
-  // English
-  { code: 'kjv', name: 'King James Version', shortLabel: 'KJV', language: 'EN', source: 'api', apiCode: 'kjv', isAvailable: true, isPremium: false, isDefault: true },
-  { code: 'web', name: 'World English Bible', shortLabel: 'WEB', language: 'EN', source: 'api', apiCode: 'web', isAvailable: true, isPremium: false },
-  { code: 'asv', name: 'American Standard Version', shortLabel: 'ASV', language: 'EN', source: 'api', apiCode: 'asv', isAvailable: true, isPremium: false },
-  { code: 'bbe', name: 'Bible in Basic English', shortLabel: 'BBE', language: 'EN', source: 'api', apiCode: 'bbe', isAvailable: true, isPremium: false },
-  // Español — bible-api.com has no Spanish translation; use 'web' as fallback
-  { code: 'oeb', name: 'Open English Bible', shortLabel: 'OEB', language: 'EN', source: 'api', apiCode: 'oeb', isAvailable: true, isPremium: false },
+  // ── Português ──
+  { code: 'ara',    name: 'Almeida Revista e Atualizada',  shortLabel: 'ARA',   language: 'PT', source: 'bolls', apiCode: 'ARA',   isAvailable: true, isPremium: false, isDefault: true },
+  { code: 'naa',    name: 'Nova Almeida Atualizada',        shortLabel: 'NAA',   language: 'PT', source: 'bolls', apiCode: 'NAA',   isAvailable: true, isPremium: false },
+  { code: 'nvt',    name: 'Nova Versão Transformadora',     shortLabel: 'NVT',   language: 'PT', source: 'bolls', apiCode: 'NVT',   isAvailable: true, isPremium: false },
+  { code: 'nvipt',  name: 'Nova Versão Internacional',      shortLabel: 'NVI',   language: 'PT', source: 'bolls', apiCode: 'NVIPT', isAvailable: true, isPremium: false },
+  { code: 'ntlh',   name: 'Nova Tradução na Linguagem de Hoje', shortLabel: 'NTLH', language: 'PT', source: 'bolls', apiCode: 'NTLH', isAvailable: true, isPremium: false },
+  { code: 'arc09',  name: 'Almeida Revista e Corrigida',    shortLabel: 'ARC',   language: 'PT', source: 'bolls', apiCode: 'ARC09', isAvailable: true, isPremium: false },
+  { code: 'acf11',  name: 'Almeida Corrigida Fiel',         shortLabel: 'ACF',   language: 'PT', source: 'bolls', apiCode: 'ACF11', isAvailable: true, isPremium: false },
+
+  // ── Español ──
+  { code: 'rv1960', name: 'Reina-Valera 1960',              shortLabel: 'RVR',   language: 'ES', source: 'bolls', apiCode: 'RV1960', isAvailable: true, isPremium: false, isDefault: true },
+  { code: 'rv2004', name: 'Reina Valera Gómez',             shortLabel: 'RVG',   language: 'ES', source: 'bolls', apiCode: 'RV2004', isAvailable: true, isPremium: false },
+  { code: 'nvi',    name: 'Nueva Versión Internacional',    shortLabel: 'NVI',   language: 'ES', source: 'bolls', apiCode: 'NVI',    isAvailable: true, isPremium: false },
+  { code: 'ntv',    name: 'Nueva Traducción Viviente',      shortLabel: 'NTV',   language: 'ES', source: 'bolls', apiCode: 'NTV',    isAvailable: true, isPremium: false },
+  { code: 'lbla',   name: 'La Biblia de las Américas',      shortLabel: 'LBLA',  language: 'ES', source: 'bolls', apiCode: 'LBLA',   isAvailable: true, isPremium: false },
+  { code: 'pdt',    name: 'Palabra de Dios para Todos',     shortLabel: 'PDT',   language: 'ES', source: 'bolls', apiCode: 'PDT',    isAvailable: true, isPremium: false },
+
+  // ── English ──
+  { code: 'kjv',    name: 'King James Version',             shortLabel: 'KJV',   language: 'EN', source: 'bolls', apiCode: 'KJV',    isAvailable: true, isPremium: false, isDefault: true },
+  { code: 'nkjv',   name: 'New King James Version',         shortLabel: 'NKJV',  language: 'EN', source: 'bolls', apiCode: 'NKJV',   isAvailable: true, isPremium: false },
+  { code: 'niv',    name: 'New International Version',      shortLabel: 'NIV',   language: 'EN', source: 'bolls', apiCode: 'NIV2011',isAvailable: true, isPremium: false },
+  { code: 'esv',    name: 'English Standard Version',       shortLabel: 'ESV',   language: 'EN', source: 'bolls', apiCode: 'ESV',    isAvailable: true, isPremium: false },
+  { code: 'nasb',   name: 'New American Standard Bible',    shortLabel: 'NASB',  language: 'EN', source: 'bolls', apiCode: 'NASB',   isAvailable: true, isPremium: false },
+  { code: 'web',    name: 'World English Bible',            shortLabel: 'WEB',   language: 'EN', source: 'bolls', apiCode: 'WEB',    isAvailable: true, isPremium: false },
+  { code: 'ylt',    name: "Young's Literal Translation",    shortLabel: 'YLT',   language: 'EN', source: 'bolls', apiCode: 'YLT',    isAvailable: true, isPremium: false },
 ];
 
 /** Group versions by language */
 export function getVersionsByLanguage(): Record<string, BibleVersion[]> {
   const pt = bibleVersions.filter(v => v.language === 'PT');
+  const es = bibleVersions.filter(v => v.language === 'ES');
   const en = bibleVersions.filter(v => v.language === 'EN');
   const groups: Record<string, BibleVersion[]> = {};
   if (pt.length) groups['Português'] = pt;
+  if (es.length) groups['Español'] = es;
   if (en.length) groups['English'] = en;
   return groups;
 }
 
-/** Get versions filtered for the user's language (prioritise same-language, include others as secondary) */
+/** Versions filtered for the user's language: same-language first, others as secondary. */
 export function getVersionsForUserLanguage(userLang: L): { primary: BibleVersion[]; secondary: BibleVersion[] } {
   const primary = bibleVersions.filter(v => v.language === userLang);
   const secondary = bibleVersions.filter(v => v.language !== userLang);
-  // If user lang has no versions (e.g. ES), show PT as primary
   if (primary.length === 0) {
     const ptVersions = bibleVersions.filter(v => v.language === 'PT');
     const rest = bibleVersions.filter(v => v.language !== 'PT');
@@ -130,18 +175,20 @@ export function getVersionsForUserLanguage(userLang: L): { primary: BibleVersion
   return { primary, secondary };
 }
 
-/** Get a BibleVersion by code */
+/** Get a BibleVersion by code (case-insensitive). */
 export function getBibleVersion(code: string): BibleVersion | undefined {
-  return bibleVersions.find(v => v.code === code);
+  if (!code) return undefined;
+  const lower = code.toLowerCase();
+  return bibleVersions.find(v => v.code.toLowerCase() === lower);
 }
 
-/** Get the default version for a language */
+/** Get the default version code for a language. */
 export function getDefaultVersionCode(lang: L): string {
   const v = bibleVersions.find(v => v.language === lang && v.isDefault);
-  return v?.code || (lang === 'PT' ? 'ara' : 'kjv');
+  return v?.code || (lang === 'PT' ? 'ara' : lang === 'ES' ? 'rv1960' : 'kjv');
 }
 
-/** Get the API translation code for a version code */
+/** Get the API translation code for a version code (used by bible-api.com legacy paths). */
 export function getApiCodeForVersion(code: string): string {
   const v = getBibleVersion(code);
   return v?.apiCode || 'web';
@@ -151,7 +198,7 @@ export function getApiCodeForVersion(code: string): string {
 export const translationOptions: Record<L, { code: string; label: string }[]> = {
   PT: bibleVersions.filter(v => v.language === 'PT').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
   EN: bibleVersions.filter(v => v.language === 'EN').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
-  ES: bibleVersions.filter(v => v.language === 'EN').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
+  ES: bibleVersions.filter(v => v.language === 'ES').map(v => ({ code: v.code, label: `${v.name} (${v.shortLabel})` })),
 };
 
 /** LEGACY — get default translation code for a language */
@@ -168,34 +215,19 @@ export function getTranslationLabel(lang: L): string {
 export function getTranslationLabelByCode(code: string): string {
   const v = getBibleVersion(code);
   if (v) return `${v.name} (${v.shortLabel})`;
-  const map: Record<string, string> = {
-    almeida: 'Almeida Revista e Atualizada (ARA)',
-    web: 'World English Bible (WEB)',
-    kjv: 'King James Version (KJV)',
-    asv: 'American Standard Version (ASV)',
-    bbe: 'Bible in Basic English (BBE)',
-  };
-  return map[code] || code;
+  return code;
 }
 
 /**
  * Map a Bible version abbreviation (from sermon text) to a version code.
- * Returns the internal version code (e.g. "ara", "kjv") to use with getApiCodeForVersion.
+ * Returns the internal code (e.g. "ara", "kjv", "rv1960") so the caller can
+ * resolve API specifics afterwards.
  */
 export function versionToApiCode(version: string): string | null {
   const upper = version.toUpperCase().trim();
   const direct = bibleVersions.find(v => v.shortLabel === upper);
   if (direct) return direct.apiCode;
-  const map: Record<string, string> = {
-    'ARA': 'almeida',
-    'ARC': 'almeida',
-    'KJV': 'kjv',
-    'WEB': 'web',
-    'ASV': 'asv',
-    'BBE': 'bbe',
-    'OEB': 'oeb',
-  };
-  return map[upper] || null;
+  return null;
 }
 
 /** Map a version abbreviation to the internal version code */
@@ -203,4 +235,90 @@ export function versionAbbrToCode(abbr: string): string | null {
   const upper = abbr.toUpperCase().trim();
   const found = bibleVersions.find(v => v.shortLabel === upper);
   return found?.code || null;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Unified chapter fetcher                                                    */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+export interface BibleVerseRow { verse: number; text: string; }
+
+interface FetchOpts {
+  bookId: string;
+  chapter: number;
+  versionCode: string;
+  /** User language — used as last-resort fallback if chosen version 404s. */
+  fallbackLang: L;
+  signal?: AbortSignal;
+}
+
+async function tryFetchJson(url: string, signal?: AbortSignal): Promise<any | null> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(url, { signal });
+      if (res.ok) return await res.json();
+      if (res.status === 404) return null;
+    } catch {
+      // retry
+    }
+    if (attempt === 0) await new Promise(r => setTimeout(r, 600));
+  }
+  return null;
+}
+
+function cleanVerseText(raw: string): string {
+  if (!raw) return '';
+  // Strip Strong/H references and HTML tags that some Bolls translations include
+  return raw
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function fetchFromBolls(version: BibleVersion, bookId: string, chapter: number, signal?: AbortSignal): Promise<BibleVerseRow[] | null> {
+  const bookNum = bollsBookNumber[bookId];
+  if (!bookNum) return null;
+  const url = `https://bolls.life/get-text/${version.apiCode}/${bookNum}/${chapter}/`;
+  const data = await tryFetchJson(url, signal);
+  if (!Array.isArray(data) || data.length === 0) return null;
+  return data
+    .map((v: any) => ({ verse: v.verse, text: cleanVerseText(v.text) }))
+    .filter(v => v.verse && v.text);
+}
+
+async function fetchFromBibleApi(version: BibleVersion, bookId: string, chapter: number, signal?: AbortSignal): Promise<BibleVerseRow[] | null> {
+  const apiBook = version.apiCode === 'almeida' ? (ptNames[bookId] || bookId) : bookId;
+  const ref = `${apiBook} ${chapter}`;
+  const url = `https://bible-api.com/${encodeURIComponent(ref)}?translation=${version.apiCode}`;
+  const data = await tryFetchJson(url, signal);
+  if (!data?.verses) return null;
+  return data.verses.map((v: any) => ({ verse: v.verse, text: cleanVerseText(v.text) }));
+}
+
+/**
+ * Unified Bible chapter fetcher. Routes to the proper backend based on the
+ * version's `source`. Falls back to the language's default version if the
+ * primary lookup fails (so users always see *something* in their language).
+ */
+export async function fetchBibleChapter(opts: FetchOpts): Promise<BibleVerseRow[]> {
+  const { bookId, chapter, versionCode, fallbackLang, signal } = opts;
+  const version = getBibleVersion(versionCode);
+
+  // Primary attempt
+  if (version) {
+    const fetcher = version.source === 'bolls' ? fetchFromBolls : fetchFromBibleApi;
+    const rows = await fetcher(version, bookId, chapter, signal);
+    if (rows && rows.length > 0) return rows;
+  }
+
+  // Fallback: default version of user's language
+  const fallbackCode = getDefaultVersionCode(fallbackLang);
+  const fallbackVersion = getBibleVersion(fallbackCode);
+  if (fallbackVersion && fallbackVersion.code !== version?.code) {
+    const fetcher = fallbackVersion.source === 'bolls' ? fetchFromBolls : fetchFromBibleApi;
+    const rows = await fetcher(fallbackVersion, bookId, chapter, signal);
+    if (rows && rows.length > 0) return rows;
+  }
+
+  return [];
 }

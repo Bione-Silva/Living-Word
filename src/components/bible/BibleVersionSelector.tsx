@@ -61,7 +61,7 @@ export function BibleVersionSelector({ value, onChange, compact }: Props) {
             {current?.name || value}
           </p>
           <p className="text-[10px] text-muted-foreground">
-            {current ? `${current.shortLabel} • ${current.source === 'api' ? 'API' : current.source === 'supabase' ? 'Local' : 'API + Local'}` : ''}
+            {current ? `${current.shortLabel} • ${current.language}` : ''}
           </p>
         </div>
         <Select value={value} onValueChange={onChange}>
