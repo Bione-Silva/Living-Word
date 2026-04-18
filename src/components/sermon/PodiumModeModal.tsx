@@ -994,23 +994,59 @@ export function PodiumModeModal({
               </div>
 
               <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-[11px] uppercase tracking-wider opacity-70 flex items-center justify-between">
+                <span>{tr.alertTone[lang]}</span>
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); testCurrentTone(); }}
+                  className={cn(
+                    'text-[10px] font-semibold normal-case tracking-normal px-2 py-0.5 rounded-md transition-colors',
+                    isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                  )}
+                >
+                  {tr.testTone[lang]}
+                </button>
+              </DropdownMenuLabel>
+              <div className="px-2 pb-2 grid grid-cols-3 gap-1">
+                {([
+                  { key: 'bell' as const, label: tr.toneBell[lang], icon: <Volume2 className="h-3 w-3" /> },
+                  { key: 'gong' as const, label: tr.toneGong[lang], icon: <Volume2 className="h-3 w-3" /> },
+                  { key: 'silent' as const, label: tr.toneSilent[lang], icon: <VolumeX className="h-3 w-3 opacity-70" /> },
+                ]).map((opt) => (
+                  <button
+                    key={opt.key}
+                    onClick={(e) => { e.preventDefault(); setAlertTone(opt.key); }}
+                    className={cn(
+                      'flex flex-col items-center gap-1 text-[10px] py-1.5 rounded-md transition-colors',
+                      alertTone === opt.key
+                        ? 'bg-amber-600 text-white font-bold ring-1 ring-amber-400'
+                        : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                    )}
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              <DropdownMenuSeparator />
               <DropdownMenuItem
-                onSelect={(e) => { e.preventDefault(); setSoundEnabled((v) => !v); }}
+                onSelect={(e) => { e.preventDefault(); setKeepScreenOn((v) => !v); }}
                 className="flex items-center justify-between gap-2 cursor-pointer"
               >
                 <span className="flex items-center gap-2 text-xs">
-                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4 opacity-60" />}
-                  {tr.alertSound[lang]}
+                  <Sun className="h-4 w-4" />
+                  {tr.keepScreenOn[lang]}
                 </span>
                 <span
                   className={cn(
                     'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full',
-                    soundEnabled
+                    keepScreenOn
                       ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/40'
                       : 'bg-slate-500/15 text-slate-500 dark:text-slate-400 ring-1 ring-slate-500/30',
                   )}
                 >
-                  {soundEnabled ? tr.on[lang] : tr.off[lang]}
+                  {keepScreenOn ? tr.on[lang] : tr.off[lang]}
                 </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
