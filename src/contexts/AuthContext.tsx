@@ -15,6 +15,8 @@ interface UserProfile {
   avatar_url?: string;
   doctrine?: string;
   pastoral_voice?: string;
+  preaching_style?: string;
+  audience?: string;
   bible_version?: string;
   trial_started_at?: string;
   trial_ends_at?: string;
@@ -25,6 +27,9 @@ interface UserProfile {
   state?: string;
   zip_code?: string;
   country?: string;
+  church_name?: string;
+  church_role?: string;
+  denomination?: string;
   theme_color?: string;
   font_family?: string;
   layout_style?: string;

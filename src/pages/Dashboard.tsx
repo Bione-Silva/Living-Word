@@ -15,6 +15,7 @@ import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
 import { SocialStudioHighlightCard } from '@/components/dashboard/SocialStudioHighlightCard';
 import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
+import { OnboardingNudgeCard } from '@/components/dashboard/OnboardingNudgeCard';
 import { SmartDevotionalRecommender } from '@/components/engagement/SmartDevotionalRecommender';
 import { UserEngagementDashboard } from '@/components/engagement/UserEngagementDashboard';
 import { NotificationCenter } from '@/components/engagement/NotificationCenter';
@@ -89,6 +90,7 @@ export default function Dashboard() {
     <div className="space-y-6 max-w-2xl mx-auto">
       <DashboardTopBanner />
       <DashboardGreeting />
+      <OnboardingNudgeCard />
       <MonthlyOverviewCard />
       <div id="bom-amigo">
         <BomAmigoCard />
