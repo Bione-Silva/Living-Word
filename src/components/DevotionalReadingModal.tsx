@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -6,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks, Send, Mail, Smartphone, ChevronDown } from 'lucide-react';
+import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks, Send, Mail, Smartphone, ChevronDown, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -47,6 +48,8 @@ const labels = {
   verse: { PT: 'Versículo-âncora', EN: 'Anchor verse', ES: 'Versículo ancla' },
   pdfReady: { PT: 'PDF pronto para envio', EN: 'PDF ready to send', ES: 'PDF listo para enviar' },
   pdfShareUnsupported: { PT: 'Seu dispositivo não permite envio direto. Baixando o PDF — anexe manualmente.', EN: 'Your device does not allow direct sending. Downloading the PDF — attach it manually.', ES: 'Tu dispositivo no permite envío directo. Descargando el PDF — adjúntalo manualmente.' },
+  toCarousel: { PT: 'Gerar Carrossel para Redes', EN: 'Generate Social Carousel', ES: 'Generar Carrusel para Redes' },
+  toCarouselShort: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
 } satisfies Record<string, Record<L, string>>;
 
 function formatDate(dateStr: string, lang: L): string {
@@ -57,6 +60,31 @@ function formatDate(dateStr: string, lang: L): string {
 
 export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  /** Build a clean text payload to seed Social Studio. */
+  const buildSocialPayload = () => {
+    const parts: string[] = [];
+    if (data.anchor_verse_text) {
+      parts.push(`"${data.anchor_verse_text}" — ${data.anchor_verse}`);
+    }
+    if (data.body_text) parts.push(data.body_text.trim());
+    if (data.closing_prayer) parts.push(data.closing_prayer.trim());
+    return parts.join('\n\n');
+  };
+
+  const handleGenerateCarousel = () => {
+    const initialText = buildSocialPayload();
+    onOpenChange(false);
+    navigate('/social-studio', {
+      state: {
+        source_content: initialText,
+        source_title: data.title,
+        source_origin: 'devotional',
+        initialText,
+      },
+    });
+  };
 
   const buildPlainText = () => {
     let text = `${data.title}\n${formatDate(data.scheduled_date, lang)}\n`;
@@ -351,8 +379,22 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
                 <Mail className="h-4 w-4" />
                 <span>{labels.shareEmail[lang]}</span>
               </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* CTA — pré-popula o Estúdio Social com o conteúdo do devocional */}
+        <button
+          onClick={handleGenerateCarousel}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:opacity-90 hover:scale-[1.02] min-h-[44px] text-white shadow-sm"
+          style={{
+            background: `linear-gradient(135deg, ${colors.gold}, hsl(280, 70%, 55%))`,
+            borderColor: 'transparent',
+          }}
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">{labels.toCarousel[lang]}</span>
+          <span className="sm:hidden">{labels.toCarouselShort[lang]}</span>
+        </button>
         </div>
 
         {/* Scrollable content — native overflow inside flex column for reliable scrolling */}

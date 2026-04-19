@@ -289,6 +289,15 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {slides.map((slide, slideIdx) => {
             const downloading = busyKey?.startsWith(`${slideIdx}-`);
+            // Intercalação dinâmica: imagem aparece apenas em slides pares
+            // (capa = 0 sempre tem imagem). Ímpares ficam só com gradiente
+            // do tema para dar respiro visual e leitura limpa.
+            // Quando há apenas 1 slide, sempre usa a imagem.
+            const useImageOnThisSlide =
+              slides.length === 1 || slideIdx % 2 === 0;
+            const slideBgImage = useImageOnThisSlide
+              ? theme.backgroundImageUrl
+              : undefined;
             return (
               <div key={slideIdx} className="group relative">
                 <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border shadow-sm transition-all hover:shadow-lg hover:border-primary/40">
@@ -297,7 +306,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
                     slide={slide}
                     aspectRatio={aspectRatio}
                     template={template}
-                    bgImageUrl={theme.backgroundImageUrl}
+                    bgImageUrl={slideBgImage}
                     themeColor={theme.gradient}
                     themeColors={getThemePalette(theme.gradient)}
                     slideIndex={slideIdx}
