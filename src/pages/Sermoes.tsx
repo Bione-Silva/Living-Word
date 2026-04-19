@@ -854,6 +854,7 @@ export default function Sermoes() {
                   <div className="rounded-xl border border-border bg-card/60 p-4">
                     <p className="text-xs font-bold text-muted-foreground mb-3 tracking-wide">{labels.duration[lang]}</p>
                     <ChipGroup items={durations} selected={duration} onSelect={setDuration} lang={lang} />
+                    <CustomDurationInput lang={lang} duration={duration} setDuration={setDuration} presets={durations} />
                   </div>
                 </div>
 
