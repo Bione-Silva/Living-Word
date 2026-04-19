@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TheologyDNAChart } from '@/components/minds/TheologyDNAChart';
 import { CompareMindsDialog } from '@/components/minds/CompareMindsDialog';
+import { MindAvatar } from '@/components/minds/MindAvatar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';

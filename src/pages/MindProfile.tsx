@@ -11,6 +11,7 @@ import {
   Shield, ChevronRight, Database, Cpu, BookMarked
 } from 'lucide-react';
 import { TheologyDNAChart } from '@/components/minds/TheologyDNAChart';
+import { MindAvatar } from '@/components/minds/MindAvatar';
 
 type L = 'PT' | 'EN' | 'ES';
 

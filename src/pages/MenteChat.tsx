@@ -6,6 +6,7 @@ import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, Thum
 import { ArtifactActions } from '@/components/mind-chat/ArtifactActions';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { minds } from '@/data/minds';
+import { MindAvatar } from '@/components/minds/MindAvatar';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { supabase } from '@/integrations/supabase/client';
