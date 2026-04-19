@@ -25,6 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Sparkles, Layers, Loader2, Wand2, Image as ImageIcon, Palette, BookOpen,
+  Hash, PenLine, Camera, Mountain, Brush, LayoutTemplate,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -37,11 +38,18 @@ const headings: Record<L, Record<string, string>> = {
     studio: 'Estúdio',
     gallery: 'Minhas Artes',
     format: 'Formato',
+    slideCount: 'Quantidade',
     inputTitle: 'Conteúdo',
     inputDesc: 'Busque um versículo ou gere texto pastoral',
-    designTitle: 'Estilo Visual',
+    contentGen: 'Gerador',
+    imageMode: 'Imagem',
+    carousel: 'Carrossel',
+    palette: 'Paleta',
+    scenes: 'Cenas',
+    designTitle: 'Estilo',
     designDesc: 'Cor de fundo, fonte e cor do texto',
     sceneTitle: 'Cenas Bíblicas',
+    templateTitle: 'Template',
     generateCarousel: 'Gerar Carrossel Devocional',
     carouselFromVerse: 'Cria slides automáticos a partir do versículo',
     carouselGenerated: 'Carrossel gerado!',
@@ -55,11 +63,18 @@ const headings: Record<L, Record<string, string>> = {
     studio: 'Studio',
     gallery: 'My Arts',
     format: 'Format',
+    slideCount: 'Count',
     inputTitle: 'Content',
     inputDesc: 'Search a verse or generate pastoral text',
-    designTitle: 'Visual Style',
+    contentGen: 'Generator',
+    imageMode: 'Image',
+    carousel: 'Carousel',
+    palette: 'Palette',
+    scenes: 'Scenes',
+    designTitle: 'Style',
     designDesc: 'Background color, font and text color',
     sceneTitle: 'Biblical Scenes',
+    templateTitle: 'Template',
     generateCarousel: 'Generate Devotional Carousel',
     carouselFromVerse: 'Auto-creates slides from the verse',
     carouselGenerated: 'Carousel generated!',
@@ -73,11 +88,18 @@ const headings: Record<L, Record<string, string>> = {
     studio: 'Estudio',
     gallery: 'Mis Artes',
     format: 'Formato',
+    slideCount: 'Cantidad',
     inputTitle: 'Contenido',
     inputDesc: 'Busca un versículo o genera texto pastoral',
-    designTitle: 'Estilo Visual',
+    contentGen: 'Generador',
+    imageMode: 'Imagen',
+    carousel: 'Carrusel',
+    palette: 'Paleta',
+    scenes: 'Escenas',
+    designTitle: 'Estilo',
     designDesc: 'Color de fondo, fuente y color del texto',
     sceneTitle: 'Escenas Bíblicas',
+    templateTitle: 'Plantilla',
     generateCarousel: 'Generar Carrusel Devocional',
     carouselFromVerse: 'Crea slides automáticos del versículo',
     carouselGenerated: '¡Carrusel generado!',
@@ -96,6 +118,7 @@ export default function SocialStudio() {
   const hasAccess = userPlan !== 'free';
 
   const [activeTab, setActiveTab] = useState<string>('studio');
+  const [activePanel, setActivePanel] = useState<string>('format');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('4:5');
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
   const [slides, setSlides] = useState<SlideData[]>([]);
@@ -402,67 +425,101 @@ export default function SocialStudio() {
         </TabsList>
 
         <TabsContent value="studio" className="mt-0">
-          <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-4 sm:gap-6">
-            {/* ── LEFT: INPUT PANEL ── */}
-            <div className="space-y-4 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 min-w-0">
-              {/* Format selector */}
-              <Card className="bg-card border-border">
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-primary" />
-                    <h3 className="text-sm font-bold text-foreground">{h.format}</h3>
-                  </div>
-                  <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
-                </CardContent>
-              </Card>
-
-              {/* Slide count selector */}
-              <Card className="bg-card border-border">
-                <CardContent className="p-4">
-                  <SlideCountPicker
-                    value={slideCount}
-                    onChange={(v) => {
-                      setSlideCount(v);
-                      // If verse loaded and user picks > 1, hint to generate carousel
-                      if (v > 1 && verseContext && slides.length === 1) {
-                        toast.info(
-                          lang === 'PT' ? 'Clique em "Gerar Carrossel" abaixo para criar os slides'
-                          : lang === 'EN' ? 'Click "Generate Carousel" below to create slides'
-                          : 'Haz clic en "Generar Carrusel" abajo para crear los slides'
-                        );
-                      }
-                    }}
-                    lang={lang}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* Content input */}
-              <div>
-                <div className="flex items-center gap-2 mb-2 px-1">
-                  <BookOpen className="h-4 w-4 text-primary" />
-                  <h3 className="text-sm font-bold text-foreground">{h.inputTitle}</h3>
+          {/* Horizontal panel navigation — pill-style chips, scrollable on mobile */}
+          {(() => {
+            const panels: Array<{ id: string; label: string; icon: typeof Layers }> = [
+              { id: 'format', label: h.format, icon: Layers },
+              { id: 'count', label: h.slideCount, icon: Hash },
+              { id: 'content', label: h.inputTitle, icon: BookOpen },
+              { id: 'generator', label: h.contentGen, icon: PenLine },
+              { id: 'image', label: h.imageMode, icon: Camera },
+              { id: 'palette', label: h.palette, icon: Palette },
+              { id: 'scenes', label: h.scenes, icon: Mountain },
+              { id: 'style', label: h.designTitle, icon: Brush },
+              { id: 'template', label: h.templateTitle, icon: LayoutTemplate },
+            ];
+            return (
+              <div className="-mx-1 mb-5 overflow-x-auto">
+                <div className="flex items-center gap-2 px-1 min-w-max">
+                  {panels.map((p) => {
+                    const Icon = p.icon;
+                    const active = activePanel === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setActivePanel(p.id)}
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all whitespace-nowrap ${
+                          active
+                            ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                            : 'bg-card text-foreground border-border hover:border-primary/40'
+                        }`}
+                        aria-pressed={active}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {p.label}
+                      </button>
+                    );
+                  })}
                 </div>
-                <p className="text-xs text-muted-foreground mb-3 px-1">{h.inputDesc}</p>
-                <ContentGenerator
-                  onVerseGenerated={handleVerseGenerated}
-                  onTextGenerated={handleTextGenerated}
-                />
               </div>
+            );
+          })()}
 
-              {/* ── NEW: Image Mode picker ── */}
-              <Card className="bg-card border-border">
-                <CardContent className="p-4">
-                  <ImageModePicker
-                    value={imageMode}
-                    onChange={(m) => setImageMode(m)}
-                    lang={lang}
-                  />
-                </CardContent>
-              </Card>
+          {/* Active panel + Preview area side-by-side on desktop, stacked on mobile */}
+          <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 sm:gap-6">
+            {/* ── ACTIVE PANEL ── */}
+            <div className="min-w-0">
+              {activePanel === 'format' && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Layers className="h-4 w-4 text-primary" />
+                      <h3 className="text-sm font-bold text-foreground">{h.format}</h3>
+                    </div>
+                    <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Devotional carousel CTA (only when verse loaded + slideCount > 1) */}
-              {verseContext && slideCount > 1 && (
+              {activePanel === 'count' && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4">
+                    <SlideCountPicker
+                      value={slideCount}
+                      onChange={(v) => {
+                        setSlideCount(v);
+                        if (v > 1 && verseContext && slides.length === 1) {
+                          toast.info(
+                            lang === 'PT' ? 'Clique em "Gerar Carrossel" abaixo para criar os slides'
+                            : lang === 'EN' ? 'Click "Generate Carousel" below to create slides'
+                            : 'Haz clic en "Generar Carrusel" abajo para crear los slides'
+                          );
+                        }
+                      }}
+                      lang={lang}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {activePanel === 'content' && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-4 w-4 text-primary" />
+                      <h3 className="text-sm font-bold text-foreground">{h.inputTitle}</h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{h.inputDesc}</p>
+                    <ContentGenerator
+                      onVerseGenerated={handleVerseGenerated}
+                      onTextGenerated={handleTextGenerated}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {activePanel === 'generator' && (
                 <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30">
                   <CardContent className="p-4 space-y-2">
                     <div className="flex items-start gap-2">
@@ -472,6 +529,15 @@ export default function SocialStudio() {
                         <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{h.carouselFromVerse} ({slideCount})</p>
                       </div>
                     </div>
+                    {!verseContext && (
+                      <p className="text-xs text-muted-foreground">
+                        {lang === 'PT'
+                          ? 'Carregue um versículo na aba "Conteúdo" primeiro.'
+                          : lang === 'EN'
+                          ? 'Load a verse in the "Content" tab first.'
+                          : 'Carga un versículo en la pestaña "Contenido" primero.'}
+                      </p>
+                    )}
                     <Button
                       onClick={generateDevotionalCarousel}
                       disabled={loadingDevotional}
@@ -482,7 +548,7 @@ export default function SocialStudio() {
                       {loadingDevotional ? h.generating : `${h.generateCarousel} (${slideCount})`}
                     </Button>
                     {showVerseError && (
-                      <p className="text-[12px] mt-1" style={{ color: '#dc2626' }}>
+                      <p className="text-[12px] mt-1 text-destructive">
                         {lang === 'PT'
                           ? 'Digite um versículo ou tema antes de gerar'
                           : lang === 'EN'
@@ -494,75 +560,85 @@ export default function SocialStudio() {
                 </Card>
               )}
 
-              {/* Verse palette gallery — always visible (permanent) */}
-              <Card className="bg-card border-border">
-                <CardContent className="p-4">
-                  <VersePalettePicker
-                    value={activePaletteId}
-                    onChange={handlePaletteSelect}
-                    lang={lang}
-                  />
-                </CardContent>
-              </Card>
+              {activePanel === 'image' && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4">
+                    <ImageModePicker
+                      value={imageMode}
+                      onChange={(m) => setImageMode(m)}
+                      lang={lang}
+                    />
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Biblical Scene Gallery — community library + AI on demand */}
-              <Card className="bg-card border-border">
-                <CardContent className="p-4">
-                  <BiblicalSceneGallery
-                    onPick={handleSceneSelect}
-                    lang={lang}
-                    activeId={activeSceneId}
-                    searchTerm={verseContext?.book || verseContext?.text}
-                  />
-                </CardContent>
-              </Card>
+              {activePanel === 'palette' && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4">
+                    <VersePalettePicker
+                      value={activePaletteId}
+                      onChange={handlePaletteSelect}
+                      lang={lang}
+                    />
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Visual style — custom background + colors */}
-              <div>
-                <div className="flex items-center gap-2 mb-2 px-1">
-                  <Palette className="h-4 w-4 text-primary" />
-                  <h3 className="text-sm font-bold text-foreground">{h.designTitle}</h3>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 px-1">{h.designDesc}</p>
-                <ThemeCustomizer
-                  value={theme}
-                  onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
-                  lang={lang}
-                  onUploadBackground={handleBackgroundUpload}
-                />
-              </div>
+              {activePanel === 'scenes' && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4">
+                    <BiblicalSceneGallery
+                      onPick={handleSceneSelect}
+                      lang={lang}
+                      activeId={activeSceneId}
+                      searchTerm={verseContext?.book || verseContext?.text}
+                    />
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Poster style picker — single template applied to all slides */}
-              <Card className="bg-card border-border">
-                <CardContent className="p-4">
-                  <TemplatePicker value={template} onChange={setTemplate} lang={lang} />
-                </CardContent>
-              </Card>
+              {activePanel === 'style' && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Palette className="h-4 w-4 text-primary" />
+                      <h3 className="text-sm font-bold text-foreground">{h.designTitle}</h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{h.designDesc}</p>
+                    <ThemeCustomizer
+                      value={theme}
+                      onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
+                      lang={lang}
+                      onUploadBackground={handleBackgroundUpload}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {activePanel === 'template' && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4">
+                    <TemplatePicker value={template} onChange={setTemplate} lang={lang} />
+                  </CardContent>
+                </Card>
+              )}
 
               {slides.length > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleClear}
-                  className="w-full text-muted-foreground hover:text-foreground"
+                  className="w-full text-muted-foreground hover:text-foreground mt-3"
                 >
                   {h.clear}
                 </Button>
               )}
             </div>
 
-            {/* ── RIGHT: VARIATION GRID ── */}
+            {/* ── PREVIEW (always visible) ── */}
             <div className="min-w-0">
               <div className="mb-2">
-                <span
-                  className="inline-block text-[11px] font-medium"
-                  style={{
-                    color: '#7c3aed',
-                    background: '#ede9fe',
-                    padding: '3px 10px',
-                    borderRadius: 9999,
-                  }}
-                >
+                <span className="inline-block text-[11px] font-medium rounded-full px-2.5 py-1 bg-primary/10 text-primary">
                   {lang === 'PT' ? 'Modo: ' : lang === 'EN' ? 'Mode: ' : 'Modo: '}
                   {getImageModeLabel(imageMode, lang)}
                 </span>
