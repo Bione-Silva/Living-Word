@@ -272,6 +272,15 @@ export default function Calendario() {
                 <List className="h-3.5 w-3.5" />
                 {tt('listView')}
               </button>
+              <button
+                onClick={() => setViewMode('year')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  viewMode === 'year' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <CalendarIcon className="h-3.5 w-3.5" />
+                {tt('yearView')}
+              </button>
             </div>
             <div className="flex gap-1.5">
               <Badge variant="outline" className="gap-1 text-[10px]">
