@@ -140,6 +140,25 @@ const ASPECT_CSS: Record<AspectRatio, string> = {
   '1.91:1': '1.91 / 1',
 };
 
+/**
+ * Mapa de gradientes por modo visual — APLICADOS NO PREVIEW NA HORA
+ * para o usuário enxergar imediatamente o efeito do modo escolhido.
+ * Cada gradiente reflete o clima estético do modo correspondente.
+ */
+const IMAGE_MODE_GRADIENT: Record<ImageMode, string> = {
+  biblica: 'linear-gradient(135deg, #3d2006 0%, #7a4010 55%, #c8861f 100%)',
+  moderna: 'linear-gradient(135deg, #f4ede2 0%, #d8c9b4 55%, #8a7f70 100%)',
+  editorial: 'linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 55%, #4a4a4a 100%)',
+  simbolica: 'linear-gradient(135deg, #0e2010 0%, #1a3d1e 55%, #3a6b3f 100%)',
+};
+
+const IMAGE_MODE_TEXT_COLOR: Record<ImageMode, string> = {
+  biblica: '#FFF6E5',
+  moderna: '#1f1a14',
+  editorial: '#FFFFFF',
+  simbolica: '#F0FFF4',
+};
+
 export default function SocialStudio() {
   const { lang } = useLanguage();
   const { user, profile } = useAuth();
