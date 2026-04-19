@@ -78,13 +78,13 @@ export function InstallAppCard() {
   // Já instalado: mostrar confirmação discreta.
   if (isStandalone) {
     return (
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 px-4 py-3 flex items-center gap-3">
-        <div className="h-9 w-9 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-          <Check className="h-4 w-4 text-emerald-600" />
+      <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 flex items-center gap-3">
+        <div className="h-9 w-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+          <Check className="h-4 w-4 text-primary" />
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-emerald-900">{COPY.installed[l]}</p>
-          <p className="text-xs text-emerald-700/80 truncate">{COPY.installedSub[l]}</p>
+          <p className="text-sm font-semibold text-foreground">{COPY.installed[l]}</p>
+          <p className="text-xs text-muted-foreground truncate">{COPY.installedSub[l]}</p>
         </div>
       </div>
     );

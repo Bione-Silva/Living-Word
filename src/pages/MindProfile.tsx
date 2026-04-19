@@ -108,7 +108,7 @@ export default function MindProfile() {
 
         <div className="relative z-10">
           <div className="mx-auto w-36 h-36 sm:w-44 sm:h-44 rounded-full border-[3px] border-[hsl(270,43%,92%)] overflow-hidden shadow-lg mb-6">
-            <img src={mind.image} alt={mind.name} className="w-full h-full object-cover" width={176} height={176} />
+            <MindAvatar src={mind.image} name={mind.name} size={176} />
           </div>
           <span className="text-3xl">{mind.flag}</span>
 
