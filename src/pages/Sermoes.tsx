@@ -243,6 +243,61 @@ function ChipGroup({ items, selected, onSelect, lang }: { items: Record<L, strin
   );
 }
 
+/* ═══ Custom duration input — preacher chooses any minutes ═══ */
+function CustomDurationInput({
+  lang,
+  duration,
+  setDuration,
+  presets,
+}: {
+  lang: L;
+  duration: string | null;
+  setDuration: (val: string | null) => void;
+  presets: string[];
+}) {
+  const placeholder = lang === 'EN' ? 'Custom (min)' : lang === 'ES' ? 'Personalizado (min)' : 'Personalizado (min)';
+  const minutesLabel = lang === 'EN' ? 'min' : 'min';
+  const isPreset = duration ? presets.includes(duration) : true;
+  const initial = !isPreset && duration ? duration.replace(/[^\d]/g, '') : '';
+  const [value, setValue] = useState<string>(initial);
+
+  const apply = (raw: string) => {
+    const n = parseInt(raw.replace(/[^\d]/g, ''), 10);
+    if (!Number.isFinite(n) || n <= 0) {
+      setValue('');
+      return;
+    }
+    const clamped = Math.min(Math.max(n, 1), 240);
+    setValue(String(clamped));
+    setDuration(`${clamped} ${minutesLabel}`);
+  };
+
+  return (
+    <div className="mt-2.5 flex items-center gap-2">
+      <input
+        type="number"
+        inputMode="numeric"
+        min={1}
+        max={240}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => setValue(e.target.value.replace(/[^\d]/g, ''))}
+        onBlur={(e) => apply(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            apply((e.target as HTMLInputElement).value);
+          }
+        }}
+        className={`w-24 px-3 py-1.5 rounded-lg text-xs font-medium border bg-background text-foreground transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+          !isPreset && duration ? 'border-primary text-primary' : 'border-border'
+        }`}
+      />
+      <span className="text-xs text-muted-foreground">{minutesLabel}</span>
+    </div>
+  );
+}
+
 /* ═══ Markdown → clean HTML for PDF ═══ */
 function markdownToHtml(md: string): string {
   let html = md;
