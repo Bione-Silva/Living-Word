@@ -19,6 +19,7 @@ import { PlanOverviewCard } from '@/components/dashboard/PlanOverviewCard';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 import { PushNotificationsCard } from '@/components/PushNotificationsCard';
 import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
+import { BIBLE_VERSIONS, DEFAULT_COMPARE_VERSIONS } from '@/lib/bible-versions';
 import type { Language } from '@/lib/i18n';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -443,7 +444,7 @@ export default function Configuracoes() {
                     const userLangKey = (lang as 'PT' | 'EN' | 'ES') || 'PT';
                     const fb = DEFAULT_COMPARE_VERSIONS[userLangKey][defaultIdx];
                     const current =
-                      (profile as Record<string, unknown> | null)?.[key] as string | null | undefined;
+                      (profile as unknown as Record<string, unknown> | null)?.[key] as string | null | undefined;
                     return (
                       <div key={key} className="space-y-1.5">
                         <Label className="text-xs">
