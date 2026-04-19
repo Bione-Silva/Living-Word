@@ -1,23 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useIsStandalone } from '@/hooks/useIsStandalone';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Bell, Download, Sparkles, X, Wifi } from 'lucide-react';
+import { trackInstallEvent, type InstallVariant } from '@/lib/pwa-analytics';
 
 type L = 'PT' | 'EN' | 'ES';
 
 const COPY = {
-  title: {
-    PT: 'Baixe o Living Word',
-    EN: 'Get the Living Word app',
-    ES: 'Descarga Living Word',
+  initial: {
+    title: {
+      PT: 'Baixe o Living Word',
+      EN: 'Get the Living Word app',
+      ES: 'Descarga Living Word',
+    },
+    desc: {
+      PT: 'Notificações diárias, acesso offline e Palavra do Dia direto no seu celular.',
+      EN: 'Daily notifications, offline access, and Daily Word right on your phone.',
+      ES: 'Notificaciones diarias, acceso offline y Palabra del Día en tu móvil.',
+    },
   },
-  desc: {
-    PT: 'Notificações diárias, acesso offline e Palavra do Dia direto no seu celular.',
-    EN: 'Daily notifications, offline access, and Daily Word right on your phone.',
-    ES: 'Notificaciones diarias, acceso offline y Palabra del Día en tu móvil.',
+  soft: {
+    title: {
+      PT: 'Que tal levar o Living Word com você?',
+      EN: 'Care to take Living Word with you?',
+      ES: '¿Y si llevas Living Word contigo?',
+    },
+    desc: {
+      PT: 'Quando estiver pronto, instalar leva poucos segundos — e sua Palavra do Dia chega ainda mais rápido.',
+      EN: 'Whenever you’re ready, installing takes seconds — and your Daily Word arrives even faster.',
+      ES: 'Cuando quieras, instalarlo toma segundos — y tu Palabra del Día llega aún más rápido.',
+    },
   },
   cta: { PT: 'Instalar app', EN: 'Install app', ES: 'Instalar app' },
   iosHint: {
@@ -36,7 +51,8 @@ const COPY = {
 const STORAGE_KEY = 'lw_mobile_install_dismissed_at';
 const FIRST_VISIT_KEY = 'lw_first_visit_at';
 const SUPPRESS_DAYS = 7;
-const SHOW_WINDOW_DAYS = 7; // banner only shows during first 7 days of usage
+const REENGAGE_AFTER_DAYS = 14; // re-show with softer copy after this many days
+const SHOW_WINDOW_DAYS = 7; // initial banner only shows during first 7 days
 
 function isIos() {
   if (typeof navigator === 'undefined') return false;
@@ -63,50 +79,83 @@ export function MobileInstallBanner() {
   const l = lang as L;
 
   const [showIosSheet, setShowIosSheet] = useState(false);
-  const [hidden, setHidden] = useState<boolean>(() => {
+
+  // Determine if banner is currently suppressed by a recent dismissal,
+  // and which copy variant we should show ("initial" or "soft_reengagement").
+  const { hidden: initiallyHidden, variant: initialVariant } = (() => {
     try {
       const ts = localStorage.getItem(STORAGE_KEY);
-      if (!ts) return false;
+      if (!ts) return { hidden: false, variant: 'initial' as InstallVariant };
       const dismissedAt = Number(ts);
-      const now = Date.now();
-      return now - dismissedAt < SUPPRESS_DAYS * 24 * 60 * 60 * 1000;
+      const ageMs = Date.now() - dismissedAt;
+      if (ageMs < SUPPRESS_DAYS * 24 * 60 * 60 * 1000) {
+        return { hidden: true, variant: 'initial' as InstallVariant };
+      }
+      if (ageMs >= REENGAGE_AFTER_DAYS * 24 * 60 * 60 * 1000) {
+        return { hidden: false, variant: 'soft_reengagement' as InstallVariant };
+      }
+      // Between SUPPRESS_DAYS and REENGAGE_AFTER_DAYS: stay quiet.
+      return { hidden: true, variant: 'initial' as InstallVariant };
     } catch {
-      return false;
+      return { hidden: false, variant: 'initial' as InstallVariant };
     }
-  });
+  })();
 
-  // 7-day welcome window: only show banner during user's first week.
+  const [hidden, setHidden] = useState<boolean>(initiallyHidden);
+  const [variant] = useState<InstallVariant>(initialVariant);
+
+  // 7-day welcome window: only gates the INITIAL banner. Soft re-engagement
+  // intentionally bypasses this so we can win back users who declined early on.
   const firstVisit = getOrSetFirstVisit();
   const withinWelcomeWindow = Date.now() - firstVisit < SHOW_WINDOW_DAYS * 24 * 60 * 60 * 1000;
 
-  if (isStandalone || hidden || !withinWelcomeWindow) return null;
-
   const ios = isIos();
-  // Show on iOS mobile (manual instructions) OR when beforeinstallprompt is available.
-  if (!isInstallable && !(ios && isMobile)) return null;
+  const canShow =
+    !isStandalone &&
+    !hidden &&
+    (isInstallable || (ios && isMobile)) &&
+    (variant === 'soft_reengagement' || withinWelcomeWindow);
+
+  // Fire "shown" once per mount when the banner becomes visible.
+  const trackedShownRef = useRef(false);
+  useEffect(() => {
+    if (canShow && !trackedShownRef.current) {
+      trackedShownRef.current = true;
+      void trackInstallEvent('shown', variant);
+    }
+  }, [canShow, variant]);
+
+  if (!canShow) return null;
+
+  const copy = variant === 'soft_reengagement' ? COPY.soft : COPY.initial;
 
   const handleDismiss = () => {
     setHidden(true);
     try {
       localStorage.setItem(STORAGE_KEY, String(Date.now()));
     } catch {}
+    void trackInstallEvent('dismissed', variant);
     dismiss();
   };
 
   const handleInstall = async () => {
+    void trackInstallEvent('clicked', variant);
     if (ios) {
       setShowIosSheet(true);
       return;
     }
     const accepted = await install();
-    if (accepted) handleDismiss();
+    if (accepted) {
+      void trackInstallEvent('installed', variant);
+      handleDismiss();
+    }
   };
 
   return (
     <div
       className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-primary/5 to-accent/10 shadow-sm animate-in fade-in slide-in-from-top-2 duration-500"
       role="region"
-      aria-label={COPY.title[l]}
+      aria-label={copy.title[l]}
     >
       <button
         onClick={handleDismiss}
@@ -122,8 +171,8 @@ export function MobileInstallBanner() {
             <Download className="h-5 w-5 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-foreground leading-tight">{COPY.title[l]}</p>
-            <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{COPY.desc[l]}</p>
+            <p className="text-sm font-semibold text-foreground leading-tight">{copy.title[l]}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{copy.desc[l]}</p>
           </div>
         </div>
 
@@ -149,3 +198,4 @@ export function MobileInstallBanner() {
     </div>
   );
 }
+

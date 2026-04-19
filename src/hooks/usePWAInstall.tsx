@@ -23,8 +23,21 @@ export function usePWAInstall() {
       setIsInstallable(true);
     };
 
+    const installedHandler = () => {
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+      // Lazy import to avoid a circular dep with analytics utils.
+      import('@/lib/pwa-analytics')
+        .then(({ trackInstallEvent }) => trackInstallEvent('installed'))
+        .catch(() => {});
+    };
+
     window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', installedHandler);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', installedHandler);
+    };
   }, []);
 
   const install = useCallback(async () => {

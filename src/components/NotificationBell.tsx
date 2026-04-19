@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bell, CheckCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -59,6 +59,15 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState(false);
+  const [pop, setPop] = useState(false);
+  const seenIdsRef = useRef<Set<string>>(new Set());
+  const popTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const triggerPop = () => {
+    setPop(true);
+    if (popTimerRef.current) clearTimeout(popTimerRef.current);
+    popTimerRef.current = setTimeout(() => setPop(false), 650);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -85,7 +94,10 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
       ]);
       if (cancelled) return;
       if (notifRes.data) {
-        setItems(notifRes.data.map(({ sent: _s, ...rest }) => rest) as NotificationItem[]);
+        const cleaned = notifRes.data.map(({ sent: _s, ...rest }) => rest) as NotificationItem[];
+        setItems(cleaned);
+        // Seed seen-ids on initial load so we don't pop for pre-existing items.
+        cleaned.forEach((n) => seenIdsRef.current.add(n.id));
       }
       if (readsRes.data) {
         setReadIds(new Set(readsRes.data.map((r) => r.notification_id as string)));
@@ -93,6 +105,8 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
     };
 
     load();
+    // Light fallback poll in case realtime drops.
+    const interval = setInterval(load, 120_000);
 
     // Realtime subscription — listen only to this user's notifications + reads.
     const channel = supabase
@@ -103,6 +117,8 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
         (payload) => {
           const n = payload.new as NotificationItem & { sent: boolean };
           if (n.sent || !isRecent(n)) return;
+          const isNewToUs = !seenIdsRef.current.has(n.id);
+          seenIdsRef.current.add(n.id);
           setItems((prev) => {
             if (prev.some((p) => p.id === n.id)) return prev;
             const next = [...prev, { id: n.id, message: n.message, type: n.type, scheduled_for: n.scheduled_for }];
@@ -110,6 +126,7 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
               .sort((a, b) => new Date(a.scheduled_for).getTime() - new Date(b.scheduled_for).getTime())
               .slice(0, 8);
           });
+          if (isNewToUs) triggerPop();
         }
       )
       .on(
@@ -168,6 +185,8 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
 
     return () => {
       cancelled = true;
+      clearInterval(interval);
+      if (popTimerRef.current) clearTimeout(popTimerRef.current);
       supabase.removeChannel(channel);
     };
   }, [user]);
@@ -232,7 +251,10 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
           <Bell className={iconClass} />
           {unreadCount > 0 && (
             <Badge
-              className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center bg-destructive text-destructive-foreground border-0"
+              key={`${unreadCount}-${pop ? 'pop' : 'idle'}`}
+              className={`absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center bg-destructive text-destructive-foreground border-0 ${
+                pop ? 'animate-badge-pop' : ''
+              }`}
               aria-label={`${unreadCount} ${COPY.title[l].toLowerCase()}`}
             >
               {unreadCount > 9 ? '9+' : unreadCount}
