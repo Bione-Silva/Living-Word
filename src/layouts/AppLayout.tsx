@@ -26,7 +26,7 @@ import {
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert, ChevronUp,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
   PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal, Menu, X,
-  Church,
+  Church, Heart,
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { BrandIcon } from '@/components/BrandIcon';
@@ -494,6 +494,26 @@ export default function AppLayout() {
                 <span>{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
               </Link>
               <Link
+                to="/bom-amigo"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/bom-amigo' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Heart className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Palavra Amiga' : lang === 'EN' ? 'Friendly Word' : 'Palabra Amiga'}</span>
+              </Link>
+              <Link
+                to="/kids"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/kids' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Baby className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Kids' : lang === 'EN' ? 'Kids' : 'Niños'}</span>
+              </Link>
+              <Link
                 to="/ferramentas"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
@@ -869,7 +889,37 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
-          {/* 2.8 — Minha Igreja agora vive em Configurações → aba Igreja */}
+          {/* 2.8 — Palavra Amiga */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Palavra Amiga' : lang === 'EN' ? 'Friendly Word' : 'Palabra Amiga'}>
+            <Link
+              to="/bom-amigo"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/bom-amigo'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Heart className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Palavra Amiga' : lang === 'EN' ? 'Friendly Word' : 'Palabra Amiga')}
+            </Link>
+          </SidebarTooltipWrap>
+
+          {/* 2.9 — Kids */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Kids' : lang === 'EN' ? 'Kids' : 'Niños'}>
+            <Link
+              to="/kids"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/kids'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Baby className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Kids' : lang === 'EN' ? 'Kids' : 'Niños')}
+            </Link>
+          </SidebarTooltipWrap>
+
+          {/* 2.10 — Minha Igreja agora vive em Configurações → aba Igreja */}
         </nav>
 
         {/* ─── Bottom section: Credits + Account ─── */}
