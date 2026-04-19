@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { Eye, EyeOff } from 'lucide-react';
 import { BrandIcon } from '@/components/BrandIcon';
-import loginBg from '@/assets/login-bg.jpg';
+import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 
 const PURPLE_THEME = {
   '--primary': '263 70% 50%',
