@@ -14,6 +14,12 @@ import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGa
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
 import { VariationGrid } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
+import {
+  ImageModePicker,
+  getImageModePromptFragment,
+  getImageModeLabel,
+  type ImageMode,
+} from '@/components/social-studio/ImageModePicker';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
@@ -99,6 +105,8 @@ export default function SocialStudio() {
   const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
   const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
+  const [imageMode, setImageMode] = useState<ImageMode>('biblica');
+  const [showVerseError, setShowVerseError] = useState(false);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
@@ -254,6 +262,7 @@ export default function SocialStudio() {
     setSlides([{ text: `"${v.text}"`, subtitle: withVersion(v.book), slideNumber: 1, totalSlides: 1 }]);
     setSlideCount(1);
     setPresentationMode(false);
+    setShowVerseError(false);
   }, [versionLabel]);
 
   const handleTextGenerated = useCallback((text: string) => {
@@ -265,7 +274,16 @@ export default function SocialStudio() {
   }, []);
 
   const generateDevotionalCarousel = async () => {
-    if (!verseContext) return;
+    if (!verseContext) {
+      setShowVerseError(true);
+      // Focus first verse-related input on the page (ContentGenerator).
+      const firstInput = document.querySelector<HTMLInputElement>(
+        'input[placeholder*="João"], input[placeholder*="John"], input[placeholder*="Juan"]'
+      );
+      firstInput?.focus();
+      return;
+    }
+    setShowVerseError(false);
     setLoadingDevotional(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
@@ -274,6 +292,9 @@ export default function SocialStudio() {
           topic: verseContext.book,
           language: lang,
           slideCount,
+          imageMode,
+          imageStyle: imageMode,
+          stylePrompt: getImageModePromptFragment(imageMode),
         },
       });
       if (error) throw error;
@@ -304,6 +325,7 @@ export default function SocialStudio() {
     setSlideCount(1);
     setActivePaletteId(null);
     setActiveSceneId(null);
+    setShowVerseError(false);
   };
 
   // ── Plano free não tem acesso ao Estúdio Social ──
@@ -428,6 +450,17 @@ export default function SocialStudio() {
                 />
               </div>
 
+              {/* ── NEW: Image Mode picker ── */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <ImageModePicker
+                    value={imageMode}
+                    onChange={(m) => setImageMode(m)}
+                    lang={lang}
+                  />
+                </CardContent>
+              </Card>
+
               {/* Devotional carousel CTA (only when verse loaded + slideCount > 1) */}
               {verseContext && slideCount > 1 && (
                 <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30">
@@ -448,6 +481,15 @@ export default function SocialStudio() {
                       {loadingDevotional ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
                       {loadingDevotional ? h.generating : `${h.generateCarousel} (${slideCount})`}
                     </Button>
+                    {showVerseError && (
+                      <p className="text-[12px] mt-1" style={{ color: '#dc2626' }}>
+                        {lang === 'PT'
+                          ? 'Digite um versículo ou tema antes de gerar'
+                          : lang === 'EN'
+                          ? 'Type a verse or theme before generating'
+                          : 'Escribe un versículo o tema antes de generar'}
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
               )}
@@ -511,6 +553,20 @@ export default function SocialStudio() {
 
             {/* ── RIGHT: VARIATION GRID ── */}
             <div className="min-w-0">
+              <div className="mb-2">
+                <span
+                  className="inline-block text-[11px] font-medium"
+                  style={{
+                    color: '#7c3aed',
+                    background: '#ede9fe',
+                    padding: '3px 10px',
+                    borderRadius: 9999,
+                  }}
+                >
+                  {lang === 'PT' ? 'Modo: ' : lang === 'EN' ? 'Mode: ' : 'Modo: '}
+                  {getImageModeLabel(imageMode, lang)}
+                </span>
+              </div>
               <VariationGrid
                 slides={slides}
                 aspectRatio={aspectRatio}
