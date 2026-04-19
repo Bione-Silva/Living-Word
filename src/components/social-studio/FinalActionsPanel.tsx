@@ -6,11 +6,19 @@ import type { SlideData } from './SlideCanvas';
 
 type L = 'PT' | 'EN' | 'ES';
 
+export interface DestinationInfo {
+  id: string;
+  label: string;
+  size: string;
+}
+
 interface Props {
   slides: SlideData[];
   selectedIndex: number;
   formatLabel: string;
   formatSize: string;
+  /** All destinations the user marked. When >1, batch ZIP exports per channel. */
+  destinations?: DestinationInfo[];
   caption?: string;
   lang: L;
   /** Receives the selected slide index and triggers PNG download via parent */
