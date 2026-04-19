@@ -688,10 +688,43 @@ export default function SocialStudio() {
                   selectedIndex={selectedSlideIndex}
                   formatLabel={`${currentFormat?.channel[lang] ?? ''} (${currentFormat?.type[lang] ?? ''})`}
                   formatSize={currentFormat?.size ?? ''}
+                  destinations={selectedFormats.map((fid) => {
+                    const def = getFormatById(fid);
+                    return {
+                      id: fid,
+                      label: `${def?.channel[lang] ?? ''} (${def?.type[lang] ?? ''})`,
+                      size: def?.size ?? '',
+                    };
+                  })}
                   caption={generatedCaption}
                   lang={lang}
                   onDownloadSingle={(idx) => variationGridRef.current?.downloadSlide(idx, 'png') ?? Promise.resolve()}
-                  onDownloadZip={() => variationGridRef.current?.downloadAllZip() ?? Promise.resolve()}
+                  onDownloadZip={async () => {
+                    // If only one destination, fall back to the single-format ZIP
+                    if (selectedFormats.length <= 1) {
+                      await variationGridRef.current?.downloadAllZip();
+                      return;
+                    }
+                    // Multi-destination: build ZIP with one folder per channel
+                    try {
+                      const blob = await exporterRef.current?.buildZip();
+                      if (!blob) return;
+                      const fname = `living-word-multicanal-${Date.now()}.zip`;
+                      const link = document.createElement('a');
+                      link.download = fname;
+                      link.href = URL.createObjectURL(blob);
+                      link.click();
+                      URL.revokeObjectURL(link.href);
+                      toast.success(
+                        lang === 'PT' ? 'ZIP multicanal pronto!' :
+                        lang === 'EN' ? 'Multi-channel ZIP ready!' :
+                        '¡ZIP multicanal listo!'
+                      );
+                    } catch (err) {
+                      console.error(err);
+                      toast.error(h.carouselError);
+                    }
+                  }}
                 />
               </CardContent>
             </Card>
