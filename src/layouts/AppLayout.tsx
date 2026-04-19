@@ -309,13 +309,13 @@ export default function AppLayout() {
             </Link>
 
             <Link
-              to="/ferramentas"
+              to="/sermoes"
               className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
-                location.pathname === '/ferramentas' ? 'text-primary' : 'text-muted-foreground'
+                location.pathname === '/sermoes' || location.pathname.startsWith('/series') ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Package className="h-[18px] w-[18px]" />
-              <span className="truncate leading-tight">{lang === 'PT' ? 'Tools' : lang === 'EN' ? 'Tools' : 'Tools'}</span>
+              <Mic className="h-[18px] w-[18px]" />
+              <span className="truncate leading-tight">{lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones'}</span>
             </Link>
 
             <button
