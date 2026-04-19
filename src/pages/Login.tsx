@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { Eye, EyeOff } from 'lucide-react';
 import { BrandIcon } from '@/components/BrandIcon';
-import loginBg from '@/assets/login-bg.jpg';
+import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 
 const PURPLE_THEME = {
   '--primary': '263 70% 50%',
@@ -19,6 +19,7 @@ const PURPLE_THEME = {
 } as React.CSSProperties;
 
 export default function Login() {
+  useForceLightTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -76,20 +77,17 @@ export default function Login() {
       className="theme-app min-h-screen relative flex items-center justify-center p-4"
       style={{
         ...PURPLE_THEME,
-        backgroundColor: '#F1ECFA',
-        backgroundImage: `url(${loginBg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        background:
+          'radial-gradient(ellipse at top, hsl(263 70% 96%) 0%, hsl(270 50% 92%) 40%, hsl(263 50% 88%) 100%)',
       }}
     >
-      {/* Soft purple wash to keep card readable */}
+      {/* Decorative purple glow */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 50% 40%, hsl(263 70% 96% / 0.65), hsl(263 60% 90% / 0.35) 60%, transparent 100%)',
+            'radial-gradient(circle at 20% 80%, hsl(263 70% 70% / 0.18), transparent 50%), radial-gradient(circle at 80% 20%, hsl(270 60% 75% / 0.20), transparent 50%)',
         }}
       />
 
