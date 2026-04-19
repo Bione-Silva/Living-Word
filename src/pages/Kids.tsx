@@ -224,13 +224,72 @@ Return ONLY valid JSON (no markdown, no code fences, no explanation):
       let currentY = MARGIN;
       const SECTION_GAP = 4;
 
-      for (const section of sections) {
-        const canvas = await html2canvas(section, {
+      // Largura de captura em pixels equivalente à largura útil do PDF (190mm @ ~96dpi ≈ 720px)
+      const CAPTURE_WIDTH_PX = 720;
+
+      // Sandbox off-screen para clonar cada seção em largura A4 com imagens em altura natural
+      const sandbox = document.createElement('div');
+      sandbox.style.position = 'fixed';
+      sandbox.style.left = '-10000px';
+      sandbox.style.top = '0';
+      sandbox.style.width = `${CAPTURE_WIDTH_PX}px`;
+      sandbox.style.background = '#ffffff';
+      sandbox.style.padding = '0';
+      sandbox.style.pointerEvents = 'none';
+      document.body.appendChild(sandbox);
+
+      const captureSection = async (section: HTMLElement) => {
+        const clone = section.cloneNode(true) as HTMLElement;
+        clone.style.width = `${CAPTURE_WIDTH_PX}px`;
+        clone.style.maxWidth = 'none';
+        clone.style.margin = '0';
+        clone.style.boxSizing = 'border-box';
+
+        // Remove restrições de altura/object-cover das imagens para preservar proporção real
+        clone.querySelectorAll('img').forEach((img) => {
+          img.style.maxHeight = 'none';
+          img.style.height = 'auto';
+          img.style.width = '100%';
+          img.style.objectFit = 'contain';
+          img.removeAttribute('height');
+          // remove classes tailwind que limitam altura
+          img.className = img.className
+            .split(' ')
+            .filter((c) => !/^max-h-/.test(c) && c !== 'object-cover')
+            .concat(['w-full', 'h-auto'])
+            .join(' ');
+        });
+
+        sandbox.innerHTML = '';
+        sandbox.appendChild(clone);
+
+        // aguarda imagens do clone carregarem dimensões naturais
+        const cloneImgs = Array.from(clone.querySelectorAll('img'));
+        await Promise.all(
+          cloneImgs.map((img) =>
+            img.complete && img.naturalWidth > 0
+              ? Promise.resolve()
+              : new Promise<void>((res) => {
+                  img.addEventListener('load', () => res(), { once: true });
+                  img.addEventListener('error', () => res(), { once: true });
+                })
+          )
+        );
+        // aguarda layout/paint
+        await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+
+        return await html2canvas(clone, {
           scale: 2,
           backgroundColor: '#ffffff',
           useCORS: true,
           logging: false,
+          width: CAPTURE_WIDTH_PX,
+          windowWidth: CAPTURE_WIDTH_PX,
         });
+      };
+
+      for (const section of sections) {
+        const canvas = await captureSection(section);
         const sectionWidthMm = contentWidth;
         const sectionHeightMm = (canvas.height * contentWidth) / canvas.width;
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
