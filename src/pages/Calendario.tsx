@@ -315,22 +315,30 @@ export default function Calendario() {
           </div>
         </div>
 
-        {/* Month Navigation */}
+        {/* Month/Year Navigation */}
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <Button variant="ghost" size="icon" onClick={prevMonth}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => viewMode === 'year' ? setCurrentDate(new Date(year - 1, 0, 1)) : prevMonth()}
+              >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <div className="flex items-center gap-3">
                 <CardTitle className="font-display text-lg sm:text-xl">
-                  {monthNames[lang]?.[month] || monthNames.PT[month]} {year}
+                  {viewMode === 'year' ? year : `${monthNames[lang]?.[month] || monthNames.PT[month]} ${year}`}
                 </CardTitle>
                 <Button variant="outline" size="sm" className="text-xs h-7" onClick={goToday}>
                   {lang === 'PT' ? 'Hoje' : lang === 'EN' ? 'Today' : 'Hoy'}
                 </Button>
               </div>
-              <Button variant="ghost" size="icon" onClick={nextMonth}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => viewMode === 'year' ? setCurrentDate(new Date(year + 1, 0, 1)) : nextMonth()}
+              >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
