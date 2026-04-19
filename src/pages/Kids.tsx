@@ -194,33 +194,94 @@ Return ONLY valid JSON (no markdown, no code fences, no explanation):
     if (!storyRef.current || !story) return;
     setPdfLoading(true);
     try {
-      const canvas = await html2canvas(storyRef.current, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        logging: false,
-      });
-      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      // Aguarda todas as imagens carregarem
+      const imgs = Array.from(storyRef.current.querySelectorAll('img'));
+      await Promise.all(
+        imgs.map(img =>
+          img.complete && img.naturalWidth > 0
+            ? Promise.resolve()
+            : new Promise<void>(res => {
+                img.addEventListener('load', () => res(), { once: true });
+                img.addEventListener('error', () => res(), { once: true });
+              })
+        )
+      );
+
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pageWidth - 20;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const MARGIN = 10;
+      const FOOTER_RESERVE = 8;
+      const contentWidth = pageWidth - MARGIN * 2;
+      const usableHeight = pageHeight - MARGIN - FOOTER_RESERVE;
 
-      let heightLeft = imgHeight;
-      let position = 10;
+      // Captura cada seção individualmente para evitar cortes
+      const sections = Array.from(
+        storyRef.current.querySelectorAll<HTMLElement>('[data-pdf-section]')
+      );
+      if (sections.length === 0) sections.push(storyRef.current);
 
-      pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight - 20;
+      let currentY = MARGIN;
+      const SECTION_GAP = 4;
 
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight + 10;
-        pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight - 20;
+      for (const section of sections) {
+        const canvas = await html2canvas(section, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          logging: false,
+        });
+        const sectionWidthMm = contentWidth;
+        const sectionHeightMm = (canvas.height * contentWidth) / canvas.width;
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+
+        // Se a seção sozinha é maior que uma página inteira, fatiamos ela
+        if (sectionHeightMm > usableHeight - MARGIN) {
+          // Adiciona em nova página se já houver conteúdo
+          if (currentY > MARGIN) {
+            pdf.addPage();
+            currentY = MARGIN;
+          }
+          // Fatia em múltiplas páginas
+          const pageContentHeight = usableHeight - MARGIN;
+          const pxPerMm = canvas.height / sectionHeightMm;
+          const sliceHeightPx = Math.floor(pageContentHeight * pxPerMm);
+          let offsetPx = 0;
+          let firstSlice = true;
+          while (offsetPx < canvas.height) {
+            const remainingPx = canvas.height - offsetPx;
+            const thisSlicePx = Math.min(sliceHeightPx, remainingPx);
+            const sliceCanvas = document.createElement('canvas');
+            sliceCanvas.width = canvas.width;
+            sliceCanvas.height = thisSlicePx;
+            const ctx = sliceCanvas.getContext('2d')!;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+            ctx.drawImage(canvas, 0, -offsetPx);
+            const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.9);
+            const sliceHeightMm = thisSlicePx / pxPerMm;
+            if (!firstSlice) {
+              pdf.addPage();
+              currentY = MARGIN;
+            }
+            pdf.addImage(sliceData, 'JPEG', MARGIN, currentY, sectionWidthMm, sliceHeightMm);
+            currentY += sliceHeightMm;
+            offsetPx += thisSlicePx;
+            firstSlice = false;
+          }
+          currentY += SECTION_GAP;
+        } else {
+          // Cabe inteira: verifica se cabe na página atual
+          if (currentY + sectionHeightMm > usableHeight && currentY > MARGIN) {
+            pdf.addPage();
+            currentY = MARGIN;
+          }
+          pdf.addImage(imgData, 'JPEG', MARGIN, currentY, sectionWidthMm, sectionHeightMm);
+          currentY += sectionHeightMm + SECTION_GAP;
+        }
       }
 
-      // Rodapé Living Word
+      // Rodapé Living Word em todas as páginas
       const totalPages = pdf.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
@@ -231,7 +292,8 @@ Return ONLY valid JSON (no markdown, no code fences, no explanation):
 
       pdf.save(`${story.title.replace(/[^\w\s-]/g, '').slice(0, 40)}.pdf`);
       toast.success(lang === 'PT' ? 'PDF baixado!' : 'PDF downloaded!');
-    } catch {
+    } catch (err) {
+      console.error('PDF error:', err);
       toast.error(lang === 'PT' ? 'Erro ao gerar PDF' : 'Error generating PDF');
     } finally {
       setPdfLoading(false);
