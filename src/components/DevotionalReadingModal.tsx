@@ -48,6 +48,8 @@ const labels = {
   verse: { PT: 'Versículo-âncora', EN: 'Anchor verse', ES: 'Versículo ancla' },
   pdfReady: { PT: 'PDF pronto para envio', EN: 'PDF ready to send', ES: 'PDF listo para enviar' },
   pdfShareUnsupported: { PT: 'Seu dispositivo não permite envio direto. Baixando o PDF — anexe manualmente.', EN: 'Your device does not allow direct sending. Downloading the PDF — attach it manually.', ES: 'Tu dispositivo no permite envío directo. Descargando el PDF — adjúntalo manualmente.' },
+  toCarousel: { PT: 'Gerar Carrossel para Redes', EN: 'Generate Social Carousel', ES: 'Generar Carrusel para Redes' },
+  toCarouselShort: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
 } satisfies Record<string, Record<L, string>>;
 
 function formatDate(dateStr: string, lang: L): string {
