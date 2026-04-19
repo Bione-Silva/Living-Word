@@ -60,6 +60,31 @@ function formatDate(dateStr: string, lang: L): string {
 
 export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  /** Build a clean text payload to seed Social Studio. */
+  const buildSocialPayload = () => {
+    const parts: string[] = [];
+    if (data.anchor_verse_text) {
+      parts.push(`"${data.anchor_verse_text}" — ${data.anchor_verse}`);
+    }
+    if (data.body_text) parts.push(data.body_text.trim());
+    if (data.closing_prayer) parts.push(data.closing_prayer.trim());
+    return parts.join('\n\n');
+  };
+
+  const handleGenerateCarousel = () => {
+    const initialText = buildSocialPayload();
+    onOpenChange(false);
+    navigate('/social-studio', {
+      state: {
+        source_content: initialText,
+        source_title: data.title,
+        source_origin: 'devotional',
+        initialText,
+      },
+    });
+  };
 
   const buildPlainText = () => {
     let text = `${data.title}\n${formatDate(data.scheduled_date, lang)}\n`;
