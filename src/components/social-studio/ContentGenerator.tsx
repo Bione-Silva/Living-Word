@@ -40,12 +40,12 @@ const contentTools = [
   { id: 'announcements', icon: Megaphone, labelKey: 'announcement', tool: 'announcements' },
 ];
 
-// Map tool IDs to search-pastoral-tools tool names
+// Map UI tool IDs to search-pastoral-tools backend tool names
 const TOOL_MAP: Record<string, string> = {
-  'social-caption': 'poetry', // reuse poetry for now since search-pastoral-tools has limited tools
-  'reels-script': 'poetry',
+  'social-caption': 'social_caption',
+  'reels-script': 'reels_script',
   'poetry': 'poetry',
-  'announcements': 'poetry',
+  'announcements': 'announcements',
 };
 
 interface VerseResult {
