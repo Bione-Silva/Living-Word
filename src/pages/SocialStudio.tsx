@@ -646,7 +646,7 @@ export default function SocialStudio() {
 
             {/* ═══ COLUNA DIREITA — apoio persistente (sempre visível) ═══ */}
             <Card className="bg-card border-border min-w-0 h-fit lg:sticky lg:top-4">
-              <CardContent className="p-4 sm:p-5">
+              <CardContent className="p-3 sm:p-3.5">
                 <FinalActionsPanel
                   slides={slides}
                   selectedIndex={selectedSlideIndex}
