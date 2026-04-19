@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Calendar, Trophy, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Bell, Calendar, Trophy, AlertCircle, Mic, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,7 +12,17 @@ type L = 'PT' | 'EN' | 'ES';
 
 const labels = {
   title: { PT: 'Notificações', EN: 'Notifications', ES: 'Notificaciones' },
-  noNotifications: { PT: 'Nenhuma notificação agendada', EN: 'No scheduled notifications', ES: 'Sin notificaciones programadas' },
+  emptyTitle: {
+    PT: 'Nada agendado para domingo',
+    EN: 'Nothing scheduled for Sunday',
+    ES: 'Nada programado para el domingo',
+  },
+  emptySub: {
+    PT: 'Que tal preparar seu próximo sermão agora?',
+    EN: 'How about preparing your next sermon now?',
+    ES: '¿Qué tal preparar tu próximo sermón ahora?',
+  },
+  emptyCta: { PT: 'Criar sermão', EN: 'Create sermon', ES: 'Crear sermón' },
   upcoming: { PT: 'Próximas', EN: 'Upcoming', ES: 'Próximas' },
 } satisfies Record<string, Record<L, string>>;
 
