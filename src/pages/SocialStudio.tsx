@@ -456,7 +456,7 @@ export default function SocialStudio() {
         </TabsList>
 
         <TabsContent value="studio" className="mt-0 space-y-5">
-          {/* ── 4-step wizard tracker ── */}
+          {/* ── 4-step wizard tracker (estrutura fixa, só muda o estado) ── */}
           <div className="overflow-x-auto -mx-1">
             <div className="flex items-stretch gap-2 sm:gap-3 px-1 min-w-max">
               {steps.map((s, idx) => {
@@ -493,177 +493,57 @@ export default function SocialStudio() {
             </div>
           </div>
 
-          {/* ── Step bodies ── */}
-
-          {/* Step 1 — FORMAT: left = picker, right = preview */}
-          {step === 'format' && (
-            <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4">
-              <Card className="bg-card border-border min-w-0">
-                <CardContent className="p-4 sm:p-5 space-y-4">
-                  <div>
-                    <h2 className="text-lg font-bold text-foreground font-display">{h.formatHeading}</h2>
-                    <p className="text-xs text-muted-foreground mt-0.5">{h.formatSub}</p>
-                  </div>
-                  <FormatPicker value={formatId} onChange={handleFormatChange} lang={lang} />
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card border-border min-w-0">
-                <CardContent className="p-4 sm:p-6 flex flex-col items-center justify-center min-h-[400px]">
-                  <div className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground mb-4">
-                    {h.formatPreview}
-                  </div>
-                  <div
-                    className="relative rounded-2xl border-2 border-dashed border-primary/30 bg-secondary/30 flex items-center justify-center max-w-full"
-                    style={{
-                      aspectRatio: ASPECT_CSS[aspectRatio],
-                      width: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 240 : 320,
-                      maxHeight: 420,
-                    }}
-                  >
-                    <div className="text-center px-4">
-                      <ImageIcon className="h-8 w-8 mx-auto text-primary/50 mb-2" />
-                      <div className="text-sm font-bold text-foreground">
-                        {currentFormat?.channel[lang]} <span className="font-normal text-muted-foreground">({currentFormat?.type[lang]})</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">{currentFormat?.size}</div>
+          {/* ── ESTRUTURA FIXA: Esquerda (controles da etapa) | Centro (preview persistente) | Direita (apoio) ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-[360px_minmax(0,1fr)_320px] gap-4">
+            {/* ═══ COLUNA ESQUERDA — controles da etapa ═══ */}
+            <Card className="bg-card border-border min-w-0">
+              <CardContent className="p-4 sm:p-5 space-y-4">
+                {step === 'format' && (
+                  <>
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground font-display">{h.formatHeading}</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">{h.formatSub}</p>
                     </div>
-                  </div>
-                  <div className="mt-6 w-full flex justify-end">
-                    <Button onClick={goNext} size="lg" className="gap-2">
-                      {h.continue}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                    <FormatPicker value={formatId} onChange={handleFormatChange} lang={lang} />
+                  </>
+                )}
 
-          {/* Step 2 — CONTENT */}
-          {step === 'content' && (
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4">
-              <Card className="bg-card border-border min-w-0">
-                <CardContent className="p-4 sm:p-6 space-y-4">
-                  <div>
-                    <h2 className="text-lg font-bold text-foreground font-display">{h.contentHeading}</h2>
-                    <p className="text-xs text-muted-foreground mt-0.5">{h.contentSub}</p>
-                  </div>
-                  <ContentGenerator
-                    onVerseGenerated={handleVerseGenerated}
-                    onTextGenerated={handleTextGenerated}
-                  />
-                  <div className="flex gap-2 pt-2">
-                    <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
-                    <Button onClick={goNext} className="flex-1 gap-2">
-                      {h.continue}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card border-border min-w-0">
-                <CardContent className="p-4 sm:p-5 space-y-3">
-                  <div className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">
-                    {lang === 'PT' ? 'Prévia do conteúdo' : lang === 'EN' ? 'Content preview' : 'Vista previa del contenido'}
-                  </div>
-                  {slides.length > 0 ? (
-                    <div className="space-y-3">
-                      <div className="rounded-xl bg-secondary/40 border border-border p-4">
-                        <p className="font-display text-base text-foreground leading-relaxed italic">
-                          {slides[0].text}
-                        </p>
-                        {slides[0].subtitle && (
-                          <p className="text-xs text-muted-foreground mt-3 font-semibold tracking-wider uppercase">
-                            {slides[0].subtitle}
-                          </p>
-                        )}
-                      </div>
-                      {generatedCaption && (
-                        <div>
-                          <div className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground mb-1.5">
-                            {lang === 'PT' ? 'Legenda sugerida' : lang === 'EN' ? 'Suggested caption' : 'Leyenda sugerida'}
-                          </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-5">{generatedCaption}</p>
-                        </div>
-                      )}
+                {step === 'content' && (
+                  <>
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground font-display">{h.contentHeading}</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">{h.contentSub}</p>
                     </div>
-                  ) : (
-                    <div className="rounded-xl border border-dashed border-border bg-secondary/30 p-6 text-center">
-                      <BookOpen className="h-6 w-6 mx-auto text-muted-foreground/60 mb-2" />
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                        {lang === 'PT' ? 'Escolha um versículo, tema ou cole um texto para ver a prévia aqui.' : lang === 'EN' ? 'Pick a verse, theme or paste a text to see the preview.' : 'Elige un versículo, tema o pega un texto para ver la vista previa.'}
-                      </p>
+                    <ContentGenerator
+                      onVerseGenerated={handleVerseGenerated}
+                      onTextGenerated={handleTextGenerated}
+                    />
+                  </>
+                )}
+
+                {step === 'style' && (
+                  <>
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground font-display">{h.styleHeading}</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">{h.styleSub}</p>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                    <ThemeCustomizer
+                      value={theme}
+                      onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
+                      lang={lang}
+                      onUploadBackground={handleBackgroundUpload}
+                    />
+                    <div className="pt-3 border-t border-border">
+                      <VisualStyleChips value={visualStyle} onChange={setVisualStyle} lang={lang} />
+                    </div>
+                    <div className="pt-3 border-t border-border">
+                      <ImageModePicker value={imageMode} onChange={setImageMode} lang={lang} />
+                    </div>
+                  </>
+                )}
 
-          {/* Step 3 — STYLE */}
-          {step === 'style' && (
-            <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4">
-              <Card className="bg-card border-border min-w-0">
-                <CardContent className="p-4 sm:p-5 space-y-5">
-                  <div>
-                    <h2 className="text-lg font-bold text-foreground font-display">{h.styleHeading}</h2>
-                    <p className="text-xs text-muted-foreground mt-0.5">{h.styleSub}</p>
-                  </div>
-                  <ThemeCustomizer
-                    value={theme}
-                    onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
-                    lang={lang}
-                    onUploadBackground={handleBackgroundUpload}
-                  />
-                  <div className="pt-3 border-t border-border">
-                    <VisualStyleChips value={visualStyle} onChange={setVisualStyle} lang={lang} />
-                  </div>
-                  <div className="pt-3 border-t border-border">
-                    <ImageModePicker value={imageMode} onChange={setImageMode} lang={lang} />
-                  </div>
-                  <div className="flex gap-2 pt-2">
-                    <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
-                    <Button onClick={goNext} className="flex-1 gap-2">
-                      {h.continue}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card border-border min-w-0">
-                <CardContent className="p-4 sm:p-5 space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">
-                      {lang === 'PT' ? 'Pré-visualização' : lang === 'EN' ? 'Preview' : 'Vista previa'}
-                    </span>
-                    <span className="inline-flex items-center text-[11px] font-medium rounded-full px-2.5 py-1 bg-primary/10 text-primary">
-                      {h.modeLabel}: {getImageModeLabel(imageMode, lang)}
-                    </span>
-                  </div>
-                  <VariationGrid
-                    ref={variationGridRef}
-                    slides={slides.length > 0 ? slides.slice(0, 1) : slides}
-                    aspectRatio={aspectRatio}
-                    theme={theme}
-                    lang={lang}
-                    template={template}
-                    presentationMode={false}
-                    selectedIndex={0}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {/* Step 4 — GENERATE */}
-          {step === 'generate' && (
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
-              <Card className="bg-card border-border min-w-0">
-                <CardContent className="p-4 sm:p-5 space-y-4">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                {step === 'generate' && (
+                  <>
                     <div>
                       <h2 className="text-lg font-bold text-foreground font-display">{h.generateHeading}</h2>
                       <p className="text-xs text-muted-foreground mt-0.5">{h.generateSub}</p>
@@ -671,18 +551,59 @@ export default function SocialStudio() {
                     <Button
                       onClick={generateDevotionalCarousel}
                       disabled={loadingDevotional || !verseContext}
-                      size="sm"
-                      className="gap-2"
+                      className="w-full gap-2"
                     >
                       {loadingDevotional ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       {loadingDevotional ? h.generating : `${h.generate} (${slideCount})`}
                     </Button>
-                  </div>
-                  {!verseContext && (
-                    <p className="text-xs text-muted-foreground bg-secondary border border-border rounded-lg p-3">
-                      {h.needVerse}
-                    </p>
+                    {!verseContext && (
+                      <p className="text-xs text-muted-foreground bg-secondary border border-border rounded-lg p-3">
+                        {h.needVerse}
+                      </p>
+                    )}
+                    {slides.length > 0 && (
+                      <Button variant="ghost" onClick={handleClear} className="w-full text-muted-foreground">
+                        {h.clear}
+                      </Button>
+                    )}
+                  </>
+                )}
+
+                {/* Navegação fixa no rodapé do painel esquerdo */}
+                <div className="flex gap-2 pt-3 border-t border-border">
+                  {currentStepIndex > 0 && (
+                    <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
                   )}
+                  {currentStepIndex < steps.length - 1 && (
+                    <Button onClick={goNext} className="flex-1 gap-2">
+                      {h.continue}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ═══ CENTRO — preview/produto persistente em todas as etapas ═══ */}
+            <Card className="bg-card border-border min-w-0">
+              <CardContent className="p-4 sm:p-5 space-y-3">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">
+                    {lang === 'PT' ? 'Sua arte' : lang === 'EN' ? 'Your art' : 'Tu arte'}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center text-[11px] font-medium rounded-full px-2.5 py-1 bg-secondary text-foreground">
+                      {currentFormat?.channel[lang]} • {currentFormat?.size}
+                    </span>
+                    {step !== 'format' && (
+                      <span className="inline-flex items-center text-[11px] font-medium rounded-full px-2.5 py-1 bg-primary/10 text-primary">
+                        {h.modeLabel}: {getImageModeLabel(imageMode, lang)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {slides.length > 0 ? (
                   <VariationGrid
                     ref={variationGridRef}
                     slides={slides}
@@ -694,33 +615,50 @@ export default function SocialStudio() {
                     selectedIndex={selectedSlideIndex}
                     onSelectIndex={setSelectedSlideIndex}
                   />
-                  <div className="flex gap-2 pt-2">
-                    <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
-                    {slides.length > 0 && (
-                      <Button variant="ghost" onClick={handleClear} className="flex-1 text-muted-foreground">
-                        {h.clear}
-                      </Button>
-                    )}
+                ) : (
+                  <div
+                    className="relative mx-auto rounded-2xl border-2 border-dashed border-primary/30 bg-secondary/30 flex items-center justify-center max-w-full"
+                    style={{
+                      aspectRatio: ASPECT_CSS[aspectRatio],
+                      width: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 280 : 420,
+                      maxHeight: 520,
+                    }}
+                  >
+                    <div className="text-center px-6">
+                      <ImageIcon className="h-10 w-10 mx-auto text-primary/50 mb-3" />
+                      <div className="text-sm font-bold text-foreground">
+                        {currentFormat?.channel[lang]} <span className="font-normal text-muted-foreground">({currentFormat?.type[lang]})</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">{currentFormat?.size}</div>
+                      <p className="text-[11px] text-muted-foreground/80 leading-relaxed mt-4 max-w-[260px] mx-auto">
+                        {lang === 'PT'
+                          ? 'Escolha um versículo ou tema na etapa "Conteúdo" para ver sua arte aqui.'
+                          : lang === 'EN'
+                          ? 'Pick a verse or theme on the "Content" step to see your art here.'
+                          : 'Elige un versículo o tema en el paso "Contenido" para ver tu arte aquí.'}
+                      </p>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </CardContent>
+            </Card>
 
-              <Card className="bg-card border-border min-w-0 h-fit lg:sticky lg:top-4">
-                <CardContent className="p-4 sm:p-5">
-                  <FinalActionsPanel
-                    slides={slides}
-                    selectedIndex={selectedSlideIndex}
-                    formatLabel={`${currentFormat?.channel[lang] ?? ''} (${currentFormat?.type[lang] ?? ''})`}
-                    formatSize={currentFormat?.size ?? ''}
-                    caption={generatedCaption}
-                    lang={lang}
-                    onDownloadSingle={(idx) => variationGridRef.current?.downloadSlide(idx, 'png') ?? Promise.resolve()}
-                    onDownloadZip={() => variationGridRef.current?.downloadAllZip() ?? Promise.resolve()}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          )}
+            {/* ═══ COLUNA DIREITA — apoio persistente (sempre visível) ═══ */}
+            <Card className="bg-card border-border min-w-0 h-fit lg:sticky lg:top-4">
+              <CardContent className="p-4 sm:p-5">
+                <FinalActionsPanel
+                  slides={slides}
+                  selectedIndex={selectedSlideIndex}
+                  formatLabel={`${currentFormat?.channel[lang] ?? ''} (${currentFormat?.type[lang] ?? ''})`}
+                  formatSize={currentFormat?.size ?? ''}
+                  caption={generatedCaption}
+                  lang={lang}
+                  onDownloadSingle={(idx) => variationGridRef.current?.downloadSlide(idx, 'png') ?? Promise.resolve()}
+                  onDownloadZip={() => variationGridRef.current?.downloadAllZip() ?? Promise.resolve()}
+                />
+              </CardContent>
+            </Card>
+          </div>
 
           {/* ── Bottom row: Quick-access tools (sempre visíveis) ── */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
