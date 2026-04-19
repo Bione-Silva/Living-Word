@@ -166,6 +166,7 @@ export default function SocialStudio() {
   const [openModal, setOpenModal] = useState<null | 'palette' | 'scenes' | 'templates'>(null);
 
   const variationGridRef = useRef<VariationGridHandle | null>(null);
+  const exporterRef = useRef<MultiFormatExporterHandle | null>(null);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
