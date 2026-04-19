@@ -14,6 +14,12 @@ import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGa
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
 import { VariationGrid } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
+import {
+  ImageModePicker,
+  getImageModePromptFragment,
+  getImageModeLabel,
+  type ImageMode,
+} from '@/components/social-studio/ImageModePicker';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
