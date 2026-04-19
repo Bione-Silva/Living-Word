@@ -68,10 +68,14 @@ export interface VariationGridProps {
   lang: L;
   template: CanvasTemplate;
   presentationMode?: boolean; // true => PPTX export available (sermão/estudo)
+  selectedIndex?: number;
+  onSelectIndex?: (idx: number) => void;
 }
 
 export interface VariationGridHandle {
   refresh: () => void;
+  downloadSlide: (idx: number, format?: 'png' | 'jpg') => Promise<void>;
+  downloadAllZip: () => Promise<void>;
 }
 
 function dataUrlToBlob(dataUrl: string) {
