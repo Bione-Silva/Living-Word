@@ -91,6 +91,40 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const prompt = typeof body?.prompt === 'string' ? body.prompt.trim() : '';
     const mode: 'search' | 'generate' = body?.mode === 'generate' ? 'generate' : 'search';
+    // Visual mode (4 reais): biblica | moderna | editorial | simbolica.
+    // Default fica em 'biblica' p/ não quebrar chamadas antigas.
+    const visualMode: 'biblica' | 'moderna' | 'editorial' | 'simbolica' =
+      ['biblica', 'moderna', 'editorial', 'simbolica'].includes(body?.visualMode)
+        ? body.visualMode
+        : 'biblica';
+
+    // Direção visual real — cada modo tem prefix + negative fortes.
+    const VISUAL_MODES = {
+      biblica: {
+        prefix:
+          'Cinematic biblical scene set in the ancient Middle East, painterly photoreal style with dramatic warm golden lighting, reverent atmosphere, devotional mood, period-accurate stone architecture, tunics, olive trees and desert landscape, depth of field, film grain, museum-quality composition',
+        negative:
+          'no modern clothing, no smartphones, no contemporary buildings, no urban setting, no coffee mugs, no laptops, no text, no captions, no watermarks, no faces of God',
+      },
+      moderna: {
+        prefix:
+          'Contemporary lifestyle photography, photorealistic real-world scene, soft natural daylight, editorial Christian brand campaign aesthetic, clean modern composition with negative space for typography, premium magazine quality, warm and human atmosphere, shallow depth of field, candid moment, muted natural color palette',
+        negative:
+          'STRICT: no biblical period costumes, no tunics, no sandals, no ancient architecture, no desert, no painterly sacred art style, no oil painting look, no dramatic golden light rays, no giant cross on mountain, no mystical glow, no fog, no theatrical staging, no excessive gold tones, no Renaissance painting, no medieval art, no text, no captions, no watermarks',
+      },
+      editorial: {
+        prefix:
+          'Editorial design poster, sophisticated minimalist composition, premium magazine layout, single hero element on a flat solid background, abundant negative space designed to receive large typography, refined neutral palette of cream beige off-white and deep charcoal, art-direction quality, calm and elegant',
+        negative:
+          'no people, no faces, no biblical costumes, no painterly style, no busy background, no clutter, no decorative ornaments, no rainbow gradients, no neon, no 3D render, no stock photo look, no text, no watermarks',
+      },
+      simbolica: {
+        prefix:
+          'Minimalist symbolic illustration, single conceptual element as the only subject, clean geometric composition, flat or low-texture background, contemporary Christian visual identity, calm muted palette with one subtle accent color',
+        negative:
+          'no people, no faces, no realistic biblical scenes, no period costumes, no busy environment, no photographic detail, no dramatic cinematic lighting, no painterly sacred art, no text, no watermark',
+      },
+    } as const;
 
     // Plano free não tem acesso ao Estúdio (apenas para GENERATE; SEARCH é livre p/ logados)
     if (mode === 'generate' && !isAdmin && !ALLOWED_PLANS.has(userPlan)) {
@@ -175,8 +209,10 @@ Deno.serve(async (req) => {
       }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // Chama IA
-    const enrichedPrompt = `${prompt} — painterly biblical landscape, cinematic lighting, soft warm tones, reverent atmosphere, no text, no captions, no watermarks`;
+    // Chama IA — prompt builder modular: subject + visual prefix + negative.
+    // O modo visual escolhido pelo usuário DEFINE a aparência da imagem.
+    const visual = VISUAL_MODES[visualMode];
+    const enrichedPrompt = `Subject: ${prompt}.\n\nVisual direction: ${visual.prefix}.\n\nDo NOT include: ${visual.negative}.`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
