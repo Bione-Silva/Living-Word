@@ -148,6 +148,8 @@ export default function SocialStudio() {
   const [activeTab, setActiveTab] = useState<string>('studio');
   const [step, setStep] = useState<WizardStep>('format');
   const [formatId, setFormatId] = useState<FormatId>('ig-post');
+  /** Multi-select destinations — must always include `formatId`. */
+  const [selectedFormats, setSelectedFormats] = useState<FormatId[]>(['ig-post']);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
   const [visualStyle, setVisualStyle] = useState<VisualStyle>('moderno');
