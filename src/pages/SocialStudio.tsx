@@ -23,89 +23,166 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Sparkles, Layers, Loader2, Wand2, Image as ImageIcon, Palette, BookOpen,
-  Hash, PenLine, Camera, Mountain, Brush, LayoutTemplate,
+  Camera, Mountain, Brush, LayoutTemplate, Check, ArrowRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
+type WizardStep = 'format' | 'content' | 'style' | 'generate';
 
 const headings: Record<L, Record<string, string>> = {
   PT: {
     title: 'Estúdio Social',
-    subtitle: 'Crie artes para suas redes em um clique. Geramos todas as variações automaticamente — você só escolhe e baixa.',
+    subtitle: 'Crie artes incríveis em poucos cliques.',
     studio: 'Estúdio',
     gallery: 'Minhas Artes',
-    format: 'Formato',
-    slideCount: 'Quantidade',
-    inputTitle: 'Conteúdo',
-    inputDesc: 'Busque um versículo ou gere texto pastoral',
-    contentGen: 'Gerador',
-    imageMode: 'Imagem',
-    carousel: 'Carrossel',
-    palette: 'Paleta',
-    scenes: 'Cenas',
-    designTitle: 'Estilo',
-    designDesc: 'Cor de fundo, fonte e cor do texto',
-    sceneTitle: 'Cenas Bíblicas',
-    templateTitle: 'Template',
-    generateCarousel: 'Gerar Carrossel Devocional',
-    carouselFromVerse: 'Cria slides automáticos a partir do versículo',
+    step1: 'Formato',
+    step1Desc: 'Onde será publicado',
+    step2: 'Conteúdo',
+    step2Desc: 'Texto, versículo ou tema',
+    step3: 'Estilo',
+    step3Desc: 'Cores, fontes e aparência',
+    step4: 'Gerar',
+    step4Desc: 'Criamos suas variações',
+    formatHeading: 'Escolha o formato',
+    formatSub: 'Selecione onde sua arte será usada',
+    contentHeading: 'Conteúdo da arte',
+    contentSub: 'Busque um versículo ou gere texto pastoral',
+    styleHeading: 'Personalize o visual',
+    styleSub: 'Cores, fontes e cenário',
+    generateHeading: 'Pronto para gerar',
+    generateSub: 'Vamos criar variações com base no seu estilo',
+    variations: 'Variações geradas',
+    seeAll: 'Ver todas',
+    variationsHint: 'Variações criadas com base no seu estilo',
+    continue: 'Continuar',
+    back: 'Voltar',
+    generate: 'Gerar Carrossel Devocional',
+    generating: 'Gerando devocional...',
+    paletteCard: 'Paleta de Versículos',
+    paletteCardSub: 'Escolha um versículo para sua arte',
+    scenesCard: 'Cenas',
+    scenesCardSub: 'Imagens para o fundo da arte',
+    stylesCard: 'Estilos',
+    stylesCardSub: 'Aparência, fonte e clima visual',
+    templatesCard: 'Templates',
+    templatesCardSub: 'Modelos prontos para usar',
+    finalReady: 'Pronto? Escolha como deseja usar sua arte',
+    copy: 'Copiar',
+    copyDesc: 'Copiar imagem',
+    share: 'Compartilhar',
+    shareDesc: 'Gerar link',
+    download: 'Baixar',
+    downloadDesc: 'PNG ou ZIP',
+    finalHint: '1 arte: PNG • Carrossel: ZIP com todas as imagens',
+    needVerse: 'Carregue um versículo na etapa "Conteúdo" antes de gerar',
     carouselGenerated: 'Carrossel gerado!',
     carouselError: 'Erro ao gerar carrossel',
-    generating: 'Gerando devocional...',
-    clear: 'Limpar',
+    clear: 'Limpar tudo',
+    modeLabel: 'Modo',
   },
   EN: {
     title: 'Social Studio',
-    subtitle: 'Create social media art in one click. We generate all variations automatically — you just pick and download.',
+    subtitle: 'Create stunning art in just a few clicks.',
     studio: 'Studio',
     gallery: 'My Arts',
-    format: 'Format',
-    slideCount: 'Count',
-    inputTitle: 'Content',
-    inputDesc: 'Search a verse or generate pastoral text',
-    contentGen: 'Generator',
-    imageMode: 'Image',
-    carousel: 'Carousel',
-    palette: 'Palette',
-    scenes: 'Scenes',
-    designTitle: 'Style',
-    designDesc: 'Background color, font and text color',
-    sceneTitle: 'Biblical Scenes',
-    templateTitle: 'Template',
-    generateCarousel: 'Generate Devotional Carousel',
-    carouselFromVerse: 'Auto-creates slides from the verse',
+    step1: 'Format',
+    step1Desc: 'Where it will be published',
+    step2: 'Content',
+    step2Desc: 'Text, verse or theme',
+    step3: 'Style',
+    step3Desc: 'Colors, fonts and look',
+    step4: 'Generate',
+    step4Desc: 'We create your variations',
+    formatHeading: 'Choose the format',
+    formatSub: 'Select where your art will be used',
+    contentHeading: 'Art content',
+    contentSub: 'Search a verse or generate pastoral text',
+    styleHeading: 'Customize the look',
+    styleSub: 'Colors, fonts and scenery',
+    generateHeading: 'Ready to generate',
+    generateSub: 'We will create variations based on your style',
+    variations: 'Generated variations',
+    seeAll: 'See all',
+    variationsHint: 'Variations created from your style',
+    continue: 'Continue',
+    back: 'Back',
+    generate: 'Generate Devotional Carousel',
+    generating: 'Generating devotional...',
+    paletteCard: 'Verse Palette',
+    paletteCardSub: 'Pick a verse for your art',
+    scenesCard: 'Scenes',
+    scenesCardSub: 'Background images for your art',
+    stylesCard: 'Styles',
+    stylesCardSub: 'Look, font and visual mood',
+    templatesCard: 'Templates',
+    templatesCardSub: 'Ready-made models to use',
+    finalReady: 'Ready? Choose how to use your art',
+    copy: 'Copy',
+    copyDesc: 'Copy image',
+    share: 'Share',
+    shareDesc: 'Get link',
+    download: 'Download',
+    downloadDesc: 'PNG or ZIP',
+    finalHint: '1 art: PNG • Carousel: ZIP with all images',
+    needVerse: 'Load a verse in the "Content" step before generating',
     carouselGenerated: 'Carousel generated!',
     carouselError: 'Error generating carousel',
-    generating: 'Generating devotional...',
-    clear: 'Clear',
+    clear: 'Clear all',
+    modeLabel: 'Mode',
   },
   ES: {
     title: 'Estudio Social',
-    subtitle: 'Crea artes para tus redes en un clic. Generamos todas las variaciones automáticamente — solo eliges y descargas.',
+    subtitle: 'Crea artes increíbles en pocos clics.',
     studio: 'Estudio',
     gallery: 'Mis Artes',
-    format: 'Formato',
-    slideCount: 'Cantidad',
-    inputTitle: 'Contenido',
-    inputDesc: 'Busca un versículo o genera texto pastoral',
-    contentGen: 'Generador',
-    imageMode: 'Imagen',
-    carousel: 'Carrusel',
-    palette: 'Paleta',
-    scenes: 'Escenas',
-    designTitle: 'Estilo',
-    designDesc: 'Color de fondo, fuente y color del texto',
-    sceneTitle: 'Escenas Bíblicas',
-    templateTitle: 'Plantilla',
-    generateCarousel: 'Generar Carrusel Devocional',
-    carouselFromVerse: 'Crea slides automáticos del versículo',
+    step1: 'Formato',
+    step1Desc: 'Dónde será publicado',
+    step2: 'Contenido',
+    step2Desc: 'Texto, versículo o tema',
+    step3: 'Estilo',
+    step3Desc: 'Colores, fuentes y apariencia',
+    step4: 'Generar',
+    step4Desc: 'Creamos tus variaciones',
+    formatHeading: 'Elige el formato',
+    formatSub: 'Selecciona dónde se usará tu arte',
+    contentHeading: 'Contenido del arte',
+    contentSub: 'Busca un versículo o genera texto pastoral',
+    styleHeading: 'Personaliza la apariencia',
+    styleSub: 'Colores, fuentes y escenario',
+    generateHeading: 'Listo para generar',
+    generateSub: 'Crearemos variaciones basadas en tu estilo',
+    variations: 'Variaciones generadas',
+    seeAll: 'Ver todas',
+    variationsHint: 'Variaciones creadas con base en tu estilo',
+    continue: 'Continuar',
+    back: 'Volver',
+    generate: 'Generar Carrusel Devocional',
+    generating: 'Generando devocional...',
+    paletteCard: 'Paleta de Versículos',
+    paletteCardSub: 'Elige un versículo para tu arte',
+    scenesCard: 'Escenas',
+    scenesCardSub: 'Imágenes para el fondo del arte',
+    stylesCard: 'Estilos',
+    stylesCardSub: 'Apariencia, fuente y clima visual',
+    templatesCard: 'Plantillas',
+    templatesCardSub: 'Modelos listos para usar',
+    finalReady: '¿Listo? Elige cómo usar tu arte',
+    copy: 'Copiar',
+    copyDesc: 'Copiar imagen',
+    share: 'Compartir',
+    shareDesc: 'Generar enlace',
+    download: 'Descargar',
+    downloadDesc: 'PNG o ZIP',
+    finalHint: '1 arte: PNG • Carrusel: ZIP con todas las imágenes',
+    needVerse: 'Carga un versículo en el paso "Contenido" antes de generar',
     carouselGenerated: '¡Carrusel generado!',
     carouselError: 'Error al generar carrusel',
-    generating: 'Generando devocional...',
-    clear: 'Limpiar',
+    clear: 'Limpiar todo',
+    modeLabel: 'Modo',
   },
 };
 
@@ -118,7 +195,7 @@ export default function SocialStudio() {
   const hasAccess = userPlan !== 'free';
 
   const [activeTab, setActiveTab] = useState<string>('studio');
-  const [activePanel, setActivePanel] = useState<string>('format');
+  const [step, setStep] = useState<WizardStep>('format');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('4:5');
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
   const [slides, setSlides] = useState<SlideData[]>([]);
@@ -130,6 +207,7 @@ export default function SocialStudio() {
   const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
   const [imageMode, setImageMode] = useState<ImageMode>('biblica');
   const [showVerseError, setShowVerseError] = useState(false);
+  const [openModal, setOpenModal] = useState<null | 'palette' | 'scenes' | 'styles' | 'templates'>(null);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
@@ -139,14 +217,11 @@ export default function SocialStudio() {
     backgroundImageUrl: undefined,
   });
 
-  // Resolve the active Bible version label (e.g. "ARA", "KJV") from the user's profile.
-  // Falls back to the default version for the current UI language.
   const versionLabel = (() => {
     const code = profile?.bible_version || getDefaultVersionCode(lang);
     return getBibleVersion(code)?.shortLabel || code.toUpperCase();
   })();
 
-  /** Append the Bible version label to a passage reference, e.g. "João 3:16 (ARA)". */
   const withVersion = (passage: string) =>
     passage.includes('(') ? passage : `${passage} (${versionLabel})`;
 
@@ -192,11 +267,7 @@ export default function SocialStudio() {
     load();
   }, [user]);
 
-  // Router state — handles 4 entry points:
-  //  1) Bible verse selected → { verseText, passage }
-  //  2) Devotional → { devotionalSlides, slideCount, presentationMode }
-  //  3) Sermon (legacy) → { prefilledSlides, defaultAspectRatio, presentationMode }
-  //  4) Sermon (Studio de Blocos / sermão pronto) → { source_content, source_title, source_origin }
+  // Router state — incoming verse / sermon prefill
   useEffect(() => {
     const state = location.state as {
       prefilledSlides?: SlideData[];
@@ -211,28 +282,20 @@ export default function SocialStudio() {
     } | null;
     if (!state) return;
 
-    // 4) Sermão completo vindo do Studio de Blocos / Sermões.
-    //    Pré-popula o canvas com a Grande Ideia/Título e abre uma aba focada
-    //    para o pregador rodar Carrossel Devocional sem colar nada de novo.
     if (state.source_content && state.source_content.trim()) {
       const raw = state.source_content.trim();
       const firstHeading = raw.match(/^#+\s+(.+)$/m)?.[1]?.trim();
       const headline = (state.source_title || firstHeading || 'Sermão').slice(0, 120);
-      // Extrai o primeiro parágrafo significativo como subtítulo
       const firstParagraph = raw
         .split('\n')
         .map((l) => l.replace(/^[#>*\-\s]+/, '').trim())
         .find((l) => l.length > 30 && l.length < 280) || '';
 
-      setSlides([{
-        text: headline,
-        subtitle: firstParagraph,
-        slideNumber: 1,
-        totalSlides: 1,
-      }]);
+      setSlides([{ text: headline, subtitle: firstParagraph, slideNumber: 1, totalSlides: 1 }]);
       setVerseContext({ text: firstParagraph || headline, book: headline });
       setSlideCount(1);
       setPresentationMode(false);
+      setStep('style');
       window.history.replaceState({}, document.title);
       toast.success(
         lang === 'PT' ? 'Sermão carregado! Pronto para gerar carrossel.'
@@ -261,6 +324,7 @@ export default function SocialStudio() {
       }]);
       setSlideCount(1);
       setPresentationMode(false);
+      setStep('style');
       window.history.replaceState({}, document.title);
       toast.success(
         lang === 'PT' ? 'Versículo carregado no Estúdio!'
@@ -299,11 +363,7 @@ export default function SocialStudio() {
   const generateDevotionalCarousel = async () => {
     if (!verseContext) {
       setShowVerseError(true);
-      // Focus first verse-related input on the page (ContentGenerator).
-      const firstInput = document.querySelector<HTMLInputElement>(
-        'input[placeholder*="João"], input[placeholder*="John"], input[placeholder*="Juan"]'
-      );
-      firstInput?.focus();
+      setStep('content');
       return;
     }
     setShowVerseError(false);
@@ -331,7 +391,7 @@ export default function SocialStudio() {
           totalSlides: total,
         }));
         setSlides(built);
-        setPresentationMode(false); // Devotional carousel is for social, not a presentation
+        setPresentationMode(false);
         toast.success(h.carouselGenerated);
       }
     } catch {
@@ -349,9 +409,10 @@ export default function SocialStudio() {
     setActivePaletteId(null);
     setActiveSceneId(null);
     setShowVerseError(false);
+    setStep('format');
   };
 
-  // ── Plano free não tem acesso ao Estúdio Social ──
+  // ── Plano free não tem acesso ──
   if (!hasAccess) {
     return (
       <div className="theme-app max-w-3xl mx-auto py-12">
@@ -372,24 +433,7 @@ export default function SocialStudio() {
                   : 'Crea artes profesionales para tus redes en segundos. Disponible en planes Starter, Pro e Iglesia.'}
               </p>
             </div>
-            <div className="grid sm:grid-cols-3 gap-3 max-w-2xl mx-auto pt-2">
-              {[
-                { plan: 'Starter', credits: 'Banco compartilhado', emoji: '🎨' },
-                { plan: 'Pro', credits: '+ 20 imagens novas/mês', emoji: '👑' },
-                { plan: 'Igreja', credits: '+ 50 imagens novas/mês', emoji: '🏛️' },
-              ].map((p) => (
-                <div key={p.plan} className="rounded-xl border border-border bg-card p-4 text-center">
-                  <div className="text-2xl mb-1">{p.emoji}</div>
-                  <div className="font-bold text-sm text-foreground">{p.plan}</div>
-                  <div className="text-[11px] text-muted-foreground mt-1">{p.credits}</div>
-                </div>
-              ))}
-            </div>
-            <Button
-              size="lg"
-              className="gap-2"
-              onClick={() => window.location.assign('/upgrade')}
-            >
+            <Button size="lg" className="gap-2" onClick={() => window.location.assign('/upgrade')}>
               <Sparkles className="h-4 w-4" />
               {lang === 'PT' ? 'Ver planos' : lang === 'EN' ? 'View plans' : 'Ver planes'}
             </Button>
@@ -399,17 +443,34 @@ export default function SocialStudio() {
     );
   }
 
+  // ── Wizard step definitions ──
+  const steps: Array<{ id: WizardStep; n: number; label: string; desc: string; icon: typeof Layers }> = [
+    { id: 'format', n: 1, label: h.step1, desc: h.step1Desc, icon: Layers },
+    { id: 'content', n: 2, label: h.step2, desc: h.step2Desc, icon: BookOpen },
+    { id: 'style', n: 3, label: h.step3, desc: h.step3Desc, icon: Brush },
+    { id: 'generate', n: 4, label: h.step4, desc: h.step4Desc, icon: Sparkles },
+  ];
+  const currentStepIndex = steps.findIndex((s) => s.id === step);
+  const goNext = () => {
+    if (currentStepIndex < steps.length - 1) setStep(steps[currentStepIndex + 1].id);
+  };
+  const goBack = () => {
+    if (currentStepIndex > 0) setStep(steps[currentStepIndex - 1].id);
+  };
+
   return (
     <div className="theme-app overflow-x-hidden">
       {/* Header */}
-      <div className="mb-5 sm:mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-md shrink-0">
-            <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
+      <div className="mb-5 sm:mb-6">
+        <div className="flex items-center gap-3 mb-1.5">
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-md shrink-0">
+            <Wand2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight break-words min-w-0">{h.title}</h1>
+          <div className="min-w-0">
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight">{h.title}</h1>
+            <p className="text-muted-foreground text-xs sm:text-sm">{h.subtitle}</p>
+          </div>
         </div>
-        <p className="text-muted-foreground text-xs sm:text-sm md:text-base max-w-2xl leading-relaxed">{h.subtitle}</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -424,234 +485,224 @@ export default function SocialStudio() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="studio" className="mt-0">
-          {/* Horizontal panel navigation — pill-style chips, scrollable on mobile */}
-          {(() => {
-            const panels: Array<{ id: string; label: string; icon: typeof Layers }> = [
-              { id: 'format', label: h.format, icon: Layers },
-              { id: 'count', label: h.slideCount, icon: Hash },
-              { id: 'content', label: h.inputTitle, icon: BookOpen },
-              { id: 'generator', label: h.contentGen, icon: PenLine },
-              { id: 'image', label: h.imageMode, icon: Camera },
-              { id: 'palette', label: h.palette, icon: Palette },
-              { id: 'scenes', label: h.scenes, icon: Mountain },
-              { id: 'style', label: h.designTitle, icon: Brush },
-              { id: 'template', label: h.templateTitle, icon: LayoutTemplate },
-            ];
-            return (
-              <div className="-mx-1 mb-5 overflow-x-auto">
-                <div className="flex items-center gap-2 px-1 min-w-max">
-                  {panels.map((p) => {
-                    const Icon = p.icon;
-                    const active = activePanel === p.id;
-                    return (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => setActivePanel(p.id)}
-                        className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all whitespace-nowrap ${
-                          active
-                            ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                            : 'bg-card text-foreground border-border hover:border-primary/40'
-                        }`}
-                        aria-pressed={active}
-                      >
-                        <Icon className="h-3.5 w-3.5" />
-                        {p.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })()}
+        <TabsContent value="studio" className="mt-0 space-y-5">
+          {/* ── 4-step wizard tracker ── */}
+          <div className="overflow-x-auto -mx-1">
+            <div className="flex items-stretch gap-2 sm:gap-3 px-1 min-w-max">
+              {steps.map((s, idx) => {
+                const Icon = s.icon;
+                const active = step === s.id;
+                const done = idx < currentStepIndex;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setStep(s.id)}
+                    className={`flex-1 min-w-[180px] flex items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-all ${
+                      active
+                        ? 'border-primary bg-primary/5 shadow-sm'
+                        : done
+                          ? 'border-primary/30 bg-card hover:border-primary/50'
+                          : 'border-border bg-card hover:border-primary/30'
+                    }`}
+                  >
+                    <div className={`h-10 w-10 shrink-0 rounded-xl flex items-center justify-center ${
+                      active ? 'bg-primary text-primary-foreground' : done ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'
+                    }`}>
+                      {done ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
+                    </div>
+                    <div className="min-w-0">
+                      <div className={`text-sm font-bold leading-tight ${active ? 'text-foreground' : 'text-foreground'}`}>
+                        {s.n}. {s.label}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground leading-tight mt-0.5">{s.desc}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-          {/* Active panel + Preview area side-by-side on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 sm:gap-6">
-            {/* ── ACTIVE PANEL ── */}
-            <div className="min-w-0">
-              {activePanel === 'format' && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Layers className="h-4 w-4 text-primary" />
-                      <h3 className="text-sm font-bold text-foreground">{h.format}</h3>
+          {/* ── Main 3-column grid: Step panel | Preview | Variations ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr_300px] gap-4">
+            {/* LEFT — Active step panel */}
+            <Card className="bg-card border-border min-w-0">
+              <CardContent className="p-4 sm:p-5 space-y-4">
+                {step === 'format' && (
+                  <>
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground font-display">{h.formatHeading}</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">{h.formatSub}</p>
                     </div>
                     <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
-                  </CardContent>
-                </Card>
-              )}
-
-              {activePanel === 'count' && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
                     <SlideCountPicker
                       value={slideCount}
                       onChange={(v) => {
                         setSlideCount(v);
                         if (v > 1 && verseContext && slides.length === 1) {
                           toast.info(
-                            lang === 'PT' ? 'Clique em "Gerar Carrossel" abaixo para criar os slides'
-                            : lang === 'EN' ? 'Click "Generate Carousel" below to create slides'
-                            : 'Haz clic en "Generar Carrusel" abajo para crear los slides'
+                            lang === 'PT' ? 'Avance até "Gerar" para criar os slides'
+                            : lang === 'EN' ? 'Go to "Generate" to create slides'
+                            : 'Avanza a "Generar" para crear los slides'
                           );
                         }
                       }}
                       lang={lang}
                     />
-                  </CardContent>
-                </Card>
-              )}
+                    <Button onClick={goNext} className="w-full gap-2" size="lg">
+                      {h.continue}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
 
-              {activePanel === 'content' && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="h-4 w-4 text-primary" />
-                      <h3 className="text-sm font-bold text-foreground">{h.inputTitle}</h3>
+                {step === 'content' && (
+                  <>
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground font-display">{h.contentHeading}</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">{h.contentSub}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground">{h.inputDesc}</p>
                     <ContentGenerator
                       onVerseGenerated={handleVerseGenerated}
                       onTextGenerated={handleTextGenerated}
                     />
-                  </CardContent>
-                </Card>
-              )}
+                    {showVerseError && (
+                      <p className="text-[12px] text-destructive">{h.needVerse}</p>
+                    )}
+                    <div className="flex gap-2">
+                      <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
+                      <Button onClick={goNext} className="flex-1 gap-2">
+                        {h.continue}
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </>
+                )}
 
-              {activePanel === 'generator' && (
-                <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30">
-                  <CardContent className="p-4 space-y-2">
-                    <div className="flex items-start gap-2">
-                      <Layers className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <div className="flex-1">
-                        <h4 className="text-sm font-bold text-foreground">{h.generateCarousel}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{h.carouselFromVerse} ({slideCount})</p>
-                      </div>
+                {step === 'style' && (
+                  <>
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground font-display">{h.styleHeading}</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">{h.styleSub}</p>
+                    </div>
+                    <ImageModePicker value={imageMode} onChange={setImageMode} lang={lang} />
+                    <div className="pt-2 border-t border-border">
+                      <ThemeCustomizer
+                        value={theme}
+                        onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
+                        lang={lang}
+                        onUploadBackground={handleBackgroundUpload}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
+                      <Button onClick={goNext} className="flex-1 gap-2">
+                        {h.continue}
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </>
+                )}
+
+                {step === 'generate' && (
+                  <>
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground font-display">{h.generateHeading}</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">{h.generateSub}</p>
                     </div>
                     {!verseContext && (
-                      <p className="text-xs text-muted-foreground">
-                        {lang === 'PT'
-                          ? 'Carregue um versículo na aba "Conteúdo" primeiro.'
-                          : lang === 'EN'
-                          ? 'Load a verse in the "Content" tab first.'
-                          : 'Carga un versículo en la pestaña "Contenido" primero.'}
+                      <p className="text-xs text-muted-foreground bg-secondary border border-border rounded-lg p-3">
+                        {h.needVerse}
                       </p>
                     )}
                     <Button
                       onClick={generateDevotionalCarousel}
-                      disabled={loadingDevotional}
-                      size="sm"
-                      className="w-full gap-1.5"
+                      disabled={loadingDevotional || !verseContext}
+                      size="lg"
+                      className="w-full gap-2"
                     >
-                      {loadingDevotional ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                      {loadingDevotional ? h.generating : `${h.generateCarousel} (${slideCount})`}
+                      {loadingDevotional ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      {loadingDevotional ? h.generating : `${h.generate} (${slideCount})`}
                     </Button>
-                    {showVerseError && (
-                      <p className="text-[12px] mt-1 text-destructive">
-                        {lang === 'PT'
-                          ? 'Digite um versículo ou tema antes de gerar'
-                          : lang === 'EN'
-                          ? 'Type a verse or theme before generating'
-                          : 'Escribe un versículo o tema antes de generar'}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-
-              {activePanel === 'image' && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <ImageModePicker
-                      value={imageMode}
-                      onChange={(m) => setImageMode(m)}
-                      lang={lang}
-                    />
-                  </CardContent>
-                </Card>
-              )}
-
-              {activePanel === 'palette' && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <VersePalettePicker
-                      value={activePaletteId}
-                      onChange={handlePaletteSelect}
-                      lang={lang}
-                    />
-                  </CardContent>
-                </Card>
-              )}
-
-              {activePanel === 'scenes' && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <BiblicalSceneGallery
-                      onPick={handleSceneSelect}
-                      lang={lang}
-                      activeId={activeSceneId}
-                      searchTerm={verseContext?.book || verseContext?.text}
-                    />
-                  </CardContent>
-                </Card>
-              )}
-
-              {activePanel === 'style' && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Palette className="h-4 w-4 text-primary" />
-                      <h3 className="text-sm font-bold text-foreground">{h.designTitle}</h3>
+                    <div className="flex gap-2">
+                      <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
+                      {slides.length > 0 && (
+                        <Button variant="ghost" onClick={handleClear} className="flex-1 text-muted-foreground">
+                          {h.clear}
+                        </Button>
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground">{h.designDesc}</p>
-                    <ThemeCustomizer
-                      value={theme}
-                      onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
-                      lang={lang}
-                      onUploadBackground={handleBackgroundUpload}
-                    />
-                  </CardContent>
-                </Card>
-              )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
 
-              {activePanel === 'template' && (
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <TemplatePicker value={template} onChange={setTemplate} lang={lang} />
-                  </CardContent>
-                </Card>
-              )}
+            {/* CENTER — Preview */}
+            <Card className="bg-card border-border min-w-0">
+              <CardContent className="p-4 sm:p-5 space-y-3">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="inline-flex items-center text-[11px] font-medium rounded-full px-2.5 py-1 bg-primary/10 text-primary">
+                    {h.modeLabel}: {getImageModeLabel(imageMode, lang)}
+                  </span>
+                </div>
+                <VariationGrid
+                  slides={slides}
+                  aspectRatio={aspectRatio}
+                  theme={theme}
+                  lang={lang}
+                  template={template}
+                  presentationMode={presentationMode}
+                />
+              </CardContent>
+            </Card>
 
-              {slides.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClear}
-                  className="w-full text-muted-foreground hover:text-foreground mt-3"
+            {/* RIGHT — Variations summary */}
+            <Card className="bg-card border-border min-w-0">
+              <CardContent className="p-4 sm:p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-foreground">{h.variations}</h3>
+                  <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/15 text-primary text-[10px] font-bold px-1.5">
+                    {slides.length}
+                  </span>
+                </div>
+                {slides.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-border bg-secondary/30 p-6 text-center">
+                    <ImageIcon className="h-6 w-6 mx-auto text-muted-foreground/60 mb-2" />
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{h.variationsHint}</p>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-muted-foreground">{h.variationsHint}</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ── Bottom row: Quick-access tools ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { id: 'palette' as const, icon: BookOpen, title: h.paletteCard, desc: h.paletteCardSub },
+              { id: 'scenes' as const, icon: Mountain, title: h.scenesCard, desc: h.scenesCardSub },
+              { id: 'styles' as const, icon: Brush, title: h.stylesCard, desc: h.stylesCardSub },
+              { id: 'templates' as const, icon: LayoutTemplate, title: h.templatesCard, desc: h.templatesCardSub },
+            ].map((c) => {
+              const Icon = c.icon;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setOpenModal(c.id)}
+                  className="flex items-start gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left hover:border-primary/40 hover:shadow-sm transition-all"
                 >
-                  {h.clear}
-                </Button>
-              )}
-            </div>
-
-            {/* ── PREVIEW (always visible) ── */}
-            <div className="min-w-0">
-              <div className="mb-2">
-                <span className="inline-block text-[11px] font-medium rounded-full px-2.5 py-1 bg-primary/10 text-primary">
-                  {lang === 'PT' ? 'Modo: ' : lang === 'EN' ? 'Mode: ' : 'Modo: '}
-                  {getImageModeLabel(imageMode, lang)}
-                </span>
-              </div>
-              <VariationGrid
-                slides={slides}
-                aspectRatio={aspectRatio}
-                theme={theme}
-                lang={lang}
-                template={template}
-                presentationMode={presentationMode}
-              />
-            </div>
+                  <div className="h-9 w-9 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-foreground leading-tight">{c.title}</div>
+                    <div className="text-[11px] text-muted-foreground leading-snug mt-0.5">{c.desc}</div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </TabsContent>
 
@@ -659,6 +710,62 @@ export default function SocialStudio() {
           <ArtGallery lang={lang} refreshTrigger={0} />
         </TabsContent>
       </Tabs>
+
+      {/* ── Quick-access modals (Paleta / Cenas / Estilos / Templates) ── */}
+      <Dialog open={openModal === 'palette'} onOpenChange={(v) => !v && setOpenModal(null)}>
+        <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-display">{h.paletteCard}</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-1">
+            <VersePalettePicker value={activePaletteId} onChange={(p) => { handlePaletteSelect(p); setOpenModal(null); }} lang={lang} />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openModal === 'scenes'} onOpenChange={(v) => !v && setOpenModal(null)}>
+        <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="font-display">{h.scenesCard}</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-1">
+            <BiblicalSceneGallery
+              onPick={(url, id) => { handleSceneSelect(url, id); setOpenModal(null); }}
+              lang={lang}
+              activeId={activeSceneId}
+              searchTerm={verseContext?.book || verseContext?.text}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openModal === 'styles'} onOpenChange={(v) => !v && setOpenModal(null)}>
+        <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-display">{h.stylesCard}</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-1 space-y-4">
+            <ImageModePicker value={imageMode} onChange={setImageMode} lang={lang} />
+            <ThemeCustomizer
+              value={theme}
+              onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
+              lang={lang}
+              onUploadBackground={handleBackgroundUpload}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openModal === 'templates'} onOpenChange={(v) => !v && setOpenModal(null)}>
+        <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-display">{h.templatesCard}</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-1">
+            <TemplatePicker value={template} onChange={(t) => { setTemplate(t); setOpenModal(null); }} lang={lang} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
