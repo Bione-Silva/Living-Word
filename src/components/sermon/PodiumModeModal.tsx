@@ -43,6 +43,8 @@ import {
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { splitByVerseRefs } from '@/lib/verse-highlighter';
+import { BibleCompareSheet } from './BibleCompareSheet';
+import { useAuth } from '@/contexts/AuthContext';
 
 type Lang = 'PT' | 'EN' | 'ES';
 type TimerMode = 'countdown' | 'progressive' | 'clock';
@@ -319,12 +321,15 @@ function PodiumMarkdown({
   fontPx,
   theme,
   tone = 'generic',
+  onVerseClick,
 }: {
   text: string;
   isQuote: boolean;
   fontPx: number;
   theme: PodiumTheme;
   tone?: BlockTone;
+  /** Callback quando o pregador toca em uma referência bíblica inline. */
+  onVerseClick?: (reference: string) => void;
 }) {
   const processed = bolderVerseNumbers(text);
   const lines = processed.split('\n');
@@ -339,15 +344,22 @@ function PodiumMarkdown({
     if (segs.length === 1 && segs[0].type === 'text') return raw;
     return segs.map((seg, i) =>
       seg.type === 'ref' ? (
-        <span
+        <button
           key={`${keyBase}-r${i}`}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onVerseClick?.(seg.value);
+          }}
+          title={onVerseClick ? (theme === 'dark' ? 'Comparar versões' : 'Comparar versões') : undefined}
           className={cn(
-            'inline-flex items-baseline px-1.5 py-0.5 mx-0.5 rounded-md text-[0.92em] font-semibold ring-1',
+            'inline-flex items-baseline px-1.5 py-0.5 mx-0.5 rounded-md text-[0.92em] font-semibold ring-1 transition-all',
             refClass,
+            onVerseClick && 'cursor-pointer hover:ring-2 hover:scale-[1.03] active:scale-[0.97]',
           )}
         >
           {seg.value}
-        </span>
+        </button>
       ) : (
         <span key={`${keyBase}-t${i}`}>{seg.value}</span>
       ),
