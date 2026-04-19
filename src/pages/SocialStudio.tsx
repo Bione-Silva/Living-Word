@@ -26,7 +26,6 @@ import { FinalActionsPanel } from '@/components/social-studio/FinalActionsPanel'
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Sparkles, Loader2, Wand2, Image as ImageIcon, BookOpen,
   Mountain, Brush, LayoutTemplate, Check, ArrowRight, Layers,
