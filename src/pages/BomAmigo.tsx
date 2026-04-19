@@ -3,9 +3,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Heart, Loader2, Send } from 'lucide-react';
+import { ArrowLeft, Heart, Send, MessageSquarePlus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
+import { toast } from 'sonner';
+import { loadHistory, saveMessage, clearHistory } from '@/hooks/useChatHistory';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -48,6 +49,26 @@ const labels = {
     PT: 'Carregando histórico...',
     EN: 'Loading history...',
     ES: 'Cargando historial...',
+  },
+  newChat: {
+    PT: 'Nova conversa',
+    EN: 'New chat',
+    ES: 'Nueva conversación',
+  },
+  newChatConfirm: {
+    PT: 'Iniciar uma nova conversa? O histórico atual será apagado.',
+    EN: 'Start a new chat? Current history will be cleared.',
+    ES: '¿Iniciar una nueva conversación? Se borrará el historial actual.',
+  },
+  newChatDone: {
+    PT: 'Nova conversa iniciada.',
+    EN: 'New chat started.',
+    ES: 'Nueva conversación iniciada.',
+  },
+  newChatError: {
+    PT: 'Não foi possível limpar o histórico.',
+    EN: 'Could not clear history.',
+    ES: 'No se pudo limpiar el historial.',
   },
 } satisfies Record<string, Record<L, string>>;
 
@@ -179,6 +200,20 @@ export default function BomAmigo() {
     }
   };
 
+  const handleNewChat = async () => {
+    if (!user || loading) return;
+    if (messages.length > 0 && !window.confirm(labels.newChatConfirm[lang])) return;
+    try {
+      await clearHistory(user.id, AGENT_ID);
+      setMessages([]);
+      setInput('');
+      toast.success(labels.newChatDone[lang]);
+      inputRef.current?.focus();
+    } catch {
+      toast.error(labels.newChatError[lang]);
+    }
+  };
+
   const isEmpty = messages.length === 0 && !loading && historyLoaded;
 
   return (
@@ -191,10 +226,20 @@ export default function BomAmigo() {
         <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center">
           <Heart className="h-5 w-5 text-primary" />
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <h1 className="text-sm font-bold text-foreground">{labels.title[lang]}</h1>
-          <p className="text-[11px] text-muted-foreground">{labels.subtitle[lang]}</p>
+          <p className="text-[11px] text-muted-foreground truncate">{labels.subtitle[lang]}</p>
         </div>
+        <button
+          onClick={handleNewChat}
+          disabled={loading || !historyLoaded}
+          title={labels.newChat[lang]}
+          aria-label={labels.newChat[lang]}
+          className="shrink-0 inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+        >
+          <MessageSquarePlus className="h-4 w-4" />
+          <span className="hidden sm:inline text-xs font-medium">{labels.newChat[lang]}</span>
+        </button>
       </div>
 
       {/* Chat messages */}
