@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bell, CheckCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -59,6 +59,15 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState(false);
+  const [pop, setPop] = useState(false);
+  const seenIdsRef = useRef<Set<string>>(new Set());
+  const popTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const triggerPop = () => {
+    setPop(true);
+    if (popTimerRef.current) clearTimeout(popTimerRef.current);
+    popTimerRef.current = setTimeout(() => setPop(false), 650);
+  };
 
   useEffect(() => {
     if (!user) return;
