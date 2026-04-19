@@ -8,10 +8,11 @@ import type { AspectRatio } from './AspectRatioSelector';
 import type { ThemeConfig } from './ThemeCustomizer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Download, Image as ImageIcon, FileImage, Loader2, Archive, Presentation, Sparkles } from 'lucide-react';
+import { Download, Image as ImageIcon, FileImage, Loader2, Archive, Presentation, Sparkles, Share2 } from 'lucide-react';
 import { captureNodeAsPng, compressToJpeg } from './export-utils';
 import { toast } from 'sonner';
 import { DownloadSuccessDialog } from '@/components/DownloadSuccessDialog';
+import { openWhatsAppShare } from '@/lib/whatsapp';
 
 type L = 'PT' | 'EN' | 'ES';
 
