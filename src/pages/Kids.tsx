@@ -340,6 +340,8 @@ Return ONLY valid JSON (no markdown, no code fences, no explanation):
         }
       }
 
+      sandbox.remove();
+
       // Rodapé Living Word em todas as páginas
       const totalPages = pdf.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
