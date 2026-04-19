@@ -23,7 +23,6 @@ import {
 } from '@/components/social-studio/ImageModePicker';
 import { FormatPicker, getFormatById, findFormatByAspect, type FormatId } from '@/components/social-studio/FormatPicker';
 import { MultiFormatExporter, type MultiFormatExporterHandle } from '@/components/social-studio/MultiFormatExporter';
-import { VisualStyleChips, type VisualStyle } from '@/components/social-studio/VisualStyleChips';
 import { FinalActionsPanel } from '@/components/social-studio/FinalActionsPanel';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -57,7 +56,8 @@ const headings: Record<L, Record<string, string>> = {
     styleSub: 'Personalize cores, fontes e clima visual',
     generateHeading: 'Variações geradas',
     generateSub: 'Escolha a arte ideal para você',
-    continue: 'Continuar', back: 'Voltar',
+    continue: 'Continuar', back: 'Voltar', apply: 'Aplicar estilo',
+    applied: 'Estilo aplicado à arte',
     generate: 'Gerar variações',
     generating: 'Gerando devocional...',
     paletteCard: 'Paleta de Versículos', paletteCardSub: 'Escolha um versículo para sua arte',
@@ -86,7 +86,8 @@ const headings: Record<L, Record<string, string>> = {
     styleSub: 'Customize colors, fonts and visual mood',
     generateHeading: 'Generated variations',
     generateSub: 'Pick the art you love',
-    continue: 'Continue', back: 'Back',
+    continue: 'Continue', back: 'Back', apply: 'Apply style',
+    applied: 'Style applied to artwork',
     generate: 'Generate variations',
     generating: 'Generating devotional...',
     paletteCard: 'Verse Palette', paletteCardSub: 'Pick a verse for your art',
@@ -115,7 +116,8 @@ const headings: Record<L, Record<string, string>> = {
     styleSub: 'Personaliza colores, fuentes y clima visual',
     generateHeading: 'Variaciones generadas',
     generateSub: 'Elige el arte ideal para ti',
-    continue: 'Continuar', back: 'Volver',
+    continue: 'Continuar', back: 'Volver', apply: 'Aplicar estilo',
+    applied: 'Estilo aplicado al arte',
     generate: 'Generar variaciones',
     generating: 'Generando devocional...',
     paletteCard: 'Paleta de Versículos', paletteCardSub: 'Elige un versículo para tu arte',
@@ -138,6 +140,25 @@ const ASPECT_CSS: Record<AspectRatio, string> = {
   '1.91:1': '1.91 / 1',
 };
 
+/**
+ * Mapa de gradientes por modo visual — APLICADOS NO PREVIEW NA HORA
+ * para o usuário enxergar imediatamente o efeito do modo escolhido.
+ * Cada gradiente reflete o clima estético do modo correspondente.
+ */
+const IMAGE_MODE_GRADIENT: Record<ImageMode, string> = {
+  biblica: 'linear-gradient(135deg, #3d2006 0%, #7a4010 55%, #c8861f 100%)',
+  moderna: 'linear-gradient(135deg, #f4ede2 0%, #d8c9b4 55%, #8a7f70 100%)',
+  editorial: 'linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 55%, #4a4a4a 100%)',
+  simbolica: 'linear-gradient(135deg, #0e2010 0%, #1a3d1e 55%, #3a6b3f 100%)',
+};
+
+const IMAGE_MODE_TEXT_COLOR: Record<ImageMode, string> = {
+  biblica: '#FFF6E5',
+  moderna: '#1f1a14',
+  editorial: '#FFFFFF',
+  simbolica: '#F0FFF4',
+};
+
 export default function SocialStudio() {
   const { lang } = useLanguage();
   const { user, profile } = useAuth();
@@ -153,7 +174,6 @@ export default function SocialStudio() {
   const [selectedFormats, setSelectedFormats] = useState<FormatId[]>(['ig-post']);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
-  const [visualStyle, setVisualStyle] = useState<VisualStyle>('moderno');
   const [slides, setSlides] = useState<SlideData[]>([]);
   const [selectedSlideIndex, setSelectedSlideIndex] = useState(0);
   const [verseContext, setVerseContext] = useState<{ text: string; book: string } | null>(null);
@@ -377,7 +397,6 @@ export default function SocialStudio() {
           imageMode,
           imageStyle: imageMode,
           stylePrompt: getImageModePromptFragment(imageMode),
-          visualStyle,
         },
       });
       if (error) throw error;
@@ -574,10 +593,27 @@ export default function SocialStudio() {
                       onUploadBackground={handleBackgroundUpload}
                     />
                     <div className="pt-3 border-t border-border">
-                      <VisualStyleChips value={visualStyle} onChange={setVisualStyle} lang={lang} />
-                    </div>
-                    <div className="pt-3 border-t border-border">
-                      <ImageModePicker value={imageMode} onChange={setImageMode} lang={lang} />
+                      <ImageModePicker
+                        value={imageMode}
+                        onChange={(m) => {
+                          setImageMode(m);
+                          // Aplicar IMEDIATAMENTE o clima do modo no preview da arte.
+                          // Cada modo tem um gradiente próprio que reflete sua estética
+                          // (cinematográfico/quente, moderno/claro, editorial/neutro, simbólico/escuro).
+                          const grad = IMAGE_MODE_GRADIENT[m];
+                          const txt = IMAGE_MODE_TEXT_COLOR[m];
+                          setTheme((prev) => ({
+                            ...prev,
+                            gradient: grad,
+                            textColor: txt,
+                            // Tirar foto de fundo para o usuário VER a mudança de clima
+                            backgroundImageUrl: undefined,
+                          }));
+                          setActivePaletteId(null);
+                          setActiveSceneId(null);
+                        }}
+                        lang={lang}
+                      />
                     </div>
                   </>
                 )}
@@ -609,17 +645,32 @@ export default function SocialStudio() {
                   </>
                 )}
 
-                {/* Navegação fixa no rodapé do painel esquerdo */}
+                {/* Navegação fixa no rodapé do painel esquerdo.
+                    Na etapa "Estilo" o botão é APLICAR (efeito imediato no preview);
+                    nas demais é CONTINUAR (avança o wizard). */}
                 <div className="flex gap-2 pt-3 border-t border-border">
                   {currentStepIndex > 0 && (
                     <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
                   )}
-                  {currentStepIndex < steps.length - 1 && (
+                  {step === 'style' ? (
+                    <Button
+                      onClick={() => {
+                        // Tudo já está aplicado em tempo real (theme + imageMode);
+                        // este botão só dá feedback explícito + avança para Gerar.
+                        toast.success(h.applied);
+                        goNext();
+                      }}
+                      className="flex-1 gap-2"
+                    >
+                      <Check className="h-4 w-4" />
+                      {h.apply}
+                    </Button>
+                  ) : currentStepIndex < steps.length - 1 ? (
                     <Button onClick={goNext} className="flex-1 gap-2">
                       {h.continue}
                       <ArrowRight className="h-4 w-4" />
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
