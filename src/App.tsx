@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { PWAUpdater } from "@/components/PWAUpdater";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -118,6 +119,7 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <PWAUpdater />
             <BrowserRouter>
               <>
                 <Routes>
