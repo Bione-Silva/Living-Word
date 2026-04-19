@@ -402,7 +402,7 @@ Return ONLY valid JSON (no markdown, no code fences, no explanation):
           {/* Comic-book style story */}
           <div ref={storyRef} className="bg-white rounded-3xl p-5 sm:p-8 space-y-6 shadow-sm">
             {/* Cover */}
-            <header className="text-center space-y-3 pb-4 border-b-2 border-dashed border-amber-200">
+            <header data-pdf-section className="text-center space-y-3 pb-4 border-b-2 border-dashed border-amber-200">
               <div className="text-6xl">{selectedChar?.emoji}</div>
               <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground leading-tight">
                 {story.title}
