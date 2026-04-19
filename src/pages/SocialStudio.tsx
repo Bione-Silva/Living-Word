@@ -493,16 +493,16 @@ export default function SocialStudio() {
             </div>
           </div>
 
-          {/* ── ESTRUTURA FIXA: Esquerda (controles da etapa) | Centro (preview persistente) | Direita (apoio) ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-[360px_minmax(0,1fr)_320px] gap-4">
+          {/* ── ESTRUTURA FIXA: Esquerda estreita | Centro grande (prioridade do preview) | Direita estreita ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_minmax(0,1fr)_180px] gap-3">
             {/* ═══ COLUNA ESQUERDA — controles da etapa ═══ */}
             <Card className="bg-card border-border min-w-0">
-              <CardContent className="p-4 sm:p-5 space-y-4">
+              <CardContent className="p-3 sm:p-3.5 space-y-3">
                 {step === 'format' && (
                   <>
                     <div>
-                      <h2 className="text-lg font-bold text-foreground font-display">{h.formatHeading}</h2>
-                      <p className="text-xs text-muted-foreground mt-0.5">{h.formatSub}</p>
+                      <h2 className="text-sm font-bold text-foreground font-display leading-tight">{h.formatHeading}</h2>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{h.formatSub}</p>
                     </div>
                     <FormatPicker value={formatId} onChange={handleFormatChange} lang={lang} />
                   </>
@@ -620,8 +620,9 @@ export default function SocialStudio() {
                     className="relative mx-auto rounded-2xl border-2 border-dashed border-primary/30 bg-secondary/30 flex items-center justify-center max-w-full"
                     style={{
                       aspectRatio: ASPECT_CSS[aspectRatio],
-                      width: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 280 : 420,
-                      maxHeight: 520,
+                      width: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 380 : '100%',
+                      maxWidth: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 380 : 720,
+                      maxHeight: 720,
                     }}
                   >
                     <div className="text-center px-6">
@@ -645,7 +646,7 @@ export default function SocialStudio() {
 
             {/* ═══ COLUNA DIREITA — apoio persistente (sempre visível) ═══ */}
             <Card className="bg-card border-border min-w-0 h-fit lg:sticky lg:top-4">
-              <CardContent className="p-4 sm:p-5">
+              <CardContent className="p-3 sm:p-3.5">
                 <FinalActionsPanel
                   slides={slides}
                   selectedIndex={selectedSlideIndex}

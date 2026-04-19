@@ -126,18 +126,18 @@ export function FormatPicker({ value, onChange, lang }: Props) {
   const groups: Array<'social' | 'carousel' | 'message'> = ['social', 'carousel', 'message'];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {groups.map((g) => {
         const items = FORMATS.filter((f) => f.group === g);
         return (
-          <div key={g} className="space-y-2">
-            <div className="flex items-center gap-1.5 px-0.5">
-              {g === 'carousel' && <Layers className="h-3 w-3 text-muted-foreground" />}
-              <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">
+          <div key={g} className="space-y-1.5">
+            <div className="flex items-center gap-1 px-0.5">
+              {g === 'carousel' && <Layers className="h-2.5 w-2.5 text-muted-foreground" />}
+              <span className="text-[9px] font-bold tracking-[0.12em] uppercase text-muted-foreground">
                 {GROUP_LABELS[g][lang]}
               </span>
             </div>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-1.5">
               {items.map((f) => {
                 const Icon = f.icon;
                 const active = value === f.id;
@@ -146,24 +146,24 @@ export function FormatPicker({ value, onChange, lang }: Props) {
                     key={f.id}
                     type="button"
                     onClick={() => onChange(f.id, f)}
-                    className={`flex items-center gap-3 rounded-xl border-2 px-3 py-2.5 text-left transition-all ${
+                    className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 text-left transition-all ${
                       active
                         ? 'border-primary bg-primary/5 shadow-sm'
                         : 'border-border bg-card hover:border-primary/30 hover:bg-secondary/40'
                     }`}
                   >
                     <div
-                      className={`h-9 w-9 shrink-0 rounded-lg flex items-center justify-center ${
+                      className={`h-6 w-6 shrink-0 rounded-md flex items-center justify-center ${
                         active ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
                       }`}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-3 w-3" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-bold text-foreground leading-tight">
+                      <div className="text-[11px] font-semibold text-foreground leading-tight truncate">
                         {f.channel[lang]} <span className="text-muted-foreground font-normal">({f.type[lang]})</span>
                       </div>
-                      <div className="text-[11px] text-muted-foreground leading-tight mt-0.5">{f.size}</div>
+                      <div className="text-[9px] text-muted-foreground leading-tight mt-0.5">{f.size}</div>
                     </div>
                   </button>
                 );
