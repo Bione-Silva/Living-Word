@@ -308,8 +308,14 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
               : undefined;
             return (
               <div key={slideIdx} className="group relative">
-                <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border shadow-sm transition-all hover:shadow-lg hover:border-primary/40">
-                  <SlideCanvas
+                <div
+                  onClick={() => onSelectIndex?.(slideIdx)}
+                  className={`relative rounded-xl overflow-hidden bg-muted/30 border-2 shadow-sm transition-all hover:shadow-lg cursor-pointer ${
+                    selectedIndex === slideIdx
+                      ? 'border-primary ring-2 ring-primary/30'
+                      : 'border-border hover:border-primary/40'
+                  }`}
+                >
                     ref={setRef(slideIdx)}
                     slide={slide}
                     aspectRatio={aspectRatio}
