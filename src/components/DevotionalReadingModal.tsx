@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -6,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks, Send, Mail, Smartphone, ChevronDown } from 'lucide-react';
+import { Copy, Share2, FileDown, BookOpen, MessageCircle, ListChecks, Send, Mail, Smartphone, ChevronDown, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 type L = 'PT' | 'EN' | 'ES';
