@@ -89,6 +89,7 @@ export default function Dashboard() {
     <div className="space-y-6 max-w-2xl mx-auto">
       <DashboardTopBanner />
       <DashboardGreeting />
+      <MonthlyOverviewCard />
       <div id="bom-amigo">
         <BomAmigoCard />
       </div>
