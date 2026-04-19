@@ -9,43 +9,46 @@ const STEPS = ["Conteúdo", "Visual", "Formato", "Publicar"];
 
 export function StepperConteudo({ currentStep, onStepClick }: Props) {
   return (
-    <div className="flex items-start justify-between w-full mb-5">
+    <div className="flex items-stretch w-full bg-[#f5f3ff] border border-[#e2deff] rounded-xl p-1.5">
       {STEPS.map((label, idx) => {
         const n = idx + 1;
         const active = n === currentStep;
         const done = n < currentStep;
         const isLast = idx === STEPS.length - 1;
+
         return (
-          <div key={label} className="flex items-start flex-1 min-w-0">
+          <div key={label} className="flex items-stretch flex-1 min-w-0">
             <button
               type="button"
               onClick={() => onStepClick?.(n)}
-              className="flex flex-col items-center gap-1 shrink-0"
+              className={`flex items-center gap-2 flex-1 px-3 py-2.5 rounded-[9px] transition-colors ${
+                active ? "bg-white shadow-sm" : "hover:bg-white/50"
+              }`}
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
+                className={`w-[26px] h-[26px] shrink-0 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
                   active
                     ? "bg-[#7c3aed] text-white"
                     : done
                     ? "bg-[#ede9fe] text-[#7c3aed]"
-                    : "bg-white border border-[#e5e7eb] text-[#9ca3af]"
+                    : "bg-[#f5f3ff] border border-[#e2deff] text-[#9ca3af]"
                 }`}
               >
-                {done ? <Check className="w-3.5 h-3.5" /> : n}
+                {done ? <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> : n}
               </div>
               <span
-                className={`text-[10px] ${
-                  active ? "text-[#7c3aed] font-medium" : "text-[#9ca3af]"
+                className={`text-[13px] truncate ${
+                  active
+                    ? "text-[#7c3aed] font-medium"
+                    : done
+                    ? "text-[#7c3aed]"
+                    : "text-[#9ca3af]"
                 }`}
               >
                 {label}
               </span>
             </button>
-            {!isLast && (
-              <div
-                className={`flex-1 h-px mt-3.5 mx-1 ${done ? "bg-[#c4b5fd]" : "bg-[#e5e7eb]"}`}
-              />
-            )}
+            {!isLast && <div className="w-px bg-[#e2deff] my-2" />}
           </div>
         );
       })}
