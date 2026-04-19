@@ -325,6 +325,7 @@ export default function SocialStudio() {
     setSlideCount(1);
     setActivePaletteId(null);
     setActiveSceneId(null);
+    setShowVerseError(false);
   };
 
   // ── Plano free não tem acesso ao Estúdio Social ──
