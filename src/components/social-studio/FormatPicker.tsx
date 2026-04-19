@@ -56,6 +56,16 @@ const FORMATS: FormatDef[] = [
     group: 'social',
   },
   {
+    id: 'fb-post',
+    icon: Facebook,
+    channel: { PT: 'Facebook', EN: 'Facebook', ES: 'Facebook' },
+    type: { PT: 'Post', EN: 'Post', ES: 'Post' },
+    size: '1200 × 630',
+    aspectRatio: '1.91:1',
+    slideCount: 1,
+    group: 'social',
+  },
+  {
     id: 'ig-carousel',
     icon: Instagram,
     channel: { PT: 'Instagram', EN: 'Instagram', ES: 'Instagram' },
