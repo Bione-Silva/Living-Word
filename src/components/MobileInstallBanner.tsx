@@ -1,23 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useIsStandalone } from '@/hooks/useIsStandalone';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Bell, Download, Sparkles, X, Wifi } from 'lucide-react';
+import { trackInstallEvent, type InstallVariant } from '@/lib/pwa-analytics';
 
 type L = 'PT' | 'EN' | 'ES';
 
 const COPY = {
-  title: {
-    PT: 'Baixe o Living Word',
-    EN: 'Get the Living Word app',
-    ES: 'Descarga Living Word',
+  initial: {
+    title: {
+      PT: 'Baixe o Living Word',
+      EN: 'Get the Living Word app',
+      ES: 'Descarga Living Word',
+    },
+    desc: {
+      PT: 'Notificações diárias, acesso offline e Palavra do Dia direto no seu celular.',
+      EN: 'Daily notifications, offline access, and Daily Word right on your phone.',
+      ES: 'Notificaciones diarias, acceso offline y Palabra del Día en tu móvil.',
+    },
   },
-  desc: {
-    PT: 'Notificações diárias, acesso offline e Palavra do Dia direto no seu celular.',
-    EN: 'Daily notifications, offline access, and Daily Word right on your phone.',
-    ES: 'Notificaciones diarias, acceso offline y Palabra del Día en tu móvil.',
+  soft: {
+    title: {
+      PT: 'Que tal levar o Living Word com você?',
+      EN: 'Care to take Living Word with you?',
+      ES: '¿Y si llevas Living Word contigo?',
+    },
+    desc: {
+      PT: 'Quando estiver pronto, instalar leva poucos segundos — e sua Palavra do Dia chega ainda mais rápido.',
+      EN: 'Whenever you’re ready, installing takes seconds — and your Daily Word arrives even faster.',
+      ES: 'Cuando quieras, instalarlo toma segundos — y tu Palabra del Día llega aún más rápido.',
+    },
   },
   cta: { PT: 'Instalar app', EN: 'Install app', ES: 'Instalar app' },
   iosHint: {
@@ -36,7 +51,8 @@ const COPY = {
 const STORAGE_KEY = 'lw_mobile_install_dismissed_at';
 const FIRST_VISIT_KEY = 'lw_first_visit_at';
 const SUPPRESS_DAYS = 7;
-const SHOW_WINDOW_DAYS = 7; // banner only shows during first 7 days of usage
+const REENGAGE_AFTER_DAYS = 14; // re-show with softer copy after this many days
+const SHOW_WINDOW_DAYS = 7; // initial banner only shows during first 7 days
 
 function isIos() {
   if (typeof navigator === 'undefined') return false;
