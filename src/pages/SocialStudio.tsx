@@ -1,18 +1,18 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { AspectRatioSelector, type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
+import { type AspectRatio } from '@/components/social-studio/AspectRatioSelector';
 import { type SlideData } from '@/components/social-studio/SlideCanvas';
 import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/social-studio/ThemeCustomizer';
 import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { VersePalettePicker, type VersePalette } from '@/components/social-studio/VersePalettePicker';
 import { getBibleVersion, getDefaultVersionCode } from '@/lib/bible-data';
-import { SlideCountPicker, type SlideCount } from '@/components/social-studio/SlideCountPicker';
+import { type SlideCount } from '@/components/social-studio/SlideCountPicker';
 import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGallery';
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
-import { VariationGrid } from '@/components/social-studio/VariationGrid';
+import { VariationGrid, type VariationGridHandle } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
 import {
   ImageModePicker,
@@ -20,13 +20,16 @@ import {
   getImageModeLabel,
   type ImageMode,
 } from '@/components/social-studio/ImageModePicker';
+import { FormatPicker, getFormatById, findFormatByAspect, type FormatId } from '@/components/social-studio/FormatPicker';
+import { VisualStyleChips, type VisualStyle } from '@/components/social-studio/VisualStyleChips';
+import { FinalActionsPanel } from '@/components/social-studio/FinalActionsPanel';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
-  Sparkles, Layers, Loader2, Wand2, Image as ImageIcon, Palette, BookOpen,
-  Camera, Mountain, Brush, LayoutTemplate, Check, ArrowRight,
+  Sparkles, Loader2, Wand2, Image as ImageIcon, BookOpen,
+  Mountain, Brush, LayoutTemplate, Check, ArrowRight, Layers,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -39,45 +42,25 @@ const headings: Record<L, Record<string, string>> = {
     subtitle: 'Crie artes incríveis em poucos cliques.',
     studio: 'Estúdio',
     gallery: 'Minhas Artes',
-    step1: 'Formato',
-    step1Desc: 'Onde será publicado',
-    step2: 'Conteúdo',
-    step2Desc: 'Texto, versículo ou tema',
-    step3: 'Estilo',
-    step3Desc: 'Cores, fontes e aparência',
-    step4: 'Gerar',
-    step4Desc: 'Criamos suas variações',
+    step1: 'Formato', step1Desc: 'Onde será publicado',
+    step2: 'Conteúdo', step2Desc: 'Texto, versículo ou tema',
+    step3: 'Estilo', step3Desc: 'Cores, fontes e aparência',
+    step4: 'Gerar', step4Desc: 'Criamos suas variações',
     formatHeading: 'Escolha o formato',
-    formatSub: 'Selecione onde sua arte será usada',
+    formatSub: 'Selecione onde sua arte será publicada',
+    formatPreview: 'Pré-visualização do formato',
     contentHeading: 'Conteúdo da arte',
     contentSub: 'Busque um versículo ou gere texto pastoral',
-    styleHeading: 'Personalize o visual',
-    styleSub: 'Cores, fontes e cenário',
-    generateHeading: 'Pronto para gerar',
-    generateSub: 'Vamos criar variações com base no seu estilo',
-    variations: 'Variações geradas',
-    seeAll: 'Ver todas',
-    variationsHint: 'Variações criadas com base no seu estilo',
-    continue: 'Continuar',
-    back: 'Voltar',
-    generate: 'Gerar Carrossel Devocional',
+    styleHeading: 'Estilo da sua arte',
+    styleSub: 'Personalize cores, fontes e clima visual',
+    generateHeading: 'Variações geradas',
+    generateSub: 'Escolha a arte ideal para você',
+    continue: 'Continuar', back: 'Voltar',
+    generate: 'Gerar variações',
     generating: 'Gerando devocional...',
-    paletteCard: 'Paleta de Versículos',
-    paletteCardSub: 'Escolha um versículo para sua arte',
-    scenesCard: 'Cenas',
-    scenesCardSub: 'Imagens para o fundo da arte',
-    stylesCard: 'Estilos',
-    stylesCardSub: 'Aparência, fonte e clima visual',
-    templatesCard: 'Templates',
-    templatesCardSub: 'Modelos prontos para usar',
-    finalReady: 'Pronto? Escolha como deseja usar sua arte',
-    copy: 'Copiar',
-    copyDesc: 'Copiar imagem',
-    share: 'Compartilhar',
-    shareDesc: 'Gerar link',
-    download: 'Baixar',
-    downloadDesc: 'PNG ou ZIP',
-    finalHint: '1 arte: PNG • Carrossel: ZIP com todas as imagens',
+    paletteCard: 'Paleta de Versículos', paletteCardSub: 'Escolha um versículo para sua arte',
+    scenesCard: 'Cenas', scenesCardSub: 'Imagens para o fundo da arte',
+    templatesCard: 'Templates', templatesCardSub: 'Modelos prontos para usar',
     needVerse: 'Carregue um versículo na etapa "Conteúdo" antes de gerar',
     carouselGenerated: 'Carrossel gerado!',
     carouselError: 'Erro ao gerar carrossel',
@@ -87,47 +70,26 @@ const headings: Record<L, Record<string, string>> = {
   EN: {
     title: 'Social Studio',
     subtitle: 'Create stunning art in just a few clicks.',
-    studio: 'Studio',
-    gallery: 'My Arts',
-    step1: 'Format',
-    step1Desc: 'Where it will be published',
-    step2: 'Content',
-    step2Desc: 'Text, verse or theme',
-    step3: 'Style',
-    step3Desc: 'Colors, fonts and look',
-    step4: 'Generate',
-    step4Desc: 'We create your variations',
+    studio: 'Studio', gallery: 'My Arts',
+    step1: 'Format', step1Desc: 'Where it will be published',
+    step2: 'Content', step2Desc: 'Text, verse or theme',
+    step3: 'Style', step3Desc: 'Colors, fonts and look',
+    step4: 'Generate', step4Desc: 'We create your variations',
     formatHeading: 'Choose the format',
     formatSub: 'Select where your art will be used',
+    formatPreview: 'Format preview',
     contentHeading: 'Art content',
     contentSub: 'Search a verse or generate pastoral text',
-    styleHeading: 'Customize the look',
-    styleSub: 'Colors, fonts and scenery',
-    generateHeading: 'Ready to generate',
-    generateSub: 'We will create variations based on your style',
-    variations: 'Generated variations',
-    seeAll: 'See all',
-    variationsHint: 'Variations created from your style',
-    continue: 'Continue',
-    back: 'Back',
-    generate: 'Generate Devotional Carousel',
+    styleHeading: 'Art style',
+    styleSub: 'Customize colors, fonts and visual mood',
+    generateHeading: 'Generated variations',
+    generateSub: 'Pick the art you love',
+    continue: 'Continue', back: 'Back',
+    generate: 'Generate variations',
     generating: 'Generating devotional...',
-    paletteCard: 'Verse Palette',
-    paletteCardSub: 'Pick a verse for your art',
-    scenesCard: 'Scenes',
-    scenesCardSub: 'Background images for your art',
-    stylesCard: 'Styles',
-    stylesCardSub: 'Look, font and visual mood',
-    templatesCard: 'Templates',
-    templatesCardSub: 'Ready-made models to use',
-    finalReady: 'Ready? Choose how to use your art',
-    copy: 'Copy',
-    copyDesc: 'Copy image',
-    share: 'Share',
-    shareDesc: 'Get link',
-    download: 'Download',
-    downloadDesc: 'PNG or ZIP',
-    finalHint: '1 art: PNG • Carousel: ZIP with all images',
+    paletteCard: 'Verse Palette', paletteCardSub: 'Pick a verse for your art',
+    scenesCard: 'Scenes', scenesCardSub: 'Background images for your art',
+    templatesCard: 'Templates', templatesCardSub: 'Ready-made models to use',
     needVerse: 'Load a verse in the "Content" step before generating',
     carouselGenerated: 'Carousel generated!',
     carouselError: 'Error generating carousel',
@@ -137,53 +99,41 @@ const headings: Record<L, Record<string, string>> = {
   ES: {
     title: 'Estudio Social',
     subtitle: 'Crea artes increíbles en pocos clics.',
-    studio: 'Estudio',
-    gallery: 'Mis Artes',
-    step1: 'Formato',
-    step1Desc: 'Dónde será publicado',
-    step2: 'Contenido',
-    step2Desc: 'Texto, versículo o tema',
-    step3: 'Estilo',
-    step3Desc: 'Colores, fuentes y apariencia',
-    step4: 'Generar',
-    step4Desc: 'Creamos tus variaciones',
+    studio: 'Estudio', gallery: 'Mis Artes',
+    step1: 'Formato', step1Desc: 'Dónde será publicado',
+    step2: 'Contenido', step2Desc: 'Texto, versículo o tema',
+    step3: 'Estilo', step3Desc: 'Colores, fuentes y apariencia',
+    step4: 'Generar', step4Desc: 'Creamos tus variaciones',
     formatHeading: 'Elige el formato',
     formatSub: 'Selecciona dónde se usará tu arte',
+    formatPreview: 'Vista previa del formato',
     contentHeading: 'Contenido del arte',
     contentSub: 'Busca un versículo o genera texto pastoral',
-    styleHeading: 'Personaliza la apariencia',
-    styleSub: 'Colores, fuentes y escenario',
-    generateHeading: 'Listo para generar',
-    generateSub: 'Crearemos variaciones basadas en tu estilo',
-    variations: 'Variaciones generadas',
-    seeAll: 'Ver todas',
-    variationsHint: 'Variaciones creadas con base en tu estilo',
-    continue: 'Continuar',
-    back: 'Volver',
-    generate: 'Generar Carrusel Devocional',
+    styleHeading: 'Estilo de tu arte',
+    styleSub: 'Personaliza colores, fuentes y clima visual',
+    generateHeading: 'Variaciones generadas',
+    generateSub: 'Elige el arte ideal para ti',
+    continue: 'Continuar', back: 'Volver',
+    generate: 'Generar variaciones',
     generating: 'Generando devocional...',
-    paletteCard: 'Paleta de Versículos',
-    paletteCardSub: 'Elige un versículo para tu arte',
-    scenesCard: 'Escenas',
-    scenesCardSub: 'Imágenes para el fondo del arte',
-    stylesCard: 'Estilos',
-    stylesCardSub: 'Apariencia, fuente y clima visual',
-    templatesCard: 'Plantillas',
-    templatesCardSub: 'Modelos listos para usar',
-    finalReady: '¿Listo? Elige cómo usar tu arte',
-    copy: 'Copiar',
-    copyDesc: 'Copiar imagen',
-    share: 'Compartir',
-    shareDesc: 'Generar enlace',
-    download: 'Descargar',
-    downloadDesc: 'PNG o ZIP',
-    finalHint: '1 arte: PNG • Carrusel: ZIP con todas las imágenes',
+    paletteCard: 'Paleta de Versículos', paletteCardSub: 'Elige un versículo para tu arte',
+    scenesCard: 'Escenas', scenesCardSub: 'Imágenes para el fondo del arte',
+    templatesCard: 'Plantillas', templatesCardSub: 'Modelos listos para usar',
     needVerse: 'Carga un versículo en el paso "Contenido" antes de generar',
     carouselGenerated: '¡Carrusel generado!',
     carouselError: 'Error al generar carrusel',
     clear: 'Limpiar todo',
     modeLabel: 'Modo',
   },
+};
+
+// Aspect ratio → CSS aspect for preview box
+const ASPECT_CSS: Record<AspectRatio, string> = {
+  '1:1': '1 / 1',
+  '4:5': '4 / 5',
+  '9:16': '9 / 16',
+  '9:16-tiktok': '9 / 16',
+  '1.91:1': '1.91 / 1',
 };
 
 export default function SocialStudio() {
@@ -196,9 +146,12 @@ export default function SocialStudio() {
 
   const [activeTab, setActiveTab] = useState<string>('studio');
   const [step, setStep] = useState<WizardStep>('format');
-  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('4:5');
+  const [formatId, setFormatId] = useState<FormatId>('ig-post');
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
+  const [visualStyle, setVisualStyle] = useState<VisualStyle>('moderno');
   const [slides, setSlides] = useState<SlideData[]>([]);
+  const [selectedSlideIndex, setSelectedSlideIndex] = useState(0);
   const [verseContext, setVerseContext] = useState<{ text: string; book: string } | null>(null);
   const [loadingDevotional, setLoadingDevotional] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
@@ -206,8 +159,10 @@ export default function SocialStudio() {
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
   const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
   const [imageMode, setImageMode] = useState<ImageMode>('biblica');
-  const [showVerseError, setShowVerseError] = useState(false);
-  const [openModal, setOpenModal] = useState<null | 'palette' | 'scenes' | 'styles' | 'templates'>(null);
+  const [generatedCaption, setGeneratedCaption] = useState<string>('');
+  const [openModal, setOpenModal] = useState<null | 'palette' | 'scenes' | 'templates'>(null);
+
+  const variationGridRef = useRef<VariationGridHandle | null>(null);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
@@ -224,6 +179,13 @@ export default function SocialStudio() {
 
   const withVersion = (passage: string) =>
     passage.includes('(') ? passage : `${passage} (${versionLabel})`;
+
+  const handleFormatChange = useCallback((id: FormatId, def: ReturnType<typeof getFormatById>) => {
+    if (!def) return;
+    setFormatId(id);
+    setAspectRatio(def.aspectRatio);
+    setSlideCount(def.slideCount);
+  }, []);
 
   const handlePaletteSelect = useCallback((p: VersePalette) => {
     setActivePaletteId(p.id);
@@ -307,7 +269,10 @@ export default function SocialStudio() {
 
     if (state.prefilledSlides && state.prefilledSlides.length > 0) {
       setSlides(state.prefilledSlides);
-      if (state.defaultAspectRatio) setAspectRatio(state.defaultAspectRatio);
+      if (state.defaultAspectRatio) {
+        setAspectRatio(state.defaultAspectRatio);
+        setFormatId(findFormatByAspect(state.defaultAspectRatio, state.slideCount ?? 1));
+      }
       if (state.presentationMode) setPresentationMode(true);
       if (state.slideCount) setSlideCount(state.slideCount);
       window.history.replaceState({}, document.title);
@@ -347,26 +312,26 @@ export default function SocialStudio() {
   const handleVerseGenerated = useCallback((v: { text: string; book: string; topic_image: string }) => {
     setVerseContext({ text: v.text, book: v.book });
     setSlides([{ text: `"${v.text}"`, subtitle: withVersion(v.book), slideNumber: 1, totalSlides: 1 }]);
+    setGeneratedCaption(`"${v.text}"\n\n— ${withVersion(v.book)}`);
     setSlideCount(1);
     setPresentationMode(false);
-    setShowVerseError(false);
   }, [versionLabel]);
 
   const handleTextGenerated = useCallback((text: string) => {
     const truncated = text.length > 280 ? text.slice(0, 277) + '…' : text;
     setVerseContext(null);
     setSlides([{ text: truncated, slideNumber: 1, totalSlides: 1 }]);
+    setGeneratedCaption(text);
     setSlideCount(1);
     setPresentationMode(false);
   }, []);
 
   const generateDevotionalCarousel = async () => {
     if (!verseContext) {
-      setShowVerseError(true);
       setStep('content');
+      toast.error(h.needVerse);
       return;
     }
-    setShowVerseError(false);
     setLoadingDevotional(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
@@ -378,6 +343,7 @@ export default function SocialStudio() {
           imageMode,
           imageStyle: imageMode,
           stylePrompt: getImageModePromptFragment(imageMode),
+          visualStyle,
         },
       });
       if (error) throw error;
@@ -391,6 +357,7 @@ export default function SocialStudio() {
           totalSlides: total,
         }));
         setSlides(built);
+        setSelectedSlideIndex(0);
         setPresentationMode(false);
         toast.success(h.carouselGenerated);
       }
@@ -408,9 +375,12 @@ export default function SocialStudio() {
     setSlideCount(1);
     setActivePaletteId(null);
     setActiveSceneId(null);
-    setShowVerseError(false);
+    setSelectedSlideIndex(0);
+    setGeneratedCaption('');
     setStep('format');
   };
+
+  const currentFormat = useMemo(() => getFormatById(formatId), [formatId]);
 
   // ── Plano free não tem acesso ──
   if (!hasAccess) {
@@ -512,7 +482,7 @@ export default function SocialStudio() {
                       {done ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
                     </div>
                     <div className="min-w-0">
-                      <div className={`text-sm font-bold leading-tight ${active ? 'text-foreground' : 'text-foreground'}`}>
+                      <div className="text-sm font-bold leading-tight text-foreground">
                         {s.n}. {s.label}
                       </div>
                       <div className="text-[11px] text-muted-foreground leading-tight mt-0.5">{s.desc}</div>
@@ -523,166 +493,240 @@ export default function SocialStudio() {
             </div>
           </div>
 
-          {/* ── Main 3-column grid: Step panel | Preview | Variations ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr_300px] gap-4">
-            {/* LEFT — Active step panel */}
-            <Card className="bg-card border-border min-w-0">
-              <CardContent className="p-4 sm:p-5 space-y-4">
-                {step === 'format' && (
-                  <>
-                    <div>
-                      <h2 className="text-lg font-bold text-foreground font-display">{h.formatHeading}</h2>
-                      <p className="text-xs text-muted-foreground mt-0.5">{h.formatSub}</p>
+          {/* ── Step bodies ── */}
+
+          {/* Step 1 — FORMAT: left = picker, right = preview */}
+          {step === 'format' && (
+            <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4">
+              <Card className="bg-card border-border min-w-0">
+                <CardContent className="p-4 sm:p-5 space-y-4">
+                  <div>
+                    <h2 className="text-lg font-bold text-foreground font-display">{h.formatHeading}</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">{h.formatSub}</p>
+                  </div>
+                  <FormatPicker value={formatId} onChange={handleFormatChange} lang={lang} />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card border-border min-w-0">
+                <CardContent className="p-4 sm:p-6 flex flex-col items-center justify-center min-h-[400px]">
+                  <div className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground mb-4">
+                    {h.formatPreview}
+                  </div>
+                  <div
+                    className="relative rounded-2xl border-2 border-dashed border-primary/30 bg-secondary/30 flex items-center justify-center max-w-full"
+                    style={{
+                      aspectRatio: ASPECT_CSS[aspectRatio],
+                      width: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 240 : 320,
+                      maxHeight: 420,
+                    }}
+                  >
+                    <div className="text-center px-4">
+                      <ImageIcon className="h-8 w-8 mx-auto text-primary/50 mb-2" />
+                      <div className="text-sm font-bold text-foreground">
+                        {currentFormat?.channel[lang]} <span className="font-normal text-muted-foreground">({currentFormat?.type[lang]})</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">{currentFormat?.size}</div>
                     </div>
-                    <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} lang={lang} />
-                    <SlideCountPicker
-                      value={slideCount}
-                      onChange={(v) => {
-                        setSlideCount(v);
-                        if (v > 1 && verseContext && slides.length === 1) {
-                          toast.info(
-                            lang === 'PT' ? 'Avance até "Gerar" para criar os slides'
-                            : lang === 'EN' ? 'Go to "Generate" to create slides'
-                            : 'Avanza a "Generar" para crear los slides'
-                          );
-                        }
-                      }}
-                      lang={lang}
-                    />
-                    <Button onClick={goNext} className="w-full gap-2" size="lg">
+                  </div>
+                  <div className="mt-6 w-full flex justify-end">
+                    <Button onClick={goNext} size="lg" className="gap-2">
                       {h.continue}
                       <ArrowRight className="h-4 w-4" />
                     </Button>
-                  </>
-                )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
-                {step === 'content' && (
-                  <>
-                    <div>
-                      <h2 className="text-lg font-bold text-foreground font-display">{h.contentHeading}</h2>
-                      <p className="text-xs text-muted-foreground mt-0.5">{h.contentSub}</p>
-                    </div>
-                    <ContentGenerator
-                      onVerseGenerated={handleVerseGenerated}
-                      onTextGenerated={handleTextGenerated}
-                    />
-                    {showVerseError && (
-                      <p className="text-[12px] text-destructive">{h.needVerse}</p>
-                    )}
-                    <div className="flex gap-2">
-                      <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
-                      <Button onClick={goNext} className="flex-1 gap-2">
-                        {h.continue}
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </>
-                )}
+          {/* Step 2 — CONTENT */}
+          {step === 'content' && (
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4">
+              <Card className="bg-card border-border min-w-0">
+                <CardContent className="p-4 sm:p-6 space-y-4">
+                  <div>
+                    <h2 className="text-lg font-bold text-foreground font-display">{h.contentHeading}</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">{h.contentSub}</p>
+                  </div>
+                  <ContentGenerator
+                    onVerseGenerated={handleVerseGenerated}
+                    onTextGenerated={handleTextGenerated}
+                  />
+                  <div className="flex gap-2 pt-2">
+                    <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
+                    <Button onClick={goNext} className="flex-1 gap-2">
+                      {h.continue}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-                {step === 'style' && (
-                  <>
-                    <div>
-                      <h2 className="text-lg font-bold text-foreground font-display">{h.styleHeading}</h2>
-                      <p className="text-xs text-muted-foreground mt-0.5">{h.styleSub}</p>
+              <Card className="bg-card border-border min-w-0">
+                <CardContent className="p-4 sm:p-5 space-y-3">
+                  <div className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">
+                    {lang === 'PT' ? 'Prévia do conteúdo' : lang === 'EN' ? 'Content preview' : 'Vista previa del contenido'}
+                  </div>
+                  {slides.length > 0 ? (
+                    <div className="space-y-3">
+                      <div className="rounded-xl bg-secondary/40 border border-border p-4">
+                        <p className="font-display text-base text-foreground leading-relaxed italic">
+                          {slides[0].text}
+                        </p>
+                        {slides[0].subtitle && (
+                          <p className="text-xs text-muted-foreground mt-3 font-semibold tracking-wider uppercase">
+                            {slides[0].subtitle}
+                          </p>
+                        )}
+                      </div>
+                      {generatedCaption && (
+                        <div>
+                          <div className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground mb-1.5">
+                            {lang === 'PT' ? 'Legenda sugerida' : lang === 'EN' ? 'Suggested caption' : 'Leyenda sugerida'}
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-5">{generatedCaption}</p>
+                        </div>
+                      )}
                     </div>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-border bg-secondary/30 p-6 text-center">
+                      <BookOpen className="h-6 w-6 mx-auto text-muted-foreground/60 mb-2" />
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        {lang === 'PT' ? 'Escolha um versículo, tema ou cole um texto para ver a prévia aqui.' : lang === 'EN' ? 'Pick a verse, theme or paste a text to see the preview.' : 'Elige un versículo, tema o pega un texto para ver la vista previa.'}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Step 3 — STYLE */}
+          {step === 'style' && (
+            <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4">
+              <Card className="bg-card border-border min-w-0">
+                <CardContent className="p-4 sm:p-5 space-y-5">
+                  <div>
+                    <h2 className="text-lg font-bold text-foreground font-display">{h.styleHeading}</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">{h.styleSub}</p>
+                  </div>
+                  <ThemeCustomizer
+                    value={theme}
+                    onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
+                    lang={lang}
+                    onUploadBackground={handleBackgroundUpload}
+                  />
+                  <div className="pt-3 border-t border-border">
+                    <VisualStyleChips value={visualStyle} onChange={setVisualStyle} lang={lang} />
+                  </div>
+                  <div className="pt-3 border-t border-border">
                     <ImageModePicker value={imageMode} onChange={setImageMode} lang={lang} />
-                    <div className="pt-2 border-t border-border">
-                      <ThemeCustomizer
-                        value={theme}
-                        onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
-                        lang={lang}
-                        onUploadBackground={handleBackgroundUpload}
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
-                      <Button onClick={goNext} className="flex-1 gap-2">
-                        {h.continue}
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </>
-                )}
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
+                    <Button onClick={goNext} className="flex-1 gap-2">
+                      {h.continue}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-                {step === 'generate' && (
-                  <>
+              <Card className="bg-card border-border min-w-0">
+                <CardContent className="p-4 sm:p-5 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">
+                      {lang === 'PT' ? 'Pré-visualização' : lang === 'EN' ? 'Preview' : 'Vista previa'}
+                    </span>
+                    <span className="inline-flex items-center text-[11px] font-medium rounded-full px-2.5 py-1 bg-primary/10 text-primary">
+                      {h.modeLabel}: {getImageModeLabel(imageMode, lang)}
+                    </span>
+                  </div>
+                  <VariationGrid
+                    ref={variationGridRef}
+                    slides={slides.length > 0 ? slides.slice(0, 1) : slides}
+                    aspectRatio={aspectRatio}
+                    theme={theme}
+                    lang={lang}
+                    template={template}
+                    presentationMode={false}
+                    selectedIndex={0}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Step 4 — GENERATE */}
+          {step === 'generate' && (
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
+              <Card className="bg-card border-border min-w-0">
+                <CardContent className="p-4 sm:p-5 space-y-4">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div>
                       <h2 className="text-lg font-bold text-foreground font-display">{h.generateHeading}</h2>
                       <p className="text-xs text-muted-foreground mt-0.5">{h.generateSub}</p>
                     </div>
-                    {!verseContext && (
-                      <p className="text-xs text-muted-foreground bg-secondary border border-border rounded-lg p-3">
-                        {h.needVerse}
-                      </p>
-                    )}
                     <Button
                       onClick={generateDevotionalCarousel}
                       disabled={loadingDevotional || !verseContext}
-                      size="lg"
-                      className="w-full gap-2"
+                      size="sm"
+                      className="gap-2"
                     >
                       {loadingDevotional ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       {loadingDevotional ? h.generating : `${h.generate} (${slideCount})`}
                     </Button>
-                    <div className="flex gap-2">
-                      <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
-                      {slides.length > 0 && (
-                        <Button variant="ghost" onClick={handleClear} className="flex-1 text-muted-foreground">
-                          {h.clear}
-                        </Button>
-                      )}
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* CENTER — Preview */}
-            <Card className="bg-card border-border min-w-0">
-              <CardContent className="p-4 sm:p-5 space-y-3">
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <span className="inline-flex items-center text-[11px] font-medium rounded-full px-2.5 py-1 bg-primary/10 text-primary">
-                    {h.modeLabel}: {getImageModeLabel(imageMode, lang)}
-                  </span>
-                </div>
-                <VariationGrid
-                  slides={slides}
-                  aspectRatio={aspectRatio}
-                  theme={theme}
-                  lang={lang}
-                  template={template}
-                  presentationMode={presentationMode}
-                />
-              </CardContent>
-            </Card>
-
-            {/* RIGHT — Variations summary */}
-            <Card className="bg-card border-border min-w-0">
-              <CardContent className="p-4 sm:p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-foreground">{h.variations}</h3>
-                  <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/15 text-primary text-[10px] font-bold px-1.5">
-                    {slides.length}
-                  </span>
-                </div>
-                {slides.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-border bg-secondary/30 p-6 text-center">
-                    <ImageIcon className="h-6 w-6 mx-auto text-muted-foreground/60 mb-2" />
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">{h.variationsHint}</p>
                   </div>
-                ) : (
-                  <p className="text-[11px] text-muted-foreground">{h.variationsHint}</p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  {!verseContext && (
+                    <p className="text-xs text-muted-foreground bg-secondary border border-border rounded-lg p-3">
+                      {h.needVerse}
+                    </p>
+                  )}
+                  <VariationGrid
+                    ref={variationGridRef}
+                    slides={slides}
+                    aspectRatio={aspectRatio}
+                    theme={theme}
+                    lang={lang}
+                    template={template}
+                    presentationMode={presentationMode}
+                    selectedIndex={selectedSlideIndex}
+                    onSelectIndex={setSelectedSlideIndex}
+                  />
+                  <div className="flex gap-2 pt-2">
+                    <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
+                    {slides.length > 0 && (
+                      <Button variant="ghost" onClick={handleClear} className="flex-1 text-muted-foreground">
+                        {h.clear}
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* ── Bottom row: Quick-access tools ── */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <Card className="bg-card border-border min-w-0 h-fit lg:sticky lg:top-4">
+                <CardContent className="p-4 sm:p-5">
+                  <FinalActionsPanel
+                    slides={slides}
+                    selectedIndex={selectedSlideIndex}
+                    formatLabel={`${currentFormat?.channel[lang] ?? ''} (${currentFormat?.type[lang] ?? ''})`}
+                    formatSize={currentFormat?.size ?? ''}
+                    caption={generatedCaption}
+                    lang={lang}
+                    onDownloadSingle={(idx) => variationGridRef.current?.downloadSlide(idx, 'png') ?? Promise.resolve()}
+                    onDownloadZip={() => variationGridRef.current?.downloadAllZip() ?? Promise.resolve()}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* ── Bottom row: Quick-access tools (sempre visíveis) ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
               { id: 'palette' as const, icon: BookOpen, title: h.paletteCard, desc: h.paletteCardSub },
               { id: 'scenes' as const, icon: Mountain, title: h.scenesCard, desc: h.scenesCardSub },
-              { id: 'styles' as const, icon: Brush, title: h.stylesCard, desc: h.stylesCardSub },
               { id: 'templates' as const, icon: LayoutTemplate, title: h.templatesCard, desc: h.templatesCardSub },
             ].map((c) => {
               const Icon = c.icon;
@@ -711,7 +755,7 @@ export default function SocialStudio() {
         </TabsContent>
       </Tabs>
 
-      {/* ── Quick-access modals (Paleta / Cenas / Estilos / Templates) ── */}
+      {/* ── Quick-access modals (Paleta / Cenas / Templates) ── */}
       <Dialog open={openModal === 'palette'} onOpenChange={(v) => !v && setOpenModal(null)}>
         <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-2xl">
           <DialogHeader>
@@ -734,23 +778,6 @@ export default function SocialStudio() {
               lang={lang}
               activeId={activeSceneId}
               searchTerm={verseContext?.book || verseContext?.text}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={openModal === 'styles'} onOpenChange={(v) => !v && setOpenModal(null)}>
-        <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-display">{h.stylesCard}</DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-1 space-y-4">
-            <ImageModePicker value={imageMode} onChange={setImageMode} lang={lang} />
-            <ThemeCustomizer
-              value={theme}
-              onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
-              lang={lang}
-              onUploadBackground={handleBackgroundUpload}
             />
           </div>
         </DialogContent>
