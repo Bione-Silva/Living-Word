@@ -115,7 +115,6 @@ export function DashboardTopBanner() {
             </div>
           </div>
         </div>
-        <PushPermissionModal open={showPushModal} onOpenChange={setShowPushModal} />
       </>
     );
   }
