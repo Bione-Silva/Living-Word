@@ -378,7 +378,6 @@ export default function SocialStudio() {
           imageMode,
           imageStyle: imageMode,
           stylePrompt: getImageModePromptFragment(imageMode),
-          visualStyle,
         },
       });
       if (error) throw error;
@@ -575,10 +574,27 @@ export default function SocialStudio() {
                       onUploadBackground={handleBackgroundUpload}
                     />
                     <div className="pt-3 border-t border-border">
-                      <VisualStyleChips value={visualStyle} onChange={setVisualStyle} lang={lang} />
-                    </div>
-                    <div className="pt-3 border-t border-border">
-                      <ImageModePicker value={imageMode} onChange={setImageMode} lang={lang} />
+                      <ImageModePicker
+                        value={imageMode}
+                        onChange={(m) => {
+                          setImageMode(m);
+                          // Aplicar IMEDIATAMENTE o clima do modo no preview da arte.
+                          // Cada modo tem um gradiente próprio que reflete sua estética
+                          // (cinematográfico/quente, moderno/claro, editorial/neutro, simbólico/escuro).
+                          const grad = IMAGE_MODE_GRADIENT[m];
+                          const txt = IMAGE_MODE_TEXT_COLOR[m];
+                          setTheme((prev) => ({
+                            ...prev,
+                            gradient: grad,
+                            textColor: txt,
+                            // Tirar foto de fundo para o usuário VER a mudança de clima
+                            backgroundImageUrl: undefined,
+                          }));
+                          setActivePaletteId(null);
+                          setActiveSceneId(null);
+                        }}
+                        lang={lang}
+                      />
                     </div>
                   </>
                 )}
