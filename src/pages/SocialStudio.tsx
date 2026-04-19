@@ -184,11 +184,37 @@ export default function SocialStudio() {
   const withVersion = (passage: string) =>
     passage.includes('(') ? passage : `${passage} (${versionLabel})`;
 
-  const handleFormatChange = useCallback((id: FormatId, def: ReturnType<typeof getFormatById>) => {
+  /** Set the active (preview) format. Adds to selected if absent. */
+  const handleSetActiveFormat = useCallback((id: FormatId, def: ReturnType<typeof getFormatById>) => {
     if (!def) return;
     setFormatId(id);
     setAspectRatio(def.aspectRatio);
     setSlideCount(def.slideCount);
+    setSelectedFormats((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  }, []);
+
+  /** Toggle a destination on/off (multi-select). Active format cannot be removed alone. */
+  const handleToggleFormat = useCallback((id: FormatId) => {
+    setSelectedFormats((prev) => {
+      if (prev.includes(id)) {
+        // Don't allow removing the last selected format
+        if (prev.length === 1) return prev;
+        const next = prev.filter((f) => f !== id);
+        // If we just removed the active one, promote the first remaining
+        setFormatId((curr) => {
+          if (curr !== id) return curr;
+          const promoted = next[0];
+          const def = getFormatById(promoted);
+          if (def) {
+            setAspectRatio(def.aspectRatio);
+            setSlideCount(def.slideCount);
+          }
+          return promoted;
+        });
+        return next;
+      }
+      return [...prev, id];
+    });
   }, []);
 
   const handlePaletteSelect = useCallback((p: VersePalette) => {
