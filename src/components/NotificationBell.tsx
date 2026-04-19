@@ -94,7 +94,10 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
       ]);
       if (cancelled) return;
       if (notifRes.data) {
-        setItems(notifRes.data.map(({ sent: _s, ...rest }) => rest) as NotificationItem[]);
+        const cleaned = notifRes.data.map(({ sent: _s, ...rest }) => rest) as NotificationItem[];
+        setItems(cleaned);
+        // Seed seen-ids on initial load so we don't pop for pre-existing items.
+        cleaned.forEach((n) => seenIdsRef.current.add(n.id));
       }
       if (readsRes.data) {
         setReadIds(new Set(readsRes.data.map((r) => r.notification_id as string)));
@@ -114,6 +117,8 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
         (payload) => {
           const n = payload.new as NotificationItem & { sent: boolean };
           if (n.sent || !isRecent(n)) return;
+          const isNewToUs = !seenIdsRef.current.has(n.id);
+          seenIdsRef.current.add(n.id);
           setItems((prev) => {
             if (prev.some((p) => p.id === n.id)) return prev;
             const next = [...prev, { id: n.id, message: n.message, type: n.type, scheduled_for: n.scheduled_for }];
@@ -121,6 +126,7 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
               .sort((a, b) => new Date(a.scheduled_for).getTime() - new Date(b.scheduled_for).getTime())
               .slice(0, 8);
           });
+          if (isNewToUs) triggerPop();
         }
       )
       .on(
