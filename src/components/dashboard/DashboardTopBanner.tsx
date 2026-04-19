@@ -94,6 +94,14 @@ export function DashboardTopBanner() {
               <Button size="sm" className="h-8" onClick={() => setShowPushModal(true)}>
                 {COPY.notifCta[l]}
               </Button>
+              <PushPermissionModal
+                open={showPushModal}
+                onOpenChange={setShowPushModal}
+                onSubscribed={() => {
+                  setPushDismissed(true);
+                  try { sessionStorage.setItem('lw_push_banner_dismissed', '1'); } catch {}
+                }}
+              />
               <button
                 onClick={() => {
                   setPushDismissed(true);

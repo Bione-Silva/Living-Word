@@ -12,3 +12,11 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /ai-billing
+Disallow: /configuracoes
+Disallow: /onboarding
+Disallow: /aceitar-convite
+
+Host: https://livingwordgo.com
+Sitemap: https://livingwordgo.com/sitemap.xml
