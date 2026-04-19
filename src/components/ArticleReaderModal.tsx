@@ -311,6 +311,23 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                 <StickyNote className="h-5 w-5" />
               </button>
             )}
+            {isBlogArticle && isPublished && item.id && profile?.blog_handle && (
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/blog/${profile.blog_handle}/${item.id}`;
+                  const text = tx(
+                    `📖 *${liveTitle || item.title}*\n\nLeia o artigo:\n${url}`,
+                    `📖 *${liveTitle || item.title}*\n\nRead the article:\n${url}`,
+                    `📖 *${liveTitle || item.title}*\n\nLee el artículo:\n${url}`,
+                  );
+                  openWhatsAppShare(text);
+                }}
+                className="rounded-full p-2 transition-colors text-foreground/80 hover:text-foreground hover:bg-foreground/10"
+                title={tx('Compartilhar no WhatsApp', 'Share on WhatsApp', 'Compartir en WhatsApp')}
+              >
+                <Share2 className="h-5 w-5" />
+              </button>
+            )}
             <button
               onClick={handleExportPDF}
               disabled={exporting}
