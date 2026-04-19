@@ -21,6 +21,7 @@ import {
   type ImageMode,
 } from '@/components/social-studio/ImageModePicker';
 import { FormatPicker, getFormatById, findFormatByAspect, type FormatId } from '@/components/social-studio/FormatPicker';
+import { MultiFormatExporter, type MultiFormatExporterHandle } from '@/components/social-studio/MultiFormatExporter';
 import { VisualStyleChips, type VisualStyle } from '@/components/social-studio/VisualStyleChips';
 import { FinalActionsPanel } from '@/components/social-studio/FinalActionsPanel';
 import { Button } from '@/components/ui/button';
@@ -147,6 +148,8 @@ export default function SocialStudio() {
   const [activeTab, setActiveTab] = useState<string>('studio');
   const [step, setStep] = useState<WizardStep>('format');
   const [formatId, setFormatId] = useState<FormatId>('ig-post');
+  /** Multi-select destinations — must always include `formatId`. */
+  const [selectedFormats, setSelectedFormats] = useState<FormatId[]>(['ig-post']);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
   const [visualStyle, setVisualStyle] = useState<VisualStyle>('moderno');
@@ -163,6 +166,7 @@ export default function SocialStudio() {
   const [openModal, setOpenModal] = useState<null | 'palette' | 'scenes' | 'templates'>(null);
 
   const variationGridRef = useRef<VariationGridHandle | null>(null);
+  const exporterRef = useRef<MultiFormatExporterHandle | null>(null);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
@@ -180,11 +184,37 @@ export default function SocialStudio() {
   const withVersion = (passage: string) =>
     passage.includes('(') ? passage : `${passage} (${versionLabel})`;
 
-  const handleFormatChange = useCallback((id: FormatId, def: ReturnType<typeof getFormatById>) => {
+  /** Set the active (preview) format. Adds to selected if absent. */
+  const handleSetActiveFormat = useCallback((id: FormatId, def: ReturnType<typeof getFormatById>) => {
     if (!def) return;
     setFormatId(id);
     setAspectRatio(def.aspectRatio);
     setSlideCount(def.slideCount);
+    setSelectedFormats((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  }, []);
+
+  /** Toggle a destination on/off (multi-select). Active format cannot be removed alone. */
+  const handleToggleFormat = useCallback((id: FormatId) => {
+    setSelectedFormats((prev) => {
+      if (prev.includes(id)) {
+        // Don't allow removing the last selected format
+        if (prev.length === 1) return prev;
+        const next = prev.filter((f) => f !== id);
+        // If we just removed the active one, promote the first remaining
+        setFormatId((curr) => {
+          if (curr !== id) return curr;
+          const promoted = next[0];
+          const def = getFormatById(promoted);
+          if (def) {
+            setAspectRatio(def.aspectRatio);
+            setSlideCount(def.slideCount);
+          }
+          return promoted;
+        });
+        return next;
+      }
+      return [...prev, id];
+    });
   }, []);
 
   const handlePaletteSelect = useCallback((p: VersePalette) => {
@@ -504,7 +534,13 @@ export default function SocialStudio() {
                       <h2 className="text-base font-bold text-foreground font-display leading-tight">{h.formatHeading}</h2>
                       <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{h.formatSub}</p>
                     </div>
-                    <FormatPicker value={formatId} onChange={handleFormatChange} lang={lang} />
+                    <FormatPicker
+                      value={formatId}
+                      selected={selectedFormats}
+                      onSetActive={handleSetActiveFormat}
+                      onToggle={handleToggleFormat}
+                      lang={lang}
+                    />
                   </>
                 )}
 
@@ -652,10 +688,43 @@ export default function SocialStudio() {
                   selectedIndex={selectedSlideIndex}
                   formatLabel={`${currentFormat?.channel[lang] ?? ''} (${currentFormat?.type[lang] ?? ''})`}
                   formatSize={currentFormat?.size ?? ''}
+                  destinations={selectedFormats.map((fid) => {
+                    const def = getFormatById(fid);
+                    return {
+                      id: fid,
+                      label: `${def?.channel[lang] ?? ''} (${def?.type[lang] ?? ''})`,
+                      size: def?.size ?? '',
+                    };
+                  })}
                   caption={generatedCaption}
                   lang={lang}
                   onDownloadSingle={(idx) => variationGridRef.current?.downloadSlide(idx, 'png') ?? Promise.resolve()}
-                  onDownloadZip={() => variationGridRef.current?.downloadAllZip() ?? Promise.resolve()}
+                  onDownloadZip={async () => {
+                    // If only one destination, fall back to the single-format ZIP
+                    if (selectedFormats.length <= 1) {
+                      await variationGridRef.current?.downloadAllZip();
+                      return;
+                    }
+                    // Multi-destination: build ZIP with one folder per channel
+                    try {
+                      const blob = await exporterRef.current?.buildZip();
+                      if (!blob) return;
+                      const fname = `living-word-multicanal-${Date.now()}.zip`;
+                      const link = document.createElement('a');
+                      link.download = fname;
+                      link.href = URL.createObjectURL(blob);
+                      link.click();
+                      URL.revokeObjectURL(link.href);
+                      toast.success(
+                        lang === 'PT' ? 'ZIP multicanal pronto!' :
+                        lang === 'EN' ? 'Multi-channel ZIP ready!' :
+                        '¡ZIP multicanal listo!'
+                      );
+                    } catch (err) {
+                      console.error(err);
+                      toast.error(h.carouselError);
+                    }
+                  }}
                 />
               </CardContent>
             </Card>
@@ -732,6 +801,17 @@ export default function SocialStudio() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── Offscreen multi-format renderer (powers per-channel ZIP export) ── */}
+      {slides.length > 0 && selectedFormats.length > 1 && (
+        <MultiFormatExporter
+          ref={exporterRef}
+          formats={selectedFormats}
+          slides={slides}
+          theme={theme}
+          template={template}
+        />
+      )}
     </div>
   );
 }
