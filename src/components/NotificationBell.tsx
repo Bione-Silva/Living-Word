@@ -186,6 +186,7 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
     return () => {
       cancelled = true;
       clearInterval(interval);
+      if (popTimerRef.current) clearTimeout(popTimerRef.current);
       supabase.removeChannel(channel);
     };
   }, [user]);
@@ -250,7 +251,10 @@ export function NotificationBell({ variant = 'desktop' }: Props) {
           <Bell className={iconClass} />
           {unreadCount > 0 && (
             <Badge
-              className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center bg-destructive text-destructive-foreground border-0"
+              key={`${unreadCount}-${pop ? 'pop' : 'idle'}`}
+              className={`absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center bg-destructive text-destructive-foreground border-0 ${
+                pop ? 'animate-badge-pop' : ''
+              }`}
               aria-label={`${unreadCount} ${COPY.title[l].toLowerCase()}`}
             >
               {unreadCount > 9 ? '9+' : unreadCount}
