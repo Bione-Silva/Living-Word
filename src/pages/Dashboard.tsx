@@ -88,9 +88,16 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
+      {/* Mobile-first: nudge de Minha Igreja vem ANTES do banner para virar destaque */}
+      <div className="md:hidden">
+        <OnboardingNudgeCard />
+      </div>
       <DashboardTopBanner />
       <DashboardGreeting />
-      <OnboardingNudgeCard />
+      {/* Desktop: nudge no fluxo normal abaixo do greeting */}
+      <div className="hidden md:block">
+        <OnboardingNudgeCard />
+      </div>
       <MonthlyOverviewCard />
       <div id="bom-amigo">
         <BomAmigoCard />

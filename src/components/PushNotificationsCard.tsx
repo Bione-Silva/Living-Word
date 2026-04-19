@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Bell, BellOff, Send, Loader2 } from 'lucide-react';
+import { Bell, Send, Loader2, AlertCircle, Smartphone } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
@@ -31,10 +31,32 @@ const COPY = {
     EN: 'Your browser does not support push notifications. Try another device.',
     ES: 'Tu navegador no admite notificaciones push. Prueba en otro dispositivo.',
   },
-  deniedHint: {
-    PT: 'Se as notificações estiverem bloqueadas, libere nas configurações do navegador (ícone de cadeado na barra de endereço → Notificações → Permitir) e clique em "Tentar novamente".',
-    EN: 'If notifications appear blocked, allow them in browser settings (lock icon → Notifications → Allow) and click "Try again".',
-    ES: 'Si están bloqueadas, permítelas en los ajustes del navegador (icono de candado → Notificaciones → Permitir) y pulsa "Reintentar".',
+  iosNeedsPwa: {
+    PT: 'No iPhone/iPad, primeiro instale o app: toque em "Compartilhar" ↑ no Safari → "Adicionar à Tela de Início". Depois abra pelo ícone na tela inicial e ative aqui novamente.',
+    EN: 'On iPhone/iPad, first install the app: tap Share ↑ in Safari → "Add to Home Screen". Then open from the home-screen icon and enable here again.',
+    ES: 'En iPhone/iPad primero instala la app: toca Compartir ↑ en Safari → "Añadir a pantalla de inicio". Luego ábrela desde el ícono y activa aquí de nuevo.',
+  },
+  deniedTitle: {
+    PT: 'Notificações bloqueadas neste navegador',
+    EN: 'Notifications blocked in this browser',
+    ES: 'Notificaciones bloqueadas en este navegador',
+  },
+  deniedSteps: {
+    PT: [
+      'Clique no ícone de cadeado 🔒 ao lado do endereço (acima).',
+      'Procure "Notificações" e mude para Permitir.',
+      'Recarregue a página e clique em "Tentar novamente" abaixo.',
+    ],
+    EN: [
+      'Click the lock icon 🔒 next to the URL (above).',
+      'Find "Notifications" and switch it to Allow.',
+      'Reload the page and click "Try again" below.',
+    ],
+    ES: [
+      'Haz clic en el icono de candado 🔒 junto a la URL (arriba).',
+      'Busca "Notificaciones" y cámbialas a Permitir.',
+      'Recarga la página y pulsa "Reintentar" abajo.',
+    ],
   },
   retry: { PT: 'Tentar novamente', EN: 'Try again', ES: 'Reintentar' },
   active: { PT: 'Ativo', EN: 'Active', ES: 'Activo' },
@@ -53,6 +75,20 @@ function detectTz(): string {
   catch { return 'America/Sao_Paulo'; }
 }
 
+function isIOS(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function isStandalonePWA(): boolean {
+  if (typeof window === 'undefined') return false;
+  return (
+    window.matchMedia?.('(display-mode: standalone)').matches ||
+    // @ts-expect-error iOS Safari only
+    window.navigator.standalone === true
+  );
+}
+
 export function PushNotificationsCard() {
   const { profile, refreshProfile } = useAuth();
   const { lang } = useLanguage();
@@ -64,6 +100,8 @@ export function PushNotificationsCard() {
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
 
+  const iosNoPwa = useMemo(() => isIOS() && !isStandalonePWA(), []);
+
   useEffect(() => {
     if (profile) {
       setHour((profile as any).push_hour ?? 6);
@@ -71,7 +109,6 @@ export function PushNotificationsCard() {
     }
   }, [profile]);
 
-  // Re-checa o estado real no mount (evita estado preso após mudar nas configs do browser)
   useEffect(() => {
     refresh();
   }, [refresh]);
@@ -90,7 +127,12 @@ export function PushNotificationsCard() {
     if (next) {
       const res = await subscribe();
       if (!res.ok) {
-        toast.error(res.error === 'denied' ? COPY.deniedHint[l] : res.error || 'Error');
+        if (res.error === 'denied') {
+          toast.error(COPY.deniedTitle[l], { duration: 6000 });
+        } else {
+          toast.error(res.error || 'Error');
+        }
+        await refresh();
         return;
       }
       await persist({ push_enabled: true, push_hour: hour, push_timezone: tz });
@@ -101,10 +143,9 @@ export function PushNotificationsCard() {
   };
 
   const handleTryAgain = async () => {
-    // Re-tenta subscribe — se o usuário já liberou nas configs do browser, vai funcionar
     const res = await subscribe();
     if (!res.ok) {
-      toast.error(res.error === 'denied' ? COPY.deniedHint[l] : res.error || 'Error');
+      toast.error(res.error === 'denied' ? COPY.deniedTitle[l] : res.error || 'Error');
       await refresh();
       return;
     }
@@ -136,12 +177,28 @@ export function PushNotificationsCard() {
         <p className="text-sm text-muted-foreground">{COPY.desc[l]}</p>
 
         {!supported ? (
-          <p className="text-sm text-muted-foreground bg-muted/40 rounded-lg p-3">{COPY.unsupported[l]}</p>
+          <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+            <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+            <p className="text-sm text-foreground">{COPY.unsupported[l]}</p>
+          </div>
+        ) : iosNoPwa ? (
+          <div className="flex items-start gap-3 rounded-lg border border-blue-500/30 bg-blue-500/10 p-3">
+            <Smartphone className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
+            <p className="text-sm text-foreground leading-relaxed">{COPY.iosNeedsPwa[l]}</p>
+          </div>
         ) : (
           <>
             {permission === 'denied' && !subscribed && (
-              <div className="space-y-2 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
-                <p className="text-sm text-foreground">{COPY.deniedHint[l]}</p>
+              <div className="space-y-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                  <p className="text-sm font-semibold text-foreground">{COPY.deniedTitle[l]}</p>
+                </div>
+                <ol className="list-decimal pl-5 space-y-1 text-sm text-foreground/90">
+                  {COPY.deniedSteps[l].map((step, i) => (
+                    <li key={i} className="leading-snug">{step}</li>
+                  ))}
+                </ol>
                 <Button size="sm" variant="outline" onClick={handleTryAgain} disabled={busy}>
                   {busy ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   {COPY.retry[l]}
@@ -151,7 +208,11 @@ export function PushNotificationsCard() {
 
             <div className="flex items-center justify-between border rounded-lg p-3">
               <Label className="cursor-pointer">{enabled ? COPY.disable[l] : COPY.enable[l]}</Label>
-              <Switch checked={enabled} onCheckedChange={handleToggle} disabled={busy} />
+              <Switch
+                checked={enabled}
+                onCheckedChange={handleToggle}
+                disabled={busy || permission === 'denied'}
+              />
             </div>
 
             {enabled && (
@@ -191,4 +252,3 @@ export function PushNotificationsCard() {
     </Card>
   );
 }
-

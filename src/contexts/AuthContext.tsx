@@ -35,6 +35,9 @@ interface UserProfile {
   layout_style?: string;
   profile_completed?: boolean;
   blog_name?: string;
+  church_logo_url?: string;
+  blog_author_display?: 'pastor' | 'church';
+  custom_doctrine?: string;
 }
 
 interface AuthContextType {
@@ -237,6 +240,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         layout_style: (data as any).layout_style,
         profile_completed: (data as any).profile_completed ?? false,
         blog_name: data.blog_name ?? undefined,
+        church_name: (data as any).church_name ?? undefined,
+        church_role: (data as any).church_role ?? undefined,
+        denomination: (data as any).denomination ?? undefined,
+        preaching_style: (data as any).preaching_style ?? undefined,
+        audience: (data as any).audience ?? undefined,
+        church_logo_url: (data as any).church_logo_url ?? undefined,
+        blog_author_display: ((data as any).blog_author_display as 'pastor' | 'church') ?? 'pastor',
+        custom_doctrine: (data as any).custom_doctrine ?? undefined,
       });
     } catch (err) {
       if (mountedRef.current && activeUserIdRef.current === userId && requestId === profileRequestRef.current) {

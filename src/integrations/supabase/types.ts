@@ -989,15 +989,18 @@ export type Database = {
           avatar_url: string | null
           bible_version: string | null
           bio: string | null
+          blog_author_display: string
           blog_handle: string | null
           blog_name: string | null
           bonus_day_count: number
           bonus_last_claimed: string | null
+          church_logo_url: string | null
           church_name: string | null
           church_role: string | null
           city: string | null
           country: string | null
           created_at: string
+          custom_doctrine: string | null
           denomination: string | null
           doctrine: string | null
           favorite_preacher: string | null
@@ -1033,15 +1036,18 @@ export type Database = {
           avatar_url?: string | null
           bible_version?: string | null
           bio?: string | null
+          blog_author_display?: string
           blog_handle?: string | null
           blog_name?: string | null
           bonus_day_count?: number
           bonus_last_claimed?: string | null
+          church_logo_url?: string | null
           church_name?: string | null
           church_role?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
+          custom_doctrine?: string | null
           denomination?: string | null
           doctrine?: string | null
           favorite_preacher?: string | null
@@ -1077,15 +1083,18 @@ export type Database = {
           avatar_url?: string | null
           bible_version?: string | null
           bio?: string | null
+          blog_author_display?: string
           blog_handle?: string | null
           blog_name?: string | null
           bonus_day_count?: number
           bonus_last_claimed?: string | null
+          church_logo_url?: string | null
           church_name?: string | null
           church_role?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
+          custom_doctrine?: string | null
           denomination?: string | null
           doctrine?: string | null
           favorite_preacher?: string | null

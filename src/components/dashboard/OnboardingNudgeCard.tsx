@@ -70,7 +70,7 @@ export function OnboardingNudgeCard() {
           <p className="text-sm text-muted-foreground mt-1">{c.desc}</p>
           <div className="flex items-center gap-2 mt-3">
             <Button asChild size="sm">
-              <Link to="/minha-igreja">
+              <Link to="/configuracoes?tab=church">
                 {c.cta}
                 <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
               </Link>

@@ -47,7 +47,7 @@ import SeriesDetail from "./pages/SeriesDetail";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
 import Ferramentas from "./pages/Ferramentas";
-import MinhaIgreja from "./pages/MinhaIgreja";
+// MinhaIgreja agora vive como aba dentro de /configuracoes?tab=church
 import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
 const queryClient = new QueryClient();
@@ -145,7 +145,7 @@ const App = () => (
                   <Route path="/quiz" element={<Quiz />} />
                   <Route path="/kids" element={<Kids />} />
                   <Route path="/ferramentas" element={<Ferramentas />} />
-                  <Route path="/minha-igreja" element={<MinhaIgreja />} />
+                  <Route path="/minha-igreja" element={<Navigate to="/configuracoes?tab=church" replace />} />
                   <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
                   <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
                   <Route path="/expos" element={<ExposStudioPage />} />
