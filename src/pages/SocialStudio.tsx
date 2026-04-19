@@ -262,6 +262,7 @@ export default function SocialStudio() {
     setSlides([{ text: `"${v.text}"`, subtitle: withVersion(v.book), slideNumber: 1, totalSlides: 1 }]);
     setSlideCount(1);
     setPresentationMode(false);
+    setShowVerseError(false);
   }, [versionLabel]);
 
   const handleTextGenerated = useCallback((text: string) => {
