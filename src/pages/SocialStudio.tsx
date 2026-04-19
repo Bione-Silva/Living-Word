@@ -448,6 +448,17 @@ export default function SocialStudio() {
                 />
               </div>
 
+              {/* ── NEW: Image Mode picker ── */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <ImageModePicker
+                    value={imageMode}
+                    onChange={(m) => setImageMode(m)}
+                    lang={lang}
+                  />
+                </CardContent>
+              </Card>
+
               {/* Devotional carousel CTA (only when verse loaded + slideCount > 1) */}
               {verseContext && slideCount > 1 && (
                 <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30">
@@ -468,6 +479,15 @@ export default function SocialStudio() {
                       {loadingDevotional ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
                       {loadingDevotional ? h.generating : `${h.generateCarousel} (${slideCount})`}
                     </Button>
+                    {showVerseError && (
+                      <p className="text-[12px] mt-1" style={{ color: '#dc2626' }}>
+                        {lang === 'PT'
+                          ? 'Digite um versículo ou tema antes de gerar'
+                          : lang === 'EN'
+                          ? 'Type a verse or theme before generating'
+                          : 'Escribe un versículo o tema antes de generar'}
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
               )}
