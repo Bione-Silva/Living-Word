@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,13 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { Crown, Camera, Loader2 } from 'lucide-react';
+import { Crown, Camera, Loader2, Church } from 'lucide-react';
 import { TrialCountdown } from '@/components/TrialCountdown';
 import { BlogThemeCustomizer } from '@/components/blog/BlogThemeCustomizer';
 import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
 import { PlanOverviewCard } from '@/components/dashboard/PlanOverviewCard';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 import { PushNotificationsCard } from '@/components/PushNotificationsCard';
+import { ChurchProfileSection } from '@/components/settings/ChurchProfileSection';
 import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
 import { BIBLE_VERSIONS, DEFAULT_COMPARE_VERSIONS } from '@/lib/bible-versions';
 import type { Language } from '@/lib/i18n';
@@ -178,13 +180,24 @@ export default function Configuracoes() {
   const userEmail = user?.email || 'email@example.com';
   const initials = fullName ? fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '?';
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'profile';
+
+  const handleTabChange = (val: string) => {
+    setSearchParams({ tab: val }, { replace: true });
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">{t('settings.title')}</h1>
 
-      <Tabs defaultValue="profile">
+      <Tabs value={initialTab} onValueChange={handleTabChange}>
         <TabsList className="bg-secondary/50 flex-wrap h-auto gap-1">
           <TabsTrigger value="profile" className="text-xs sm:text-sm">{t('settings.profile')}</TabsTrigger>
+          <TabsTrigger value="church" className="text-xs sm:text-sm gap-1">
+            <Church className="h-3.5 w-3.5" />
+            {lang === 'PT' ? 'Igreja' : lang === 'EN' ? 'Church' : 'Iglesia'}
+          </TabsTrigger>
           <TabsTrigger value="blog" className="text-xs sm:text-sm">{t('settings.blog')}</TabsTrigger>
           <TabsTrigger value="plan" className="text-xs sm:text-sm">{t('settings.plan')}</TabsTrigger>
           <TabsTrigger value="doctrine" className="text-xs sm:text-sm">{t('settings.doctrine')}</TabsTrigger>
