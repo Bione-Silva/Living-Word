@@ -116,6 +116,8 @@ serve(async (req) => {
 
     const systemPrompt = TOOL_PROMPTS[tool](langLabel, langCode);
 
+    const model = CREATIVE_TOOLS.has(tool) ? 'openai/gpt-4o-mini' : 'google/gemini-2.5-flash';
+
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -123,7 +125,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
