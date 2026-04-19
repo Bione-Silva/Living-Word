@@ -801,6 +801,17 @@ export default function SocialStudio() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── Offscreen multi-format renderer (powers per-channel ZIP export) ── */}
+      {slides.length > 0 && selectedFormats.length > 1 && (
+        <MultiFormatExporter
+          ref={exporterRef}
+          formats={selectedFormats}
+          slides={slides}
+          theme={theme}
+          template={template}
+        />
+      )}
     </div>
   );
 }
