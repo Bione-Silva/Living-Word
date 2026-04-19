@@ -534,7 +534,13 @@ export default function SocialStudio() {
                       <h2 className="text-base font-bold text-foreground font-display leading-tight">{h.formatHeading}</h2>
                       <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{h.formatSub}</p>
                     </div>
-                    <FormatPicker value={formatId} onChange={handleFormatChange} lang={lang} />
+                    <FormatPicker
+                      value={formatId}
+                      selected={selectedFormats}
+                      onSetActive={handleSetActiveFormat}
+                      onToggle={handleToggleFormat}
+                      lang={lang}
+                    />
                   </>
                 )}
 
