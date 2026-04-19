@@ -25,6 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Sparkles, Layers, Loader2, Wand2, Image as ImageIcon, Palette, BookOpen,
+  Hash, PenLine, Camera, Mountain, Brush, LayoutTemplate,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
