@@ -105,6 +105,8 @@ export default function SocialStudio() {
   const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
   const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
+  const [imageMode, setImageMode] = useState<ImageMode>('biblica');
+  const [showVerseError, setShowVerseError] = useState(false);
 
   const [theme, setTheme] = useState<ThemeConfig>({
     gradient: colorPresets[0].gradient,
