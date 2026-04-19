@@ -56,7 +56,8 @@ const headings: Record<L, Record<string, string>> = {
     styleSub: 'Personalize cores, fontes e clima visual',
     generateHeading: 'Variações geradas',
     generateSub: 'Escolha a arte ideal para você',
-    continue: 'Continuar', back: 'Voltar',
+    continue: 'Continuar', back: 'Voltar', apply: 'Aplicar estilo',
+    applied: 'Estilo aplicado à arte',
     generate: 'Gerar variações',
     generating: 'Gerando devocional...',
     paletteCard: 'Paleta de Versículos', paletteCardSub: 'Escolha um versículo para sua arte',
@@ -85,7 +86,8 @@ const headings: Record<L, Record<string, string>> = {
     styleSub: 'Customize colors, fonts and visual mood',
     generateHeading: 'Generated variations',
     generateSub: 'Pick the art you love',
-    continue: 'Continue', back: 'Back',
+    continue: 'Continue', back: 'Back', apply: 'Apply style',
+    applied: 'Style applied to artwork',
     generate: 'Generate variations',
     generating: 'Generating devotional...',
     paletteCard: 'Verse Palette', paletteCardSub: 'Pick a verse for your art',
@@ -114,7 +116,8 @@ const headings: Record<L, Record<string, string>> = {
     styleSub: 'Personaliza colores, fuentes y clima visual',
     generateHeading: 'Variaciones generadas',
     generateSub: 'Elige el arte ideal para ti',
-    continue: 'Continuar', back: 'Volver',
+    continue: 'Continuar', back: 'Volver', apply: 'Aplicar estilo',
+    applied: 'Estilo aplicado al arte',
     generate: 'Generar variaciones',
     generating: 'Generando devocional...',
     paletteCard: 'Paleta de Versículos', paletteCardSub: 'Elige un versículo para tu arte',
@@ -152,7 +155,6 @@ export default function SocialStudio() {
   const [selectedFormats, setSelectedFormats] = useState<FormatId[]>(['ig-post']);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
-  const [visualStyle, setVisualStyle] = useState<VisualStyle>('moderno');
   const [slides, setSlides] = useState<SlideData[]>([]);
   const [selectedSlideIndex, setSelectedSlideIndex] = useState(0);
   const [verseContext, setVerseContext] = useState<{ text: string; book: string } | null>(null);
