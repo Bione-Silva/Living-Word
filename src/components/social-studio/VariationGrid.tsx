@@ -88,7 +88,7 @@ function dataUrlToBlob(dataUrl: string) {
 }
 
 export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>(
-  ({ slides, aspectRatio, theme, lang, template, presentationMode = false }, ref) => {
+  ({ slides, aspectRatio, theme, lang, template, presentationMode = false, selectedIndex, onSelectIndex }, ref) => {
     const l = labels[lang];
     const [busyKey, setBusyKey] = useState<string | null>(null);
     const [zipBusy, setZipBusy] = useState(false);
@@ -101,7 +101,11 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
     };
     const getNode = (idx: number) => refsMap.current.get(idx) || null;
 
-    useImperativeHandle(ref, () => ({ refresh: () => {} }));
+    useImperativeHandle(ref, () => ({
+      refresh: () => {},
+      downloadSlide: (idx: number, format: 'png' | 'jpg' = 'png') => handleDownload(idx, format),
+      downloadAllZip: () => handleDownloadAllZip(),
+    }));
 
     const handleDownload = async (slideIdx: number, format: 'png' | 'jpg') => {
       const node = getNode(slideIdx);
