@@ -26,6 +26,7 @@ import {
   HelpCircle, Feather, Baby, Globe, Gamepad2, ShieldAlert, ChevronUp,
   ExternalLink, User, Package, GraduationCap, FolderOpen, ImageIcon,
   PanelLeftClose, PanelLeftOpen, Lock, Building2, MoreHorizontal, Menu, X,
+  Church,
 } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { BrandIcon } from '@/components/BrandIcon';
