@@ -14,6 +14,7 @@ import { StreakBar } from '@/components/dashboard/StreakBar';
 import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
 import { SocialStudioHighlightCard } from '@/components/dashboard/SocialStudioHighlightCard';
+import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
 import { SmartDevotionalRecommender } from '@/components/engagement/SmartDevotionalRecommender';
 import { UserEngagementDashboard } from '@/components/engagement/UserEngagementDashboard';
 import { NotificationCenter } from '@/components/engagement/NotificationCenter';
@@ -88,6 +89,7 @@ export default function Dashboard() {
     <div className="space-y-6 max-w-2xl mx-auto">
       <DashboardTopBanner />
       <DashboardGreeting />
+      <MonthlyOverviewCard />
       <div id="bom-amigo">
         <BomAmigoCard />
       </div>
