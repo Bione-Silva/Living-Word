@@ -88,7 +88,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-5 sm:space-y-6 max-w-2xl mx-auto pb-2">
       {/* Mobile-first: nudge de Minha Igreja vem ANTES do banner para virar destaque */}
       <div className="md:hidden">
         <OnboardingNudgeCard />
