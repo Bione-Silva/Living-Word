@@ -91,10 +91,13 @@ export function InstallAppCard() {
   }
 
   const handlePrimary = async () => {
+    void trackInstallEvent('clicked');
     if (isInstallable) {
-      void trackInstallEvent('clicked');
-      await install();
+      const accepted = await install();
+      if (!accepted) setOpen(true);
     } else {
+      // Sem prompt nativo (iOS, Safari, iframe do preview, navegador não suportado):
+      // abrir modal com instruções por plataforma.
       setOpen(true);
     }
   };
