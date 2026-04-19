@@ -129,6 +129,41 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
       }
     };
 
+    const handleShareWhatsApp = async (slideIdx: number) => {
+      const node = getNode(slideIdx);
+      if (!node) return;
+      setBusyKey(`${slideIdx}-share`);
+      try {
+        const pngDataUrl = await captureNodeAsPng(node);
+        const blob = await compressToJpeg(pngDataUrl, 1_500_000);
+        const fname = `living-word-${template}-${slideIdx + 1}.jpg`;
+        const file = new File([blob], fname, { type: 'image/jpeg' });
+
+        const nav: any = navigator;
+        if (nav.canShare && nav.canShare({ files: [file] })) {
+          await nav.share({
+            files: [file],
+            text: l.shareCaption,
+          });
+        } else {
+          // Fallback: download + open WhatsApp with caption
+          const link = document.createElement('a');
+          link.download = fname;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          URL.revokeObjectURL(link.href);
+          openWhatsAppShare(l.shareCaption);
+        }
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') {
+          console.error(err);
+          toast.error(l.sharingError);
+        }
+      } finally {
+        setBusyKey(null);
+      }
+    };
+
     const handleDownloadAllZip = async () => {
       if (slides.length === 0) return;
       setZipBusy(true);
