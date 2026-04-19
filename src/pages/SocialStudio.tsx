@@ -16,7 +16,6 @@ import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
 import { VariationGrid, type VariationGridHandle } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
 import {
-  ImageModePicker,
   getImageModePromptFragment,
   getImageModeLabel,
   type ImageMode,
