@@ -551,6 +551,20 @@ export default function SocialStudio() {
 
             {/* ── RIGHT: VARIATION GRID ── */}
             <div className="min-w-0">
+              <div className="mb-2">
+                <span
+                  className="inline-block text-[11px] font-medium"
+                  style={{
+                    color: '#7c3aed',
+                    background: '#ede9fe',
+                    padding: '3px 10px',
+                    borderRadius: 9999,
+                  }}
+                >
+                  {lang === 'PT' ? 'Modo: ' : lang === 'EN' ? 'Mode: ' : 'Modo: '}
+                  {getImageModeLabel(imageMode, lang)}
+                </span>
+              </div>
               <VariationGrid
                 slides={slides}
                 aspectRatio={aspectRatio}
