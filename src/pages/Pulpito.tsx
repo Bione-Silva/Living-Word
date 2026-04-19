@@ -80,8 +80,10 @@ export default function Pulpito() {
     return () => { alive = false; };
   }, [user]);
 
+  // Abre o sermão no editor (Criador de Sermão).
+  // De lá o usuário decide se quer entrar no Modo Púlpito.
   const openInPulpit = (id: string) => {
-    navigate(`/sermoes?materialId=${id}&pulpito=1`);
+    navigate(`/sermoes?materialId=${id}`);
   };
 
   return (
