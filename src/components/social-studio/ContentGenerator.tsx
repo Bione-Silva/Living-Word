@@ -40,12 +40,12 @@ const contentTools = [
   { id: 'announcements', icon: Megaphone, labelKey: 'announcement', tool: 'announcements' },
 ];
 
-// Map tool IDs to search-pastoral-tools tool names
+// Map UI tool IDs to search-pastoral-tools backend tool names
 const TOOL_MAP: Record<string, string> = {
-  'social-caption': 'poetry', // reuse poetry for now since search-pastoral-tools has limited tools
-  'reels-script': 'poetry',
+  'social-caption': 'social_caption',
+  'reels-script': 'reels_script',
   'poetry': 'poetry',
-  'announcements': 'poetry',
+  'announcements': 'announcements',
 };
 
 interface VerseResult {
@@ -123,36 +123,9 @@ export function ContentGenerator({ onVerseGenerated, onTextGenerated }: Props) {
     setContentLoading(true);
     setGeneratedContent('');
     try {
-      const toolName = activeTool === 'social-caption' ? 'poetry' : activeTool === 'reels-script' ? 'poetry' : activeTool === 'announcements' ? 'poetry' : 'poetry';
-
-      // Build context-rich prompt based on tool type
-      const toolLabels: Record<string, Record<L, string>> = {
-        'social-caption': {
-          PT: `Crie uma legenda profissional para post de Instagram/Facebook sobre: "${topic}". Inclua hashtags relevantes, um CTA (call-to-action) e emojis. Tom pastoral e engajante. Máximo 300 palavras.`,
-          EN: `Create a professional Instagram/Facebook caption about: "${topic}". Include relevant hashtags, a CTA (call-to-action) and emojis. Pastoral and engaging tone. Max 300 words.`,
-          ES: `Crea una leyenda profesional para post de Instagram/Facebook sobre: "${topic}". Incluye hashtags relevantes, un CTA (call-to-action) y emojis. Tono pastoral y atractivo. Máximo 300 palabras.`,
-        },
-        'reels-script': {
-          PT: `Crie um roteiro para Reels/TikTok (60 segundos) sobre: "${topic}". Formato: GANCHO (3s), DESENVOLVIMENTO (45s), CTA (12s). Tom envolvente e pastoral.`,
-          EN: `Create a Reels/TikTok script (60 seconds) about: "${topic}". Format: HOOK (3s), DEVELOPMENT (45s), CTA (12s). Engaging and pastoral tone.`,
-          ES: `Crea un guión para Reels/TikTok (60 segundos) sobre: "${topic}". Formato: GANCHO (3s), DESARROLLO (45s), CTA (12s). Tono atractivo y pastoral.`,
-        },
-        'poetry': {
-          PT: `Crie um poema cristão inspirado no tema: "${topic}". Use imagens vívidas e profundidade teológica. 12-20 linhas.`,
-          EN: `Create a Christian poem inspired by: "${topic}". Use vivid imagery and theological depth. 12-20 lines.`,
-          ES: `Crea un poema cristiano inspirado en: "${topic}". Usa imágenes vívidas y profundidad teológica. 12-20 líneas.`,
-        },
-        'announcements': {
-          PT: `Crie um aviso de culto/evento acolhedor sobre: "${topic}". Inclua data/horário placeholder, tom pastoral e acolhedor. Formato para projeção e redes sociais.`,
-          EN: `Create a welcoming service/event announcement about: "${topic}". Include date/time placeholders, pastoral and welcoming tone. Format for projection and social media.`,
-          ES: `Crea un aviso de culto/evento acogedor sobre: "${topic}". Incluye fecha/hora placeholder, tono pastoral y acogedor. Formato para proyección y redes sociales.`,
-        },
-      };
-
-      const userPrompt = toolLabels[activeTool]?.[l] || toolLabels[activeTool]?.['PT'] || topic;
-
+      const backendTool = TOOL_MAP[activeTool] || 'social_caption';
       const { data, error } = await supabase.functions.invoke('search-pastoral-tools', {
-        body: { tool: 'poetry', userPrompt, language: lang },
+        body: { tool: backendTool, userPrompt: topic.trim(), language: lang },
       });
       if (error) throw error;
       setGeneratedContent(data?.content || '');

@@ -41,7 +41,40 @@ You are a children's ministry storyteller. Create an engaging, age-appropriate (
     `${languageLock(langCode, langLabel)}
 
 You are a theological translation expert. Translate the given text while preserving theological nuance, cultural context, and pastoral tone. Provide the translation and notes on key theological terms. Target language: ${langLabel}.`,
+  social_caption: (langLabel, langCode) =>
+    `${languageLock(langCode, langLabel)}
+
+You are a Christian Social Media Copywriter specialized in Instagram and Facebook captions for pastors and ministries. Given a topic or Bible passage, write ONE professional caption with:
+- A strong opening hook (first line) that stops the scroll.
+- A pastoral, warm, engaging body (2–4 short paragraphs, easy to read on mobile).
+- Tasteful use of emojis (never excessive — max 4–6 total, only where they truly add warmth).
+- A clear CTA (call-to-action) at the end (comment, share, save, or reflect).
+- 5–8 relevant hashtags on a separate final line.
+- Maximum 300 words total.
+Do NOT write a poem. Do NOT write a sermon. Write a caption that sounds human, pastoral, and made for social feeds. Entirely in ${langLabel}.`,
+  reels_script: (langLabel, langCode) =>
+    `${languageLock(langCode, langLabel)}
+
+You are a Christian Reels/TikTok scriptwriter specialized in 60-second vertical videos for pastors. Given a topic or Bible passage, deliver a script with this EXACT structure and labels (translated to ${langLabel}):
+1. HOOK (0–3s) — one punchy line that stops the scroll.
+2. RETENTION / DEVELOPMENT (3–48s) — 3 to 5 short spoken beats that build curiosity and deliver the message; include suggested on-screen text in [brackets] when helpful.
+3. CTA (48–60s) — a clear pastoral call-to-action (follow, comment, share, save).
+Add a final line "🎬 ${langCode === 'PT' ? 'Sugestão visual' : langCode === 'ES' ? 'Sugerencia visual' : 'Visual suggestion'}:" with 1–2 sentences describing B-roll / scene ideas.
+Tone: pastoral, engaging, modern, never cringe. Entirely in ${langLabel}.`,
+  announcements: (langLabel, langCode) =>
+    `${languageLock(langCode, langLabel)}
+
+You are a parish/church announcement writer. Given an event or topic, produce a warm, welcoming announcement suitable for both projection slides AND social media. Structure:
+- Short, inviting headline (max 8 words).
+- 2–3 short paragraphs with the key info, written in a pastoral and welcoming tone.
+- Placeholders in [brackets] for date, time, and location when not specified (e.g., [DATA], [HORÁRIO], [LOCAL]).
+- Closing line that invites the community with warmth (no pressure, no marketing hype).
+- Optional final line with 1–2 light emojis if appropriate.
+Do NOT write a poem, sermon, or social caption with hashtags. Keep it under 180 words. Entirely in ${langLabel}.`,
 };
+
+// Tools that route to GPT-4o-mini (creative / literary writing)
+const CREATIVE_TOOLS = new Set(['poetry', 'kids_story', 'social_caption', 'reels_script', 'announcements']);
 
 const VALID_TOOLS = new Set(Object.keys(TOOL_PROMPTS));
 
@@ -83,6 +116,8 @@ serve(async (req) => {
 
     const systemPrompt = TOOL_PROMPTS[tool](langLabel, langCode);
 
+    const model = CREATIVE_TOOLS.has(tool) ? 'openai/gpt-4o-mini' : 'google/gemini-2.5-flash';
+
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -90,7 +125,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
