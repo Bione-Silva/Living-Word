@@ -5,41 +5,63 @@ import { toast } from "sonner";
 /**
  * PWAUpdater
  *
- * Listens for new Service Worker versions emitted by vite-plugin-pwa.
- * When a new version is available we:
- *   1. Show a brief, non-intrusive toast.
- *   2. Call updateSW(true) which posts SKIP_WAITING to the new SW and
- *      reloads the page once it activates.
+ * Aggressively keeps installed PWAs on the latest version:
+ *  1. Registers the auto-generated SW from vite-plugin-pwa.
+ *  2. Polls for new versions every 15 minutes.
+ *  3. Re-checks for updates whenever the tab regains focus / becomes visible.
+ *  4. When a new SW is found, it auto-activates (skipWaiting + clientsClaim
+ *     are set in vite.config.ts) and we show a brief toast then reload.
  *
- * We also poll the SW every 60 minutes so long-lived sessions
- * (installed PWAs left open for days) eventually pick up new builds.
+ * The user never has to close all tabs or "Add to Home Screen" again.
  */
 export function PWAUpdater() {
   const reloadingRef = useRef(false);
+  const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
 
   const {
     needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW({
     immediate: true,
-    onRegisteredSW(swUrl, registration) {
+    onRegisteredSW(_swUrl, registration) {
       if (!registration) return;
+      registrationRef.current = registration;
 
-      // Periodic update check — once an hour
-      const ONE_HOUR = 60 * 60 * 1000;
-      const interval = setInterval(() => {
-        if (registration.installing || !navigator) return;
-        if ("connection" in navigator && !(navigator as Navigator & { onLine: boolean }).onLine) return;
+      const checkForUpdate = () => {
+        if (!registration || registration.installing) return;
+        if (typeof navigator !== "undefined" && "onLine" in navigator && !navigator.onLine) return;
         registration.update().catch(() => {
           /* silent — next tick will retry */
         });
-      }, ONE_HOUR);
+      };
 
-      // Cleanup if the registration changes (rare, but defensive)
-      return () => clearInterval(interval);
+      // Periodic update check — every 15 minutes for long-lived sessions.
+      const FIFTEEN_MIN = 15 * 60 * 1000;
+      const interval = window.setInterval(checkForUpdate, FIFTEEN_MIN);
+
+      // Also check when the user comes back to the app (very common in PWAs).
+      const onVisibility = () => {
+        if (document.visibilityState === "visible") checkForUpdate();
+      };
+      const onFocus = () => checkForUpdate();
+      const onOnline = () => checkForUpdate();
+
+      document.addEventListener("visibilitychange", onVisibility);
+      window.addEventListener("focus", onFocus);
+      window.addEventListener("online", onOnline);
+
+      // Initial check shortly after registration in case the service worker
+      // was already installed from a previous session.
+      window.setTimeout(checkForUpdate, 2000);
+
+      return () => {
+        window.clearInterval(interval);
+        document.removeEventListener("visibilitychange", onVisibility);
+        window.removeEventListener("focus", onFocus);
+        window.removeEventListener("online", onOnline);
+      };
     },
     onRegisterError(err) {
-      // Keep this quiet in production — don't bother the user.
       console.warn("[PWA] SW registration error:", err);
     },
   });
@@ -49,16 +71,15 @@ export function PWAUpdater() {
     reloadingRef.current = true;
 
     toast("Atualizando o app para a versão mais recente...", {
-      duration: 2500,
+      duration: 2000,
     });
 
-    // Small delay so the user can see the toast briefly,
-    // then activate the new SW and reload.
-    const t = setTimeout(() => {
+    // Brief delay so the toast is visible, then activate SW + reload.
+    const t = window.setTimeout(() => {
       void updateServiceWorker(true);
-    }, 800);
+    }, 700);
 
-    return () => clearTimeout(t);
+    return () => window.clearTimeout(t);
   }, [needRefresh, updateServiceWorker]);
 
   return null;
