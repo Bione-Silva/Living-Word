@@ -1,4 +1,4 @@
-import { Instagram, Music2, Linkedin, MessageCircle, Layers } from 'lucide-react';
+import { Instagram, Music2, Linkedin, MessageCircle, Layers, Facebook } from 'lucide-react';
 import type { AspectRatio } from './AspectRatioSelector';
 import type { SlideCount } from './SlideCountPicker';
 
@@ -6,6 +6,7 @@ export type FormatId =
   | 'ig-post'
   | 'ig-story'
   | 'tiktok'
+  | 'fb-post'
   | 'ig-carousel'
   | 'li-carousel'
   | 'whatsapp';
