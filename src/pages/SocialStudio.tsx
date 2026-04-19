@@ -371,6 +371,9 @@ export default function SocialStudio() {
           topic: verseContext.book,
           language: lang,
           slideCount,
+          // Visual mode (4 reais) — escolhido pelo usuário na etapa Estilo
+          visualMode: imageMode,
+          // Mantidos para retrocompat até o backend migrar tudo
           imageMode,
           imageStyle: imageMode,
           stylePrompt: getImageModePromptFragment(imageMode),
@@ -792,6 +795,7 @@ export default function SocialStudio() {
           lang={lang}
           activeId={activeSceneId}
           searchTerm={verseContext?.book || verseContext?.text}
+          visualMode={imageMode}
         />
       </SidePanel>
 
