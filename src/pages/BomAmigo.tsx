@@ -3,9 +3,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Heart, Loader2, Send } from 'lucide-react';
+import { ArrowLeft, Heart, Send, MessageSquarePlus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { loadHistory, saveMessage } from '@/hooks/useChatHistory';
+import { toast } from 'sonner';
+import { loadHistory, saveMessage, clearHistory } from '@/hooks/useChatHistory';
 
 type L = 'PT' | 'EN' | 'ES';
 
