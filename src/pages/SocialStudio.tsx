@@ -273,7 +273,16 @@ export default function SocialStudio() {
   }, []);
 
   const generateDevotionalCarousel = async () => {
-    if (!verseContext) return;
+    if (!verseContext) {
+      setShowVerseError(true);
+      // Focus first verse-related input on the page (ContentGenerator).
+      const firstInput = document.querySelector<HTMLInputElement>(
+        'input[placeholder*="João"], input[placeholder*="John"], input[placeholder*="Juan"]'
+      );
+      firstInput?.focus();
+      return;
+    }
+    setShowVerseError(false);
     setLoadingDevotional(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
@@ -282,6 +291,9 @@ export default function SocialStudio() {
           topic: verseContext.book,
           language: lang,
           slideCount,
+          imageMode,
+          imageStyle: imageMode,
+          stylePrompt: getImageModePromptFragment(imageMode),
         },
       });
       if (error) throw error;
