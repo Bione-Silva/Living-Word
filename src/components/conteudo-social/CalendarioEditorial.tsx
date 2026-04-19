@@ -2,28 +2,31 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
 const PLATAFORMAS = [
-  { id: "instagram", label: "Instagram", dot: "#ec4899", chipBg: "bg-pink-100", chipText: "text-pink-700" },
-  { id: "linkedin", label: "LinkedIn", dot: "#3b82f6", chipBg: "bg-blue-100", chipText: "text-blue-700" },
-  { id: "tiktok", label: "TikTok", dot: "#ef4444", chipBg: "bg-red-100", chipText: "text-red-700" },
-  { id: "facebook", label: "Facebook", dot: "#6366f1", chipBg: "bg-indigo-100", chipText: "text-indigo-700" },
+  { id: "instagram", label: "Instagram", dot: "#ec4899", chipBg: "#fce7f3", chipText: "#be185d" },
+  { id: "linkedin", label: "LinkedIn", dot: "#3b82f6", chipBg: "#dbeafe", chipText: "#1d4ed8" },
+  { id: "tiktok", label: "TikTok", dot: "#ef4444", chipBg: "#fee2e2", chipText: "#b91c1c" },
+  { id: "facebook", label: "Facebook", dot: "#6366f1", chipBg: "#e0e7ff", chipText: "#4338ca" },
 ];
 
-const MOCK_EVENTS: Array<{ day: number; platform: string; title: string }> = [
-  { day: 2, platform: "instagram", title: "João 3:16" },
-  { day: 3, platform: "linkedin", title: "Liderança" },
-  { day: 5, platform: "instagram", title: "Salmo 23" },
-  { day: 7, platform: "facebook", title: "Aviso culto" },
-  { day: 9, platform: "instagram", title: "Reels Fé" },
-  { day: 10, platform: "linkedin", title: "Devocional" },
-  { day: 12, platform: "tiktok", title: "Versículo" },
-  { day: 14, platform: "instagram", title: "Carrossel" },
-  { day: 16, platform: "linkedin", title: "Reflexão" },
-  { day: 18, platform: "instagram", title: "Stories" },
-  { day: 20, platform: "facebook", title: "Evento" },
-  { day: 22, platform: "tiktok", title: "Short Fé" },
-  { day: 24, platform: "instagram", title: "Romanos 8" },
-  { day: 27, platform: "linkedin", title: "Liderança" },
-  { day: 29, platform: "instagram", title: "Devocional" },
+const EVENTOS_MOCK = [
+  { dia: 1,  plataforma: "instagram", texto: "Gál 5:22-23" },
+  { dia: 2,  plataforma: "linkedin",  texto: "Liderança Cristã" },
+  { dia: 4,  plataforma: "facebook",  texto: "Devocional Manhã" },
+  { dia: 5,  plataforma: "instagram", texto: "Carrossel Fé" },
+  { dia: 5,  plataforma: "tiktok",    texto: "Reel Salmo 23" },
+  { dia: 8,  plataforma: "instagram", texto: "João 3:16" },
+  { dia: 9,  plataforma: "linkedin",  texto: "Propósito de Vida" },
+  { dia: 11, plataforma: "facebook",  texto: "Aviso: Culto" },
+  { dia: 12, plataforma: "tiktok",    texto: "Reel Gratidão" },
+  { dia: 15, plataforma: "instagram", texto: "Filipenses 4:13" },
+  { dia: 16, plataforma: "linkedin",  texto: "Sermão: Fé" },
+  { dia: 18, plataforma: "instagram", texto: "Poesia: Amor" },
+  { dia: 19, plataforma: "facebook",  texto: "Aviso: EBD" },
+  { dia: 22, plataforma: "instagram", texto: "Prov 3:5-6" },
+  { dia: 23, plataforma: "tiktok",    texto: "Reel Adoração" },
+  { dia: 25, plataforma: "linkedin",  texto: "Missão e Chamado" },
+  { dia: 26, plataforma: "instagram", texto: "Carrossel Final" },
+  { dia: 29, plataforma: "facebook",  texto: "Reflexão Mensal" },
 ];
 
 const WEEK_DAYS = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
@@ -31,45 +34,44 @@ const WEEK_DAYS = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 export function CalendarioEditorial() {
   const [filtros, setFiltros] = useState<string[]>(["instagram", "linkedin"]);
 
-  const toggleFiltro = (id: string) => {
+  const toggleFiltro = (id: string) =>
     setFiltros((prev) => (prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]));
-  };
 
-  // Abril 2025: começa numa terça (idx 2)
+  // Abril 2025 começa em terça (offset 2)
   const firstDayOffset = 2;
   const daysInMonth = 30;
   const cells: Array<{ day: number; current: boolean }> = [];
-  // Dias do mês anterior (março)
   for (let i = firstDayOffset - 1; i >= 0; i--) cells.push({ day: 31 - i, current: false });
   for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, current: true });
-  while (cells.length % 7 !== 0) cells.push({ day: cells.length - daysInMonth - firstDayOffset + 1, current: false });
+  let next = 1;
+  while (cells.length % 7 !== 0) cells.push({ day: next++, current: false });
 
   const today = 15;
-  const visibleEvents = MOCK_EVENTS.filter((e) => filtros.includes(e.platform));
+  const visiveis = EVENTOS_MOCK.filter((e) => filtros.includes(e.plataforma));
 
   const stats = [
-    { label: "Agendados", value: 8, sub: "esta semana" },
+    { label: "Agendados", value: visiveis.length, sub: "esta semana" },
     { label: "Publicados", value: 23, sub: "este mês" },
     { label: "Plataformas", value: filtros.length, sub: "ativas" },
-    { label: "Créditos", value: 142, sub: "disponíveis" },
+    { label: "Créditos", value: "142", sub: "disponíveis" },
   ];
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-[#1f172a]">Calendário Editorial</h2>
-          <div className="flex items-center gap-2 mt-1">
-            <button className="p-1 hover:bg-[#f9f8ff] rounded">
+          <h2 className="font-semibold text-xl text-[#1f172a]">Calendário Editorial</h2>
+          <div className="flex items-center gap-2 mt-1.5">
+            <button className="p-1 hover:bg-[#f5f3ff] rounded">
               <ChevronLeft className="w-4 h-4 text-[#6b7280]" />
             </button>
             <span className="text-sm font-medium text-[#1f172a]">Abril 2025</span>
-            <button className="p-1 hover:bg-[#f9f8ff] rounded">
+            <button className="p-1 hover:bg-[#f5f3ff] rounded">
               <ChevronRight className="w-4 h-4 text-[#6b7280]" />
             </button>
           </div>
         </div>
-        <button className="h-9 px-3 rounded-md border border-[#7c3aed] text-[#7c3aed] text-sm font-medium hover:bg-[#ede9fe] flex items-center gap-1.5">
+        <button className="h-9 px-3 rounded-lg border border-[#c4b5fd] bg-[#ede9fe] text-[#7c3aed] text-sm font-medium hover:bg-[#e0d9ff] flex items-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5" />
           Gerar calendário
         </button>
@@ -77,10 +79,10 @@ export function CalendarioEditorial() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-xl border border-[#e5e7eb] bg-[#f9f8ff] p-3">
-            <div className="text-[10px] font-medium text-[#6b7280] uppercase tracking-wider">{s.label}</div>
-            <div className="text-2xl font-bold text-[#1f172a] mt-0.5">{s.value}</div>
-            <div className="text-[10px] text-[#6b7280] mt-0.5">{s.sub}</div>
+          <div key={s.label} className="bg-[#f5f3ff] border border-[#e5e7eb] rounded-[10px] py-3 px-3.5">
+            <div className="text-[10px] uppercase tracking-wider font-medium text-[#9ca3af]">{s.label}</div>
+            <div className="text-2xl font-semibold text-[#1f172a] mt-0.5 leading-tight">{s.value}</div>
+            <div className="text-[10px] text-[#16a34a] mt-0.5">{s.sub}</div>
           </div>
         ))}
       </div>
@@ -95,7 +97,7 @@ export function CalendarioEditorial() {
               onClick={() => toggleFiltro(p.id)}
               className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors ${
                 active
-                  ? "bg-[#ede9fe] border-[#c4b5fd] text-[#7c3aed]"
+                  ? "bg-[#ede9fe] border-[#c4b5fd] text-[#7c3aed] font-medium"
                   : "bg-white border-[#e5e7eb] text-[#6b7280]"
               }`}
             >
@@ -106,35 +108,38 @@ export function CalendarioEditorial() {
         })}
       </div>
 
-      <div className="rounded-xl border border-[#e5e7eb] bg-white overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-[#e5e7eb]">
+      <div>
+        <div className="grid grid-cols-7 mb-2">
           {WEEK_DAYS.map((d) => (
-            <div key={d} className="text-[10px] font-bold text-[#6b7280] uppercase tracking-wider py-2 text-center">
+            <div key={d} className="text-[10px] uppercase tracking-wider text-[#9ca3af] text-center pb-2">
               {d}
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7">
+        <div className="grid grid-cols-7 gap-1">
           {cells.map((cell, idx) => {
             const isToday = cell.current && cell.day === today;
-            const dayEvents = cell.current ? visibleEvents.filter((e) => e.day === cell.day) : [];
+            const dayEvents = cell.current ? visiveis.filter((e) => e.dia === cell.day) : [];
             return (
               <div
                 key={idx}
-                className={`min-h-[80px] p-1.5 border-r border-b border-[#f3f4f6] hover:bg-[#faf5ff] transition-colors ${
-                  !cell.current ? "opacity-40" : ""
-                } ${isToday ? "border-[1.5px] border-[#7c3aed] bg-[#faf5ff]" : ""}`}
+                className={`min-h-[80px] p-1.5 rounded-lg bg-white transition-colors hover:bg-[#faf5ff] hover:border-[#c4b5fd] ${
+                  isToday ? "border-[1.5px] border-[#7c3aed] bg-[#faf5ff]" : "border border-[#f3f4f6]"
+                } ${!cell.current ? "opacity-40" : ""}`}
               >
-                <div className="text-sm font-medium text-[#1f172a]">{cell.day}</div>
+                <div className={`text-xs font-medium ${isToday ? "text-[#7c3aed] font-semibold" : "text-[#6b7280]"}`}>
+                  {cell.day}
+                </div>
                 <div className="space-y-0.5 mt-1">
                   {dayEvents.map((e, i) => {
-                    const plat = PLATAFORMAS.find((p) => p.id === e.platform)!;
+                    const plat = PLATAFORMAS.find((p) => p.id === e.plataforma)!;
                     return (
                       <div
                         key={i}
-                        className={`${plat.chipBg} ${plat.chipText} rounded text-[9px] px-1.5 py-0.5 truncate font-medium`}
+                        className="rounded px-1.5 py-0.5 text-[9px] font-medium overflow-hidden text-ellipsis whitespace-nowrap"
+                        style={{ background: plat.chipBg, color: plat.chipText }}
                       >
-                        {e.title}
+                        {e.texto}
                       </div>
                     );
                   })}

@@ -1,42 +1,41 @@
 import { Check } from "lucide-react";
 
-interface StepperProps {
+interface Props {
   currentStep: number;
-  onStepClick?: (step: number) => void;
+  onStepClick?: (n: number) => void;
 }
 
-const steps = ["Conteúdo", "Visual", "Formato", "Publicar"];
+const STEPS = ["Conteúdo", "Visual", "Formato", "Publicar"];
 
-export function StepperConteudo({ currentStep, onStepClick }: StepperProps) {
+export function StepperConteudo({ currentStep, onStepClick }: Props) {
   return (
-    <div className="flex items-center justify-between w-full mb-6">
-      {steps.map((label, idx) => {
-        const stepNum = idx + 1;
-        const isActive = stepNum === currentStep;
-        const isDone = stepNum < currentStep;
-        const isLast = idx === steps.length - 1;
-
+    <div className="flex items-start justify-between w-full mb-5">
+      {STEPS.map((label, idx) => {
+        const n = idx + 1;
+        const active = n === currentStep;
+        const done = n < currentStep;
+        const isLast = idx === STEPS.length - 1;
         return (
-          <div key={label} className="flex items-center flex-1">
+          <div key={label} className="flex items-start flex-1 min-w-0">
             <button
               type="button"
-              onClick={() => onStepClick?.(stepNum)}
-              className="flex flex-col items-center gap-1.5 group"
+              onClick={() => onStepClick?.(n)}
+              className="flex flex-col items-center gap-1 shrink-0"
             >
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
-                  isActive
+                  active
                     ? "bg-[#7c3aed] text-white"
-                    : isDone
-                    ? "bg-green-500 text-white"
-                    : "bg-white border border-[#e5e7eb] text-[#6b7280]"
+                    : done
+                    ? "bg-[#ede9fe] text-[#7c3aed]"
+                    : "bg-white border border-[#e5e7eb] text-[#9ca3af]"
                 }`}
               >
-                {isDone ? <Check className="w-3.5 h-3.5" /> : stepNum}
+                {done ? <Check className="w-3.5 h-3.5" /> : n}
               </div>
               <span
-                className={`text-[10px] font-medium ${
-                  isActive ? "text-[#7c3aed]" : isDone ? "text-green-600" : "text-[#6b7280]"
+                className={`text-[10px] ${
+                  active ? "text-[#7c3aed] font-medium" : "text-[#9ca3af]"
                 }`}
               >
                 {label}
@@ -44,9 +43,7 @@ export function StepperConteudo({ currentStep, onStepClick }: StepperProps) {
             </button>
             {!isLast && (
               <div
-                className={`flex-1 h-px mx-1 -mt-4 ${
-                  isDone ? "bg-green-500" : "bg-[#e5e7eb]"
-                }`}
+                className={`flex-1 h-px mt-3.5 mx-1 ${done ? "bg-[#c4b5fd]" : "bg-[#e5e7eb]"}`}
               />
             )}
           </div>
