@@ -175,48 +175,44 @@ export default function Ferramentas() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
-              {cat.tools.map((tool) => {
-                const Icon = tool.icon;
-                const locked = isToolLockedForPlan(tool.id, userPlan);
-                return (
-                  <button
-                    key={tool.id}
-                    onClick={() => handleClick(tool)}
-                    className="text-left group"
-                  >
-                    <Card
-                      className={`relative h-full p-4 transition-all border-border/60 bg-card ${
-                        locked
-                          ? 'opacity-70'
-                          : 'hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]'
-                      }`}
+            <div className="overflow-x-auto scrollbar-hide -mx-2 px-2">
+              <div className="flex gap-4 sm:gap-5 min-w-max sm:min-w-0 sm:flex-wrap sm:justify-start py-1">
+                {cat.tools.map((tool) => {
+                  const Icon = tool.icon;
+                  const locked = isToolLockedForPlan(tool.id, userPlan);
+                  return (
+                    <button
+                      key={tool.id}
+                      onClick={() => handleClick(tool)}
+                      className="flex flex-col items-center gap-2 group w-[72px] sm:w-[80px] shrink-0"
                     >
-                      {locked && (
-                        <div className="absolute top-2.5 right-2.5">
-                          <LockBadge userPlan={userPlan} toolId={tool.id} />
-                        </div>
-                      )}
                       <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors ${
+                        className={`relative h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-card border-2 flex items-center justify-center transition-all ${
                           locked
-                            ? 'bg-muted/60'
-                            : 'bg-primary/10 group-hover:bg-primary/15'
+                            ? 'border-border/60 opacity-70'
+                            : 'border-border group-hover:border-primary/50 group-hover:shadow-md group-hover:shadow-primary/10 group-active:scale-95'
                         }`}
                       >
                         <Icon
-                          className={`h-5 w-5 ${
-                            locked ? 'text-muted-foreground' : 'text-primary'
+                          className={`h-6 w-6 transition-colors ${
+                            locked
+                              ? 'text-muted-foreground'
+                              : 'text-primary/80 group-hover:text-primary'
                           }`}
                         />
+                        {locked && (
+                          <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-background border border-border flex items-center justify-center">
+                            <LockBadge userPlan={userPlan} toolId={tool.id} />
+                          </div>
+                        )}
                       </div>
-                      <h3 className="font-semibold text-sm text-foreground leading-tight">
+                      <span className="text-[10px] sm:text-[11px] font-medium text-foreground text-center leading-tight line-clamp-2">
                         {tool.label[lang]}
-                      </h3>
-                    </Card>
-                  </button>
-                );
-              })}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </section>
         ))}
