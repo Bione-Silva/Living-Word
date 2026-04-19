@@ -18,14 +18,42 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
+      injectRegister: false, // we register manually via useRegisterSW
       devOptions: {
         enabled: false,
       },
       workbox: {
+        // Take control as soon as the new SW is activated
+        clientsClaim: true,
+        skipWaiting: true,
+        cleanupOutdatedCaches: true,
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/~oauth/, /^\/blog\//, /\.\w+$/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        runtimeCaching: [
+          {
+            // Always check the network first for HTML / app shell so users
+            // get the new index.html (and therefore the new asset hashes)
+            // without being stuck on a stale cached version.
+            urlPattern: ({ request }) => request.mode === "navigate",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-cache",
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
+            },
+          },
+          {
+            // Manifest must always be revalidated so install metadata stays fresh
+            urlPattern: ({ url }) => url.pathname === "/manifest.json" || url.pathname === "/manifest.webmanifest",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "manifest-cache",
+              expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 },
+            },
+          },
+        ],
       },
       includeAssets: ["icon-192.png", "icon-512.png"],
       manifest: {
