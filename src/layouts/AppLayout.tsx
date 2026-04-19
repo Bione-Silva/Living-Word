@@ -440,6 +440,39 @@ export default function AppLayout() {
                 <span>{lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear'}</span>
               </button>
               <Link
+                to="/sermoes"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/sermoes' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Mic className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones'}</span>
+              </Link>
+              <Link
+                to="/pulpito"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/pulpito' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Megaphone className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Modo Púlpito' : lang === 'EN' ? 'Pulpit Mode' : 'Modo Púlpito'}</span>
+                <Badge variant="outline" className="ml-auto text-[9px] border-primary/40 text-primary px-1.5 py-0">
+                  {lang === 'PT' ? 'NOVO' : 'NEW'}
+                </Badge>
+              </Link>
+              <Link
+                to="/social-studio"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/social-studio' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Palette className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}</span>
+              </Link>
+              <Link
                 to="/bible"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
