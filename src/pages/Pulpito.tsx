@@ -12,10 +12,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 const copy = {
   PT: {
     title: 'Modo Púlpito',
-    subtitle: 'Escolha um sermão para apresentar em tela grande, com versículos comparados em até 3 versões da Bíblia.',
+    subtitle: 'Escolha um sermão para abrir no editor. De lá você pode iniciar o Modo Púlpito em tela grande.',
     empty: 'Você ainda não salvou nenhum sermão.',
     emptyCta: 'Criar meu primeiro sermão',
-    open: 'Abrir no Púlpito',
+    open: 'Abrir sermão',
     create: 'Novo Sermão',
     badge: 'Premium',
     listLabel: 'Seus sermões salvos',
@@ -23,10 +23,10 @@ const copy = {
   },
   EN: {
     title: 'Pulpit Mode',
-    subtitle: 'Pick a sermon to present full-screen, with verses compared across up to 3 Bible versions.',
+    subtitle: 'Pick a sermon to open in the editor. From there you can launch Pulpit Mode full-screen.',
     empty: 'You have no saved sermons yet.',
     emptyCta: 'Create my first sermon',
-    open: 'Open in Pulpit',
+    open: 'Open sermon',
     create: 'New Sermon',
     badge: 'Premium',
     listLabel: 'Your saved sermons',
@@ -34,10 +34,10 @@ const copy = {
   },
   ES: {
     title: 'Modo Púlpito',
-    subtitle: 'Elige un sermón para presentar a pantalla completa, con versículos comparados en hasta 3 versiones de la Biblia.',
+    subtitle: 'Elige un sermón para abrirlo en el editor. Desde allí puedes iniciar el Modo Púlpito en pantalla completa.',
     empty: 'Aún no has guardado ningún sermón.',
     emptyCta: 'Crear mi primer sermón',
-    open: 'Abrir en Púlpito',
+    open: 'Abrir sermón',
     create: 'Nuevo Sermón',
     badge: 'Premium',
     listLabel: 'Tus sermones guardados',
@@ -80,8 +80,10 @@ export default function Pulpito() {
     return () => { alive = false; };
   }, [user]);
 
+  // Abre o sermão no editor (Criador de Sermão).
+  // De lá o usuário decide se quer entrar no Modo Púlpito.
   const openInPulpit = (id: string) => {
-    navigate(`/sermoes?materialId=${id}&pulpito=1`);
+    navigate(`/sermoes?materialId=${id}`);
   };
 
   return (
