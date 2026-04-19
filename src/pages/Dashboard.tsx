@@ -7,6 +7,7 @@ import { ExtrasModal } from '@/components/ExtrasModal';
 import { extraOutreachTools, extraFunTools } from '@/components/ExtraToolsSections';
 import { DashboardGreeting } from '@/components/dashboard/DashboardGreeting';
 import { DashboardTopBanner } from '@/components/dashboard/DashboardTopBanner';
+import { InstallAppCard } from '@/components/dashboard/InstallAppCard';
 import { BomAmigoCard } from '@/components/dashboard/BomAmigoCard';
 import { DevotionalCard } from '@/components/dashboard/DevotionalCard';
 import { ToolsCircleGrid } from '@/components/dashboard/ToolsCircleGrid';
@@ -87,7 +88,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-5 sm:space-y-6 max-w-2xl mx-auto pb-2">
       {/* Mobile-first: nudge de Minha Igreja vem ANTES do banner para virar destaque */}
       <div className="md:hidden">
         <OnboardingNudgeCard />
@@ -112,6 +113,16 @@ export default function Dashboard() {
       <UserEngagementDashboard />
       <RecentGenerations />
 
+      {/* Conta & App — área secundária persistente para instalar PWA */}
+      <section className="pt-2">
+        <div className="mb-3 flex items-center gap-2">
+          <span className="text-[11px] font-semibold tracking-[0.14em] uppercase text-muted-foreground">
+            {lang === 'EN' ? 'Account & App' : lang === 'ES' ? 'Cuenta y App' : 'Conta & App'}
+          </span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+        <InstallAppCard />
+      </section>
       <ExtrasModal
         open={extrasOpen}
         onOpenChange={setExtrasOpen}

@@ -6,6 +6,7 @@ import { ArrowLeft, Send, Loader2, BookOpen, PenTool, Users, GraduationCap, Thum
 import { ArtifactActions } from '@/components/mind-chat/ArtifactActions';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { minds } from '@/data/minds';
+import { MindAvatar } from '@/components/minds/MindAvatar';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { supabase } from '@/integrations/supabase/client';
@@ -385,7 +386,7 @@ export default function MenteChat() {
         </Button>
         {mind && (
           <div className="w-10 h-10 rounded-full border-2 border-[hsl(263,70%,50%)]/40 overflow-hidden">
-            <img src={mind.image} alt={name} className="w-full h-full object-cover" />
+            <MindAvatar src={mind.image} name={name} size={40} />
           </div>
         )}
         <div className="flex-1 min-w-0">

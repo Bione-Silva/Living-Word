@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TheologyDNAChart } from '@/components/minds/TheologyDNAChart';
 import { CompareMindsDialog } from '@/components/minds/CompareMindsDialog';
+import { MindAvatar } from '@/components/minds/MindAvatar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
@@ -104,7 +105,7 @@ export function MindDetailSheet({ mind, open, onOpenChange }: MindDetailSheetPro
           <section className="text-center pt-4">
             <div className="relative mx-auto w-32 h-32 sm:w-40 sm:h-40 mb-5">
               <div className="w-full h-full rounded-full border-[3px] border-[hsl(270,43%,92%)] overflow-hidden shadow-lg">
-                <img src={mind.image} alt={mind.name} className="w-full h-full object-cover" width={160} height={160} />
+                <MindAvatar src={mind.image} name={mind.name} size={160} />
               </div>
               <span className="absolute -bottom-1 -right-1 text-2xl drop-shadow">{mind.flag}</span>
             </div>

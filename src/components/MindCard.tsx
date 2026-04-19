@@ -1,5 +1,6 @@
 import { Lock, Database } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { MindAvatar } from '@/components/minds/MindAvatar';
 import type { MindFullData } from '@/data/minds';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -36,13 +37,12 @@ export function MindCard({ mind, lang, isFree, onClick, index }: MindCardProps) 
         {/* Photo + Flag */}
         <div className="relative mx-auto w-24 h-24 mb-4">
           <div className="w-full h-full rounded-full border-2 border-[hsl(270,43%,92%)] group-hover:border-[hsl(270,35%,78%)] transition-all duration-500 overflow-hidden shadow-sm">
-            <img
+            <MindAvatar
               src={mind.image}
-              alt={mind.name}
-              className={`w-full h-full object-cover transition-all duration-500 ${isLocked ? 'grayscale brightness-75' : 'group-hover:scale-105'}`}
-              loading="lazy"
-              width={96}
-              height={96}
+              name={mind.name}
+              size={96}
+              grayscale={isLocked}
+              imgClassName={`transition-all duration-500 ${isLocked ? '' : 'group-hover:scale-105'}`}
             />
           </div>
           {/* Country flag */}
