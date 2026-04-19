@@ -379,8 +379,22 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
                 <Mail className="h-4 w-4" />
                 <span>{labels.shareEmail[lang]}</span>
               </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* CTA — pré-popula o Estúdio Social com o conteúdo do devocional */}
+        <button
+          onClick={handleGenerateCarousel}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:opacity-90 hover:scale-[1.02] min-h-[44px] text-white shadow-sm"
+          style={{
+            background: `linear-gradient(135deg, ${colors.gold}, hsl(280, 70%, 55%))`,
+            borderColor: 'transparent',
+          }}
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">{labels.toCarousel[lang]}</span>
+          <span className="sm:hidden">{labels.toCarouselShort[lang]}</span>
+        </button>
         </div>
 
         {/* Scrollable content — native overflow inside flex column for reliable scrolling */}
