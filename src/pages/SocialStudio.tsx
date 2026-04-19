@@ -645,17 +645,32 @@ export default function SocialStudio() {
                   </>
                 )}
 
-                {/* Navegação fixa no rodapé do painel esquerdo */}
+                {/* Navegação fixa no rodapé do painel esquerdo.
+                    Na etapa "Estilo" o botão é APLICAR (efeito imediato no preview);
+                    nas demais é CONTINUAR (avança o wizard). */}
                 <div className="flex gap-2 pt-3 border-t border-border">
                   {currentStepIndex > 0 && (
                     <Button onClick={goBack} variant="outline" className="flex-1">{h.back}</Button>
                   )}
-                  {currentStepIndex < steps.length - 1 && (
+                  {step === 'style' ? (
+                    <Button
+                      onClick={() => {
+                        // Tudo já está aplicado em tempo real (theme + imageMode);
+                        // este botão só dá feedback explícito + avança para Gerar.
+                        toast.success(h.applied);
+                        goNext();
+                      }}
+                      className="flex-1 gap-2"
+                    >
+                      <Check className="h-4 w-4" />
+                      {h.apply}
+                    </Button>
+                  ) : currentStepIndex < steps.length - 1 ? (
                     <Button onClick={goNext} className="flex-1 gap-2">
                       {h.continue}
                       <ArrowRight className="h-4 w-4" />
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
