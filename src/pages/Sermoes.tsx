@@ -423,6 +423,44 @@ export default function Sermoes() {
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams]);
 
+  // ─── Bridge: abrir um sermão salvo direto no Modo Púlpito ───
+  // Aceita: ?materialId=<uuid>&pulpito=1
+  const pulpitoBridgeApplied = useRef(false);
+  useEffect(() => {
+    if (pulpitoBridgeApplied.current) return;
+    const materialId = searchParams.get('materialId');
+    const pulpito = searchParams.get('pulpito');
+    if (!materialId || !user) return;
+    pulpitoBridgeApplied.current = true;
+
+    (async () => {
+      const { data } = await supabase
+        .from('materials')
+        .select('id, title, content, passage, created_at')
+        .eq('id', materialId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (data) {
+        const session: SermonSession = {
+          id: data.id,
+          title: data.title,
+          content: data.content || '',
+          passage: data.passage || '',
+          date: new Date(data.created_at).toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US'),
+        };
+        handleRestoreSession(session);
+        if (pulpito === '1') {
+          setTimeout(() => setPodiumOpen(true), 250);
+        }
+      }
+      const next = new URLSearchParams(searchParams);
+      next.delete('materialId');
+      next.delete('pulpito');
+      setSearchParams(next, { replace: true });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, user]);
+
 
   const resultRef = useRef<HTMLDivElement>(null);
 

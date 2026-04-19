@@ -42,6 +42,7 @@ import Devocional from "./pages/Devocional";
 import DevocionalPublico from "./pages/DevocionalPublico";
 import BomAmigo from "./pages/BomAmigo";
 import Sermoes from "./pages/Sermoes";
+import Pulpito from "./pages/Pulpito";
 import SeriesDetail from "./pages/SeriesDetail";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
@@ -138,6 +139,7 @@ const App = () => (
                   <Route path="/devocional" element={<Devocional />} />
                   <Route path="/bom-amigo" element={<BomAmigo />} />
                   <Route path="/sermoes" element={<Sermoes />} />
+                  <Route path="/pulpito" element={<Pulpito />} />
                   <Route path="/series/:id" element={<SeriesDetail />} />
                   <Route path="/quiz" element={<Quiz />} />
                   <Route path="/kids" element={<Kids />} />

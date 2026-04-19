@@ -22,3 +22,4 @@ Free: 5 gerações/mês, 3 formatos, 1 blog article, watermark. Trial 7d sem car
 - [Edge Functions](mem://features/edge-functions) — API endpoints and payloads
 - [AI Models Allowed](mem://constraints/ai-models-allowed) — Apenas Gemini e GPT permitidos
 - [CLAUDE.md Rules](mem://constraints/claude-md-rules) — Master operational rules from project CLAUDE.md
+- [Sidebar Structure v3](mem://features/sidebar-structure) — Sermões/Modo Púlpito/Social promovidos para seção RECURSOS, rota /pulpito

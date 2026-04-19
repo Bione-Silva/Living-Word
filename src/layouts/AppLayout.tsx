@@ -65,7 +65,6 @@ const sidebarGroups: SidebarToolGroup[] = [
     label: { PT: 'Criar', EN: 'Create', ES: 'Crear' },
     icon: Sparkles,
     tools: [
-      { id: 'sermon-generator', icon: Mic, label: { PT: 'Sermões', EN: 'Sermons', ES: 'Sermones' } },
       { id: 'biblical-study', icon: GraduationCap, label: { PT: 'Estudo Bíblico', EN: 'Bible Study', ES: 'Estudio Bíblico' } },
       { id: 'free-article', icon: PenTool, label: { PT: 'Blog & Artigos', EN: 'Blog & Articles', ES: 'Blog y Artículos' } },
       { id: 'title-gen', icon: Type, label: { PT: 'Títulos Criativos', EN: 'Creative Titles', ES: 'Títulos Creativos' } },
@@ -73,7 +72,6 @@ const sidebarGroups: SidebarToolGroup[] = [
       { id: 'illustrations', icon: Film, label: { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones' } },
       { id: 'bible-modernizer', icon: Sparkles, label: { PT: 'Modernizador Bíblico', EN: 'Bible Modernizer', ES: 'Modernizador Bíblico' } },
       { id: 'free-article-universal', icon: Type, label: { PT: 'Redator Universal', EN: 'Universal Writer', ES: 'Redactor Universal' } },
-      { id: 'social-studio', icon: Palette, label: { PT: 'Estúdio Social', EN: 'Social Studio', ES: 'Estudio Social' } },
       { id: 'youtube-blog', icon: Video, label: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' } },
       { id: 'reels-script', icon: Video, label: { PT: 'Roteiro para Reels', EN: 'Reels Script', ES: 'Guion para Reels' } },
       { id: 'social-caption', icon: MessageSquare, label: { PT: 'Legendas para Redes', EN: 'Social Captions', ES: 'Subtítulos para Redes' } },
@@ -311,13 +309,13 @@ export default function AppLayout() {
             </Link>
 
             <Link
-              to="/ferramentas"
+              to="/sermoes"
               className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
-                location.pathname === '/ferramentas' ? 'text-primary' : 'text-muted-foreground'
+                location.pathname === '/sermoes' || location.pathname.startsWith('/series') ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Package className="h-[18px] w-[18px]" />
-              <span className="truncate leading-tight">{lang === 'PT' ? 'Tools' : lang === 'EN' ? 'Tools' : 'Tools'}</span>
+              <Mic className="h-[18px] w-[18px]" />
+              <span className="truncate leading-tight">{lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones'}</span>
             </Link>
 
             <button
@@ -441,6 +439,39 @@ export default function AppLayout() {
                 <Sparkles className="h-[18px] w-[18px] shrink-0" />
                 <span>{lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear'}</span>
               </button>
+              <Link
+                to="/sermoes"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/sermoes' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Mic className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones'}</span>
+              </Link>
+              <Link
+                to="/pulpito"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/pulpito' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Megaphone className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Modo Púlpito' : lang === 'EN' ? 'Pulpit Mode' : 'Modo Púlpito'}</span>
+                <Badge variant="outline" className="ml-auto text-[9px] border-primary/40 text-primary px-1.5 py-0">
+                  {lang === 'PT' ? 'NOVO' : 'NEW'}
+                </Badge>
+              </Link>
+              <Link
+                to="/social-studio"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/social-studio' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Palette className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}</span>
+              </Link>
               <Link
                 to="/bible"
                 onClick={() => setMobileMenuOpen(false)}
@@ -752,7 +783,47 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
-          {/* 2.2 — Biblioteca */}
+          {/* 2.2 — Sermões */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones'}>
+            <Link
+              to="/sermoes"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/sermoes' || location.pathname.startsWith('/series')
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Mic className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones')}
+            </Link>
+          </SidebarTooltipWrap>
+
+          {/* 2.3 — Modo Púlpito */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Modo Púlpito' : lang === 'EN' ? 'Pulpit Mode' : 'Modo Púlpito'}>
+            <Link
+              to="/pulpito"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/pulpito'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Megaphone className="h-4 w-4 shrink-0" />
+              {!collapsed && (
+                <>
+                  <span className="flex-1">{lang === 'PT' ? 'Modo Púlpito' : lang === 'EN' ? 'Pulpit Mode' : 'Modo Púlpito'}</span>
+                  <Badge variant="outline" className="text-[9px] border-primary/40 text-primary px-1.5 py-0">
+                    {lang === 'PT' ? 'NOVO' : 'NEW'}
+                  </Badge>
+                </>
+              )}
+            </Link>
+          </SidebarTooltipWrap>
+
+          {/* 2.4 — Bíblia (movida para Recursos também) */}
+          {/* (Bíblia já existe acima na seção Ferramentas — mantemos lá para acesso rápido) */}
+
+          {/* 2.5 — Biblioteca */}
           <SidebarTooltipWrap collapsed={collapsed} label={t('nav.library') || 'Biblioteca'}>
             <Link
               to="/biblioteca"
@@ -767,7 +838,7 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
-          {/* 2.3 — Calendário */}
+          {/* 2.6 — Calendário */}
           <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario'}>
             <Link
               to="/calendario"
@@ -779,6 +850,21 @@ export default function AppLayout() {
             >
               <CalendarDays className="h-4 w-4 shrink-0" />
               {!collapsed && (lang === 'PT' ? 'Calendário' : lang === 'EN' ? 'Calendar' : 'Calendario')}
+            </Link>
+          </SidebarTooltipWrap>
+
+          {/* 2.7 — Estúdio Social */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social'}>
+            <Link
+              to="/social-studio"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/social-studio'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Palette className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Estúdio Social' : lang === 'EN' ? 'Social Studio' : 'Estudio Social')}
             </Link>
           </SidebarTooltipWrap>
         </nav>
