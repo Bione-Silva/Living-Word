@@ -1,5 +1,3 @@
-import { Sparkles } from 'lucide-react';
-
 type L = 'PT' | 'EN' | 'ES';
 
 export interface VersePalette {
@@ -137,15 +135,8 @@ interface Props {
 }
 
 export function VersePalettePicker({ value, onChange, lang }: Props) {
-  const l = labels[lang];
-
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 px-1">
-        <Sparkles className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-bold text-foreground">{l.title}</h3>
-      </div>
-      <p className="text-xs text-muted-foreground px-1">{l.hint}</p>
       <div className="grid grid-cols-2 gap-2">
         {VERSE_PALETTES.map((p) => {
           const active = value === p.id;
