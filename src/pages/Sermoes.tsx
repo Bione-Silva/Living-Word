@@ -255,8 +255,9 @@ function CustomDurationInput({
   setDuration: (val: string | null) => void;
   presets: string[];
 }) {
-  const placeholder = lang === 'EN' ? 'Custom (min)' : lang === 'ES' ? 'Personalizado (min)' : 'Personalizado (min)';
-  const minutesLabel = lang === 'EN' ? 'min' : 'min';
+  const orLabel = lang === 'EN' ? 'or set custom' : lang === 'ES' ? 'o personalizado' : 'ou personalizado';
+  const placeholder = lang === 'EN' ? 'e.g. 90' : lang === 'ES' ? 'ej. 90' : 'ex: 90';
+  const minutesLabel = 'min';
   const isPreset = duration ? presets.includes(duration) : true;
   const initial = !isPreset && duration ? duration.replace(/[^\d]/g, '') : '';
   const [value, setValue] = useState<string>(initial);
@@ -273,27 +274,33 @@ function CustomDurationInput({
   };
 
   return (
-    <div className="mt-2.5 flex items-center gap-2">
-      <input
-        type="number"
-        inputMode="numeric"
-        min={1}
-        max={240}
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => setValue(e.target.value.replace(/[^\d]/g, ''))}
-        onBlur={(e) => apply(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            apply((e.target as HTMLInputElement).value);
-          }
-        }}
-        className={`w-24 px-3 py-1.5 rounded-lg text-xs font-medium border bg-background text-foreground transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 ${
-          !isPreset && duration ? 'border-primary text-primary' : 'border-border'
-        }`}
-      />
-      <span className="text-xs text-muted-foreground">{minutesLabel}</span>
+    <div className="mt-3 pt-3 border-t border-border/40">
+      <p className="text-[10px] font-semibold text-muted-foreground/80 uppercase tracking-wider mb-2">{orLabel}</p>
+      <div className="flex items-center gap-2">
+        <input
+          type="number"
+          inputMode="numeric"
+          min={1}
+          max={240}
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => setValue(e.target.value.replace(/[^\d]/g, ''))}
+          onBlur={(e) => apply(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              apply((e.target as HTMLInputElement).value);
+            }
+          }}
+          className={`w-20 px-3 py-2 rounded-lg text-sm font-semibold border bg-background text-foreground transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+            !isPreset && duration ? 'border-primary text-primary' : 'border-border'
+          }`}
+        />
+        <span className="text-xs font-medium text-muted-foreground">{minutesLabel}</span>
+        {!isPreset && duration && (
+          <span className="ml-auto text-[11px] font-semibold text-primary">✓ {duration}</span>
+        )}
+      </div>
     </div>
   );
 }
