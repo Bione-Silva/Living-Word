@@ -27,6 +27,9 @@ const labels = {
     jpg: 'JPG',
     slides: 'slides',
     slide: 'slide',
+    whatsapp: 'WhatsApp',
+    sharingError: 'Não foi possível compartilhar.',
+    shareCaption: 'Confira essa arte feita no Living Word ✨',
   },
   EN: {
     empty: 'Your artworks will appear here',
@@ -38,6 +41,9 @@ const labels = {
     jpg: 'JPG',
     slides: 'slides',
     slide: 'slide',
+    whatsapp: 'WhatsApp',
+    sharingError: 'Could not share.',
+    shareCaption: 'Check out this artwork made on Living Word ✨',
   },
   ES: {
     empty: 'Tus artes aparecerán aquí',
@@ -49,6 +55,9 @@ const labels = {
     jpg: 'JPG',
     slides: 'slides',
     slide: 'slide',
+    whatsapp: 'WhatsApp',
+    sharingError: 'No se pudo compartir.',
+    shareCaption: 'Mira este arte hecho en Living Word ✨',
   },
 };
 
