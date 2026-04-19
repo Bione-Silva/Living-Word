@@ -32,6 +32,8 @@ const T: Record<L, Record<string, string>> = {
     copied: 'Legenda copiada!',
     copyEmpty: 'Sem legenda para copiar',
     noSlide: 'Nenhuma arte gerada ainda',
+    zipNoticeTitle: 'Carrossel ou múltiplas artes?',
+    zipNoticeBody: 'O download será feito em arquivo ZIP com todas as imagens.',
   },
   EN: {
     selected: 'Selected art',
@@ -44,6 +46,8 @@ const T: Record<L, Record<string, string>> = {
     copied: 'Caption copied!',
     copyEmpty: 'No caption to copy',
     noSlide: 'No art generated yet',
+    zipNoticeTitle: 'Carousel or multiple arts?',
+    zipNoticeBody: 'The download will be a ZIP file with all images.',
   },
   ES: {
     selected: 'Arte seleccionado',
@@ -56,6 +60,8 @@ const T: Record<L, Record<string, string>> = {
     copied: '¡Leyenda copiada!',
     copyEmpty: 'Sin leyenda para copiar',
     noSlide: 'Aún no hay arte generado',
+    zipNoticeTitle: '¿Carrusel o varias artes?',
+    zipNoticeBody: 'La descarga será un archivo ZIP con todas las imágenes.',
   },
 };
 
