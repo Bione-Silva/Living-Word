@@ -493,16 +493,16 @@ export default function SocialStudio() {
             </div>
           </div>
 
-          {/* ── ESTRUTURA FIXA: Esquerda estreita | Centro grande (prioridade do preview) | Direita estreita ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-[200px_minmax(0,1fr)_180px] gap-3">
+          {/* ── ESTRUTURA FIXA: Esquerda compacta | Centro amplo (preview prioritário) | Direita compacta ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_240px] gap-4">
             {/* ═══ COLUNA ESQUERDA — controles da etapa ═══ */}
             <Card className="bg-card border-border min-w-0">
-              <CardContent className="p-3 sm:p-3.5 space-y-3">
+              <CardContent className="p-3.5 sm:p-4 space-y-3.5">
                 {step === 'format' && (
                   <>
                     <div>
-                      <h2 className="text-sm font-bold text-foreground font-display leading-tight">{h.formatHeading}</h2>
-                      <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{h.formatSub}</p>
+                      <h2 className="text-base font-bold text-foreground font-display leading-tight">{h.formatHeading}</h2>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{h.formatSub}</p>
                     </div>
                     <FormatPicker value={formatId} onChange={handleFormatChange} lang={lang} />
                   </>
