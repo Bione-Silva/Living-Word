@@ -12,6 +12,7 @@ import { getBibleVersion, getDefaultVersionCode } from '@/lib/bible-data';
 import { type SlideCount } from '@/components/social-studio/SlideCountPicker';
 import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGallery';
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
+import { SidePanel } from '@/components/social-studio/SidePanel';
 import { VariationGrid, type VariationGridHandle } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
 import {
@@ -763,44 +764,49 @@ export default function SocialStudio() {
         </TabsContent>
       </Tabs>
 
-      {/* ── Quick-access modals (Paleta / Cenas / Templates) ── */}
-      <Dialog open={openModal === 'palette'} onOpenChange={(v) => !v && setOpenModal(null)}>
-        <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-display">{h.paletteCard}</DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-1">
-            <VersePalettePicker value={activePaletteId} onChange={(p) => { handlePaletteSelect(p); setOpenModal(null); }} lang={lang} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* ── Quick-access side panels (Paleta / Cenas / Templates) ──
+           Non-modal: dock to the right column on desktop and to the bottom
+           on mobile so the user keeps SEEING the artwork while choosing. */}
+      <SidePanel
+        open={openModal === 'palette'}
+        onOpenChange={(v) => !v && setOpenModal(null)}
+        title={h.paletteCard}
+        description={h.paletteCardSub}
+      >
+        <VersePalettePicker
+          value={activePaletteId}
+          onChange={(p) => { handlePaletteSelect(p); setOpenModal(null); }}
+          lang={lang}
+        />
+      </SidePanel>
 
-      <Dialog open={openModal === 'scenes'} onOpenChange={(v) => !v && setOpenModal(null)}>
-        <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="font-display">{h.scenesCard}</DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-1">
-            <BiblicalSceneGallery
-              onPick={(url, id) => { handleSceneSelect(url, id); setOpenModal(null); }}
-              lang={lang}
-              activeId={activeSceneId}
-              searchTerm={verseContext?.book || verseContext?.text}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SidePanel
+        open={openModal === 'scenes'}
+        onOpenChange={(v) => !v && setOpenModal(null)}
+        title={h.scenesCard}
+        description={h.scenesCardSub}
+        widthClassName="md:w-[480px]"
+      >
+        <BiblicalSceneGallery
+          onPick={(url, id) => { handleSceneSelect(url, id); setOpenModal(null); }}
+          lang={lang}
+          activeId={activeSceneId}
+          searchTerm={verseContext?.book || verseContext?.text}
+        />
+      </SidePanel>
 
-      <Dialog open={openModal === 'templates'} onOpenChange={(v) => !v && setOpenModal(null)}>
-        <DialogContent className="theme-app border-border bg-background text-foreground sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-display">{h.templatesCard}</DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-1">
-            <TemplatePicker value={template} onChange={(t) => { setTemplate(t); setOpenModal(null); }} lang={lang} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SidePanel
+        open={openModal === 'templates'}
+        onOpenChange={(v) => !v && setOpenModal(null)}
+        title={h.templatesCard}
+        description={h.templatesCardSub}
+      >
+        <TemplatePicker
+          value={template}
+          onChange={(t) => { setTemplate(t); setOpenModal(null); }}
+          lang={lang}
+        />
+      </SidePanel>
 
       {/* ── Offscreen multi-format renderer (powers per-channel ZIP export) ── */}
       {slides.length > 0 && selectedFormats.length > 1 && (
