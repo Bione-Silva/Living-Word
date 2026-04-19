@@ -306,6 +306,11 @@ export default function Configuracoes() {
           </Card>
         </TabsContent>
 
+        {/* CHURCH TAB — Pastoral identity, logo, doctrine */}
+        <TabsContent value="church">
+          <ChurchProfileSection />
+        </TabsContent>
+
         <TabsContent value="blog">
           <Card>
             <CardHeader><CardTitle className="font-display">{t('settings.blog')}</CardTitle></CardHeader>
