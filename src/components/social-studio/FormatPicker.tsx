@@ -1,4 +1,4 @@
-import { Instagram, Music2, Linkedin, MessageCircle, Layers } from 'lucide-react';
+import { Instagram, Music2, Linkedin, MessageCircle, Layers, Facebook } from 'lucide-react';
 import type { AspectRatio } from './AspectRatioSelector';
 import type { SlideCount } from './SlideCountPicker';
 
@@ -6,6 +6,7 @@ export type FormatId =
   | 'ig-post'
   | 'ig-story'
   | 'tiktok'
+  | 'fb-post'
   | 'ig-carousel'
   | 'li-carousel'
   | 'whatsapp';
@@ -51,6 +52,16 @@ const FORMATS: FormatDef[] = [
     type: { PT: 'Vertical', EN: 'Vertical', ES: 'Vertical' },
     size: '1080 × 1920',
     aspectRatio: '9:16-tiktok',
+    slideCount: 1,
+    group: 'social',
+  },
+  {
+    id: 'fb-post',
+    icon: Facebook,
+    channel: { PT: 'Facebook', EN: 'Facebook', ES: 'Facebook' },
+    type: { PT: 'Post', EN: 'Post', ES: 'Post' },
+    size: '1200 × 630',
+    aspectRatio: '1.91:1',
     slideCount: 1,
     group: 'social',
   },
