@@ -420,6 +420,7 @@ Return ONLY valid JSON (no markdown, no code fences, no explanation):
               return (
                 <article
                   key={idx}
+                  data-pdf-section
                   className={`rounded-2xl border-2 ${c.border} ${c.bg} p-4 sm:p-5 space-y-3 animate-fade-in`}
                   style={{ animationDelay: `${idx * 100}ms` }}
                 >
@@ -460,7 +461,7 @@ Return ONLY valid JSON (no markdown, no code fences, no explanation):
 
             {/* Lesson */}
             {story.lesson && (
-              <aside className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 rounded-2xl p-5 text-center space-y-2">
+              <aside data-pdf-section className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 rounded-2xl p-5 text-center space-y-2">
                 <div className="text-3xl">💡</div>
                 <h3 className="text-xs font-bold uppercase tracking-widest text-primary">
                   {labels.lesson[lang]}
