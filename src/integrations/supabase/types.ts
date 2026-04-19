@@ -1198,6 +1198,39 @@ export type Database = {
         }
         Relationships: []
       }
+      pwa_install_events: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          platform: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+          variant: string
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          platform?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          variant?: string
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          platform?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          variant?: string
+        }
+        Relationships: []
+      }
       quiz_scores: {
         Row: {
           best_streak: number
