@@ -87,8 +87,8 @@ export const MultiFormatExporter = forwardRef<MultiFormatExporterHandle, Props>(
           position: 'fixed',
           left: '-99999px',
           top: 0,
-          width: 0,
-          height: 0,
+          width: 600,
+          height: 'auto',
           overflow: 'hidden',
           pointerEvents: 'none',
         }}
@@ -97,12 +97,12 @@ export const MultiFormatExporter = forwardRef<MultiFormatExporterHandle, Props>(
           const def: FormatDef | undefined = getFormatById(fid);
           if (!def) return null;
           return (
-            <div key={fid} style={{ width: def.width, marginBottom: 16 }}>
+            <div key={fid} style={{ width: 520, marginBottom: 12 }}>
               {slides.map((slide, slideIdx) => {
                 const useImageOnThisSlide = slides.length === 1 || slideIdx % 2 === 0;
                 const slideBgImage = useImageOnThisSlide ? theme.backgroundImageUrl : undefined;
                 return (
-                  <div key={`${fid}-${slideIdx}`} style={{ width: def.width }}>
+                  <div key={`${fid}-${slideIdx}`} style={{ width: 520 }}>
                     <SlideCanvas
                       ref={setRef(`${fid}::${slideIdx}`)}
                       slide={slide}
