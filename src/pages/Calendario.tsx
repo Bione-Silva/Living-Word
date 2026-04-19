@@ -64,7 +64,7 @@ export default function Calendario() {
   const [selectedMaterial, setSelectedMaterial] = useState('');
   const [selectedHour, setSelectedHour] = useState('09');
   const [selectedMinute, setSelectedMinute] = useState('00');
-  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
+  const [viewMode, setViewMode] = useState<'calendar' | 'list' | 'year'>('calendar');
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -92,9 +92,14 @@ export default function Calendario() {
     time: { PT: 'Horário', EN: 'Time', ES: 'Hora' },
     upcoming: { PT: 'Próximas publicações', EN: 'Upcoming publications', ES: 'Próximas publicaciones' },
     noItems: { PT: 'Nenhuma publicação neste mês', EN: 'No publications this month', ES: 'Sin publicaciones este mes' },
-    calendarView: { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' },
+    calendarView: { PT: 'Mês', EN: 'Month', ES: 'Mes' },
     listView: { PT: 'Lista', EN: 'List', ES: 'Lista' },
+    yearView: { PT: 'Ano', EN: 'Year', ES: 'Año' },
     remove: { PT: 'Remover', EN: 'Remove', ES: 'Eliminar' },
+    yearTitle: { PT: 'Planejamento anual', EN: 'Annual planning', ES: 'Planificación anual' },
+    yearHint: { PT: 'Clique em qualquer mês para ver o detalhe.', EN: 'Click any month to see the details.', ES: 'Haz clic en cualquier mes para ver el detalle.' },
+    items: { PT: 'publicações', EN: 'publications', ES: 'publicaciones' },
+    item: { PT: 'publicação', EN: 'publication', ES: 'publicación' },
   };
 
   const tt = (key: keyof typeof i18n) => i18n[key][lang as 'PT' | 'EN' | 'ES'] || i18n[key].PT;
