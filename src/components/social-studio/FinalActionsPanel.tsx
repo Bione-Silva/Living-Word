@@ -84,6 +84,7 @@ export function FinalActionsPanel({
   selectedIndex,
   formatLabel,
   formatSize,
+  destinations = [],
   caption,
   lang,
   onDownloadSingle,
@@ -94,6 +95,9 @@ export function FinalActionsPanel({
   const [busy, setBusy] = useState<'png' | 'zip' | 'share' | null>(null);
   const isCarousel = slides.length > 1;
   const hasSlides = slides.length > 0;
+  const multiDestinations = destinations.length > 1;
+  // ZIP is enabled when carousel OR multiple destinations selected
+  const zipEnabled = isCarousel || multiDestinations;
 
   const handlePng = async () => {
     if (!hasSlides) return;
@@ -106,7 +110,7 @@ export function FinalActionsPanel({
   };
 
   const handleZip = async () => {
-    if (!isCarousel) return;
+    if (!zipEnabled) return;
     setBusy('zip');
     try {
       await onDownloadZip();
@@ -153,6 +157,30 @@ export function FinalActionsPanel({
         )}
       </div>
 
+      {destinations.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">
+              {t.destinations}
+            </div>
+            <span className="text-[10px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">
+              {destinations.length}
+            </span>
+          </div>
+          <div className="space-y-1">
+            {destinations.map((d) => (
+              <div
+                key={d.id}
+                className="flex items-center justify-between text-[11px] rounded-md bg-secondary/40 border border-border px-2 py-1.5"
+              >
+                <span className="font-medium text-foreground truncate">{d.label}</span>
+                <span className="text-muted-foreground tabular-nums shrink-0 ml-2">{d.size}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
         <div className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground mb-1.5">
           {t.format}
@@ -174,7 +202,7 @@ export function FinalActionsPanel({
 
         <Button
           onClick={handleZip}
-          disabled={!isCarousel || busy !== null}
+          disabled={!zipEnabled || busy !== null || !hasSlides}
           variant="outline"
           className="w-full justify-start gap-2"
           size="sm"
@@ -182,7 +210,9 @@ export function FinalActionsPanel({
           {busy === 'zip' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Package className="h-4 w-4" />}
           <span className="flex-1 text-left">
             {t.downloadZip}
-            <span className="block text-[10px] text-muted-foreground font-normal">{t.downloadZipHint}</span>
+            <span className="block text-[10px] text-muted-foreground font-normal">
+              {multiDestinations ? t.downloadZipMulti : t.downloadZipHint}
+            </span>
           </span>
         </Button>
 
@@ -211,10 +241,12 @@ export function FinalActionsPanel({
         )}
       </div>
 
-      <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
-        <div className="text-[11px] font-bold text-foreground leading-tight">{t.zipNoticeTitle}</div>
-        <p className="text-[11px] text-muted-foreground leading-snug mt-1">{t.zipNoticeBody}</p>
-      </div>
+      {multiDestinations && (
+        <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
+          <div className="text-[11px] font-bold text-foreground leading-tight">{t.zipNoticeTitle}</div>
+          <p className="text-[11px] text-muted-foreground leading-snug mt-1">{t.zipNoticeBody}</p>
+        </div>
+      )}
     </div>
   );
 }
