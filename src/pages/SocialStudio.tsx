@@ -620,8 +620,9 @@ export default function SocialStudio() {
                     className="relative mx-auto rounded-2xl border-2 border-dashed border-primary/30 bg-secondary/30 flex items-center justify-center max-w-full"
                     style={{
                       aspectRatio: ASPECT_CSS[aspectRatio],
-                      width: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 280 : 420,
-                      maxHeight: 520,
+                      width: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 380 : '100%',
+                      maxWidth: aspectRatio === '9:16' || aspectRatio === '9:16-tiktok' ? 380 : 720,
+                      maxHeight: 720,
                     }}
                   >
                     <div className="text-center px-6">
