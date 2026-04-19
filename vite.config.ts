@@ -27,30 +27,39 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         skipWaiting: true,
         cleanupOutdatedCaches: true,
+        // Bump cacheId to invalidate ALL previous PWA caches from old beige theme
+        cacheId: "lw-v2-purple",
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/~oauth/, /^\/blog\//, /\.\w+$/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
-            // Always check the network first for HTML / app shell so users
-            // get the new index.html (and therefore the new asset hashes)
-            // without being stuck on a stale cached version.
+            // Always check the network first for HTML / app shell
             urlPattern: ({ request }) => request.mode === "navigate",
             handler: "NetworkFirst",
             options: {
-              cacheName: "html-cache",
+              cacheName: "lw-html-v2",
               networkTimeoutSeconds: 5,
               expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
             },
           },
           {
-            // Manifest must always be revalidated so install metadata stays fresh
+            // Manifest must always be revalidated
             urlPattern: ({ url }) => url.pathname === "/manifest.json" || url.pathname === "/manifest.webmanifest",
             handler: "NetworkFirst",
             options: {
-              cacheName: "manifest-cache",
+              cacheName: "lw-manifest-v2",
               expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 },
+            },
+          },
+          {
+            // App icons should always reflect the latest brand
+            urlPattern: ({ url }) => /\/(icon-\d+|apple-touch-icon|favicon|livingword-icon)\.png$/.test(url.pathname),
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "lw-icons-v2",
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 7 },
             },
           },
         ],
