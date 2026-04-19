@@ -50,6 +50,26 @@ const labels = {
     EN: 'Loading history...',
     ES: 'Cargando historial...',
   },
+  newChat: {
+    PT: 'Nova conversa',
+    EN: 'New chat',
+    ES: 'Nueva conversación',
+  },
+  newChatConfirm: {
+    PT: 'Iniciar uma nova conversa? O histórico atual será apagado.',
+    EN: 'Start a new chat? Current history will be cleared.',
+    ES: '¿Iniciar una nueva conversación? Se borrará el historial actual.',
+  },
+  newChatDone: {
+    PT: 'Nova conversa iniciada.',
+    EN: 'New chat started.',
+    ES: 'Nueva conversación iniciada.',
+  },
+  newChatError: {
+    PT: 'Não foi possível limpar o histórico.',
+    EN: 'Could not clear history.',
+    ES: 'No se pudo limpiar el historial.',
+  },
 } satisfies Record<string, Record<L, string>>;
 
 const SYSTEM_PROMPT = (lang: L, userName?: string) =>
