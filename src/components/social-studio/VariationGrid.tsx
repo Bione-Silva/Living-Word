@@ -68,10 +68,14 @@ export interface VariationGridProps {
   lang: L;
   template: CanvasTemplate;
   presentationMode?: boolean; // true => PPTX export available (sermão/estudo)
+  selectedIndex?: number;
+  onSelectIndex?: (idx: number) => void;
 }
 
 export interface VariationGridHandle {
   refresh: () => void;
+  downloadSlide: (idx: number, format?: 'png' | 'jpg') => Promise<void>;
+  downloadAllZip: () => Promise<void>;
 }
 
 function dataUrlToBlob(dataUrl: string) {
@@ -84,7 +88,7 @@ function dataUrlToBlob(dataUrl: string) {
 }
 
 export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>(
-  ({ slides, aspectRatio, theme, lang, template, presentationMode = false }, ref) => {
+  ({ slides, aspectRatio, theme, lang, template, presentationMode = false, selectedIndex, onSelectIndex }, ref) => {
     const l = labels[lang];
     const [busyKey, setBusyKey] = useState<string | null>(null);
     const [zipBusy, setZipBusy] = useState(false);
@@ -97,7 +101,11 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
     };
     const getNode = (idx: number) => refsMap.current.get(idx) || null;
 
-    useImperativeHandle(ref, () => ({ refresh: () => {} }));
+    useImperativeHandle(ref, () => ({
+      refresh: () => {},
+      downloadSlide: (idx: number, format: 'png' | 'jpg' = 'png') => handleDownload(idx, format),
+      downloadAllZip: () => handleDownloadAllZip(),
+    }));
 
     const handleDownload = async (slideIdx: number, format: 'png' | 'jpg') => {
       const node = getNode(slideIdx);
@@ -300,7 +308,14 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
               : undefined;
             return (
               <div key={slideIdx} className="group relative">
-                <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border shadow-sm transition-all hover:shadow-lg hover:border-primary/40">
+                <div
+                  onClick={() => onSelectIndex?.(slideIdx)}
+                  className={`relative rounded-xl overflow-hidden bg-muted/30 border-2 shadow-sm transition-all hover:shadow-lg cursor-pointer ${
+                    selectedIndex === slideIdx
+                      ? 'border-primary ring-2 ring-primary/30'
+                      : 'border-border hover:border-primary/40'
+                  }`}
+                >
                   <SlideCanvas
                     ref={setRef(slideIdx)}
                     slide={slide}
