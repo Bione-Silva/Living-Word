@@ -36,7 +36,6 @@ import HelpArticlePage from "./pages/HelpArticlePage";
 import ExposStudioPage from "./pages/ExposStudioPage";
 import Workspaces from "./pages/Workspaces";
 import SocialStudio from "./pages/SocialStudio";
-import ConteudoSocial from "./pages/ConteudoSocial";
 import BibleReader from "./pages/BibleReader";
 import Pricing from "./pages/Pricing";
 import Onboarding from "./pages/Onboarding";
@@ -156,7 +155,6 @@ const App = () => (
                   <Route path="/biblioteca" element={<Biblioteca />} />
                   <Route path="/workspaces" element={<Workspaces />} />
                   <Route path="/social-studio" element={<SocialStudio />} />
-                  <Route path="/conteudo-social" element={<ConteudoSocial />} />
                   <Route path="/bible" element={<BibleReader />} />
                   <Route path="/calendario" element={<Calendario />} />
                   <Route path="/configuracoes" element={<Configuracoes />} />
