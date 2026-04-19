@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { BookOpen, Download, Loader2, X, StickyNote, Save, FolderOpen, Sparkles, Globe, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Download, Loader2, X, StickyNote, Save, FolderOpen, Sparkles, Globe, CheckCircle2, Share2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
+import { openWhatsAppShare } from '@/lib/whatsapp';
 
 type ImageStyle = 'watercolor' | 'oil' | 'minimalist' | 'photographic';
 
@@ -77,7 +78,7 @@ function getBodyImages(item: any): string[] {
 export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: ArticleReaderModalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [exporting, setExporting] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState('');
@@ -308,6 +309,23 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
                 title={tx('Anotações do Pregador', 'Preacher Notes', 'Notas del Predicador')}
               >
                 <StickyNote className="h-5 w-5" />
+              </button>
+            )}
+            {isBlogArticle && isPublished && item.id && profile?.blog_handle && (
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/blog/${profile.blog_handle}/${item.id}`;
+                  const text = tx(
+                    `📖 *${liveTitle || item.title}*\n\nLeia o artigo:\n${url}`,
+                    `📖 *${liveTitle || item.title}*\n\nRead the article:\n${url}`,
+                    `📖 *${liveTitle || item.title}*\n\nLee el artículo:\n${url}`,
+                  );
+                  openWhatsAppShare(text);
+                }}
+                className="rounded-full p-2 transition-colors text-foreground/80 hover:text-foreground hover:bg-foreground/10"
+                title={tx('Compartilhar no WhatsApp', 'Share on WhatsApp', 'Compartir en WhatsApp')}
+              >
+                <Share2 className="h-5 w-5" />
               </button>
             )}
             <button

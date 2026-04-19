@@ -8,10 +8,11 @@ import type { AspectRatio } from './AspectRatioSelector';
 import type { ThemeConfig } from './ThemeCustomizer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Download, Image as ImageIcon, FileImage, Loader2, Archive, Presentation, Sparkles } from 'lucide-react';
+import { Download, Image as ImageIcon, FileImage, Loader2, Archive, Presentation, Sparkles, Share2 } from 'lucide-react';
 import { captureNodeAsPng, compressToJpeg } from './export-utils';
 import { toast } from 'sonner';
 import { DownloadSuccessDialog } from '@/components/DownloadSuccessDialog';
+import { openWhatsAppShare } from '@/lib/whatsapp';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -26,6 +27,9 @@ const labels = {
     jpg: 'JPG',
     slides: 'slides',
     slide: 'slide',
+    whatsapp: 'WhatsApp',
+    sharingError: 'Não foi possível compartilhar.',
+    shareCaption: 'Confira essa arte feita no Living Word ✨',
   },
   EN: {
     empty: 'Your artworks will appear here',
@@ -37,6 +41,9 @@ const labels = {
     jpg: 'JPG',
     slides: 'slides',
     slide: 'slide',
+    whatsapp: 'WhatsApp',
+    sharingError: 'Could not share.',
+    shareCaption: 'Check out this artwork made on Living Word ✨',
   },
   ES: {
     empty: 'Tus artes aparecerán aquí',
@@ -48,6 +55,9 @@ const labels = {
     jpg: 'JPG',
     slides: 'slides',
     slide: 'slide',
+    whatsapp: 'WhatsApp',
+    sharingError: 'No se pudo compartir.',
+    shareCaption: 'Mira este arte hecho en Living Word ✨',
   },
 };
 
@@ -114,6 +124,41 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
       } catch (err) {
         console.error(err);
         toast.error('Erro ao baixar');
+      } finally {
+        setBusyKey(null);
+      }
+    };
+
+    const handleShareWhatsApp = async (slideIdx: number) => {
+      const node = getNode(slideIdx);
+      if (!node) return;
+      setBusyKey(`${slideIdx}-share`);
+      try {
+        const pngDataUrl = await captureNodeAsPng(node);
+        const blob = await compressToJpeg(pngDataUrl, 1_500_000);
+        const fname = `living-word-${template}-${slideIdx + 1}.jpg`;
+        const file = new File([blob], fname, { type: 'image/jpeg' });
+
+        const nav: any = navigator;
+        if (nav.canShare && nav.canShare({ files: [file] })) {
+          await nav.share({
+            files: [file],
+            text: l.shareCaption,
+          });
+        } else {
+          // Fallback: download + open WhatsApp with caption
+          const link = document.createElement('a');
+          link.download = fname;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          URL.revokeObjectURL(link.href);
+          openWhatsAppShare(l.shareCaption);
+        }
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') {
+          console.error(err);
+          toast.error(l.sharingError);
+        }
       } finally {
         setBusyKey(null);
       }
@@ -290,6 +335,19 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
                           <FileImage className="h-3 w-3" />
                         )}
                         {l.jpg}
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleShareWhatsApp(slideIdx)}
+                        disabled={downloading}
+                        className="h-8 px-2.5 text-xs gap-1 shadow-lg bg-[#25D366] hover:bg-[#20BD5A] text-white"
+                      >
+                        {downloading && busyKey?.endsWith('share') ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Share2 className="h-3 w-3" />
+                        )}
+                        {l.whatsapp}
                       </Button>
                     </div>
                   </div>

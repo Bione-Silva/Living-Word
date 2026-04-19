@@ -64,7 +64,7 @@ export default function Calendario() {
   const [selectedMaterial, setSelectedMaterial] = useState('');
   const [selectedHour, setSelectedHour] = useState('09');
   const [selectedMinute, setSelectedMinute] = useState('00');
-  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
+  const [viewMode, setViewMode] = useState<'calendar' | 'list' | 'year'>('calendar');
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -92,9 +92,14 @@ export default function Calendario() {
     time: { PT: 'Horário', EN: 'Time', ES: 'Hora' },
     upcoming: { PT: 'Próximas publicações', EN: 'Upcoming publications', ES: 'Próximas publicaciones' },
     noItems: { PT: 'Nenhuma publicação neste mês', EN: 'No publications this month', ES: 'Sin publicaciones este mes' },
-    calendarView: { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' },
+    calendarView: { PT: 'Mês', EN: 'Month', ES: 'Mes' },
     listView: { PT: 'Lista', EN: 'List', ES: 'Lista' },
+    yearView: { PT: 'Ano', EN: 'Year', ES: 'Año' },
     remove: { PT: 'Remover', EN: 'Remove', ES: 'Eliminar' },
+    yearTitle: { PT: 'Planejamento anual', EN: 'Annual planning', ES: 'Planificación anual' },
+    yearHint: { PT: 'Clique em qualquer mês para ver o detalhe.', EN: 'Click any month to see the details.', ES: 'Haz clic en cualquier mes para ver el detalle.' },
+    items: { PT: 'publicações', EN: 'publications', ES: 'publicaciones' },
+    item: { PT: 'publicação', EN: 'publication', ES: 'publicación' },
   };
 
   const tt = (key: keyof typeof i18n) => i18n[key][lang as 'PT' | 'EN' | 'ES'] || i18n[key].PT;
@@ -159,6 +164,26 @@ export default function Calendario() {
         return da - db;
       });
   }, [queueItems, year, month]);
+
+  // Aggregate items per month for the annual view
+  const monthAggregates = useMemo(() => {
+    const map: Record<number, { total: number; published: number; scheduled: number; items: QueueItem[] }> = {};
+    for (let m = 0; m < 12; m++) {
+      map[m] = { total: 0, published: 0, scheduled: 0, items: [] };
+    }
+    queueItems.forEach((item) => {
+      const dateStr = item.scheduled_at || item.published_at;
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (d.getFullYear() !== year) return;
+      const m = d.getMonth();
+      map[m].total += 1;
+      if (item.status === 'published') map[m].published += 1;
+      else if (item.status === 'scheduled') map[m].scheduled += 1;
+      map[m].items.push(item);
+    });
+    return map;
+  }, [queueItems, year]);
 
   const scheduleMutation = useMutation({
     mutationFn: async ({ materialId, day, hour, minute }: { materialId: string; day: number; hour: number; minute: number }) => {
@@ -267,6 +292,15 @@ export default function Calendario() {
                 <List className="h-3.5 w-3.5" />
                 {tt('listView')}
               </button>
+              <button
+                onClick={() => setViewMode('year')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  viewMode === 'year' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <CalendarIcon className="h-3.5 w-3.5" />
+                {tt('yearView')}
+              </button>
             </div>
             <div className="flex gap-1.5">
               <Badge variant="outline" className="gap-1 text-[10px]">
@@ -281,29 +315,90 @@ export default function Calendario() {
           </div>
         </div>
 
-        {/* Month Navigation */}
+        {/* Month/Year Navigation */}
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <Button variant="ghost" size="icon" onClick={prevMonth}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => viewMode === 'year' ? setCurrentDate(new Date(year - 1, 0, 1)) : prevMonth()}
+              >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <div className="flex items-center gap-3">
                 <CardTitle className="font-display text-lg sm:text-xl">
-                  {monthNames[lang]?.[month] || monthNames.PT[month]} {year}
+                  {viewMode === 'year' ? year : `${monthNames[lang]?.[month] || monthNames.PT[month]} ${year}`}
                 </CardTitle>
                 <Button variant="outline" size="sm" className="text-xs h-7" onClick={goToday}>
                   {lang === 'PT' ? 'Hoje' : lang === 'EN' ? 'Today' : 'Hoy'}
                 </Button>
               </div>
-              <Button variant="ghost" size="icon" onClick={nextMonth}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => viewMode === 'year' ? setCurrentDate(new Date(year + 1, 0, 1)) : nextMonth()}
+              >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </CardHeader>
 
           <CardContent className="px-2 sm:px-6">
-            {viewMode === 'calendar' ? (
+            {viewMode === 'year' ? (
+              /* YEAR VIEW — 12 mini month cards */
+              <div className="space-y-3">
+                <p className="text-xs text-muted-foreground px-1">{tt('yearHint')}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {Array.from({ length: 12 }, (_, m) => {
+                    const agg = monthAggregates[m];
+                    const isCurrentMonth = m === new Date().getMonth() && year === new Date().getFullYear();
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setCurrentDate(new Date(year, m, 1));
+                          setViewMode('calendar');
+                        }}
+                        className={`group flex flex-col items-start gap-2 p-3 rounded-xl border bg-card text-left transition-all hover:border-primary/40 hover:bg-secondary/40 ${
+                          isCurrentMonth ? 'border-primary/60 ring-1 ring-primary/30' : 'border-border/60'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <p className={`text-sm font-semibold ${isCurrentMonth ? 'text-primary' : 'text-foreground'}`}>
+                            {monthNames[lang]?.[m] || monthNames.PT[m]}
+                          </p>
+                          {agg.total > 0 && (
+                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+                              {agg.total} {agg.total === 1 ? tt('item') : tt('items')}
+                            </Badge>
+                          )}
+                        </div>
+                        {agg.total === 0 ? (
+                          <p className="text-[11px] text-muted-foreground/70">—</p>
+                        ) : (
+                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                            {agg.published > 0 && (
+                              <span className="flex items-center gap-1">
+                                <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                                {agg.published}
+                              </span>
+                            )}
+                            {agg.scheduled > 0 && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3 text-blue-500" />
+                                {agg.scheduled}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : viewMode === 'calendar' ? (
               <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
                 {(dayNames[lang] || dayNames.PT).map((d) => (
                   <div key={d} className="text-center text-[10px] sm:text-xs font-medium text-muted-foreground py-1.5 sm:py-2">{d}</div>
