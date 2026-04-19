@@ -78,7 +78,7 @@ function getBodyImages(item: any): string[] {
 export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: ArticleReaderModalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [exporting, setExporting] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState('');
