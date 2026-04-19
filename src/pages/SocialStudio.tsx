@@ -23,7 +23,6 @@ import {
 } from '@/components/social-studio/ImageModePicker';
 import { FormatPicker, getFormatById, findFormatByAspect, type FormatId } from '@/components/social-studio/FormatPicker';
 import { MultiFormatExporter, type MultiFormatExporterHandle } from '@/components/social-studio/MultiFormatExporter';
-import { VisualStyleChips, type VisualStyle } from '@/components/social-studio/VisualStyleChips';
 import { FinalActionsPanel } from '@/components/social-studio/FinalActionsPanel';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
