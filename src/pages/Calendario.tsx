@@ -345,7 +345,60 @@ export default function Calendario() {
           </CardHeader>
 
           <CardContent className="px-2 sm:px-6">
-            {viewMode === 'calendar' ? (
+            {viewMode === 'year' ? (
+              /* YEAR VIEW — 12 mini month cards */
+              <div className="space-y-3">
+                <p className="text-xs text-muted-foreground px-1">{tt('yearHint')}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {Array.from({ length: 12 }, (_, m) => {
+                    const agg = monthAggregates[m];
+                    const isCurrentMonth = m === new Date().getMonth() && year === new Date().getFullYear();
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setCurrentDate(new Date(year, m, 1));
+                          setViewMode('calendar');
+                        }}
+                        className={`group flex flex-col items-start gap-2 p-3 rounded-xl border bg-card text-left transition-all hover:border-primary/40 hover:bg-secondary/40 ${
+                          isCurrentMonth ? 'border-primary/60 ring-1 ring-primary/30' : 'border-border/60'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <p className={`text-sm font-semibold ${isCurrentMonth ? 'text-primary' : 'text-foreground'}`}>
+                            {monthNames[lang]?.[m] || monthNames.PT[m]}
+                          </p>
+                          {agg.total > 0 && (
+                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+                              {agg.total} {agg.total === 1 ? tt('item') : tt('items')}
+                            </Badge>
+                          )}
+                        </div>
+                        {agg.total === 0 ? (
+                          <p className="text-[11px] text-muted-foreground/70">—</p>
+                        ) : (
+                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                            {agg.published > 0 && (
+                              <span className="flex items-center gap-1">
+                                <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                                {agg.published}
+                              </span>
+                            )}
+                            {agg.scheduled > 0 && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3 text-blue-500" />
+                                {agg.scheduled}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : viewMode === 'calendar' ? (
               <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
                 {(dayNames[lang] || dayNames.PT).map((d) => (
                   <div key={d} className="text-center text-[10px] sm:text-xs font-medium text-muted-foreground py-1.5 sm:py-2">{d}</div>
