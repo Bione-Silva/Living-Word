@@ -182,7 +182,7 @@ export default function SocialStudio() {
   const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
   const [imageMode, setImageMode] = useState<ImageMode>('biblica');
   const [generatedCaption, setGeneratedCaption] = useState<string>('');
-  const [openModal, setOpenModal] = useState<null | 'palette' | 'scenes' | 'templates'>(null);
+  
 
   const variationGridRef = useRef<VariationGridHandle | null>(null);
   const exporterRef = useRef<MultiFormatExporterHandle | null>(null);
