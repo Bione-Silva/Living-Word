@@ -98,9 +98,27 @@ export function NotificationCenter() {
       </CardHeader>
       <CardContent>
         {notifications.length === 0 ? (
-          <p className="text-xs text-muted-foreground text-center py-3">
-            {labels.noNotifications[lang]}
-          </p>
+          <Link
+            to="/sermoes"
+            className="block rounded-lg border border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-3"
+          >
+            <div className="flex items-start gap-3">
+              <div className="h-9 w-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+                <Mic className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-foreground leading-snug">
+                  📅 {labels.emptyTitle[lang]}
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                  {labels.emptySub[lang]}
+                </p>
+                <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-primary">
+                  {labels.emptyCta[lang]} <ArrowRight className="h-3 w-3" />
+                </span>
+              </div>
+            </div>
+          </Link>
         ) : (
           <div className="space-y-2">
             {notifications.slice(0, 5).map((n) => (
