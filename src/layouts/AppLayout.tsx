@@ -889,6 +889,21 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
+          {/* 2.7b — Conteúdo Social */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Conteúdo Social' : lang === 'EN' ? 'Social Content' : 'Contenido Social'}>
+            <Link
+              to="/conteudo-social"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/conteudo-social'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Share2 className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Conteúdo Social' : lang === 'EN' ? 'Social Content' : 'Contenido Social')}
+            </Link>
+          </SidebarTooltipWrap>
+
           {/* 2.8 — Palavra Amiga */}
           <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Palavra Amiga' : lang === 'EN' ? 'Friendly Word' : 'Palabra Amiga'}>
             <Link
