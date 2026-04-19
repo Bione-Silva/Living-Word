@@ -316,6 +316,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
                       : 'border-border hover:border-primary/40'
                   }`}
                 >
+                  <SlideCanvas
                     ref={setRef(slideIdx)}
                     slide={slide}
                     aspectRatio={aspectRatio}
