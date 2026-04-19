@@ -165,6 +165,26 @@ export default function Calendario() {
       });
   }, [queueItems, year, month]);
 
+  // Aggregate items per month for the annual view
+  const monthAggregates = useMemo(() => {
+    const map: Record<number, { total: number; published: number; scheduled: number; items: QueueItem[] }> = {};
+    for (let m = 0; m < 12; m++) {
+      map[m] = { total: 0, published: 0, scheduled: 0, items: [] };
+    }
+    queueItems.forEach((item) => {
+      const dateStr = item.scheduled_at || item.published_at;
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (d.getFullYear() !== year) return;
+      const m = d.getMonth();
+      map[m].total += 1;
+      if (item.status === 'published') map[m].published += 1;
+      else if (item.status === 'scheduled') map[m].scheduled += 1;
+      map[m].items.push(item);
+    });
+    return map;
+  }, [queueItems, year]);
+
   const scheduleMutation = useMutation({
     mutationFn: async ({ materialId, day, hour, minute }: { materialId: string; day: number; hour: number; minute: number }) => {
       const scheduledAt = new Date(year, month, day, hour, minute, 0).toISOString();
