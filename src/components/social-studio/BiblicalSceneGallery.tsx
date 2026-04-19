@@ -87,9 +87,15 @@ interface Props {
   lang: L;
   activeId?: string | null;
   searchTerm?: string; // optional search/filter (e.g. verse text or theme)
+  /**
+   * Visual mode chosen in the Style step. Sent to the edge function so the
+   * generated image actually matches what the user picked (Moderna Natural
+   * must NOT come back as a biblical painting).
+   */
+  visualMode?: 'biblica' | 'moderna' | 'editorial' | 'simbolica';
 }
 
-export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm }: Props) {
+export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm, visualMode = 'biblica' }: Props) {
   const l = labels[lang];
   const [scenes, setScenes] = useState<SceneRow[]>([]);
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
@@ -162,7 +168,7 @@ export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm }: Pro
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
-        body: { mode: 'generate', prompt: customPrompt.trim() },
+        body: { mode: 'generate', prompt: customPrompt.trim(), visualMode },
       });
       if (error) throw error;
       if (data?.error === 'quota_exceeded') {
