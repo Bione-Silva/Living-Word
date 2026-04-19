@@ -118,6 +118,7 @@ export default function SocialStudio() {
   const hasAccess = userPlan !== 'free';
 
   const [activeTab, setActiveTab] = useState<string>('studio');
+  const [activePanel, setActivePanel] = useState<string>('format');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('4:5');
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
   const [slides, setSlides] = useState<SlideData[]>([]);
