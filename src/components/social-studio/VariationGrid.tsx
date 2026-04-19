@@ -336,6 +336,19 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
                         )}
                         {l.jpg}
                       </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleShareWhatsApp(slideIdx)}
+                        disabled={downloading}
+                        className="h-8 px-2.5 text-xs gap-1 shadow-lg bg-[#25D366] hover:bg-[#20BD5A] text-white"
+                      >
+                        {downloading && busyKey?.endsWith('share') ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Share2 className="h-3 w-3" />
+                        )}
+                        {l.whatsapp}
+                      </Button>
                     </div>
                   </div>
                 </div>
