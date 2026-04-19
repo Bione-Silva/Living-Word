@@ -79,50 +79,83 @@ export function MobileInstallBanner() {
   const l = lang as L;
 
   const [showIosSheet, setShowIosSheet] = useState(false);
-  const [hidden, setHidden] = useState<boolean>(() => {
+
+  // Determine if banner is currently suppressed by a recent dismissal,
+  // and which copy variant we should show ("initial" or "soft_reengagement").
+  const { hidden: initiallyHidden, variant: initialVariant } = (() => {
     try {
       const ts = localStorage.getItem(STORAGE_KEY);
-      if (!ts) return false;
+      if (!ts) return { hidden: false, variant: 'initial' as InstallVariant };
       const dismissedAt = Number(ts);
-      const now = Date.now();
-      return now - dismissedAt < SUPPRESS_DAYS * 24 * 60 * 60 * 1000;
+      const ageMs = Date.now() - dismissedAt;
+      if (ageMs < SUPPRESS_DAYS * 24 * 60 * 60 * 1000) {
+        return { hidden: true, variant: 'initial' as InstallVariant };
+      }
+      if (ageMs >= REENGAGE_AFTER_DAYS * 24 * 60 * 60 * 1000) {
+        return { hidden: false, variant: 'soft_reengagement' as InstallVariant };
+      }
+      // Between SUPPRESS_DAYS and REENGAGE_AFTER_DAYS: stay quiet.
+      return { hidden: true, variant: 'initial' as InstallVariant };
     } catch {
-      return false;
+      return { hidden: false, variant: 'initial' as InstallVariant };
     }
-  });
+  })();
 
-  // 7-day welcome window: only show banner during user's first week.
+  const [hidden, setHidden] = useState<boolean>(initiallyHidden);
+  const [variant] = useState<InstallVariant>(initialVariant);
+
+  // 7-day welcome window: only gates the INITIAL banner. Soft re-engagement
+  // intentionally bypasses this so we can win back users who declined early on.
   const firstVisit = getOrSetFirstVisit();
   const withinWelcomeWindow = Date.now() - firstVisit < SHOW_WINDOW_DAYS * 24 * 60 * 60 * 1000;
 
-  if (isStandalone || hidden || !withinWelcomeWindow) return null;
-
   const ios = isIos();
-  // Show on iOS mobile (manual instructions) OR when beforeinstallprompt is available.
-  if (!isInstallable && !(ios && isMobile)) return null;
+  const canShow =
+    !isStandalone &&
+    !hidden &&
+    (isInstallable || (ios && isMobile)) &&
+    (variant === 'soft_reengagement' || withinWelcomeWindow);
+
+  // Fire "shown" once per mount when the banner becomes visible.
+  const trackedShownRef = useRef(false);
+  useEffect(() => {
+    if (canShow && !trackedShownRef.current) {
+      trackedShownRef.current = true;
+      void trackInstallEvent('shown', variant);
+    }
+  }, [canShow, variant]);
+
+  if (!canShow) return null;
+
+  const copy = variant === 'soft_reengagement' ? COPY.soft : COPY.initial;
 
   const handleDismiss = () => {
     setHidden(true);
     try {
       localStorage.setItem(STORAGE_KEY, String(Date.now()));
     } catch {}
+    void trackInstallEvent('dismissed', variant);
     dismiss();
   };
 
   const handleInstall = async () => {
+    void trackInstallEvent('clicked', variant);
     if (ios) {
       setShowIosSheet(true);
       return;
     }
     const accepted = await install();
-    if (accepted) handleDismiss();
+    if (accepted) {
+      void trackInstallEvent('installed', variant);
+      handleDismiss();
+    }
   };
 
   return (
     <div
       className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-primary/5 to-accent/10 shadow-sm animate-in fade-in slide-in-from-top-2 duration-500"
       role="region"
-      aria-label={COPY.title[l]}
+      aria-label={copy.title[l]}
     >
       <button
         onClick={handleDismiss}
@@ -138,8 +171,8 @@ export function MobileInstallBanner() {
             <Download className="h-5 w-5 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-foreground leading-tight">{COPY.title[l]}</p>
-            <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{COPY.desc[l]}</p>
+            <p className="text-sm font-semibold text-foreground leading-tight">{copy.title[l]}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{copy.desc[l]}</p>
           </div>
         </div>
 
@@ -165,3 +198,4 @@ export function MobileInstallBanner() {
     </div>
   );
 }
+
