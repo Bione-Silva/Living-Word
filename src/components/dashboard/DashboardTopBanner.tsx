@@ -76,7 +76,15 @@ export function DashboardTopBanner() {
   }
 
   // Priority 2: push opt-in
-  if (pushSupported && !subscribed && permission !== 'denied' && !pushDismissed) {
+  // Hide as soon as the user has granted permission OR is already subscribed
+  // (avoids the banner sticking around after clicking "Ativar").
+  if (
+    pushSupported &&
+    !subscribed &&
+    permission !== 'granted' &&
+    permission !== 'denied' &&
+    !pushDismissed
+  ) {
     return (
       <>
         <div className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent overflow-hidden">
