@@ -34,8 +34,8 @@ export default defineConfig(({ mode }) => ({
         description: "Plataforma cristã trilíngue para pastores e líderes evangélicos.",
         start_url: "/dashboard",
         display: "standalone",
-        background_color: "#0F0A18",
-        theme_color: "#0F0A18",
+        background_color: "#6D28D9",
+        theme_color: "#6D28D9",
         orientation: "portrait-primary",
         icons: [
           {
