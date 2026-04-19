@@ -65,58 +65,58 @@ export default function MentesBrilhantes() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       {/* ── Hero Header (Clean/Light) ── */}
-      <div className="relative rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-5 sm:p-10 overflow-hidden">
+      <div className="relative rounded-2xl border border-[hsl(270,43%,92%)] bg-white p-4 sm:p-10 overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(270,35%,78%)] to-transparent" />
 
         <div className="relative z-10">
-          <div className="flex items-start gap-4 mb-5">
-            <div className="w-12 h-12 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center shrink-0 border border-[hsl(270,43%,92%)]">
-              <Brain className="h-6 w-6 text-[hsl(257,61%,32%)]" />
+          <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[hsl(252,100%,99%)] flex items-center justify-center shrink-0 border border-[hsl(270,43%,92%)]">
+              <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-[hsl(257,61%,32%)]" />
             </div>
-            <div>
-              <h1 className="font-display text-2xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] flex items-center gap-3 tracking-tight">
-                {pageTitle[lang]}
-                <Sparkles className="h-5 w-5 text-[hsl(263,70%,50%)]" />
+            <div className="min-w-0">
+              <h1 className="font-display text-xl sm:text-4xl font-bold text-[hsl(220,15%,15%)] flex items-center gap-2 sm:gap-3 tracking-tight leading-tight">
+                <span className="truncate">{pageTitle[lang]}</span>
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(263,70%,50%)] shrink-0" />
               </h1>
-              <p className="text-sm text-[hsl(220,10%,50%)] mt-1.5 max-w-2xl leading-relaxed">
+              <p className="text-xs sm:text-sm text-[hsl(220,10%,50%)] mt-1 sm:mt-1.5 max-w-2xl leading-relaxed">
                 {pageSubtitle[lang]}
               </p>
             </div>
           </div>
 
-          {/* Stats bar */}
-          <div className="flex flex-wrap items-center gap-6 mt-5 pt-5 border-t border-[hsl(270,43%,92%)]">
-            <div className="flex items-center gap-2">
+          {/* Stats — grid em mobile, flex em desktop */}
+          <div className="grid grid-cols-3 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-6 mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-[hsl(270,43%,92%)]">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
               <Cpu className="h-4 w-4 text-[hsl(263,70%,50%)]" />
               <div>
-                <p className="text-lg font-bold text-[hsl(220,15%,20%)] font-mono">{totalTokens}</p>
-                <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Context Tokens' : 'Tokens de Contexto'}</p>
+                <p className="text-base sm:text-lg font-bold text-[hsl(220,15%,20%)] font-mono leading-none">{totalTokens}</p>
+                <p className="text-[9px] sm:text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider mt-1">{lang === 'EN' ? 'Tokens' : 'Tokens'}</p>
               </div>
             </div>
-            <div className="w-px h-8 bg-[hsl(270,43%,92%)]" />
-            <div className="flex items-center gap-2">
+            <div className="hidden sm:block w-px h-8 bg-[hsl(270,43%,92%)]" />
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
               <Database className="h-4 w-4 text-[hsl(263,70%,50%)]" />
               <div>
-                <p className="text-lg font-bold text-[hsl(220,15%,20%)] font-mono">{totalPages}</p>
-                <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Pages Processed' : 'Páginas Processadas'}</p>
+                <p className="text-base sm:text-lg font-bold text-[hsl(220,15%,20%)] font-mono leading-none">{totalPages}</p>
+                <p className="text-[9px] sm:text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider mt-1">{lang === 'EN' ? 'Pages' : 'Páginas'}</p>
               </div>
             </div>
-            <div className="w-px h-8 bg-[hsl(270,43%,92%)]" />
-            <div className="flex items-center gap-2">
+            <div className="hidden sm:block w-px h-8 bg-[hsl(270,43%,92%)]" />
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
               <Brain className="h-4 w-4 text-emerald-500" />
               <div>
-                <p className="text-lg font-bold text-emerald-600 font-mono">{visibleMinds.length}</p>
-                <p className="text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider">{lang === 'EN' ? 'Active Agents' : 'Agentes Ativos'}</p>
+                <p className="text-base sm:text-lg font-bold text-emerald-600 font-mono leading-none">{visibleMinds.length}</p>
+                <p className="text-[9px] sm:text-[10px] text-[hsl(220,10%,55%)] uppercase tracking-wider mt-1">{lang === 'EN' ? 'Active' : 'Ativos'}</p>
               </div>
             </div>
             {visibleMinds.length >= 2 && (
               <>
-                <div className="w-px h-8 bg-[hsl(270,43%,92%)]" />
+                <div className="hidden sm:block w-px h-8 bg-[hsl(270,43%,92%)]" />
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowCompare(true)}
-                  className="gap-2 border-[hsl(270,43%,92%)] text-[hsl(257,61%,32%)] hover:bg-[hsl(252,100%,99%)]"
+                  className="col-span-3 sm:col-auto gap-2 border-[hsl(270,43%,92%)] text-[hsl(257,61%,32%)] hover:bg-[hsl(252,100%,99%)] mt-2 sm:mt-0"
                 >
                   <ArrowLeftRight className="h-4 w-4" />
                   {lang === 'EN' ? 'Compare Minds' : lang === 'ES' ? 'Comparar Mentes' : 'Comparar Mentes'}
