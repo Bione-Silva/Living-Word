@@ -762,31 +762,73 @@ export default function SocialStudio() {
             </Card>
           </div>
 
-          {/* ── Bottom row: Quick-access tools (sempre visíveis) ── */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {[
-              { id: 'palette' as const, icon: BookOpen, title: h.paletteCard, desc: h.paletteCardSub },
-              { id: 'scenes' as const, icon: Mountain, title: h.scenesCard, desc: h.scenesCardSub },
-              { id: 'templates' as const, icon: LayoutTemplate, title: h.templatesCard, desc: h.templatesCardSub },
-            ].map((c) => {
-              const Icon = c.icon;
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setOpenModal(c.id)}
-                  className="flex items-start gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left hover:border-primary/40 hover:shadow-sm transition-all"
-                >
-                  <div className="h-9 w-9 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                    <Icon className="h-4 w-4" />
+          {/* ── Bottom row: 3 colunas inline (sempre visíveis, sem popup) ──
+               Paleta de Versículos · Cenas · Templates aplicam ao vivo no preview. */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-card border-border">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <BookOpen className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-sm font-bold text-foreground leading-tight">{c.title}</div>
-                    <div className="text-[11px] text-muted-foreground leading-snug mt-0.5">{c.desc}</div>
+                    <div className="text-sm font-bold text-foreground leading-tight">{h.paletteCard}</div>
+                    <div className="text-[11px] text-muted-foreground leading-snug">{h.paletteCardSub}</div>
                   </div>
-                </button>
-              );
-            })}
+                </div>
+                <div className="max-h-[320px] overflow-y-auto pr-1">
+                  <VersePalettePicker
+                    value={activePaletteId}
+                    onChange={handlePaletteSelect}
+                    lang={lang}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-border">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <Mountain className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-foreground leading-tight">{h.scenesCard}</div>
+                    <div className="text-[11px] text-muted-foreground leading-snug">{h.scenesCardSub}</div>
+                  </div>
+                </div>
+                <div className="max-h-[320px] overflow-y-auto pr-1">
+                  <BiblicalSceneGallery
+                    onPick={handleSceneSelect}
+                    lang={lang}
+                    activeId={activeSceneId}
+                    searchTerm={verseContext?.book || verseContext?.text}
+                    visualMode={imageMode}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-border">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <LayoutTemplate className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-foreground leading-tight">{h.templatesCard}</div>
+                    <div className="text-[11px] text-muted-foreground leading-snug">{h.templatesCardSub}</div>
+                  </div>
+                </div>
+                <div className="max-h-[320px] overflow-y-auto pr-1">
+                  <TemplatePicker
+                    value={template}
+                    onChange={setTemplate}
+                    lang={lang}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
@@ -794,51 +836,6 @@ export default function SocialStudio() {
           <ArtGallery lang={lang} refreshTrigger={0} />
         </TabsContent>
       </Tabs>
-
-      {/* ── Quick-access side panels (Paleta / Cenas / Templates) ──
-           Non-modal: dock to the right column on desktop and to the bottom
-           on mobile so the user keeps SEEING the artwork while choosing. */}
-      <SidePanel
-        open={openModal === 'palette'}
-        onOpenChange={(v) => !v && setOpenModal(null)}
-        title={h.paletteCard}
-        description={h.paletteCardSub}
-      >
-        <VersePalettePicker
-          value={activePaletteId}
-          onChange={(p) => { handlePaletteSelect(p); setOpenModal(null); }}
-          lang={lang}
-        />
-      </SidePanel>
-
-      <SidePanel
-        open={openModal === 'scenes'}
-        onOpenChange={(v) => !v && setOpenModal(null)}
-        title={h.scenesCard}
-        description={h.scenesCardSub}
-        widthClassName="md:w-[480px]"
-      >
-        <BiblicalSceneGallery
-          onPick={(url, id) => { handleSceneSelect(url, id); setOpenModal(null); }}
-          lang={lang}
-          activeId={activeSceneId}
-          searchTerm={verseContext?.book || verseContext?.text}
-          visualMode={imageMode}
-        />
-      </SidePanel>
-
-      <SidePanel
-        open={openModal === 'templates'}
-        onOpenChange={(v) => !v && setOpenModal(null)}
-        title={h.templatesCard}
-        description={h.templatesCardSub}
-      >
-        <TemplatePicker
-          value={template}
-          onChange={(t) => { setTemplate(t); setOpenModal(null); }}
-          lang={lang}
-        />
-      </SidePanel>
 
       {/* ── Offscreen multi-format renderer (powers per-channel ZIP export) ── */}
       {slides.length > 0 && selectedFormats.length > 1 && (
