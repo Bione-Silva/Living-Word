@@ -40,8 +40,21 @@ export function DashboardTopBanner() {
   const { supported: pushSupported, subscribed, permission } = usePushNotifications();
   const [showPushModal, setShowPushModal] = useState(false);
   const [pushDismissed, setPushDismissed] = useState(() => {
-    try { return sessionStorage.getItem('lw_push_banner_dismissed') === '1'; } catch { return false; }
+    try {
+      return (
+        sessionStorage.getItem('lw_push_banner_dismissed') === '1' ||
+        localStorage.getItem('lw_push_banner_dismissed') === '1'
+      );
+    } catch { return false; }
   });
+
+  const persistDismiss = (permanent: boolean) => {
+    setPushDismissed(true);
+    try {
+      sessionStorage.setItem('lw_push_banner_dismissed', '1');
+      if (permanent) localStorage.setItem('lw_push_banner_dismissed', '1');
+    } catch {}
+  };
 
   // Priority 1: install banner if installable
   if (isInstallable) {
@@ -76,7 +89,15 @@ export function DashboardTopBanner() {
   }
 
   // Priority 2: push opt-in
-  if (pushSupported && !subscribed && permission !== 'denied' && !pushDismissed) {
+  // Hide as soon as the user has granted permission OR is already subscribed
+  // (avoids the banner sticking around after clicking "Ativar").
+  if (
+    pushSupported &&
+    !subscribed &&
+    permission !== 'granted' &&
+    permission !== 'denied' &&
+    !pushDismissed
+  ) {
     return (
       <>
         <div className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent overflow-hidden">
@@ -97,16 +118,10 @@ export function DashboardTopBanner() {
               <PushPermissionModal
                 open={showPushModal}
                 onOpenChange={setShowPushModal}
-                onSubscribed={() => {
-                  setPushDismissed(true);
-                  try { sessionStorage.setItem('lw_push_banner_dismissed', '1'); } catch {}
-                }}
+                onSubscribed={() => persistDismiss(true)}
               />
               <button
-                onClick={() => {
-                  setPushDismissed(true);
-                  try { sessionStorage.setItem('lw_push_banner_dismissed', '1'); } catch {}
-                }}
+                onClick={() => persistDismiss(false)}
                 className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                 aria-label="dismiss"
               >
