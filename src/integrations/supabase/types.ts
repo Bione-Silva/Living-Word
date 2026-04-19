@@ -1014,6 +1014,8 @@ export type Database = {
           plan: string
           preaching_style: string | null
           profile_completed: boolean | null
+          pulpit_compare_version_2: string | null
+          pulpit_compare_version_3: string | null
           push_enabled: boolean
           push_hour: number
           push_timezone: string
@@ -1056,6 +1058,8 @@ export type Database = {
           plan?: string
           preaching_style?: string | null
           profile_completed?: boolean | null
+          pulpit_compare_version_2?: string | null
+          pulpit_compare_version_3?: string | null
           push_enabled?: boolean
           push_hour?: number
           push_timezone?: string
@@ -1098,6 +1102,8 @@ export type Database = {
           plan?: string
           preaching_style?: string | null
           profile_completed?: boolean | null
+          pulpit_compare_version_2?: string | null
+          pulpit_compare_version_3?: string | null
           push_enabled?: boolean
           push_hour?: number
           push_timezone?: string
