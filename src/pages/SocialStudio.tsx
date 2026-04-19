@@ -493,8 +493,8 @@ export default function SocialStudio() {
             </div>
           </div>
 
-          {/* ── ESTRUTURA FIXA: Esquerda (controles da etapa) | Centro (preview persistente) | Direita (apoio) ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-[360px_minmax(0,1fr)_320px] gap-4">
+          {/* ── ESTRUTURA FIXA: Esquerda estreita | Centro grande (prioridade do preview) | Direita estreita ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_minmax(0,1fr)_180px] gap-3">
             {/* ═══ COLUNA ESQUERDA — controles da etapa ═══ */}
             <Card className="bg-card border-border min-w-0">
               <CardContent className="p-4 sm:p-5 space-y-4">
