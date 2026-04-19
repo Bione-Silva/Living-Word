@@ -406,6 +406,79 @@ export default function Configuracoes() {
                 </p>
               </div>
 
+              {/* Pulpit Mode — Compare versions */}
+              <div className="space-y-2 pt-4 border-t border-border">
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="font-semibold">
+                    {lang === 'PT' ? 'Comparar no Modo Púlpito' : lang === 'EN' ? 'Compare in Pulpit Mode' : 'Comparar en Modo Púlpito'}
+                  </Label>
+                  <Badge variant="secondary" className="text-[10px]">
+                    {lang === 'PT' ? 'Pregação' : lang === 'EN' ? 'Preaching' : 'Predicación'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {lang === 'PT'
+                    ? 'Quando o pregador tocar em um versículo no Modo Púlpito, abrimos um painel com a versão do sermão + estas duas versões para comparar.'
+                    : lang === 'EN'
+                    ? "When you tap a verse in Pulpit Mode, we'll open a panel with the sermon version + these two extra versions to compare."
+                    : 'Cuando el predicador toque un versículo en el Modo Púlpito, abriremos un panel con la versión del sermón + estas dos versiones para comparar.'}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  {([
+                    {
+                      key: 'pulpit_compare_version_2' as const,
+                      labelPT: 'Versão de comparação 2',
+                      labelEN: 'Compare version 2',
+                      labelES: 'Versión de comparación 2',
+                      defaultIdx: 0,
+                    },
+                    {
+                      key: 'pulpit_compare_version_3' as const,
+                      labelPT: 'Versão de comparação 3',
+                      labelEN: 'Compare version 3',
+                      labelES: 'Versión de comparación 3',
+                      defaultIdx: 1,
+                    },
+                  ]).map(({ key, labelPT, labelEN, labelES, defaultIdx }) => {
+                    const userLangKey = (lang as 'PT' | 'EN' | 'ES') || 'PT';
+                    const fb = DEFAULT_COMPARE_VERSIONS[userLangKey][defaultIdx];
+                    const current =
+                      (profile as Record<string, unknown> | null)?.[key] as string | null | undefined;
+                    return (
+                      <div key={key} className="space-y-1.5">
+                        <Label className="text-xs">
+                          {lang === 'PT' ? labelPT : lang === 'EN' ? labelEN : labelES}
+                        </Label>
+                        <Select
+                          value={current || fb}
+                          onValueChange={async (value) => {
+                            if (!profile?.id) return;
+                            try {
+                              const { error } = await supabase
+                                .from('profiles')
+                                .update({ [key]: value, updated_at: new Date().toISOString() })
+                                .eq('id', profile.id);
+                              if (error) throw error;
+                              await refreshProfile();
+                              toast.success(lang === 'PT' ? 'Versão de comparação salva!' : lang === 'EN' ? 'Compare version saved!' : '¡Versión de comparación guardada!');
+                            } catch {
+                              toast.error(lb('save_error'));
+                            }
+                          }}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {BIBLE_VERSIONS.map((bv) => (
+                              <SelectItem key={bv.code} value={bv.code}>{bv.full}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Doctrine */}
               <div className="space-y-2">
                 <Label>{t('settings.doctrine_label')}</Label>

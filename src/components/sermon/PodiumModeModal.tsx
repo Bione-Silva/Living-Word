@@ -462,8 +462,12 @@ export function PodiumModeModal({
   lang = 'PT',
 }: PodiumModeModalProps) {
   /* ─── Tema do Púlpito (independente do tema global) ─── */
+  const { profile, refreshProfile } = useAuth();
   const [theme, setTheme] = useState<PodiumTheme>('dark');
   const isDark = theme === 'dark';
+
+  /* ─── Comparar versões bíblicas ─── */
+  const [compareRef, setCompareRef] = useState<string | null>(null);
 
   /* ─── Tipografia ─── */
   const [fontPx, setFontPx] = useState(28);
@@ -1633,7 +1637,7 @@ export function PodiumModeModal({
                         style={{ fontSize: `${Math.min(fontPx, 22)}px`, lineHeight: 1.7 }}
                       />
                     ) : (
-                      <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} theme={theme} tone={c.tone} />
+                      <PodiumMarkdown text={c.body} isQuote={c.isQuote} fontPx={fontPx} theme={theme} tone={c.tone} onVerseClick={(ref) => setCompareRef(ref)} />
                     )}
                   </div>
                 </section>
@@ -1742,6 +1746,31 @@ export function PodiumModeModal({
           )}
         </div>
       </SlidePanel>
+
+      {/* Comparar versões bíblicas — sheet (mobile) / drawer (desktop) */}
+      <BibleCompareSheet
+        open={!!compareRef}
+        onClose={() => setCompareRef(null)}
+        reference={compareRef || ''}
+        primaryVersion={profile?.bible_version || 'ARA'}
+        defaultCompareVersion2={(profile as { pulpit_compare_version_2?: string | null } | null)?.pulpit_compare_version_2 ?? null}
+        defaultCompareVersion3={(profile as { pulpit_compare_version_3?: string | null } | null)?.pulpit_compare_version_3 ?? null}
+        lang={lang}
+        theme={theme}
+        onSaveDefaults={async (v2, v3) => {
+          if (!profile?.id) return;
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              pulpit_compare_version_2: v2,
+              pulpit_compare_version_3: v3,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', profile.id);
+          if (error) throw error;
+          await refreshProfile?.();
+        }}
+      />
     </div>,
     document.body,
   );
