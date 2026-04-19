@@ -196,6 +196,11 @@ export function FinalActionsPanel({
           </Button>
         )}
       </div>
+
+      <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
+        <div className="text-[11px] font-bold text-foreground leading-tight">{t.zipNoticeTitle}</div>
+        <p className="text-[11px] text-muted-foreground leading-snug mt-1">{t.zipNoticeBody}</p>
+      </div>
     </div>
   );
 }
