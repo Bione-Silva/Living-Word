@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Sparkles, Wand2, Lock, Crown, Database, Check, Images, RefreshCcw } from 'lucide-react';
+import { Loader2, Sparkles, Wand2, Lock, Crown, Database, Check, Images, RefreshCcw, Layers, ImageIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
