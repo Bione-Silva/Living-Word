@@ -206,10 +206,22 @@ export function RecentGenerations() {
           const Icon = style.icon;
           const label = typeLabels[m.type]?.[lang] || m.type;
 
+          // Route to the right editor based on material type
+          const isSermon = /^(sermon|pastoral)$/i.test(m.type);
+          const isArticle = /^(article|blog|blog_article)$/i.test(m.type);
+          const isStudy = /^(study|biblical_study|expos)$/i.test(m.type);
+          const to = isSermon
+            ? `/sermoes?materialId=${m.id}`
+            : isArticle
+              ? `/blog?article=${m.id}`
+              : isStudy
+                ? `/biblioteca?material=${m.id}`
+                : `/biblioteca?material=${m.id}`;
+
           return (
             <Link
               key={m.id}
-              to={`/biblioteca?material=${m.id}`}
+              to={to}
               className="group rounded-xl p-3 flex items-center gap-3 bg-card border border-border hover:border-primary/30 hover:shadow-sm transition-all"
             >
               <span

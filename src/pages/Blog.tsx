@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { isFreePlan } from '@/lib/plan-normalization';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -17,7 +17,7 @@ import {
   Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload, Loader2, ImagePlus,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -46,6 +46,7 @@ export default function Blog() {
   const { profile, user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const isFree = isFreePlan(profile?.plan);
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
@@ -139,6 +140,19 @@ export default function Blog() {
     setEditContent(article.content);
     setPreviewMode(false);
   };
+
+  // Auto-open editor when arriving with ?article={id}
+  useEffect(() => {
+    const target = searchParams.get('article');
+    if (!target || !articles?.length) return;
+    const found = articles.find(a => a.id === target);
+    if (found && (!editArticle || editArticle.id !== target)) {
+      openEditor(found);
+      const next = new URLSearchParams(searchParams);
+      next.delete('article');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, articles, editArticle, setSearchParams]);
 
   const handleSave = async () => {
     if (!editArticle) return;
