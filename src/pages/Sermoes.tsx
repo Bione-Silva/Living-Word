@@ -164,6 +164,42 @@ function buildSystemPrompt(
   parts.push(`- Write subtitles as PURE pastoral phrases. Example CORRECT: "### O Cinto da Verdade e a Couraça da Justiça". Example WRONG: "### 1. O Cinto da Verdade".`);
   parts.push(`- Do NOT write Roman numerals (I., II., III.) before subtitles either.`);
 
+  // ═══ MANDATORY EXEGETICAL DEPTH ═══
+  parts.push(`\n══════════════════════════════════════════════════════════`);
+  parts.push(`MANDATORY EXEGETICAL DEPTH — DO NOT SKIP ANY ITEM:`);
+  parts.push(`══════════════════════════════════════════════════════════`);
+  if (lang === 'PT') {
+    parts.push(`Antes de escrever, faça internamente este estudo e reflita os resultados no sermão:`);
+    parts.push(`1. CONTEXTO HISTÓRICO-CULTURAL: autor, destinatários, ocasião, pano de fundo cultural.`);
+    parts.push(`2. CONTEXTO LITERÁRIO: gênero da passagem, posição no livro, conexão com versículos vizinhos.`);
+    parts.push(`3. LÍNGUAS ORIGINAIS: identifique 2-3 termos-chave em grego/hebraico com transliteração e nota semântica curta (ex.: *agapē* (ἀγάπη) — amor sacrificial). Use-os naturalmente no texto, não como glossário solto.`);
+    parts.push(`4. TRADIÇÃO INTERPRETATIVA: mencione brevemente como reformadores ou comentaristas clássicos leem o texto, quando relevante.`);
+    parts.push(`5. ILUSTRAÇÕES: concretas, contemporâneas, ancoradas no texto. PROIBIDO: "diamante bruto", analogias esportivas genéricas, clichês.`);
+    parts.push(`6. REFERÊNCIAS CRUZADAS: pelo menos 2 por ponto, com explicação curta — nunca lista solta.`);
+    parts.push(`7. TRANSIÇÕES EXPLÍCITAS entre os pontos principais.`);
+    parts.push(`8. ORAÇÃO FINAL OBRIGATÓRIA na conclusão (4-8 frases).`);
+  } else if (lang === 'ES') {
+    parts.push(`Antes de escribir, haga internamente este estudio y refléjelo en el sermón:`);
+    parts.push(`1. CONTEXTO HISTÓRICO-CULTURAL: autor, destinatarios, ocasión, trasfondo.`);
+    parts.push(`2. CONTEXTO LITERARIO: género, posición en el libro, conexión con versículos vecinos.`);
+    parts.push(`3. LENGUAS ORIGINALES: 2-3 términos griego/hebreo con transliteración y nota semántica.`);
+    parts.push(`4. TRADICIÓN INTERPRETATIVA cuando sea relevante.`);
+    parts.push(`5. ILUSTRACIONES concretas y contemporáneas, sin clichés.`);
+    parts.push(`6. REFERENCIAS CRUZADAS: mínimo 2 por punto con explicación.`);
+    parts.push(`7. TRANSICIONES EXPLÍCITAS entre puntos.`);
+    parts.push(`8. ORACIÓN FINAL OBLIGATORIA (4-8 frases).`);
+  } else {
+    parts.push(`Before writing, do this study internally and surface the findings in the sermon body:`);
+    parts.push(`1. HISTORICAL-CULTURAL CONTEXT: author, audience, occasion, background.`);
+    parts.push(`2. LITERARY CONTEXT: genre, place in the book, connection to surrounding verses.`);
+    parts.push(`3. ORIGINAL LANGUAGES: 2-3 key Greek/Hebrew terms with transliteration and a one-line semantic note (e.g., *agapē* (ἀγάπη) — sacrificial covenant love).`);
+    parts.push(`4. INTERPRETIVE TRADITION: briefly note how Reformers or classical commentators read the text when relevant.`);
+    parts.push(`5. ILLUSTRATIONS must be concrete, contemporary, anchored in the text. BANNED: "diamond in the rough", generic sports analogies, tired clichés.`);
+    parts.push(`6. CROSS-REFERENCES: at least 2 per point with brief explanation — never a bare list.`);
+    parts.push(`7. EXPLICIT TRANSITIONS between main points.`);
+    parts.push(`8. CLOSING PRAYER MANDATORY in the conclusion (4-8 sentences).`);
+  }
+
   parts.push(`\nMANDATORY SERMON STRUCTURE (use Markdown — translated headings):`);
   if (lang === 'PT') {
     parts.push(`1. **# Título** — criativo e memorável (sem numeração)`);
