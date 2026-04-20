@@ -205,32 +205,32 @@ export function DevotionalHeroCard() {
             </span>
           </button>
 
-          {/* Action grid */}
-          <div className="grid grid-cols-2 gap-2">
+          {/* Action grid — 1 col em telas estreitas/tablet onde o card divide espaço, 2 col só quando há largura suficiente */}
+          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
             <button
               onClick={handleWhatsApp}
-              className="h-10 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors px-2"
+              className="h-10 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors px-3 min-w-0"
             >
               <MessageCircle className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{L10N.whatsapp[lang]}</span>
             </button>
             <button
               onClick={handleRead}
-              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-2"
+              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-3 min-w-0"
             >
               <FileText className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{L10N.read[lang]}</span>
             </button>
             <button
               onClick={handleDownload}
-              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-2"
+              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-3 min-w-0"
             >
               <Download className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{L10N.download[lang]}</span>
             </button>
             <button
               onClick={handleCopy}
-              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-2"
+              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-3 min-w-0"
             >
               <LinkIcon className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{L10N.copy[lang]}</span>
