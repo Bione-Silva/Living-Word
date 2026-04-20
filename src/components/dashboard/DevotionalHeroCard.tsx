@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { safeInvoke } from '@/lib/safe-invoke';
@@ -52,6 +52,7 @@ function fmt(s: number) {
 export function DevotionalHeroCard() {
   const { lang } = useLanguage();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [data, setData] = useState<DevotionalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -120,12 +121,12 @@ export function DevotionalHeroCard() {
   };
 
   const handleRead = () => {
-    window.location.href = '/devocional';
+    navigate('/devocional');
   };
 
   const handleDownload = () => {
     toast.info(lang === 'PT' ? 'Abrindo gerador de arte...' : lang === 'EN' ? 'Opening art generator...' : 'Abriendo generador de arte...');
-    window.location.href = '/devocional?share=1';
+    navigate('/devocional?share=1');
   };
 
   if (loading) {
