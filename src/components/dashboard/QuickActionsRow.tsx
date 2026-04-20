@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
-  Mic, BookOpen, BookMarked, Palette, Library,
+  Mic, BookOpen, GraduationCap, Palette, Library,
   Heart, Search, MoreHorizontal,
 } from 'lucide-react';
 
