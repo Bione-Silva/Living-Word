@@ -13,37 +13,40 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { AUTH_REAUTH, FOOTER_BRAND, htmlLang, normalizeLang } from '../transactional-email-templates/_i18n.ts'
 
 interface ReauthenticationEmailProps {
   token: string
   siteUrl?: string
+  lang?: string
 }
 
-export const ReauthenticationEmail = ({ token, siteUrl }: ReauthenticationEmailProps) => (
-  <Html lang="pt-BR" dir="ltr">
-    <Head />
-    <Preview>Seu código de verificação Living Word</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={header}>
-          <Text style={brand}>Living Word</Text>
-        </Section>
-        <Section style={card}>
-          <Heading style={h1}>Código de verificação</Heading>
-          <Text style={text}>Use o código abaixo para confirmar sua identidade:</Text>
-          <Text style={codeStyle}>{token}</Text>
-          <Text style={footer}>
-            Este código expira em alguns minutos. Se você não solicitou,
-            pode ignorar este e-mail com segurança.
+export const ReauthenticationEmail = ({ token, siteUrl, lang }: ReauthenticationEmailProps) => {
+  const L = normalizeLang(lang)
+  const t = AUTH_REAUTH[L]
+  return (
+    <Html lang={htmlLang(L)} dir="ltr">
+      <Head />
+      <Preview>{t.preview}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Section style={header}>
+            <Text style={brand}>Living Word</Text>
+          </Section>
+          <Section style={card}>
+            <Heading style={h1}>{t.h1}</Heading>
+            <Text style={text}>{t.text}</Text>
+            <Text style={codeStyle}>{token}</Text>
+            <Text style={footer}>{t.footer}</Text>
+          </Section>
+          <Text style={brandFooter}>
+            <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
-        </Section>
-        <Text style={brandFooter}>
-          <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export default ReauthenticationEmail
 

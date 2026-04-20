@@ -5,56 +5,56 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 import { styles, SITE_URL, SOCIAL } from './_shared-styles.ts'
+import { DRIP_DAY_1, FOOTER_BRAND, htmlLang, normalizeLang, type Lang } from './_i18n.ts'
 
-interface Props { name?: string }
+interface Props { name?: string; lang?: Lang | string }
 
-const DripDay1Email = ({ name }: Props) => (
-  <Html lang="pt-BR" dir="ltr">
-    <Head />
-    <Preview>Crie seu próximo sermão em minutos com a IA pastoral</Preview>
-    <Body style={styles.main}>
-      <Container style={styles.container}>
-        <Section style={styles.header}>
-          <Text style={styles.brand}>Living Word</Text>
-        </Section>
-        <Section style={styles.card}>
-          <Heading style={styles.h1}>
-            {name ? `${name}, vamos criar seu próximo sermão?` : 'Vamos criar seu próximo sermão?'}
-          </Heading>
-          <Text style={styles.text}>
-            A Living Word foi treinada nas Escrituras e em corpus de grandes pregadores
-            (Spurgeon, Wesley, Calvino, Billy Graham). Em poucos minutos você pode:
-          </Text>
-          <Text style={styles.text}>
-            • Esboçar um sermão expositivo a partir de uma passagem<br />
-            • Gerar ilustrações fiéis ao contexto bíblico<br />
-            • Adaptar tom para igreja local, juventude ou estudo de grupo
-          </Text>
-          <Section style={styles.buttonWrap}>
-            <Button style={styles.button} href={`${SITE_URL}/pulpito`}>
-              Abrir o Púlpito
-            </Button>
+const DripDay1Email = ({ name, lang }: Props) => {
+  const L = normalizeLang(lang as string)
+  const t = DRIP_DAY_1[L]
+  return (
+    <Html lang={htmlLang(L)} dir="ltr">
+      <Head />
+      <Preview>{t.preview}</Preview>
+      <Body style={styles.main}>
+        <Container style={styles.container}>
+          <Section style={styles.header}>
+            <Text style={styles.brand}>Living Word</Text>
           </Section>
-          <Text style={styles.verse}>
-            "Toda a Escritura é inspirada por Deus e útil para o ensino." — 2 Timóteo 3:16
+          <Section style={styles.card}>
+            <Heading style={styles.h1}>
+              {name ? t.h1WithName(name) : t.h1NoName}
+            </Heading>
+            <Text style={styles.text}>{t.p1}</Text>
+            <Text style={styles.text}>
+              {t.bullets.map((b, i) => (
+                <React.Fragment key={i}>
+                  • {b}{i < t.bullets.length - 1 ? <br /> : null}
+                </React.Fragment>
+              ))}
+            </Text>
+            <Section style={styles.buttonWrap}>
+              <Button style={styles.button} href={`${SITE_URL}/pulpito`}>{t.cta}</Button>
+            </Section>
+            <Text style={styles.verse}>{t.verse}</Text>
+          </Section>
+          <Section style={styles.socialRow}>
+            <Link href={SOCIAL.instagram} style={styles.socialLink}>Instagram</Link>·
+            <Link href={SOCIAL.youtube} style={styles.socialLink}>YouTube</Link>·
+            <Link href={SOCIAL.facebook} style={styles.socialLink}>Facebook</Link>
+          </Section>
+          <Text style={styles.brandFooter}>
+            <Link href={SITE_URL} style={styles.brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
-        </Section>
-        <Section style={styles.socialRow}>
-          <Link href={SOCIAL.instagram} style={styles.socialLink}>Instagram</Link>·
-          <Link href={SOCIAL.youtube} style={styles.socialLink}>YouTube</Link>·
-          <Link href={SOCIAL.facebook} style={styles.socialLink}>Facebook</Link>
-        </Section>
-        <Text style={styles.brandFooter}>
-          <Link href={SITE_URL} style={styles.brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export const template = {
   component: DripDay1Email,
-  subject: 'Crie seu próximo sermão em minutos',
+  subject: (data: Record<string, any>) => DRIP_DAY_1[normalizeLang(data?.lang)].subject,
   displayName: 'Drip — Dia 1',
-  previewData: { name: 'Pastor João' },
+  previewData: { name: 'Pastor João', lang: 'PT' },
 } satisfies TemplateEntry
