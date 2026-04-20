@@ -154,18 +154,18 @@ export function ContinueWhereYouLeftOff() {
   if (cards.length === 0) return null;
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-3 px-1">
-        <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-muted-foreground">
+    <section className="min-w-0 w-full">
+      <div className="flex items-center justify-between mb-3 px-0.5 gap-2 min-w-0">
+        <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-muted-foreground truncate">
           {L10N.section[lang]}
         </p>
-        <Link to="/biblioteca" className="text-[11px] font-semibold text-primary hover:underline inline-flex items-center gap-0.5">
+        <Link to="/biblioteca" className="text-[11px] font-semibold text-primary hover:underline inline-flex items-center gap-0.5 shrink-0">
           {L10N.viewAll[lang]} <ChevronRight className="h-3 w-3" />
         </Link>
       </div>
 
       <div
-        className={`grid gap-3 grid-cols-1 sm:grid-cols-2 ${
+        className={`grid gap-3 grid-cols-1 sm:grid-cols-2 min-w-0 ${
           cards.length >= 4 ? 'xl:grid-cols-4' : cards.length === 3 ? 'xl:grid-cols-3' : ''
         }`}
       >
@@ -175,9 +175,9 @@ export function ContinueWhereYouLeftOff() {
             <Link
               key={i}
               to={c.to}
-              className="rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-sm transition-all p-3.5 flex flex-col gap-2.5 group"
+              className="rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-sm transition-all p-3.5 flex flex-col gap-2.5 group min-w-0 overflow-hidden"
             >
-              <div className="flex items-start gap-2.5">
+              <div className="flex items-start gap-2.5 min-w-0">
                 <div className={`h-9 w-9 rounded-lg ${c.iconBg} flex items-center justify-center shrink-0`}>
                   <Icon className={`h-4 w-4 ${c.iconColor}`} />
                 </div>
@@ -185,13 +185,13 @@ export function ContinueWhereYouLeftOff() {
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground truncate">
                     {c.type}
                   </p>
-                  <p className="text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                  <p className="text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors break-words">
                     {c.title}
                   </p>
                 </div>
               </div>
-              <p className="text-[11px] text-muted-foreground -mt-1">{c.subtitle}</p>
-              <div className="mt-auto">
+              <p className="text-[11px] text-muted-foreground -mt-1 truncate">{c.subtitle}</p>
+              <div className="mt-auto min-w-0">
                 <div className="text-[10px] font-semibold text-foreground/80 mb-1">
                   {c.progress}% {L10N.pct[lang]}
                 </div>

@@ -186,21 +186,21 @@ export function RecentGenerations() {
   if (items.length === 0) return null;
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-3 px-1">
-        <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-muted-foreground">
+    <section className="min-w-0 w-full">
+      <div className="flex items-center justify-between mb-3 px-0.5 gap-2 min-w-0">
+        <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-muted-foreground truncate">
           {sectionTitle[lang]}
         </p>
         <Link
           to="/biblioteca"
-          className="text-[11px] font-semibold text-primary flex items-center gap-0.5 hover:underline"
+          className="text-[11px] font-semibold text-primary flex items-center gap-0.5 hover:underline shrink-0"
         >
           {viewAll[lang]}
           <ChevronRight className="h-3 w-3" />
         </Link>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 min-w-0">
         {items.map((m) => {
           const style = typeStyles[m.type] || fallbackStyle;
           const Icon = style.icon;
@@ -222,7 +222,7 @@ export function RecentGenerations() {
             <Link
               key={m.id}
               to={to}
-              className="group rounded-xl p-3 flex items-center gap-2.5 sm:gap-3 bg-card border border-border hover:border-primary/30 hover:shadow-sm transition-all"
+              className="group rounded-xl p-3 flex items-center gap-2.5 sm:gap-3 bg-card border border-border hover:border-primary/30 hover:shadow-sm transition-all min-w-0 w-full overflow-hidden"
             >
               <span
                 className={`h-9 w-9 rounded-lg ${style.iconWrap} flex items-center justify-center shrink-0`}

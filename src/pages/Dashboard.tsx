@@ -88,9 +88,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-5 md:space-y-6 max-w-[1280px] mx-auto pb-4 px-1 sm:px-0">
+    <div className="space-y-5 md:space-y-6 max-w-[1280px] mx-auto pb-4 min-w-0 w-full overflow-x-hidden">
       {/* Mobile-first onboarding nudge */}
-      <div className="md:hidden">
+      <div className="md:hidden min-w-0">
         <OnboardingNudgeCard />
       </div>
 
@@ -104,36 +104,34 @@ export default function Dashboard() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          TOPO — Protagonistas em split 50/50 (mesmo peso visual)
-          - Mobile (<md): empilha vertical
-          - Tablet/Desktop (≥md): lado a lado 50/50
+          MOBILE: Resumo do mês PRIMEIRO (no topo), depois protagonistas
           ═══════════════════════════════════════════════════════════════ */}
-      <div className="md:hidden">
+      <div className="md:hidden min-w-0">
         <MonthlyOverviewCard />
       </div>
 
-      <div className="grid gap-4 md:gap-5 md:grid-cols-2 items-stretch">
-        <DevotionalHeroCard />
-        <BomAmigoHeroCard />
+      {/* TOPO — Devocional + Palavra Amiga (split 50/50 ≥ md, empilhado mobile) */}
+      <div className="grid gap-4 md:gap-5 md:grid-cols-2 items-stretch min-w-0">
+        <div className="min-w-0"><DevotionalHeroCard /></div>
+        <div className="min-w-0"><BomAmigoHeroCard /></div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
           BLOCOS SECUNDÁRIOS
-          - Mobile: tudo empilha em uma coluna
-          - Tablet (md): coluna única ainda — evita espremer
-          - Desktop (lg): split 7/5
+          - Mobile: ordem → Continue → Recentes → Ações Rápidas → Agenda → Promo
+          - md/xl: split 7/5
           ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 md:gap-5 md:grid-cols-2 xl:grid-cols-12 items-start">
+      <div className="grid gap-4 md:gap-5 md:grid-cols-2 xl:grid-cols-12 items-start min-w-0">
         {/* Coluna esquerda */}
-        <div className="xl:col-span-7 flex flex-col gap-4 md:gap-5">
+        <div className="xl:col-span-7 flex flex-col gap-4 md:gap-5 min-w-0">
           <ContinueWhereYouLeftOff />
           <RecentGenerations />
           <QuickActionsRow onMore={() => setExtrasOpen(true)} />
         </div>
 
         {/* Coluna direita */}
-        <div className="xl:col-span-5 flex flex-col gap-4 md:gap-5">
-          <div className="hidden md:block">
+        <div className="xl:col-span-5 flex flex-col gap-4 md:gap-5 min-w-0">
+          <div className="hidden md:block min-w-0">
             <MonthlyOverviewCard />
           </div>
           <WeekAgendaCard />
