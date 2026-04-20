@@ -1,27 +1,27 @@
 import * as React from "react";
 
-// Phone-only detection for layout shell decisions.
-// We still protect phones in landscape by looking at the smallest edge,
-// but we avoid classifying iPads/tablets as mobile just because they have touch.
-const MOBILE_BREAKPOINT = 768;
+// "Mobile shell" detection — covers phones AND tablets.
+// Per product decision: tablets must use the mobile layout (no fixed sidebar,
+// bottom nav, sheets) just scaled up. Only true desktops get the sidebar.
+//
+// Rule: viewport width < DESKTOP_BREAKPOINT  →  mobile shell
+//       OR any touch-primary device          →  mobile shell
+//       Else                                 →  desktop shell
+const DESKTOP_BREAKPOINT = 1280; // anything below this = phone or tablet
 
 function detectMobile(): boolean {
   if (typeof window === "undefined") return false;
   const isTouch =
     window.matchMedia?.("(pointer: coarse)").matches ||
-    // Fallback for older browsers / iPad Safari quirks
     (typeof navigator !== "undefined" &&
-      (navigator.maxTouchPoints > 1 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)));
-  // Use the smallest viewport edge so rotating a phone to landscape
-  // (e.g. 844x390) is still considered mobile.
-  const minEdge = Math.min(window.innerWidth, window.innerHeight);
-  const maxEdge = Math.max(window.innerWidth, window.innerHeight);
-  const narrow = window.innerWidth < MOBILE_BREAKPOINT || minEdge < MOBILE_BREAKPOINT;
+      (navigator.maxTouchPoints > 1 ||
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)));
 
-  // Large touch devices such as iPads should use tablet/desktop layout.
-  const phoneSizedTouch = isTouch && maxEdge < 950;
+  const narrow = window.innerWidth < DESKTOP_BREAKPOINT;
 
-  return narrow || phoneSizedTouch;
+  // Touch devices (phones AND tablets including iPad Pro 12.9") use mobile shell.
+  // Non-touch narrow viewports (e.g. resized desktop window) also use mobile shell.
+  return narrow || isTouch;
 }
 
 export function useIsMobile() {
@@ -31,7 +31,7 @@ export function useIsMobile() {
     const update = () => setIsMobile(detectMobile());
     update();
 
-    const widthMql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const widthMql = window.matchMedia(`(max-width: ${DESKTOP_BREAKPOINT - 1}px)`);
     const pointerMql = window.matchMedia("(pointer: coarse)");
     const orientationMql = window.matchMedia("(orientation: portrait)");
 
