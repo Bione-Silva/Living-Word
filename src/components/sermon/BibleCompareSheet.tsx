@@ -10,6 +10,7 @@ import {
   bibleVersions as ALL_VERSIONS,
   getBibleVersion,
   getDefaultVersionCode,
+  versionAbbrToCode,
   type L as BibleLang,
 } from '@/lib/bible-data';
 
