@@ -64,8 +64,11 @@ export function VerseOfTheDay() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 flex flex-col items-center text-center gap-2 h-[calc(100%-1.75rem)]">
-        <div className="text-4xl font-bold text-primary leading-none">{v.num}</div>
-        <p className="text-[12px] text-foreground/90 leading-snug px-1">
+        <div className="flex flex-col items-center leading-none">
+          <span className="text-[10px] font-bold tracking-[0.18em] text-muted-foreground">{month}</span>
+          <span className="text-4xl font-bold text-primary leading-none mt-0.5 tabular-nums">{day}</span>
+        </div>
+        <p className="text-[12px] text-foreground/90 leading-snug px-1 mt-1">
           {v.text}
         </p>
         <p className="text-xs font-semibold text-primary mt-0.5">{v.ref}</p>
