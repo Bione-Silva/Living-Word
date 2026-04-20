@@ -104,37 +104,25 @@ export default function Dashboard() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 1 — Devocional (esquerda) + Resumo, Agenda, Palavra Amiga (direita)
-          Desktop ≥lg: Devocional 7 / coluna direita 5
+          BLOCO PRINCIPAL — Duas colunas independentes que se empilham
+          sem deixar espaços vazios entre os cards.
+          Esquerda (7/12): Devocional → Continue → Recentes
+          Direita  (5/12): Resumo → Agenda → Palavra Amiga → Ações → Estúdio
           ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-7">
+      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12 items-start">
+        {/* Coluna esquerda */}
+        <div className="lg:col-span-7 flex flex-col gap-4 lg:gap-5">
           <DevotionalHeroCard />
+          <ContinueWhereYouLeftOff />
+          <RecentGenerations />
         </div>
-        <div className="lg:col-span-5 space-y-4">
+
+        {/* Coluna direita */}
+        <div className="lg:col-span-5 flex flex-col gap-4 lg:gap-5">
           <MonthlyOverviewCard />
           <WeekAgendaCard />
           <BomAmigoHeroCard />
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 2 — Continue de onde parou (full width, cards maiores)
-          ═══════════════════════════════════════════════════════════════ */}
-      <ContinueWhereYouLeftOff />
-
-      {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 3 — Ações Rápidas + Suas Criações Recentes + Estúdio Social
-          Desktop ≥lg: 12 colunas (Ações 3 / Recentes 5 / Estúdio 4)
-          ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-3">
           <QuickActionsRow onMore={() => setExtrasOpen(true)} />
-        </div>
-        <div className="lg:col-span-5">
-          <RecentGenerations />
-        </div>
-        <div className="lg:col-span-4">
           <SocialStudioPromoCard />
         </div>
       </div>
