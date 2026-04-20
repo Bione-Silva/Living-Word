@@ -41,7 +41,6 @@ export default defineConfig(({ mode }) => ({
             urlPattern: ({ request }) => request.mode === "navigate",
             handler: "NetworkFirst",
             options: {
-              cacheName: "lw-html-v3",
               cacheName: "lw-html-v4",
               networkTimeoutSeconds: 5,
               expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
@@ -52,7 +51,6 @@ export default defineConfig(({ mode }) => ({
             urlPattern: ({ url }) => url.pathname === "/manifest.json" || url.pathname === "/manifest.webmanifest",
             handler: "NetworkFirst",
             options: {
-              cacheName: "lw-manifest-v3",
               cacheName: "lw-manifest-v4",
               expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 },
             },
@@ -62,7 +60,6 @@ export default defineConfig(({ mode }) => ({
             urlPattern: ({ url }) => /\/(icon-\d+|apple-touch-icon|favicon|livingword-icon)\.png$/.test(url.pathname),
             handler: "NetworkFirst",
             options: {
-              cacheName: "lw-icons-v3",
               cacheName: "lw-icons-v4",
               expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 7 },
             },
