@@ -36,6 +36,42 @@ const isPreviewHost =
   window.location.hostname.includes("id-preview--") ||
   window.location.hostname.includes("lovableproject.com");
 
+async function invalidateStaleBuildCaches() {
+  try {
+    const storageKey = "lw_app_build_id";
+    const previousBuildId = window.localStorage.getItem(storageKey);
+
+    if (!previousBuildId) {
+      window.localStorage.setItem(storageKey, __APP_BUILD_ID__);
+      return;
+    }
+
+    if (previousBuildId === __APP_BUILD_ID__) return;
+
+    const registrations = await navigator.serviceWorker?.getRegistrations?.();
+    await Promise.all(
+      (registrations ?? []).map(async (registration) => {
+        const scriptUrl =
+          registration.active?.scriptURL ||
+          registration.waiting?.scriptURL ||
+          registration.installing?.scriptURL ||
+          "";
+
+        if (!scriptUrl.includes("/sw-push.js")) {
+          await registration.unregister();
+        }
+      }),
+    );
+
+    const cacheNames = await window.caches?.keys?.();
+    await Promise.all((cacheNames ?? []).map((cacheName) => window.caches.delete(cacheName)));
+
+    window.localStorage.setItem(storageKey, __APP_BUILD_ID__);
+  } catch {
+    // noop
+  }
+}
+
 if (isPreviewHost || isInIframe) {
   clearPreviewAuthStorage();
   // Only unregister non-push service workers in preview/iframe; keep /sw-push.js for testing
@@ -53,6 +89,10 @@ if (isPreviewHost || isInIframe) {
       void window.caches.delete(cacheName);
     });
   });
+}
+
+if (!isPreviewHost && !isInIframe) {
+  void invalidateStaleBuildCaches();
 }
 // Production: vite-plugin-pwa registers the generated service worker
 // automatically via <PWAUpdater /> (useRegisterSW). No manual registration here —
