@@ -13,13 +13,13 @@ import { BomAmigoHeroCard } from '@/components/dashboard/BomAmigoHeroCard';
 import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
 import { WeekAgendaCard } from '@/components/dashboard/WeekAgendaCard';
 import { ContinueWhereYouLeftOff } from '@/components/dashboard/ContinueWhereYouLeftOff';
-import { ToolsCircleGrid } from '@/components/dashboard/ToolsCircleGrid';
-import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
+import { RecommendedForYou } from '@/components/dashboard/RecommendedForYou';
+import { VerseOfTheDay } from '@/components/dashboard/VerseOfTheDay';
+import { QuickActionsRow } from '@/components/dashboard/QuickActionsRow';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
-import { SocialStudioHighlightCard } from '@/components/dashboard/SocialStudioHighlightCard';
+import { SocialStudioPromoCard } from '@/components/dashboard/SocialStudioPromoCard';
+import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { OnboardingNudgeCard } from '@/components/dashboard/OnboardingNudgeCard';
-import { SmartDevotionalRecommender } from '@/components/engagement/SmartDevotionalRecommender';
-import { NotificationCenter } from '@/components/engagement/NotificationCenter';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
