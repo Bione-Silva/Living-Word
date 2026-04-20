@@ -205,7 +205,40 @@ export function DevotionalHeroCard() {
             </span>
           </button>
 
-          {/* Action grid — 1 col em telas estreitas/tablet onde o card divide espaço, 2 col só quando há largura suficiente */}
+          {/* Mobile-only: arte 9:16 entre o áudio e os botões */}
+          <Link
+            to="/devocional?share=1"
+            className="sm:hidden relative aspect-[9/16] rounded-2xl overflow-hidden bg-gradient-to-br from-amber-900 via-orange-800 to-red-900 group w-[180px] mx-auto"
+          >
+            {cover && (
+              <img
+                src={cover}
+                alt={data.title}
+                className="absolute inset-0 w-full h-full object-cover"
+                crossOrigin="anonymous"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
+            <span className="absolute top-2 left-2 text-[8px] font-bold tracking-[0.15em] uppercase bg-black/40 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-full">
+              {L10N.storyTag[lang]}
+            </span>
+            <div className="absolute inset-x-0 bottom-0 p-2.5 text-white">
+              <p
+                className="font-display text-[11px] leading-snug font-semibold mb-1 line-clamp-4 drop-shadow"
+                style={{ textShadow: '0 2px 8px rgba(0,0,0,0.6)' }}
+              >
+                "{data.anchor_verse_text}"
+              </p>
+              <p className="text-[9px] font-bold tracking-[0.12em] uppercase opacity-90">
+                {data.anchor_verse}
+              </p>
+            </div>
+            <div className="absolute bottom-1.5 right-1.5 text-[8px] text-white/60 font-medium">
+              Living Word
+            </div>
+          </Link>
+
+          {/* Action grid */}
           <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
             <button
               onClick={handleWhatsApp}
@@ -246,10 +279,10 @@ export function DevotionalHeroCard() {
           </div>
         </div>
 
-        {/* RIGHT: Story 9:16 art preview — largura controlada para nunca explodir */}
+        {/* RIGHT: Story 9:16 art preview — escondida no mobile (renderizada acima dos botões dentro da coluna) */}
         <Link
           to="/devocional?share=1"
-          className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-gradient-to-br from-amber-900 via-orange-800 to-red-900 group shrink-0 w-[140px] sm:w-full mx-auto sm:mx-0 self-start"
+          className="hidden sm:block relative aspect-[9/16] rounded-2xl overflow-hidden bg-gradient-to-br from-amber-900 via-orange-800 to-red-900 group shrink-0 w-full self-start"
         >
           {cover && (
             <img
