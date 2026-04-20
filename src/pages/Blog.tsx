@@ -141,6 +141,19 @@ export default function Blog() {
     setPreviewMode(false);
   };
 
+  // Auto-open editor when arriving with ?article={id}
+  useEffect(() => {
+    const target = searchParams.get('article');
+    if (!target || !articles?.length) return;
+    const found = articles.find(a => a.id === target);
+    if (found && (!editArticle || editArticle.id !== target)) {
+      openEditor(found);
+      const next = new URLSearchParams(searchParams);
+      next.delete('article');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, articles, editArticle, setSearchParams]);
+
   const handleSave = async () => {
     if (!editArticle) return;
     setSaving(true);
