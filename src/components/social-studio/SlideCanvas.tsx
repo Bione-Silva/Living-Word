@@ -7,6 +7,7 @@ export interface SlideData {
   subtitle?: string;
   slideNumber?: number;
   totalSlides?: number;
+  bgImageUrl?: string;
 }
 
 interface Props {
@@ -256,14 +257,15 @@ function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWate
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
   const fallbackGradient = themeColor || 'linear-gradient(135deg, #1a1a2e, #0f3460)';
   const verseSize = autoVerseSize(slide.text);
+  const activeBgImageUrl = slide.bgImageUrl || bgImageUrl;
 
   return (
     <div
       className="relative h-full w-full overflow-hidden flex items-center justify-center"
       style={{ fontFamily: font, containerType: 'size' }}
     >
-      {bgImageUrl ? (
-        <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+      {activeBgImageUrl ? (
+        <img src={activeBgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
       ) : (
         <div className="absolute inset-0" style={{ backgroundImage: fallbackGradient }} />
       )}
@@ -568,10 +570,11 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
       themeColors && themeColors.length > 0
         ? themeColors[slideIndex % themeColors.length]
         : themeColor;
+    const effectiveBgImageUrl = slide.bgImageUrl || bgImageUrl;
 
     // Quando há imagem única, alternamos uma tint suave por índice
     // para simular variação visual entre slides do mesmo carrossel.
-    const overlayTint = bgImageUrl
+    const overlayTint = effectiveBgImageUrl
       ? IMAGE_OVERLAY_TINTS[slideIndex % IMAGE_OVERLAY_TINTS.length]
       : null;
 
@@ -584,19 +587,19 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
           className="relative h-full w-full overflow-hidden rounded-2xl select-none isolate shadow-xl"
         >
           {template === 'editorial' && (
-            <EditorialTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+            <EditorialTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'swiss' && (
-            <SwissTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+            <SwissTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'cinematic' && (
-            <CinematicTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <CinematicTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'gradient' && (
-            <GradientTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <GradientTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'lw-amber' && (
-            <LwAmberTemplate slide={slide} bgImageUrl={bgImageUrl} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <LwAmberTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
 
           {/* Overlay tonal por índice — só quando há imagem única
