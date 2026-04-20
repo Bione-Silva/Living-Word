@@ -1,8 +1,8 @@
 import * as React from "react";
 
-// Treat any device with a coarse pointer (touch) as mobile, regardless of
-// orientation. This fixes the landscape bug on phones/tablets where width
-// crosses the 768px threshold and the layout flips to desktop.
+// Phone-only detection for layout shell decisions.
+// We still protect phones in landscape by looking at the smallest edge,
+// but we avoid classifying iPads/tablets as mobile just because they have touch.
 const MOBILE_BREAKPOINT = 768;
 
 function detectMobile(): boolean {
@@ -15,8 +15,13 @@ function detectMobile(): boolean {
   // Use the smallest viewport edge so rotating a phone to landscape
   // (e.g. 844x390) is still considered mobile.
   const minEdge = Math.min(window.innerWidth, window.innerHeight);
+  const maxEdge = Math.max(window.innerWidth, window.innerHeight);
   const narrow = window.innerWidth < MOBILE_BREAKPOINT || minEdge < MOBILE_BREAKPOINT;
-  return isTouch || narrow;
+
+  // Large touch devices such as iPads should use tablet/desktop layout.
+  const phoneSizedTouch = isTouch && maxEdge < 950;
+
+  return narrow || phoneSizedTouch;
 }
 
 export function useIsMobile() {
