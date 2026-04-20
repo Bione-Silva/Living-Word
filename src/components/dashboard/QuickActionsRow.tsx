@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
-  Mic, BookOpen, Image as ImageIcon, Palette, Library,
+  Mic, BookOpen, BookMarked, Palette, Library,
   Heart, Search, MoreHorizontal,
 } from 'lucide-react';
 
@@ -32,7 +32,7 @@ export function QuickActionsRow({ onMore }: QuickActionsRowProps) {
   const actions: QuickAction[] = [
     { id: 'sermon', icon: Mic, label: { PT: 'Novo Sermão', EN: 'New Sermon', ES: 'Nuevo Sermón' }, action: () => navigate('/sermoes') },
     { id: 'study', icon: BookOpen, label: { PT: 'Novo Estudo', EN: 'New Study', ES: 'Nuevo Estudio' }, action: () => navigate('/estudos/novo') },
-    { id: 'art', icon: ImageIcon, label: { PT: 'Criar Arte', EN: 'Create Art', ES: 'Crear Arte' }, action: () => navigate('/social-studio') },
+    { id: 'bible', icon: BookMarked, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' }, action: () => navigate('/bible') },
     { id: 'social', icon: Palette, label: { PT: 'Estúdio Social', EN: 'Social Studio', ES: 'Estudio Social' }, action: () => navigate('/social-studio') },
     { id: 'library', icon: Library, label: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' }, action: () => navigate('/biblioteca') },
     { id: 'palavra', icon: Heart, label: { PT: 'Palavra Amiga', EN: 'Friendly Word', ES: 'Palabra Amiga' }, action: () => navigate('/bom-amigo') },
