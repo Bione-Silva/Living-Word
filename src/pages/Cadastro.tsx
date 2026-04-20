@@ -28,6 +28,8 @@ const copy = {
   name: { PT: 'Nome completo', EN: 'Full name', ES: 'Nombre completo' } as Record<L, string>,
   email: { PT: 'E-mail', EN: 'Email', ES: 'Correo electrónico' } as Record<L, string>,
   password: { PT: 'Senha', EN: 'Password', ES: 'Contraseña' } as Record<L, string>,
+  phone: { PT: 'WhatsApp (opcional)', EN: 'WhatsApp (optional)', ES: 'WhatsApp (opcional)' } as Record<L, string>,
+  phoneHint: { PT: 'Ex.: +55 11 99999-0000', EN: 'Ex.: +1 555 555-0000', ES: 'Ej.: +52 55 5555-0000' } as Record<L, string>,
   language: { PT: 'Idioma', EN: 'Language', ES: 'Idioma' } as Record<L, string>,
   cta: { PT: 'Criar conta', EN: 'Create account', ES: 'Crear cuenta' } as Record<L, string>,
   or: { PT: 'ou', EN: 'or', ES: 'o' } as Record<L, string>,
@@ -43,6 +45,7 @@ export default function Cadastro() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [language, setLanguage] = useState<Language>('PT');
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +61,7 @@ export default function Cadastro() {
         if (plan) {
           navigate(`/upgrade?autoCheckout=${plan}`);
         } else {
-          navigate('/onboarding');
+          navigate('/blog-onboarding');
         }
       }
     });
@@ -77,13 +80,21 @@ export default function Cadastro() {
 
       setLang(language);
 
+      // Persist phone (optional) right after signup if session is already active
+      if (phone.trim()) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('profiles').update({ phone: phone.trim() }).eq('id', user.id);
+        }
+      }
+
       if (needsConfirmation) {
         toast.info(copy.checkEmail[language]);
         return;
       }
 
       toast.success(copy.success[language]);
-      navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/onboarding');
+      navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/blog-onboarding');
     } catch (err: any) {
       console.error('Signup error:', err);
       toast.error(err.message || 'Erro ao criar conta');
@@ -160,6 +171,17 @@ export default function Cadastro() {
                 className="bg-background border-border"
                 required
                 minLength={6}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="font-medium">{copy.phone[lang]}</Label>
+              <Input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="bg-background border-border"
+                placeholder={copy.phoneHint[lang]}
+                autoComplete="tel"
               />
             </div>
             <div className="space-y-1.5">
