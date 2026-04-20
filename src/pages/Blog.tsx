@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { isFreePlan } from '@/lib/plan-normalization';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -17,7 +17,7 @@ import {
   Archive, ArchiveRestore, Save, X, Eye, Trash2, Upload, Loader2, ImagePlus,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -46,6 +46,7 @@ export default function Blog() {
   const { profile, user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const isFree = isFreePlan(profile?.plan);
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
