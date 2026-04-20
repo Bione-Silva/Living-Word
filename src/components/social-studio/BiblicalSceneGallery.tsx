@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Sparkles, Wand2, Lock, Crown, Database, Check, Images, RefreshCcw } from 'lucide-react';
+import { Loader2, Sparkles, Wand2, Lock, Crown, Database, Check, Images, RefreshCcw, Layers, ImageIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -114,6 +114,9 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
   const [seeding, setSeeding] = useState(false);
   const [selectedScenes, setSelectedScenes] = useState<SceneRow[]>([]);
   const [variationBusy, setVariationBusy] = useState(false);
+  // 'single' = 1 imagem aplicada como fundo único.
+  // 'carousel' = N imagens (= slideCount) com mesma cena, ângulos diferentes — 1 por slide.
+  const [aiMode, setAiMode] = useState<'single' | 'carousel'>('carousel');
 
   // Detecta se o usuário é admin (para mostrar botão de popular banco)
   useEffect(() => {
@@ -264,14 +267,54 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
       toast.error(l.emptyPrompt);
       return;
     }
-    if (quota && quota.remaining <= 0) {
-      toast.error(l.quotaError);
+    // Quantas imagens vamos pedir
+    const targetCount = aiMode === 'carousel' ? Math.max(1, Math.min(10, slideCount || 1)) : 1;
+    if (quota && quota.remaining < targetCount) {
+      toast.error(
+        lang === 'PT'
+          ? `Você tem ${quota.remaining} cota(s) e pediu ${targetCount}.`
+          : lang === 'EN'
+            ? `You have ${quota.remaining} quota(s) but requested ${targetCount}.`
+            : `Tienes ${quota.remaining} cuota(s) y pediste ${targetCount}.`,
+      );
       return;
     }
     setGenerating(true);
     try {
+      // Single: usa o caminho legado
+      if (targetCount === 1) {
+        const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
+          body: { mode: 'generate', prompt: customPrompt.trim(), visualMode },
+        });
+        if (error) throw error;
+        if (data?.error === 'quota_exceeded') {
+          toast.error(data.message || l.quotaError);
+          if (data.quota) setQuota(data.quota);
+          return;
+        }
+        const url: string | undefined = data?.imageUrl;
+        if (!url) throw new Error('No image returned');
+        toast.success(l.generated);
+        onChangeScenePool({
+          assets: [{ id: data?.sceneId || crypto.randomUUID(), imageUrl: url, label: customPrompt.trim(), prompt: customPrompt.trim(), origin: 'generated' }],
+          sourceType: 'ai_generated',
+          variationMode: 'none',
+          distributionMode: 'auto_balance',
+        });
+        if (data?.quota) setQuota(data.quota);
+        setCustomPrompt('');
+        await loadScenes(searchTerm);
+        return;
+      }
+
+      // Batch: gera N imagens da mesma cena, 1 por slide
       const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
-        body: { mode: 'generate', prompt: customPrompt.trim(), visualMode },
+        body: {
+          mode: 'generate_batch',
+          prompt: customPrompt.trim(),
+          visualMode,
+          count: targetCount,
+        },
       });
       if (error) throw error;
       if (data?.error === 'quota_exceeded') {
@@ -279,17 +322,35 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
         if (data.quota) setQuota(data.quota);
         return;
       }
-      const url: string | undefined = data?.imageUrl;
-      if (!url) throw new Error('No image returned');
-      toast.success(l.generated);
+      const variations = Array.isArray(data?.variations) ? data.variations : [];
+      if (variations.length === 0) throw new Error('No variations returned');
+
+      const assets: SceneAsset[] = variations.map(
+        (item: { sceneId?: string; imageUrl: string; label?: string; prompt?: string }, index: number) => ({
+          id: item.sceneId || `${customPrompt}-batch-${index}-${Date.now()}`,
+          imageUrl: item.imageUrl,
+          label: item.label || `${customPrompt.trim()} ${index + 1}`,
+          prompt: item.prompt || customPrompt.trim(),
+          origin: 'generated',
+        }),
+      );
+
       onChangeScenePool({
-        assets: [{ id: data?.sceneId || crypto.randomUUID(), imageUrl: url, label: customPrompt.trim(), prompt: customPrompt.trim(), origin: 'generated' }],
-        sourceType: 'ai_generated',
-        variationMode: 'none',
-        distributionMode: 'auto_balance',
+        assets,
+        sourceType: 'ai_variations_from_library',
+        variationMode: 'visual_variation',
+        distributionMode: 'image_every_slide',
       });
+
+      if (data?.quota) setQuota(data.quota);
+      toast.success(
+        lang === 'PT'
+          ? `${assets.length} cenas geradas para o carrossel!`
+          : lang === 'EN'
+            ? `${assets.length} scenes generated for the carousel!`
+            : `¡${assets.length} escenas generadas para el carrusel!`,
+      );
       setCustomPrompt('');
-      // Recarrega banco para incluir a nova cena
       await loadScenes(searchTerm);
     } catch (e) {
       console.error(e);
@@ -438,25 +499,84 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
             </Button>
           </div>
         ) : (
-          <div className="flex gap-2">
-            <Input
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              placeholder={l.customPlaceholder}
-              className="flex-1 h-9 text-xs bg-background"
-              disabled={!canGenerate || generating}
-              onKeyDown={(e) => e.key === 'Enter' && canGenerate && !generating && handleGenerate()}
-            />
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleGenerate}
-              disabled={!canGenerate || generating || !customPrompt.trim()}
-              className="gap-1.5 shrink-0"
-            >
-              {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
-              {l.generate}
-            </Button>
+          <div className="space-y-2">
+            {/* Toggle: imagem única vs carrossel inteiro */}
+            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-lg bg-muted/40 border border-border">
+              <button
+                type="button"
+                onClick={() => setAiMode('single')}
+                disabled={generating}
+                className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                  aiMode === 'single'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <ImageIcon className="h-3 w-3" />
+                {lang === 'PT' ? '1 imagem' : lang === 'EN' ? '1 image' : '1 imagen'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiMode('carousel')}
+                disabled={generating}
+                className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                  aiMode === 'carousel'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Layers className="h-3 w-3" />
+                {lang === 'PT'
+                  ? `Carrossel (${slideCount})`
+                  : lang === 'EN'
+                    ? `Carousel (${slideCount})`
+                    : `Carrusel (${slideCount})`}
+              </button>
+            </div>
+
+            {/* Hint */}
+            <p className="text-[10px] text-muted-foreground/80 leading-relaxed px-1">
+              {aiMode === 'carousel'
+                ? lang === 'PT'
+                  ? `Gera ${slideCount} imagens da mesma cena com ângulos diferentes — 1 por slide do carrossel.`
+                  : lang === 'EN'
+                    ? `Generates ${slideCount} images of the same scene with different angles — 1 per carousel slide.`
+                    : `Genera ${slideCount} imágenes de la misma escena con ángulos diferentes — 1 por slide del carrusel.`
+                : lang === 'PT'
+                  ? 'Gera 1 imagem aplicada como fundo único do post.'
+                  : lang === 'EN'
+                    ? 'Generates 1 image applied as the single post background.'
+                    : 'Genera 1 imagen aplicada como fondo único del post.'}
+            </p>
+
+            <div className="flex gap-2">
+              <Input
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                placeholder={l.customPlaceholder}
+                className="flex-1 h-9 text-xs bg-background"
+                disabled={!canGenerate || generating}
+                onKeyDown={(e) => e.key === 'Enter' && canGenerate && !generating && handleGenerate()}
+              />
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleGenerate}
+                disabled={!canGenerate || generating || !customPrompt.trim()}
+                className="gap-1.5 shrink-0"
+              >
+                {generating
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : aiMode === 'carousel'
+                    ? <Layers className="h-3.5 w-3.5" />
+                    : <Wand2 className="h-3.5 w-3.5" />}
+                {generating
+                  ? (lang === 'PT' ? 'Gerando...' : lang === 'EN' ? 'Generating...' : 'Generando...')
+                  : aiMode === 'carousel'
+                    ? (lang === 'PT' ? `Gerar ${slideCount}` : lang === 'EN' ? `Generate ${slideCount}` : `Generar ${slideCount}`)
+                    : l.generate}
+              </Button>
+            </div>
           </div>
         )}
 
