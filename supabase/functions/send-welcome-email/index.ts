@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
       templateData,
     },
     headers: {
-      Authorization: authHeader,
+      Authorization: `Bearer ${serviceKey}`,
     },
   })
 
