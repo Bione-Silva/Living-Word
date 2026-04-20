@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight, Sparkles, Plus, Filter } from 'lucide-react'
 import { toast } from 'sonner';
 import { CalendarGrid, type CalendarItem } from '@/components/calendario/CalendarGrid';
 import { ContentPreviewPanel } from '@/components/calendario/ContentPreviewPanel';
-import { NetworkFilterBar, type NetworkKey, NETWORK_META } from '@/components/calendario/NetworkFilterBar';
+import { NetworkFilterBar, type NetworkKey, type FilterKey, NETWORK_META } from '@/components/calendario/NetworkFilterBar';
 import { NewPostDialog } from '@/components/calendario/NewPostDialog';
 import { GenerateWithAIDialog } from '@/components/calendario/GenerateWithAIDialog';
 
