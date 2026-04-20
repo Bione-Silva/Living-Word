@@ -36,10 +36,10 @@ export const SignupEmail = ({
           <Text style={brand}>Living Word</Text>
         </Section>
         <Section style={card}>
-          <Heading style={h1}>Bem-vindo à Living Word</Heading>
+          <Heading style={h1}>Falta pouco!</Heading>
           <Text style={text}>
-            Que alegria ter você aqui. Para começar a usar sua plataforma bíblica
-            inteligente, confirme seu e-mail clicando no botão abaixo.
+            Clique no botão abaixo para confirmar seu e-mail e ativar sua
+            plataforma pastoral.
           </Text>
           <Section style={buttonWrap}>
             <Button style={button} href={confirmationUrl}>
