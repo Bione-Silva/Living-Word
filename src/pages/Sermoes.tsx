@@ -1411,8 +1411,16 @@ export default function Sermoes() {
                   ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
                   : 'border-border bg-background hover:bg-muted text-foreground'
               }`}
+              title={autoSaving ? (lang === 'PT' ? 'Salvando automaticamente…' : lang === 'ES' ? 'Guardando automáticamente…' : 'Auto-saving…') : undefined}
             >
-              <Save className="h-3.5 w-3.5" /> {justSaved ? labels.saved[lang] : labels.save[lang]}
+              {autoSaving
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : <Save className="h-3.5 w-3.5" />}
+              {justSaved
+                ? labels.saved[lang]
+                : autoSaving
+                  ? (lang === 'PT' ? 'Salvando…' : lang === 'ES' ? 'Guardando…' : 'Saving…')
+                  : labels.save[lang]}
             </button>
             <button
               onClick={() => setRawTextOpen(true)}
