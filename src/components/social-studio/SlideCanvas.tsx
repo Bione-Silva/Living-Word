@@ -253,9 +253,10 @@ function SwissTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, s
 /* ────────────────────────────────────────────
    TEMPLATE 3 — CINEMATIC (image bg, verse centered with overlay)
    ──────────────────────────────────────────── */
-function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'textColor'>) {
+function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
   const fallbackGradient = themeColor || 'linear-gradient(135deg, #1a1a2e, #0f3460)';
+  const txtColor = textColor || '#FFF8E7';
   const verseSize = autoVerseSize(slide.text);
   const activeBgImageUrl = slide.bgImageUrl || bgImageUrl;
 
@@ -286,7 +287,7 @@ function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWate
         <p
           className="font-semibold leading-[1.4] tracking-wide"
           style={{
-            color: '#FFF8E7',
+            color: txtColor,
             fontSize: verseSize,
             textShadow: '0 4px 24px rgba(0,0,0,0.7)',
             fontFamily: font,
@@ -348,9 +349,10 @@ function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWate
 /* ────────────────────────────────────────────
    TEMPLATE 4 — GRADIENT POSTER (centered verse, geometric accents)
    ──────────────────────────────────────────── */
-function GradientTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'textColor'>) {
+function GradientTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
   const gradient = themeColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)';
+  const txtColor = textColor || '#FFFFFF';
   const verseSize = autoVerseSize(slide.text);
 
   return (
@@ -390,7 +392,7 @@ function GradientTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWater
         <p
           className="font-bold leading-[1.3] tracking-wide"
           style={{
-            color: '#FFFFFF',
+            color: txtColor,
             fontFamily: font,
             fontSize: verseSize,
             textShadow: '0 2px 24px rgba(0,0,0,0.3)',
@@ -449,8 +451,9 @@ function GradientTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWater
 /* ────────────────────────────────────────────
    TEMPLATE 5 — LIVING WORD AMBER (centered verse, warm cross motif)
    ──────────────────────────────────────────── */
-function LwAmberTemplate({ slide, bgImageUrl, fontFamily, showWatermark }: Omit<Props, 'aspectRatio' | 'template' | 'textColor'>) {
+function LwAmberTemplate({ slide, bgImageUrl, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
+  const txtColor = textColor || '#F5E6C8';
   const verseSize = autoVerseSize(slide.text);
   const amberGradient = 'linear-gradient(145deg, #1a0f05 0%, #2d1a0a 25%, #4a2c17 50%, #1E1240 75%, #6D28D9 100%)';
 
@@ -486,7 +489,7 @@ function LwAmberTemplate({ slide, bgImageUrl, fontFamily, showWatermark }: Omit<
         <p
           className="font-bold leading-[1.35] tracking-wide"
           style={{
-            color: '#F5E6C8',
+            color: txtColor,
             fontFamily: font,
             fontSize: verseSize,
             textShadow: '0 2px 24px rgba(0,0,0,0.5)',
@@ -593,13 +596,13 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
             <SwissTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'cinematic' && (
-            <CinematicTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <CinematicTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'gradient' && (
-            <GradientTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <GradientTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'lw-amber' && (
-            <LwAmberTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <LwAmberTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
 
           {/* Overlay tonal por índice — só quando há imagem única
