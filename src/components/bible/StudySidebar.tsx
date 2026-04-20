@@ -98,6 +98,10 @@ const labels = {
   copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
   share: { PT: 'Enviar', EN: 'Share', ES: 'Compartir' },
   pdf: { PT: 'PDF', EN: 'PDF', ES: 'PDF' },
+  saveLib: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' },
+  saveWs: { PT: 'Workspace', EN: 'Workspace', ES: 'Workspace' },
+  savedLib: { PT: 'Salvo na Biblioteca!', EN: 'Saved to Library!', ES: '¡Guardado en Biblioteca!' },
+  saving: { PT: 'Salvando...', EN: 'Saving...', ES: 'Guardando...' },
 } satisfies Record<string, Record<L, string>>;
 
 // Match verse references like "João 3:16", "Genesis 1:1-3", "1 Coríntios 13:4"
