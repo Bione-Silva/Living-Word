@@ -376,7 +376,10 @@ export default function SocialStudio() {
     const reader = new FileReader();
     reader.onload = () => {
       setTheme((prev) => ({ ...prev, backgroundImageUrl: reader.result as string }));
-      setActiveSceneId(null);
+      setScenePool([]);
+      setSceneSourceType('custom_upload');
+      setSceneVariationMode('none');
+      setSceneDistributionMode('auto_balance');
       toast.success(lang === 'PT' ? 'Imagem aplicada' : lang === 'EN' ? 'Image applied' : 'Imagen aplicada');
     };
     reader.readAsDataURL(file);
@@ -449,7 +452,10 @@ export default function SocialStudio() {
     setPresentationMode(false);
     setSlideCount(1);
     setActivePaletteId(null);
-    setActiveSceneId(null);
+    setScenePool([]);
+    setSceneSourceType(null);
+    setSceneVariationMode('none');
+    setSceneDistributionMode('auto_balance');
     setSelectedSlideIndex(0);
     setGeneratedCaption('');
     setStep('format');
@@ -610,7 +616,14 @@ export default function SocialStudio() {
                     </div>
                     <ThemeCustomizer
                       value={theme}
-                      onChange={(v) => { setTheme(v); setActivePaletteId(null); setActiveSceneId(null); }}
+                      onChange={(v) => {
+                        setTheme(v);
+                        setActivePaletteId(null);
+                        setScenePool([]);
+                        setSceneSourceType(null);
+                        setSceneVariationMode('none');
+                        setSceneDistributionMode('auto_balance');
+                      }}
                       lang={lang}
                       onUploadBackground={handleBackgroundUpload}
                     />
