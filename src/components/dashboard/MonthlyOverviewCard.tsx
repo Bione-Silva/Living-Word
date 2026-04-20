@@ -14,6 +14,8 @@ const COPY = {
   studies: { PT: 'Estudos concluídos', EN: 'Studies completed', ES: 'Estudios concluidos' } as Record<L, string>,
   arts: { PT: 'Artes criadas', EN: 'Arts created', ES: 'Artes creadas' } as Record<L, string>,
   usage: { PT: 'Tempo de uso', EN: 'Time spent', ES: 'Tiempo de uso' } as Record<L, string>,
+  devotionals: { PT: 'Devocionais lidos', EN: 'Devotionals read', ES: 'Devocionales leídos' } as Record<L, string>,
+  conversations: { PT: 'Conversas Palavra Amiga', EN: 'Friendly Word chats', ES: 'Charlas Palabra Amiga' } as Record<L, string>,
   vsLast: { PT: 'vs mês anterior', EN: 'vs last month', ES: 'vs mes anterior' } as Record<L, string>,
 };
 
@@ -51,6 +53,8 @@ export function MonthlyOverviewCard() {
     { label: COPY.sermons[lang], value: '0', delta: null },
     { label: COPY.studies[lang], value: '0', delta: null },
     { label: COPY.arts[lang], value: '0', delta: null },
+    { label: COPY.devotionals[lang], value: '0', delta: null },
+    { label: COPY.conversations[lang], value: '0', delta: null },
     { label: COPY.usage[lang], value: '0h 0m', delta: null },
   ]);
 
@@ -86,11 +90,31 @@ export function MonthlyOverviewCard() {
           .gte('created_at', range.start)
           .lt('created_at', range.end);
 
+      const countDevotionals = (range: { start: string; end: string }) =>
+        supabase
+          .from('devotional_engagements')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('action', 'read')
+          .gte('created_at', range.start)
+          .lt('created_at', range.end);
+
+      const countChats = (range: { start: string; end: string }) =>
+        supabase
+          .from('chat_messages')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('role', 'user')
+          .gte('created_at', range.start)
+          .lt('created_at', range.end);
+
       const [
         sermonsCur, sermonsPrev,
         studiesCur, studiesPrev,
         artsCur, artsPrev,
         timeCur, timePrev,
+        devCur, devPrev,
+        chatsCur, chatsPrev,
       ] = await Promise.all([
         countMaterials(['sermon', 'pastoral'], cur),
         countMaterials(['sermon', 'pastoral'], prev),
@@ -100,6 +124,10 @@ export function MonthlyOverviewCard() {
         countArts(prev),
         sumDuration(cur),
         sumDuration(prev),
+        countDevotionals(cur),
+        countDevotionals(prev),
+        countChats(cur),
+        countChats(prev),
       ]);
 
       const totalSeconds = (rows: { duration_seconds: number | null }[] | null) =>
@@ -113,11 +141,17 @@ export function MonthlyOverviewCard() {
       const aPrev = artsPrev.count ?? 0;
       const tCur = totalSeconds(timeCur.data as any);
       const tPrev = totalSeconds(timePrev.data as any);
+      const dCur = devCur.count ?? 0;
+      const dPrev = devPrev.count ?? 0;
+      const cCur = chatsCur.count ?? 0;
+      const cPrev = chatsPrev.count ?? 0;
 
       setTiles([
         { label: COPY.sermons[lang], value: String(sCur), delta: pctDelta(sCur, sPrev) },
         { label: COPY.studies[lang], value: String(stCur), delta: pctDelta(stCur, stPrev) },
         { label: COPY.arts[lang], value: String(aCur), delta: pctDelta(aCur, aPrev) },
+        { label: COPY.devotionals[lang], value: String(dCur), delta: pctDelta(dCur, dPrev) },
+        { label: COPY.conversations[lang], value: String(cCur), delta: pctDelta(cCur, cPrev) },
         { label: COPY.usage[lang], value: formatDuration(tCur, lang), delta: pctDelta(tCur, tPrev) },
       ]);
     })();
@@ -139,21 +173,21 @@ export function MonthlyOverviewCard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {tiles.map((t) => (
           <div
             key={t.label}
-            className="rounded-xl border border-border bg-background/60 p-4 flex flex-col gap-1.5"
+            className="rounded-xl border border-border bg-background/60 p-3.5 flex flex-col gap-1.5"
           >
-            <span className="text-[11px] font-medium text-muted-foreground leading-tight">
+            <span className="text-[10.5px] font-medium text-muted-foreground leading-tight line-clamp-2 min-h-[26px]">
               {t.label}
             </span>
-            <p className="text-2xl font-bold text-foreground leading-none tracking-tight">
+            <p className="text-xl font-bold text-foreground leading-none tracking-tight">
               {t.value}
             </p>
             {t.delta !== null ? (
               <p
-                className={`text-[11px] font-semibold leading-tight ${
+                className={`text-[10.5px] font-semibold leading-tight ${
                   t.delta >= 0 ? 'text-emerald-600' : 'text-rose-600'
                 }`}
               >
@@ -161,7 +195,7 @@ export function MonthlyOverviewCard() {
                 {t.delta}% <span className="font-normal text-muted-foreground">{COPY.vsLast[lang]}</span>
               </p>
             ) : (
-              <p className="text-[11px] font-normal text-muted-foreground leading-tight">
+              <p className="text-[10.5px] font-normal text-muted-foreground leading-tight">
                 — {COPY.vsLast[lang]}
               </p>
             )}
