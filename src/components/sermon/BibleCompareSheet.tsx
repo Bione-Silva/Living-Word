@@ -388,7 +388,7 @@ export function BibleCompareSheet({
           variant="outline"
           onClick={handleSaveDefaults}
           disabled={savingDefaults}
-          className="gap-1.5"
+          className={cn('gap-1.5', isDark && 'border-slate-600 text-slate-100 hover:bg-slate-700')}
         >
           <Settings2 className="h-3.5 w-3.5" />
           {savingDefaults ? '...' : tr.saveDefaults[lang]}
