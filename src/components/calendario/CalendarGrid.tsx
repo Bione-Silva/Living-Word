@@ -157,7 +157,12 @@ function ItemPill({
   selected: boolean;
   onClick: () => void;
 }) {
-  const meta = item.kind === 'editorial' ? NETWORK_META.editorial : NETWORK_META[item.network!];
+  const editorialKey: 'sermon' | 'blog' =
+    item.editorial_type && /sermon|pastoral|sermao|sermão/i.test(item.editorial_type)
+      ? 'sermon'
+      : 'blog';
+  const meta =
+    item.kind === 'editorial' ? NETWORK_META[editorialKey] : NETWORK_META[item.network!];
   const Icon = meta.icon;
   const time = item.scheduled_at
     ? new Date(item.scheduled_at).toLocaleTimeString([], {
