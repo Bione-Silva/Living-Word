@@ -48,6 +48,7 @@ const labels = {
   verse: { PT: 'Versículo-âncora', EN: 'Anchor verse', ES: 'Versículo ancla' },
   pdfReady: { PT: 'PDF pronto para envio', EN: 'PDF ready to send', ES: 'PDF listo para enviar' },
   pdfShareUnsupported: { PT: 'Seu dispositivo não permite envio direto. Baixando o PDF — anexe manualmente.', EN: 'Your device does not allow direct sending. Downloading the PDF — attach it manually.', ES: 'Tu dispositivo no permite envío directo. Descargando el PDF — adjúntalo manualmente.' },
+  whatsappUnsupported: { PT: 'No navegador, o WhatsApp não aceita anexar PDF automaticamente. Use “Compartilhar PDF” no celular ou salve o PDF primeiro.', EN: 'In the browser, WhatsApp cannot attach a PDF automatically. Use “Share PDF” on mobile or save the PDF first.', ES: 'En el navegador, WhatsApp no puede adjuntar un PDF automáticamente. Usa “Compartir PDF” en el móvil o guarda el PDF primero.' },
   toCarousel: { PT: 'Gerar Carrossel para Redes', EN: 'Generate Social Carousel', ES: 'Generar Carrusel para Redes' },
   toCarouselShort: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
 } satisfies Record<string, Record<L, string>>;
@@ -112,6 +113,23 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
 
   const buildPdfFileName = () =>
     `${lang === 'EN' ? 'Devotional' : 'Devocional'} Living Word - ${data.scheduled_date}.pdf`;
+
+  const supportsNativeFileShare = () => {
+    const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+    if (typeof nav.share !== 'function') return false;
+    if (typeof nav.canShare !== 'function') return true;
+    try {
+      const probe = new File(['living-word'], 'living-word.txt', { type: 'text/plain' });
+      return nav.canShare({ files: [probe] });
+    } catch {
+      return false;
+    }
+  };
+
+  const buildPdfFile = async () => {
+    const { blob, fileName } = await buildPdfBlob();
+    return new File([blob], fileName, { type: 'application/pdf' });
+  };
 
   /** Builds the PDF and returns { blob, fileName }. Used by both download + share. */
   const buildPdfBlob = async (): Promise<{ blob: Blob; fileName: string }> => {
@@ -260,8 +278,7 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
   const handleSharePdfNative = async () => {
     const loadingToast = toast.loading(lang === 'PT' ? 'Preparando PDF...' : lang === 'ES' ? 'Preparando PDF...' : 'Preparing PDF...');
     try {
-      const { blob, fileName } = await buildPdfBlob();
-      const file = new File([blob], fileName, { type: 'application/pdf' });
+      const file = await buildPdfFile();
       const shareData: ShareData = {
         title: data.title,
         text: `${data.title} — Living Word`,
@@ -278,10 +295,10 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
       }
 
       // Fallback: download the file and warn the user to attach manually.
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(file);
       const a = document.createElement('a');
       a.href = url;
-      a.download = fileName;
+      a.download = file.name;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -300,12 +317,27 @@ export function DevotionalReadingModal({ open, onOpenChange, data, lang }: Props
 
   /** WhatsApp deep-link with the devotional summary text (PDF must be attached manually). */
   const handleShareWhatsApp = async () => {
-    // Generate PDF download alongside the deep-link so user can attach it.
-    await handlePdf();
-    const text = encodeURIComponent(
-      `*${data.title}* — Living Word\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${lang === 'PT' ? 'Devocional do dia em PDF anexo.' : lang === 'ES' ? 'Devocional del día en PDF adjunto.' : "Today's devotional PDF attached."}`
-    );
-    window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer');
+    if (!supportsNativeFileShare()) {
+      toast.message(labels.whatsappUnsupported[lang]);
+      return;
+    }
+
+    const loadingToast = toast.loading(lang === 'PT' ? 'Preparando PDF...' : lang === 'ES' ? 'Preparando PDF...' : 'Preparing PDF...');
+    try {
+      const file = await buildPdfFile();
+      toast.dismiss(loadingToast);
+      await navigator.share({
+        title: data.title,
+        text: `${data.title} — Living Word`,
+        files: [file],
+      });
+    } catch (err) {
+      if ((err as DOMException)?.name !== 'AbortError') {
+        console.error('[DevotionalShareWhatsApp]', err);
+        toast.error(lang === 'PT' ? 'Erro ao compartilhar' : lang === 'ES' ? 'Error al compartir' : 'Error sharing');
+      }
+      toast.dismiss(loadingToast);
+    }
   };
 
   /** Mailto link prefilled with subject + body (PDF must be attached manually). */
