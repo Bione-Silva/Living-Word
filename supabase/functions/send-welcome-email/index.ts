@@ -77,6 +77,9 @@ Deno.serve(async (req) => {
       idempotencyKey: `${emailType}-${userId}`,
       templateData,
     },
+    headers: {
+      Authorization: `Bearer ${serviceKey}`,
+    },
   })
 
   if (invokeError) {
