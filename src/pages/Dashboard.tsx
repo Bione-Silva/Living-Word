@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import type { ToolCardData } from '@/components/ToolCard';
 import { isToolLockedForPlan, getMinPlanForTool, type PlanSlug } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 const researchTools: ToolCardData[] = [
   { id: 'topic-explorer', icon: Search, title: { PT: 'Explorador de Tópicos', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
