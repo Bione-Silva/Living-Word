@@ -891,16 +891,14 @@ export default function SocialStudio() {
                       <div className="text-[11px] text-muted-foreground leading-snug">{h.scenesCardSub}</div>
                     </div>
                   </div>
-                  <div className="max-h-[320px] overflow-y-auto pr-1">
-                    <BiblicalSceneGallery
-                      onChangeScenePool={handleScenePoolChange}
-                      lang={lang}
-                      activeIds={scenePool.map((scene) => scene.id)}
-                      searchTerm={verseContext?.book || verseContext?.text}
-                      visualMode={imageMode}
-                      slideCount={slideCount}
-                    />
-                  </div>
+                  <BiblicalSceneGallery
+                    onChangeScenePool={handleScenePoolChange}
+                    lang={lang}
+                    activeIds={scenePool.map((scene) => scene.id)}
+                    searchTerm={verseContext?.book || verseContext?.text}
+                    visualMode={imageMode}
+                    slideCount={slideCount}
+                  />
                 </CardContent>
               </Card>
 
