@@ -115,6 +115,7 @@ export default function Dashboard() {
           <DevotionalHeroCard />
           <ContinueWhereYouLeftOff />
           <RecentGenerations />
+          <QuickActionsRow onMore={() => setExtrasOpen(true)} />
         </div>
 
         {/* Coluna direita */}
@@ -122,10 +123,7 @@ export default function Dashboard() {
           <MonthlyOverviewCard />
           <WeekAgendaCard />
           <BomAmigoHeroCard />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5 items-stretch">
-            <QuickActionsRow onMore={() => setExtrasOpen(true)} />
-            <SocialStudioPromoCard />
-          </div>
+          <SocialStudioPromoCard />
         </div>
       </div>
 
