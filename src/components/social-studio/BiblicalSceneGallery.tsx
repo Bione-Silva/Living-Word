@@ -169,14 +169,19 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
     origin,
   });
 
-  const handleToggleScene = (scene: SceneRow) => {
-    setSelectedScenes((prev) => {
-      const exists = prev.some((item) => item.id === scene.id);
-      return exists ? prev.filter((item) => item.id !== scene.id) : [...prev, scene];
-    });
-  };
-
-  const handleUseSingle = (scene: SceneRow) => {
+  /**
+   * Clique numa cena = aplica imediatamente como fundo do post.
+   * Clicar de novo na MESMA cena já aplicada abre o painel de opções extras
+   * (adicionar mais cenas / gerar variações). Isso elimina o estado intermediário
+   * que travava a seleção e fazia parecer que algumas imagens "não trocavam".
+   */
+  const handleSceneClick = (scene: SceneRow) => {
+    const alreadyActive = activeIds.length === 1 && activeIds[0] === scene.id;
+    if (alreadyActive) {
+      // segundo clique → abre opções avançadas
+      setSelectedScenes([scene]);
+      return;
+    }
     setSelectedScenes([scene]);
     onChangeScenePool({
       assets: [toAsset(scene)],
