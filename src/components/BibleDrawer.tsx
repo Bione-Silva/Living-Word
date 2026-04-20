@@ -252,22 +252,40 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
                       <Search className="ml-2 h-3.5 w-3.5 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0" align="start">
-                    <Command>
-                      <CommandInput placeholder={lang === 'PT' ? 'Buscar livro...' : lang === 'EN' ? 'Search book...' : 'Buscar libro...'} />
-                      <CommandList className="max-h-[220px]">
-                        <CommandEmpty>{lang === 'PT' ? 'Nenhum livro' : 'No book found'}</CommandEmpty>
+                  <PopoverContent className="w-[240px] p-0" align="start">
+                    <Command
+                      shouldFilter={false}
+                    >
+                      <CommandInput
+                        placeholder={lang === 'PT' ? 'Buscar livro...' : lang === 'EN' ? 'Search book...' : 'Buscar libro...'}
+                        value={bookSearch}
+                        onValueChange={setBookSearch}
+                      />
+                      <CommandList className="max-h-[260px]">
+                        <CommandEmpty>{lang === 'PT' ? 'Nenhum livro' : lang === 'EN' ? 'No book found' : 'Ningún libro'}</CommandEmpty>
                         <CommandGroup>
-                          {bookItems.map((b) => (
-                            <CommandItem
-                              key={b.id}
-                              value={b.name}
-                              onSelect={() => { setBook(b.id); setChapter(1); setHighlightRange(null); setBookOpen(false); }}
-                              className="cursor-pointer"
-                            >
-                              {b.name}
-                            </CommandItem>
-                          ))}
+                          {bookItems
+                            .filter((b) => {
+                              if (!bookSearch.trim()) return true;
+                              const q = norm(bookSearch);
+                              return norm(b.name).includes(q) || norm(b.id).includes(q);
+                            })
+                            .map((b) => (
+                              <CommandItem
+                                key={b.id}
+                                value={b.id}
+                                onSelect={() => {
+                                  setBook(b.id);
+                                  setChapter(1);
+                                  setHighlightRange(null);
+                                  setBookSearch('');
+                                  setBookOpen(false);
+                                }}
+                                className="cursor-pointer"
+                              >
+                                {b.name}
+                              </CommandItem>
+                            ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
