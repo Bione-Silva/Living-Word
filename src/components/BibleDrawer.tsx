@@ -5,9 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe, Layers } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { bibleBooks, getBookName, getTranslation, getTranslationLabelByCode, getVersionsForUserLanguage, getBibleVersion, fetchBibleChapter, type L } from '@/lib/bible-data';
+import { BibleCompareSheet } from '@/components/sermon/BibleCompareSheet';
+
+/** Strip accents/diacritics and lowercase for searching. */
+const norm = (s: string): string =>
+  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 
 interface Props {
   open: boolean;
