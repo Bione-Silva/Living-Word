@@ -27,8 +27,8 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         skipWaiting: true,
         cleanupOutdatedCaches: true,
-        // Bump cacheId to invalidate ALL previous PWA caches from old beige theme
-        cacheId: "lw-v2-purple",
+        // Bump cacheId to invalidate previous mobile dashboard caches on iPhone/iPad
+        cacheId: "lw-v3-responsive",
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/~oauth/, /^\/blog\//, /\.\w+$/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => ({
             urlPattern: ({ request }) => request.mode === "navigate",
             handler: "NetworkFirst",
             options: {
-              cacheName: "lw-html-v2",
+              cacheName: "lw-html-v3",
               networkTimeoutSeconds: 5,
               expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
             },
@@ -49,7 +49,7 @@ export default defineConfig(({ mode }) => ({
             urlPattern: ({ url }) => url.pathname === "/manifest.json" || url.pathname === "/manifest.webmanifest",
             handler: "NetworkFirst",
             options: {
-              cacheName: "lw-manifest-v2",
+              cacheName: "lw-manifest-v3",
               expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 },
             },
           },
@@ -58,7 +58,7 @@ export default defineConfig(({ mode }) => ({
             urlPattern: ({ url }) => /\/(icon-\d+|apple-touch-icon|favicon|livingword-icon)\.png$/.test(url.pathname),
             handler: "NetworkFirst",
             options: {
-              cacheName: "lw-icons-v2",
+              cacheName: "lw-icons-v3",
               expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 7 },
             },
           },

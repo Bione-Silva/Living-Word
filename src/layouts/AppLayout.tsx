@@ -142,7 +142,12 @@ export default function AppLayout() {
   const [helpToolId, setHelpToolId] = useState<string | null>(null);
   const [mobileOpenGroups, setMobileOpenGroups] = useState<Record<string, boolean>>({});
   const [collapsed, setCollapsed] = useState(() => {
-    try { return localStorage.getItem('lw-sidebar-collapsed') === 'true'; } catch { return false; }
+    try {
+      const stored = localStorage.getItem('lw-sidebar-collapsed');
+      return stored === null ? true : stored === 'true';
+    } catch {
+      return true;
+    }
   });
   const [accountOpen, setAccountOpen] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState<{ featureName: string; toolId: string; requiredPlan: PlanSlug } | null>(null);
@@ -1038,7 +1043,7 @@ export default function AppLayout() {
 
       {/* Main content */}
       <div className={`flex-1 ${mainMl} transition-all duration-200 h-screen flex flex-col`}>
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border px-6 py-3 flex items-center justify-end gap-3">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border px-4 xl:px-6 py-3 flex items-center justify-end gap-3">
           {profile?.blog_handle && (
             <Link
               to={`/blog/${profile.blog_handle}`}
@@ -1065,7 +1070,7 @@ export default function AppLayout() {
             )}
           </Link>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 xl:p-6">
           <MobileInstallBanner />
           <Outlet />
         </main>
