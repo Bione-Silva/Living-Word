@@ -7,11 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  BIBLE_VERSIONS,
-  DEFAULT_COMPARE_VERSIONS,
-  getVersionLabel,
-  type BibleVersionLang,
-} from '@/lib/bible-versions';
+  bibleVersions as ALL_VERSIONS,
+  getBibleVersion,
+  getDefaultVersionCode,
+  type L as BibleLang,
+} from '@/lib/bible-data';
 
 type Lang = 'PT' | 'EN' | 'ES';
 type PodiumTheme = 'dark' | 'light';
@@ -98,10 +98,12 @@ export function BibleCompareSheet({
   const isDark = theme === 'dark';
 
   // Resolve the 3 versions: sermon version + 2 chosen by preacher (or sane defaults).
-  const fallback = DEFAULT_COMPARE_VERSIONS[(lang as BibleVersionLang) || 'PT'];
-  const [v1] = useState<string>(primaryVersion || fallback[0]);
-  const [v2, setV2] = useState<string>(() => defaultCompareVersion2 || fallback[0]);
-  const [v3, setV3] = useState<string>(() => defaultCompareVersion3 || fallback[1]);
+  const fallbackV2 = getDefaultVersionCode(lang as BibleLang);
+  const fallbackV3Candidates = ALL_VERSIONS.filter(v => v.language === (lang || 'PT') && v.code !== fallbackV2);
+  const fallbackV3 = fallbackV3Candidates[1]?.code || fallbackV3Candidates[0]?.code || fallbackV2;
+  const [v1] = useState<string>(primaryVersion || fallbackV2);
+  const [v2, setV2] = useState<string>(() => defaultCompareVersion2 || fallbackV2);
+  const [v3, setV3] = useState<string>(() => defaultCompareVersion3 || fallbackV3);
 
   const [results, setResults] = useState<VerseResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -213,7 +215,7 @@ export function BibleCompareSheet({
   // Filter version options to exclude the sermon version + the OTHER compare slot, so user
   // never picks duplicates.
   const buildOptions = (excludeCodes: string[]) =>
-    BIBLE_VERSIONS.filter((bv) => !excludeCodes.map((c) => c.toUpperCase()).includes(bv.code.toUpperCase()));
+    ALL_VERSIONS.filter((bv) => bv.isAvailable && !excludeCodes.map((c) => c.toLowerCase()).includes(bv.code.toLowerCase()));
 
   const surfaceBg = isDark ? 'bg-slate-900 text-slate-50' : 'bg-white text-slate-900';
   const borderClass = isDark ? 'border-slate-800' : 'border-slate-200';
@@ -290,7 +292,7 @@ export function BibleCompareSheet({
                 <SelectContent>
                   {buildOptions([v1, v3]).map((bv) => (
                     <SelectItem key={bv.code} value={bv.code} className="text-xs">
-                      {bv.full}
+                      {`${bv.shortLabel} — ${bv.name}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -307,7 +309,7 @@ export function BibleCompareSheet({
                 <SelectContent>
                   {buildOptions([v1, v2]).map((bv) => (
                     <SelectItem key={bv.code} value={bv.code} className="text-xs">
-                      {bv.full}
+                      {`${bv.shortLabel} — ${bv.name}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -338,7 +340,7 @@ export function BibleCompareSheet({
                             ? (isDark ? 'bg-amber-500/30 text-amber-200' : 'bg-amber-200 text-amber-900')
                             : (isDark ? 'bg-slate-700 text-slate-200' : 'bg-slate-200 text-slate-700'),
                         )}>
-                          {getVersionLabel(r.version)}
+                          {getBibleVersion(r.version)?.shortLabel || r.version}
                         </span>
                         {isPrimary && (
                           <span className={cn('text-[10px] font-medium', isDark ? 'text-amber-300/80' : 'text-amber-700')}>
@@ -386,7 +388,7 @@ export function BibleCompareSheet({
           variant="outline"
           onClick={handleSaveDefaults}
           disabled={savingDefaults}
-          className="gap-1.5"
+          className={cn('gap-1.5', isDark && 'border-slate-600 text-slate-100 hover:bg-slate-700')}
         >
           <Settings2 className="h-3.5 w-3.5" />
           {savingDefaults ? '...' : tr.saveDefaults[lang]}
