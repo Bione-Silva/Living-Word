@@ -293,8 +293,19 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           </div>
         </div>
 
-        {/* Single-template grid: one card per slide */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Single-template grid: one card per slide.
+            • 1 slide  → ocupa todo o quadrado (limitado pelo aspect ratio)
+            • 2 slides → 2 colunas
+            • 3+       → até 3 colunas */}
+        <div
+          className={
+            slides.length === 1
+              ? 'grid grid-cols-1 gap-4 max-w-[640px] mx-auto'
+              : slides.length === 2
+              ? 'grid grid-cols-1 sm:grid-cols-2 gap-4'
+              : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+          }
+        >
           {slides.map((slide, slideIdx) => {
             const downloading = busyKey?.startsWith(`${slideIdx}-`);
             return (
