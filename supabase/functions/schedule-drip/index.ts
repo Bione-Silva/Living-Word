@@ -53,13 +53,28 @@ Deno.serve(async (req) => {
   // we don't store it on drip_schedule rows.
 
   const now = Date.now()
+  // Test accounts (contains "+test" or domain "@example.com") get an
+  // accelerated cadence so the full 3-email sequence can be validated in
+  // ~6 minutes instead of 7 days. Real users keep the standard schedule.
+  const isTestEmail = email.includes('+test') || email.toLowerCase().endsWith('@example.com')
+  const minutes = (n: number) => new Date(now + n * 60 * 1000).toISOString()
   const days = (n: number) => new Date(now + n * 24 * 60 * 60 * 1000).toISOString()
 
-  const rows = [
-    { template_name: 'drip-day-1', send_at: days(1) },
-    { template_name: 'drip-day-3', send_at: days(3) },
-    { template_name: 'drip-day-7', send_at: days(7) },
-  ].map(r => ({
+  const schedule = isTestEmail
+    ? [
+        { template_name: 'drip-day-1', send_at: minutes(2) },
+        { template_name: 'drip-day-3', send_at: minutes(4) },
+        { template_name: 'drip-day-7', send_at: minutes(6) },
+      ]
+    : [
+        { template_name: 'drip-day-1', send_at: days(1) },
+        { template_name: 'drip-day-3', send_at: days(3) },
+        { template_name: 'drip-day-7', send_at: days(7) },
+      ]
+
+  console.log('schedule-drip', { userId, email, isTestEmail, schedule })
+
+  const rows = schedule.map(r => ({
     user_id: userId,
     recipient_email: email,
     recipient_name: name,
