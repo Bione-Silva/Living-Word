@@ -104,15 +104,23 @@ export default function Dashboard() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          BLOCO PRINCIPAL — Duas colunas independentes que se empilham
-          sem deixar espaços vazios entre os cards.
-          Esquerda (7/12): Devocional → Continue → Recentes
-          Direita  (5/12): Resumo → Agenda → Palavra Amiga → Ações → Estúdio
+          TOPO — Protagonistas em split 50/50 (mesmo peso visual)
+          Devocional Diário (Story 9:16) + Palavra Amiga
+          Empilham no mobile/tablet (<lg). Lado a lado no desktop.
+          ═══════════════════════════════════════════════════════════════ */}
+      <div className="grid gap-4 lg:gap-5 lg:grid-cols-2 items-stretch">
+        <DevotionalHeroCard />
+        <BomAmigoHeroCard />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          BLOCOS SECUNDÁRIOS — sem competir com os protagonistas
+          Esquerda (7/12): Continue → Recentes → Ações rápidas
+          Direita  (5/12): Resumo do mês → Agenda → Estúdio Social
           ═══════════════════════════════════════════════════════════════ */}
       <div className="grid gap-4 lg:gap-5 lg:grid-cols-12 items-start">
         {/* Coluna esquerda */}
         <div className="lg:col-span-7 flex flex-col gap-4 lg:gap-5">
-          <DevotionalHeroCard />
           <ContinueWhereYouLeftOff />
           <RecentGenerations />
           <QuickActionsRow onMore={() => setExtrasOpen(true)} />
@@ -122,7 +130,6 @@ export default function Dashboard() {
         <div className="lg:col-span-5 flex flex-col gap-4 lg:gap-5">
           <MonthlyOverviewCard />
           <WeekAgendaCard />
-          <BomAmigoHeroCard />
           <SocialStudioPromoCard />
         </div>
       </div>
