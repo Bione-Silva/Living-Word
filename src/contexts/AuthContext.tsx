@@ -321,6 +321,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           void supabase.functions.invoke('send-welcome-email', {
             body: { emailType: 'welcome-confirmed' },
           }).catch((e) => console.warn('[Welcome email] welcome-confirmed failed:', e));
+          // Schedule drip sequence (day-1, day-3, day-7) — idempotent via DB upsert,
+          // safe to call on every confirmed sign-in.
+          void supabase.functions.invoke('schedule-drip', { body: {} })
+            .catch((e) => console.warn('[Drip] schedule failed:', e));
         }, 1000);
       }
     });
