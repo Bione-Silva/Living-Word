@@ -4,10 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BookOpen, Copy, Share2, FileDown, Loader2, X, ExternalLink } from 'lucide-react';
+import { BookOpen, Copy, Share2, FileDown, Loader2, X, ExternalLink, BookMarked, FolderPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { getBookName, type L } from '@/lib/bible-data';
 import ReactMarkdown from 'react-markdown';
+import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
 
 /** Convert structured study JSON to markdown */
 function studyToMarkdown(study: Record<string, any>): string {
