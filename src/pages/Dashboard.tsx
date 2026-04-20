@@ -8,23 +8,23 @@ import { extraOutreachTools, extraFunTools } from '@/components/ExtraToolsSectio
 import { DashboardGreeting } from '@/components/dashboard/DashboardGreeting';
 import { DashboardTopBanner } from '@/components/dashboard/DashboardTopBanner';
 import { InstallAppCard } from '@/components/dashboard/InstallAppCard';
-import { BomAmigoCard } from '@/components/dashboard/BomAmigoCard';
-import { DevotionalCard } from '@/components/dashboard/DevotionalCard';
+import { DevotionalHeroCard } from '@/components/dashboard/DevotionalHeroCard';
+import { BomAmigoHeroCard } from '@/components/dashboard/BomAmigoHeroCard';
+import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
+import { WeekAgendaCard } from '@/components/dashboard/WeekAgendaCard';
+import { ContinueWhereYouLeftOff } from '@/components/dashboard/ContinueWhereYouLeftOff';
 import { ToolsCircleGrid } from '@/components/dashboard/ToolsCircleGrid';
-import { StreakBar } from '@/components/dashboard/StreakBar';
 import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
 import { SocialStudioHighlightCard } from '@/components/dashboard/SocialStudioHighlightCard';
-import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
 import { OnboardingNudgeCard } from '@/components/dashboard/OnboardingNudgeCard';
 import { SmartDevotionalRecommender } from '@/components/engagement/SmartDevotionalRecommender';
-import { UserEngagementDashboard } from '@/components/engagement/UserEngagementDashboard';
 import { NotificationCenter } from '@/components/engagement/NotificationCenter';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
   Wand2, PenLine, Type, Lightbulb, Sparkles, Film,
-  GraduationCap, Gamepad2, Feather, Baby
+  GraduationCap, Baby
 } from 'lucide-react';
 import type { ToolCardData } from '@/components/ToolCard';
 import { isToolLockedForPlan, getMinPlanForTool, type PlanSlug } from '@/lib/plans';
@@ -89,32 +89,69 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-5 sm:space-y-6 max-w-2xl mx-auto pb-2">
-      {/* Mobile-first: nudge de Minha Igreja vem ANTES do banner para virar destaque */}
+    <div className="space-y-6 max-w-[1280px] mx-auto pb-4">
+      {/* Mobile-first onboarding nudge */}
       <div className="md:hidden">
         <OnboardingNudgeCard />
       </div>
+
       <DashboardTopBanner />
+
+      {/* Greeting + spiritual context line */}
       <DashboardGreeting />
-      {/* Desktop: nudge no fluxo normal abaixo do greeting */}
+
       <div className="hidden md:block">
         <OnboardingNudgeCard />
       </div>
-      <MonthlyOverviewCard />
-      <div id="bom-amigo">
-        <BomAmigoCard />
-      </div>
-      <DevotionalCard />
-      <SmartDevotionalRecommender />
-      <ToolsCircleGrid onToolClick={handleToolClick} />
-      <SocialStudioHighlightCard />
-      <StreakBar />
-      <NotificationCenter />
-      <MoreToolsAccordion onToolClick={handleToolClick} />
-      <UserEngagementDashboard />
-      <RecentGenerations />
 
-      {/* Conta & App — área secundária persistente para instalar PWA */}
+      {/* ═══════════════════════════════════════════════════════════════
+          FAIXA 1 — Pilares: Devocional + Palavra Amiga + Apoio lateral
+          Mobile: empilhado vertical
+          Desktop ≥lg: 3 colunas (Devocional 6 / Palavra 4 / Apoio 3)
+          ═══════════════════════════════════════════════════════════════ */}
+      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <DevotionalHeroCard />
+        </div>
+        <div className="lg:col-span-3">
+          <BomAmigoHeroCard />
+        </div>
+        <div className="lg:col-span-3 space-y-4">
+          <MonthlyOverviewCard />
+          <WeekAgendaCard />
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          FAIXA 2 — Continue de onde parou
+          ═══════════════════════════════════════════════════════════════ */}
+      <ContinueWhereYouLeftOff />
+
+      {/* Smart recommender (engagement) */}
+      <SmartDevotionalRecommender />
+
+      {/* ═══════════════════════════════════════════════════════════════
+          FAIXA 3 — Ações rápidas (ferramentas circulares)
+          ═══════════════════════════════════════════════════════════════ */}
+      <ToolsCircleGrid onToolClick={handleToolClick} />
+
+      {/* ═══════════════════════════════════════════════════════════════
+          FAIXA 4 — Recomendados + Recentes
+          ═══════════════════════════════════════════════════════════════ */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <RecentGenerations />
+        <NotificationCenter />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          FAIXA 5 — Estúdio Social em destaque
+          ═══════════════════════════════════════════════════════════════ */}
+      <SocialStudioHighlightCard />
+
+      {/* More tools */}
+      <MoreToolsAccordion onToolClick={handleToolClick} />
+
+      {/* Conta & App */}
       <section className="pt-2">
         <div className="mb-3 flex items-center gap-2">
           <span className="text-[11px] font-semibold tracking-[0.14em] uppercase text-muted-foreground">
@@ -124,6 +161,7 @@ export default function Dashboard() {
         </div>
         <InstallAppCard />
       </section>
+
       <ExtrasModal
         open={extrasOpen}
         onOpenChange={setExtrasOpen}
