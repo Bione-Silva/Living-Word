@@ -386,25 +386,21 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
         ✨ {l.poweredBy}
       </p>
 
-      {selectedScenes.length > 0 && (
+      {selectedScenes.length > 0 && activeIds.length > 0 && (
         <Card className="border-border bg-secondary/30">
           <CardContent className="p-3 space-y-3">
             <div className="space-y-1">
               <div className="text-xs font-bold text-foreground">
-                {lang === 'PT' ? 'Como deseja usar esta cena?' : lang === 'EN' ? 'How do you want to use this scene?' : '¿Cómo deseas usar esta escena?'}
+                {lang === 'PT' ? 'Cena aplicada — deseja mais opções?' : lang === 'EN' ? 'Scene applied — want more options?' : '¿Escena aplicada — deseas más opciones?'}
               </div>
               <div className="text-[11px] text-muted-foreground leading-snug">
                 {selectedScenes.length > 1
                   ? (lang === 'PT' ? 'Você montou um pool visual para distribuir no carrossel.' : lang === 'EN' ? 'You created a visual pool to distribute across the carousel.' : 'Creaste un pool visual para distribuir en el carrusel.')
-                  : (lang === 'PT' ? 'Escolha entre usar a cena original, adicionar mais cenas ou gerar variações reais com IA.' : lang === 'EN' ? 'Choose between using the original scene, adding more scenes, or generating real AI variations.' : 'Elige entre usar la escena original, añadir más escenas o generar variaciones reales con IA.')}
+                  : (lang === 'PT' ? 'Você pode adicionar mais cenas ao pool ou gerar variações reais com IA.' : lang === 'EN' ? 'You can add more scenes to the pool or generate real AI variations.' : 'Puedes añadir más escenas al pool o generar variaciones reales con IA.')}
               </div>
             </div>
 
             <div className="grid gap-2">
-              <Button type="button" size="sm" className="justify-start gap-2" onClick={() => handleUseSingle(selectedScenes[0])}>
-                <Check className="h-3.5 w-3.5" />
-                {lang === 'PT' ? 'Usar esta imagem' : lang === 'EN' ? 'Use this image' : 'Usar esta imagen'}
-              </Button>
               <Button type="button" size="sm" variant="outline" className="justify-start gap-2" onClick={handleUseMulti}>
                 <Images className="h-3.5 w-3.5" />
                 {lang === 'PT' ? `Escolher mais imagens (${selectedScenes.length})` : lang === 'EN' ? `Choose more images (${selectedScenes.length})` : `Elegir más imágenes (${selectedScenes.length})`}
