@@ -4,6 +4,8 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
+const BUILD_ID = new Date().toISOString();
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -27,8 +29,8 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         skipWaiting: true,
         cleanupOutdatedCaches: true,
-        // Bump cacheId to invalidate previous mobile dashboard caches on iPhone/iPad
-        cacheId: "lw-v3-responsive",
+        // Bump cacheId to invalidate old brand assets across installed browsers/PWAs
+        cacheId: "lw-v4-brand-refresh",
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/~oauth/, /^\/blog\//, /\.\w+$/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
@@ -40,6 +42,7 @@ export default defineConfig(({ mode }) => ({
             handler: "NetworkFirst",
             options: {
               cacheName: "lw-html-v3",
+              cacheName: "lw-html-v4",
               networkTimeoutSeconds: 5,
               expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
             },
@@ -50,6 +53,7 @@ export default defineConfig(({ mode }) => ({
             handler: "NetworkFirst",
             options: {
               cacheName: "lw-manifest-v3",
+              cacheName: "lw-manifest-v4",
               expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 },
             },
           },
@@ -59,6 +63,7 @@ export default defineConfig(({ mode }) => ({
             handler: "NetworkFirst",
             options: {
               cacheName: "lw-icons-v3",
+              cacheName: "lw-icons-v4",
               expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 7 },
             },
           },
@@ -119,6 +124,9 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
+  },
+  define: {
+    __APP_BUILD_ID__: JSON.stringify(BUILD_ID),
   },
   build: {
     rollupOptions: {
