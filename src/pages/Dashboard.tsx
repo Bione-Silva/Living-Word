@@ -13,13 +13,13 @@ import { BomAmigoHeroCard } from '@/components/dashboard/BomAmigoHeroCard';
 import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
 import { WeekAgendaCard } from '@/components/dashboard/WeekAgendaCard';
 import { ContinueWhereYouLeftOff } from '@/components/dashboard/ContinueWhereYouLeftOff';
-import { ToolsCircleGrid } from '@/components/dashboard/ToolsCircleGrid';
-import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
+import { RecommendedForYou } from '@/components/dashboard/RecommendedForYou';
+import { VerseOfTheDay } from '@/components/dashboard/VerseOfTheDay';
+import { QuickActionsRow } from '@/components/dashboard/QuickActionsRow';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
-import { SocialStudioHighlightCard } from '@/components/dashboard/SocialStudioHighlightCard';
+import { SocialStudioPromoCard } from '@/components/dashboard/SocialStudioPromoCard';
+import { MoreToolsAccordion } from '@/components/dashboard/MoreToolsAccordion';
 import { OnboardingNudgeCard } from '@/components/dashboard/OnboardingNudgeCard';
-import { SmartDevotionalRecommender } from '@/components/engagement/SmartDevotionalRecommender';
-import { NotificationCenter } from '@/components/engagement/NotificationCenter';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import {
   Search, BookOpen, Globe, Quote, ScrollText, Languages,
@@ -123,35 +123,40 @@ export default function Dashboard() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 2 — Continue de onde parou
+          FAIXA 2 — Continue de onde parou (4 cards)  +  Recomendado  +  Versículo
+          Desktop ≥lg: 12 colunas (Continue 7 / Recomendado 3 / Versículo 2)
           ═══════════════════════════════════════════════════════════════ */}
-      <ContinueWhereYouLeftOff />
-
-      {/* Smart recommender (engagement) */}
-      <SmartDevotionalRecommender />
-
-      {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 3 — Ações rápidas (ferramentas circulares)
-          ═══════════════════════════════════════════════════════════════ */}
-      <ToolsCircleGrid onToolClick={handleToolClick} />
-
-      {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 4 — Recomendados + Recentes
-          ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <RecentGenerations />
-        <NotificationCenter />
+      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <ContinueWhereYouLeftOff />
+        </div>
+        <div className="lg:col-span-3">
+          <RecommendedForYou />
+        </div>
+        <div className="lg:col-span-2">
+          <VerseOfTheDay />
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 5 — Estúdio Social em destaque
+          FAIXA 3 — Ações Rápidas + Suas Criações Recentes + Estúdio Social
+          Desktop ≥lg: 12 colunas (Ações 3 / Recentes 5 / Estúdio 4)
           ═══════════════════════════════════════════════════════════════ */}
-      <SocialStudioHighlightCard />
+      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-3">
+          <QuickActionsRow onMore={() => setExtrasOpen(true)} />
+        </div>
+        <div className="lg:col-span-5">
+          <RecentGenerations />
+        </div>
+        <div className="lg:col-span-4">
+          <SocialStudioPromoCard />
+        </div>
+      </div>
 
       {/* More tools */}
       <MoreToolsAccordion onToolClick={handleToolClick} />
 
-      {/* Conta & App */}
       <section className="pt-2">
         <div className="mb-3 flex items-center gap-2">
           <span className="text-[11px] font-semibold tracking-[0.14em] uppercase text-muted-foreground">
