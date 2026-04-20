@@ -28,17 +28,21 @@ interface Props {
 
 export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, initialVerse, initialVerseEnd, initialTranslation }: Props) {
   const { lang } = useLanguage();
+  const { profile, refreshProfile } = useAuth();
   const [book, setBook] = useState(initialBook || 'John');
   const [chapter, setChapter] = useState(initialChapter || 3);
   const [translation, setTranslation] = useState(initialTranslation || getTranslation(lang));
   const [verses, setVerses] = useState<{ verse: number; text: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [bookOpen, setBookOpen] = useState(false);
+  const [bookSearch, setBookSearch] = useState('');
   const [goToVerse, setGoToVerse] = useState('');
   const verseRefs = useRef<Record<number, HTMLSpanElement | null>>({});
   const [highlightRange, setHighlightRange] = useState<{ start: number; end?: number } | null>(null);
   // When opened from a ref link, default to showing only the referenced verses
   const [showFullChapter, setShowFullChapter] = useState(false);
+  // Compare-versions sheet (3 versions side-by-side)
+  const [compareOpen, setCompareOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
