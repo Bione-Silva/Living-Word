@@ -215,7 +215,7 @@ export function BibleCompareSheet({
   // Filter version options to exclude the sermon version + the OTHER compare slot, so user
   // never picks duplicates.
   const buildOptions = (excludeCodes: string[]) =>
-    BIBLE_VERSIONS.filter((bv) => !excludeCodes.map((c) => c.toUpperCase()).includes(bv.code.toUpperCase()));
+    ALL_VERSIONS.filter((bv) => bv.isAvailable && !excludeCodes.map((c) => c.toLowerCase()).includes(bv.code.toLowerCase()));
 
   const surfaceBg = isDark ? 'bg-slate-900 text-slate-50' : 'bg-white text-slate-900';
   const borderClass = isDark ? 'border-slate-800' : 'border-slate-200';
@@ -340,7 +340,7 @@ export function BibleCompareSheet({
                             ? (isDark ? 'bg-amber-500/30 text-amber-200' : 'bg-amber-200 text-amber-900')
                             : (isDark ? 'bg-slate-700 text-slate-200' : 'bg-slate-200 text-slate-700'),
                         )}>
-                          {getVersionLabel(r.version)}
+                          {getBibleVersion(r.version)?.shortLabel || r.version}
                         </span>
                         {isPrimary && (
                           <span className={cn('text-[10px] font-medium', isDark ? 'text-amber-300/80' : 'text-amber-700')}>
