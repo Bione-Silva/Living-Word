@@ -292,7 +292,7 @@ export function BibleCompareSheet({
                 <SelectContent>
                   {buildOptions([v1, v3]).map((bv) => (
                     <SelectItem key={bv.code} value={bv.code} className="text-xs">
-                      {bv.full}
+                      {`${bv.shortLabel} — ${bv.name}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -309,7 +309,7 @@ export function BibleCompareSheet({
                 <SelectContent>
                   {buildOptions([v1, v2]).map((bv) => (
                     <SelectItem key={bv.code} value={bv.code} className="text-xs">
-                      {bv.full}
+                      {`${bv.shortLabel} — ${bv.name}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
