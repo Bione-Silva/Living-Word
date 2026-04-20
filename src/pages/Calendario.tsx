@@ -5,12 +5,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Sparkles, Plus, Filter } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { CalendarGrid, type CalendarItem } from '@/components/calendario/CalendarGrid';
 import { ContentPreviewPanel } from '@/components/calendario/ContentPreviewPanel';
 import { NetworkFilterBar, type NetworkKey, type FilterKey, NETWORK_META } from '@/components/calendario/NetworkFilterBar';
-import { NewPostDialog } from '@/components/calendario/NewPostDialog';
 import { GenerateWithAIDialog } from '@/components/calendario/GenerateWithAIDialog';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -44,7 +43,6 @@ export default function Calendario() {
   const [activeNetworks, setActiveNetworks] = useState<Set<FilterKey>>(
     new Set(['instagram', 'facebook', 'x', 'linkedin', 'tiktok', 'youtube', 'sermon', 'blog']),
   );
-  const [showNewPost, setShowNewPost] = useState(false);
   const [showAI, setShowAI] = useState(false);
 
   const year = currentDate.getFullYear();
@@ -157,10 +155,6 @@ export default function Calendario() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => setShowNewPost(true)} className="gap-1.5">
-            <Plus className="h-4 w-4" />
-            {t('newPost')}
-          </Button>
           <Button
             size="sm"
             onClick={() => setShowAI(true)}
@@ -216,7 +210,6 @@ export default function Calendario() {
         />
       </div>
 
-      <NewPostDialog open={showNewPost} onOpenChange={setShowNewPost} lang={lang} />
       <GenerateWithAIDialog open={showAI} onOpenChange={setShowAI} lang={lang} />
     </div>
   );
