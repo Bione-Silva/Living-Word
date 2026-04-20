@@ -5,12 +5,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Sparkles, Plus, Filter } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { CalendarGrid, type CalendarItem } from '@/components/calendario/CalendarGrid';
 import { ContentPreviewPanel } from '@/components/calendario/ContentPreviewPanel';
 import { NetworkFilterBar, type NetworkKey, type FilterKey, NETWORK_META } from '@/components/calendario/NetworkFilterBar';
-import { NewPostDialog } from '@/components/calendario/NewPostDialog';
 import { GenerateWithAIDialog } from '@/components/calendario/GenerateWithAIDialog';
 
 type L = 'PT' | 'EN' | 'ES';
