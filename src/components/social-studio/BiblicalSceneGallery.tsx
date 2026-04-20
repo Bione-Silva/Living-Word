@@ -114,6 +114,9 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
   const [seeding, setSeeding] = useState(false);
   const [selectedScenes, setSelectedScenes] = useState<SceneRow[]>([]);
   const [variationBusy, setVariationBusy] = useState(false);
+  // 'single' = 1 imagem aplicada como fundo único.
+  // 'carousel' = N imagens (= slideCount) com mesma cena, ângulos diferentes — 1 por slide.
+  const [aiMode, setAiMode] = useState<'single' | 'carousel'>('carousel');
 
   // Detecta se o usuário é admin (para mostrar botão de popular banco)
   useEffect(() => {
