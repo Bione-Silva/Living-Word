@@ -12,28 +12,34 @@ const L10N = {
   copied: { PT: 'Versículo copiado!', EN: 'Verse copied!', ES: '¡Versículo copiado!' },
 } satisfies Record<string, Record<L, string>>;
 
-const VERSES: Record<L, { num: number; text: string; ref: string }> = {
+const VERSES: Record<L, { text: string; ref: string }> = {
   PT: {
-    num: 5,
     text: 'Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.',
     ref: 'Salmos 37:5',
   },
   EN: {
-    num: 5,
     text: 'Commit your way to the Lord; trust in him, and he will act.',
     ref: 'Psalm 37:5',
   },
   ES: {
-    num: 5,
     text: 'Encomienda al Señor tu camino; confía en él, y él hará.',
     ref: 'Salmos 37:5',
   },
+};
+
+const MONTHS: Record<L, string[]> = {
+  PT: ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'],
+  EN: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+  ES: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
 };
 
 export function VerseOfTheDay() {
   const { lang: cur } = useLanguage();
   const lang = (cur || 'PT') as L;
   const v = useMemo(() => VERSES[lang], [lang]);
+  const today = new Date();
+  const day = today.getDate();
+  const month = MONTHS[lang][today.getMonth()];
 
   const handleShare = async () => {
     const text = `"${v.text}" — ${v.ref}`;
@@ -58,8 +64,11 @@ export function VerseOfTheDay() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 flex flex-col items-center text-center gap-2 h-[calc(100%-1.75rem)]">
-        <div className="text-4xl font-bold text-primary leading-none">{v.num}</div>
-        <p className="text-[12px] text-foreground/90 leading-snug px-1">
+        <div className="flex flex-col items-center leading-none">
+          <span className="text-[10px] font-bold tracking-[0.18em] text-muted-foreground">{month}</span>
+          <span className="text-4xl font-bold text-primary leading-none mt-0.5 tabular-nums">{day}</span>
+        </div>
+        <p className="text-[12px] text-foreground/90 leading-snug px-1 mt-1">
           {v.text}
         </p>
         <p className="text-xs font-semibold text-primary mt-0.5">{v.ref}</p>
