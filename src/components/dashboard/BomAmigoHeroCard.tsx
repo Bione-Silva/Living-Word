@@ -42,7 +42,7 @@ export function BomAmigoHeroCard() {
 
   return (
     <section
-      className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm flex flex-col h-full min-h-[420px]"
+      className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm flex flex-col h-full"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
