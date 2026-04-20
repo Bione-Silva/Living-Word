@@ -24,6 +24,7 @@ import { SERMON_BLOCK_META } from '@/components/sermon/sermon-block-types';
 import { PodiumLivePreview } from '@/components/sermon/PodiumLivePreview';
 import { exportSermonToPptx } from '@/lib/sermon-pptx';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useQueryClient } from '@tanstack/react-query';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -328,6 +329,7 @@ export default function Sermoes() {
   const { user, profile } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Form state
   const [topic, setTopic] = useState('');
@@ -600,6 +602,7 @@ export default function Sermoes() {
       setSermonTitle(title);
       toast.success(labels.saved[lang]);
       await refreshSessions();
+      queryClient.invalidateQueries({ queryKey: ['materials'] });
     } catch (e) {
       toast.error('Erro ao salvar');
     }
@@ -735,6 +738,7 @@ export default function Sermoes() {
     }
     toast.success(labels.saved[lang]);
     await refreshSessions();
+    queryClient.invalidateQueries({ queryKey: ['materials'] });
   };
 
   const handleRegenerate = () => {
