@@ -157,10 +157,6 @@ export default function Calendario() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => setShowNewPost(true)} className="gap-1.5">
-            <Plus className="h-4 w-4" />
-            {t('newPost')}
-          </Button>
           <Button
             size="sm"
             onClick={() => setShowAI(true)}
