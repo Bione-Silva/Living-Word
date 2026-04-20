@@ -631,7 +631,7 @@ export default function Sermoes() {
   const lastAutoSaveSnapshotRef = useRef<string>('');
   const [autoSaving, setAutoSaving] = useState(false);
   useEffect(() => {
-    if (!user || mode !== 'blocks' || blocks.length === 0) return;
+    if (!user || editorMode !== 'blocks' || blocks.length === 0) return;
     const interval = setInterval(async () => {
       const hasContent = blocks.some((b) => (b.content || '').trim().length > 0);
       if (!hasContent) return;
@@ -643,7 +643,7 @@ export default function Sermoes() {
       if (ok) lastAutoSaveSnapshotRef.current = snapshot;
     }, 30_000);
     return () => clearInterval(interval);
-  }, [user, mode, blocks, bigIdea, passageRef, saveBlocksCore]);
+  }, [user, editorMode, blocks, bigIdea, passageRef, saveBlocksCore]);
 
   const handleDeleteSession = async (id: string) => {
     await supabase.from('materials').delete().eq('id', id);
