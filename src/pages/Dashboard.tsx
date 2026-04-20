@@ -13,7 +13,7 @@ import { BomAmigoHeroCard } from '@/components/dashboard/BomAmigoHeroCard';
 import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
 import { WeekAgendaCard } from '@/components/dashboard/WeekAgendaCard';
 import { ContinueWhereYouLeftOff } from '@/components/dashboard/ContinueWhereYouLeftOff';
-import { VerseOfTheDay } from '@/components/dashboard/VerseOfTheDay';
+
 import { QuickActionsRow } from '@/components/dashboard/QuickActionsRow';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
 import { SocialStudioPromoCard } from '@/components/dashboard/SocialStudioPromoCard';
@@ -104,8 +104,8 @@ export default function Dashboard() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 1 — Devocional + Resumo do Mês expandido + Agenda
-          Desktop ≥lg: Devocional 7 / Resumo+Agenda 5
+          FAIXA 1 — Devocional (esquerda) + Resumo, Agenda, Palavra Amiga (direita)
+          Desktop ≥lg: Devocional 7 / coluna direita 5
           ═══════════════════════════════════════════════════════════════ */}
       <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
         <div className="lg:col-span-7">
@@ -114,24 +114,14 @@ export default function Dashboard() {
         <div className="lg:col-span-5 space-y-4">
           <MonthlyOverviewCard />
           <WeekAgendaCard />
+          <BomAmigoHeroCard />
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 2 — Continue de onde parou + Palavra Amiga + Versículo
-          Desktop ≥lg: Continue 5 / Palavra Amiga 5 / Versículo 2
+          FAIXA 2 — Continue de onde parou (full width, cards maiores)
           ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-          <ContinueWhereYouLeftOff />
-        </div>
-        <div className="lg:col-span-5">
-          <BomAmigoHeroCard />
-        </div>
-        <div className="lg:col-span-2">
-          <VerseOfTheDay />
-        </div>
-      </div>
+      <ContinueWhereYouLeftOff />
 
       {/* ═══════════════════════════════════════════════════════════════
           FAIXA 3 — Ações Rápidas + Suas Criações Recentes + Estúdio Social
