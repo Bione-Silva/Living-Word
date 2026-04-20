@@ -154,7 +154,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Conta & App */}
+      {/* More tools */}
+      <MoreToolsAccordion onToolClick={handleToolClick} />
+
       <section className="pt-2">
         <div className="mb-3 flex items-center gap-2">
           <span className="text-[11px] font-semibold tracking-[0.14em] uppercase text-muted-foreground">
