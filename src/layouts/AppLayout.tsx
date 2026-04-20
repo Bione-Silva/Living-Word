@@ -268,8 +268,10 @@ export default function AppLayout() {
           <MobileInstallBanner />
         </div>
 
-        <main className={`flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-[calc(5rem+env(safe-area-inset-bottom))] ${isBibleRoute ? 'bible-light bible-light-surface' : ''}`}>
-          <Outlet />
+        <main className={`flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden px-3 py-4 pb-[calc(5rem+env(safe-area-inset-bottom))] ${isBibleRoute ? 'bible-light bible-light-surface' : ''}`}>
+          <div className="min-w-0 w-full max-w-full">
+            <Outlet />
+          </div>
         </main>
 
         {/* ─── Mobile BottomNavBar: 6 essential items ─── */}
