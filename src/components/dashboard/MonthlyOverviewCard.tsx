@@ -160,29 +160,29 @@ export function MonthlyOverviewCard() {
   if (!user) return null;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[11px] font-bold tracking-[0.18em] uppercase text-foreground">
+    <section className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-4 gap-2">
+        <h3 className="text-[11px] font-bold tracking-[0.18em] uppercase text-foreground truncate">
           {COPY.title[lang]}
         </h3>
         <Link
           to="/calendario"
-          className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-0.5"
+          className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-0.5 shrink-0"
         >
           {COPY.details[lang]} <ChevronRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-3">
         {tiles.map((t) => (
           <div
             key={t.label}
-            className="rounded-xl border border-border bg-background/60 p-3.5 flex flex-col gap-1.5"
+            className="rounded-xl border border-border bg-background/60 p-3 sm:p-3.5 flex flex-col gap-1.5"
           >
             <span className="text-[10.5px] font-medium text-muted-foreground leading-tight line-clamp-2 min-h-[26px]">
               {t.label}
             </span>
-            <p className="text-xl font-bold text-foreground leading-none tracking-tight">
+            <p className="text-lg sm:text-xl font-bold text-foreground leading-none tracking-tight">
               {t.value}
             </p>
             {t.delta !== null ? (

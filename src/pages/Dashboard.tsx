@@ -88,7 +88,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 max-w-[1280px] mx-auto pb-4">
+    <div className="space-y-5 md:space-y-6 max-w-[1280px] mx-auto pb-4 px-1 sm:px-0">
       {/* Mobile-first onboarding nudge */}
       <div className="md:hidden">
         <OnboardingNudgeCard />
@@ -105,18 +105,19 @@ export default function Dashboard() {
 
       {/* ═══════════════════════════════════════════════════════════════
           TOPO — Protagonistas em split 50/50 (mesmo peso visual)
-          Devocional Diário (Story 9:16) + Palavra Amiga
-          Empilham no mobile/tablet (<lg). Lado a lado no desktop.
+          - Mobile (<md): empilha vertical
+          - Tablet/Desktop (≥md): lado a lado 50/50
           ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 lg:gap-5 lg:grid-cols-2 items-stretch">
+      <div className="grid gap-4 md:gap-5 md:grid-cols-2 items-stretch">
         <DevotionalHeroCard />
         <BomAmigoHeroCard />
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          BLOCOS SECUNDÁRIOS — sem competir com os protagonistas
-          Esquerda (7/12): Continue → Recentes → Ações rápidas
-          Direita  (5/12): Resumo do mês → Agenda → Estúdio Social
+          BLOCOS SECUNDÁRIOS
+          - Mobile: tudo empilha em uma coluna
+          - Tablet (md): coluna única ainda — evita espremer
+          - Desktop (lg): split 7/5
           ═══════════════════════════════════════════════════════════════ */}
       <div className="grid gap-4 lg:gap-5 lg:grid-cols-12 items-start">
         {/* Coluna esquerda */}

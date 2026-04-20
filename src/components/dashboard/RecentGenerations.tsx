@@ -222,7 +222,7 @@ export function RecentGenerations() {
             <Link
               key={m.id}
               to={to}
-              className="group rounded-xl p-3 flex items-center gap-3 bg-card border border-border hover:border-primary/30 hover:shadow-sm transition-all"
+              className="group rounded-xl p-3 flex items-center gap-2.5 sm:gap-3 bg-card border border-border hover:border-primary/30 hover:shadow-sm transition-all"
             >
               <span
                 className={`h-9 w-9 rounded-lg ${style.iconWrap} flex items-center justify-center shrink-0`}
@@ -234,13 +234,13 @@ export function RecentGenerations() {
                 <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                   {m.title}
                 </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+                <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
                   {relativeTime(m.created_at, lang)}
                 </p>
               </div>
 
               <span
-                className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} shrink-0`}
+                className={`hidden sm:inline-flex text-[10px] font-semibold px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} shrink-0`}
               >
                 {label}
               </span>
@@ -252,7 +252,7 @@ export function RecentGenerations() {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
-                className="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted shrink-0 transition-colors"
+                className="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted shrink-0 transition-colors"
               >
                 <MoreHorizontal className="h-4 w-4" />
               </button>

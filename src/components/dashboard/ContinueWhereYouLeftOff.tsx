@@ -166,7 +166,7 @@ export function ContinueWhereYouLeftOff() {
 
       <div
         className={`grid gap-3 grid-cols-1 sm:grid-cols-2 ${
-          cards.length >= 4 ? 'lg:grid-cols-4' : cards.length === 3 ? 'lg:grid-cols-3' : cards.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-1'
+          cards.length >= 4 ? 'xl:grid-cols-4' : cards.length === 3 ? 'xl:grid-cols-3' : ''
         }`}
       >
         {cards.map((c, i) => {

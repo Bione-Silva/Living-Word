@@ -48,19 +48,19 @@ export function QuickActionsRow({ onMore }: QuickActionsRowProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 sm:gap-3">
+      <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 lg:grid-cols-4 xl:grid-cols-8 gap-2 sm:gap-2.5">
         {actions.map((a) => {
           const Icon = a.icon;
           return (
             <button
               key={a.id}
               onClick={a.action}
-              className="flex flex-col items-center gap-1.5 group"
+              className="flex flex-col items-center gap-1.5 group min-w-0"
             >
-              <div className="w-full aspect-square max-h-12 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center transition-all group-hover:bg-primary/15 group-hover:border-primary/30 group-active:scale-95">
+              <div className="w-full aspect-square max-h-14 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center transition-all group-hover:bg-primary/15 group-hover:border-primary/30 group-active:scale-95">
                 <Icon className="h-5 w-5 text-primary" />
               </div>
-              <span className="text-[10px] font-medium text-foreground text-center leading-tight line-clamp-2">
+              <span className="text-[10px] font-medium text-foreground text-center leading-tight line-clamp-2 w-full">
                 {a.label[lang]}
               </span>
             </button>
