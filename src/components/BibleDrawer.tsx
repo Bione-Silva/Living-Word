@@ -221,14 +221,23 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
                 )}
               </div>
 
-              {/* Expand to full chapter */}
-              <button
-                onClick={() => setShowFullChapter(true)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-              >
-                <ChevronDown className="h-3.5 w-3.5" />
-                {lang === 'PT' ? 'Ver capítulo completo' : lang === 'ES' ? 'Ver capítulo completo' : 'View full chapter'}
-              </button>
+              {/* Action buttons: Compare versions + Expand */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setCompareOpen(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-primary/30 bg-primary/5 text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Comparar versões' : lang === 'ES' ? 'Comparar versiones' : 'Compare versions'}
+                </button>
+                <button
+                  onClick={() => setShowFullChapter(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                >
+                  <ChevronDown className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Capítulo completo' : lang === 'ES' ? 'Capítulo completo' : 'Full chapter'}
+                </button>
+              </div>
             </>
           )}
 
