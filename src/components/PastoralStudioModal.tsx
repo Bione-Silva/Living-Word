@@ -325,7 +325,11 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
       }).select('id').single();
 
       if (error) throw error;
-      if (insertData) setSavedMaterialId(insertData.id);
+      if (insertData) {
+        setSavedMaterialId(insertData.id);
+        const { triggerAutoFeed } = await import('@/lib/autofeed-trigger');
+        triggerAutoFeed(insertData.id, activeTab === 'sermon' ? 'sermon' : activeTab === 'outline' ? 'outline' : 'devotional');
+      }
       toast.success(text.saved);
     } catch {
       toast.error(text.saveError);
