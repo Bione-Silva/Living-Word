@@ -7,6 +7,7 @@ export interface SlideData {
   subtitle?: string;
   slideNumber?: number;
   totalSlides?: number;
+  bgImageUrl?: string;
 }
 
 interface Props {
@@ -256,14 +257,15 @@ function CinematicTemplate({ slide, bgImageUrl, themeColor, fontFamily, showWate
   const font = fontFamily || "'Cormorant Garamond', 'Georgia', serif";
   const fallbackGradient = themeColor || 'linear-gradient(135deg, #1a1a2e, #0f3460)';
   const verseSize = autoVerseSize(slide.text);
+  const activeBgImageUrl = slide.bgImageUrl || bgImageUrl;
 
   return (
     <div
       className="relative h-full w-full overflow-hidden flex items-center justify-center"
       style={{ fontFamily: font, containerType: 'size' }}
     >
-      {bgImageUrl ? (
-        <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+      {activeBgImageUrl ? (
+        <img src={activeBgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
       ) : (
         <div className="absolute inset-0" style={{ backgroundImage: fallbackGradient }} />
       )}
