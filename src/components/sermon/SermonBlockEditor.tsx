@@ -292,7 +292,7 @@ export function SermonBlockEditor({
   return (
     <div className="space-y-4">
       {/* ─── Seletor compacto: bolinhas coloridas com fundo -50 (mesma paleta do Púlpito Claro) ─── */}
-      <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2.5">
+      <div className="relative z-20 rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2.5 overflow-visible">
         <div className="flex items-center justify-between mb-1.5 gap-2">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
             {tr.quickAdd[lang]}
