@@ -4,10 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BookOpen, Copy, Share2, FileDown, Loader2, X, ExternalLink } from 'lucide-react';
+import { BookOpen, Copy, Share2, FileDown, Loader2, X, ExternalLink, BookMarked, FolderPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { getBookName, type L } from '@/lib/bible-data';
 import ReactMarkdown from 'react-markdown';
+import { SaveToWorkspaceDialog } from '@/components/workspaces/SaveToWorkspaceDialog';
 
 /** Convert structured study JSON to markdown */
 function studyToMarkdown(study: Record<string, any>): string {
@@ -97,6 +98,10 @@ const labels = {
   copy: { PT: 'Copiar', EN: 'Copy', ES: 'Copiar' },
   share: { PT: 'Enviar', EN: 'Share', ES: 'Compartir' },
   pdf: { PT: 'PDF', EN: 'PDF', ES: 'PDF' },
+  saveLib: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' },
+  saveWs: { PT: 'Workspace', EN: 'Workspace', ES: 'Workspace' },
+  savedLib: { PT: 'Salvo na Biblioteca!', EN: 'Saved to Library!', ES: '¡Guardado en Biblioteca!' },
+  saving: { PT: 'Salvando...', EN: 'Saving...', ES: 'Guardando...' },
 } satisfies Record<string, Record<L, string>>;
 
 // Match verse references like "João 3:16", "Genesis 1:1-3", "1 Coríntios 13:4"
@@ -118,7 +123,54 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [savedMaterialId, setSavedMaterialId] = useState<string | null>(null);
+  const [savingLib, setSavingLib] = useState(false);
+  const [wsDialogOpen, setWsDialogOpen] = useState(false);
   const lastPassageRef = useRef('');
+
+  // Reset saved state when passage changes
+  useEffect(() => {
+    setSavedMaterialId(null);
+  }, [passage]);
+
+  const ensureSaved = useCallback(async (): Promise<string | null> => {
+    if (savedMaterialId) return savedMaterialId;
+    if (!user || !content) return null;
+    setSavingLib(true);
+    try {
+      const { data, error: insErr } = await supabase
+        .from('materials')
+        .insert({
+          user_id: user.id,
+          title: passage,
+          content,
+          type: 'biblical_study',
+          passage,
+          language: lang,
+        })
+        .select('id')
+        .single();
+      if (insErr) throw insErr;
+      setSavedMaterialId(data.id);
+      return data.id;
+    } catch (e) {
+      toast.error((e as Error).message);
+      return null;
+    } finally {
+      setSavingLib(false);
+    }
+  }, [savedMaterialId, user, content, passage, lang]);
+
+  const handleSaveToLibrary = async () => {
+    const id = await ensureSaved();
+    if (id) toast.success(labels.savedLib[lang]);
+  };
+
+  const handleSaveToWorkspace = async () => {
+    const id = await ensureSaved();
+    if (id) setWsDialogOpen(true);
+  };
+
 
   const generate = useCallback(async () => {
     if (!user || !passage) return;
@@ -275,7 +327,7 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
 
           {/* Action buttons */}
           {content && !loading && (
-            <div className="flex items-center gap-2 mt-3">
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted/60 transition-colors"
@@ -293,6 +345,21 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted/60 transition-colors"
               >
                 <FileDown className="h-3.5 w-3.5" /> {labels.pdf[lang]}
+              </button>
+              <button
+                onClick={handleSaveToLibrary}
+                disabled={savingLib}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5 text-primary text-xs font-medium hover:bg-primary/10 transition-colors disabled:opacity-60"
+              >
+                <BookMarked className="h-3.5 w-3.5" />
+                {savingLib ? labels.saving[lang] : labels.saveLib[lang]}
+              </button>
+              <button
+                onClick={handleSaveToWorkspace}
+                disabled={savingLib}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5 text-primary text-xs font-medium hover:bg-primary/10 transition-colors disabled:opacity-60"
+              >
+                <FolderPlus className="h-3.5 w-3.5" /> {labels.saveWs[lang]}
               </button>
             </div>
           )}
@@ -325,6 +392,13 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
           </div>
         </ScrollArea>
       </SheetContent>
+      {savedMaterialId && (
+        <SaveToWorkspaceDialog
+          open={wsDialogOpen}
+          onOpenChange={setWsDialogOpen}
+          materialId={savedMaterialId}
+        />
+      )}
     </Sheet>
   );
 }
