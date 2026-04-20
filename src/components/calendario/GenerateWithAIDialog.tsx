@@ -132,7 +132,7 @@ export function GenerateWithAIDialog({ open, onOpenChange, lang }: Props) {
           dayOffset++;
 
           const isSermon = kind === 'sermon';
-          const materialType = isSermon ? 'sermon' : 'article';
+          const materialType = isSermon ? 'sermon' : 'blog_article';
           const titlePrefix = pastoralLabel(kind);
 
           const { data: material, error: matErr } = await supabase
