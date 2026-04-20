@@ -6,7 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Mail, RefreshCw, AlertTriangle, CheckCircle2, Clock, Ban } from 'lucide-react';
+import { Mail, RefreshCw, AlertTriangle, CheckCircle2, Clock, Ban, TrendingUp } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
 
 type Range = '24h' | '7d' | '30d';
 type StatusFilter = 'all' | 'sent' | 'pending' | 'failed' | 'dlq' | 'suppressed' | 'stale';
@@ -47,16 +57,52 @@ export function EmailQueuePanel() {
   const [rows, setRows] = useState<LogRow[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [chartData, setChartData] = useState<Array<{ date: string; sent: number; failed: number }>>([]);
+
   const load = async () => {
     setLoading(true);
     const since = rangeStart(range).toISOString();
-    const { data, error } = await supabase
-      .from('email_send_log')
-      .select('id, message_id, template_name, recipient_email, status, error_message, created_at')
-      .gte('created_at', since)
-      .order('created_at', { ascending: false })
-      .limit(1000);
-    if (!error && data) setRows(data as LogRow[]);
+    const since30d = rangeStart('30d').toISOString();
+    const [main, series] = await Promise.all([
+      supabase
+        .from('email_send_log')
+        .select('id, message_id, template_name, recipient_email, status, error_message, created_at')
+        .gte('created_at', since)
+        .order('created_at', { ascending: false })
+        .limit(1000),
+      supabase
+        .from('email_send_log')
+        .select('message_id, status, created_at')
+        .gte('created_at', since30d)
+        .order('created_at', { ascending: false })
+        .limit(5000),
+    ]);
+    if (!main.error && main.data) setRows(main.data as LogRow[]);
+
+    // Build daily series, deduplicated by message_id (latest status wins)
+    if (!series.error && series.data) {
+      const seenMsg = new Set<string>();
+      const buckets = new Map<string, { sent: number; failed: number }>();
+      // initialize 30 day buckets
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        buckets.set(d.toISOString().slice(0, 10), { sent: 0, failed: 0 });
+      }
+      for (const r of series.data as Array<{ message_id: string | null; status: string; created_at: string }>) {
+        const key = r.message_id || `${r.created_at}-${r.status}`;
+        if (seenMsg.has(key)) continue;
+        seenMsg.add(key);
+        const day = r.created_at.slice(0, 10);
+        const bucket = buckets.get(day);
+        if (!bucket) continue;
+        if (r.status === 'sent') bucket.sent++;
+        else if (r.status === 'failed' || r.status === 'dlq' || r.status === 'rate_limited') bucket.failed++;
+      }
+      setChartData(Array.from(buckets.entries()).map(([date, v]) => ({ date, ...v })));
+    }
     setLoading(false);
   };
 
@@ -168,6 +214,66 @@ export function EmailQueuePanel() {
           <StatBox label="Falhas" value={stats.failed} icon={AlertTriangle} tone="red" />
           <StatBox label="DLQ" value={stats.dlq} icon={Ban} tone="red" />
           <StatBox label="Entrega %" value={`${deliveryRate}%`} icon={CheckCircle2} tone="emerald" />
+        </div>
+
+        {/* Daily volume chart — last 30 days */}
+        <div className="rounded-lg border admin-border p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-medium">Volume diário · últimos 30 dias</h3>
+          </div>
+          <div className="h-[220px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 12, left: -16, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tickFormatter={(v: string) => {
+                    const [, m, d] = v.split('-');
+                    return `${d}/${m}`;
+                  }}
+                  interval="preserveStartEnd"
+                  minTickGap={24}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: 'hsl(var(--popover))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
+                  labelFormatter={(v: string) => {
+                    const [y, m, d] = v.split('-');
+                    return `${d}/${m}/${y}`;
+                  }}
+                />
+                <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
+                <Line
+                  type="monotone"
+                  dataKey="sent"
+                  name="Enviados"
+                  stroke="hsl(142 71% 45%)"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="failed"
+                  name="Falhas"
+                  stroke="hsl(0 72% 51%)"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* Filters */}
