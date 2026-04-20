@@ -89,7 +89,7 @@ export function CreditUsageReport() {
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(10);
   const [featureFilter, setFeatureFilter] = useState('all');
-  const userPlan = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const totalCredits = PLAN_CREDITS[userPlan] || 500;
   const usedCredits = profile?.generations_used || 0;
   const remaining = Math.max(totalCredits - usedCredits, 0);
