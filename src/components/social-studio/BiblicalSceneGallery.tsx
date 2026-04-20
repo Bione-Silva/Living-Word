@@ -498,25 +498,84 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
             </Button>
           </div>
         ) : (
-          <div className="flex gap-2">
-            <Input
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              placeholder={l.customPlaceholder}
-              className="flex-1 h-9 text-xs bg-background"
-              disabled={!canGenerate || generating}
-              onKeyDown={(e) => e.key === 'Enter' && canGenerate && !generating && handleGenerate()}
-            />
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleGenerate}
-              disabled={!canGenerate || generating || !customPrompt.trim()}
-              className="gap-1.5 shrink-0"
-            >
-              {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
-              {l.generate}
-            </Button>
+          <div className="space-y-2">
+            {/* Toggle: imagem única vs carrossel inteiro */}
+            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-lg bg-muted/40 border border-border">
+              <button
+                type="button"
+                onClick={() => setAiMode('single')}
+                disabled={generating}
+                className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                  aiMode === 'single'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <ImageIcon className="h-3 w-3" />
+                {lang === 'PT' ? '1 imagem' : lang === 'EN' ? '1 image' : '1 imagen'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiMode('carousel')}
+                disabled={generating}
+                className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                  aiMode === 'carousel'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Layers className="h-3 w-3" />
+                {lang === 'PT'
+                  ? `Carrossel (${slideCount})`
+                  : lang === 'EN'
+                    ? `Carousel (${slideCount})`
+                    : `Carrusel (${slideCount})`}
+              </button>
+            </div>
+
+            {/* Hint */}
+            <p className="text-[10px] text-muted-foreground/80 leading-relaxed px-1">
+              {aiMode === 'carousel'
+                ? lang === 'PT'
+                  ? `Gera ${slideCount} imagens da mesma cena com ângulos diferentes — 1 por slide do carrossel.`
+                  : lang === 'EN'
+                    ? `Generates ${slideCount} images of the same scene with different angles — 1 per carousel slide.`
+                    : `Genera ${slideCount} imágenes de la misma escena con ángulos diferentes — 1 por slide del carrusel.`
+                : lang === 'PT'
+                  ? 'Gera 1 imagem aplicada como fundo único do post.'
+                  : lang === 'EN'
+                    ? 'Generates 1 image applied as the single post background.'
+                    : 'Genera 1 imagen aplicada como fondo único del post.'}
+            </p>
+
+            <div className="flex gap-2">
+              <Input
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                placeholder={l.customPlaceholder}
+                className="flex-1 h-9 text-xs bg-background"
+                disabled={!canGenerate || generating}
+                onKeyDown={(e) => e.key === 'Enter' && canGenerate && !generating && handleGenerate()}
+              />
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleGenerate}
+                disabled={!canGenerate || generating || !customPrompt.trim()}
+                className="gap-1.5 shrink-0"
+              >
+                {generating
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : aiMode === 'carousel'
+                    ? <Layers className="h-3.5 w-3.5" />
+                    : <Wand2 className="h-3.5 w-3.5" />}
+                {generating
+                  ? (lang === 'PT' ? 'Gerando...' : lang === 'EN' ? 'Generating...' : 'Generando...')
+                  : aiMode === 'carousel'
+                    ? (lang === 'PT' ? `Gerar ${slideCount}` : lang === 'EN' ? `Generate ${slideCount}` : `Generar ${slideCount}`)
+                    : l.generate}
+              </Button>
+            </div>
           </div>
         )}
 
