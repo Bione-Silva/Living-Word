@@ -31,20 +31,21 @@ export const RecoveryEmail = ({ siteUrl, confirmationUrl }: RecoveryEmailProps) 
           <Text style={brand}>Living Word</Text>
         </Section>
         <Section style={card}>
-          <Heading style={h1}>Redefinir sua senha</Heading>
+          <Heading style={h1}>Vamos cuidar disso juntos 🙏</Heading>
           <Text style={text}>
-            Recebemos uma solicitação para redefinir a senha da sua conta Living Word.
-            Clique no botão abaixo para escolher uma nova senha.
+            Recebemos seu pedido para redefinir a senha do seu Altar Digital.
+            Acontece com todos nós — clique no botão abaixo e em poucos segundos
+            você estará de volta criando conteúdo pastoral com a Living Word.
           </Text>
           <Section style={buttonWrap}>
             <Button style={button} href={confirmationUrl}>
-              Redefinir senha
+              Criar nova senha
             </Button>
           </Section>
-          <Text style={smallText}>Este link expira em 1 hora por motivos de segurança.</Text>
+          <Text style={smallText}>Este link é válido por 1 hora — por sua segurança.</Text>
           <Text style={footer}>
-            Se você não solicitou esta redefinição, pode ignorar este e-mail —
-            sua senha permanecerá inalterada.
+            Se você não pediu para redefinir sua senha, fique tranquilo:
+            basta ignorar este e-mail e sua conta continuará protegida.
           </Text>
         </Section>
         <Text style={brandFooter}>
