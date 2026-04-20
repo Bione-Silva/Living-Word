@@ -78,14 +78,19 @@ Deno.serve(async (req) => {
       templateData,
     },
     headers: {
-      Authorization: `Bearer ${serviceKey}`,
+      Authorization: authHeader,
     },
   })
 
   if (invokeError) {
     console.error('send-welcome-email invoke failed', invokeError)
-    return new Response(JSON.stringify({ error: invokeError.message }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    return new Response(JSON.stringify({
+      sent: false,
+      fallback: true,
+      error: 'email_dispatch_failed',
+      message: invokeError.message,
+    }), {
+      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
