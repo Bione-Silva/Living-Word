@@ -9,7 +9,7 @@ import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/so
 import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { VersePalettePicker, type VersePalette } from '@/components/social-studio/VersePalettePicker';
 import { getBibleVersion, getDefaultVersionCode } from '@/lib/bible-data';
-import { type SlideCount } from '@/components/social-studio/SlideCountPicker';
+import { SlideCountPicker, type SlideCount } from '@/components/social-studio/SlideCountPicker';
 import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGallery';
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
 import { normalizePlan } from '@/lib/plan-normalization';
