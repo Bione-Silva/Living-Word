@@ -316,6 +316,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, nextSession) => {
       syncSession(nextSession, `auth:${event}`);
+      if (event === 'SIGNED_IN' && nextSession?.user?.email_confirmed_at) {
+        setTimeout(() => {
+          void supabase.functions.invoke('send-welcome-email', {
+            body: { emailType: 'welcome-confirmed' },
+          }).catch((e) => console.warn('[Welcome email] welcome-confirmed failed:', e));
+        }, 1000);
+      }
     });
 
     const bootstrap = async () => {
