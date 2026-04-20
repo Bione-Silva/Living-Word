@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import type { ToolCardData } from '@/components/ToolCard';
 import { isToolLockedForPlan, getMinPlanForTool, type PlanSlug } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 const researchTools: ToolCardData[] = [
   { id: 'topic-explorer', icon: Search, title: { PT: 'Explorador de Tópicos', EN: 'Topic Explorer', ES: 'Explorador de Temas' }, description: { PT: '', EN: '', ES: '' }, hasModal: true },
@@ -53,7 +54,7 @@ export default function Dashboard() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
-  const userPlan: PlanSlug = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const isFree = userPlan === 'free';
   const [activeSheet, setActiveSheet] = useState<{ id: string; title: string } | null>(null);
   const [extrasOpen, setExtrasOpen] = useState(false);

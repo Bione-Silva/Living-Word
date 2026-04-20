@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { PLAN_CREDITS } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 import { Info } from 'lucide-react';
 
 interface GenerationCounterProps {
@@ -54,7 +55,7 @@ export function GenerationCounter({ compact }: GenerationCounterProps) {
   if (!profile) return null;
 
   const used = profile.generations_used;
-  const limit = PLAN_CREDITS[profile.plan as keyof typeof PLAN_CREDITS] || 500;
+  const limit = PLAN_CREDITS[normalizePlan(profile.plan)];
   const pct = limit > 0 ? Math.round((used / limit) * 100) : 0;
   const remaining = Math.max(limit - used, 0);
 

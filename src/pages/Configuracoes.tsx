@@ -20,7 +20,8 @@ import { PlanOverviewCard } from '@/components/dashboard/PlanOverviewCard';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 import { PushNotificationsCard } from '@/components/PushNotificationsCard';
 import { ChurchProfileSection } from '@/components/settings/ChurchProfileSection';
-import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
+import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, PLAN_DISPLAY_NAMES, type PlanSlug } from '@/lib/plans';
+import { normalizePlan, isFreePlan } from '@/lib/plan-normalization';
 import { BIBLE_VERSIONS, DEFAULT_COMPARE_VERSIONS } from '@/lib/bible-versions';
 import type { Language } from '@/lib/i18n';
 
@@ -60,7 +61,7 @@ const COUNTRIES = [
 export default function Configuracoes() {
   const { profile, user, refreshProfile } = useAuth();
   const { t, lang, setLang } = useLanguage();
-  const isFree = profile?.plan === 'free';
+  const isFree = isFreePlan(profile?.plan);
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -342,10 +343,12 @@ export default function Configuracoes() {
               <CardHeader><CardTitle className="font-display">{t('settings.plan')}</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Badge variant="secondary" className="capitalize text-sm px-3 py-1">{profile?.plan || 'free'}</Badge>
+                  <Badge variant="secondary" className="capitalize text-sm px-3 py-1">
+                    {PLAN_DISPLAY_NAMES[normalizePlan(profile?.plan)]?.[lang as 'PT'|'EN'|'ES'] || normalizePlan(profile?.plan)}
+                  </Badge>
                   <span className="text-sm text-muted-foreground">
                     {(() => {
-                      const userPlan = (profile?.plan as PlanSlug) || 'free';
+                      const userPlan: PlanSlug = normalizePlan(profile?.plan);
                       const used = profile?.generations_used || 0;
                       const limit = PLAN_CREDITS[userPlan] || 500;
                       const remaining = Math.max(limit - used, 0);
@@ -366,7 +369,7 @@ export default function Configuracoes() {
                   </>
                 )}
                 {(() => {
-                  const userPlan = (profile?.plan as PlanSlug) || 'free';
+                  const userPlan: PlanSlug = normalizePlan(profile?.plan);
                   const used = profile?.generations_used || 0;
                   const limit = PLAN_CREDITS[userPlan] || 500;
                   const remaining = Math.max(limit - used, 0);

@@ -43,6 +43,7 @@ import {
   PLAN_CREDITS, isToolLockedForPlan, getMinPlanForTool, getUpgradeBadge,
   type PlanSlug, PLAN_DISPLAY_NAMES
 } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -146,7 +147,7 @@ export default function AppLayout() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState<{ featureName: string; toolId: string; requiredPlan: PlanSlug } | null>(null);
 
-  const userPlan: PlanSlug = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const isFree = userPlan === 'free';
 
   const toggleCollapsed = () => {

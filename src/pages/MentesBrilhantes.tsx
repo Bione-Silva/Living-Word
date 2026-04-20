@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { hasAccess, type PlanSlug } from '@/lib/plans';
+import { hasAccess } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MindCard } from '@/components/MindCard';
@@ -30,7 +31,7 @@ export default function MentesBrilhantes() {
   const { profile } = useAuth();
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
-  const isFree = !hasAccess((profile?.plan as PlanSlug) || 'free', 'mentes_brilhantes');
+  const isFree = !hasAccess(normalizePlan(profile?.plan), 'mentes_brilhantes');
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedMind, setSelectedMind] = useState<MindFullData | null>(null);
   const [activeMinds, setActiveMinds] = useState<string[]>([]);

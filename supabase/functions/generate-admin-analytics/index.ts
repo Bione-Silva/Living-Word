@@ -3,6 +3,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
+import { normalizePlan, PLAN_PRICE_USD } from '../_shared/plan.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -32,16 +33,20 @@ Deno.serve(async (req) => {
     const { data: profiles } = await adminClient.from('profiles').select('plan, generations_used');
 
     const totalUsers = profiles?.length || 0;
-    const free = profiles?.filter(p => p.plan === 'free').length || 0;
-    const pastoral = profiles?.filter(p => p.plan === 'pastoral').length || 0;
-    const church = profiles?.filter(p => p.plan === 'church').length || 0;
-    const ministry = profiles?.filter(p => p.plan === 'ministry').length || 0;
+    // Normalize legacy plan slugs (pastoral→starter, church→pro, ministry→igreja)
+    const counts = { free: 0, starter: 0, pro: 0, igreja: 0 };
+    for (const p of profiles ?? []) {
+      counts[normalizePlan(p.plan)]++;
+    }
     const totalGenerations = profiles?.reduce((sum, p) => sum + (p.generations_used || 0), 0) || 0;
-    const mrr = pastoral * 9.90 + church * 29.90 + ministry * 79.90;
+    const mrr =
+      counts.starter * PLAN_PRICE_USD.starter +
+      counts.pro * PLAN_PRICE_USD.pro +
+      counts.igreja * PLAN_PRICE_USD.igreja;
 
     if (!apiKey) {
       return new Response(JSON.stringify({
-        insight: `📊 **Resumo Rápido**\n\n- ${totalUsers} usuários registrados\n- ${free} free, ${pastoral} pastoral, ${church} church, ${ministry} ministry\n- MRR estimado: US$ ${mrr.toFixed(2)}\n- ${totalGenerations} gerações utilizadas\n\n*Configure o Lovable AI para análises mais profundas com IA.*`
+        insight: `📊 **Resumo Rápido**\n\n- ${totalUsers} usuários registrados\n- ${counts.free} free, ${counts.starter} starter, ${counts.pro} pro, ${counts.igreja} igreja\n- MRR estimado: US$ ${mrr.toFixed(2)}\n- ${totalGenerations} gerações utilizadas\n\n*Configure o Lovable AI para análises mais profundas com IA.*`
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -49,7 +54,7 @@ Deno.serve(async (req) => {
 
     const prompt = `Analise estes dados do SaaS Living Word e dê recomendações financeiras como um CFO:
 - Total de usuários: ${totalUsers}
-- Free: ${free}, Pastoral ($9.90): ${pastoral}, Church ($29.90): ${church}, Ministry ($79.90): ${ministry}
+- Free: ${counts.free}, Starter ($${PLAN_PRICE_USD.starter}): ${counts.starter}, Pro ($${PLAN_PRICE_USD.pro}): ${counts.pro}, Igreja ($${PLAN_PRICE_USD.igreja}): ${counts.igreja}
 - MRR atual: US$ ${mrr.toFixed(2)}
 - Total de gerações de IA utilizadas: ${totalGenerations}
 

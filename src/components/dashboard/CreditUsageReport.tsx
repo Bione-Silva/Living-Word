@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, ChevronDown, Wallet, Filter } from 'lucide-react';
 import { TOOL_CREDITS, PLAN_CREDITS, type PlanSlug } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -89,7 +90,7 @@ export function CreditUsageReport() {
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(10);
   const [featureFilter, setFeatureFilter] = useState('all');
-  const userPlan = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const totalCredits = PLAN_CREDITS[userPlan] || 500;
   const usedCredits = profile?.generations_used || 0;
   const remaining = Math.max(totalCredits - usedCredits, 0);

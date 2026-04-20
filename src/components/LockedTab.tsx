@@ -2,7 +2,8 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Lock, Crown, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getMinPlanForTool, getUpgradeBadge, PLAN_DISPLAY_NAMES, type PlanSlug } from '@/lib/plans';
+import { getMinPlanForTool, getUpgradeBadge, PLAN_DISPLAY_NAMES } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 import { useAuth } from '@/contexts/AuthContext';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -16,7 +17,7 @@ export function LockedTab({ formatName, toolId }: LockedTabProps) {
   const { lang } = useLanguage();
   const { profile } = useAuth();
 
-  const currentPlan: PlanSlug = (profile?.plan as PlanSlug) || 'free';
+  const currentPlan = normalizePlan(profile?.plan);
   const requiredPlan = toolId ? getMinPlanForTool(toolId) : 'starter';
   const planName = PLAN_DISPLAY_NAMES[requiredPlan][lang as L];
   const badgeType = getUpgradeBadge(currentPlan, requiredPlan);

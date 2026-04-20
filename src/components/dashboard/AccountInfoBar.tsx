@@ -4,12 +4,13 @@ import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 import { Crown } from 'lucide-react';
 import { PLAN_CREDITS, PLAN_DISPLAY_NAMES } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 export function AccountInfoBar() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
 
-  const plan = profile?.plan || 'free';
+  const plan = normalizePlan(profile?.plan);
   const isFree = plan === 'free';
   const used = profile?.generations_used || 0;
   const limit = PLAN_CREDITS[plan] || profile?.generations_limit || 150;

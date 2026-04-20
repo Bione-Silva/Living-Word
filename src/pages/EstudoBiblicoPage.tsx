@@ -9,6 +9,7 @@ import { StudyTypePicker, STUDY_TYPE_OPTIONS } from '@/components/biblical-study
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { isFreePlan } from '@/lib/plan-normalization';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { helpFullArticles, helpCategories } from '@/data/help-center-data';
 import type { BiblicalStudyFormData, BiblicalStudyResponse, StudyType } from '@/types/biblical-study';
@@ -28,7 +29,7 @@ export default function EstudoBiblicoPage() {
   const [generationMeta, setGenerationMeta] = useState<GenerationMeta | null>(null);
   const { profile } = useAuth();
   const { lang, t } = useLanguage();
-  const isFree = profile?.plan === 'free';
+  const isFree = isFreePlan(profile?.plan);
   const [darkStudy, setDarkStudy] = useState(false);
   const [bibleOpen, setBibleOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);

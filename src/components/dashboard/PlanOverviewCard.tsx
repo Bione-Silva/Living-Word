@@ -9,6 +9,7 @@ import {
   PLAN_DISPLAY_NAMES,
   type PlanSlug,
 } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 import {
   Crown,
   BookOpen,
@@ -61,7 +62,7 @@ export function PlanOverviewCard() {
   const { lang } = useLanguage();
   const l = lang as L;
 
-  const userPlan = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const totalCredits = PLAN_CREDITS[userPlan] || 500;
   const usedCredits = profile?.generations_used || 0;
   const remaining = Math.max(totalCredits - usedCredits, 0);

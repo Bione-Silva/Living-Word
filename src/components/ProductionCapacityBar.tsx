@@ -5,7 +5,8 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { BarChart3, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { PLAN_CREDITS, type PlanSlug } from '@/lib/plans';
+import { PLAN_CREDITS } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -22,7 +23,7 @@ export function ProductionCapacityBar() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
 
-  const plan = (profile?.plan || 'free') as PlanSlug;
+  const plan = normalizePlan(profile?.plan);
   const used = profile?.generations_used || 0;
   const limit = PLAN_CREDITS[plan] || profile?.generations_limit || 500;
   const pct = Math.min((used / limit) * 100, 100);
