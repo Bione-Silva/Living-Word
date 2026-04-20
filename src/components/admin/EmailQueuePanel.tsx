@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Mail, RefreshCw, AlertTriangle, CheckCircle2, Clock, Ban } from 'lucide-react';
 
 type Range = '24h' | '7d' | '30d';
-type StatusFilter = 'all' | 'sent' | 'pending' | 'failed' | 'dlq' | 'suppressed';
+type StatusFilter = 'all' | 'sent' | 'pending' | 'failed' | 'dlq' | 'suppressed' | 'stale';
 
 interface LogRow {
   id: string;
@@ -28,6 +28,7 @@ const STATUS_STYLES: Record<string, string> = {
   dlq: 'bg-red-700/15 text-red-700 border-red-700/30',
   suppressed: 'bg-zinc-500/15 text-zinc-600 border-zinc-500/30',
   rate_limited: 'bg-orange-500/15 text-orange-600 border-orange-500/30',
+  stale: 'bg-zinc-400/15 text-zinc-500 border-zinc-400/30',
 };
 
 const rangeStart = (r: Range): Date => {
@@ -135,6 +136,11 @@ export function EmailQueuePanel() {
       .sort((a, b) => b.total - a.total);
   }, [reclassified]);
 
+  // Delivery rate excludes stale (sends whose final state was lost) so the
+  // metric reflects the live system, not legacy infrastructure incidents.
+  const deliveryDenom = stats.total - stats.stale;
+  const deliveryRate = deliveryDenom > 0 ? ((stats.sent / deliveryDenom) * 100).toFixed(1) : '0.0';
+
   return (
     <Card className="admin-card">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -191,6 +197,7 @@ export function EmailQueuePanel() {
               <SelectItem value="failed">Falha</SelectItem>
               <SelectItem value="dlq">DLQ</SelectItem>
               <SelectItem value="suppressed">Suprimido</SelectItem>
+              <SelectItem value="stale">Stale (perdido)</SelectItem>
             </SelectContent>
           </Select>
 
