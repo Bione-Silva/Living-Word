@@ -392,6 +392,13 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
           </div>
         </ScrollArea>
       </SheetContent>
+      {savedMaterialId && (
+        <SaveToWorkspaceDialog
+          open={wsDialogOpen}
+          onOpenChange={setWsDialogOpen}
+          materialId={savedMaterialId}
+        />
+      )}
     </Sheet>
   );
 }
