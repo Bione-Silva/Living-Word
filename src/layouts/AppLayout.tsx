@@ -43,6 +43,7 @@ import {
   PLAN_CREDITS, isToolLockedForPlan, getMinPlanForTool, getUpgradeBadge,
   type PlanSlug, PLAN_DISPLAY_NAMES
 } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 type L = 'PT' | 'EN' | 'ES';
 

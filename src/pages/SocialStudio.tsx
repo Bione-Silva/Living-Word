@@ -12,6 +12,7 @@ import { getBibleVersion, getDefaultVersionCode } from '@/lib/bible-data';
 import { type SlideCount } from '@/components/social-studio/SlideCountPicker';
 import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGallery';
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 import { VariationGrid, type VariationGridHandle } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
