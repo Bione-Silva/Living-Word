@@ -1,24 +1,44 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Download, Share2, Trash2, Calendar, Clock, ImageIcon } from 'lucide-react';
+import { Copy, Download, Trash2, Calendar, Clock, ImageIcon, Instagram, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { NETWORK_META } from './NetworkFilterBar';
+import { InstagramMockup } from './InstagramMockup';
 import type { CalendarItem } from './CalendarGrid';
 
 type L = 'PT' | 'EN' | 'ES';
+
+interface ProfileLite {
+  blog_handle?: string | null;
+  avatar_url?: string | null;
+  church_name?: string | null;
+}
 
 const COPY = {
   scheduled: { PT: 'Agendado', EN: 'Scheduled', ES: 'Programado' },
   published: { PT: 'Publicado', EN: 'Published', ES: 'Publicado' },
   draft: { PT: 'Rascunho', EN: 'Draft', ES: 'Borrador' },
+  approved: { PT: 'Aprovado', EN: 'Approved', ES: 'Aprobado' },
   caption: { PT: 'Legenda', EN: 'Caption', ES: 'Leyenda' },
   hashtags: { PT: 'Hashtags', EN: 'Hashtags', ES: 'Hashtags' },
   copyCaption: { PT: 'Copiar legenda', EN: 'Copy caption', ES: 'Copiar leyenda' },
   download: { PT: 'Baixar imagem', EN: 'Download image', ES: 'Descargar imagen' },
-  share: { PT: 'Compartilhar link', EN: 'Share link', ES: 'Compartir enlace' },
+  openInsta: { PT: 'Abrir no Instagram', EN: 'Open in Instagram', ES: 'Abrir en Instagram' },
   remove: { PT: 'Remover', EN: 'Remove', ES: 'Eliminar' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
   noImage: { PT: 'Sem imagem', EN: 'No image', ES: 'Sin imagen' },
+  prepared: {
+    PT: 'Imagem baixada e legenda copiada. Cole no Instagram.',
+    EN: 'Image downloaded and caption copied. Paste in Instagram.',
+    ES: 'Imagen descargada y leyenda copiada. Pega en Instagram.',
+  },
+  preparedNoImg: {
+    PT: 'Legenda copiada. Cole no Instagram.',
+    EN: 'Caption copied. Paste in Instagram.',
+    ES: 'Leyenda copiada. Pega en Instagram.',
+  },
+  autoFeed: { PT: 'Gerado por AutoFeed', EN: 'AutoFeed generated', ES: 'Generado por AutoFeed' },
+  preview: { PT: 'Pré-visualização', EN: 'Preview', ES: 'Vista previa' },
 } satisfies Record<string, Record<L, string>>;
 
 interface Props {
@@ -26,9 +46,10 @@ interface Props {
   lang: L;
   onDelete: (item: CalendarItem) => void;
   emptyText: string;
+  profile?: ProfileLite;
 }
 
-export function ContentPreviewPanel({ item, lang, onDelete, emptyText }: Props) {
+export function ContentPreviewPanel({ item, lang, onDelete, emptyText, profile }: Props) {
   const t = (k: keyof typeof COPY) => COPY[k][lang];
 
   if (!item) {
@@ -66,19 +87,34 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText }: Props) 
     a.click();
   };
 
-  const shareLink = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
+  const openInInstagram = async () => {
+    const text = `${item.caption}${item.hashtags ? `\n\n${item.hashtags}` : ''}`;
+    let downloaded = false;
+    if (item.image_url) {
       try {
-        await navigator.share({ title: item.title, text: item.caption, url });
+        const a = document.createElement('a');
+        a.href = item.image_url;
+        a.download = `${item.title.slice(0, 40) || 'post'}.png`;
+        a.target = '_blank';
+        a.click();
+        downloaded = true;
       } catch {
-        // user cancelled
+        // ignore
       }
-    } else {
-      await navigator.clipboard.writeText(url);
-      toast.success(t('copied'));
     }
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // ignore
+    }
+    toast.success(downloaded ? t('prepared') : t('preparedNoImg'));
+    // Open Instagram (deep link on mobile, web fallback elsewhere)
+    setTimeout(() => {
+      window.open('https://www.instagram.com/', '_blank', 'noopener');
+    }, 250);
   };
+
+  const isInstagram = item.kind === 'social' && item.network === 'instagram';
 
   return (
     <aside className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden xl:sticky xl:top-4 xl:self-start max-h-[calc(100vh-2rem)] flex flex-col">

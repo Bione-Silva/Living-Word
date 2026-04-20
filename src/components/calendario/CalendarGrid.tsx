@@ -15,6 +15,7 @@ export interface CalendarItem {
   scheduled_at: string | null;
   status: string;
   editorial_type?: string;
+  auto_generated?: boolean;
 }
 
 const WEEKDAYS: Record<L, string[]> = {
