@@ -613,6 +613,7 @@ export default function Sermoes() {
       setSermonContent(md);
       setSermonTitle(title);
       toast.success(labels.saved[lang]);
+      flashSaved();
       await refreshSessions();
       queryClient.invalidateQueries({ queryKey: ['materials'] });
     } catch (e) {
@@ -749,6 +750,7 @@ export default function Sermoes() {
       if (data) setActiveSessionId(data.id);
     }
     toast.success(labels.saved[lang]);
+    flashSaved();
     await refreshSessions();
     queryClient.invalidateQueries({ queryKey: ['materials'] });
   };
@@ -1148,8 +1150,15 @@ export default function Sermoes() {
                   {/* Action buttons */}
                   {sermonContent && (
                     <div className="flex flex-wrap gap-2 mt-6 mb-4 pt-4 border-t border-border justify-start animate-in fade-in duration-300">
-                      <button onClick={handleSave} className={`${actionBtn} !border-primary/30 !bg-primary/5 !text-primary`}>
-                        <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+                      <button
+                        onClick={handleSave}
+                        className={`${actionBtn} transition-all ${
+                          justSaved
+                            ? '!border-emerald-500/50 !bg-emerald-500/10 !text-emerald-700 dark:!text-emerald-400'
+                            : '!border-primary/30 !bg-primary/5 !text-primary'
+                        }`}
+                      >
+                        <Save className="h-3.5 w-3.5" /> {justSaved ? labels.saved[lang] : labels.save[lang]}
                       </button>
                       <button
                         onClick={() => setPodiumOpen(true)}
@@ -1373,9 +1382,13 @@ export default function Sermoes() {
             </button>
             <button
               onClick={handleSaveBlocks}
-              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
+              className={`shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap ${
+                justSaved
+                  ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                  : 'border-border bg-background hover:bg-muted text-foreground'
+              }`}
             >
-              <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+              <Save className="h-3.5 w-3.5" /> {justSaved ? labels.saved[lang] : labels.save[lang]}
             </button>
             <button
               onClick={() => setRawTextOpen(true)}
@@ -1485,9 +1498,13 @@ export default function Sermoes() {
             <span className="md:hidden shrink-0 h-6 w-px bg-border mx-0.5" />
             <button
               onClick={handleSave}
-              className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border border-border bg-background hover:bg-muted text-foreground transition-colors whitespace-nowrap"
+              className={`shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap ${
+                justSaved
+                  ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                  : 'border-border bg-background hover:bg-muted text-foreground'
+              }`}
             >
-              <Save className="h-3.5 w-3.5" /> {labels.save[lang]}
+              <Save className="h-3.5 w-3.5" /> {justSaved ? labels.saved[lang] : labels.save[lang]}
             </button>
             <button
               onClick={() => setSlidesOpen(true)}
