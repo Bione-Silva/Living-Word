@@ -423,7 +423,7 @@ export default function AppLayout() {
 
         {/* ─── Mobile Hamburger Menu (left drawer) — full navigation ─── */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetContent side="left" className="theme-app w-[88vw] max-w-[340px] p-0 overflow-y-auto">
+          <SheetContent side="left" className="theme-app w-[260px] max-w-[75vw] p-0 overflow-y-auto">
             <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
               <SheetTitle className="font-display text-xl text-sidebar-foreground text-left">Living Word</SheetTitle>
               <SheetDescription className="sr-only">Menu principal</SheetDescription>
