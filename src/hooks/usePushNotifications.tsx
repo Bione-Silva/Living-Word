@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 function urlBase64ToUint8Array(base64: string): Uint8Array {
@@ -31,6 +31,10 @@ export function usePushNotifications() {
   );
   const [subscribed, setSubscribed] = useState<boolean>(false);
   const [busy, setBusy] = useState(false);
+  // Pre-loaded VAPID key — fetched once on mount so the subscribe() handler
+  // doesn't have to await a network round-trip after the user gesture.
+  const vapidKeyRef = useRef<string | null>(null);
+  const swRegRef = useRef<ServiceWorkerRegistration | null>(null);
 
   const refreshState = useCallback(async () => {
     if (!supported) return;
@@ -44,31 +48,92 @@ export function usePushNotifications() {
     }
   }, [supported]);
 
+  // Pre-warm: register the SW and fetch the VAPID key as soon as possible,
+  // so by the time the user clicks "enable" we can call requestPermission and
+  // pushManager.subscribe synchronously without losing the user gesture.
+  useEffect(() => {
+    if (!supported) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const reg =
+          (await navigator.serviceWorker.getRegistration(SW_URL)) ||
+          (await navigator.serviceWorker.register(SW_URL, { scope: '/' }));
+        await navigator.serviceWorker.ready;
+        if (cancelled) return;
+        swRegRef.current = reg;
+
+        const sub = await reg.pushManager.getSubscription();
+        if (!cancelled) setSubscribed(!!sub);
+      } catch (e) {
+        console.warn('[push] sw register prewarm failed', e);
+      }
+
+      try {
+        const { data, error } = await supabase.functions.invoke('push-vapid-public-key');
+        if (cancelled) return;
+        if (error) {
+          console.warn('[push] vapid prewarm error', error);
+        } else if (data?.publicKey) {
+          vapidKeyRef.current = data.publicKey;
+        }
+      } catch (e) {
+        console.warn('[push] vapid prewarm exception', e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [supported]);
+
   useEffect(() => {
     refreshState();
   }, [refreshState]);
 
   const subscribe = useCallback(async (): Promise<{ ok: boolean; error?: string }> => {
-    if (!supported) return { ok: false, error: 'unsupported' };
+    if (!supported) {
+      console.warn('[push] not supported');
+      return { ok: false, error: 'unsupported' };
+    }
     setBusy(true);
     try {
+      // STEP 1 — request permission FIRST, synchronously inside the user gesture.
+      // No awaits before this call other than the permission call itself.
+      console.log('[push] requesting permission, current=', Notification.permission);
       const perm = await Notification.requestPermission();
+      console.log('[push] permission result=', perm);
       setPermission(perm);
       if (perm !== 'granted') return { ok: false, error: 'denied' };
 
-      const reg = await navigator.serviceWorker.register(SW_URL, { scope: '/' });
-      await navigator.serviceWorker.ready;
+      // STEP 2 — make sure we have a SW registration. Use the pre-warmed one if available.
+      let reg = swRegRef.current;
+      if (!reg) {
+        reg =
+          (await navigator.serviceWorker.getRegistration(SW_URL)) ||
+          (await navigator.serviceWorker.register(SW_URL, { scope: '/' }));
+        await navigator.serviceWorker.ready;
+        swRegRef.current = reg;
+      }
+      console.log('[push] sw registration ok');
 
-      // Get VAPID public key
-      const { data: vapidData, error: vapidErr } = await supabase.functions.invoke(
-        'push-vapid-public-key'
-      );
-      if (vapidErr || !vapidData?.publicKey) {
-        return { ok: false, error: vapidErr?.message || 'vapid-missing' };
+      // STEP 3 — make sure we have the VAPID key. Use pre-warmed if available.
+      let vapidKey = vapidKeyRef.current;
+      if (!vapidKey) {
+        console.log('[push] vapid not pre-warmed, fetching now');
+        const { data: vapidData, error: vapidErr } = await supabase.functions.invoke(
+          'push-vapid-public-key'
+        );
+        if (vapidErr || !vapidData?.publicKey) {
+          console.error('[push] vapid fetch failed', vapidErr);
+          return { ok: false, error: vapidErr?.message || 'vapid-missing' };
+        }
+        vapidKey = vapidData.publicKey;
+        vapidKeyRef.current = vapidKey;
       }
 
+      // STEP 4 — subscribe (or reuse existing subscription).
       const existing = await reg.pushManager.getSubscription();
-      const appServerKey = urlBase64ToUint8Array(vapidData.publicKey);
+      const appServerKey = urlBase64ToUint8Array(vapidKey);
       const sub =
         existing ||
         (await reg.pushManager.subscribe({
@@ -78,6 +143,7 @@ export function usePushNotifications() {
             appServerKey.byteOffset + appServerKey.byteLength,
           ) as ArrayBuffer,
         }));
+      console.log('[push] subscribed to push manager');
 
       const payload = {
         endpoint: sub.endpoint,
@@ -92,11 +158,16 @@ export function usePushNotifications() {
       };
 
       const { error } = await supabase.functions.invoke('push-register', { body: payload });
-      if (error) return { ok: false, error: error.message };
+      if (error) {
+        console.error('[push] register failed', error);
+        return { ok: false, error: error.message };
+      }
 
       setSubscribed(true);
+      console.log('[push] all done');
       return { ok: true };
     } catch (e: any) {
+      console.error('[push] subscribe exception', e);
       return { ok: false, error: e?.message ?? String(e) };
     } finally {
       setBusy(false);
