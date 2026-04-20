@@ -455,6 +455,10 @@ export default function SocialStudio() {
     }
     setLoadingDevotional(true);
     try {
+      // Garante 1 imagem por slide: se o pool tiver menos cenas que o número
+      // de slides, completa com cenas distintas do banco compartilhado.
+      await ensureScenePool(slideCount);
+
       const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
         body: {
           verse: `${verseContext.book} — "${verseContext.text}"`,
