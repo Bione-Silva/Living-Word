@@ -359,6 +359,37 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
           )}
         </div>
       </SheetContent>
+
+      {/* Compare versions side-by-side (3 versions) */}
+      {highlightRange && (
+        <BibleCompareSheet
+          open={compareOpen}
+          onClose={() => setCompareOpen(false)}
+          reference={focusedLabel}
+          primaryVersion={translation || profile?.bible_version || 'ARA'}
+          defaultCompareVersion2={
+            (profile as { pulpit_compare_version_2?: string | null } | null)?.pulpit_compare_version_2 ?? null
+          }
+          defaultCompareVersion3={
+            (profile as { pulpit_compare_version_3?: string | null } | null)?.pulpit_compare_version_3 ?? null
+          }
+          lang={lang}
+          theme="light"
+          onSaveDefaults={async (v2, v3) => {
+            if (!profile?.id) return;
+            const { error } = await supabase
+              .from('profiles')
+              .update({
+                pulpit_compare_version_2: v2,
+                pulpit_compare_version_3: v3,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', profile.id);
+            if (error) throw error;
+            await refreshProfile?.();
+          }}
+        />
+      )}
     </Sheet>
   );
 }
