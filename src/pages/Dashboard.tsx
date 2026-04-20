@@ -103,17 +103,16 @@ export default function Dashboard() {
         <OnboardingNudgeCard />
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          MOBILE: Resumo do mês PRIMEIRO (no topo), depois protagonistas
-          ═══════════════════════════════════════════════════════════════ */}
-      <div className="md:hidden min-w-0">
-        <MonthlyOverviewCard />
-      </div>
-
-      {/* TOPO — Devocional + Palavra Amiga (split 50/50 ≥ md, empilhado mobile) */}
+      {/* TOPO — Devocional + Palavra Amiga (split 50/50 ≥ md, empilhado mobile)
+          Mobile: Devocional aparece IMEDIATAMENTE após o greeting (palavra espiritual antes de métricas) */}
       <div className="grid gap-4 md:gap-5 md:grid-cols-2 items-stretch min-w-0">
         <div className="min-w-0"><DevotionalHeroCard /></div>
         <div className="min-w-0"><BomAmigoHeroCard /></div>
+      </div>
+
+      {/* MOBILE: Resumo do mês DEPOIS dos heroes espirituais */}
+      <div className="md:hidden min-w-0">
+        <MonthlyOverviewCard />
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════

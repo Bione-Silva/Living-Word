@@ -317,19 +317,9 @@ export default function AppLayout() {
               <span className="truncate leading-tight">{lang === 'PT' ? 'Mentes' : lang === 'EN' ? 'Minds' : 'Mentes'}</span>
             </Link>
 
-            <Link
-              to="/sermoes"
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
-                location.pathname === '/sermoes' || location.pathname.startsWith('/series') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <Mic className="h-[18px] w-[18px]" />
-              <span className="truncate leading-tight">{lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones'}</span>
-            </Link>
-
             <button
               onClick={() => { setMobileAccountOpen(true); setMobileToolsOpen(false); }}
-              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[9.5px] font-medium transition-colors ${
+              className={`flex flex-col items-center gap-0.5 py-1.5 px-1 min-w-[44px] text-[10px] font-medium transition-colors ${
                 mobileAccountOpen ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
