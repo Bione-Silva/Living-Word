@@ -213,7 +213,13 @@ async function handleWebhook(req: Request): Promise<Response> {
   // The email action type is in payload.data.action_type (e.g., "signup", "recovery")
   // payload.type is the hook event type ("auth")
   const emailType = payload.data.action_type
-  console.log('Received auth event', { emailType, email: payload.data.email, run_id })
+  const rawLang =
+    (payload.data as any)?.user?.user_metadata?.language ??
+    (payload.data as any)?.user?.user_metadata?.locale ??
+    (payload.data as any)?.metadata?.language ??
+    'pt'
+  const lang = normalizeLang(rawLang)
+  console.log('Received auth event', { emailType, email: payload.data.email, lang, run_id })
 
   const EmailTemplate = EMAIL_TEMPLATES[emailType]
   if (!EmailTemplate) {
@@ -265,7 +271,7 @@ async function handleWebhook(req: Request): Promise<Response> {
       to: payload.data.email,
       from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
       sender_domain: SENDER_DOMAIN,
-      subject: EMAIL_SUBJECTS[emailType] || 'Notification',
+      subject: subjectFor(emailType, lang),
       html,
       text,
       purpose: 'transactional',
