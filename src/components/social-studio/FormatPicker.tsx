@@ -9,6 +9,7 @@ export type FormatId =
   | 'fb-post'
   | 'ig-carousel'
   | 'li-carousel'
+  | 'tiktok-carousel'
   | 'whatsapp';
 
 type L = 'PT' | 'EN' | 'ES';
@@ -97,6 +98,18 @@ const FORMATS: FormatDef[] = [
     width: 1080,
     height: 1080,
     aspectRatio: '1:1',
+    slideCount: 5,
+    group: 'carousel',
+  },
+  {
+    id: 'tiktok-carousel',
+    icon: Music2,
+    channel: { PT: 'TikTok', EN: 'TikTok', ES: 'TikTok' },
+    type: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
+    size: '1080 × 1920',
+    width: 1080,
+    height: 1920,
+    aspectRatio: '9:16-tiktok',
     slideCount: 5,
     group: 'carousel',
   },
