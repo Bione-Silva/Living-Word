@@ -326,9 +326,9 @@ export function SermonBlockEditor({
                 {/* Tooltip flutuante na hover (desktop) */}
                 <span
                   className={cn(
-                    'pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 z-10',
+                    'pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 z-[100]',
                     'opacity-0 group-hover:opacity-100 transition-opacity',
-                    'whitespace-nowrap rounded-md bg-foreground/90 px-1.5 py-0.5',
+                    'whitespace-nowrap rounded-md bg-foreground px-2 py-1 shadow-lg',
                     'text-[10px] font-medium text-background',
                   )}
                 >
