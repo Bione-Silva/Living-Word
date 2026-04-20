@@ -6,7 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Mail, RefreshCw, AlertTriangle, CheckCircle2, Clock, Ban } from 'lucide-react';
+import { Mail, RefreshCw, AlertTriangle, CheckCircle2, Clock, Ban, TrendingUp } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
 
 type Range = '24h' | '7d' | '30d';
 type StatusFilter = 'all' | 'sent' | 'pending' | 'failed' | 'dlq' | 'suppressed' | 'stale';
