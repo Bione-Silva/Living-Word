@@ -252,7 +252,7 @@ export function PastoralStudioModal({ open, onOpenChange, toolTitle }: PastoralS
     setBlockedFormats([]);
 
     try {
-      const isFree = profile?.plan === 'free';
+      const isFree = isFreePlan(profile?.plan);
       const body: Record<string, unknown> = {
         ...formData,
         isFree,

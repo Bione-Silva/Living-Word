@@ -28,7 +28,7 @@ export default function EstudoBiblicoPage() {
   const [generationMeta, setGenerationMeta] = useState<GenerationMeta | null>(null);
   const { profile } = useAuth();
   const { lang, t } = useLanguage();
-  const isFree = profile?.plan === 'free';
+  const isFree = isFreePlan(profile?.plan);
   const [darkStudy, setDarkStudy] = useState(false);
   const [bibleOpen, setBibleOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);

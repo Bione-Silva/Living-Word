@@ -102,7 +102,7 @@ const greeting: Record<L, { h1: string; sub: string }> = {
 export default function Estudio() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
-  const isFree = profile?.plan === 'free';
+  const isFree = isFreePlan(profile?.plan);
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeTool, setActiveTool] = useState<ToolCardData | null>(null);

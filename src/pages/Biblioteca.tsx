@@ -81,7 +81,7 @@ export default function Biblioteca() {
   useEffect(() => {
     localStorage.setItem('library_view_mode', viewMode);
   }, [viewMode]);
-  const isFree = profile?.plan === 'free';
+  const isFree = isFreePlan(profile?.plan);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const searchPlaceholder = lang === 'PT'
