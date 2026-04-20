@@ -82,29 +82,58 @@ export function EmailQueuePanel() {
     [dedup]
   );
 
+  // Reclassify "pending" rows older than 1h as "stale" so they don't pollute
+  // the live queue view — these are sends whose final state was never logged
+  // (likely lost in earlier infrastructure incidents).
+  const STALE_MS = 60 * 60 * 1000;
+  const reclassified = useMemo(() => {
+    const now = Date.now();
+    return dedup.map((r) => {
+      if (r.status === 'pending' && now - new Date(r.created_at).getTime() > STALE_MS) {
+        return { ...r, status: 'stale' };
+      }
+      return r;
+    });
+  }, [dedup]);
+
   const filtered = useMemo(() => {
-    return dedup.filter((r) => {
+    return reclassified.filter((r) => {
       if (status !== 'all' && r.status !== status) return false;
       if (template !== 'all' && r.template_name !== template) return false;
       if (search && !r.recipient_email.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [dedup, status, template, search]);
+  }, [reclassified, status, template, search]);
 
   const stats = useMemo(() => {
-    const counts = { total: dedup.length, sent: 0, pending: 0, failed: 0, dlq: 0, suppressed: 0 };
-    for (const r of dedup) {
+    const counts = { total: reclassified.length, sent: 0, pending: 0, failed: 0, dlq: 0, suppressed: 0, stale: 0 };
+    for (const r of reclassified) {
       if (r.status === 'sent') counts.sent++;
       else if (r.status === 'pending') counts.pending++;
       else if (r.status === 'failed' || r.status === 'rate_limited') counts.failed++;
       else if (r.status === 'dlq') counts.dlq++;
       else if (r.status === 'suppressed') counts.suppressed++;
+      else if (r.status === 'stale') counts.stale++;
     }
     return counts;
-  }, [dedup]);
+  }, [reclassified]);
 
-  const deliveryRate =
-    stats.total > 0 ? ((stats.sent / stats.total) * 100).toFixed(1) : '0.0';
+  // Per-template breakdown with delivery rate
+  const byTemplate = useMemo(() => {
+    const map = new Map<string, { total: number; sent: number; failed: number; pending: number; stale: number }>();
+    for (const r of reclassified) {
+      const t = map.get(r.template_name) || { total: 0, sent: 0, failed: 0, pending: 0, stale: 0 };
+      t.total++;
+      if (r.status === 'sent') t.sent++;
+      else if (r.status === 'failed' || r.status === 'dlq' || r.status === 'rate_limited') t.failed++;
+      else if (r.status === 'pending') t.pending++;
+      else if (r.status === 'stale') t.stale++;
+      map.set(r.template_name, t);
+    }
+    return Array.from(map.entries())
+      .map(([name, v]) => ({ name, ...v, rate: v.total ? (v.sent / v.total) * 100 : 0 }))
+      .sort((a, b) => b.total - a.total);
+  }, [reclassified]);
 
   return (
     <Card className="admin-card">
