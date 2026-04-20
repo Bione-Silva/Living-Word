@@ -121,11 +121,20 @@ export function DashboardGreeting() {
     }
   }, [verse, lang]);
 
+  const subtitle = lang === 'PT'
+    ? 'Que tal ouvir a Palavra de Deus e espalhar esperança hoje?'
+    : lang === 'EN'
+    ? 'How about hearing the Word of God and spreading hope today?'
+    : '¿Qué tal escuchar la Palabra de Dios y esparcir esperanza hoy?';
+
   return (
-    <div className="px-1">
-      <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground leading-tight">
+    <div className="px-1 space-y-1.5">
+      <h1 className="font-display text-2xl md:text-[1.9rem] font-bold text-foreground leading-tight">
         {getTimeGreeting(lang)}, <span className="text-primary">{name}</span>! 👋
       </h1>
+      <p className="text-sm text-muted-foreground leading-snug max-w-2xl">
+        {subtitle}
+      </p>
     </div>
   );
 }
