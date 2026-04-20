@@ -855,42 +855,7 @@ export default function SocialStudio() {
           </div>
 
           {/* ── Bottom row: cada etapa mostra apenas o que pertence a ela.
-               • Conteúdo → Cenas (com geração por IA) para já preparar fundo.
-               • Estilo   → Paleta · Cenas · Templates (decisões visuais). */}
-          {step === 'content' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="bg-card border-border">
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                      <Mountain className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold text-foreground leading-tight">{h.scenesCard}</div>
-                      <div className="text-[11px] text-muted-foreground leading-snug">{h.scenesCardSub}</div>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground/80 leading-snug">
-                    {lang === 'PT'
-                      ? 'Escolha cenas do banco ou crie novas com IA. Se você selecionar menos cenas que slides, completamos automaticamente — uma imagem diferente por card.'
-                      : lang === 'EN'
-                      ? 'Pick scenes from the library or create new ones with AI. If you select fewer scenes than slides, we auto-fill the rest — one different image per card.'
-                      : 'Elige escenas del banco o crea nuevas con IA. Si seleccionas menos escenas que slides, completamos automáticamente — una imagen diferente por card.'}
-                  </p>
-                  <div className="max-h-[360px] overflow-y-auto pr-1">
-                    <BiblicalSceneGallery
-                      onChangeScenePool={handleScenePoolChange}
-                      lang={lang}
-                      activeIds={scenePool.map((scene) => scene.id)}
-                      searchTerm={verseContext?.book || verseContext?.text}
-                      visualMode={imageMode}
-                      slideCount={slideCount}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+               • Estilo → Paleta · Cenas · Templates (decisões visuais). */}
 
           {step === 'style' && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
