@@ -53,7 +53,7 @@ export default function Dashboard() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
-  const userPlan: PlanSlug = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const isFree = userPlan === 'free';
   const [activeSheet, setActiveSheet] = useState<{ id: string; title: string } | null>(null);
   const [extrasOpen, setExtrasOpen] = useState(false);

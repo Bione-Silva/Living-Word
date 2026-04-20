@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Mic, Zap, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { PLAN_CREDITS, type PlanSlug } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -79,7 +80,7 @@ export function MonthlyOverviewCard() {
 
   if (!user) return null;
 
-  const userPlan = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const limit = PLAN_CREDITS[userPlan] || 500;
   const used = profile?.generations_used || 0;
   const usedPct = limit > 0 ? Math.min(Math.round((used / limit) * 100), 100) : 0;

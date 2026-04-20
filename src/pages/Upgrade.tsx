@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 import { PLAN_CREDITS, PLAN_DISPLAY_NAMES, PLAN_GENERATION_POTENTIAL, LOW_CREDITS_THRESHOLD, type PlanSlug } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 
@@ -183,7 +184,7 @@ export default function Upgrade() {
   const { profile } = useAuth();
   const { pricing, loading: regionLoading } = useGeoRegion();
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentPlan = (profile?.plan as PlanSlug) || 'free';
+  const currentPlan: PlanSlug = normalizePlan(profile?.plan);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
   const autoCheckoutFired = useRef(false);

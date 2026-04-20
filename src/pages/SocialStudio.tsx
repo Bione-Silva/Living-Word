@@ -163,7 +163,7 @@ export default function SocialStudio() {
   const { user, profile } = useAuth();
   const location = useLocation();
   const h = headings[lang];
-  const userPlan = (profile?.plan || 'free') as 'free' | 'starter' | 'pro' | 'igreja';
+  const userPlan = normalizePlan(profile?.plan);
   const hasAccess = userPlan !== 'free';
 
   const [activeTab, setActiveTab] = useState<string>('studio');

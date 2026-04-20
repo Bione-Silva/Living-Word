@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { hasAccess, type PlanSlug } from '@/lib/plans';
+import { hasAccess } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { minds } from '@/data/minds';
@@ -84,7 +85,7 @@ export default function MindProfile() {
     );
   }
 
-  const isFree = !hasAccess((profile?.plan as PlanSlug) || 'free', 'mentes_brilhantes');
+  const isFree = !hasAccess(normalizePlan(profile?.plan), 'mentes_brilhantes');
   const isLocked = mind.locked && isFree;
 
   const handleModality = (modalityId: string) => {

@@ -146,7 +146,7 @@ export default function AppLayout() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState<{ featureName: string; toolId: string; requiredPlan: PlanSlug } | null>(null);
 
-  const userPlan: PlanSlug = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const isFree = userPlan === 'free';
 
   const toggleCollapsed = () => {

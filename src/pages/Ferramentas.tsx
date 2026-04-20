@@ -15,6 +15,7 @@ import {
 import {
   isToolLockedForPlan, getMinPlanForTool, getUpgradeBadge, type PlanSlug,
 } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -121,7 +122,7 @@ export default function Ferramentas() {
   const { profile } = useAuth();
   const { lang } = useLanguage();
   const navigate = useNavigate();
-  const userPlan: PlanSlug = (profile?.plan as PlanSlug) || 'free';
+  const userPlan: PlanSlug = normalizePlan(profile?.plan);
   const [activeTool, setActiveTool] = useState<{ id: string; title: string } | null>(null);
   const [upgradeModal, setUpgradeModal] = useState<{ featureName: string; toolId: string; requiredPlan: PlanSlug } | null>(null);
 
