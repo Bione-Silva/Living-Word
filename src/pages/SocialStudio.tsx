@@ -679,15 +679,22 @@ export default function SocialStudio() {
                       <h2 className="text-lg font-bold text-foreground font-display">{h.styleHeading}</h2>
                       <p className="text-xs text-muted-foreground mt-0.5">{h.styleSub}</p>
                     </div>
-                    <ThemeCustomizer
-                      value={theme}
-                      onChange={(v) => {
-                        setTheme(v);
-                        setActivePaletteId(null);
-                      }}
+                    <ImageModePicker
+                      value={imageMode}
+                      onChange={setImageMode}
                       lang={lang}
-                      onUploadBackground={handleBackgroundUpload}
                     />
+                    <div className="pt-3 border-t border-border">
+                      <ThemeCustomizer
+                        value={theme}
+                        onChange={(v) => {
+                          setTheme(v);
+                          setActivePaletteId(null);
+                        }}
+                        lang={lang}
+                        onUploadBackground={handleBackgroundUpload}
+                      />
+                    </div>
                   </>
                 )}
 
