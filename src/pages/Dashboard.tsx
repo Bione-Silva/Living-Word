@@ -108,6 +108,10 @@ export default function Dashboard() {
           - Mobile (<md): empilha vertical
           - Tablet/Desktop (≥md): lado a lado 50/50
           ═══════════════════════════════════════════════════════════════ */}
+      <div className="md:hidden">
+        <MonthlyOverviewCard />
+      </div>
+
       <div className="grid gap-4 md:gap-5 md:grid-cols-2 items-stretch">
         <DevotionalHeroCard />
         <BomAmigoHeroCard />
@@ -119,17 +123,19 @@ export default function Dashboard() {
           - Tablet (md): coluna única ainda — evita espremer
           - Desktop (lg): split 7/5
           ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12 items-start">
+      <div className="grid gap-4 md:gap-5 md:grid-cols-2 xl:grid-cols-12 items-start">
         {/* Coluna esquerda */}
-        <div className="lg:col-span-7 flex flex-col gap-4 lg:gap-5">
+        <div className="xl:col-span-7 flex flex-col gap-4 md:gap-5">
           <ContinueWhereYouLeftOff />
           <RecentGenerations />
           <QuickActionsRow onMore={() => setExtrasOpen(true)} />
         </div>
 
         {/* Coluna direita */}
-        <div className="lg:col-span-5 flex flex-col gap-4 lg:gap-5">
-          <MonthlyOverviewCard />
+        <div className="xl:col-span-5 flex flex-col gap-4 md:gap-5">
+          <div className="hidden md:block">
+            <MonthlyOverviewCard />
+          </div>
           <WeekAgendaCard />
           <SocialStudioPromoCard />
         </div>
