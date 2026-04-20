@@ -168,10 +168,10 @@ export function DevotionalHeroCard() {
         </Link>
       </div>
 
-      <div className="grid sm:grid-cols-[1fr_190px] lg:grid-cols-[1fr_210px] gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_140px] md:grid-cols-[1fr_150px] xl:grid-cols-[1fr_170px] gap-4 sm:gap-4 lg:gap-5 flex-1 min-h-0">
         {/* LEFT: text + audio + actions */}
-        <div className="min-w-0 space-y-3.5">
-          <h2 className="font-display text-2xl sm:text-[1.75rem] font-bold text-foreground leading-tight">
+        <div className="min-w-0 space-y-3.5 flex flex-col">
+          <h2 className="font-display text-xl sm:text-[1.4rem] lg:text-[1.6rem] xl:text-[1.75rem] font-bold text-foreground leading-tight">
             {data.title}
           </h2>
           <p className="text-sm font-semibold text-primary">{data.anchor_verse}</p>
@@ -208,36 +208,36 @@ export function DevotionalHeroCard() {
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={handleWhatsApp}
-              className="h-10 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+              className="h-10 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors px-2"
             >
-              <MessageCircle className="h-3.5 w-3.5" />
+              <MessageCircle className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{L10N.whatsapp[lang]}</span>
             </button>
             <button
               onClick={handleRead}
-              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors"
+              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-2"
             >
-              <FileText className="h-3.5 w-3.5" />
+              <FileText className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{L10N.read[lang]}</span>
             </button>
             <button
               onClick={handleDownload}
-              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors"
+              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-2"
             >
-              <Download className="h-3.5 w-3.5" />
+              <Download className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{L10N.download[lang]}</span>
             </button>
             <button
               onClick={handleCopy}
-              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors"
+              className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors px-2"
             >
-              <LinkIcon className="h-3.5 w-3.5" />
+              <LinkIcon className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{L10N.copy[lang]}</span>
             </button>
           </div>
 
-          {/* Support copy */}
-          <div className="rounded-lg bg-primary/5 border border-primary/10 px-3 py-2.5 flex items-start gap-2">
+          {/* Support copy — esconde em mobile pra liberar espaço */}
+          <div className="hidden sm:flex rounded-lg bg-primary/5 border border-primary/10 px-3 py-2.5 items-start gap-2 mt-auto">
             <MessageCircle className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
             <p className="text-[11px] text-foreground/70 leading-snug">
               {L10N.copyTitle[lang]}
@@ -245,10 +245,10 @@ export function DevotionalHeroCard() {
           </div>
         </div>
 
-        {/* RIGHT: Story 9:16 art preview */}
+        {/* RIGHT: Story 9:16 art preview — largura controlada para nunca explodir */}
         <Link
           to="/devocional?share=1"
-          className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-gradient-to-br from-amber-900 via-orange-800 to-red-900 group shrink-0 w-full max-w-[210px] mx-auto sm:max-w-none"
+          className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-gradient-to-br from-amber-900 via-orange-800 to-red-900 group shrink-0 w-[140px] sm:w-full mx-auto sm:mx-0 self-start"
         >
           {cover && (
             <img
@@ -260,23 +260,23 @@ export function DevotionalHeroCard() {
           )}
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
 
-          <span className="absolute top-2.5 left-2.5 text-[8.5px] font-bold tracking-[0.15em] uppercase bg-black/40 backdrop-blur-sm text-white px-2 py-1 rounded-full">
+          <span className="absolute top-2 left-2 text-[8px] font-bold tracking-[0.15em] uppercase bg-black/40 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-full">
             {L10N.storyTag[lang]}
           </span>
 
-          <div className="absolute inset-x-0 bottom-0 p-3 text-white">
+          <div className="absolute inset-x-0 bottom-0 p-2.5 text-white">
             <p
-              className="font-display text-[13px] leading-snug font-semibold mb-1.5 line-clamp-5 drop-shadow"
+              className="font-display text-[11px] leading-snug font-semibold mb-1 line-clamp-4 drop-shadow"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.6)' }}
             >
               "{data.anchor_verse_text}"
             </p>
-            <p className="text-[10px] font-bold tracking-[0.12em] uppercase opacity-90">
+            <p className="text-[9px] font-bold tracking-[0.12em] uppercase opacity-90">
               {data.anchor_verse}
             </p>
           </div>
 
-          <div className="absolute bottom-2 right-2 text-[8px] text-white/60 font-medium">
+          <div className="absolute bottom-1.5 right-1.5 text-[8px] text-white/60 font-medium">
             Living Word
           </div>
 
