@@ -265,9 +265,54 @@ export default function SocialStudio() {
     setSceneVariationMode(payload.variationMode);
     setSceneDistributionMode(payload.distributionMode);
     setActivePaletteId(null);
-    setTheme((prev) => ({ ...prev, backgroundImageUrl: payload.assets[0]?.imageUrl }));
+    // Importante: NÃO definimos theme.backgroundImageUrl aqui.
+    // A distribuição por slide (applySceneDistribution) é a única fonte
+    // de verdade para o fundo de cada card. Setar backgroundImageUrl
+    // global faria todos os slides usarem a mesma imagem (bug visível).
+    setTheme((prev) => ({ ...prev, backgroundImageUrl: undefined }));
     toast.success(lang === 'PT' ? 'Cenas aplicadas!' : lang === 'EN' ? 'Scenes applied!' : '¡Escenas aplicadas!');
   }, [lang]);
+
+  /**
+   * Garante que o pool tenha pelo menos `target` cenas distintas.
+   * Se faltarem, busca mais no banco compartilhado (excluindo as já no pool).
+   * Retorna o pool expandido — ou o original se já for suficiente / busca falhar.
+   */
+  const ensureScenePool = useCallback(async (target: number): Promise<SceneAsset[]> => {
+    if (scenePool.length >= target) return scenePool;
+    if (target <= 0) return scenePool;
+
+    try {
+      const term = verseContext?.book || verseContext?.text || 'biblical scene';
+      const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
+        body: { mode: 'search', prompt: term },
+      });
+      if (error) throw error;
+      const all: Array<{ id: string; image_url: string; description?: string; prompt?: string }> =
+        Array.isArray(data?.scenes) ? data.scenes : [];
+      const existingIds = new Set(scenePool.map((s) => s.id));
+      const extras: SceneAsset[] = all
+        .filter((row) => row?.id && row?.image_url && !existingIds.has(row.id))
+        .map((row) => ({
+          id: row.id,
+          imageUrl: row.image_url,
+          label: row.description || row.prompt?.slice(0, 40) || 'Scene',
+          prompt: row.prompt,
+          origin: 'library' as const,
+        }));
+
+      const expanded = [...scenePool, ...extras].slice(0, target);
+      if (expanded.length > scenePool.length) {
+        setScenePool(expanded);
+        setSceneSourceType((prev) => prev ?? 'library_multi');
+        setSceneDistributionMode('image_every_slide');
+      }
+      return expanded;
+    } catch (err) {
+      console.warn('ensureScenePool failed:', err);
+      return scenePool;
+    }
+  }, [scenePool, verseContext]);
 
   const distributedSlides = useMemo(() => {
     if (slides.length === 0 || scenePool.length === 0) return slides;
@@ -410,6 +455,10 @@ export default function SocialStudio() {
     }
     setLoadingDevotional(true);
     try {
+      // Garante 1 imagem por slide: se o pool tiver menos cenas que o número
+      // de slides, completa com cenas distintas do banco compartilhado.
+      await ensureScenePool(slideCount);
+
       const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
         body: {
           verse: `${verseContext.book} — "${verseContext.text}"`,
@@ -798,10 +847,44 @@ export default function SocialStudio() {
             </Card>
           </div>
 
-          {/* ── Bottom row: 3 colunas inline — APENAS na etapa "Estilo" ──
-               Princípio de isolamento: cada etapa mostra só o que pertence a ela.
-               Paleta · Cenas · Templates são decisões de Estilo e NÃO devem
-               aparecer na etapa Gerar (resultado/ações finais devem respirar). */}
+          {/* ── Bottom row: cada etapa mostra apenas o que pertence a ela.
+               • Conteúdo → Cenas (com geração por IA) para já preparar fundo.
+               • Estilo   → Paleta · Cenas · Templates (decisões visuais). */}
+          {step === 'content' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                      <Mountain className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-foreground leading-tight">{h.scenesCard}</div>
+                      <div className="text-[11px] text-muted-foreground leading-snug">{h.scenesCardSub}</div>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground/80 leading-snug">
+                    {lang === 'PT'
+                      ? 'Escolha cenas do banco ou crie novas com IA. Se você selecionar menos cenas que slides, completamos automaticamente — uma imagem diferente por card.'
+                      : lang === 'EN'
+                      ? 'Pick scenes from the library or create new ones with AI. If you select fewer scenes than slides, we auto-fill the rest — one different image per card.'
+                      : 'Elige escenas del banco o crea nuevas con IA. Si seleccionas menos escenas que slides, completamos automáticamente — una imagen diferente por card.'}
+                  </p>
+                  <div className="max-h-[360px] overflow-y-auto pr-1">
+                    <BiblicalSceneGallery
+                      onChangeScenePool={handleScenePoolChange}
+                      lang={lang}
+                      activeIds={scenePool.map((scene) => scene.id)}
+                      searchTerm={verseContext?.book || verseContext?.text}
+                      visualMode={imageMode}
+                      slideCount={slideCount}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           {step === 'style' && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="bg-card border-border">
