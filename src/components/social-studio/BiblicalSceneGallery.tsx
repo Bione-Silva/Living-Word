@@ -345,7 +345,7 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
               <button
                 key={s.id}
                 type="button"
-                onClick={() => handleToggleScene(s)}
+                onClick={() => handleSceneClick(s)}
                 className={`relative overflow-hidden rounded-xl border-2 transition-all duration-200 group aspect-[4/3] ${
                   isActive
                     ? 'border-primary ring-2 ring-primary/30 shadow-md'
