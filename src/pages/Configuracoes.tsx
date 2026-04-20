@@ -20,6 +20,7 @@ import { PlanOverviewCard } from '@/components/dashboard/PlanOverviewCard';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 import { PushNotificationsCard } from '@/components/PushNotificationsCard';
 import { ChurchProfileSection } from '@/components/settings/ChurchProfileSection';
+import { AutoFeedSettingsCard } from '@/components/settings/AutoFeedSettingsCard';
 import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, PLAN_DISPLAY_NAMES, type PlanSlug } from '@/lib/plans';
 import { normalizePlan, isFreePlan } from '@/lib/plan-normalization';
 import { BIBLE_VERSIONS, DEFAULT_COMPARE_VERSIONS } from '@/lib/bible-versions';
@@ -339,6 +340,7 @@ export default function Configuracoes() {
         <TabsContent value="plan">
           <div className="space-y-6">
             <PlanOverviewCard />
+            <AutoFeedSettingsCard />
             <Card>
               <CardHeader><CardTitle className="font-display">{t('settings.plan')}</CardTitle></CardHeader>
               <CardContent className="space-y-4">

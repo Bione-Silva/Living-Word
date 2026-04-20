@@ -196,7 +196,7 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
         const materialType = mode === 'lesson' ? 'outline' : outputMode;
         const label = mode === 'sermon' ? 'Sermão' : mode === 'devotional' ? 'Devocional' : 'Aula';
 
-        const { error: saveError } = await supabase.from('materials').insert({
+        const { data: inserted, error: saveError } = await supabase.from('materials').insert({
           user_id: user.id,
           title: `${label} — ${studyTitle}`,
           type: materialType,
@@ -204,9 +204,13 @@ export function StudyActions({ study, materialId, onImagesGenerated }: StudyActi
           language: studyLanguage,
           passage: studyPassage,
           bible_version: study.passagem.versao || 'ARA',
-        });
+        }).select('id, type').maybeSingle();
 
         if (saveError) throw saveError;
+        if (inserted?.id) {
+          const { triggerAutoFeed } = await import('@/lib/autofeed-trigger');
+          triggerAutoFeed(inserted.id, inserted.type || materialType);
+        }
       }
       toast.success(t('transformSuccess'));
     } catch {

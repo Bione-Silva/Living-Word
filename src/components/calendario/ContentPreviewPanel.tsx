@@ -1,24 +1,44 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Download, Share2, Trash2, Calendar, Clock, ImageIcon } from 'lucide-react';
+import { Copy, Download, Trash2, Calendar, Clock, ImageIcon, Instagram, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { NETWORK_META } from './NetworkFilterBar';
+import { InstagramMockup } from './InstagramMockup';
 import type { CalendarItem } from './CalendarGrid';
 
 type L = 'PT' | 'EN' | 'ES';
+
+interface ProfileLite {
+  blog_handle?: string | null;
+  avatar_url?: string | null;
+  church_name?: string | null;
+}
 
 const COPY = {
   scheduled: { PT: 'Agendado', EN: 'Scheduled', ES: 'Programado' },
   published: { PT: 'Publicado', EN: 'Published', ES: 'Publicado' },
   draft: { PT: 'Rascunho', EN: 'Draft', ES: 'Borrador' },
+  approved: { PT: 'Aprovado', EN: 'Approved', ES: 'Aprobado' },
   caption: { PT: 'Legenda', EN: 'Caption', ES: 'Leyenda' },
   hashtags: { PT: 'Hashtags', EN: 'Hashtags', ES: 'Hashtags' },
   copyCaption: { PT: 'Copiar legenda', EN: 'Copy caption', ES: 'Copiar leyenda' },
   download: { PT: 'Baixar imagem', EN: 'Download image', ES: 'Descargar imagen' },
-  share: { PT: 'Compartilhar link', EN: 'Share link', ES: 'Compartir enlace' },
+  openInsta: { PT: 'Abrir no Instagram', EN: 'Open in Instagram', ES: 'Abrir en Instagram' },
   remove: { PT: 'Remover', EN: 'Remove', ES: 'Eliminar' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
   noImage: { PT: 'Sem imagem', EN: 'No image', ES: 'Sin imagen' },
+  prepared: {
+    PT: 'Imagem baixada e legenda copiada. Cole no Instagram.',
+    EN: 'Image downloaded and caption copied. Paste in Instagram.',
+    ES: 'Imagen descargada y leyenda copiada. Pega en Instagram.',
+  },
+  preparedNoImg: {
+    PT: 'Legenda copiada. Cole no Instagram.',
+    EN: 'Caption copied. Paste in Instagram.',
+    ES: 'Leyenda copiada. Pega en Instagram.',
+  },
+  autoFeed: { PT: 'Gerado por AutoFeed', EN: 'AutoFeed generated', ES: 'Generado por AutoFeed' },
+  preview: { PT: 'Pré-visualização', EN: 'Preview', ES: 'Vista previa' },
 } satisfies Record<string, Record<L, string>>;
 
 interface Props {
@@ -26,9 +46,10 @@ interface Props {
   lang: L;
   onDelete: (item: CalendarItem) => void;
   emptyText: string;
+  profile?: ProfileLite;
 }
 
-export function ContentPreviewPanel({ item, lang, onDelete, emptyText }: Props) {
+export function ContentPreviewPanel({ item, lang, onDelete, emptyText, profile }: Props) {
   const t = (k: keyof typeof COPY) => COPY[k][lang];
 
   if (!item) {
@@ -66,19 +87,34 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText }: Props) 
     a.click();
   };
 
-  const shareLink = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
+  const openInInstagram = async () => {
+    const text = `${item.caption}${item.hashtags ? `\n\n${item.hashtags}` : ''}`;
+    let downloaded = false;
+    if (item.image_url) {
       try {
-        await navigator.share({ title: item.title, text: item.caption, url });
+        const a = document.createElement('a');
+        a.href = item.image_url;
+        a.download = `${item.title.slice(0, 40) || 'post'}.png`;
+        a.target = '_blank';
+        a.click();
+        downloaded = true;
       } catch {
-        // user cancelled
+        // ignore
       }
-    } else {
-      await navigator.clipboard.writeText(url);
-      toast.success(t('copied'));
     }
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // ignore
+    }
+    toast.success(downloaded ? t('prepared') : t('preparedNoImg'));
+    // Open Instagram (deep link on mobile, web fallback elsewhere)
+    setTimeout(() => {
+      window.open('https://www.instagram.com/', '_blank', 'noopener');
+    }, 250);
   };
+
+  const isInstagram = item.kind === 'social' && item.network === 'instagram';
 
   return (
     <aside className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden xl:sticky xl:top-4 xl:self-start max-h-[calc(100vh-2rem)] flex flex-col">
@@ -92,27 +128,42 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText }: Props) 
             {meta.label}
           </p>
         </div>
+        {item.auto_generated && (
+          <Badge variant="outline" className="bg-background/60 text-[10px] gap-1">
+            <Sparkles className="h-2.5 w-2.5" />
+            {t('autoFeed')}
+          </Badge>
+        )}
         <Badge variant="outline" className="bg-background/60 text-[10px] capitalize">
-          {t(item.status as 'scheduled' | 'published' | 'draft') || item.status}
+          {t((item.status as 'scheduled' | 'published' | 'draft' | 'approved')) || item.status}
         </Badge>
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {/* Image preview */}
-        <div className="aspect-square bg-muted/30 border-b border-border flex items-center justify-center overflow-hidden">
-          {item.image_url ? (
-            <img
-              src={item.image_url}
-              alt={item.title}
-              className="w-full h-full object-cover"
+        {isInstagram ? (
+          <div className="p-4 bg-muted/10">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3 text-center">
+              {t('preview')}
+            </p>
+            <InstagramMockup
+              item={item}
+              handle={profile?.blog_handle || profile?.church_name || undefined}
+              avatarUrl={profile?.avatar_url || null}
+              lang={lang}
             />
-          ) : (
-            <div className="text-center text-muted-foreground">
-              <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p className="text-xs">{t('noImage')}</p>
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="aspect-square bg-muted/30 border-b border-border flex items-center justify-center overflow-hidden">
+            {item.image_url ? (
+              <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+            ) : (
+              <div className="text-center text-muted-foreground">
+                <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
+                <p className="text-xs">{t('noImage')}</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Body */}
         <div className="p-4 space-y-4">
@@ -174,9 +225,13 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText }: Props) 
           <Download className="h-3.5 w-3.5" />
           <span className="truncate">{t('download')}</span>
         </Button>
-        <Button variant="outline" size="sm" onClick={shareLink} className="gap-1.5">
-          <Share2 className="h-3.5 w-3.5" />
-          <span className="truncate">{t('share')}</span>
+        <Button
+          size="sm"
+          onClick={openInInstagram}
+          className="gap-1.5 col-span-1 bg-gradient-to-r from-amber-500 via-rose-500 to-fuchsia-600 text-primary-foreground hover:opacity-90"
+        >
+          <Instagram className="h-3.5 w-3.5" />
+          <span className="truncate">{t('openInsta')}</span>
         </Button>
         <Button
           variant="outline"

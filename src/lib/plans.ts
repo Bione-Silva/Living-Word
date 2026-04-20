@@ -23,7 +23,8 @@ export type PlanFeature =
   | 'white_label'
   | 'suporte_prioritario'
   | 'suporte_vip'
-  | 'biblioteca_ilimitada';
+  | 'biblioteca_ilimitada'
+  | 'autofeed';
 
 // ── Cota mensal de geração nova de imagem bíblica (com IA) ──
 export const BIBLICAL_SCENE_QUOTA: Record<PlanSlug, number> = {
@@ -107,6 +108,7 @@ const FEATURE_MIN_PLAN: Record<PlanFeature, PlanSlug> = {
   suporte_prioritario: 'pro',
   suporte_vip: 'igreja',
   biblioteca_ilimitada: 'starter',
+  autofeed: 'pro',
 };
 
 // ── Tool → feature mapping ──

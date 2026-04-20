@@ -1112,6 +1112,7 @@ export type Database = {
       profiles: {
         Row: {
           audience: string | null
+          autofeed_enabled: boolean
           avatar_url: string | null
           bible_version: string | null
           bio: string | null
@@ -1159,6 +1160,7 @@ export type Database = {
         }
         Insert: {
           audience?: string | null
+          autofeed_enabled?: boolean
           avatar_url?: string | null
           bible_version?: string | null
           bio?: string | null
@@ -1206,6 +1208,7 @@ export type Database = {
         }
         Update: {
           audience?: string | null
+          autofeed_enabled?: boolean
           avatar_url?: string | null
           bible_version?: string | null
           bio?: string | null
@@ -1541,6 +1544,7 @@ export type Database = {
       }
       social_calendar_posts: {
         Row: {
+          auto_generated: boolean
           caption: string
           color: string | null
           created_at: string
@@ -1551,11 +1555,13 @@ export type Database = {
           network: string
           scheduled_at: string | null
           social_art_id: string | null
+          source_material_id: string | null
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          auto_generated?: boolean
           caption?: string
           color?: string | null
           created_at?: string
@@ -1566,11 +1572,13 @@ export type Database = {
           network?: string
           scheduled_at?: string | null
           social_art_id?: string | null
+          source_material_id?: string | null
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          auto_generated?: boolean
           caption?: string
           color?: string | null
           created_at?: string
@@ -1581,6 +1589,7 @@ export type Database = {
           network?: string
           scheduled_at?: string | null
           social_art_id?: string | null
+          source_material_id?: string | null
           status?: string
           updated_at?: string
           user_id?: string
