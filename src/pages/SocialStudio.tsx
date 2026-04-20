@@ -706,10 +706,10 @@ export default function SocialStudio() {
                   </div>
                 </div>
 
-                {slides.length > 0 ? (
+                {distributedSlides.length > 0 ? (
                   <VariationGrid
                     ref={variationGridRef}
-                    slides={slides}
+                    slides={distributedSlides}
                     aspectRatio={aspectRatio}
                     theme={theme}
                     lang={lang}
@@ -751,7 +751,7 @@ export default function SocialStudio() {
             <Card className="bg-card border-border min-w-0 h-fit lg:sticky lg:top-4">
               <CardContent className="p-3.5 sm:p-4">
                 <FinalActionsPanel
-                  slides={slides}
+                  slides={distributedSlides}
                   selectedIndex={selectedSlideIndex}
                   formatLabel={`${currentFormat?.channel[lang] ?? ''} (${currentFormat?.type[lang] ?? ''})`}
                   formatSize={currentFormat?.size ?? ''}
@@ -834,11 +834,12 @@ export default function SocialStudio() {
                 </div>
                 <div className="max-h-[320px] overflow-y-auto pr-1">
                   <BiblicalSceneGallery
-                    onPick={handleSceneSelect}
+                    onChangeScenePool={handleScenePoolChange}
                     lang={lang}
-                    activeId={activeSceneId}
+                    activeIds={scenePool.map((scene) => scene.id)}
                     searchTerm={verseContext?.book || verseContext?.text}
                     visualMode={imageMode}
+                    slideCount={slideCount}
                   />
                 </div>
               </CardContent>
@@ -873,11 +874,11 @@ export default function SocialStudio() {
       </Tabs>
 
       {/* ── Offscreen multi-format renderer (powers per-channel ZIP export) ── */}
-      {slides.length > 0 && selectedFormats.length > 1 && (
+      {distributedSlides.length > 0 && selectedFormats.length > 1 && (
         <MultiFormatExporter
           ref={exporterRef}
           formats={selectedFormats}
-          slides={slides}
+          slides={distributedSlides}
           theme={theme}
           template={template}
         />
