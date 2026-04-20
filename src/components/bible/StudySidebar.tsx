@@ -327,7 +327,7 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
 
           {/* Action buttons */}
           {content && !loading && (
-            <div className="flex items-center gap-2 mt-3">
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted/60 transition-colors"
@@ -345,6 +345,21 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted/60 transition-colors"
               >
                 <FileDown className="h-3.5 w-3.5" /> {labels.pdf[lang]}
+              </button>
+              <button
+                onClick={handleSaveToLibrary}
+                disabled={savingLib}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5 text-primary text-xs font-medium hover:bg-primary/10 transition-colors disabled:opacity-60"
+              >
+                <BookMarked className="h-3.5 w-3.5" />
+                {savingLib ? labels.saving[lang] : labels.saveLib[lang]}
+              </button>
+              <button
+                onClick={handleSaveToWorkspace}
+                disabled={savingLib}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5 text-primary text-xs font-medium hover:bg-primary/10 transition-colors disabled:opacity-60"
+              >
+                <FolderPlus className="h-3.5 w-3.5" /> {labels.saveWs[lang]}
               </button>
             </div>
           )}
