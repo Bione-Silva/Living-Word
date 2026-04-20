@@ -570,10 +570,11 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
       themeColors && themeColors.length > 0
         ? themeColors[slideIndex % themeColors.length]
         : themeColor;
+    const effectiveBgImageUrl = slide.bgImageUrl || bgImageUrl;
 
     // Quando há imagem única, alternamos uma tint suave por índice
     // para simular variação visual entre slides do mesmo carrossel.
-    const overlayTint = bgImageUrl
+    const overlayTint = effectiveBgImageUrl
       ? IMAGE_OVERLAY_TINTS[slideIndex % IMAGE_OVERLAY_TINTS.length]
       : null;
 
@@ -586,19 +587,19 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
           className="relative h-full w-full overflow-hidden rounded-2xl select-none isolate shadow-xl"
         >
           {template === 'editorial' && (
-            <EditorialTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+            <EditorialTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'swiss' && (
-            <SwissTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+            <SwissTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
           {template === 'cinematic' && (
-            <CinematicTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <CinematicTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'gradient' && (
-            <GradientTemplate slide={slide} bgImageUrl={bgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <GradientTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
           {template === 'lw-amber' && (
-            <LwAmberTemplate slide={slide} bgImageUrl={bgImageUrl} fontFamily={fontFamily} showWatermark={showWatermark} />
+            <LwAmberTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} fontFamily={fontFamily} showWatermark={showWatermark} />
           )}
 
           {/* Overlay tonal por índice — só quando há imagem única
