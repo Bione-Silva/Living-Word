@@ -5,3 +5,5 @@ project_id = "osusqcbyybfuwdewvbai"
     verify_jwt = false
   [functions.kb-search]
     verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
