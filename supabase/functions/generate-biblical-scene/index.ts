@@ -17,8 +17,25 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 
+type NormalizedPlan = 'free' | 'starter' | 'pro' | 'igreja';
+
+const PLAN_ALIAS: Record<string, NormalizedPlan> = {
+  free: 'free',
+  starter: 'starter',
+  pro: 'pro',
+  igreja: 'igreja',
+  pastoral: 'starter',
+  church: 'pro',
+  ministry: 'igreja',
+};
+
+function normalizePlan(plan?: string | null): NormalizedPlan {
+  if (!plan) return 'free';
+  return PLAN_ALIAS[plan.toLowerCase()] ?? 'free';
+}
+
 // Cota mensal de geração nova de imagem por plano
-const SCENE_QUOTA: Record<string, number> = {
+const SCENE_QUOTA: Record<NormalizedPlan, number> = {
   free: 0,
   starter: 0,
   pro: 20,
@@ -26,7 +43,7 @@ const SCENE_QUOTA: Record<string, number> = {
 };
 
 // Bloqueia free, libera demais para uso do banco
-const ALLOWED_PLANS = new Set(['starter', 'pro', 'igreja']);
+const ALLOWED_PLANS = new Set<NormalizedPlan>(['starter', 'pro', 'igreja']);
 
 interface SceneRow {
   id: string;
@@ -79,7 +96,8 @@ Deno.serve(async (req) => {
       .select('plan')
       .eq('id', user.id)
       .maybeSingle();
-    const userPlan = (profile?.plan || 'free') as string;
+    const rawPlan = typeof profile?.plan === 'string' ? profile.plan : 'free';
+    const userPlan = normalizePlan(rawPlan);
 
     // Admins sempre passam (para seed/teste); demais regras só se aplicam abaixo.
     const { data: isAdminData } = await adminClient.rpc('has_role', {
