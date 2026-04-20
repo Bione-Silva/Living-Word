@@ -1413,6 +1413,54 @@ export type Database = {
         }
         Relationships: []
       }
+      social_calendar_posts: {
+        Row: {
+          caption: string
+          color: string | null
+          created_at: string
+          hashtags: string
+          id: string
+          image_url: string | null
+          material_id: string | null
+          network: string
+          scheduled_at: string | null
+          social_art_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          caption?: string
+          color?: string | null
+          created_at?: string
+          hashtags?: string
+          id?: string
+          image_url?: string | null
+          material_id?: string | null
+          network?: string
+          scheduled_at?: string | null
+          social_art_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          caption?: string
+          color?: string | null
+          created_at?: string
+          hashtags?: string
+          id?: string
+          image_url?: string | null
+          material_id?: string | null
+          network?: string
+          scheduled_at?: string | null
+          social_art_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       team_members: {
         Row: {
           accepted_at: string | null
