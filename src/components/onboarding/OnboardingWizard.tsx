@@ -160,6 +160,13 @@ export default function OnboardingWizard() {
 
       await refreshProfile();
 
+      const blogUrl = cleanHandle ? `https://livingwordgo.com/blog/${cleanHandle}` : undefined;
+      void supabase.functions.invoke('send-welcome-email', {
+        body: { emailType: 'altar-digital-ready', blogUrl },
+      }).catch((e) => console.warn('[Welcome email] altar-digital-ready failed:', e));
+      void supabase.functions.invoke('schedule-drip', { body: {} })
+        .catch((e) => console.warn('[Drip] schedule failed:', e));
+
       toast.success(
         language === 'PT' ? `Blog criado com ${data?.articles_created || 3} artigos!` :
         language === 'EN' ? `Blog created with ${data?.articles_created || 3} articles!` :

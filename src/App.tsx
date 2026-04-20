@@ -48,6 +48,7 @@ import SeriesDetail from "./pages/SeriesDetail";
 import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
 import Ferramentas from "./pages/Ferramentas";
+import Unsubscribe from "./pages/Unsubscribe";
 // MinhaIgreja agora vive como aba dentro de /configuracoes?tab=church
 import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
@@ -134,6 +135,7 @@ const App = () => (
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/lp" element={<Landing />} />
                 <Route path="/devocional/publico/:shareToken" element={<DevocionalPublico />} />
+                <Route path="/unsubscribe" element={<Unsubscribe />} />
 
                 <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                   <Route path="/onboarding" element={<Onboarding />} />
