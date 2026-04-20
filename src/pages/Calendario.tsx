@@ -41,8 +41,8 @@ export default function Calendario() {
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
-  const [activeNetworks, setActiveNetworks] = useState<Set<NetworkKey | 'editorial'>>(
-    new Set(['instagram', 'facebook', 'x', 'linkedin', 'tiktok', 'youtube', 'editorial']),
+  const [activeNetworks, setActiveNetworks] = useState<Set<FilterKey>>(
+    new Set(['instagram', 'facebook', 'x', 'linkedin', 'tiktok', 'youtube', 'sermon', 'blog']),
   );
   const [showNewPost, setShowNewPost] = useState(false);
   const [showAI, setShowAI] = useState(false);
