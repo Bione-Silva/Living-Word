@@ -523,7 +523,11 @@ export default function Sermoes() {
       const { data: insertedData } = await supabase.from('materials').insert({
         user_id: user.id, type: 'sermon', title, content, language: lang, passage: topicText.trim(),
       }).select('id').single();
-      if (insertedData) setActiveSessionId(insertedData.id);
+      if (insertedData) {
+        setActiveSessionId(insertedData.id);
+        const { triggerAutoFeed } = await import('@/lib/autofeed-trigger');
+        triggerAutoFeed(insertedData.id, 'sermon');
+      }
 
       // Also save to chat history for continuity
       await saveMessage(user.id, AGENT_ID, 'user', topicText.trim());
@@ -608,7 +612,11 @@ export default function Sermoes() {
         const { data } = await (supabase as any).from('materials').insert({
           user_id: user.id, type: 'sermon', title, content: payload, language: lang, passage: passageRef,
         }).select('id').single();
-        if (data) setActiveSessionId(data.id);
+        if (data) {
+          setActiveSessionId(data.id);
+          const { triggerAutoFeed } = await import('@/lib/autofeed-trigger');
+          triggerAutoFeed(data.id, 'sermon');
+        }
       }
       setSermonContent(md);
       setSermonTitle(title);
@@ -771,7 +779,11 @@ export default function Sermoes() {
       await supabase.from('materials').update({ content: sermonContent, title: sermonTitle }).eq('id', activeSessionId);
     } else {
       const { data } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content: sermonContent, language: lang, passage: sermonTopic }).select('id').single();
-      if (data) setActiveSessionId(data.id);
+      if (data) {
+        setActiveSessionId(data.id);
+        const { triggerAutoFeed } = await import('@/lib/autofeed-trigger');
+        triggerAutoFeed(data.id, 'sermon');
+      }
     }
     toast.success(labels.saved[lang]);
     flashSaved();
