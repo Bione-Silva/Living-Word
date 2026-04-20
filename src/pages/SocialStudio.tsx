@@ -881,13 +881,11 @@ export default function SocialStudio() {
                       <div className="text-[11px] text-muted-foreground leading-snug">{h.paletteCardSub}</div>
                     </div>
                   </div>
-                  <div className="max-h-[320px] overflow-y-auto pr-1">
-                    <VersePalettePicker
-                      value={activePaletteId}
-                      onChange={handlePaletteSelect}
-                      lang={lang}
-                    />
-                  </div>
+                  <VersePalettePicker
+                    value={activePaletteId}
+                    onChange={handlePaletteSelect}
+                    lang={lang}
+                  />
                 </CardContent>
               </Card>
 
