@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, ChevronDown, Wallet, Filter } from 'lucide-react';
 import { TOOL_CREDITS, PLAN_CREDITS, type PlanSlug } from '@/lib/plans';
+import { normalizePlan } from '@/lib/plan-normalization';
 
 type L = 'PT' | 'EN' | 'ES';
 
