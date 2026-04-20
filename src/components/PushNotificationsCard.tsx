@@ -99,6 +99,10 @@ export function PushNotificationsCard() {
   const [tz, setTz] = useState<string>((profile as any)?.push_timezone || detectTz());
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
+  // Only show the "blocked" banner after the user actively tried to enable
+  // notifications in this session. Otherwise a stale browser-level "denied"
+  // state hijacks the card and hides the main toggle.
+  const [showDeniedHelp, setShowDeniedHelp] = useState(false);
 
   const iosNoPwa = useMemo(() => isIOS() && !isStandalonePWA(), []);
 
@@ -128,6 +132,7 @@ export function PushNotificationsCard() {
       const res = await subscribe();
       if (!res.ok) {
         if (res.error === 'denied') {
+          setShowDeniedHelp(true);
           toast.error(COPY.deniedTitle[l], { duration: 6000 });
         } else {
           toast.error(res.error || 'Error');
@@ -135,6 +140,7 @@ export function PushNotificationsCard() {
         await refresh();
         return;
       }
+      setShowDeniedHelp(false);
       await persist({ push_enabled: true, push_hour: hour, push_timezone: tz });
     } else {
       await unsubscribe();
@@ -149,6 +155,7 @@ export function PushNotificationsCard() {
       await refresh();
       return;
     }
+    setShowDeniedHelp(false);
     await persist({ push_enabled: true, push_hour: hour, push_timezone: tz });
   };
 
@@ -188,7 +195,7 @@ export function PushNotificationsCard() {
           </div>
         ) : (
           <>
-            {permission === 'denied' && !subscribed && (
+            {showDeniedHelp && permission === 'denied' && !subscribed && (
               <div className="space-y-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
                 <div className="flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
@@ -211,7 +218,7 @@ export function PushNotificationsCard() {
               <Switch
                 checked={enabled}
                 onCheckedChange={handleToggle}
-                disabled={busy || permission === 'denied'}
+                disabled={busy}
               />
             </div>
 
