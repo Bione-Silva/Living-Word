@@ -173,17 +173,21 @@ export default function MenteChat() {
     const titleMatch = content.match(/^#\s+(.+)/m) || content.match(/^##\s+(.+)/m);
     const title = titleMatch?.[1]?.replace(/[*_]/g, '').trim() || `${modLabel} — ${name}`;
 
-    const { error } = await supabase.from('materials').insert({
+    const { data: ins, error } = await supabase.from('materials').insert({
       user_id: user.id,
       type: materialType,
       title,
       content,
       language: lang,
-    });
+    }).select('id').single();
 
     if (error) {
       toast.error(lang === 'PT' ? 'Erro ao salvar' : lang === 'EN' ? 'Error saving' : 'Error al guardar');
     } else {
+      if (ins?.id) {
+        const { triggerAutoFeed } = await import('@/lib/autofeed-trigger');
+        triggerAutoFeed(ins.id, materialType);
+      }
       setSavedIndexes((prev) => new Set(prev).add(msgIndex));
       toast.success(lang === 'PT' ? 'Salvo na Biblioteca! 📚' : lang === 'EN' ? 'Saved to Library! 📚' : '¡Guardado en la Biblioteca! 📚');
     }

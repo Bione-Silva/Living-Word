@@ -146,14 +146,19 @@ export function ArtifactActions({ content, lang, userId, modalidade, mindName, b
     setLoadingAction('outline');
     try {
       const typeMap: Record<string, string> = { sermao: 'outline', estudo: 'outline', devocional: 'outline', aconselhamento: 'outline' };
-      const { error } = await supabase.from('materials').insert({
+      const matType = typeMap[modalidade] || 'outline';
+      const { data: ins, error } = await supabase.from('materials').insert({
         user_id: userId,
-        type: typeMap[modalidade] || 'outline',
+        type: matType,
         title: `📝 ${title}`,
         content,
         language: lang,
-      });
+      }).select('id').single();
       if (error) throw error;
+      if (ins?.id) {
+        const { triggerAutoFeed } = await import('@/lib/autofeed-trigger');
+        triggerAutoFeed(ins.id, matType);
+      }
       setOutlineSaved(true);
       toast.success(labels.saved[lang]);
     } catch {
