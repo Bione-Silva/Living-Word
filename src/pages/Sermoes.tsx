@@ -905,7 +905,7 @@ export default function Sermoes() {
         </div>
 
         {/* Content: Form or Result */}
-        <div ref={resultRef} className="flex-1 overflow-y-auto px-4 py-6">
+        <div ref={resultRef} className="flex-1 overflow-y-auto px-4 py-6 pb-[8rem] md:pb-24">
           {!showResult ? (
             /* ═══ FORM VIEW ═══ */
             <div className="max-w-2xl mx-auto animate-in fade-in duration-500">
