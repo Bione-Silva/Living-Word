@@ -66,11 +66,11 @@ export function SocialStudioPromoCard() {
         </div>
 
         {/* Right: phone fan illustration (uploaded reference asset) */}
-        <div className="shrink-0 w-[140px] sm:w-[170px] flex items-center justify-end">
+        <div className="shrink-0 w-[120px] sm:w-[150px] md:w-[170px] flex items-center justify-center self-stretch">
           <img
             src={promoImg}
             alt={t.title}
-            className="w-full h-auto object-contain pointer-events-none select-none"
+            className="max-h-full w-full h-auto object-contain pointer-events-none select-none"
             loading="lazy"
           />
         </div>
