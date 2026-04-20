@@ -13,7 +13,7 @@ import { BomAmigoHeroCard } from '@/components/dashboard/BomAmigoHeroCard';
 import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
 import { WeekAgendaCard } from '@/components/dashboard/WeekAgendaCard';
 import { ContinueWhereYouLeftOff } from '@/components/dashboard/ContinueWhereYouLeftOff';
-import { VerseOfTheDay } from '@/components/dashboard/VerseOfTheDay';
+
 import { QuickActionsRow } from '@/components/dashboard/QuickActionsRow';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
 import { SocialStudioPromoCard } from '@/components/dashboard/SocialStudioPromoCard';
