@@ -6,7 +6,7 @@ import { safeInvoke } from '@/lib/safe-invoke';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import {
-  BookOpen, Play, Pause, Share2, Download, Link as LinkIcon, MessageCircle, ChevronRight, Bookmark
+  BookOpen, Play, Pause, Download, Link as LinkIcon, MessageCircle, ChevronRight, Bookmark, FileText
 } from 'lucide-react';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 
@@ -20,6 +20,9 @@ interface DevotionalData {
   anchor_verse_text: string;
   body_text: string;
   audio_url?: string;
+  audio_url_nova?: string | null;
+  audio_url_alloy?: string | null;
+  audio_url_onyx?: string | null;
   audio_duration_seconds?: number;
   cover_image_url?: string | null;
   scheduled_date: string;
@@ -31,11 +34,12 @@ const L10N = {
   listen: { PT: 'Ouvir devocional', EN: 'Listen devotional', ES: 'Escuchar devocional' },
   pause: { PT: 'Pausar', EN: 'Pause', ES: 'Pausar' },
   whatsapp: { PT: 'Enviar no WhatsApp', EN: 'Send on WhatsApp', ES: 'Enviar en WhatsApp' },
-  share: { PT: 'Compartilhar', EN: 'Share', ES: 'Compartir' },
+  read: { PT: 'Ler em texto', EN: 'Read text', ES: 'Leer en texto' },
   download: { PT: 'Baixar arte', EN: 'Download art', ES: 'Descargar arte' },
   copy: { PT: 'Copiar link', EN: 'Copy link', ES: 'Copiar enlace' },
   copied: { PT: 'Link copiado!', EN: 'Link copied!', ES: '¡Enlace copiado!' },
   copyTitle: { PT: 'Ouça a Palavra de hoje e compartilhe esperança com mais pessoas.', EN: "Listen to today's Word and share hope with more people.", ES: 'Escucha la Palabra de hoy y comparte esperanza con más personas.' },
+  audioPrep: { PT: 'Áudio em preparação', EN: 'Audio in preparation', ES: 'Audio en preparación' },
   error: { PT: 'Não conseguimos carregar a palavra de hoje.', EN: "We couldn't load today's word.", ES: 'No pudimos cargar la palabra de hoy.' },
 } satisfies Record<string, Record<L, string>>;
 
@@ -70,13 +74,20 @@ export function DevotionalHeroCard() {
     })();
   }, [user]);
 
+  const audioSrc =
+    data?.audio_url ||
+    data?.audio_url_nova ||
+    data?.audio_url_alloy ||
+    data?.audio_url_onyx ||
+    null;
+
   const togglePlay = () => {
-    if (!data?.audio_url) {
-      toast.info(lang === 'PT' ? 'Áudio em preparação' : lang === 'EN' ? 'Audio in preparation' : 'Audio en preparación');
+    if (!audioSrc) {
+      toast.info(L10N.audioPrep[lang]);
       return;
     }
     if (!audioRef.current) {
-      audioRef.current = new Audio(data.audio_url);
+      audioRef.current = new Audio(audioSrc);
       audioRef.current.addEventListener('timeupdate', () => {
         if (audioRef.current) setProgress(audioRef.current.currentTime);
       });
@@ -108,14 +119,8 @@ export function DevotionalHeroCard() {
     openWhatsAppShare(txt);
   };
 
-  const handleShare = async () => {
-    if (!data) return;
-    const text = `${data.title}\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}`;
-    if (navigator.share) {
-      await navigator.share({ title: data.title, text, url: link }).catch(() => {});
-    } else {
-      handleCopy();
-    }
+  const handleRead = () => {
+    window.location.href = '/devocional';
   };
 
   const handleDownload = () => {
@@ -209,11 +214,11 @@ export function DevotionalHeroCard() {
               <span className="truncate">{L10N.whatsapp[lang]}</span>
             </button>
             <button
-              onClick={handleShare}
+              onClick={handleRead}
               className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors"
             >
-              <Share2 className="h-3.5 w-3.5" />
-              <span className="truncate">{L10N.share[lang]}</span>
+              <FileText className="h-3.5 w-3.5" />
+              <span className="truncate">{L10N.read[lang]}</span>
             </button>
             <button
               onClick={handleDownload}
