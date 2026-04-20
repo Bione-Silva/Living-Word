@@ -329,6 +329,7 @@ export default function Sermoes() {
   const { user, profile } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Form state
   const [topic, setTopic] = useState('');
