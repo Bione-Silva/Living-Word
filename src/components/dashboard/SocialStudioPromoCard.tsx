@@ -42,9 +42,6 @@ export function SocialStudioPromoCard() {
             <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-primary text-primary-foreground">
               {t.badge}
             </span>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-background/60 text-primary border border-primary/25">
-              {t.badge}
-            </span>
           </div>
 
           <h3 className="text-base sm:text-lg font-bold text-foreground leading-tight mb-2">
@@ -65,8 +62,8 @@ export function SocialStudioPromoCard() {
           </Button>
         </div>
 
-        {/* Right: phone fan illustration (uploaded reference asset) */}
-        <div className="shrink-0 w-[120px] sm:w-[150px] md:w-[170px] flex items-center justify-center self-stretch">
+        {/* Right: phone fan illustration */}
+        <div className="shrink-0 w-[110px] sm:w-[130px] md:w-[150px] flex items-center justify-center self-stretch">
           <img
             src={promoImg}
             alt={t.title}
