@@ -123,7 +123,54 @@ export function StudySidebar({ open, onOpenChange, passage, verseText, bookId, c
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [savedMaterialId, setSavedMaterialId] = useState<string | null>(null);
+  const [savingLib, setSavingLib] = useState(false);
+  const [wsDialogOpen, setWsDialogOpen] = useState(false);
   const lastPassageRef = useRef('');
+
+  // Reset saved state when passage changes
+  useEffect(() => {
+    setSavedMaterialId(null);
+  }, [passage]);
+
+  const ensureSaved = useCallback(async (): Promise<string | null> => {
+    if (savedMaterialId) return savedMaterialId;
+    if (!user || !content) return null;
+    setSavingLib(true);
+    try {
+      const { data, error: insErr } = await supabase
+        .from('materials')
+        .insert({
+          user_id: user.id,
+          title: passage,
+          content,
+          type: 'biblical_study',
+          passage,
+          language: lang,
+        })
+        .select('id')
+        .single();
+      if (insErr) throw insErr;
+      setSavedMaterialId(data.id);
+      return data.id;
+    } catch (e) {
+      toast.error((e as Error).message);
+      return null;
+    } finally {
+      setSavingLib(false);
+    }
+  }, [savedMaterialId, user, content, passage, lang]);
+
+  const handleSaveToLibrary = async () => {
+    const id = await ensureSaved();
+    if (id) toast.success(labels.savedLib[lang]);
+  };
+
+  const handleSaveToWorkspace = async () => {
+    const id = await ensureSaved();
+    if (id) setWsDialogOpen(true);
+  };
+
 
   const generate = useCallback(async () => {
     if (!user || !passage) return;
