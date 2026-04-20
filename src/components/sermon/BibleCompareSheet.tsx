@@ -98,13 +98,24 @@ export function BibleCompareSheet({
   const isDesktop = useBreakpoint('(min-width: 768px)');
   const isDark = theme === 'dark';
 
+  const normalizeVersionCode = (code?: string | null) => {
+    if (!code) return null;
+    const trimmed = code.trim();
+    if (!trimmed) return null;
+    const exact = getBibleVersion(trimmed);
+    if (exact) return exact.code;
+    return versionAbbrToCode(trimmed) || null;
+  };
+
   // Resolve the 3 versions: sermon version + 2 chosen by preacher (or sane defaults).
-  const fallbackV2 = getDefaultVersionCode(lang as BibleLang);
-  const fallbackV3Candidates = ALL_VERSIONS.filter(v => v.language === (lang || 'PT') && v.code !== fallbackV2);
-  const fallbackV3 = fallbackV3Candidates[1]?.code || fallbackV3Candidates[0]?.code || fallbackV2;
-  const [v1] = useState<string>(primaryVersion || fallbackV2);
-  const [v2, setV2] = useState<string>(() => defaultCompareVersion2 || fallbackV2);
-  const [v3, setV3] = useState<string>(() => defaultCompareVersion3 || fallbackV3);
+  const normalizedPrimary = normalizeVersionCode(primaryVersion) || getDefaultVersionCode(lang as BibleLang);
+  const normalizedSavedV2 = normalizeVersionCode(defaultCompareVersion2);
+  const normalizedSavedV3 = normalizeVersionCode(defaultCompareVersion3);
+  const fallbackV2 = ALL_VERSIONS.find((v) => v.language === (lang || 'PT') && v.code !== normalizedPrimary)?.code || getDefaultVersionCode(lang as BibleLang);
+  const fallbackV3 = ALL_VERSIONS.find((v) => v.language === (lang || 'PT') && ![normalizedPrimary, normalizedSavedV2 || fallbackV2].includes(v.code))?.code || fallbackV2;
+  const [v1] = useState<string>(normalizedPrimary);
+  const [v2, setV2] = useState<string>(() => normalizedSavedV2 || fallbackV2);
+  const [v3, setV3] = useState<string>(() => normalizedSavedV3 || fallbackV3);
 
   const [results, setResults] = useState<VerseResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -386,10 +397,10 @@ export function BibleCompareSheet({
       {onSaveDefaults ? (
         <Button
           size="sm"
-          variant="outline"
+          variant={isDark ? 'secondary' : 'outline'}
           onClick={handleSaveDefaults}
           disabled={savingDefaults}
-          className={cn('gap-1.5', isDark && 'border-slate-600 text-slate-100 hover:bg-slate-700')}
+          className={cn('gap-1.5', isDark && 'bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border')}
         >
           <Settings2 className="h-3.5 w-3.5" />
           {savingDefaults ? '...' : tr.saveDefaults[lang]}
