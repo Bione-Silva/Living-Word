@@ -604,6 +604,7 @@ export default function SocialStudio() {
                     <ContentGenerator
                       onVerseGenerated={handleVerseGenerated}
                       onTextGenerated={handleTextGenerated}
+                      prefillTopic={verseContext?.book || verseContext?.text || ''}
                     />
                   </>
                 )}
