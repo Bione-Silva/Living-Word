@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => ({
         skipWaiting: true,
         cleanupOutdatedCaches: true,
         // Bump cacheId to invalidate old brand assets across installed browsers/PWAs
-        cacheId: "lw-v4-brand-refresh",
+        cacheId: "lw-v5-new-logo",
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/~oauth/, /^\/blog\//, /\.\w+$/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
