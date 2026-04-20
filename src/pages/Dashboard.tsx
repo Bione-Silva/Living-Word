@@ -13,7 +13,6 @@ import { BomAmigoHeroCard } from '@/components/dashboard/BomAmigoHeroCard';
 import { MonthlyOverviewCard } from '@/components/dashboard/MonthlyOverviewCard';
 import { WeekAgendaCard } from '@/components/dashboard/WeekAgendaCard';
 import { ContinueWhereYouLeftOff } from '@/components/dashboard/ContinueWhereYouLeftOff';
-import { RecommendedForYou } from '@/components/dashboard/RecommendedForYou';
 import { VerseOfTheDay } from '@/components/dashboard/VerseOfTheDay';
 import { QuickActionsRow } from '@/components/dashboard/QuickActionsRow';
 import { RecentGenerations } from '@/components/dashboard/RecentGenerations';
@@ -105,33 +104,29 @@ export default function Dashboard() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 1 — Pilares: Devocional + Palavra Amiga + Apoio lateral
-          Mobile: empilhado vertical
-          Desktop ≥lg: 3 colunas (Devocional 6 / Palavra 4 / Apoio 3)
+          FAIXA 1 — Devocional + Resumo do Mês expandido + Agenda
+          Desktop ≥lg: Devocional 7 / Resumo+Agenda 5
           ═══════════════════════════════════════════════════════════════ */}
       <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-6">
+        <div className="lg:col-span-7">
           <DevotionalHeroCard />
         </div>
-        <div className="lg:col-span-3">
-          <BomAmigoHeroCard />
-        </div>
-        <div className="lg:col-span-3 space-y-4">
+        <div className="lg:col-span-5 space-y-4">
           <MonthlyOverviewCard />
           <WeekAgendaCard />
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 2 — Continue de onde parou (4 cards)  +  Recomendado  +  Versículo
-          Desktop ≥lg: 12 colunas (Continue 7 / Recomendado 3 / Versículo 2)
+          FAIXA 2 — Continue de onde parou + Palavra Amiga + Versículo
+          Desktop ≥lg: Continue 5 / Palavra Amiga 5 / Versículo 2
           ═══════════════════════════════════════════════════════════════ */}
       <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-5">
           <ContinueWhereYouLeftOff />
         </div>
-        <div className="lg:col-span-3">
-          <RecommendedForYou />
+        <div className="lg:col-span-5">
+          <BomAmigoHeroCard />
         </div>
         <div className="lg:col-span-2">
           <VerseOfTheDay />
