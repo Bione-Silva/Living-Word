@@ -43,7 +43,6 @@ export default function Calendario() {
   const [activeNetworks, setActiveNetworks] = useState<Set<FilterKey>>(
     new Set(['instagram', 'facebook', 'x', 'linkedin', 'tiktok', 'youtube', 'sermon', 'blog']),
   );
-  const [showNewPost, setShowNewPost] = useState(false);
   const [showAI, setShowAI] = useState(false);
 
   const year = currentDate.getFullYear();
