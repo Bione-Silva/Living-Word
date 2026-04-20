@@ -738,6 +738,7 @@ export default function Sermoes() {
     }
     toast.success(labels.saved[lang]);
     await refreshSessions();
+    queryClient.invalidateQueries({ queryKey: ['materials'] });
   };
 
   const handleRegenerate = () => {
