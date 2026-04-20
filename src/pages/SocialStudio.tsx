@@ -9,7 +9,7 @@ import { ThemeCustomizer, type ThemeConfig, colorPresets } from '@/components/so
 import { TemplatePicker, type CanvasTemplate } from '@/components/social-studio/TemplatePicker';
 import { VersePalettePicker, type VersePalette } from '@/components/social-studio/VersePalettePicker';
 import { getBibleVersion, getDefaultVersionCode } from '@/lib/bible-data';
-import { type SlideCount } from '@/components/social-studio/SlideCountPicker';
+import { SlideCountPicker, type SlideCount } from '@/components/social-studio/SlideCountPicker';
 import { BiblicalSceneGallery } from '@/components/social-studio/BiblicalSceneGallery';
 import { ContentGenerator } from '@/components/social-studio/ContentGenerator';
 import { normalizePlan } from '@/lib/plan-normalization';
@@ -17,6 +17,7 @@ import { normalizePlan } from '@/lib/plan-normalization';
 import { VariationGrid, type VariationGridHandle } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
 import {
+  ImageModePicker,
   getImageModePromptFragment,
   getImageModeLabel,
   type ImageMode,
@@ -662,6 +663,13 @@ export default function SocialStudio() {
                       onTextGenerated={handleTextGenerated}
                       prefillTopic={verseContext?.book || verseContext?.text || ''}
                     />
+                    <div className="pt-3 border-t border-border">
+                      <SlideCountPicker
+                        value={slideCount}
+                        onChange={setSlideCount}
+                        lang={lang}
+                      />
+                    </div>
                   </>
                 )}
 
@@ -671,15 +679,22 @@ export default function SocialStudio() {
                       <h2 className="text-lg font-bold text-foreground font-display">{h.styleHeading}</h2>
                       <p className="text-xs text-muted-foreground mt-0.5">{h.styleSub}</p>
                     </div>
-                    <ThemeCustomizer
-                      value={theme}
-                      onChange={(v) => {
-                        setTheme(v);
-                        setActivePaletteId(null);
-                      }}
+                    <ImageModePicker
+                      value={imageMode}
+                      onChange={setImageMode}
                       lang={lang}
-                      onUploadBackground={handleBackgroundUpload}
                     />
+                    <div className="pt-3 border-t border-border">
+                      <ThemeCustomizer
+                        value={theme}
+                        onChange={(v) => {
+                          setTheme(v);
+                          setActivePaletteId(null);
+                        }}
+                        lang={lang}
+                        onUploadBackground={handleBackgroundUpload}
+                      />
+                    </div>
                   </>
                 )}
 
@@ -866,13 +881,11 @@ export default function SocialStudio() {
                       <div className="text-[11px] text-muted-foreground leading-snug">{h.paletteCardSub}</div>
                     </div>
                   </div>
-                  <div className="max-h-[320px] overflow-y-auto pr-1">
-                    <VersePalettePicker
-                      value={activePaletteId}
-                      onChange={handlePaletteSelect}
-                      lang={lang}
-                    />
-                  </div>
+                  <VersePalettePicker
+                    value={activePaletteId}
+                    onChange={handlePaletteSelect}
+                    lang={lang}
+                  />
                 </CardContent>
               </Card>
 
