@@ -365,8 +365,9 @@ export default function SocialStudio() {
 
     if (state.source_content && state.source_content.trim()) {
       const raw = state.source_content.trim();
+      const isDevotional = state.source_origin === 'devotional';
       const firstHeading = raw.match(/^#+\s+(.+)$/m)?.[1]?.trim();
-      const headline = (state.source_title || firstHeading || 'Sermão').slice(0, 120);
+      const headline = (state.source_title || firstHeading || (isDevotional ? 'Devocional' : 'Sermão')).slice(0, 120);
       const firstParagraph = raw
         .split('\n')
         .map((l) => l.replace(/^[#>*\-\s]+/, '').trim())
@@ -376,12 +377,17 @@ export default function SocialStudio() {
       setVerseContext({ text: firstParagraph || headline, book: headline });
       setSlideCount(1);
       setPresentationMode(false);
-      setStep('format');
+      setGeneratedCaption(raw);
+      setStep('content');
       window.history.replaceState({}, document.title);
       toast.success(
-        lang === 'PT' ? 'Sermão carregado! Pronto para gerar carrossel.'
-          : lang === 'EN' ? 'Sermon loaded! Ready to generate carousel.'
-          : '¡Sermón cargado! Listo para generar carrusel.'
+        isDevotional
+          ? lang === 'PT' ? 'Devocional carregado! Pronto para gerar carrossel.'
+            : lang === 'EN' ? 'Devotional loaded! Ready to generate carousel.'
+            : '¡Devocional cargado! Listo para generar carrusel.'
+          : lang === 'PT' ? 'Sermão carregado! Pronto para gerar carrossel.'
+            : lang === 'EN' ? 'Sermon loaded! Ready to generate carousel.'
+            : '¡Sermón cargado! Listo para generar carrusel.'
       );
       return;
     }
