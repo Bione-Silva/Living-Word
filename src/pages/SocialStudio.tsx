@@ -663,6 +663,13 @@ export default function SocialStudio() {
                       onTextGenerated={handleTextGenerated}
                       prefillTopic={verseContext?.book || verseContext?.text || ''}
                     />
+                    <div className="pt-3 border-t border-border">
+                      <SlideCountPicker
+                        value={slideCount}
+                        onChange={setSlideCount}
+                        lang={lang}
+                      />
+                    </div>
                   </>
                 )}
 
