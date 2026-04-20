@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight, Sparkles, Plus, Filter } from 'lucide-react'
 import { toast } from 'sonner';
 import { CalendarGrid, type CalendarItem } from '@/components/calendario/CalendarGrid';
 import { ContentPreviewPanel } from '@/components/calendario/ContentPreviewPanel';
-import { NetworkFilterBar, type NetworkKey, NETWORK_META } from '@/components/calendario/NetworkFilterBar';
+import { NetworkFilterBar, type NetworkKey, type FilterKey, NETWORK_META } from '@/components/calendario/NetworkFilterBar';
 import { NewPostDialog } from '@/components/calendario/NewPostDialog';
 import { GenerateWithAIDialog } from '@/components/calendario/GenerateWithAIDialog';
 
@@ -41,8 +41,8 @@ export default function Calendario() {
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
-  const [activeNetworks, setActiveNetworks] = useState<Set<NetworkKey | 'editorial'>>(
-    new Set(['instagram', 'facebook', 'x', 'linkedin', 'tiktok', 'youtube', 'editorial']),
+  const [activeNetworks, setActiveNetworks] = useState<Set<FilterKey>>(
+    new Set(['instagram', 'facebook', 'x', 'linkedin', 'tiktok', 'youtube', 'sermon', 'blog']),
   );
   const [showNewPost, setShowNewPost] = useState(false);
   const [showAI, setShowAI] = useState(false);
@@ -98,22 +98,27 @@ export default function Calendario() {
         status: p.status,
       }));
 
-    const b: CalendarItem[] = activeNetworks.has('editorial')
-      ? editorialItems
-          .filter((e: any) => e.scheduled_at)
-          .map((e: any) => ({
-            id: e.id,
-            kind: 'editorial',
-            network: null,
-            title: e.materials?.title || '—',
-            caption: e.materials?.passage || '',
-            hashtags: '',
-            image_url: null,
-            scheduled_at: e.scheduled_at,
-            status: e.status,
-            editorial_type: e.materials?.type,
-          }))
-      : [];
+    const isSermonType = (type?: string) =>
+      !!type && /sermon|pastoral|sermao|sermão/i.test(type);
+
+    const b: CalendarItem[] = editorialItems
+      .filter((e: any) => {
+        if (!e.scheduled_at) return false;
+        const isSermon = isSermonType(e.materials?.type);
+        return isSermon ? activeNetworks.has('sermon') : activeNetworks.has('blog');
+      })
+      .map((e: any) => ({
+        id: e.id,
+        kind: 'editorial',
+        network: null,
+        title: e.materials?.title || '—',
+        caption: e.materials?.passage || '',
+        hashtags: '',
+        image_url: null,
+        scheduled_at: e.scheduled_at,
+        status: e.status,
+        editorial_type: e.materials?.type,
+      }));
 
     return [...a, ...b];
   }, [socialPosts, editorialItems, activeNetworks]);
@@ -133,7 +138,7 @@ export default function Calendario() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const toggleNetwork = (key: NetworkKey | 'editorial') => {
+  const toggleNetwork = (key: FilterKey) => {
     const next = new Set(activeNetworks);
     if (next.has(key)) next.delete(key);
     else next.add(key);

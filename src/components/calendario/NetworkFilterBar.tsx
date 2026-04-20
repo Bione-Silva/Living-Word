@@ -1,12 +1,14 @@
-import { Instagram, Facebook, Linkedin, Youtube, FileText } from 'lucide-react';
+import { Instagram, Facebook, Linkedin, Youtube, Mic, PenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type L = 'PT' | 'EN' | 'ES';
 
 export type NetworkKey = 'instagram' | 'facebook' | 'x' | 'linkedin' | 'tiktok' | 'youtube';
+export type EditorialKey = 'sermon' | 'blog';
+export type FilterKey = NetworkKey | EditorialKey;
 
 export const NETWORK_META: Record<
-  NetworkKey | 'editorial',
+  FilterKey,
   { label: string; icon: React.ElementType; color: string; bg: string; ring: string; dot: string }
 > = {
   instagram: {
@@ -57,37 +59,51 @@ export const NETWORK_META: Record<
     ring: 'ring-red-500/30',
     dot: 'bg-red-500',
   },
-  editorial: {
-    label: 'Editorial',
-    icon: FileText,
-    color: 'text-emerald-600',
+  sermon: {
+    label: 'Sermons',
+    icon: Mic,
+    color: 'text-emerald-700',
     bg: 'bg-emerald-500/10',
     ring: 'ring-emerald-500/30',
     dot: 'bg-emerald-500',
   },
+  blog: {
+    label: 'Blog',
+    icon: PenLine,
+    color: 'text-violet-700',
+    bg: 'bg-violet-500/10',
+    ring: 'ring-violet-500/30',
+    dot: 'bg-violet-500',
+  },
 };
 
-const EDITORIAL_LABEL: Record<L, string> = {
-  PT: 'Sermões & Artigos',
-  EN: 'Sermons & Articles',
-  ES: 'Sermones y Artículos',
+const SERMON_LABEL: Record<L, string> = {
+  PT: 'Sermões',
+  EN: 'Sermons',
+  ES: 'Sermones',
+};
+const BLOG_LABEL: Record<L, string> = {
+  PT: 'Blog & Artigos',
+  EN: 'Blog & Articles',
+  ES: 'Blog y Artículos',
 };
 
 interface Props {
-  active: Set<NetworkKey | 'editorial'>;
-  onToggle: (key: NetworkKey | 'editorial') => void;
+  active: Set<FilterKey>;
+  onToggle: (key: FilterKey) => void;
   lang: L;
 }
 
 export function NetworkFilterBar({ active, onToggle, lang }: Props) {
-  const keys: (NetworkKey | 'editorial')[] = [
+  const keys: FilterKey[] = [
     'instagram',
     'facebook',
     'x',
     'linkedin',
     'tiktok',
     'youtube',
-    'editorial',
+    'sermon',
+    'blog',
   ];
 
   return (
@@ -96,7 +112,8 @@ export function NetworkFilterBar({ active, onToggle, lang }: Props) {
         const meta = NETWORK_META[k];
         const Icon = meta.icon;
         const isActive = active.has(k);
-        const label = k === 'editorial' ? EDITORIAL_LABEL[lang] : meta.label;
+        const label =
+          k === 'sermon' ? SERMON_LABEL[lang] : k === 'blog' ? BLOG_LABEL[lang] : meta.label;
         return (
           <button
             key={k}
