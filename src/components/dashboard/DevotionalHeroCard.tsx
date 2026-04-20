@@ -214,11 +214,11 @@ export function DevotionalHeroCard() {
               <span className="truncate">{L10N.whatsapp[lang]}</span>
             </button>
             <button
-              onClick={handleShare}
+              onClick={handleRead}
               className="h-10 rounded-lg border border-border hover:border-primary/40 hover:bg-primary/5 text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors"
             >
-              <Share2 className="h-3.5 w-3.5" />
-              <span className="truncate">{L10N.share[lang]}</span>
+              <FileText className="h-3.5 w-3.5" />
+              <span className="truncate">{L10N.read[lang]}</span>
             </button>
             <button
               onClick={handleDownload}
