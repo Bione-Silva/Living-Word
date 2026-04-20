@@ -77,7 +77,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // Master email skips onboarding redirect
   const isMaster = user.email === MASTER_EMAIL;
 
-  // Redirect to onboarding if profile not completed (except if already on onboarding/upgrade or master)
+  // Redirect to blog onboarding if profile not completed (except if already there or on upgrade, or master)
   const skipRedirectPaths = ['/onboarding', '/upgrade', '/blog-onboarding'];
   if (
     !isMaster &&
@@ -85,7 +85,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     !profile.profile_completed &&
     !skipRedirectPaths.some(p => location.pathname.startsWith(p))
   ) {
-    return <Navigate to="/onboarding" replace />;
+    return <Navigate to="/blog-onboarding" replace />;
   }
 
   return <>{children}</>;
