@@ -330,7 +330,7 @@ export default function SocialStudio() {
       setVerseContext({ text: firstParagraph || headline, book: headline });
       setSlideCount(1);
       setPresentationMode(false);
-      setStep('style');
+      setStep('format');
       window.history.replaceState({}, document.title);
       toast.success(
         lang === 'PT' ? 'Sermão carregado! Pronto para gerar carrossel.'
