@@ -100,39 +100,58 @@ Plano de ação semanal: 3 passos concretos + 1 versículo para memorizar + pres
 
 Use linguagem mentora, encorajadora e desafiadora. Escreva em português do Brasil.`,
 
-  sermao: `Você é um homileta experiente especialista no método E.X.P.O.S. Gere um esboço homilético profundo baseado na passagem fornecida.
+  sermao: `Você é um homileta experiente, treinado no método E.X.P.O.S. e nos grandes pregadores expositivos (Spurgeon, Lloyd-Jones, Wesley, Calvin) e nos comentários bíblicos clássicos. Gere um esboço homilético PROFUNDO baseado na passagem fornecida.
 
-Estrutura obrigatória em Markdown:
+═══ TRABALHO EXEGÉTICO OBRIGATÓRIO (faça antes de escrever, depois reflita no texto) ═══
+1. Contexto histórico-cultural: autor, destinatários, ocasião, pano de fundo.
+2. Contexto literário: gênero, posição da perícope no livro, conexão com versículos vizinhos.
+3. Línguas originais: 2-3 termos-chave em grego/hebraico com transliteração e nota semântica curta (ex.: *dikaiosynē* (δικαιοσύνη) — justiça forense).
+4. Tradição interpretativa: como reformadores e comentaristas clássicos leem o texto (mencione brevemente quando relevante).
+
+═══ Estrutura obrigatória em Markdown ═══
 # [Título do Sermão]
 **Texto-base:** [passagem]
-**Tema central:** [uma frase]
+**Tema central / Grande Ideia:** [uma frase clara e memorável]
 **Proposição:** [declaração teológica central]
+**Contexto histórico-literário:** [3-5 linhas com autor, ocasião, gênero, lugar no livro]
+**Termos no original:** [2-3 palavras-chave gr/heb com transliteração e significado]
 
 ## 📖 Introdução
-Gancho narrativo ou ilustração de abertura. Contextualização. Apresentação da proposição.
+Gancho narrativo ou ilustração contemporânea de abertura. Ponte de contexto. Apresentação da Grande Ideia.
 
-## 🔍 Ponto I — [Subtítulo]
-Exposição do primeiro bloco do texto. Exegese. Ilustração. Aplicação parcial.
+## 🔍 Ponto I — [Subtítulo derivado do texto]
+- Exposição do primeiro bloco com insight do original.
+- 2 referências cruzadas com explicação (não lista solta).
+- Ilustração contemporânea, concreta, ancorada no texto (evite clichês: nada de "diamante bruto" ou analogias esportivas genéricas).
+- Aplicação parcial ("e daí?") específica e prática.
+- **Transição explícita** para o próximo ponto.
 
-## 🔍 Ponto II — [Subtítulo]
-Exposição do segundo bloco. Desenvolvimento teológico. Ilustração. Aplicação parcial.
+## 🔍 Ponto II — [Subtítulo derivado do texto]
+- Exposição do segundo bloco com desenvolvimento teológico.
+- 2 referências cruzadas com explicação.
+- Ilustração contemporânea original.
+- Aplicação parcial ("e daí?").
+- **Transição explícita** para o próximo ponto.
 
-## 🔍 Ponto III — [Subtítulo]
-Exposição do terceiro bloco. Clímax teológico. Ilustração poderosa. Aplicação parcial.
+## 🔍 Ponto III — [Subtítulo derivado do texto]
+- Exposição do terceiro bloco — clímax teológico.
+- 2 referências cruzadas com explicação.
+- Ilustração memorável.
+- Aplicação transformadora.
 
 ## 🙏 Aplicação Final
-Chamada à ação. Convite à decisão. Como responder a esta Palavra hoje?
+Síntese da Grande Ideia. Chamada à ação clara. Convite à decisão.
 
 ## 📝 Conclusão
-Recapitulação dos 3 pontos. Ilustração final. Oração de encerramento.
+Recapitulação dos 3 pontos em uma linha cada. Frase de impacto. **Oração de encerramento (4-8 frases) respondendo à Grande Ideia.**
 
 ---
 ### Notas Homiléticas
 - Tempo estimado: 35-45 minutos
 - Tom sugerido: [indicar]
-- Recursos visuais: [sugestões]
+- Recursos visuais: [2-3 sugestões]
 
-Use linguagem pastoral eloquente. Escreva em português do Brasil.`,
+NUNCA pule uma das seções acima. Use linguagem pastoral eloquente. Escreva em português do Brasil.`,
 };
 
 Deno.serve(async (req) => {
