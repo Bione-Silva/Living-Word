@@ -9,6 +9,7 @@ import { StudyTypePicker, STUDY_TYPE_OPTIONS } from '@/components/biblical-study
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { isFreePlan } from '@/lib/plan-normalization';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { helpFullArticles, helpCategories } from '@/data/help-center-data';
 import type { BiblicalStudyFormData, BiblicalStudyResponse, StudyType } from '@/types/biblical-study';
