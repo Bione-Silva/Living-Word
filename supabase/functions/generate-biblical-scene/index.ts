@@ -96,7 +96,8 @@ Deno.serve(async (req) => {
       .select('plan')
       .eq('id', user.id)
       .maybeSingle();
-    const userPlan = (profile?.plan || 'free') as string;
+    const rawPlan = typeof profile?.plan === 'string' ? profile.plan : 'free';
+    const userPlan = normalizePlan(rawPlan);
 
     // Admins sempre passam (para seed/teste); demais regras só se aplicam abaixo.
     const { data: isAdminData } = await adminClient.rpc('has_role', {
