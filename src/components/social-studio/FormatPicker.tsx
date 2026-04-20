@@ -102,6 +102,18 @@ const FORMATS: FormatDef[] = [
     group: 'carousel',
   },
   {
+    id: 'tiktok-carousel',
+    icon: Music2,
+    channel: { PT: 'TikTok', EN: 'TikTok', ES: 'TikTok' },
+    type: { PT: 'Carrossel', EN: 'Carousel', ES: 'Carrusel' },
+    size: '1080 × 1920',
+    width: 1080,
+    height: 1920,
+    aspectRatio: '9:16-tiktok',
+    slideCount: 5,
+    group: 'carousel',
+  },
+  {
     id: 'whatsapp',
     icon: MessageCircle,
     channel: { PT: 'WhatsApp', EN: 'WhatsApp', ES: 'WhatsApp' },
