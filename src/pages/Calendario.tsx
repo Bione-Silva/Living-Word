@@ -98,22 +98,27 @@ export default function Calendario() {
         status: p.status,
       }));
 
-    const b: CalendarItem[] = activeNetworks.has('editorial')
-      ? editorialItems
-          .filter((e: any) => e.scheduled_at)
-          .map((e: any) => ({
-            id: e.id,
-            kind: 'editorial',
-            network: null,
-            title: e.materials?.title || '—',
-            caption: e.materials?.passage || '',
-            hashtags: '',
-            image_url: null,
-            scheduled_at: e.scheduled_at,
-            status: e.status,
-            editorial_type: e.materials?.type,
-          }))
-      : [];
+    const isSermonType = (type?: string) =>
+      !!type && /sermon|pastoral|sermao|sermão/i.test(type);
+
+    const b: CalendarItem[] = editorialItems
+      .filter((e: any) => {
+        if (!e.scheduled_at) return false;
+        const isSermon = isSermonType(e.materials?.type);
+        return isSermon ? activeNetworks.has('sermon') : activeNetworks.has('blog');
+      })
+      .map((e: any) => ({
+        id: e.id,
+        kind: 'editorial',
+        network: null,
+        title: e.materials?.title || '—',
+        caption: e.materials?.passage || '',
+        hashtags: '',
+        image_url: null,
+        scheduled_at: e.scheduled_at,
+        status: e.status,
+        editorial_type: e.materials?.type,
+      }));
 
     return [...a, ...b];
   }, [socialPosts, editorialItems, activeNetworks]);
