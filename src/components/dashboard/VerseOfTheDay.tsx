@@ -12,28 +12,34 @@ const L10N = {
   copied: { PT: 'Versículo copiado!', EN: 'Verse copied!', ES: '¡Versículo copiado!' },
 } satisfies Record<string, Record<L, string>>;
 
-const VERSES: Record<L, { num: number; text: string; ref: string }> = {
+const VERSES: Record<L, { text: string; ref: string }> = {
   PT: {
-    num: 5,
     text: 'Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.',
     ref: 'Salmos 37:5',
   },
   EN: {
-    num: 5,
     text: 'Commit your way to the Lord; trust in him, and he will act.',
     ref: 'Psalm 37:5',
   },
   ES: {
-    num: 5,
     text: 'Encomienda al Señor tu camino; confía en él, y él hará.',
     ref: 'Salmos 37:5',
   },
+};
+
+const MONTHS: Record<L, string[]> = {
+  PT: ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'],
+  EN: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+  ES: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
 };
 
 export function VerseOfTheDay() {
   const { lang: cur } = useLanguage();
   const lang = (cur || 'PT') as L;
   const v = useMemo(() => VERSES[lang], [lang]);
+  const today = new Date();
+  const day = today.getDate();
+  const month = MONTHS[lang][today.getMonth()];
 
   const handleShare = async () => {
     const text = `"${v.text}" — ${v.ref}`;
