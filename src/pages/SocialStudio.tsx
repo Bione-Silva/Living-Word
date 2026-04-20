@@ -797,75 +797,79 @@ export default function SocialStudio() {
             </Card>
           </div>
 
-          {/* ── Bottom row: 3 colunas inline (sempre visíveis, sem popup) ──
-               Paleta de Versículos · Cenas · Templates aplicam ao vivo no preview. */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-card border-border">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                    <BookOpen className="h-4 w-4" />
+          {/* ── Bottom row: 3 colunas inline — APENAS na etapa "Estilo" ──
+               Princípio de isolamento: cada etapa mostra só o que pertence a ela.
+               Paleta · Cenas · Templates são decisões de Estilo e NÃO devem
+               aparecer na etapa Gerar (resultado/ações finais devem respirar). */}
+          {step === 'style' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                      <BookOpen className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-foreground leading-tight">{h.paletteCard}</div>
+                      <div className="text-[11px] text-muted-foreground leading-snug">{h.paletteCardSub}</div>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-bold text-foreground leading-tight">{h.paletteCard}</div>
-                    <div className="text-[11px] text-muted-foreground leading-snug">{h.paletteCardSub}</div>
+                  <div className="max-h-[320px] overflow-y-auto pr-1">
+                    <VersePalettePicker
+                      value={activePaletteId}
+                      onChange={handlePaletteSelect}
+                      lang={lang}
+                    />
                   </div>
-                </div>
-                <div className="max-h-[320px] overflow-y-auto pr-1">
-                  <VersePalettePicker
-                    value={activePaletteId}
-                    onChange={handlePaletteSelect}
-                    lang={lang}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card className="bg-card border-border">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                    <Mountain className="h-4 w-4" />
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                      <Mountain className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-foreground leading-tight">{h.scenesCard}</div>
+                      <div className="text-[11px] text-muted-foreground leading-snug">{h.scenesCardSub}</div>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-bold text-foreground leading-tight">{h.scenesCard}</div>
-                    <div className="text-[11px] text-muted-foreground leading-snug">{h.scenesCardSub}</div>
+                  <div className="max-h-[320px] overflow-y-auto pr-1">
+                    <BiblicalSceneGallery
+                      onChangeScenePool={handleScenePoolChange}
+                      lang={lang}
+                      activeIds={scenePool.map((scene) => scene.id)}
+                      searchTerm={verseContext?.book || verseContext?.text}
+                      visualMode={imageMode}
+                      slideCount={slideCount}
+                    />
                   </div>
-                </div>
-                <div className="max-h-[320px] overflow-y-auto pr-1">
-                  <BiblicalSceneGallery
-                    onChangeScenePool={handleScenePoolChange}
-                    lang={lang}
-                    activeIds={scenePool.map((scene) => scene.id)}
-                    searchTerm={verseContext?.book || verseContext?.text}
-                    visualMode={imageMode}
-                    slideCount={slideCount}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card className="bg-card border-border">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                    <LayoutTemplate className="h-4 w-4" />
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                      <LayoutTemplate className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-foreground leading-tight">{h.templatesCard}</div>
+                      <div className="text-[11px] text-muted-foreground leading-snug">{h.templatesCardSub}</div>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-bold text-foreground leading-tight">{h.templatesCard}</div>
-                    <div className="text-[11px] text-muted-foreground leading-snug">{h.templatesCardSub}</div>
+                  <div className="max-h-[320px] overflow-y-auto pr-1">
+                    <TemplatePicker
+                      value={template}
+                      onChange={setTemplate}
+                      lang={lang}
+                    />
                   </div>
-                </div>
-                <div className="max-h-[320px] overflow-y-auto pr-1">
-                  <TemplatePicker
-                    value={template}
-                    onChange={setTemplate}
-                    lang={lang}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="gallery" className="mt-0">
