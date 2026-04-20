@@ -57,16 +57,52 @@ export function EmailQueuePanel() {
   const [rows, setRows] = useState<LogRow[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [chartData, setChartData] = useState<Array<{ date: string; sent: number; failed: number }>>([]);
+
   const load = async () => {
     setLoading(true);
     const since = rangeStart(range).toISOString();
-    const { data, error } = await supabase
-      .from('email_send_log')
-      .select('id, message_id, template_name, recipient_email, status, error_message, created_at')
-      .gte('created_at', since)
-      .order('created_at', { ascending: false })
-      .limit(1000);
-    if (!error && data) setRows(data as LogRow[]);
+    const since30d = rangeStart('30d').toISOString();
+    const [main, series] = await Promise.all([
+      supabase
+        .from('email_send_log')
+        .select('id, message_id, template_name, recipient_email, status, error_message, created_at')
+        .gte('created_at', since)
+        .order('created_at', { ascending: false })
+        .limit(1000),
+      supabase
+        .from('email_send_log')
+        .select('message_id, status, created_at')
+        .gte('created_at', since30d)
+        .order('created_at', { ascending: false })
+        .limit(5000),
+    ]);
+    if (!main.error && main.data) setRows(main.data as LogRow[]);
+
+    // Build daily series, deduplicated by message_id (latest status wins)
+    if (!series.error && series.data) {
+      const seenMsg = new Set<string>();
+      const buckets = new Map<string, { sent: number; failed: number }>();
+      // initialize 30 day buckets
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        buckets.set(d.toISOString().slice(0, 10), { sent: 0, failed: 0 });
+      }
+      for (const r of series.data as Array<{ message_id: string | null; status: string; created_at: string }>) {
+        const key = r.message_id || `${r.created_at}-${r.status}`;
+        if (seenMsg.has(key)) continue;
+        seenMsg.add(key);
+        const day = r.created_at.slice(0, 10);
+        const bucket = buckets.get(day);
+        if (!bucket) continue;
+        if (r.status === 'sent') bucket.sent++;
+        else if (r.status === 'failed' || r.status === 'dlq' || r.status === 'rate_limited') bucket.failed++;
+      }
+      setChartData(Array.from(buckets.entries()).map(([date, v]) => ({ date, ...v })));
+    }
     setLoading(false);
   };
 
