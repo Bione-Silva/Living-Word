@@ -596,8 +596,8 @@ export default function Sermoes() {
   };
 
   /* ─── Salvar sermão construído por blocos ─── */
-  const handleSaveBlocks = async () => {
-    if (!user || blocks.length === 0) return;
+  const saveBlocksCore = useCallback(async (silent: boolean) => {
+    if (!user || blocks.length === 0) return false;
     const md = blocksToMarkdown(blocks, lang);
     const title = bigIdea.trim().slice(0, 80) || passageRef.trim().slice(0, 80) || (lang === 'PT' ? 'Sermão sem título' : 'Untitled sermon');
     const payload = JSON.stringify({ _type: 'blocks', blocks, bigIdea, passageRef, markdown: md });
@@ -612,14 +612,38 @@ export default function Sermoes() {
       }
       setSermonContent(md);
       setSermonTitle(title);
-      toast.success(labels.saved[lang]);
-      flashSaved();
+      if (!silent) {
+        toast.success(labels.saved[lang]);
+        flashSaved();
+      }
       await refreshSessions();
       queryClient.invalidateQueries({ queryKey: ['materials'] });
+      return true;
     } catch (e) {
-      toast.error('Erro ao salvar');
+      if (!silent) toast.error('Erro ao salvar');
+      return false;
     }
-  };
+  }, [user, blocks, lang, bigIdea, passageRef, activeSessionId, flashSaved, refreshSessions, queryClient]);
+
+  const handleSaveBlocks = useCallback(() => { void saveBlocksCore(false); }, [saveBlocksCore]);
+
+  /* ─── Auto-save a cada 30s quando houver blocos com conteúdo ─── */
+  const lastAutoSaveSnapshotRef = useRef<string>('');
+  const [autoSaving, setAutoSaving] = useState(false);
+  useEffect(() => {
+    if (!user || mode !== 'blocks' || blocks.length === 0) return;
+    const interval = setInterval(async () => {
+      const hasContent = blocks.some((b) => (b.content || '').trim().length > 0);
+      if (!hasContent) return;
+      const snapshot = JSON.stringify({ blocks, bigIdea, passageRef });
+      if (snapshot === lastAutoSaveSnapshotRef.current) return;
+      setAutoSaving(true);
+      const ok = await saveBlocksCore(true);
+      setAutoSaving(false);
+      if (ok) lastAutoSaveSnapshotRef.current = snapshot;
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [user, mode, blocks, bigIdea, passageRef, saveBlocksCore]);
 
   const handleDeleteSession = async (id: string) => {
     await supabase.from('materials').delete().eq('id', id);
