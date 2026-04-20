@@ -138,7 +138,7 @@ export default function Calendario() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const toggleNetwork = (key: NetworkKey | 'editorial') => {
+  const toggleNetwork = (key: FilterKey) => {
     const next = new Set(activeNetworks);
     if (next.has(key)) next.delete(key);
     else next.add(key);
