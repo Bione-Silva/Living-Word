@@ -7,11 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  BIBLE_VERSIONS,
-  DEFAULT_COMPARE_VERSIONS,
-  getVersionLabel,
-  type BibleVersionLang,
-} from '@/lib/bible-versions';
+  bibleVersions as ALL_VERSIONS,
+  getBibleVersion,
+  getDefaultVersionCode,
+  type L as BibleLang,
+} from '@/lib/bible-data';
 
 type Lang = 'PT' | 'EN' | 'ES';
 type PodiumTheme = 'dark' | 'light';
