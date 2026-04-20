@@ -211,7 +211,6 @@ export default function Calendario() {
         />
       </div>
 
-      <NewPostDialog open={showNewPost} onOpenChange={setShowNewPost} lang={lang} />
       <GenerateWithAIDialog open={showAI} onOpenChange={setShowAI} lang={lang} />
     </div>
   );
