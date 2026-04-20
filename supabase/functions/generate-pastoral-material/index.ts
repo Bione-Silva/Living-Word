@@ -132,16 +132,36 @@ serve(async (req) => {
 
     // Build prompts for each allowed format
     const formatPrompts: Record<string, string> = {
-      sermon: `Write a complete sermon of 1800-2600 words based on ${bible_passage} (${bible_version}) for ${audienceDesc}.
-Include: Title (H1), central proposition, a strong introduction with a hook, contextual framing of the passage, 3 to 5 major movements with sub-points, exegetical explanation, illustrations, cross references, pastoral application after each movement, and a conclusion with a clear call to action.
-The sermon must feel publication-ready and long enough to read like at least 3 pages. Do not compress it into a short devotional or a few paragraphs.
-${pain_point ? `Address this context: ${pain_point}.` : ""}
+      sermon: `Write a complete, publication-ready sermon of 1800-2600 words based on ${bible_passage} (${bible_version}) for ${audienceDesc}.
+
+═══ MANDATORY EXEGETICAL DEPTH ═══
+Before writing, internally do this study and surface the results in the sermon body:
+1. HISTORICAL-CULTURAL CONTEXT: who wrote, to whom, when, why; the cultural setting that shapes meaning.
+2. LITERARY CONTEXT: genre of the passage, where it sits in the book's argument, how it connects to the immediate surrounding verses.
+3. ORIGINAL LANGUAGES: identify 2-3 KEY words in Greek/Hebrew with transliteration and a one-line semantic note (e.g., *agapē* (ἀγάπη) — sacrificial covenant love). Use them naturally inside the explanation, not as a glossary dump.
+4. INTERPRETIVE TRADITION: briefly acknowledge how this text has been read in classical Christian tradition (Reformers, Patristics, or major commentators when relevant). Stay faithful to the ${doctrine} tradition.
+
+═══ MANDATORY STRUCTURE ═══
+- TITLE (H1).
+- BIG IDEA / CENTRAL PROPOSITION: one sharp sentence the audience must take home.
+- INTRODUCTION: a hook (story, question or contemporary tension) → context bridge → state the Big Idea.
+- 3 to 5 MAJOR MOVEMENTS, each derived directly from the text. For EACH movement include:
+   • Exposition of the verse(s) with original-language insight when relevant.
+   • At least 2 cross-references with brief explanation (not a bare list).
+   • ONE concrete, contemporary illustration — anchored in the text, avoiding tired clichés (no "diamond in the rough", no generic sports analogies).
+   • Pastoral application (the "so what?") — specific, behavioral, addressed to ${audienceDesc}.
+   • An EXPLICIT TRANSITION sentence into the next movement.
+- CONCLUSION: recap the Big Idea, restate the movements in one line each, deliver a clear call to action or call to decision.
+- CLOSING PRAYER: 4-8 sentences, in the voice of the preacher, responding to the Big Idea.
+- PREACHER'S NOTES (small section at the end): suggested length in minutes, tone, and 2-3 visual/illustration ideas.
+
+${pain_point ? `Address this pastoral context throughout: ${pain_point}.` : ""}
 Tone: ${voice}. Tradition: ${doctrine}. Language: ${targetLang}.
-Format in Markdown.`,
+Format in Markdown. Do NOT compress into a devotional. Do NOT skip the exegetical depth.`,
 
       outline: `Create a detailed sermon outline based on ${bible_passage} (${bible_version}) for ${audienceDesc}.
-Include: Title, central theme, fallen condition focus, introduction (hook + context), 3-5 major points with multiple sub-points and supporting verses, transitions, illustration suggestions, applications, and a conclusion.
-Each major point must be developed with enough detail that a pastor could preach from it without needing to rebuild the structure from scratch.
+Include: Title, Big Idea / central proposition, fallen condition focus, historical-literary context (2-4 lines), 1-2 key Greek/Hebrew terms with transliteration, introduction (hook + context), 3-5 major points with multiple sub-points, supporting cross-references (min. 2 per point), illustration suggestions (concrete & contemporary), explicit transitions between points, applications, conclusion with call to action, and a closing prayer outline.
+Each major point must be developed enough that a pastor could preach from it without rebuilding the structure.
 ${pain_point ? `Address: ${pain_point}.` : ""}
 Tone: ${voice}. Tradition: ${doctrine}. Language: ${targetLang}.
 Format as a structured Markdown outline with bullet points.`,
@@ -167,7 +187,10 @@ ${pain_point ? `Address: ${pain_point}.` : ""}
 Tone: ${voice}. Language: ${targetLang}. Format in Markdown.`,
     };
 
-    const systemPrompt = `You are an expert pastoral content generator for Christian leaders. You create theologically sound, engaging content that respects the ${doctrine} tradition. Your tone is ${voice}. Always write in ${targetLang}.`;
+    const systemPrompt = `You are an expert pastoral content generator for Christian leaders, trained on the homiletical method of great expository preachers (Spurgeon, Lloyd-Jones, Wesley, Calvin) and on classical biblical commentaries.
+You produce theologically sound, exegetically rigorous, pastorally warm content that respects the ${doctrine} tradition.
+When the user requests a sermon or outline, you MUST honor every section demanded by the user prompt — historical-cultural context, literary context, original-language terms, cross-references, contemporary illustrations, transitions, application, call to action, and closing prayer. Never silently drop a section.
+Tone: ${voice}. Always write in ${targetLang}.`;
 
     // Minimum word counts per format
     const minWords: Record<string, number> = {
