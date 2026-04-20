@@ -98,10 +98,12 @@ export function BibleCompareSheet({
   const isDark = theme === 'dark';
 
   // Resolve the 3 versions: sermon version + 2 chosen by preacher (or sane defaults).
-  const fallback = DEFAULT_COMPARE_VERSIONS[(lang as BibleVersionLang) || 'PT'];
-  const [v1] = useState<string>(primaryVersion || fallback[0]);
-  const [v2, setV2] = useState<string>(() => defaultCompareVersion2 || fallback[0]);
-  const [v3, setV3] = useState<string>(() => defaultCompareVersion3 || fallback[1]);
+  const fallbackV2 = getDefaultVersionCode(lang as BibleLang);
+  const fallbackV3Candidates = ALL_VERSIONS.filter(v => v.language === (lang || 'PT') && v.code !== fallbackV2);
+  const fallbackV3 = fallbackV3Candidates[1]?.code || fallbackV3Candidates[0]?.code || fallbackV2;
+  const [v1] = useState<string>(primaryVersion || fallbackV2);
+  const [v2, setV2] = useState<string>(() => defaultCompareVersion2 || fallbackV2);
+  const [v3, setV3] = useState<string>(() => defaultCompareVersion3 || fallbackV3);
 
   const [results, setResults] = useState<VerseResult[]>([]);
   const [loading, setLoading] = useState(false);
