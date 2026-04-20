@@ -128,27 +128,42 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText, profile }
             {meta.label}
           </p>
         </div>
+        {item.auto_generated && (
+          <Badge variant="outline" className="bg-background/60 text-[10px] gap-1">
+            <Sparkles className="h-2.5 w-2.5" />
+            {t('autoFeed')}
+          </Badge>
+        )}
         <Badge variant="outline" className="bg-background/60 text-[10px] capitalize">
-          {t(item.status as 'scheduled' | 'published' | 'draft') || item.status}
+          {t((item.status as 'scheduled' | 'published' | 'draft' | 'approved')) || item.status}
         </Badge>
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {/* Image preview */}
-        <div className="aspect-square bg-muted/30 border-b border-border flex items-center justify-center overflow-hidden">
-          {item.image_url ? (
-            <img
-              src={item.image_url}
-              alt={item.title}
-              className="w-full h-full object-cover"
+        {isInstagram ? (
+          <div className="p-4 bg-muted/10">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3 text-center">
+              {t('preview')}
+            </p>
+            <InstagramMockup
+              item={item}
+              handle={profile?.blog_handle || profile?.church_name || undefined}
+              avatarUrl={profile?.avatar_url || null}
+              lang={lang}
             />
-          ) : (
-            <div className="text-center text-muted-foreground">
-              <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p className="text-xs">{t('noImage')}</p>
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="aspect-square bg-muted/30 border-b border-border flex items-center justify-center overflow-hidden">
+            {item.image_url ? (
+              <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+            ) : (
+              <div className="text-center text-muted-foreground">
+                <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
+                <p className="text-xs">{t('noImage')}</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Body */}
         <div className="p-4 space-y-4">
@@ -210,9 +225,13 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText, profile }
           <Download className="h-3.5 w-3.5" />
           <span className="truncate">{t('download')}</span>
         </Button>
-        <Button variant="outline" size="sm" onClick={shareLink} className="gap-1.5">
-          <Share2 className="h-3.5 w-3.5" />
-          <span className="truncate">{t('share')}</span>
+        <Button
+          size="sm"
+          onClick={openInInstagram}
+          className="gap-1.5 col-span-1 bg-gradient-to-r from-amber-500 via-rose-500 to-fuchsia-600 text-primary-foreground hover:opacity-90"
+        >
+          <Instagram className="h-3.5 w-3.5" />
+          <span className="truncate">{t('openInsta')}</span>
         </Button>
         <Button
           variant="outline"
