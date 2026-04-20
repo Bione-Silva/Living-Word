@@ -216,6 +216,66 @@ export function EmailQueuePanel() {
           <StatBox label="Entrega %" value={`${deliveryRate}%`} icon={CheckCircle2} tone="emerald" />
         </div>
 
+        {/* Daily volume chart — last 30 days */}
+        <div className="rounded-lg border admin-border p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-medium">Volume diário · últimos 30 dias</h3>
+          </div>
+          <div className="h-[220px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 12, left: -16, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tickFormatter={(v: string) => {
+                    const [, m, d] = v.split('-');
+                    return `${d}/${m}`;
+                  }}
+                  interval="preserveStartEnd"
+                  minTickGap={24}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: 'hsl(var(--popover))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
+                  labelFormatter={(v: string) => {
+                    const [y, m, d] = v.split('-');
+                    return `${d}/${m}/${y}`;
+                  }}
+                />
+                <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
+                <Line
+                  type="monotone"
+                  dataKey="sent"
+                  name="Enviados"
+                  stroke="hsl(142 71% 45%)"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="failed"
+                  name="Falhas"
+                  stroke="hsl(0 72% 51%)"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="flex flex-wrap gap-2 items-center">
           <div className="flex gap-1 rounded-lg border admin-border p-1">
