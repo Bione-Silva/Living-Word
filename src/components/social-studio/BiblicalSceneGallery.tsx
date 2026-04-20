@@ -262,14 +262,54 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
       toast.error(l.emptyPrompt);
       return;
     }
-    if (quota && quota.remaining <= 0) {
-      toast.error(l.quotaError);
+    // Quantas imagens vamos pedir
+    const targetCount = aiMode === 'carousel' ? Math.max(1, Math.min(10, slideCount || 1)) : 1;
+    if (quota && quota.remaining < targetCount) {
+      toast.error(
+        lang === 'PT'
+          ? `Você tem ${quota.remaining} cota(s) e pediu ${targetCount}.`
+          : lang === 'EN'
+            ? `You have ${quota.remaining} quota(s) but requested ${targetCount}.`
+            : `Tienes ${quota.remaining} cuota(s) y pediste ${targetCount}.`,
+      );
       return;
     }
     setGenerating(true);
     try {
+      // Single: usa o caminho legado
+      if (targetCount === 1) {
+        const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
+          body: { mode: 'generate', prompt: customPrompt.trim(), visualMode },
+        });
+        if (error) throw error;
+        if (data?.error === 'quota_exceeded') {
+          toast.error(data.message || l.quotaError);
+          if (data.quota) setQuota(data.quota);
+          return;
+        }
+        const url: string | undefined = data?.imageUrl;
+        if (!url) throw new Error('No image returned');
+        toast.success(l.generated);
+        onChangeScenePool({
+          assets: [{ id: data?.sceneId || crypto.randomUUID(), imageUrl: url, label: customPrompt.trim(), prompt: customPrompt.trim(), origin: 'generated' }],
+          sourceType: 'ai_generated',
+          variationMode: 'none',
+          distributionMode: 'auto_balance',
+        });
+        if (data?.quota) setQuota(data.quota);
+        setCustomPrompt('');
+        await loadScenes(searchTerm);
+        return;
+      }
+
+      // Batch: gera N imagens da mesma cena, 1 por slide
       const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
-        body: { mode: 'generate', prompt: customPrompt.trim(), visualMode },
+        body: {
+          mode: 'generate_batch',
+          prompt: customPrompt.trim(),
+          visualMode,
+          count: targetCount,
+        },
       });
       if (error) throw error;
       if (data?.error === 'quota_exceeded') {
@@ -277,17 +317,35 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
         if (data.quota) setQuota(data.quota);
         return;
       }
-      const url: string | undefined = data?.imageUrl;
-      if (!url) throw new Error('No image returned');
-      toast.success(l.generated);
+      const variations = Array.isArray(data?.variations) ? data.variations : [];
+      if (variations.length === 0) throw new Error('No variations returned');
+
+      const assets: SceneAsset[] = variations.map(
+        (item: { sceneId?: string; imageUrl: string; label?: string; prompt?: string }, index: number) => ({
+          id: item.sceneId || `${customPrompt}-batch-${index}-${Date.now()}`,
+          imageUrl: item.imageUrl,
+          label: item.label || `${customPrompt.trim()} ${index + 1}`,
+          prompt: item.prompt || customPrompt.trim(),
+          origin: 'generated',
+        }),
+      );
+
       onChangeScenePool({
-        assets: [{ id: data?.sceneId || crypto.randomUUID(), imageUrl: url, label: customPrompt.trim(), prompt: customPrompt.trim(), origin: 'generated' }],
-        sourceType: 'ai_generated',
-        variationMode: 'none',
-        distributionMode: 'auto_balance',
+        assets,
+        sourceType: 'ai_variations_from_library',
+        variationMode: 'visual_variation',
+        distributionMode: 'image_every_slide',
       });
+
+      if (data?.quota) setQuota(data.quota);
+      toast.success(
+        lang === 'PT'
+          ? `${assets.length} cenas geradas para o carrossel!`
+          : lang === 'EN'
+            ? `${assets.length} scenes generated for the carousel!`
+            : `¡${assets.length} escenas generadas para el carrusel!`,
+      );
       setCustomPrompt('');
-      // Recarrega banco para incluir a nova cena
       await loadScenes(searchTerm);
     } catch (e) {
       console.error(e);
