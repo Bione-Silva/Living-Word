@@ -51,18 +51,18 @@ export function RecentGenerations() {
   if (items.length === 0) return null;
 
   const sectionTitle = {
-    PT: '📝 CRIAÇÕES RECENTES',
-    EN: '📝 RECENT CREATIONS',
-    ES: '📝 CREACIONES RECIENTES',
+    PT: 'SUAS CRIAÇÕES RECENTES',
+    EN: 'YOUR RECENT CREATIONS',
+    ES: 'TUS CREACIONES RECIENTES',
   };
 
   return (
     <section>
       <div className="flex items-center justify-between mb-3 px-1">
-        <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">
+        <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-muted-foreground">
           {sectionTitle[lang]}
         </p>
-        <Link to="/biblioteca" className="text-[11px] font-medium text-primary flex items-center gap-0.5 hover:underline">
+        <Link to="/biblioteca" className="text-[11px] font-semibold text-primary flex items-center gap-0.5 hover:underline">
           {lang === 'PT' ? 'Ver tudo' : lang === 'EN' ? 'View all' : 'Ver todo'}
           <ChevronRight className="h-3 w-3" />
         </Link>
