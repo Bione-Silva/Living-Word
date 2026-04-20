@@ -9,6 +9,7 @@ export type FormatId =
   | 'fb-post'
   | 'ig-carousel'
   | 'li-carousel'
+  | 'tiktok-carousel'
   | 'whatsapp';
 
 type L = 'PT' | 'EN' | 'ES';
