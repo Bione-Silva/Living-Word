@@ -5,9 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Loader2, Search, ChevronDown, Globe, Layers } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { bibleBooks, getBookName, getTranslation, getTranslationLabelByCode, getVersionsForUserLanguage, getBibleVersion, fetchBibleChapter, type L } from '@/lib/bible-data';
+import { BibleCompareSheet } from '@/components/sermon/BibleCompareSheet';
+
+/** Strip accents/diacritics and lowercase for searching. */
+const norm = (s: string): string =>
+  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 
 interface Props {
   open: boolean;
@@ -21,17 +28,21 @@ interface Props {
 
 export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, initialVerse, initialVerseEnd, initialTranslation }: Props) {
   const { lang } = useLanguage();
+  const { profile, refreshProfile } = useAuth();
   const [book, setBook] = useState(initialBook || 'John');
   const [chapter, setChapter] = useState(initialChapter || 3);
   const [translation, setTranslation] = useState(initialTranslation || getTranslation(lang));
   const [verses, setVerses] = useState<{ verse: number; text: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [bookOpen, setBookOpen] = useState(false);
+  const [bookSearch, setBookSearch] = useState('');
   const [goToVerse, setGoToVerse] = useState('');
   const verseRefs = useRef<Record<number, HTMLSpanElement | null>>({});
   const [highlightRange, setHighlightRange] = useState<{ start: number; end?: number } | null>(null);
   // When opened from a ref link, default to showing only the referenced verses
   const [showFullChapter, setShowFullChapter] = useState(false);
+  // Compare-versions sheet (3 versions side-by-side)
+  const [compareOpen, setCompareOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -210,14 +221,23 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
                 )}
               </div>
 
-              {/* Expand to full chapter */}
-              <button
-                onClick={() => setShowFullChapter(true)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-              >
-                <ChevronDown className="h-3.5 w-3.5" />
-                {lang === 'PT' ? 'Ver capítulo completo' : lang === 'ES' ? 'Ver capítulo completo' : 'View full chapter'}
-              </button>
+              {/* Action buttons: Compare versions + Expand */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setCompareOpen(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-primary/30 bg-primary/5 text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Comparar versões' : lang === 'ES' ? 'Comparar versiones' : 'Compare versions'}
+                </button>
+                <button
+                  onClick={() => setShowFullChapter(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                >
+                  <ChevronDown className="h-3.5 w-3.5" />
+                  {lang === 'PT' ? 'Capítulo completo' : lang === 'ES' ? 'Capítulo completo' : 'Full chapter'}
+                </button>
+              </div>
             </>
           )}
 
@@ -232,22 +252,40 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
                       <Search className="ml-2 h-3.5 w-3.5 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0" align="start">
-                    <Command>
-                      <CommandInput placeholder={lang === 'PT' ? 'Buscar livro...' : lang === 'EN' ? 'Search book...' : 'Buscar libro...'} />
-                      <CommandList className="max-h-[220px]">
-                        <CommandEmpty>{lang === 'PT' ? 'Nenhum livro' : 'No book found'}</CommandEmpty>
+                  <PopoverContent className="w-[240px] p-0" align="start">
+                    <Command
+                      shouldFilter={false}
+                    >
+                      <CommandInput
+                        placeholder={lang === 'PT' ? 'Buscar livro...' : lang === 'EN' ? 'Search book...' : 'Buscar libro...'}
+                        value={bookSearch}
+                        onValueChange={setBookSearch}
+                      />
+                      <CommandList className="max-h-[260px]">
+                        <CommandEmpty>{lang === 'PT' ? 'Nenhum livro' : lang === 'EN' ? 'No book found' : 'Ningún libro'}</CommandEmpty>
                         <CommandGroup>
-                          {bookItems.map((b) => (
-                            <CommandItem
-                              key={b.id}
-                              value={b.name}
-                              onSelect={() => { setBook(b.id); setChapter(1); setHighlightRange(null); setBookOpen(false); }}
-                              className="cursor-pointer"
-                            >
-                              {b.name}
-                            </CommandItem>
-                          ))}
+                          {bookItems
+                            .filter((b) => {
+                              if (!bookSearch.trim()) return true;
+                              const q = norm(bookSearch);
+                              return norm(b.name).includes(q) || norm(b.id).includes(q);
+                            })
+                            .map((b) => (
+                              <CommandItem
+                                key={b.id}
+                                value={b.id}
+                                onSelect={() => {
+                                  setBook(b.id);
+                                  setChapter(1);
+                                  setHighlightRange(null);
+                                  setBookSearch('');
+                                  setBookOpen(false);
+                                }}
+                                className="cursor-pointer"
+                              >
+                                {b.name}
+                              </CommandItem>
+                            ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -321,6 +359,37 @@ export function BibleDrawer({ open, onOpenChange, initialBook, initialChapter, i
           )}
         </div>
       </SheetContent>
+
+      {/* Compare versions side-by-side (3 versions) */}
+      {highlightRange && (
+        <BibleCompareSheet
+          open={compareOpen}
+          onClose={() => setCompareOpen(false)}
+          reference={focusedLabel}
+          primaryVersion={translation || profile?.bible_version || 'ARA'}
+          defaultCompareVersion2={
+            (profile as { pulpit_compare_version_2?: string | null } | null)?.pulpit_compare_version_2 ?? null
+          }
+          defaultCompareVersion3={
+            (profile as { pulpit_compare_version_3?: string | null } | null)?.pulpit_compare_version_3 ?? null
+          }
+          lang={lang}
+          theme="light"
+          onSaveDefaults={async (v2, v3) => {
+            if (!profile?.id) return;
+            const { error } = await supabase
+              .from('profiles')
+              .update({
+                pulpit_compare_version_2: v2,
+                pulpit_compare_version_3: v3,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', profile.id);
+            if (error) throw error;
+            await refreshProfile?.();
+          }}
+        />
+      )}
     </Sheet>
   );
 }
