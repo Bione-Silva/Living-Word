@@ -23,6 +23,7 @@ import {
 import { FormatPicker, getFormatById, findFormatByAspect, type FormatId } from '@/components/social-studio/FormatPicker';
 import { MultiFormatExporter, type MultiFormatExporterHandle } from '@/components/social-studio/MultiFormatExporter';
 import { FinalActionsPanel } from '@/components/social-studio/FinalActionsPanel';
+import { applySceneDistribution, type CarouselDistributionMode, type SceneAsset, type SceneSourceType, type VariationMode } from '@/components/social-studio/scene-distribution';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
@@ -178,7 +179,10 @@ export default function SocialStudio() {
   const [loadingDevotional, setLoadingDevotional] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
   const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
-  const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
+  const [scenePool, setScenePool] = useState<SceneAsset[]>([]);
+  const [sceneSourceType, setSceneSourceType] = useState<SceneSourceType | null>(null);
+  const [sceneVariationMode, setSceneVariationMode] = useState<VariationMode>('none');
+  const [sceneDistributionMode, setSceneDistributionMode] = useState<CarouselDistributionMode>('auto_balance');
   const [template, setTemplate] = useState<CanvasTemplate>('cinematic');
   const [imageMode, setImageMode] = useState<ImageMode>('biblica');
   const [generatedCaption, setGeneratedCaption] = useState<string>('');
@@ -238,7 +242,10 @@ export default function SocialStudio() {
 
   const handlePaletteSelect = useCallback((p: VersePalette) => {
     setActivePaletteId(p.id);
-    setActiveSceneId(null);
+    setScenePool([]);
+    setSceneSourceType(null);
+    setSceneVariationMode('none');
+    setSceneDistributionMode('auto_balance');
     setTheme((prev) => ({
       ...prev,
       gradient: p.gradient,
@@ -247,12 +254,29 @@ export default function SocialStudio() {
     }));
   }, []);
 
-  const handleSceneSelect = useCallback((imageUrl: string, sceneId: string) => {
-    setActiveSceneId(sceneId);
+  const handleScenePoolChange = useCallback((payload: {
+    assets: SceneAsset[];
+    sourceType: SceneSourceType;
+    variationMode: VariationMode;
+    distributionMode: CarouselDistributionMode;
+  }) => {
+    setScenePool(payload.assets);
+    setSceneSourceType(payload.sourceType);
+    setSceneVariationMode(payload.variationMode);
+    setSceneDistributionMode(payload.distributionMode);
     setActivePaletteId(null);
-    setTheme((prev) => ({ ...prev, backgroundImageUrl: imageUrl }));
-    toast.success(lang === 'PT' ? 'Cena aplicada!' : lang === 'EN' ? 'Scene applied!' : '¡Escena aplicada!');
+    setTheme((prev) => ({ ...prev, backgroundImageUrl: payload.assets[0]?.imageUrl }));
+    toast.success(lang === 'PT' ? 'Cenas aplicadas!' : lang === 'EN' ? 'Scenes applied!' : '¡Escenas aplicadas!');
   }, [lang]);
+
+  const distributedSlides = useMemo(() => {
+    if (slides.length === 0 || scenePool.length === 0) return slides;
+    return applySceneDistribution(slides, {
+      scenePool,
+      sourceType: sceneSourceType,
+      distributionMode: sceneDistributionMode,
+    });
+  }, [slides, scenePool, sceneSourceType, sceneDistributionMode, sceneVariationMode]);
 
   // Workspace defaults
   useEffect(() => {

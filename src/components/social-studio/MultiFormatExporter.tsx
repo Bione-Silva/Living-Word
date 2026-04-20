@@ -99,8 +99,6 @@ export const MultiFormatExporter = forwardRef<MultiFormatExporterHandle, Props>(
           return (
             <div key={fid} style={{ width: 520, marginBottom: 12 }}>
               {slides.map((slide, slideIdx) => {
-                const useImageOnThisSlide = slides.length === 1 || slideIdx % 2 === 0;
-                const slideBgImage = useImageOnThisSlide ? theme.backgroundImageUrl : undefined;
                 return (
                   <div key={`${fid}-${slideIdx}`} style={{ width: 520 }}>
                     <SlideCanvas
@@ -108,7 +106,7 @@ export const MultiFormatExporter = forwardRef<MultiFormatExporterHandle, Props>(
                       slide={slide}
                       aspectRatio={def.aspectRatio}
                       template={template}
-                      bgImageUrl={slideBgImage}
+                      bgImageUrl={slide.bgImageUrl ?? theme.backgroundImageUrl}
                       themeColor={theme.gradient}
                       themeColors={getThemePalette(theme.gradient)}
                       slideIndex={slideIdx}
