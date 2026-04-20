@@ -676,10 +676,6 @@ export default function SocialStudio() {
                       onChange={(v) => {
                         setTheme(v);
                         setActivePaletteId(null);
-                        setScenePool([]);
-                        setSceneSourceType(null);
-                        setSceneVariationMode('none');
-                        setSceneDistributionMode('auto_balance');
                       }}
                       lang={lang}
                       onUploadBackground={handleBackgroundUpload}
