@@ -362,7 +362,7 @@ export default function SocialStudio() {
       }]);
       setSlideCount(1);
       setPresentationMode(false);
-      setStep('style');
+      setStep('format');
       window.history.replaceState({}, document.title);
       toast.success(
         lang === 'PT' ? 'Versículo carregado no Estúdio!'
