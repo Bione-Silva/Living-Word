@@ -57,9 +57,11 @@ interface VerseResult {
 interface Props {
   onVerseGenerated: (verse: VerseResult) => void;
   onTextGenerated: (text: string) => void;
+  /** Tema/título pré-carregado (sermão, versículo, devocional vindos de outras telas). */
+  prefillTopic?: string;
 }
 
-export function ContentGenerator({ onVerseGenerated, onTextGenerated }: Props) {
+export function ContentGenerator({ onVerseGenerated, onTextGenerated, prefillTopic }: Props) {
   const { lang } = useLanguage();
   const { profile } = useAuth();
   const l = lang as L;
@@ -68,11 +70,19 @@ export function ContentGenerator({ onVerseGenerated, onTextGenerated }: Props) {
   const [passage, setPassage] = useState('');
   const [verseLoading, setVerseLoading] = useState(false);
 
-  const [topic, setTopic] = useState('');
+  const [topic, setTopic] = useState(prefillTopic ?? '');
   const [activeTool, setActiveTool] = useState('social-caption');
   const [contentLoading, setContentLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
   const [copied, setCopied] = useState(false);
+
+  // Sincroniza o tema quando um novo artefato é carregado de outra tela
+  // (sermão, versículo, devocional) para que o usuário só precise clicar "Gerar".
+  useEffect(() => {
+    if (prefillTopic && prefillTopic.trim()) {
+      setTopic(prefillTopic.trim().slice(0, 240));
+    }
+  }, [prefillTopic]);
 
   const fetchVerse = async () => {
     if (!passage.trim()) return;
