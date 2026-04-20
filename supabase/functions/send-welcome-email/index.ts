@@ -59,14 +59,15 @@ Deno.serve(async (req) => {
   }
 
   const { data: profile } = await admin
-    .from('profiles').select('full_name, blog_handle').eq('id', userId).maybeSingle()
+    .from('profiles').select('full_name, blog_handle, language').eq('id', userId).maybeSingle()
   const name = profile?.full_name?.split(' ')[0] || null
+  const lang = (profile?.language || 'PT').toString().toUpperCase()
   const blogUrl = body.blogUrl || (profile?.blog_handle
     ? `https://livingwordgo.com/blog/${profile.blog_handle}`
     : 'https://livingwordgo.com')
 
   const templateName = emailType
-  const templateData: Record<string, unknown> = { name }
+  const templateData: Record<string, unknown> = { name, lang }
   if (emailType === 'altar-digital-ready') templateData.blogUrl = blogUrl
 
   const { error: invokeError } = await admin.functions.invoke('send-transactional-email', {

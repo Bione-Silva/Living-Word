@@ -14,44 +14,43 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { AUTH_INVITE, FOOTER_BRAND, htmlLang, normalizeLang } from '../transactional-email-templates/_i18n.ts'
 
 interface InviteEmailProps {
   siteName: string
   siteUrl: string
   confirmationUrl: string
+  lang?: string
 }
 
-export const InviteEmail = ({ siteUrl, confirmationUrl }: InviteEmailProps) => (
-  <Html lang="pt-BR" dir="ltr">
-    <Head />
-    <Preview>Você foi convidado para a equipe Living Word</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={header}>
-          <Text style={brand}>Living Word</Text>
-        </Section>
-        <Section style={card}>
-          <Heading style={h1}>Você foi convidado</Heading>
-          <Text style={text}>
-            Você recebeu um convite para fazer parte de uma equipe na Living Word —
-            a plataforma bíblica inteligente para pastores e líderes cristãos.
-          </Text>
-          <Section style={buttonWrap}>
-            <Button style={button} href={confirmationUrl}>
-              Aceitar convite
-            </Button>
+export const InviteEmail = ({ siteUrl, confirmationUrl, lang }: InviteEmailProps) => {
+  const L = normalizeLang(lang)
+  const t = AUTH_INVITE[L]
+  return (
+    <Html lang={htmlLang(L)} dir="ltr">
+      <Head />
+      <Preview>{t.preview}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Section style={header}>
+            <Text style={brand}>Living Word</Text>
           </Section>
-          <Text style={footer}>
-            Se você não esperava este convite, pode ignorar este e-mail com segurança.
+          <Section style={card}>
+            <Heading style={h1}>{t.h1}</Heading>
+            <Text style={text}>{t.text}</Text>
+            <Section style={buttonWrap}>
+              <Button style={button} href={confirmationUrl}>{t.cta}</Button>
+            </Section>
+            <Text style={footer}>{t.ignore}</Text>
+          </Section>
+          <Text style={brandFooter}>
+            <Link href={siteUrl} style={brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
-        </Section>
-        <Text style={brandFooter}>
-          <Link href={siteUrl} style={brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export default InviteEmail
 

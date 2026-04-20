@@ -14,56 +14,54 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { AUTH_SIGNUP, FOOTER_BRAND, htmlLang, normalizeLang } from '../transactional-email-templates/_i18n.ts'
 
 interface SignupEmailProps {
   siteName: string
   siteUrl: string
   recipient: string
   confirmationUrl: string
+  lang?: string
 }
 
 export const SignupEmail = ({
   siteUrl,
   recipient,
   confirmationUrl,
-}: SignupEmailProps) => (
-  <Html lang="pt-BR" dir="ltr">
-    <Head />
-    <Preview>Confirme seu e-mail para acessar a Living Word</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={header}>
-          <Text style={brand}>Living Word</Text>
-        </Section>
-        <Section style={card}>
-          <Heading style={h1}>Falta pouco!</Heading>
-          <Text style={text}>
-            Clique no botão abaixo para confirmar seu e-mail e ativar sua
-            plataforma pastoral.
-          </Text>
-          <Section style={buttonWrap}>
-            <Button style={button} href={confirmationUrl}>
-              Confirmar e-mail
-            </Button>
+  lang,
+}: SignupEmailProps) => {
+  const L = normalizeLang(lang)
+  const t = AUTH_SIGNUP[L]
+  return (
+    <Html lang={htmlLang(L)} dir="ltr">
+      <Head />
+      <Preview>{t.preview}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Section style={header}>
+            <Text style={brand}>Living Word</Text>
           </Section>
-          <Text style={smallText}>
-            Conta criada para{' '}
-            <Link href={`mailto:${recipient}`} style={link}>{recipient}</Link>.
+          <Section style={card}>
+            <Heading style={h1}>{t.h1}</Heading>
+            <Text style={text}>{t.text}</Text>
+            <Section style={buttonWrap}>
+              <Button style={button} href={confirmationUrl}>{t.cta}</Button>
+            </Section>
+            <Text style={smallText}>
+              {t.accountFor}{' '}
+              <Link href={`mailto:${recipient}`} style={link}>{recipient}</Link>.
+            </Text>
+            <Text style={verse}>{t.verse}</Text>
+            <Text style={footer}>{t.ignore}</Text>
+          </Section>
+          <Text style={brandFooter}>
+            <Link href={siteUrl} style={brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
-          <Text style={verse}>
-            "A tua palavra é lâmpada para os meus pés e luz para o meu caminho." — Salmos 119:105
-          </Text>
-          <Text style={footer}>
-            Se você não criou esta conta, pode ignorar este e-mail com segurança.
-          </Text>
-        </Section>
-        <Text style={brandFooter}>
-          <Link href={siteUrl} style={brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export default SignupEmail
 

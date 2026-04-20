@@ -5,15 +5,18 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 import { styles, SITE_URL, DASHBOARD_URL, SOCIAL } from './_shared-styles.ts'
+import { ALTAR_DIGITAL, FOOTER_BRAND, htmlLang, normalizeLang, type Lang } from './_i18n.ts'
 
-interface Props { name?: string; blogUrl?: string }
+interface Props { name?: string; blogUrl?: string; lang?: Lang | string }
 
-const AltarDigitalEmail = ({ name, blogUrl }: Props) => {
+const AltarDigitalEmail = ({ name, blogUrl, lang }: Props) => {
+  const L = normalizeLang(lang as string)
+  const t = ALTAR_DIGITAL[L]
   const finalBlogUrl = blogUrl || SITE_URL
   return (
-    <Html lang="pt-BR" dir="ltr">
+    <Html lang={htmlLang(L)} dir="ltr">
       <Head />
-      <Preview>Seu Altar Digital está no ar — 3 artigos bíblicos prontos</Preview>
+      <Preview>{t.preview}</Preview>
       <Body style={styles.main}>
         <Container style={styles.container}>
           <Section style={styles.header}>
@@ -21,29 +24,19 @@ const AltarDigitalEmail = ({ name, blogUrl }: Props) => {
           </Section>
           <Section style={styles.card}>
             <Heading style={styles.h1}>
-              {name ? `${name}, seu Altar Digital está no ar` : 'Seu Altar Digital está no ar'}
+              {name ? t.h1WithName(name) : t.h1NoName}
             </Heading>
             <Text style={styles.text}>
-              Já provisionamos seu blog com <strong>3 artigos bíblicos exclusivos</strong> para
-              que você comece a edificar sua audiência hoje mesmo.
+              {t.p1Prefix}<strong>{t.p1Strong}</strong>{t.p1Suffix}
             </Text>
-            <Text style={styles.text}>
-              Cada artigo foi cuidadosamente preparado para refletir profundidade pastoral,
-              fidelidade às Escrituras e clareza para leitores em busca de Cristo.
-            </Text>
+            <Text style={styles.text}>{t.p2}</Text>
             <Section style={styles.buttonWrap}>
-              <Button style={styles.button} href={finalBlogUrl}>
-                Ver meu blog
-              </Button>
+              <Button style={styles.button} href={finalBlogUrl}>{t.cta}</Button>
             </Section>
             <Text style={{ ...styles.text, textAlign: 'center' as const, fontSize: '13px' }}>
-              <Link href={DASHBOARD_URL} style={styles.brandFooterLink}>
-                Acessar meu painel
-              </Link>
+              <Link href={DASHBOARD_URL} style={styles.brandFooterLink}>{t.dashboard}</Link>
             </Text>
-            <Text style={styles.verse}>
-              "Pastoreiem o rebanho de Deus que está aos seus cuidados." — 1 Pedro 5:2
-            </Text>
+            <Text style={styles.verse}>{t.verse}</Text>
           </Section>
           <Section style={styles.socialRow}>
             <Link href={SOCIAL.instagram} style={styles.socialLink}>Instagram</Link>·
@@ -51,7 +44,7 @@ const AltarDigitalEmail = ({ name, blogUrl }: Props) => {
             <Link href={SOCIAL.facebook} style={styles.socialLink}>Facebook</Link>
           </Section>
           <Text style={styles.brandFooter}>
-            <Link href={SITE_URL} style={styles.brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
+            <Link href={SITE_URL} style={styles.brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
         </Container>
       </Body>
@@ -61,7 +54,7 @@ const AltarDigitalEmail = ({ name, blogUrl }: Props) => {
 
 export const template = {
   component: AltarDigitalEmail,
-  subject: 'Seu Altar Digital está no ar 🎉',
+  subject: (data: Record<string, any>) => ALTAR_DIGITAL[normalizeLang(data?.lang)].subject,
   displayName: 'Altar Digital pronto',
-  previewData: { name: 'Pastor João', blogUrl: 'https://joao.livingwordgo.com' },
+  previewData: { name: 'Pastor João', blogUrl: 'https://joao.livingwordgo.com', lang: 'PT' },
 } satisfies TemplateEntry

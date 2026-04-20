@@ -14,6 +14,7 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { AUTH_EMAIL_CHANGE, FOOTER_BRAND, htmlLang, normalizeLang } from '../transactional-email-templates/_i18n.ts'
 
 interface EmailChangeEmailProps {
   siteName: string
@@ -21,6 +22,7 @@ interface EmailChangeEmailProps {
   email: string
   newEmail: string
   confirmationUrl: string
+  lang?: string
 }
 
 export const EmailChangeEmail = ({
@@ -28,40 +30,40 @@ export const EmailChangeEmail = ({
   email,
   newEmail,
   confirmationUrl,
-}: EmailChangeEmailProps) => (
-  <Html lang="pt-BR" dir="ltr">
-    <Head />
-    <Preview>Confirme a alteração do seu e-mail na Living Word</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={header}>
-          <Text style={brand}>Living Word</Text>
-        </Section>
-        <Section style={card}>
-          <Heading style={h1}>Confirmar alteração de e-mail</Heading>
-          <Text style={text}>
-            Recebemos uma solicitação para alterar o e-mail da sua conta Living Word de{' '}
-            <Link href={`mailto:${email}`} style={link}>{email}</Link> para{' '}
-            <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
-          </Text>
-          <Text style={text}>Clique no botão abaixo para confirmar esta alteração:</Text>
-          <Section style={buttonWrap}>
-            <Button style={button} href={confirmationUrl}>
-              Confirmar alteração
-            </Button>
+  lang,
+}: EmailChangeEmailProps) => {
+  const L = normalizeLang(lang)
+  const t = AUTH_EMAIL_CHANGE[L]
+  return (
+    <Html lang={htmlLang(L)} dir="ltr">
+      <Head />
+      <Preview>{t.preview}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Section style={header}>
+            <Text style={brand}>Living Word</Text>
           </Section>
-          <Text style={footer}>
-            Se você não solicitou esta alteração, proteja sua conta imediatamente
-            redefinindo sua senha.
+          <Section style={card}>
+            <Heading style={h1}>{t.h1}</Heading>
+            <Text style={text}>
+              {t.intro}{' '}
+              <Link href={`mailto:${email}`} style={link}>{email}</Link> {t.to}{' '}
+              <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
+            </Text>
+            <Text style={text}>{t.text2}</Text>
+            <Section style={buttonWrap}>
+              <Button style={button} href={confirmationUrl}>{t.cta}</Button>
+            </Section>
+            <Text style={footer}>{t.ignore}</Text>
+          </Section>
+          <Text style={brandFooter}>
+            <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
-        </Section>
-        <Text style={brandFooter}>
-          <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export default EmailChangeEmail
 

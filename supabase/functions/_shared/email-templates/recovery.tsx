@@ -14,47 +14,44 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { AUTH_RECOVERY, FOOTER_BRAND, htmlLang, normalizeLang } from '../transactional-email-templates/_i18n.ts'
 
 interface RecoveryEmailProps {
   siteName: string
   siteUrl?: string
   confirmationUrl: string
+  lang?: string
 }
 
-export const RecoveryEmail = ({ siteUrl, confirmationUrl }: RecoveryEmailProps) => (
-  <Html lang="pt-BR" dir="ltr">
-    <Head />
-    <Preview>Redefina sua senha da Living Word</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={header}>
-          <Text style={brand}>Living Word</Text>
-        </Section>
-        <Section style={card}>
-          <Heading style={h1}>Vamos cuidar disso juntos 🙏</Heading>
-          <Text style={text}>
-            Recebemos seu pedido para redefinir a senha do seu Altar Digital.
-            Acontece com todos nós — clique no botão abaixo e em poucos segundos
-            você estará de volta criando conteúdo pastoral com a Living Word.
-          </Text>
-          <Section style={buttonWrap}>
-            <Button style={button} href={confirmationUrl}>
-              Criar nova senha
-            </Button>
+export const RecoveryEmail = ({ siteUrl, confirmationUrl, lang }: RecoveryEmailProps) => {
+  const L = normalizeLang(lang)
+  const t = AUTH_RECOVERY[L]
+  return (
+    <Html lang={htmlLang(L)} dir="ltr">
+      <Head />
+      <Preview>{t.preview}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Section style={header}>
+            <Text style={brand}>Living Word</Text>
           </Section>
-          <Text style={smallText}>Este link é válido por 1 hora — por sua segurança.</Text>
-          <Text style={footer}>
-            Se você não pediu para redefinir sua senha, fique tranquilo:
-            basta ignorar este e-mail e sua conta continuará protegida.
+          <Section style={card}>
+            <Heading style={h1}>{t.h1}</Heading>
+            <Text style={text}>{t.text}</Text>
+            <Section style={buttonWrap}>
+              <Button style={button} href={confirmationUrl}>{t.cta}</Button>
+            </Section>
+            <Text style={smallText}>{t.validity}</Text>
+            <Text style={footer}>{t.ignore}</Text>
+          </Section>
+          <Text style={brandFooter}>
+            <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
-        </Section>
-        <Text style={brandFooter}>
-          <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export default RecoveryEmail
 

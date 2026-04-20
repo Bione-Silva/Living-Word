@@ -5,55 +5,54 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 import { styles, SITE_URL, DASHBOARD_URL, SOCIAL } from './_shared-styles.ts'
+import { WELCOME_CONFIRMED, FOOTER_BRAND, htmlLang, normalizeLang, type Lang } from './_i18n.ts'
 
-interface Props { name?: string }
+interface Props { name?: string; lang?: Lang | string }
 
-const WelcomeConfirmedEmail = ({ name }: Props) => (
-  <Html lang="pt-BR" dir="ltr">
-    <Head />
-    <Preview>Bem-vindo à Living Word — sua jornada pastoral começa agora</Preview>
-    <Body style={styles.main}>
-      <Container style={styles.container}>
-        <Section style={styles.header}>
-          <Text style={styles.brand}>Living Word</Text>
-        </Section>
-        <Section style={styles.card}>
-          <Heading style={styles.h1}>
-            {name ? `Bem-vindo, ${name}` : 'Bem-vindo à Living Word'}
-          </Heading>
-          <Text style={styles.text}>
-            Que alegria ter você conosco. Sua conta está confirmada e a plataforma
-            pastoral mais completa para líderes cristãos já está pronta para uso.
-          </Text>
-          <Text style={styles.text}>
-            Em instantes, vamos preparar seu <strong>Altar Digital</strong> —
-            seu blog próprio com três artigos bíblicos exclusivos para começar.
-          </Text>
-          <Section style={styles.buttonWrap}>
-            <Button style={styles.button} href={DASHBOARD_URL}>
-              Acessar meu painel
-            </Button>
+const WelcomeConfirmedEmail = ({ name, lang }: Props) => {
+  const L = normalizeLang(lang as string)
+  const t = WELCOME_CONFIRMED[L]
+  return (
+    <Html lang={htmlLang(L)} dir="ltr">
+      <Head />
+      <Preview>{t.preview}</Preview>
+      <Body style={styles.main}>
+        <Container style={styles.container}>
+          <Section style={styles.header}>
+            <Text style={styles.brand}>Living Word</Text>
           </Section>
-          <Text style={styles.verse}>
-            "Pregue a Palavra, esteja preparado a tempo e fora de tempo." — 2 Timóteo 4:2
+          <Section style={styles.card}>
+            <Heading style={styles.h1}>
+              {name ? t.h1WithName(name) : t.h1NoName}
+            </Heading>
+            <Text style={styles.text}>{t.p1}</Text>
+            <Text style={styles.text}>
+              {t.p2Prefix}<strong>{t.p2Strong}</strong>{t.p2Suffix}
+            </Text>
+            <Section style={styles.buttonWrap}>
+              <Button style={styles.button} href={DASHBOARD_URL}>
+                {t.cta}
+              </Button>
+            </Section>
+            <Text style={styles.verse}>{t.verse}</Text>
+          </Section>
+          <Section style={styles.socialRow}>
+            <Link href={SOCIAL.instagram} style={styles.socialLink}>Instagram</Link>·
+            <Link href={SOCIAL.youtube} style={styles.socialLink}>YouTube</Link>·
+            <Link href={SOCIAL.facebook} style={styles.socialLink}>Facebook</Link>
+          </Section>
+          <Text style={styles.brandFooter}>
+            <Link href={SITE_URL} style={styles.brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
-        </Section>
-        <Section style={styles.socialRow}>
-          <Link href={SOCIAL.instagram} style={styles.socialLink}>Instagram</Link>·
-          <Link href={SOCIAL.youtube} style={styles.socialLink}>YouTube</Link>·
-          <Link href={SOCIAL.facebook} style={styles.socialLink}>Facebook</Link>
-        </Section>
-        <Text style={styles.brandFooter}>
-          <Link href={SITE_URL} style={styles.brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export const template = {
   component: WelcomeConfirmedEmail,
-  subject: 'Bem-vindo à Living Word',
+  subject: (data: Record<string, any>) => WELCOME_CONFIRMED[normalizeLang(data?.lang)].subject,
   displayName: 'Boas-vindas — conta confirmada',
-  previewData: { name: 'Pastor João' },
+  previewData: { name: 'Pastor João', lang: 'PT' },
 } satisfies TemplateEntry

@@ -14,44 +14,43 @@ import {
   Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { AUTH_MAGIC_LINK, FOOTER_BRAND, htmlLang, normalizeLang } from '../transactional-email-templates/_i18n.ts'
 
 interface MagicLinkEmailProps {
   siteName: string
   siteUrl?: string
   confirmationUrl: string
+  lang?: string
 }
 
-export const MagicLinkEmail = ({ siteUrl, confirmationUrl }: MagicLinkEmailProps) => (
-  <Html lang="pt-BR" dir="ltr">
-    <Head />
-    <Preview>Seu link de acesso à Living Word</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={header}>
-          <Text style={brand}>Living Word</Text>
-        </Section>
-        <Section style={card}>
-          <Heading style={h1}>Seu link de acesso</Heading>
-          <Text style={text}>
-            Clique no botão abaixo para entrar na sua conta Living Word.
-            Este link expira em alguns minutos.
-          </Text>
-          <Section style={buttonWrap}>
-            <Button style={button} href={confirmationUrl}>
-              Entrar agora
-            </Button>
+export const MagicLinkEmail = ({ siteUrl, confirmationUrl, lang }: MagicLinkEmailProps) => {
+  const L = normalizeLang(lang)
+  const t = AUTH_MAGIC_LINK[L]
+  return (
+    <Html lang={htmlLang(L)} dir="ltr">
+      <Head />
+      <Preview>{t.preview}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Section style={header}>
+            <Text style={brand}>Living Word</Text>
           </Section>
-          <Text style={footer}>
-            Se você não solicitou este link, pode ignorar este e-mail com segurança.
+          <Section style={card}>
+            <Heading style={h1}>{t.h1}</Heading>
+            <Text style={text}>{t.text}</Text>
+            <Section style={buttonWrap}>
+              <Button style={button} href={confirmationUrl}>{t.cta}</Button>
+            </Section>
+            <Text style={footer}>{t.ignore}</Text>
+          </Section>
+          <Text style={brandFooter}>
+            <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · {FOOTER_BRAND[L]}
           </Text>
-        </Section>
-        <Text style={brandFooter}>
-          <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export default MagicLinkEmail
 
