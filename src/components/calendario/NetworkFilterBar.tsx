@@ -112,7 +112,8 @@ export function NetworkFilterBar({ active, onToggle, lang }: Props) {
         const meta = NETWORK_META[k];
         const Icon = meta.icon;
         const isActive = active.has(k);
-        const label = k === 'editorial' ? EDITORIAL_LABEL[lang] : meta.label;
+        const label =
+          k === 'sermon' ? SERMON_LABEL[lang] : k === 'blog' ? BLOG_LABEL[lang] : meta.label;
         return (
           <button
             key={k}
