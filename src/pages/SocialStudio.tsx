@@ -265,9 +265,54 @@ export default function SocialStudio() {
     setSceneVariationMode(payload.variationMode);
     setSceneDistributionMode(payload.distributionMode);
     setActivePaletteId(null);
-    setTheme((prev) => ({ ...prev, backgroundImageUrl: payload.assets[0]?.imageUrl }));
+    // Importante: NÃO definimos theme.backgroundImageUrl aqui.
+    // A distribuição por slide (applySceneDistribution) é a única fonte
+    // de verdade para o fundo de cada card. Setar backgroundImageUrl
+    // global faria todos os slides usarem a mesma imagem (bug visível).
+    setTheme((prev) => ({ ...prev, backgroundImageUrl: undefined }));
     toast.success(lang === 'PT' ? 'Cenas aplicadas!' : lang === 'EN' ? 'Scenes applied!' : '¡Escenas aplicadas!');
   }, [lang]);
+
+  /**
+   * Garante que o pool tenha pelo menos `target` cenas distintas.
+   * Se faltarem, busca mais no banco compartilhado (excluindo as já no pool).
+   * Retorna o pool expandido — ou o original se já for suficiente / busca falhar.
+   */
+  const ensureScenePool = useCallback(async (target: number): Promise<SceneAsset[]> => {
+    if (scenePool.length >= target) return scenePool;
+    if (target <= 0) return scenePool;
+
+    try {
+      const term = verseContext?.book || verseContext?.text || 'biblical scene';
+      const { data, error } = await supabase.functions.invoke('generate-biblical-scene', {
+        body: { mode: 'search', prompt: term },
+      });
+      if (error) throw error;
+      const all: Array<{ id: string; image_url: string; description?: string; prompt?: string }> =
+        Array.isArray(data?.scenes) ? data.scenes : [];
+      const existingIds = new Set(scenePool.map((s) => s.id));
+      const extras: SceneAsset[] = all
+        .filter((row) => row?.id && row?.image_url && !existingIds.has(row.id))
+        .map((row) => ({
+          id: row.id,
+          imageUrl: row.image_url,
+          label: row.description || row.prompt?.slice(0, 40) || 'Scene',
+          prompt: row.prompt,
+          origin: 'library' as const,
+        }));
+
+      const expanded = [...scenePool, ...extras].slice(0, target);
+      if (expanded.length > scenePool.length) {
+        setScenePool(expanded);
+        setSceneSourceType((prev) => prev ?? 'library_multi');
+        setSceneDistributionMode('image_every_slide');
+      }
+      return expanded;
+    } catch (err) {
+      console.warn('ensureScenePool failed:', err);
+      return scenePool;
+    }
+  }, [scenePool, verseContext]);
 
   const distributedSlides = useMemo(() => {
     if (slides.length === 0 || scenePool.length === 0) return slides;
