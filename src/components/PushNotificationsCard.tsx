@@ -169,6 +169,11 @@ export function PushNotificationsCard() {
 
   const enabled = !!(profile as any)?.push_enabled && subscribed;
 
+  const handleToggleClick = () => {
+    if (busy) return;
+    void handleToggle(!enabled);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -213,14 +218,22 @@ export function PushNotificationsCard() {
               </div>
             )}
 
-            <div className="flex items-center justify-between border rounded-lg p-3">
-              <Label className="cursor-pointer">{enabled ? COPY.disable[l] : COPY.enable[l]}</Label>
+            <button
+              type="button"
+              onClick={handleToggleClick}
+              disabled={busy}
+              className="flex w-full items-center justify-between rounded-lg border p-3 text-left transition-colors hover:bg-muted/30 disabled:cursor-not-allowed disabled:opacity-60"
+              aria-label={enabled ? COPY.disable[l] : COPY.enable[l]}
+              aria-pressed={enabled}
+            >
+              <Label className="cursor-pointer pointer-events-none">{enabled ? COPY.disable[l] : COPY.enable[l]}</Label>
               <Switch
                 checked={enabled}
                 onCheckedChange={handleToggle}
                 disabled={busy}
+                className="pointer-events-none"
               />
-            </div>
+            </button>
 
             {enabled && (
               <>
