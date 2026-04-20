@@ -196,18 +196,13 @@ export function BiblicalSceneGallery({ onPick, lang, activeId, searchTerm, visua
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2 px-1">
-        <div className="flex items-center gap-2 min-w-0">
-          <ImageIcon className="h-4 w-4 text-primary shrink-0" />
-          <h3 className="text-sm font-bold text-foreground truncate">{l.title}</h3>
-        </div>
-        {quota && quota.limit > 0 && (
+      {quota && quota.limit > 0 && (
+        <div className="flex justify-end px-1">
           <Badge variant="secondary" className="text-[10px] font-mono shrink-0">
             {l.quotaLabel(quota.used, quota.limit)}
           </Badge>
-        )}
-      </div>
-      <p className="text-xs text-muted-foreground px-1">{l.hint}</p>
+        </div>
+      )}
 
       {/* Library grid */}
       {loading ? (
