@@ -1,6 +1,6 @@
 ---
-name: Sidebar structure v4 (Kids + Palavra Amiga visíveis)
-description: Sidebar tem seção FERRAMENTAS (Dashboard + Criar/Pesquisar + Bíblia) e seção RECURSOS (Mentes, Sermões, Modo Púlpito, Biblioteca, Calendário, Estúdio Social, Palavra Amiga, Kids)
+name: Sidebar structure v5 (Bottom nav 5 itens — Sermões removido)
+description: Sidebar tem seção FERRAMENTAS (Dashboard + Criar/Pesquisar + Bíblia) e seção RECURSOS (Mentes, Sermões, Modo Púlpito, Biblioteca, Calendário, Estúdio Social, Palavra Amiga, Kids). Bottom nav mobile = 5 itens.
 type: feature
 ---
 Estrutura da sidebar desktop e mobile hamburger:
@@ -21,7 +21,7 @@ Estrutura da sidebar desktop e mobile hamburger:
 - Palavra Amiga (rota /bom-amigo — ícone Heart)
 - Kids (rota /kids — ícone Baby)
 
-**Bottom nav mobile (6 itens):** Início, Criar, Bíblia, Mentes, Sermões, Conta.
+**Bottom nav mobile (5 itens — Sermões REMOVIDO em abril/2026 para dar respiro nos touch targets em iPhone 375–390px):** Início, Criar, Bíblia, Mentes, Conta. Sermões fica acessível via menu Criar e via sidebar/hamburger.
 
 **Mobile hamburger menu inclui:** Início, Criar, Sermões, Modo Púlpito, Estúdio Social, Bíblia, Mentes, Palavra Amiga, Kids, Ferramentas + bloco Conta.
 
