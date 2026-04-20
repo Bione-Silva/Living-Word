@@ -1444,7 +1444,10 @@ export default function Sermoes() {
 
       {/* ─── ActionBar fixa inferior — modo IA (markdown) ─── */}
       {editorMode === 'ai' && showResult && sermonContent && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)] pb-[env(safe-area-inset-bottom)]">
+        <div
+          className="fixed left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-md shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.15)] md:bottom-0 md:pb-[env(safe-area-inset-bottom)]"
+          style={{ bottom: 'calc(4.5rem + env(safe-area-inset-bottom, 0px))' }}
+        >
           <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2 overflow-x-auto sm:overflow-visible sm:flex-wrap sm:justify-end scrollbar-hide [-webkit-overflow-scrolling:touch]">
             {/* Mobile-only quick access: Bible + Notes */}
             <button
