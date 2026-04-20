@@ -157,7 +157,7 @@ export function DevotionalHeroCard() {
   const cover = data.cover_image_url;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm flex flex-col h-full">
       {/* Section label */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-primary inline-flex items-center gap-1.5">
