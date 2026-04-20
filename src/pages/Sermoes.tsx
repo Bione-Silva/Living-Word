@@ -349,6 +349,18 @@ export default function Sermoes() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+  const justSavedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flashSaved = useCallback(() => {
+    if (justSavedTimerRef.current) clearTimeout(justSavedTimerRef.current);
+    setJustSaved(true);
+    justSavedTimerRef.current = setTimeout(() => setJustSaved(false), 2500);
+  }, []);
+
+  useEffect(() => () => {
+    if (justSavedTimerRef.current) clearTimeout(justSavedTimerRef.current);
+  }, []);
 
   // History
   const [sessions, setSessions] = useState<SermonSession[]>([]);
