@@ -602,6 +602,7 @@ export default function Sermoes() {
       setSermonTitle(title);
       toast.success(labels.saved[lang]);
       await refreshSessions();
+      queryClient.invalidateQueries({ queryKey: ['materials'] });
     } catch (e) {
       toast.error('Erro ao salvar');
     }
