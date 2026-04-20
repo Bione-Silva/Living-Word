@@ -30,9 +30,9 @@ export function QuickActionsRow({ onMore }: QuickActionsRowProps) {
   } satisfies Record<L, string>;
 
   const actions: QuickAction[] = [
-    { id: 'bible', icon: BookMarked, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' }, action: () => navigate('/bible') },
+    { id: 'bible', icon: BookOpen, label: { PT: 'Bíblia', EN: 'Bible', ES: 'Biblia' }, action: () => navigate('/bible') },
     { id: 'sermon', icon: Mic, label: { PT: 'Novo Sermão', EN: 'New Sermon', ES: 'Nuevo Sermón' }, action: () => navigate('/sermoes') },
-    { id: 'study', icon: BookOpen, label: { PT: 'Novo Estudo', EN: 'New Study', ES: 'Nuevo Estudio' }, action: () => navigate('/estudos/novo') },
+    { id: 'study', icon: GraduationCap, label: { PT: 'Novo Estudo', EN: 'New Study', ES: 'Nuevo Estudio' }, action: () => navigate('/estudos/novo') },
     { id: 'social', icon: Palette, label: { PT: 'Estúdio Social', EN: 'Social Studio', ES: 'Estudio Social' }, action: () => navigate('/social-studio') },
     { id: 'library', icon: Library, label: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' }, action: () => navigate('/biblioteca') },
     { id: 'palavra', icon: Heart, label: { PT: 'Palavra Amiga', EN: 'Friendly Word', ES: 'Palabra Amiga' }, action: () => navigate('/bom-amigo') },
