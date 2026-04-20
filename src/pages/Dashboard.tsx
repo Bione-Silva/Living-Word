@@ -122,8 +122,10 @@ export default function Dashboard() {
           <MonthlyOverviewCard />
           <WeekAgendaCard />
           <BomAmigoHeroCard />
-          <QuickActionsRow onMore={() => setExtrasOpen(true)} />
-          <SocialStudioPromoCard />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5 items-stretch">
+            <QuickActionsRow onMore={() => setExtrasOpen(true)} />
+            <SocialStudioPromoCard />
+          </div>
         </div>
       </div>
 
