@@ -9,35 +9,46 @@ import {
   Head,
   Heading,
   Html,
+  Link,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
 interface RecoveryEmailProps {
   siteName: string
+  siteUrl?: string
   confirmationUrl: string
 }
 
-export const RecoveryEmail = ({
-  siteName,
-  confirmationUrl,
-}: RecoveryEmailProps) => (
-  <Html lang="en" dir="ltr">
+export const RecoveryEmail = ({ siteUrl, confirmationUrl }: RecoveryEmailProps) => (
+  <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Reset your password for {siteName}</Preview>
+    <Preview>Redefina sua senha da Living Word</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Reset your password</Heading>
-        <Text style={text}>
-          We received a request to reset your password for {siteName}. Click
-          the button below to choose a new password.
-        </Text>
-        <Button style={button} href={confirmationUrl}>
-          Reset Password
-        </Button>
-        <Text style={footer}>
-          If you didn't request a password reset, you can safely ignore this
-          email. Your password will not be changed.
+        <Section style={header}>
+          <Text style={brand}>Living Word</Text>
+        </Section>
+        <Section style={card}>
+          <Heading style={h1}>Redefinir sua senha</Heading>
+          <Text style={text}>
+            Recebemos uma solicitação para redefinir a senha da sua conta Living Word.
+            Clique no botão abaixo para escolher uma nova senha.
+          </Text>
+          <Section style={buttonWrap}>
+            <Button style={button} href={confirmationUrl}>
+              Redefinir senha
+            </Button>
+          </Section>
+          <Text style={smallText}>Este link expira em 1 hora por motivos de segurança.</Text>
+          <Text style={footer}>
+            Se você não solicitou esta redefinição, pode ignorar este e-mail —
+            sua senha permanecerá inalterada.
+          </Text>
+        </Section>
+        <Text style={brandFooter}>
+          <Link href={siteUrl || 'https://livingwordgo.com'} style={brandFooterLink}>livingwordgo.com</Link> · Feito com ❤ por Living Word
         </Text>
       </Container>
     </Body>
@@ -46,26 +57,25 @@ export const RecoveryEmail = ({
 
 export default RecoveryEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
+const main = { backgroundColor: '#ffffff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif' }
+const container = { maxWidth: '560px', margin: '0 auto', padding: '32px 24px' }
+const header = { textAlign: 'center' as const, padding: '0 0 24px' }
+const brand = { fontSize: '20px', fontWeight: 'bold' as const, color: '#6D28D9', margin: '0' }
+const card = { backgroundColor: '#FAF7FF', border: '1px solid #E9DDFD', borderRadius: '16px', padding: '36px 32px' }
+const h1 = { fontSize: '24px', fontWeight: 'bold' as const, color: '#1F1235', margin: '0 0 16px', lineHeight: '1.3' }
+const text = { fontSize: '15px', color: '#4A3F5C', lineHeight: '1.6', margin: '0 0 24px' }
+const smallText = { fontSize: '13px', color: '#6B5C7E', lineHeight: '1.5', margin: '0 0 20px', textAlign: 'center' as const }
+const buttonWrap = { textAlign: 'center' as const, margin: '8px 0 20px' }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: '#6D28D9',
   color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
+  fontSize: '15px',
+  fontWeight: 'bold' as const,
+  borderRadius: '12px',
+  padding: '14px 32px',
   textDecoration: 'none',
+  display: 'inline-block',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const footer = { fontSize: '12px', color: '#998AAE', margin: '20px 0 0', lineHeight: '1.5' }
+const brandFooter = { fontSize: '11px', color: '#998AAE', textAlign: 'center' as const, margin: '24px 0 0' }
+const brandFooterLink = { color: '#6D28D9', textDecoration: 'none' }
