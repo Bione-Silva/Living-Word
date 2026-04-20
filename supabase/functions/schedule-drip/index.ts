@@ -44,10 +44,13 @@ Deno.serve(async (req) => {
 
   const admin = createClient(supabaseUrl, serviceKey)
 
-  // Fetch user name from profile
+  // Fetch user name + language from profile (language captured at schedule time
+  // so the drip respects the user's preferred language even if they change it later).
   const { data: profile } = await admin
-    .from('profiles').select('full_name').eq('id', userId).maybeSingle()
+    .from('profiles').select('full_name, language').eq('id', userId).maybeSingle()
   const name = profile?.full_name?.split(' ')[0] || null
+  // Note: drip-scheduler reads language fresh from profile at send time —
+  // we don't store it on drip_schedule rows.
 
   const now = Date.now()
   const days = (n: number) => new Date(now + n * 24 * 60 * 60 * 1000).toISOString()

@@ -44,6 +44,15 @@ Deno.serve(async (req) => {
 
   for (const row of due) {
     try {
+      // Resolve language fresh from the user's profile so the drip respects
+      // the most recent language preference at send time.
+      let lang = 'PT'
+      if (row.user_id) {
+        const { data: profile } = await supabase
+          .from('profiles').select('language').eq('id', row.user_id).maybeSingle()
+        if (profile?.language) lang = String(profile.language).toUpperCase()
+      }
+
       const { error: invokeError } = await supabase.functions.invoke(
         'send-transactional-email',
         {
@@ -51,7 +60,7 @@ Deno.serve(async (req) => {
             templateName: row.template_name,
             recipientEmail: row.recipient_email,
             idempotencyKey: `drip-${row.id}`,
-            templateData: { name: row.recipient_name },
+            templateData: { name: row.recipient_name, lang },
           },
         },
       )
