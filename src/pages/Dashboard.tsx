@@ -123,33 +123,36 @@ export default function Dashboard() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 2 — Continue de onde parou
+          FAIXA 2 — Continue de onde parou (4 cards)  +  Recomendado  +  Versículo
+          Desktop ≥lg: 12 colunas (Continue 7 / Recomendado 3 / Versículo 2)
           ═══════════════════════════════════════════════════════════════ */}
-      <ContinueWhereYouLeftOff />
-
-      {/* Smart recommender (engagement) */}
-      <SmartDevotionalRecommender />
-
-      {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 3 — Ações rápidas (ferramentas circulares)
-          ═══════════════════════════════════════════════════════════════ */}
-      <ToolsCircleGrid onToolClick={handleToolClick} />
-
-      {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 4 — Recomendados + Recentes
-          ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <RecentGenerations />
-        <NotificationCenter />
+      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <ContinueWhereYouLeftOff />
+        </div>
+        <div className="lg:col-span-3">
+          <RecommendedForYou />
+        </div>
+        <div className="lg:col-span-2">
+          <VerseOfTheDay />
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FAIXA 5 — Estúdio Social em destaque
+          FAIXA 3 — Ações Rápidas + Suas Criações Recentes + Estúdio Social
+          Desktop ≥lg: 12 colunas (Ações 3 / Recentes 5 / Estúdio 4)
           ═══════════════════════════════════════════════════════════════ */}
-      <SocialStudioHighlightCard />
-
-      {/* More tools */}
-      <MoreToolsAccordion onToolClick={handleToolClick} />
+      <div className="grid gap-4 lg:gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-3">
+          <QuickActionsRow onMore={() => setExtrasOpen(true)} />
+        </div>
+        <div className="lg:col-span-5">
+          <RecentGenerations />
+        </div>
+        <div className="lg:col-span-4">
+          <SocialStudioPromoCard />
+        </div>
+      </div>
 
       {/* Conta & App */}
       <section className="pt-2">
