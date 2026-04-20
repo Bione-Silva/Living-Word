@@ -170,8 +170,8 @@ export function DevotionalHeroCard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_140px] md:grid-cols-[1fr_150px] xl:grid-cols-[1fr_170px] gap-4 sm:gap-4 lg:gap-5 flex-1 min-h-0">
-        {/* LEFT: text + audio + actions */}
-        <div className="min-w-0 space-y-3.5 flex flex-col">
+        {/* LEFT: text + audio + actions — no mobile fica DEPOIS da arte */}
+        <div className="min-w-0 space-y-3.5 flex flex-col order-2 sm:order-1">
           <h2 className="font-display text-xl sm:text-[1.4rem] lg:text-[1.6rem] xl:text-[1.75rem] font-bold text-foreground leading-tight">
             {data.title}
           </h2>
