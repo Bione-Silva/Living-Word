@@ -44,9 +44,9 @@ function extractKeywords(text: string): string[] {
 const VISUAL_MODES = {
   biblica: {
     prefix:
-      'Cinematic biblical scene set in the ancient Middle East, painterly photoreal style with dramatic warm golden lighting, reverent atmosphere, devotional mood, period-accurate stone architecture, tunics, olive trees and desert landscape, depth of field, film grain, museum-quality composition',
+      'Cinematic authentic photography set in the ancient Middle East, HIGHLY DETAILED REALISTIC PHOTOGRAPH, natural daylight or overcast, historical documentary style. STRICTLY NO painting, NO illustration, NO dramatic warm golden lighting, NO fantasy glow, period-accurate stone architecture, real sand and dust, textured clothing, museum-quality composition',
     negative:
-      'no modern clothing, no smartphones, no contemporary buildings, no urban setting, no coffee mugs, no laptops, no text, no captions, no watermarks, no faces of God',
+      'no oil painting, no watercolor, no sketch, no golden medieval castles, no fantasy auras, no modern clothing, no smartphones, no contemporary buildings, no urban setting, no text, no captions, no watermarks',
   },
   moderna: {
     prefix:
