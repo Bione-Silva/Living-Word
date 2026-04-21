@@ -719,7 +719,7 @@ export default function Landing() {
                 <RevealOnScroll key={i} delay={i * 0.12}>
                   <div className="rounded-xl p-5 h-full" style={{ background: '#F4F4F5', border: '1px solid rgba(15,10,24,0.12)' }}>
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ background: '#FFFFFF' }}>
-                      <Icon className="h-4 w-4" style={{ color: '#0F0A18' }} />
+                      <Icon className="h-4 w-4" style={{ color: '#6D28D9' }} />
                     </div>
                     <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: '#0F0A18' }}>{c.title[lang]}</h3>
                     <p className="text-[14px] leading-[1.6]" style={{ color: '#0F0A18' }}>{c.desc[lang]}</p>
@@ -879,7 +879,7 @@ export default function Landing() {
                 <RevealOnScroll key={i} delay={i * 0.06}>
                   <div className="rounded-2xl p-6 h-full flex flex-col" style={{ background: '#FFFFFF', border: '1px solid rgba(15,10,24,0.1)', boxShadow: '0 2px 12px rgba(15,10,24,0.05)' }}>
                     <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style={{ background: '#FFFFFF' }}>
-                      <Icon className="h-5 w-5" style={{ color: '#0F0A18' }} />
+                      <Icon className="h-5 w-5" style={{ color: '#6D28D9' }} />
                     </div>
                     <h3 className="text-[16px] font-bold mb-2" style={{ color: '#0F0A18' }}>{card.title[lang]}</h3>
                     <p className="text-[13px] leading-[1.65]" style={{ color: '#0F0A18' }}>{card.desc[lang]}</p>
@@ -897,7 +897,7 @@ export default function Landing() {
                 <RevealOnScroll key={i} delay={i * 0.06}>
                   <div className="rounded-2xl p-6 h-full flex flex-col" style={{ background: '#FFFFFF', border: '1px solid rgba(15,10,24,0.1)', boxShadow: '0 2px 12px rgba(15,10,24,0.05)' }}>
                     <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style={{ background: '#FFFFFF' }}>
-                      <Icon className="h-5 w-5" style={{ color: '#0F0A18' }} />
+                      <Icon className="h-5 w-5" style={{ color: '#6D28D9' }} />
                     </div>
                     <h3 className="text-[16px] font-bold mb-2" style={{ color: '#0F0A18' }}>{card.title[lang]}</h3>
                     <p className="text-[13px] leading-[1.65]" style={{ color: '#0F0A18' }}>{card.desc[lang]}</p>
