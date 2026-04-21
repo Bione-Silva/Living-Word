@@ -87,7 +87,7 @@ const categories: ToolCategory[] = [
       { id: 'announcements', icon: Megaphone, label: { PT: 'Avisos do Culto', EN: 'Service Announcements', ES: 'Avisos del Culto' } },
       { id: 'social-caption', icon: MessageSquare, label: { PT: 'Legendas para Redes', EN: 'Social Captions', ES: 'Subtítulos para Redes' } },
       { id: 'reels-script', icon: Video, label: { PT: 'Roteiro para Reels', EN: 'Reels Script', ES: 'Guion para Reels' } },
-      { id: 'youtube-blog', icon: Video, label: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' } },
+      { id: 'youtube-blog', icon: Video, label: { PT: 'Link do YouTube', EN: 'YouTube Link', ES: 'Enlace de YouTube' } },
       { id: 'biblioteca', icon: Library, label: { PT: 'Biblioteca', EN: 'Library', ES: 'Biblioteca' }, to: '/biblioteca' },
       { id: 'workspaces', icon: FolderOpen, label: { PT: 'Workspaces', EN: 'Workspaces', ES: 'Workspaces' }, to: '/workspaces' },
       { id: 'calendario', icon: CalendarDays, label: { PT: 'Calendário', EN: 'Calendar', ES: 'Calendario' }, to: '/calendario' },

@@ -409,6 +409,7 @@ export default function Sermoes() {
   const [podiumOpen, setPodiumOpen] = useState(false);
   const [rawTextOpen, setRawTextOpen] = useState(false);
   const [exportingPptx, setExportingPptx] = useState(false);
+  const [isEditingSermon, setIsEditingSermon] = useState(false);
 
   // ─── Studio de Blocos ───
   const [editorMode, setEditorMode] = useState<'ai' | 'blocks'>('ai');
@@ -1209,6 +1210,15 @@ export default function Sermoes() {
               ) : (
                 <>
                   {/* Sermon document */}
+                  {isEditingSermon ? (
+                    <textarea
+                      autoFocus
+                      value={typeof sermonContent === 'string' ? sermonContent : ''}
+                      onChange={(e) => setSermonContent(e.target.value)}
+                      className="w-full min-h-[60vh] px-4 py-4 rounded-xl border border-primary/40 bg-background text-sm text-foreground font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y transition-all"
+                      placeholder={lang === 'PT' ? 'Edite o conteúdo em Markdown...' : lang === 'ES' ? 'Edite el contenido en Markdown...' : 'Edit content in Markdown...'}
+                    />
+                  ) : (
                   <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed
                     [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-4 [&_blockquote]:bg-primary/5 [&_blockquote]:rounded-r-lg [&_blockquote]:italic
                     [&_h1]:text-xl [&_h1]:md:text-2xl [&_h1]:font-bold [&_h1]:border-b [&_h1]:border-border [&_h1]:pb-2
@@ -1218,6 +1228,7 @@ export default function Sermoes() {
                       {typeof sermonContent === 'string' ? sermonContent : ''}
                     </ReactMarkdown>
                   </div>
+                  )}
 
                   {/* Action buttons */}
                   {sermonContent && (
@@ -1585,6 +1596,20 @@ export default function Sermoes() {
               }`}
             >
               <Save className="h-3.5 w-3.5" /> {justSaved ? labels.saved[lang] : labels.save[lang]}
+            </button>
+            <button
+              onClick={() => setIsEditingSermon((v) => !v)}
+              className={`shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap ${
+                isEditingSermon
+                  ? 'border-primary/50 bg-primary/10 text-primary'
+                  : 'border-border bg-background hover:bg-muted text-foreground'
+              }`}
+              title={lang === 'PT' ? 'Editar texto gerado' : lang === 'ES' ? 'Editar texto generado' : 'Edit generated text'}
+            >
+              {isEditingSermon
+                ? <>{lang === 'PT' ? '👁️ Ver' : lang === 'ES' ? '👁️ Ver' : '👁️ Preview'}</>
+                : <>{lang === 'PT' ? '✏️ Editar' : lang === 'ES' ? '✏️ Editar' : '✏️ Edit'}</>
+              }
             </button>
             <button
               onClick={() => setSlidesOpen(true)}

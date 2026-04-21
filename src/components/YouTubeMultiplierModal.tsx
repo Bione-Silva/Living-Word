@@ -32,7 +32,7 @@ interface Props {
 
 /* ── content‑type definitions ── */
 const contentTypes = [
-  { id: 'article', icon: FileText, label: { PT: 'Artigo para Blog', EN: 'Blog Article', ES: 'Artículo de Blog' } },
+  { id: 'article', icon: FileText, label: { PT: 'Devocional/Artigo', EN: 'Devotional/Article', ES: 'Devocional/Artículo' } },
   { id: 'cell', icon: Users, label: { PT: 'Estudo de Célula', EN: 'Cell Group Study', ES: 'Estudio de Célula' } },
   { id: 'social', icon: MessageSquare, label: { PT: 'Frases para Redes', EN: 'Social Phrases', ES: 'Frases para Redes' } },
   { id: 'newsletter', icon: Mail, label: { PT: 'Newsletter Pastoral', EN: 'Pastoral Newsletter', ES: 'Newsletter Pastoral' } },
@@ -44,8 +44,8 @@ type ContentTypeId = typeof contentTypes[number]['id'];
 const copy: Record<L, Record<string, string>> = {
   PT: {
     subtitle: 'Transforme palestras e pregações do YouTube em um ecossistema completo: Artigos, Estudos de Célula, Frases virais e Newsletters usando IA.',
-    inputLabel: 'Cole a transcrição do vídeo',
-    placeholder: 'Cole aqui a transcrição completa ou os pontos-chave do vídeo do YouTube...',
+    inputLabel: 'Link do YouTube ou Transcrição',
+    placeholder: 'Cole o link do YouTube (ex: https://youtube.com/watch?v=...) ou texto da transcrição...',
     selectLabel: 'O que você deseja gerar?',
     generate: 'Gerar Conteúdo',
     generating: 'Reciclando conteúdo com IA (~30s)...',
@@ -61,7 +61,7 @@ const copy: Record<L, Record<string, string>> = {
     published: 'Publicado no blog!',
     selectOne: 'Selecione pelo menos um tipo de conteúdo',
     genIn: 'Gerar em:',
-    tabArticle: 'Artigo',
+    tabArticle: 'Devocional',
     tabCell: 'Célula',
     tabSocial: 'Social',
     tabNewsletter: 'Newsletter',
@@ -69,8 +69,8 @@ const copy: Record<L, Record<string, string>> = {
   },
   EN: {
     subtitle: 'Transform YouTube talks and sermons into a complete content ecosystem: Articles, Cell Studies, Viral Phrases, and Newsletters powered by AI.',
-    inputLabel: 'Paste the video transcript',
-    placeholder: 'Paste here the full transcript or key points from the YouTube video...',
+    inputLabel: 'YouTube Link or Transcript',
+    placeholder: 'Paste the YouTube link (e.g. https://youtube.com/watch?v=...) or transcript text...',
     selectLabel: 'What would you like to generate?',
     generate: 'Generate Content',
     generating: 'Recycling content with AI (~30s)...',
@@ -86,7 +86,7 @@ const copy: Record<L, Record<string, string>> = {
     published: 'Published to blog!',
     selectOne: 'Select at least one content type',
     genIn: 'Generate in:',
-    tabArticle: 'Article',
+    tabArticle: 'Devotional',
     tabCell: 'Cell Group',
     tabSocial: 'Social',
     tabNewsletter: 'Newsletter',
@@ -94,8 +94,8 @@ const copy: Record<L, Record<string, string>> = {
   },
   ES: {
     subtitle: 'Transforma charlas y predicaciones de YouTube en un ecosistema completo: Artículos, Estudios de Célula, Frases virales y Newsletters con IA.',
-    inputLabel: 'Pega la transcripción del video',
-    placeholder: 'Pega aquí la transcripción completa o los puntos clave del video de YouTube...',
+    inputLabel: 'Enlace de YouTube o Transcripción',
+    placeholder: 'Pega el enlace de YouTube (ej: https://youtube.com/watch?v=...) o texto de transcripción...',
     selectLabel: '¿Qué deseas generar?',
     generate: 'Generar Contenido',
     generating: 'Reciclando contenido con IA (~30s)...',
@@ -111,7 +111,7 @@ const copy: Record<L, Record<string, string>> = {
     published: '¡Publicado en el blog!',
     selectOne: 'Selecciona al menos un tipo de contenido',
     genIn: 'Generar en:',
-    tabArticle: 'Artículo',
+    tabArticle: 'Devocional',
     tabCell: 'Célula',
     tabSocial: 'Social',
     tabNewsletter: 'Newsletter',
@@ -123,7 +123,7 @@ const copy: Record<L, Record<string, string>> = {
 function buildSystemPrompt(selected: ContentTypeId[], langLabel: string) {
   const sections: string[] = [];
   if (selected.includes('article')) sections.push(
-    `## ARTICLE\nWrite a complete, SEO-friendly blog article (600-800 words) with H1 title, introduction, 2-3 H2 sections, and conclusion.`
+    `## ARTICLE\nWrite a daily devotional (about 2-3 minutes of reading, roughly 400 words). Format MUST include: 1) An inspiring title, 2) A KEY BIBLE VERSE (must be a real, verified verse. DO NOT hallucinate nonexistent chapters/verses), 3) A clear, deep reflection applying the transcript's truths, 4) A short closing prayer.`
   );
   if (selected.includes('cell')) sections.push(
     `## CELL_GROUP\nCreate a cell/small-group study guide with: an icebreaker question, 3-5 discussion questions, a key Bible verse, and a closing prayer prompt.`
@@ -135,7 +135,7 @@ function buildSystemPrompt(selected: ContentTypeId[], langLabel: string) {
     `## NEWSLETTER\nWrite a warm pastoral newsletter/email (300-500 words) with greeting, main insight, practical takeaway, and sign-off.`
   );
 
-  return `You are a content repurposing specialist for pastors and Christian leaders. The user will paste a video transcript or key points. Generate ONLY the requested sections below. Each section MUST start with its exact header (e.g. "## ARTICLE"). Write in ${langLabel}.\n\n${sections.join('\n\n')}`;
+  return `You are a content repurposing specialist for pastors and Christian leaders. The user will paste a video transcript or key points. Generate ONLY the requested sections below. Each section MUST start with its exact header (e.g. "## ARTICLE"). Write in ${langLabel}.\n\nCRITICAL: Do NOT invent or hallucinate Bible verses. If you cite a verse, ensure the chapter and verse actually exist in reality (e.g. Gospel of John has only 21 chapters).\n\n${sections.join('\n\n')}`;
 }
 
 /* ── parser ── */
@@ -178,6 +178,7 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
   const [expanded, setExpanded] = useState(false);
   const [expandedTab, setExpandedTab] = useState<ContentTypeId>('article');
   const [generationLang, setGenerationLang] = useState<Language>(lang);
+  const [isFetchingSubtitles, setIsFetchingSubtitles] = useState(false);
   const [selected, setSelected] = useState<Set<ContentTypeId>>(new Set(['article', 'cell', 'social', 'newsletter']));
 
   useEffect(() => { setGenerationLang(lang); }, [lang]);
@@ -211,13 +212,31 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
   const handleGenerate = async () => {
     if (!input.trim()) return;
     if (selected.size === 0) { toast.error(t.selectOne); return; }
+    
+    let processInput = input.trim();
+    // Verify if it's a Youtube Link
+    const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+    
     setLoading(true);
     setRawResult('');
+    
     try {
+      if (ytRegex.test(processInput)) {
+        setIsFetchingSubtitles(true);
+        const { data: ytData, error: ytError } = await supabase.functions.invoke('fetch-youtube-transcript', {
+          body: { url: processInput },
+        });
+        setIsFetchingSubtitles(false);
+        if (ytError || !ytData?.text) {
+          throw new Error('O YouTube bloqueou a extração automática (Anti-Bot). Como alternativa, vá no vídeo, copie todo o texto da aba "Mostrar transcrição", e cole aqui dentro!');
+        }
+        processInput = ytData.text;
+      }
+
       const { data, error } = await supabase.functions.invoke('ai-tool', {
         body: {
           systemPrompt: buildSystemPrompt([...selected], genLangLabel),
-          userPrompt: input,
+          userPrompt: processInput,
         },
       });
       if (error) throw error;
@@ -225,6 +244,7 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
     } catch (err: any) {
       toast.error(err.message || 'Error generating content');
     } finally {
+      setIsFetchingSubtitles(false);
       setLoading(false);
     }
   };
@@ -240,7 +260,7 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
     try {
       const { error } = await supabase.from('materials').insert({
         user_id: user.id,
-        title: `YouTube → ${type} — ${input.substring(0, 50)}`,
+        title: `YouTube → ${input.substring(0, 50)}...`,
         type: 'youtube-blog',
         content,
         language: generationLang,
@@ -290,7 +310,7 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
             )}
             <div className="min-w-0">
               <DialogHeader className="p-0 space-y-0.5">
-                <DialogTitle className="font-display text-xl leading-tight text-foreground">{toolTitle}</DialogTitle>
+                <DialogTitle className="font-display text-xl leading-tight text-foreground">{toolTitle === 'YouTube → Blog' ? 'Link do YouTube' : toolTitle}</DialogTitle>
                 <DialogDescription className="text-sm text-primary font-medium italic">
                   {t.subtitle}
                 </DialogDescription>
@@ -366,7 +386,9 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
           {/* ── Loading state ── */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-12 space-y-4 rounded-xl border border-border bg-card">
-              <p className="text-sm text-primary font-medium animate-pulse">{t.working}</p>
+              <p className="text-sm text-primary font-medium animate-pulse">
+                {isFetchingSubtitles ? 'Extraindo legenda do YouTube...' : t.working}
+              </p>
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
                 <span className="w-3 h-3 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -414,7 +436,7 @@ export function YouTubeMultiplierModal({ open, onOpenChange, toolTitle }: Props)
         <Dialog open={expanded} onOpenChange={setExpanded}>
           <DialogContent className="theme-app max-w-4xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0">
             <DialogHeader>
-              <DialogTitle className="font-display text-xl">{toolTitle}</DialogTitle>
+              <DialogTitle className="font-display text-xl">{toolTitle === 'YouTube → Blog' ? 'Link do YouTube' : toolTitle}</DialogTitle>
               <DialogDescription className="sr-only">{t.expandedTitle}</DialogDescription>
             </DialogHeader>
             <ScrollArea className="flex-1 min-h-0 bg-muted/20 rounded-lg">

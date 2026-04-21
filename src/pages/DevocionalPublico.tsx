@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { BookOpen, Lock, Play, ArrowRight } from 'lucide-react';
+import { BookOpen, Play, Pause, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -43,8 +43,12 @@ const labels = {
   signUpFree: { PT: 'Cadastre-se gratuitamente', EN: 'Sign up for free', ES: 'Regístrate gratis' },
   readFull: { PT: 'Leia o devocional completo', EN: 'Read the full devotional', ES: 'Lee el devocional completo' },
   itsFree: { PT: 'É grátis!', EN: "It's free!", ES: '¡Es gratis!' },
-  ctaTitle: { PT: 'Continue sua jornada espiritual', EN: 'Continue your spiritual journey', ES: 'Continúa tu jornada espiritual' },
-  ctaDesc: { PT: 'Acesse devocionais diários, estudos bíblicos e muito mais — 100% gratuito', EN: 'Access daily devotionals, Bible studies and more — 100% free', ES: 'Accede a devocionales diarios, estudios bíblicos y más — 100% gratis' },
+  ctaTitle: { PT: 'Ouça a Palavra de hoje e compartilhe esperança', EN: 'Listen to the Word and share hope', ES: 'Escucha la Palabra y comparte esperanza' },
+  ctaDesc: { 
+    PT: <>Na Living Word você também pode <strong>estudar a Palavra de Deus</strong>, <strong>criar sermões incríveis</strong>, e <strong>gerar conteúdo completo para o seu Instagram e redes sociais</strong>. Crie sua conta grátis agora.</>, 
+    EN: <>At Living Word you can also <strong>study the Word of God</strong>, <strong>create incredible sermons</strong>, and <strong>generate complete content for your Instagram and social networks</strong>. Create your free account now.</>, 
+    ES: <>En Living Word también puedes <strong>estudiar la Palabra de Dios</strong>, <strong>crear sermones increíbles</strong> y <strong>generar contenido completo para tu Instagram y redes sociales</strong>. Crea tu cuenta gratis ahora.</> 
+  },
   ctaButton: { PT: 'Criar minha conta grátis', EN: 'Create my free account', ES: 'Crear mi cuenta gratis' },
   notFound: { PT: 'Devocional não encontrado', EN: 'Devotional not found', ES: 'Devocional no encontrado' },
   meditation: { PT: 'MEDITAÇÃO', EN: 'MEDITATION', ES: 'MEDITACIÓN' },
@@ -58,6 +62,10 @@ export default function DevocionalPublico() {
   const [share, setShare] = useState<ShareData | null>(null);
   const [devotional, setDevotional] = useState<DevotionalData | null>(null);
   const [sharer, setSharer] = useState<SharerProfile | null>(null);
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (!shareToken) return;
@@ -122,12 +130,32 @@ export default function DevocionalPublico() {
     );
   }
 
-  // Split body into paragraphs, show first 2
+  // Split body into paragraphs
   const paragraphs = devotional.body_text.split(/\n\n+/).filter(Boolean);
-  const visibleParagraphs = paragraphs.slice(0, 2);
-  const hasMore = paragraphs.length > 2;
 
   const sharerName = sharer?.full_name || 'Living Word';
+
+  const audioSrc = devotional?.audio_url_onyx;
+  
+  const togglePlay = () => {
+    if (!audioSrc) return;
+    if (!audioRef.current) {
+      audioRef.current = new Audio(audioSrc);
+      audioRef.current.addEventListener('timeupdate', () => {
+        if (audioRef.current) setProgress(audioRef.current.currentTime);
+      });
+      audioRef.current.addEventListener('ended', () => {
+        setPlaying(false);
+        setProgress(0);
+      });
+    }
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[hsl(252,100%,99%)]">
@@ -169,34 +197,28 @@ export default function DevocionalPublico() {
           </div>
         </div>
 
-        {/* Audio: locked */}
-        {devotional.audio_url_onyx && (
-          <div className="relative rounded-2xl border border-[hsl(270,43%,92%)] p-6 overflow-hidden">
-            <div className="absolute inset-0 bg-[hsl(252,100%,99%)]/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
-              <div className="w-14 h-14 rounded-full bg-[hsl(263,70%,50%)] flex items-center justify-center mb-3 shadow-lg">
-                <Play className="h-6 w-6 text-white ml-0.5" />
-              </div>
-              <p className="text-sm font-semibold text-[hsl(256,56%,16%)]">{labels.listenFull[l]}</p>
-              <Link to={`/cadastro?ref=${shareToken}`}>
-                <Button variant="link" className="text-[hsl(263,70%,50%)] mt-1 text-xs">
-                  {labels.signUpFree[l]} →
-                </Button>
-              </Link>
+        {/* Audio Player */}
+        {audioSrc && (
+          <div className="bg-[hsl(252,100%,99%)] rounded-2xl border border-[hsl(270,43%,92%)] p-4 sm:p-6 flex items-center gap-4 sm:gap-5 shadow-sm">
+            <button
+              onClick={togglePlay}
+              className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-full bg-[hsl(263,70%,50%)] flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-md shadow-[hsl(263,70%,50%)]/20"
+            >
+              {playing ? <Pause className="h-5 w-5 sm:h-6 sm:w-6 text-white" /> : <Play className="h-5 w-5 sm:h-6 sm:w-6 text-white ml-1" />}
+            </button>
+            <div className="flex-1 min-w-0 flex flex-col gap-2">
+               <p className="text-sm font-semibold text-[hsl(256,56%,16%)] truncate">{labels.listenFull[l]}</p>
+               <div className="h-1.5 bg-[hsl(270,43%,92%)] rounded-full overflow-hidden w-full max-w-[280px]">
+                 <div className="h-full bg-[hsl(263,70%,50%)] transition-all ease-linear" style={{ width: audioRef.current?.duration ? `${(progress / audioRef.current.duration) * 100}%` : '0%' }} />
+               </div>
             </div>
-            {/* Fake player behind blur */}
-            <div className="h-20 flex items-center gap-4 opacity-40">
-              <div className="w-10 h-10 rounded-full bg-[hsl(263,70%,50%)] flex items-center justify-center">
-                <Play className="h-4 w-4 text-white" />
-              </div>
-              <div className="flex-1 h-2 bg-[hsl(270,43%,92%)] rounded-full">
-                <div className="h-full w-1/3 bg-[hsl(263,70%,50%)] rounded-full" />
-              </div>
-              <span className="text-xs text-[hsl(263,70%,50%)]">0:00 / 5:42</span>
+            <div className="text-xs font-semibold text-[hsl(263,70%,50%)] w-12 text-right tabular-nums">
+              {Math.floor(progress / 60)}:{(Math.floor(progress % 60)).toString().padStart(2, '0')}
             </div>
           </div>
         )}
 
-        {/* Meditation - visible paragraphs */}
+        {/* Meditation - all paragraphs */}
         <div>
           <div className="flex items-center gap-2.5 mb-4">
             <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-[hsl(263,70%,50%)]/10">
@@ -207,27 +229,11 @@ export default function DevocionalPublico() {
             </h2>
           </div>
           <div className="space-y-4 font-serif text-base leading-relaxed text-[hsl(256,56%,16%)]">
-            {visibleParagraphs.map((p, i) => (
+            {paragraphs.map((p, i) => (
               <p key={i}>{p}</p>
             ))}
           </div>
         </div>
-
-        {/* Blur overlay for remaining content */}
-        {hasMore && (
-          <div className="relative">
-            <div className="space-y-4 font-serif text-base leading-relaxed text-[hsl(256,56%,16%)]">
-              <p className="line-clamp-3">{paragraphs[2]}</p>
-            </div>
-            {/* Gradient blur */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[hsl(252,100%,99%)]/70 to-[hsl(252,100%,99%)]" />
-            <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center pb-4">
-              <Lock className="h-5 w-5 text-[hsl(263,70%,50%)] mb-2" />
-              <p className="text-sm font-semibold text-[hsl(256,56%,16%)]">{labels.readFull[l]}</p>
-              <p className="text-xs text-[hsl(263,70%,50%)]">{labels.itsFree[l]}</p>
-            </div>
-          </div>
-        )}
 
         {/* CTA Card */}
         <div className="rounded-2xl border-2 border-[hsl(263,70%,50%)]/30 bg-gradient-to-br from-[hsl(263,70%,50%)]/5 to-[hsl(252,100%,99%)] p-8 text-center space-y-4">

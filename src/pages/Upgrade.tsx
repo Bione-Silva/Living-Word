@@ -86,9 +86,9 @@ const plans: PlanData[] = [
     icon: Brain, featured: true, isFree: false,
     credits: PLAN_CREDITS.pro,
     features: {
-      PT: ['8.000 créditos/mês', 'Tudo do Starter +', '🧠 Mentes Brilhantes', 'Ilustrações para sermões', 'Calendário editorial', 'YouTube → Blog', 'Até 3 workspaces', 'Equipe até 3 usuários'],
-      EN: ['8,000 credits/month', 'Everything in Starter +', '🧠 Brilliant Minds', 'Sermon illustrations', 'Editorial calendar', 'YouTube → Blog', 'Up to 3 workspaces', 'Team up to 3 users'],
-      ES: ['8.000 créditos/mes', 'Todo del Starter +', '🧠 Mentes Brillantes', 'Ilustraciones para sermones', 'Calendario editorial', 'YouTube → Blog', 'Hasta 3 workspaces', 'Equipo hasta 3 usuarios'],
+      PT: ['8.000 créditos/mês', 'Tudo do Starter +', '🧠 Mentes Brilhantes', 'Ilustrações para sermões', 'Calendário editorial', 'Link do YouTube', 'Até 3 workspaces', 'Equipe até 3 usuários'],
+      EN: ['8,000 credits/month', 'Everything in Starter +', '🧠 Brilliant Minds', 'Sermon illustrations', 'Editorial calendar', 'YouTube Link', 'Up to 3 workspaces', 'Team up to 3 users'],
+      ES: ['8.000 créditos/mes', 'Todo del Starter +', '🧠 Mentes Brillantes', 'Ilustraciones para sermones', 'Calendario editorial', 'Enlace de YouTube', 'Hasta 3 workspaces', 'Equipo hasta 3 usuarios'],
     },
   },
   {

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+
 import { BookOpen, Check, Copy, Loader2, Settings2, Share2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -11,6 +11,7 @@ import {
   getBibleVersion,
   getDefaultVersionCode,
   versionAbbrToCode,
+  getVersionsByLanguage,
   type L as BibleLang,
 } from '@/lib/bible-data';
 
@@ -224,10 +225,29 @@ export function BibleCompareSheet({
 
   /* ─────────────── Render ─────────────── */
 
-  // Filter version options to exclude the sermon version + the OTHER compare slot, so user
-  // never picks duplicates.
-  const buildOptions = (excludeCodes: string[]) =>
-    ALL_VERSIONS.filter((bv) => bv.isAvailable && !excludeCodes.map((c) => c.toLowerCase()).includes(bv.code.toLowerCase()));
+  // Group versions by language, putting the user's primary language first.
+  // Excludes the sermon version + the OTHER compare slot.
+  const buildGroupedOptions = (excludeCodes: string[]) => {
+    const rawGroups = getVersionsByLanguage();
+    const out: { label: string; options: typeof ALL_VERSIONS }[] = [];
+    const primaryLabel = lang === 'PT' ? 'Português' : lang === 'ES' ? 'Español' : 'English';
+    
+    const filterFn = (bv: (typeof ALL_VERSIONS)[0]) => 
+      bv.isAvailable && !excludeCodes.map(c => c.toLowerCase()).includes(bv.code.toLowerCase());
+
+    if (rawGroups[primaryLabel]) {
+      const opts = rawGroups[primaryLabel].filter(filterFn);
+      if (opts.length > 0) out.push({ label: primaryLabel, options: opts });
+    }
+    
+    for (const [groupLang, items] of Object.entries(rawGroups)) {
+      if (groupLang === primaryLabel) continue;
+      const opts = items.filter(filterFn);
+      if (opts.length > 0) out.push({ label: groupLang, options: opts });
+    }
+    
+    return out;
+  };
 
   const surfaceBg = isDark ? 'bg-slate-900 text-slate-50' : 'bg-white text-slate-900';
   const borderClass = isDark ? 'border-slate-800' : 'border-slate-200';
@@ -301,11 +321,17 @@ export function BibleCompareSheet({
                 <SelectTrigger className={cn('h-8 text-xs', isDark && 'bg-slate-800 border-slate-700')}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  {buildOptions([v1, v3]).map((bv) => (
-                    <SelectItem key={bv.code} value={bv.code} className="text-xs">
-                      {`${bv.shortLabel} — ${bv.name}`}
-                    </SelectItem>
+                <SelectContent className="z-[250]">
+                  {buildGroupedOptions([v1, v3]).map((group, i) => (
+                    <SelectGroup key={group.label}>
+                      <SelectLabel className="text-xs text-muted-foreground font-bold uppercase tracking-wider">{group.label}</SelectLabel>
+                      {group.options.map((bv) => (
+                        <SelectItem key={bv.code} value={bv.code} className="text-xs pl-8">
+                          {`${bv.shortLabel} — ${bv.name}`}
+                        </SelectItem>
+                      ))}
+                      {i < 2 && <SelectSeparator />}
+                    </SelectGroup>
                   ))}
                 </SelectContent>
               </Select>
@@ -318,11 +344,17 @@ export function BibleCompareSheet({
                 <SelectTrigger className={cn('h-8 text-xs', isDark && 'bg-slate-800 border-slate-700')}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  {buildOptions([v1, v2]).map((bv) => (
-                    <SelectItem key={bv.code} value={bv.code} className="text-xs">
-                      {`${bv.shortLabel} — ${bv.name}`}
-                    </SelectItem>
+                <SelectContent className="z-[250]">
+                  {buildGroupedOptions([v1, v2]).map((group, i) => (
+                    <SelectGroup key={group.label}>
+                      <SelectLabel className="text-xs text-muted-foreground font-bold uppercase tracking-wider">{group.label}</SelectLabel>
+                      {group.options.map((bv) => (
+                        <SelectItem key={bv.code} value={bv.code} className="text-xs pl-8">
+                          {`${bv.shortLabel} — ${bv.name}`}
+                        </SelectItem>
+                      ))}
+                      {i < 2 && <SelectSeparator />}
+                    </SelectGroup>
                   ))}
                 </SelectContent>
               </Select>
@@ -420,16 +452,16 @@ export function BibleCompareSheet({
 
   /* Desktop: right-side drawer. Mobile: bottom sheet. */
   if (isDesktop) {
-    return createPortal(
-      <>
+    return (
+      <div className="relative z-[9999]">
         <button
           aria-label="overlay"
           onClick={onClose}
-          className="fixed inset-0 z-[200] bg-black/50"
+          className="fixed inset-0 bg-black/50"
         />
         <aside
           className={cn(
-            'fixed top-0 bottom-0 right-0 z-[210] w-[92vw] max-w-[520px] flex flex-col shadow-2xl border-l',
+            'fixed top-0 bottom-0 right-0 w-[92vw] max-w-[520px] flex flex-col shadow-2xl border-l',
             surfaceBg,
             borderClass,
             'animate-in slide-in-from-right duration-300',
@@ -439,21 +471,20 @@ export function BibleCompareSheet({
           {Body}
           {Footer}
         </aside>
-      </>,
-      document.body,
+      </div>
     );
   }
 
-  return createPortal(
-    <>
+  return (
+    <div className="relative z-[9999]">
       <button
         aria-label="overlay"
         onClick={onClose}
-        className="fixed inset-0 z-[200] bg-black/60"
+        className="fixed inset-0 bg-black/60"
       />
       <div
         className={cn(
-          'fixed left-0 right-0 bottom-0 z-[210] flex flex-col rounded-t-2xl shadow-2xl border-t',
+          'fixed left-0 right-0 bottom-0 flex flex-col rounded-t-2xl shadow-2xl border-t',
           surfaceBg,
           borderClass,
           'max-h-[88vh] animate-in slide-in-from-bottom duration-300',
@@ -467,7 +498,6 @@ export function BibleCompareSheet({
         {Body}
         {Footer}
       </div>
-    </>,
-    document.body,
+    </div>
   );
 }

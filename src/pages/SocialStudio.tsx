@@ -16,6 +16,7 @@ import { normalizePlan } from '@/lib/plan-normalization';
 
 import { VariationGrid, type VariationGridHandle } from '@/components/social-studio/VariationGrid';
 import { ArtGallery } from '@/components/social-studio/ArtGallery';
+import { AutofeedCarousels } from '@/components/social-studio/AutofeedCarousels';
 import {
   ImageModePicker,
   getImageModePromptFragment,
@@ -587,6 +588,10 @@ export default function SocialStudio() {
             <Sparkles className="h-3.5 w-3.5" />
             {h.studio}
           </TabsTrigger>
+          <TabsTrigger value="autofeed" className="gap-1.5 text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground">
+            <Wand2 className="h-3.5 w-3.5" />
+            AutoFeed
+          </TabsTrigger>
           <TabsTrigger value="gallery" className="gap-1.5 text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground">
             <ImageIcon className="h-3.5 w-3.5" />
             {h.gallery}
@@ -933,6 +938,10 @@ export default function SocialStudio() {
               </Card>
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="autofeed" className="mt-0">
+          <AutofeedCarousels lang={lang} />
         </TabsContent>
 
         <TabsContent value="gallery" className="mt-0">

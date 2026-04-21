@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { openWhatsAppShare } from '@/lib/whatsapp';
 
+import { supabase } from '@/integrations/supabase/client';
 type L = 'PT' | 'EN' | 'ES';
 
 interface DevotionalData {
@@ -51,7 +52,7 @@ function fmt(s: number) {
 
 export function DevotionalHeroCard() {
   const { lang } = useLanguage();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState<DevotionalData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -107,16 +108,57 @@ export function DevotionalHeroCard() {
     }
   };
 
-  const link = `${window.location.origin}/devocional`;
+  const getShareUrl = async () => {
+    if (!user || !data) return `${window.location.origin}/devocional`;
+    
+    const { data: existing } = await supabase
+      .from('devocional_compartilhamentos' as any)
+      .select('share_token')
+      .eq('user_id', user.id)
+      .eq('devocional_date', data.scheduled_date)
+      .single();
+
+    if (existing) {
+      return `${window.location.origin}/devocional/publico/${(existing as any).share_token}`;
+    }
+
+    const token = crypto.randomUUID();
+    const { error } = await supabase
+      .from('devocional_compartilhamentos' as any)
+      .insert({
+        user_id: user.id,
+        devocional_date: data.scheduled_date,
+        share_token: token,
+      } as any);
+
+    if (!error) {
+      return `${window.location.origin}/devocional/publico/${token}`;
+    }
+    
+    return `${window.location.origin}/devocional`;
+  };
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(link);
+    const shareUrl = await getShareUrl();
+    await navigator.clipboard.writeText(shareUrl);
     toast.success(L10N.copied[lang]);
   };
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = async () => {
     if (!data) return;
-    const txt = `${data.title}\n\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\n${link}`;
+    const shareUrl = await getShareUrl();
+    const userName = profile?.full_name || 'Alguém';
+    
+    // Copy/Mensagem baseada no idioma
+    let txt = '';
+    if (lang === 'PT') {
+      txt = `*${userName}* está compartilhando este devocional com você! 📖✨\n\n*${data.title}*\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\nOuça o áudio e leia a reflexão completa no link:\n${shareUrl}`;
+    } else if (lang === 'EN') {
+      txt = `*${userName}* is sharing this devotional with you! 📖✨\n\n*${data.title}*\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\nListen to the audio and read the full reflection here:\n${shareUrl}`;
+    } else {
+      txt = `¡*${userName}* está compartiendo este devocional contigo! 📖✨\n\n*${data.title}*\n"${data.anchor_verse_text}"\n— ${data.anchor_verse}\n\nEscucha el audio y lee la reflexión completa en el enlace:\n${shareUrl}`;
+    }
+    
     openWhatsAppShare(txt);
   };
 

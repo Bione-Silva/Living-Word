@@ -36,7 +36,7 @@ const FEATURE_LABELS: Record<string, Record<L, string>> = {
   'metaphor-creator': { PT: 'Criador de Metáforas', EN: 'Metaphor Creator', ES: 'Creador de Metáforas' },
   'bible-modernizer': { PT: 'Modernizador Bíblico', EN: 'Bible Modernizer', ES: 'Modernizador Bíblico' },
   'illustrations': { PT: 'Ilustrações para Sermão', EN: 'Sermon Illustrations', ES: 'Ilustraciones para Sermón' },
-  'youtube-blog': { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' },
+  'youtube-blog': { PT: 'Link do YouTube', EN: 'YouTube Link', ES: 'Enlace de YouTube' },
   'reels-script': { PT: 'Roteiro para Reels', EN: 'Reels Script', ES: 'Guión para Reels' },
   'cell-group': { PT: 'Material de Célula', EN: 'Cell Group Material', ES: 'Material de Célula' },
   'social-caption': { PT: 'Legenda para Redes', EN: 'Social Caption', ES: 'Leyenda para Redes' },

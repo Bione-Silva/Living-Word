@@ -402,9 +402,9 @@ export function ArticleReaderModal({ open, onOpenChange, item, onReplaceItem }: 
 
                   <div className="w-16 h-0.5 mb-6 bg-primary" />
 
-                  {/* Action bar — clear primary actions */}
+                  {/* Action bar — clear primary actions (IGNORED IN PDF EXPORT) */}
                   {item.id && (
-                    <div className="mb-8 -mx-1 sm:-mx-2 px-2.5 sm:px-3 py-3 rounded-xl flex flex-col gap-3 bg-card border border-border">
+                    <div data-html2canvas-ignore="true" className="mb-8 -mx-1 sm:-mx-2 px-2.5 sm:px-3 py-3 rounded-xl flex flex-col gap-3 bg-card border border-border">
                       <div className="flex flex-col gap-2 sm:gap-3">
                         <p className="text-xs sm:text-sm text-muted-foreground break-words">
                           {tx(

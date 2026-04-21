@@ -75,9 +75,9 @@ const labels = {
   linkCopied: { PT: 'Link copiado! Cole no WhatsApp ou onde quiser.', EN: 'Link copied! Paste it in WhatsApp or anywhere.', ES: '¡Enlace copiado! Pégalo en WhatsApp o donde quieras.' },
   preparingLink: { PT: 'Preparando link...', EN: 'Preparing link...', ES: 'Preparando enlace...' },
   whatsAppInvite: {
-    PT: '✨ *{title}*\n📖 {verse}\n\n_{sender} enviou este devocional pra você através da Living Word — sua dose diária de Palavra._\n\n👉 Abra e leia: {url}',
-    EN: '✨ *{title}*\n📖 {verse}\n\n_{sender} sent you this devotional through Living Word — your daily dose of the Word._\n\n👉 Open and read: {url}',
-    ES: '✨ *{title}*\n📖 {verse}\n\n_{sender} te envió este devocional a través de Living Word — tu dosis diaria de la Palabra._\n\n👉 Abre y lee: {url}',
+    PT: '✨ *{title}*\n📖 {verse}\n\n*{sender}* está compartilhando este devocional com você! 🕊️\n\n👉 Ouça a Palavra e receba esperança lendo a reflexão completa no link:\n{url}',
+    EN: '✨ *{title}*\n📖 {verse}\n\n*{sender}* is sharing this devotional with you! 🕊️\n\n👉 Listen to the Word and receive hope by reading the full reflection on the link:\n{url}',
+    ES: '✨ *{title}*\n📖 {verse}\n\n¡*{sender}* está compartiendo este devocional contigo! 🕊️\n\n👉 Escucha la Palabra y recibe esperanza leyendo la reflexión completa en el enlace:\n{url}',
   },
   deepenChat: { PT: 'Continuar no Chat', EN: 'Continue in Chat', ES: 'Continuar en el Chat' },
   journal: { PT: '✍️ Minha Reflexão Pessoal', EN: '✍️ My Personal Reflection', ES: '✍️ Mi Reflexión Personal' },

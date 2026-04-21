@@ -51,7 +51,7 @@ const sections: ToolSection[] = [
       { id: 'bible-modernizer', icon: Repeat, title: { PT: 'Modernizador Bíblico', EN: 'Bible Modernizer', ES: 'Modernizador Bíblico' }, description: { PT: 'Recontar histórias bíblicas no contexto atual', EN: 'Retell Bible stories in a modern context', ES: 'Recontar historias bíblicas en contexto actual' } },
       { id: 'illustrations', icon: PenTool, title: { PT: 'Ilustrações para Sermão', EN: 'Sermon Illustrations', ES: 'Ilustraciones para Sermón' }, description: { PT: 'Histórias reais para enriquecer a pregação', EN: 'Real stories to enrich your preaching', ES: 'Historias reales para enriquecer la predicación' } },
       { id: 'free-article', icon: Wand2, title: { PT: 'Artigo de Blog', EN: 'Blog Article', ES: 'Artículo de Blog' }, description: { PT: 'Artigo devocional completo pronto para publicar', EN: 'Complete devotional article ready to publish', ES: 'Artículo devocional completo listo para publicar' } },
-      { id: 'youtube-blog', icon: Video, title: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' }, description: { PT: 'Transforme vídeos em artigos cristãos', EN: 'Turn videos into Christian articles', ES: 'Transforma videos en artículos cristianos' }, locked: true },
+      { id: 'youtube-blog', icon: Video, title: { PT: 'Link do YouTube', EN: 'YouTube Link', ES: 'Enlace de YouTube' }, description: { PT: 'Transforme vídeos em artigos cristãos', EN: 'Turn videos into Christian articles', ES: 'Transforma videos en artículos cristianos' }, locked: true },
     ],
   },
   {

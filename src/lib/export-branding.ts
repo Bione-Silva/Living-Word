@@ -27,11 +27,12 @@ export function pdfBrandHeader(): string {
     </div>`;
 }
 
-/** Returns an HTML footer bar with site URL for PDF exports */
+/** Returns an HTML footer bar with site URL and Logo for PDF exports */
 export function pdfBrandFooter(): string {
   return `
-    <div style="margin-top:28px;padding-top:10px;border-top:1px solid #ddd;text-align:center;font-size:10px;color:${BRAND.colors.muted};font-family:Arial,sans-serif;">
-      ${BRAND.name} &bull; ${BRAND.site}
+    <div style="margin-top:40px;padding-top:16px;border-top:1px solid #eee;text-align:center;font-size:12px;color:${BRAND.colors.muted};font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <img src="${BRAND.logoPath}" style="height:20px;opacity:0.8;" alt="Logo" />
+      <span>${BRAND.name} &bull; <a href="https://${BRAND.site}" style="color:${BRAND.colors.muted};text-decoration:none;">${BRAND.site}</a></span>
     </div>`;
 }
 
@@ -41,6 +42,11 @@ export function pdfBrandFooter(): string {
  */
 export function wrapWithBrand(innerHtml: string): string {
   return `<div style="font-family:'Georgia',serif;padding:20px;color:#333;max-width:700px;margin:0 auto;">
+    <style>
+      h1, h2, h3, h4, .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+      h1, h2, h3 { page-break-after: avoid !important; break-after: avoid !important; padding-top: 10px; }
+      img, figure { page-break-inside: avoid; }
+    </style>
     ${pdfBrandHeader()}
     ${innerHtml}
     ${pdfBrandFooter()}

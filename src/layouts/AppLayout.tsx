@@ -74,7 +74,7 @@ const sidebarGroups: SidebarToolGroup[] = [
       { id: 'illustrations', icon: Film, label: { PT: 'Ilustrações', EN: 'Illustrations', ES: 'Ilustraciones' } },
       { id: 'bible-modernizer', icon: Sparkles, label: { PT: 'Modernizador Bíblico', EN: 'Bible Modernizer', ES: 'Modernizador Bíblico' } },
       { id: 'free-article-universal', icon: Type, label: { PT: 'Redator Universal', EN: 'Universal Writer', ES: 'Redactor Universal' } },
-      { id: 'youtube-blog', icon: Video, label: { PT: 'YouTube → Blog', EN: 'YouTube → Blog', ES: 'YouTube → Blog' } },
+      { id: 'youtube-blog', icon: Video, label: { PT: 'Link do YouTube', EN: 'YouTube Link', ES: 'Enlace de YouTube' } },
       { id: 'reels-script', icon: Video, label: { PT: 'Roteiro para Reels', EN: 'Reels Script', ES: 'Guion para Reels' } },
       { id: 'social-caption', icon: MessageSquare, label: { PT: 'Legendas para Redes', EN: 'Social Captions', ES: 'Subtítulos para Redes' } },
       { id: 'newsletter', icon: Mail, label: { PT: 'Newsletter Semanal', EN: 'Weekly Newsletter', ES: 'Newsletter Semanal' } },
