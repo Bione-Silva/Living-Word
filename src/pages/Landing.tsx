@@ -601,7 +601,7 @@ export default function Landing() {
                     </div>
                   </div>
                   {/* App content */}
-                  <div className="px-4 pb-5 pt-2 space-y-3" style={{ background: '#E8E0F5', minHeight: '400px' }}>
+                  <div className="px-4 pb-5 pt-2 space-y-3" style={{ background: '#FFFFFF', minHeight: '400px' }}>
                     <div className="flex items-center justify-between mb-1">
                       <p className="text-[11px] font-bold" style={{ color: '#0F0A18' }}>
                         📖 {lang === 'PT' ? 'Estúdio Pastoral' : lang === 'EN' ? 'Pastoral Studio' : 'Estudio Pastoral'}
@@ -641,7 +641,7 @@ export default function Landing() {
                           { icon: '👥', label: lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula' },
                           { icon: '📱', label: 'Reels' },
                         ].map((chip, i) => (
-                          <span key={i} className="text-[7px] font-semibold px-2 py-1 rounded-md flex items-center gap-1" style={{ background: '#fff', border: '1px solid rgba(15,10,24,0.1)', color: '#0F0A18' }}>
+                          <span key={i} className="text-[7px] font-semibold px-2 py-1 rounded-md flex items-center gap-1" style={{ background: '#6D28D9', color: '#FFFFFF' }}>
                             <span>{chip.icon}</span> {chip.label}
                           </span>
                         ))}
@@ -669,10 +669,10 @@ export default function Landing() {
                   { icon: '🕊️', label: { PT: 'Devocional', EN: 'Devotional', ES: 'Devocional' } },
                   { icon: '✍️', label: { PT: 'Artigo', EN: 'Article', ES: 'Artículo' } },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm" style={{ background: 'rgba(232,224,245,0.92)', border: '1px solid rgba(109,40,217,0.2)', animationDelay: `${i * 0.2}s` }}>
+                  <div key={i} className="flex items-center gap-2 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm" style={{ background: 'rgba(109,40,217,0.95)', border: '1px solid rgba(255,255,255,0.1)', animationDelay: `${i * 0.2}s` }}>
                     <span className="text-[16px]">{item.icon}</span>
-                    <span className="text-[12px] font-semibold" style={{ color: '#0F0A18' }}>{item.label[lang]}</span>
-                    <Check className="w-3.5 h-3.5" style={{ color: '#4CAF50' }} />
+                    <span className="text-[12px] font-semibold" style={{ color: '#FFFFFF' }}>{item.label[lang]}</span>
+                    <Check className="w-3.5 h-3.5" style={{ color: '#FFFFFF' }} />
                   </div>
                 ))}
               </div>
@@ -690,15 +690,15 @@ export default function Landing() {
       </section>
 
       {/* ===== 2. PROOF BAR ===== */}
-      <section className="py-8 px-5" style={{ background: '#E8E0F5' }}>
+      <section className="py-8 px-5" style={{ background: '#6D28D9' }}>
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 sm:gap-0 items-center">
             {copy.stats.map((s, i) => (
               <div key={i} className="flex items-center justify-center">
-                {i > 0 && <div className="hidden sm:block w-px h-12 mr-6 sm:mr-8" style={{ background: 'rgba(15,10,24,0.18)' }} />}
+                {i > 0 && <div className="hidden sm:block w-px h-12 mr-6 sm:mr-8" style={{ background: 'rgba(255,255,255,0.2)' }} />}
                 <div className="text-center px-1 sm:px-3 py-2">
-                  <div className="font-display text-[26px] sm:text-[38px] font-bold tracking-tight" style={{ color: '#0F0A18' }}>{s.num}</div>
-                  <div className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.14em] mt-0.5" style={{ color: '#1E1240' }}>{s.label[lang]}</div>
+                  <div className="font-display text-[26px] sm:text-[38px] font-bold tracking-tight" style={{ color: '#FFFFFF' }}>{s.num}</div>
+                  <div className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.14em] mt-0.5" style={{ color: 'rgba(255,255,255,0.8)' }}>{s.label[lang]}</div>
                 </div>
               </div>
             ))}
@@ -763,7 +763,7 @@ export default function Landing() {
                     <span className="text-[10px] font-medium px-4 py-0.5 rounded" style={{ background: 'rgba(15,10,24,0.08)', color: '#1E1240' }}>app.livingword.com</span>
                   </div>
                 </div>
-                <div className="px-5 py-5" style={{ background: '#E8E0F5', minHeight: '280px' }}>
+                <div className="px-5 py-5" style={{ background: '#FFFFFF', minHeight: '280px' }}>
                   <div className="flex gap-5">
                     <div className="flex-1 space-y-2.5">
                       <p className="text-[11px] font-bold" style={{ color: '#0F0A18' }}>
