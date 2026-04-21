@@ -11,6 +11,7 @@ import { lovable } from '@/integrations/lovable/index';
 import { Eye, EyeOff } from 'lucide-react';
 import { BrandIcon } from '@/components/BrandIcon';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
+import loginBg from '@/assets/login-bg.jpg';
 
 const PURPLE_THEME = {
   '--primary': '263 70% 50%',
@@ -77,8 +78,12 @@ export default function Login() {
       className="theme-app min-h-screen relative flex items-center justify-center p-4"
       style={{
         ...PURPLE_THEME,
-        background:
-          'radial-gradient(ellipse at top, hsl(263 70% 96%) 0%, hsl(270 50% 92%) 40%, hsl(263 50% 88%) 100%)',
+        backgroundColor: '#F5F3FF',
+        backgroundImage: `url(${loginBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundBlendMode: 'luminosity',
       }}
     >
       {/* Decorative purple glow */}
@@ -86,8 +91,7 @@ export default function Login() {
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
-          background:
-            'radial-gradient(circle at 20% 80%, hsl(263 70% 70% / 0.18), transparent 50%), radial-gradient(circle at 80% 20%, hsl(270 60% 75% / 0.20), transparent 50%)',
+          background: 'rgba(245, 243, 255, 0.92)',
         }}
       />
 

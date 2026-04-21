@@ -59,8 +59,7 @@ export default function ResetPassword() {
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
-          background:
-            'radial-gradient(circle at 50% 40%, hsl(263 70% 96% / 0.65), hsl(263 60% 90% / 0.35) 60%, transparent 100%)',
+          background: 'rgba(245, 243, 255, 0.92)',
         }}
       />
       <Card className="relative z-10 w-full max-w-md border-border bg-card text-card-foreground shadow-xl shadow-primary/10">
