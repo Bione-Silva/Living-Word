@@ -45,6 +45,7 @@ async function generateImage(prompt: string, hfToken: string, lovableKey: string
         model: "google/gemini-2.5-flash-image",
         messages: [{ role: "user", content: prompt }],
         modalities: ["image", "text"],
+        aspect_ratio: "16:9",
       }),
     });
     if (!r.ok) {

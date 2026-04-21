@@ -55,6 +55,7 @@ async function generateWithGemini(prompt: string, lovableApiKey: string): Promis
         model: "google/gemini-2.5-flash-image",
         messages: [{ role: "user", content: prompt }],
         modalities: ["image", "text"],
+        aspect_ratio: "16:9",
       }),
     });
 

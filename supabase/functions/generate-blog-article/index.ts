@@ -199,10 +199,11 @@ Output a complete devotional blog article in Markdown format with:
 - A compelling title (H1) — ONLY the article topic, NEVER include prefixes like "Blog", "Artigos", "Blog & Artigos", "Devotional", category labels, or any similar prefix. Just the topic itself, e.g. "Ressurreição de Lázaro", not "Blog & Artigos — Ressurreição de Lázaro".
 - Opening reflection (2-3 paragraphs)
 - Bible passage reference and commentary with historical and cultural context
+- At least 3 or 4 additional biblical cross-references integrated naturally into the text
 - At least 3-4 distinct sections with H2/H3 headings for depth and visual structure
 - Practical application for daily life
 - Closing prayer or reflection
-The article MUST have between 500 and 800 words. Structure it like a well-organized sermon with scannable sections (use H2/H3 headings). Be warm, theologically sound, and accessible. Use at least 4 H2/H3 headings throughout.`;
+The article MUST have between 500 and 800 words, rich with scriptural references and biblical grounding. Structure it like a well-organized sermon with scannable sections (use H2/H3 headings). Be warm, theologically sound, and accessible. Use at least 4 H2/H3 headings throughout.`;
 
     const userPrompt = source_content
       ? `Transform the following ${source_type || "source material"} into a devotional blog article about "${passage}"${inputTitle ? ` with the title "${inputTitle}"` : ""}. Preserve the strongest ideas, restructure it with a polished H1/H2/H3 blog flow, and return only Markdown.\n\nSOURCE MATERIAL:\n${source_content}`
