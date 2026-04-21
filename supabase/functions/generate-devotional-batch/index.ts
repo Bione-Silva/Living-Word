@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { IMAGE_STYLES, pickStyle, isArtisticStyle, REALISTIC_ENFORCEMENT } from '../_shared/image-styles.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
