@@ -57,7 +57,7 @@ export function QuickActionsRow({ onMore }: QuickActionsRowProps) {
               onClick={a.action}
               className="flex flex-col items-center gap-1.5 group min-w-0"
             >
-              <div className="w-full aspect-square max-h-14 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center transition-all group-hover:bg-primary/15 group-hover:border-primary/30 group-active:scale-95">
+              <div className="w-full aspect-square max-h-14 rounded-xl bg-zinc-100/80 border border-zinc-200 dark:bg-zinc-800/80 dark:border-zinc-700/50 flex items-center justify-center transition-all group-hover:bg-zinc-200/80 group-hover:border-zinc-300 dark:group-hover:bg-zinc-700 group-active:scale-95">
                 <Icon className="h-5 w-5 text-primary" />
               </div>
               <span className="text-[10px] font-medium text-foreground text-center leading-tight line-clamp-2 w-full">

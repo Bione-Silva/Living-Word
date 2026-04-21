@@ -511,7 +511,7 @@ export default function Landing() {
         }}
       >
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-3">
-          <span className="font-display text-lg tracking-tight" style={{ color: '#F8F6FF' }}>Living <span style={{ color: '#6D28D9' }}>Word</span></span>
+          <span className="font-display text-lg tracking-tight" style={{ color: '#F4F4F5' }}>Living <span style={{ color: '#6D28D9' }}>Word</span></span>
           <div className="hidden md:flex items-center gap-7">
             <button onClick={() => scrollTo('how')} className="text-[13px] font-medium transition-colors hover:text-[#6D28D9]" style={{ color: 'rgba(224,231,255,0.65)' }}>{copy.nav.how[lang]}</button>
             <button onClick={() => scrollTo('features')} className="text-[13px] font-medium transition-colors hover:text-[#6D28D9]" style={{ color: 'rgba(224,231,255,0.65)' }}>{copy.nav.features[lang]}</button>
@@ -536,7 +536,7 @@ export default function Landing() {
             </div>
           </div>
           <button className="md:hidden p-1.5" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X className="h-5 w-5" style={{ color: '#F8F6FF' }} /> : <Menu className="h-5 w-5" style={{ color: '#F8F6FF' }} />}
+            {mobileMenuOpen ? <X className="h-5 w-5" style={{ color: '#F4F4F5' }} /> : <Menu className="h-5 w-5" style={{ color: '#F4F4F5' }} />}
           </button>
         </div>
         {mobileMenuOpen && (
@@ -574,7 +574,7 @@ export default function Landing() {
             {/* Left: Copy */}
             <div>
               <span className="inline-block text-[11px] font-semibold tracking-[0.14em] uppercase px-3.5 py-1.5 rounded-full mb-6" style={{ background: 'rgba(109,40,217,0.15)', color: '#6D28D9', border: '1px solid rgba(109,40,217,0.2)' }}>{copy.hero.eyebrow[lang]}</span>
-              <h1 className="font-display text-[28px] sm:text-[42px] font-bold leading-[1.15] tracking-tight mb-5" style={{ color: '#F8F6FF' }}>
+              <h1 className="font-display text-[28px] sm:text-[42px] font-bold leading-[1.15] tracking-tight mb-5" style={{ color: '#F4F4F5' }}>
                 {copy.hero.h1[lang]}
                 <br />
                 <em className="not-italic" style={{ color: '#6D28D9' }}>{copy.hero.h1_em[lang]}</em>
@@ -608,7 +608,7 @@ export default function Landing() {
                       </p>
                       <div className="flex gap-1">
                         {(['PT', 'EN', 'ES'] as L[]).map((l) => (
-                          <span key={l} className="text-[7px] font-bold px-1.5 py-0.5 rounded" style={{ background: l === lang ? '#0F0A18' : 'rgba(15,10,24,0.1)', color: l === lang ? '#F8F6FF' : '#0F0A18' }}>{l}</span>
+                          <span key={l} className="text-[7px] font-bold px-1.5 py-0.5 rounded" style={{ background: l === lang ? '#0F0A18' : 'rgba(15,10,24,0.1)', color: l === lang ? '#F4F4F5' : '#0F0A18' }}>{l}</span>
                         ))}
                       </div>
                     </div>
@@ -654,9 +654,9 @@ export default function Landing() {
                       </p>
                       <div className="space-y-1">
                         <div className="h-1.5 rounded w-full" style={{ background: '#FFFFFF' }} />
-                        <div className="h-1.5 rounded w-5/6" style={{ background: '#F8F6FF' }} />
-                        <div className="h-1.5 rounded w-4/5" style={{ background: '#F8F6FF' }} />
-                        <div className="h-1.5 rounded w-2/3" style={{ background: '#F8F6FF' }} />
+                        <div className="h-1.5 rounded w-5/6" style={{ background: '#F4F4F5' }} />
+                        <div className="h-1.5 rounded w-4/5" style={{ background: '#F4F4F5' }} />
+                        <div className="h-1.5 rounded w-2/3" style={{ background: '#F4F4F5' }} />
                       </div>
                     </div>
                   </div>
@@ -679,7 +679,7 @@ export default function Landing() {
               {/* Floating language badge */}
               <div className="absolute left-0 bottom-12 z-20 flex gap-1.5 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm" style={{ background: 'rgba(224,231,255,0.92)', border: '1px solid rgba(109,40,217,0.2)' }}>
                 {(['PT', 'EN', 'ES'] as L[]).map((l) => (
-                  <span key={l} className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: l === lang ? '#0F0A18' : 'rgba(15,10,24,0.1)', color: l === lang ? '#F8F6FF' : '#0F0A18' }}>{l}</span>
+                  <span key={l} className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: l === lang ? '#0F0A18' : 'rgba(15,10,24,0.1)', color: l === lang ? '#F4F4F5' : '#0F0A18' }}>{l}</span>
                 ))}
               </div>
               {/* Glow */}
@@ -717,7 +717,7 @@ export default function Landing() {
               const Icon = c.icon;
               return (
                 <RevealOnScroll key={i} delay={i * 0.12}>
-                  <div className="rounded-xl p-5 h-full" style={{ background: '#F8F6FF', border: '1px solid rgba(15,10,24,0.12)' }}>
+                  <div className="rounded-xl p-5 h-full" style={{ background: '#F4F4F5', border: '1px solid rgba(15,10,24,0.12)' }}>
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ background: '#FFFFFF' }}>
                       <Icon className="h-4 w-4" style={{ color: '#0F0A18' }} />
                     </div>
@@ -732,7 +732,7 @@ export default function Landing() {
       </section>
 
       {/* ===== 4. HOW IT WORKS ===== */}
-      <section id="how" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F8F6FF' }}>
+      <section id="how" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F4F4F5' }}>
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#6D28D9' }}>{copy.how.tag[lang]}</p>
           <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#0F0A18' }}>{copy.how.h2[lang]}</h2>
@@ -740,7 +740,7 @@ export default function Landing() {
             {copy.how.steps.map((step, i) => (
               <RevealOnScroll key={i} delay={i * 0.18}>
                 <div className="flex gap-5 py-5" style={{ borderBottom: i < 2 ? '1px solid rgba(15,10,24,0.1)' : 'none' }}>
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-display text-xl font-semibold" style={{ background: '#0F0A18', color: '#F8F6FF' }}>{i + 1}</div>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-display text-xl font-semibold" style={{ background: '#0F0A18', color: '#F4F4F5' }}>{i + 1}</div>
                   <div className="flex-1">
                     <h3 className="text-[16px] font-semibold mb-1.5" style={{ color: '#0F0A18' }}>{step.title[lang]}</h3>
                     <p className="text-[14px] leading-[1.65] mb-2" style={{ color: '#0F0A18' }}>{step.desc[lang]}</p>
@@ -781,7 +781,7 @@ export default function Landing() {
                       ))}
                       <div className="flex gap-1.5 pt-1">
                         {(['PT', 'EN', 'ES'] as L[]).map((l) => (
-                          <span key={l} className="text-[7px] font-semibold px-2 py-0.5 rounded" style={{ background: l === lang ? '#0F0A18' : 'rgba(15,10,24,0.1)', color: l === lang ? '#F8F6FF' : '#0F0A18' }}>{l}</span>
+                          <span key={l} className="text-[7px] font-semibold px-2 py-0.5 rounded" style={{ background: l === lang ? '#0F0A18' : 'rgba(15,10,24,0.1)', color: l === lang ? '#F4F4F5' : '#0F0A18' }}>{l}</span>
                         ))}
                       </div>
                       <div className="rounded px-3 py-1.5 text-center text-[9px] font-semibold" style={{ background: '#6D28D9', color: '#FFFFFF' }}>
@@ -798,16 +798,16 @@ export default function Landing() {
                           'Blog', lang === 'PT' ? 'Célula' : lang === 'EN' ? 'Small Group' : 'Célula',
                           'EN', 'ES',
                         ].map((tab, i) => (
-                          <span key={i} className="text-[7px] font-semibold px-1.5 py-0.5 rounded" style={{ background: i === 0 ? '#0F0A18' : 'rgba(15,10,24,0.08)', color: i === 0 ? '#F8F6FF' : '#1E1240' }}>{tab}</span>
+                          <span key={i} className="text-[7px] font-semibold px-1.5 py-0.5 rounded" style={{ background: i === 0 ? '#0F0A18' : 'rgba(15,10,24,0.08)', color: i === 0 ? '#F4F4F5' : '#1E1240' }}>{tab}</span>
                         ))}
                       </div>
                       <div className="rounded-lg p-2.5 space-y-1.5" style={{ background: '#fff', border: '1px solid rgba(15,10,24,0.08)' }}>
                         <div className="h-2 rounded w-3/4" style={{ background: '#FFFFFF' }} />
-                        <div className="h-1.5 rounded w-full" style={{ background: '#F8F6FF' }} />
-                        <div className="h-1.5 rounded w-full" style={{ background: '#F8F6FF' }} />
-                        <div className="h-1.5 rounded w-5/6" style={{ background: '#F8F6FF' }} />
-                        <div className="h-1.5 rounded w-full" style={{ background: '#F8F6FF' }} />
-                        <div className="h-1.5 rounded w-2/3" style={{ background: '#F8F6FF' }} />
+                        <div className="h-1.5 rounded w-full" style={{ background: '#F4F4F5' }} />
+                        <div className="h-1.5 rounded w-full" style={{ background: '#F4F4F5' }} />
+                        <div className="h-1.5 rounded w-5/6" style={{ background: '#F4F4F5' }} />
+                        <div className="h-1.5 rounded w-full" style={{ background: '#F4F4F5' }} />
+                        <div className="h-1.5 rounded w-2/3" style={{ background: '#F4F4F5' }} />
                       </div>
                     </div>
                   </div>
@@ -831,7 +831,7 @@ export default function Landing() {
           <RevealOnScroll>
             <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
               {/* Input card */}
-              <div className="rounded-2xl p-6 text-center" style={{ background: '#F8F6FF', border: '1px solid rgba(15,10,24,0.12)' }}>
+              <div className="rounded-2xl p-6 text-center" style={{ background: '#F4F4F5', border: '1px solid rgba(15,10,24,0.12)' }}>
                 <p className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: '#1E1240' }}>
                   {lang === 'PT' ? 'Entrada' : lang === 'EN' ? 'Input' : 'Entrada'}
                 </p>
@@ -854,7 +854,7 @@ export default function Landing() {
               {/* Output cards grid */}
               <div className="grid grid-cols-2 gap-2">
                 {copy.multiformat.outputs.map((out, i) => (
-                  <div key={i} className="rounded-xl px-3 py-3 flex items-center gap-2 transition-all hover:scale-[1.02]" style={{ background: '#F8F6FF', border: '1px solid rgba(15,10,24,0.08)' }}>
+                  <div key={i} className="rounded-xl px-3 py-3 flex items-center gap-2 transition-all hover:scale-[1.02]" style={{ background: '#F4F4F5', border: '1px solid rgba(15,10,24,0.08)' }}>
                     <span className="text-[18px]">{out.icon}</span>
                     <span className="text-[12px] font-semibold leading-tight" style={{ color: '#0F0A18' }}>{out.label[lang]}</span>
                   </div>
@@ -866,7 +866,7 @@ export default function Landing() {
       </section>
 
       {/* ===== 6. FEATURES (6 principais + secundários menores) ===== */}
-      <section id="features" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F8F6FF' }}>
+      <section id="features" className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F4F4F5' }}>
         <div className="max-w-4xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#6D28D9' }}>{copy.features.tag[lang]}</p>
           <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#0F0A18' }}>{copy.features.h2[lang]}</h2>
@@ -912,7 +912,7 @@ export default function Landing() {
       {/* ===== 7. VS COMPETITORS ===== */}
       <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#0F0A18' }}>
         <div className="max-w-3xl mx-auto">
-          <h2 className="font-display text-[22px] sm:text-[32px] font-semibold text-center mb-8 leading-tight" style={{ color: '#F8F6FF' }}>{copy.vs.h2[lang]}</h2>
+          <h2 className="font-display text-[22px] sm:text-[32px] font-semibold text-center mb-8 leading-tight" style={{ color: '#F4F4F5' }}>{copy.vs.h2[lang]}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <p className="text-[12px] font-semibold uppercase tracking-wide mb-4" style={{ color: 'rgba(224,231,255,0.45)' }}>{copy.vs.them[lang]}</p>
@@ -941,7 +941,7 @@ export default function Landing() {
       </section>
 
       {/* ===== 8. TESTIMONIALS ===== */}
-      <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F8F6FF' }}>
+      <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F4F4F5' }}>
         <div className="max-w-3xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#6D28D9' }}>{copy.testimonials.tag[lang]}</p>
           <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-8" style={{ color: '#0F0A18' }}>{copy.testimonials.h2[lang]}</h2>
@@ -965,7 +965,7 @@ export default function Landing() {
       {/* ===== 9. MENTES BRILHANTES (compacta — diferencial premium) ===== */}
       <section className="py-14 sm:py-16 px-5 sm:px-8" style={{ background: '#FFFFFF' }}>
         <div className="max-w-4xl mx-auto">
-          <div className="rounded-2xl p-6 sm:p-10" style={{ background: '#F8F6FF', border: '1px solid rgba(15,10,24,0.1)' }}>
+          <div className="rounded-2xl p-6 sm:p-10" style={{ background: '#F4F4F5', border: '1px solid rgba(15,10,24,0.1)' }}>
             <div className="flex flex-col sm:flex-row items-start gap-6">
               {/* Left: Copy */}
               <div className="flex-1">
@@ -992,7 +992,7 @@ export default function Landing() {
                   <span>·</span>
                   <span>30,000+ {lang === 'PT' ? 'páginas' : lang === 'EN' ? 'pages' : 'páginas'}</span>
                 </div>
-                <Link to="/cadastro" className="inline-flex items-center gap-2 text-[14px] font-semibold px-5 py-2.5 rounded-lg transition-all hover:scale-[1.02]" style={{ background: '#0F0A18', color: '#F8F6FF' }}>
+                <Link to="/cadastro" className="inline-flex items-center gap-2 text-[14px] font-semibold px-5 py-2.5 rounded-lg transition-all hover:scale-[1.02]" style={{ background: '#0F0A18', color: '#F4F4F5' }}>
                   <MessageCircle className="w-4 h-4" />
                   {lang === 'PT' ? 'Experimentar' : lang === 'EN' ? 'Try it' : 'Probar'}
                 </Link>
@@ -1038,11 +1038,11 @@ export default function Landing() {
               pricingPlans.map((plan, i) => (
                 <RevealOnScroll key={i} delay={i * 0.1}>
                   <div className="rounded-xl p-5 flex flex-col h-full" style={{
-                    background: plan.featured ? '#F8F6FF' : '#FFFFFF',
+                    background: plan.featured ? '#F4F4F5' : '#FFFFFF',
                     border: plan.featured ? '2px solid #0F0A18' : '1px solid rgba(15,10,24,0.12)',
                   }}>
                     {plan.featured && (
-                      <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-2 self-start" style={{ background: '#0F0A18', color: '#F8F6FF' }}>
+                      <span className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full mb-2 self-start" style={{ background: '#0F0A18', color: '#F4F4F5' }}>
                         {lang === 'PT' ? 'Mais escolhido' : lang === 'EN' ? 'Most popular' : 'Más elegido'}
                       </span>
                     )}
@@ -1080,7 +1080,7 @@ export default function Landing() {
       </section>
 
       {/* ===== 11. FAQ ===== */}
-      <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F8F6FF' }} itemScope itemType="https://schema.org/FAQPage">
+      <section className="py-14 sm:py-18 px-5 sm:px-8" style={{ background: '#F4F4F5' }} itemScope itemType="https://schema.org/FAQPage">
         <div className="max-w-5xl mx-auto">
           <p className="text-[12px] font-semibold tracking-[0.12em] uppercase mb-3" style={{ color: '#6D28D9' }}>{copy.faq.tag[lang]}</p>
           <h2 className="font-display text-[24px] sm:text-[36px] font-semibold leading-tight mb-6" style={{ color: '#0F0A18' }}>{copy.faq.h2[lang]}</h2>
@@ -1107,11 +1107,11 @@ export default function Landing() {
       {/* ===== 12. CTA FINAL ===== */}
       <section className="py-16 sm:py-20 px-5 text-center safe-area-bottom" style={{ background: '#0F0A18' }}>
         <div className="max-w-2xl mx-auto">
-          <h2 className="font-display text-[24px] sm:text-[38px] font-semibold leading-tight mb-4" style={{ color: '#F8F6FF' }}>
+          <h2 className="font-display text-[24px] sm:text-[38px] font-semibold leading-tight mb-4" style={{ color: '#F4F4F5' }}>
             {copy.ctaFinal.h2_1[lang]}<br /><em>{copy.ctaFinal.h2_em[lang]}</em>
           </h2>
           <p className="text-[16px] leading-[1.7] mb-8" style={{ color: 'rgba(224,231,255,0.75)' }}>{copy.ctaFinal.sub[lang]}</p>
-          <Link to="/cadastro" className="inline-block text-[16px] font-semibold px-9 py-4 rounded-xl mb-4 transition-transform hover:scale-[1.02]" style={{ background: '#F8F6FF', color: '#0F0A18' }}>{copy.ctaFinal.cta[lang]}</Link>
+          <Link to="/cadastro" className="inline-block text-[16px] font-semibold px-9 py-4 rounded-xl mb-4 transition-transform hover:scale-[1.02]" style={{ background: '#F4F4F5', color: '#0F0A18' }}>{copy.ctaFinal.cta[lang]}</Link>
           <br />
           <span className="text-[13px] font-medium" style={{ color: 'rgba(224,231,255,0.5)' }}>{copy.ctaFinal.tags[lang]}</span>
           <p className="font-display text-[14px] italic mt-6" style={{ color: 'rgba(224,231,255,0.35)' }}>{copy.ctaFinal.verse[lang]}</p>

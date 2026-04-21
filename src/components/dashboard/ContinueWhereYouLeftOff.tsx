@@ -95,39 +95,39 @@ export function ContinueWhereYouLeftOff() {
       if (sermon) {
         built.push({
           icon: Mic,
-          iconBg: 'bg-primary/10',
+          iconBg: 'bg-zinc-100/80 dark:bg-zinc-800',
           iconColor: 'text-primary',
           type: L10N.sermon[lang],
           title: sermon.title,
           subtitle: `${lang === 'PT' ? 'Editado' : lang === 'EN' ? 'Edited' : 'Editado'} ${timeAgo(sermon.updated_at, lang)}`,
           progress: 75,
-          progressColor: 'bg-emerald-500',
+          progressColor: 'bg-primary',
           to: `/sermoes`,
         });
       }
       if (study) {
         built.push({
           icon: BookOpen,
-          iconBg: 'bg-emerald-500/10',
-          iconColor: 'text-emerald-500',
+          iconBg: 'bg-zinc-100/80 dark:bg-zinc-800',
+          iconColor: 'text-primary',
           type: L10N.study[lang],
           title: study.title || study.passage || '—',
           subtitle: `${lang === 'PT' ? 'Última leitura' : lang === 'EN' ? 'Last read' : 'Última lectura'} ${timeAgo(study.updated_at, lang)}`,
           progress: 40,
-          progressColor: 'bg-blue-500',
+          progressColor: 'bg-primary',
           to: `/estudos`,
         });
       }
       if (art) {
         built.push({
           icon: ImageIcon,
-          iconBg: 'bg-orange-500/10',
-          iconColor: 'text-orange-500',
+          iconBg: 'bg-zinc-100/80 dark:bg-zinc-800',
+          iconColor: 'text-primary',
           type: L10N.social[lang],
           title: art.title || (lang === 'PT' ? 'Arte sem título' : lang === 'EN' ? 'Untitled art' : 'Arte sin título'),
           subtitle: `${lang === 'PT' ? 'Criado' : lang === 'EN' ? 'Created' : 'Creado'} ${timeAgo(art.created_at, lang)}`,
           progress: 60,
-          progressColor: 'bg-orange-500',
+          progressColor: 'bg-primary',
           to: `/social-studio`,
         });
       }
@@ -135,14 +135,14 @@ export function ContinueWhereYouLeftOff() {
         const days = Math.max(1, Math.round((new Date(event.scheduled_at).getTime() - Date.now()) / 1000 / 60 / 60 / 24));
         built.push({
           icon: Calendar,
-          iconBg: 'bg-pink-500/10',
-          iconColor: 'text-pink-500',
+          iconBg: 'bg-zinc-100/80 dark:bg-zinc-800',
+          iconColor: 'text-primary',
           type: L10N.calendar[lang],
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           title: (event as any).materials?.title || '—',
           subtitle: L10N.upcomingIn[lang].replace('{n}', String(days)),
           progress: 100 - Math.min(days * 14, 90),
-          progressColor: 'bg-pink-500',
+          progressColor: 'bg-primary',
           to: `/calendario`,
         });
       }
