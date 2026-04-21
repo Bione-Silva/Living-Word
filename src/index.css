@@ -6,34 +6,34 @@
 
 @layer base {
   :root {
-    /* ── Landing (Night Canvas + Word Primary / Sacred Gold) — Clickone Palette ── */
-    --background: 261 41% 7%;          /* Night Canvas */
-    --foreground: 240 50% 99%;         /* Divine White */
+    /* ── Landing (Café Ministerial + Âmbar Pastoral) ── */
+    --background: 30 20% 12%;          /* Teca Profunda */
+    --foreground: 35 30% 96%;          /* Pergaminho Claro */
 
-    --card: 256 56% 16%;               /* Scripture Dark */
-    --card-foreground: 240 50% 99%;
+    --card: 32 25% 16%;               /* Café Ministerial */
+    --card-foreground: 35 30% 96%;
 
-    --popover: 256 56% 16%;
-    --popover-foreground: 240 50% 99%;
+    --popover: 32 25% 16%;
+    --popover-foreground: 35 30% 96%;
 
-    --primary: 263 70% 50%;            /* Word Primary */
-    --primary-foreground: 240 50% 99%;
+    --primary: 32 40% 50%;            /* Âmbar Pastoral */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 257 61% 32%;          /* Covenant */
-    --secondary-foreground: 240 50% 99%;
+    --secondary: 35 15% 25%;          /* Amadeirado Frio */
+    --secondary-foreground: 35 30% 96%;
 
-    --muted: 215 28% 17%;              /* Stone Gray */
-    --muted-foreground: 281 62% 90%;   /* Soft Lavender */
+    --muted: 30 15% 20%;              /* Deep Wood */
+    --muted-foreground: 35 25% 75%;   /* Soft Tan */
 
-    --accent: 270 43% 92%;             /* Soft Lavender (was Sacred Gold) */
-    --accent-foreground: 263 70% 50%;  /* Word Primary */
+    --accent: 35 35% 65%;             /* Ouro Envelhecido */
+    --accent-foreground: 30 20% 12%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 257 61% 32%;             /* Covenant */
-    --input: 257 61% 32%;
-    --ring: 258 90% 66%;               /* Spirit Light */
+    --border: 35 15% 25%;             /* Amadeirado Frio */
+    --input: 35 15% 25%;
+    --ring: 32 40% 50%;               /* Âmbar Pastoral */
 
     --radius: 0.75rem;
 
