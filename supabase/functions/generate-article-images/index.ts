@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildImagePrompt } from "../_shared/image-styles.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -78,9 +79,8 @@ function analyzeSections(markdown: string): Section[] {
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(/^#{2,3}\s+(.+)/);
     if (m) {
-      // Skip headings that already have an image in the next 4 lines
       const nearbyLines = lines.slice(i + 1, i + 5).join("\n");
-      if (/!\[.*?\]\(.*?\)/.test(nearbyLines)) continue; // already has image
+      if (/!\[.*?\]\(.*?\)/.test(nearbyLines)) continue;
       const snippet = lines
         .slice(i + 1, i + 6)
         .join(" ")
@@ -128,7 +128,6 @@ Deno.serve(async (req) => {
     const needed = requiredInternalImages(wordCount);
     const sections = analyzeSections(content);
 
-    // Pick which sections get images (skip first H2 which is near the top)
     const candidates = sections.slice(1);
     const targets = candidates.slice(0, Math.max(needed, candidates.length > needed ? needed : candidates.length));
 
@@ -141,10 +140,16 @@ Deno.serve(async (req) => {
       `[article-images] Generating ${targets.length} internal images for article ${article_id} (${wordCount} words)`,
     );
 
-    // Generate all images in parallel
+    // Generate all images in parallel — cada seção tem seed única para estilo diferente
     const results = await Promise.allSettled(
       targets.map(async (section, idx) => {
-        const prompt = `Biblical historical illustration about "${section.heading}", ${section.snippet ? `context: ${section.snippet},` : ""} ancient Middle East setting, warm golden tones, oil painting style, cinematic lighting, highly detailed, no text or letters`;
+        const prompt = buildImagePrompt({
+          title: section.heading,
+          context: section.snippet || undefined,
+          seed: `${article_id}-section-${idx}-${section.heading}`,
+          aspectRatio: '16:9',
+        });
+
         const bytes = await generateImage(prompt, hfToken, lovableKey);
         if (!bytes) return null;
 
@@ -180,7 +185,6 @@ Deno.serve(async (req) => {
     const sorted = [...images].sort((a, b) => b.lineIndex - a.lineIndex);
     for (const img of sorted) {
       const insertAt = Math.min(img.lineIndex + 2, lines.length);
-      // Check if there's already an image in the next 5 lines — replace its URL instead of inserting
       let replaced = false;
       for (let k = insertAt; k < Math.min(insertAt + 5, lines.length); k++) {
         if (/^\s*!\[.*?\]\(.*?\)\s*$/.test(lines[k])) {
@@ -199,7 +203,6 @@ Deno.serve(async (req) => {
     const imageUrls = images.map((i) => i.url);
     const admin = createClient(supabaseUrl, serviceKey);
 
-    // Get existing article_images to merge
     const { data: existing } = await admin
       .from("materials")
       .select("article_images, cover_image_url")

@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildImagePrompt } from "../_shared/image-styles.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -129,7 +130,14 @@ Deno.serve(async (req) => {
     }
 
     const snippet = (content || "").replace(/[#*_\[\]()]/g, "").slice(0, 150);
-    const prompt = `Biblical historical illustration about "${title}", ${snippet ? `context: ${snippet},` : ""} ancient Middle East setting, warm golden tones, oil painting style, cinematic lighting, Jesus or biblical figures, highly detailed, no text or letters, 16:9 aspect ratio`;
+
+    // Prompt com variação fotográfica realista (rotação por article_id + título)
+    const prompt = buildImagePrompt({
+      title,
+      context: snippet || undefined,
+      seed: `${article_id}-${title}`,
+      aspectRatio: '16:9',
+    });
 
     console.log(`[generate-article-cover] Generating cover for article ${article_id}`);
 
