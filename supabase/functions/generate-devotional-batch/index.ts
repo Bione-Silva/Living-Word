@@ -90,22 +90,25 @@ async function generateDevotionalText(openaiKey: string, dateStr: string): Promi
 // IMAGEM — Gemini Image via Lovable AI Gateway
 // ============================================================================
 
-// 12 estilos visuais bíblicos rotacionados — variedade real entre devocionais.
-// Categorias: paisagem natural, panorâmicas urbanas/aéreas, céu, símbolos sagrados,
-// fotografia documental, artes clássicas, abstrato luminoso. SEM personagens em close.
+// 16 estilos visuais — forte ênfase em fotografia REAL e variação geográfica.
+// Apenas 2 dos 16 são artísticos (oil-painting, watercolor). Os demais são fotográficos.
 const IMAGE_STYLES = [
-  { kind: 'landscape', desc: 'wide cinematic landscape photograph of a vast wheat field at golden hour, dramatic clouds, distant horizon, photorealistic, soft natural light, depth of field' },
-  { kind: 'aerial-city', desc: 'sweeping aerial drone photograph of an ancient walled city in the Middle East at dusk, warm amber lighting on stone walls, distant mountains, photorealistic' },
-  { kind: 'sky', desc: 'majestic dramatic sky photograph — vast cumulus clouds pierced by golden sunbeams (god rays / crepuscular light), cinematic, hopeful, no ground visible' },
-  { kind: 'mountain', desc: 'serene mountain photograph at sunrise, mist rolling through valleys, snow-capped peaks, soft pastel sky, photorealistic, sense of awe and stillness' },
-  { kind: 'desert', desc: 'biblical desert landscape photograph at golden hour, sand dunes with long shadows, lone path, warm earth tones, photorealistic, contemplative mood' },
-  { kind: 'water', desc: 'still lake at dawn photograph, glassy water reflecting pink and gold sky, distant silhouette of trees, peaceful, photorealistic, hopeful' },
-  { kind: 'olive-grove', desc: 'ancient olive grove photograph in the Mediterranean, dappled golden sunlight through silver leaves, weathered tree trunks, warm earthy palette, photorealistic' },
-  { kind: 'oil-painting', desc: 'museum-quality Renaissance oil painting of dramatic biblical landscape — golden light through stone arches, mystical pathway, chiaroscuro, painterly brushstrokes' },
-  { kind: 'watercolor', desc: 'soft watercolor illustration of a winding path leading toward a distant gentle light, pastel washes, hand-painted texture, contemplative and serene' },
-  { kind: 'symbolic', desc: 'symbolic minimalist composition — single shaft of warm divine light descending into darkness, or an open doorway of light, photorealistic, sacred, no figures' },
-  { kind: 'starry-night', desc: 'star-filled night sky photograph over a quiet biblical-era village silhouette, milky way visible, deep blues and warm village lights, awe-inspiring' },
-  { kind: 'jerusalem', desc: 'panoramic photograph of historic Jerusalem old city stone walls and golden dome at sunset, photorealistic, warm lighting, timeless and sacred' },
+  { kind: 'wheat-field', desc: 'wide-angle photograph of a vast golden wheat field at sunset, soft warm natural light, shallow depth of field, photojournalistic style, no filters' },
+  { kind: 'coastal-city', desc: 'aerial drone photograph of a Mediterranean coastal town with white-washed buildings cascading down a hillside to turquoise water, golden hour, photorealistic' },
+  { kind: 'mountain-sunrise', desc: 'landscape photograph of mountain peaks at sunrise, pink and orange sky, mist in valleys, shot on professional DSLR, sharp detail, real-world photography' },
+  { kind: 'olive-grove', desc: 'natural photograph of an ancient olive grove in Israel, gnarled trunks, dappled sunlight through silver-green leaves, warm earth tones, documentary style' },
+  { kind: 'desert-path', desc: 'landscape photograph of the Negev desert at golden hour, winding footpath through red sand dunes, long shadows, warm amber tones, real photography' },
+  { kind: 'calm-lake', desc: 'landscape photograph of a still lake at dawn reflecting pastel sky, reeds in foreground, distant treeline, serene and peaceful, shot on mirrorless camera' },
+  { kind: 'vineyard', desc: 'wide photograph of terraced Mediterranean vineyard at sunset, rows of green vines, warm golden light, rural Tuscan feel, natural photography' },
+  { kind: 'countryside-road', desc: 'photograph of a long straight country road lined with cypress trees leading toward distant hills, warm afternoon light, Southern France or Tuscany feel' },
+  { kind: 'jerusalem-modern', desc: 'street-level photograph of Jerusalem Old City stone alleyways at golden hour, warm stone walls, hanging lanterns, real photography, no tourists' },
+  { kind: 'sky-rays', desc: 'dramatic real photograph of crepuscular sun rays breaking through storm clouds over green rolling hills, high contrast, shot on DSLR, nature photography' },
+  { kind: 'garden', desc: 'close-up photograph of a peaceful garden with wildflowers, morning dew, soft bokeh background, warm natural light, macro photography feel' },
+  { kind: 'fishing-village', desc: 'photograph of a small fishing village harbor at dawn, colorful wooden boats, calm water reflections, Mediterranean coast, documentary photography' },
+  { kind: 'forest-path', desc: 'photograph of a sunlit forest path with light filtering through tall trees, green ferns, peaceful morning atmosphere, nature photography' },
+  { kind: 'starry-sky', desc: 'real photograph of the Milky Way over a quiet landscape, deep blue night sky, thousands of stars, long exposure, no light pollution, astrophotography' },
+  { kind: 'oil-painting', desc: 'museum-quality Renaissance oil painting of a biblical landscape — golden light through stone arches, chiaroscuro, painterly brushstrokes, classical art' },
+  { kind: 'watercolor', desc: 'gentle watercolor illustration of a winding path toward distant light, pastel washes, hand-painted texture, contemplative and serene' },
 ];
 
 // Hash determinístico simples — mesmo dia/título sempre gera mesmo estilo (idempotente),
@@ -122,7 +125,11 @@ function pickStyle(seed: string): typeof IMAGE_STYLES[number] {
 async function generateCoverImage(aiKey: string, title: string, category: string, seed: string): Promise<Uint8Array | null> {
   try {
     const style = pickStyle(seed);
-    const prompt = `Create a breathtaking biblical-themed devotional image. Visual style: ${style.desc}. Connect visually to the theme "${category}" and the title "${title}", but DO NOT show any modern people, cartoons, anime, comic art, or movie-poster aesthetic. NO text, NO watermarks, NO captions. Portrait orientation (3:4). High quality, evocative, reverent, contemplative — must feel like a real photograph or fine art piece, never illustrated or animated.`;
+    const isArtistic = style.kind === 'oil-painting' || style.kind === 'watercolor';
+    const realisticEnforcement = isArtistic
+      ? ''
+      : ' CRITICAL: This must look like a REAL PHOTOGRAPH taken with a professional camera. Do NOT render it as a painting, illustration, digital art, or medieval-style image. No golden/sepia vintage filter. No painterly brushstrokes. Real-world colors, real textures, real lighting.';
+    const prompt = `${style.desc}. Theme: "${category}", inspired by "${title}". NO people faces, NO cartoons, NO anime, NO text, NO watermarks, NO captions. Portrait 3:4 aspect ratio.${realisticEnforcement}`;
     const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${aiKey}`, 'Content-Type': 'application/json' },
