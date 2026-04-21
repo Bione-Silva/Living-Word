@@ -114,14 +114,14 @@ export default function Cadastro() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundBlendMode: 'luminosity',
-      }}
+        }}
     >
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'rgba(245, 243, 255, 0.92)',
+          background:
+            'radial-gradient(circle at 50% 40%, rgba(245, 243, 255, 0.65) 0%, rgba(245, 243, 255, 0.45) 60%, transparent 100%)',
         }}
       />
 
