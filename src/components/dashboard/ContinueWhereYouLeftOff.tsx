@@ -95,7 +95,7 @@ export function ContinueWhereYouLeftOff() {
       if (sermon) {
         built.push({
           icon: Mic,
-          iconBg: 'bg-zinc-100/80 dark:bg-zinc-800',
+          iconBg: 'bg-violet-50/80 dark:bg-zinc-800',
           iconColor: 'text-primary',
           type: L10N.sermon[lang],
           title: sermon.title,
@@ -108,7 +108,7 @@ export function ContinueWhereYouLeftOff() {
       if (study) {
         built.push({
           icon: BookOpen,
-          iconBg: 'bg-zinc-100/80 dark:bg-zinc-800',
+          iconBg: 'bg-violet-50/80 dark:bg-zinc-800',
           iconColor: 'text-primary',
           type: L10N.study[lang],
           title: study.title || study.passage || '—',
@@ -121,7 +121,7 @@ export function ContinueWhereYouLeftOff() {
       if (art) {
         built.push({
           icon: ImageIcon,
-          iconBg: 'bg-zinc-100/80 dark:bg-zinc-800',
+          iconBg: 'bg-violet-50/80 dark:bg-zinc-800',
           iconColor: 'text-primary',
           type: L10N.social[lang],
           title: art.title || (lang === 'PT' ? 'Arte sem título' : lang === 'EN' ? 'Untitled art' : 'Arte sin título'),
@@ -135,7 +135,7 @@ export function ContinueWhereYouLeftOff() {
         const days = Math.max(1, Math.round((new Date(event.scheduled_at).getTime() - Date.now()) / 1000 / 60 / 60 / 24));
         built.push({
           icon: Calendar,
-          iconBg: 'bg-zinc-100/80 dark:bg-zinc-800',
+          iconBg: 'bg-violet-50/80 dark:bg-zinc-800',
           iconColor: 'text-primary',
           type: L10N.calendar[lang],
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
