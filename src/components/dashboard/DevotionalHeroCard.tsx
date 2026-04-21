@@ -239,7 +239,7 @@ export function DevotionalHeroCard() {
           </Link>
 
           {/* Action grid */}
-          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2">
             <button
               onClick={handleWhatsApp}
               className="h-10 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors px-3 min-w-0"
