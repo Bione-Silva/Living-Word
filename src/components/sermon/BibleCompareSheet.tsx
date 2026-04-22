@@ -321,7 +321,7 @@ export function BibleCompareSheet({
                 <SelectTrigger className={cn('h-8 text-xs', isDark && 'bg-slate-800 border-slate-700')}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="z-[250]">
+                <SelectContent className="z-[99999]">
                   {buildGroupedOptions([v1, v3]).map((group, i) => (
                     <SelectGroup key={group.label}>
                       <SelectLabel className="text-xs text-muted-foreground font-bold uppercase tracking-wider">{group.label}</SelectLabel>
@@ -344,7 +344,7 @@ export function BibleCompareSheet({
                 <SelectTrigger className={cn('h-8 text-xs', isDark && 'bg-slate-800 border-slate-700')}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="z-[250]">
+                <SelectContent className="z-[99999]">
                   {buildGroupedOptions([v1, v2]).map((group, i) => (
                     <SelectGroup key={group.label}>
                       <SelectLabel className="text-xs text-muted-foreground font-bold uppercase tracking-wider">{group.label}</SelectLabel>

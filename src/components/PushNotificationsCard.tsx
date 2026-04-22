@@ -235,22 +235,25 @@ export function PushNotificationsCard() {
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={handleToggleClick}
+            <Button
+              variant="outline"
+              className={`w-full justify-between h-14 px-4 shadow-sm transition-all border-2 ${enabled ? 'border-primary/50 bg-primary/5' : 'hover:bg-muted/50'}`}
+              onClick={() => handleToggleClick()}
               disabled={busy}
-              className="flex w-full items-center justify-between rounded-lg border p-3 text-left transition-colors hover:bg-muted/30 disabled:cursor-not-allowed disabled:opacity-60"
-              aria-label={enabled ? COPY.disable[l] : COPY.enable[l]}
-              aria-pressed={enabled}
             >
-              <Label className="cursor-pointer pointer-events-none">{enabled ? COPY.disable[l] : COPY.enable[l]}</Label>
+              <div className="flex items-center gap-3">
+                <Bell className={`h-5 w-5 ${enabled ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className="font-semibold text-sm">
+                  {enabled ? COPY.disable[l] : COPY.enable[l]}
+                </span>
+              </div>
               <Switch
                 checked={enabled}
-                onCheckedChange={handleToggle}
+                onCheckedChange={() => handleToggleClick()}
                 disabled={busy}
                 className="pointer-events-none"
               />
-            </button>
+            </Button>
 
             {enabled && (
               <>

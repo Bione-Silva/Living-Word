@@ -546,6 +546,215 @@ function LwAmberTemplate({ slide, bgImageUrl, fontFamily, textColor, showWaterma
 }
 
 /* ────────────────────────────────────────────
+   TEMPLATE 6 — SPLIT FRAME (Text top/bottom, image centered)
+   ──────────────────────────────────────────── */
+function SplitFrameTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
+  const dark = isDarkText(textColor);
+  const solidBg = dark ? '#FFFFFF' : baseColor(themeColor);
+  const txtColor = textColor || '#FFFFFF';
+  const font = fontFamily || "'Montserrat', 'Helvetica Neue', sans-serif";
+  const verseSize = autoVerseSize(slide.text);
+
+  return (
+    <div className="relative h-full w-full flex flex-col" style={{ backgroundColor: solidBg, fontFamily: font, containerType: 'size' }}>
+      {/* Top Banner (Subtitle / Book) */}
+      <div className="w-full flex items-center justify-center text-center" style={{ height: '22%', padding: '0 8cqw' }}>
+        <p className="font-bold uppercase font-sans tracking-widest" style={{ color: dark ? '#555555' : `${txtColor}EE`, fontSize: '2.5cqw', letterSpacing: '0.25em' }}>
+          {slide.subtitle || 'LIVING WORD'}
+        </p>
+      </div>
+
+      {/* Center Frame (Image) */}
+      <div className="w-full flex-1 relative px-6 z-10" style={{ height: '48%' }}>
+        <div className="w-full h-full relative rounded-xl overflow-hidden shadow-2xl border border-white/10">
+          {bgImageUrl ? (
+            <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+          ) : (
+            <div className="absolute inset-0" style={{ backgroundImage: themeColor || 'linear-gradient(135deg, #1a1a2e, #0f3460)' }} />
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Banner (Verse Text) */}
+      <div className="w-full flex flex-col items-center justify-center text-center relative" style={{ height: '30%', padding: '2cqw 8cqw 4cqw 8cqw' }}>
+        <p className="font-semibold leading-[1.3] tracking-wide" style={{ color: dark ? '#222222' : txtColor, fontSize: verseSize, fontFamily: font }}>
+          {slide.text}
+        </p>
+        
+        {slide.slideNumber && slide.totalSlides && (
+          <span className="absolute font-sans font-bold" style={{ color: dark ? '#888888' : `${txtColor}88`, bottom: '4cqw', left: '6cqw', fontSize: '1.8cqw' }}>
+            {slide.slideNumber} / {slide.totalSlides}
+          </span>
+        )}
+
+        {showWatermark && (
+          <span className="absolute uppercase font-sans font-bold" style={{ color: dark ? '#888888' : `${txtColor}88`, bottom: '4cqw', right: '6cqw', fontSize: '1.6cqw', letterSpacing: '0.4em' }}>
+            LIVING WORD
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
+   TEMPLATE 7 — PHOTO CARD (Top text, middle image, bottom text area)
+   ──────────────────────────────────────────── */
+function PhotoCardTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
+  const dark = isDarkText(textColor);
+  const bg = dark ? '#F3F6FA' : baseColor(themeColor);
+  const titleColor = dark ? '#1E3A8A' : '#FFFFFF'; // Deep blue or white
+  const bodyColor = dark ? '#334155' : 'rgba(255,255,255,0.9)';
+  const font = fontFamily || "'Inter', 'Helvetica Neue', sans-serif";
+  
+  // Decide which is the title and which is the body.
+  // Usually, religious content has `text` (the verse) and `subtitle` (the reference).
+  // For the corporate style, we'll make the first part of the text large, or if it's short, all of it.
+  return (
+    <div
+      className="relative h-full w-full flex flex-col justify-between"
+      style={{ backgroundColor: bg, fontFamily: font, containerType: 'size', padding: '8cqw 6cqw' }}
+    >
+      {/* Title Area */}
+      <div className="text-left" style={{ marginBottom: '4cqw' }}>
+        <h2 className="font-extrabold leading-[1.05] tracking-tight" style={{ color: titleColor, fontSize: '6cqw' }}>
+          {slide.subtitle ? slide.subtitle : 'DESTAQUE'}
+        </h2>
+      </div>
+
+      {/* Covered Image Area */}
+      <div className="w-full relative rounded-2xl overflow-hidden shadow-sm" style={{ flex: '1', minHeight: '30%' }}>
+        {bgImageUrl ? (
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundImage: themeColor || 'linear-gradient(135deg, #94a3b8, #cbd5e1)' }} />
+        )}
+      </div>
+
+      {/* Body Area */}
+      <div className="text-left" style={{ marginTop: '4cqw', marginBottom: '4cqw' }}>
+        <p className="font-medium leading-[1.4]" style={{ color: bodyColor, fontSize: '3.2cqw' }}>
+          {slide.text}
+        </p>
+      </div>
+
+      {/* Footer Area */}
+      {showWatermark && (
+        <div className="w-full flex items-center justify-between border-t" style={{ paddingTop: '2cqw', borderColor: dark ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)' }}>
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 rounded-sm flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: titleColor, color: bg }}>▶</span>
+            <span className="text-[1.8cqw] font-semibold" style={{ color: dark ? '#64748B' : 'rgba(255,255,255,0.6)' }}>@livingword</span>
+          </div>
+          {slide.slideNumber && slide.totalSlides && (
+            <div className="flex gap-1">
+               {Array.from({ length: slide.totalSlides }).map((_, i) => (
+                 <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: (i + 1) === slide.slideNumber ? titleColor : (dark ? '#CBD5E1' : 'rgba(255,255,255,0.2)') }} />
+               ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
+   TEMPLATE 8 — PHOTO OVERLAY (Full image, bottom dark gradient text)
+   ──────────────────────────────────────────── */
+function PhotoOverlayTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
+  const font = fontFamily || "'Inter', 'Helvetica Neue', sans-serif";
+  const titleColor = '#FFFFFF';
+  const bodyColor = 'rgba(255,255,255,0.9)';
+
+  return (
+    <div className="relative h-full w-full flex flex-col" style={{ backgroundColor: baseColor(themeColor), fontFamily: font, containerType: 'size' }}>
+      {/* Background Image */}
+      <div className="absolute inset-0 w-full h-full">
+        {bgImageUrl ? (
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundImage: themeColor || 'linear-gradient(135deg, #1e293b, #0f172a)' }} />
+        )}
+      </div>
+
+      {/* Dark Gradient Overlay for Text */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 40%, transparent 100%)' }} />
+
+      {/* Content Positioned at Bottom */}
+      <div className="relative z-10 flex-1 flex flex-col justify-end text-left" style={{ padding: '8cqw 6cqw' }}>
+        <h2 className="font-extrabold leading-[1.05] tracking-tight mb-4" style={{ color: titleColor, fontSize: '6.5cqw', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+          {slide.subtitle || 'DESTAQUE'}
+        </h2>
+        <p className="font-medium leading-[1.4]" style={{ color: bodyColor, fontSize: '3.5cqw', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
+          {slide.text}
+        </p>
+
+        {showWatermark && (
+          <div className="w-full flex items-center justify-between mt-6 pt-4 border-t border-white/20">
+            <div className="flex items-center gap-2">
+              <span className="text-[2cqw] font-semibold" style={{ color: 'rgba(255,255,255,0.7)' }}>@livingword</span>
+            </div>
+            {slide.slideNumber && slide.totalSlides && (
+              <div className="flex gap-1.5">
+                 {Array.from({ length: slide.totalSlides }).map((_, i) => (
+                   <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: (i + 1) === slide.slideNumber ? '#FFFFFF' : 'rgba(255,255,255,0.3)' }} />
+                 ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
+   TEMPLATE 9 — PHOTO TOP (Big text on top solid half, image on bottom half)
+   ──────────────────────────────────────────── */
+function PhotoTopTemplate({ slide, bgImageUrl, themeColor, fontFamily, textColor, showWatermark }: Omit<Props, 'aspectRatio' | 'template'>) {
+  const dark = isDarkText(textColor);
+  const bg = dark ? '#FFFFFF' : baseColor(themeColor);
+  const titleColor = dark ? '#0F172A' : '#FFFFFF';
+  const font = fontFamily || "'Inter', 'Helvetica Neue', sans-serif";
+
+  return (
+    <div className="relative h-full w-full flex flex-col" style={{ backgroundColor: bg, fontFamily: font, containerType: 'size' }}>
+      
+      {/* Top Text Area */}
+      <div className="w-full flex flex-col items-start justify-center text-left" style={{ height: '45%', padding: '6cqw 8cqw' }}>
+        <h2 className="font-extrabold leading-[1.05] tracking-tight" style={{ color: titleColor, fontSize: '6cqw' }}>
+          {slide.subtitle ? slide.subtitle : 'DESTAQUE'}
+        </h2>
+        <p className="mt-3 font-medium leading-[1.4]" style={{ color: dark ? '#475569' : 'rgba(255,255,255,0.8)', fontSize: '3cqw' }}>
+          {slide.text}
+        </p>
+      </div>
+
+      {/* Bottom Image Area */}
+      <div className="w-full relative shadow-inner" style={{ height: '55%' }}>
+        {bgImageUrl ? (
+          <img src={bgImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" />
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundImage: themeColor || 'linear-gradient(135deg, #e2e8f0, #cbd5e1)' }} />
+        )}
+        
+        {/* Footer Overlay */}
+        {showWatermark && (
+          <div className="absolute bottom-0 left-0 w-full p-4 flex items-center justify-between bg-black/40 backdrop-blur-md">
+            <span className="text-[2cqw] font-semibold text-white/90">@livingword</span>
+            {slide.slideNumber && slide.totalSlides && (
+              <span className="text-[2cqw] font-bold text-white/60">
+                {slide.slideNumber} / {slide.totalSlides}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
    EXPORTED COMPONENT
    ──────────────────────────────────────────── */
 export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
@@ -603,6 +812,18 @@ export const SlideCanvas = forwardRef<HTMLDivElement, Props>(
           )}
           {template === 'lw-amber' && (
             <LwAmberTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+          )}
+          {template === 'split-frame' && (
+            <SplitFrameTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+          )}
+          {template === 'photo-card' && (
+            <PhotoCardTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+          )}
+          {template === 'photo-overlay' && (
+            <PhotoOverlayTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
+          )}
+          {template === 'photo-top' && (
+            <PhotoTopTemplate slide={slide} bgImageUrl={effectiveBgImageUrl} themeColor={effectiveThemeColor} fontFamily={fontFamily} textColor={textColor} showWatermark={showWatermark} />
           )}
 
           {/* Overlay tonal por índice — só quando há imagem única

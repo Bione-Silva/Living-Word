@@ -115,6 +115,11 @@ serve(async (req) => {
     const voice = requestedVoice || profile?.pastoral_voice || "acolhedor";
 
     // Determine which formats are free vs blocked
+    const MODEL_PREMIUM = "openai/gpt-4o";
+    const MODEL_FREE = "openai/gpt-4o-mini";
+    const isPremium = profile?.plan === "premium" || profile?.plan === "pro";
+    const MODEL = isPremium ? MODEL_PREMIUM : MODEL_FREE;
+
     const freeFormats = ["sermon", "outline", "devotional"];
     const blockedFormats = isFree
       ? output_modes.filter((m) => !freeFormats.includes(m))
@@ -233,7 +238,7 @@ Tone: ${voice}. Always write in ${targetLang}.`;
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-2.5-flash",
+            model: MODEL,
             max_tokens: 7000,
             messages: [
               { role: "system", content: systemPrompt },
@@ -294,11 +299,14 @@ Tone: ${voice}. Always write in ${targetLang}.`;
         await adminClient.from("generation_logs").insert({
           user_id: userId,
           feature: mode,
-          model: "google/gemini-2.5-flash",
+          model: MODEL,
           input_tokens: lastUsage.prompt_tokens || 0,
           output_tokens: lastUsage.completion_tokens || 0,
           total_tokens: lastUsage.total_tokens || 0,
-          cost_usd: ((lastUsage.prompt_tokens || 0) * 0.0000001 + (lastUsage.completion_tokens || 0) * 0.0000004),
+          // gpt-4o-mini: $0.15/1M input, $0.60/1M output — gpt-4o: $5/1M input, $15/1M output
+          cost_usd: isPremium
+            ? ((lastUsage.prompt_tokens || 0) / 1_000_000) * 5 + ((lastUsage.completion_tokens || 0) / 1_000_000) * 15
+            : ((lastUsage.prompt_tokens || 0) / 1_000_000) * 0.15 + ((lastUsage.completion_tokens || 0) / 1_000_000) * 0.60,
         });
       }
     }
@@ -331,7 +339,7 @@ Tone: ${voice}. Always write in ${targetLang}.`;
         generations_remaining: generationsRemaining,
         upgrade_hint: upgradeHint,
         generation_meta: {
-          model: "google/gemini-2.5-flash",
+          model: MODEL,
           total_tokens: totalTokensAll,
           total_cost_usd: totalCostAll,
           elapsed_ms: elapsedMs,

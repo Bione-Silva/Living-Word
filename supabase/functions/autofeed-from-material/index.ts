@@ -245,6 +245,32 @@ Rules:
       return json({ error: insErr.message }, 500);
     }
 
+    // Persist carousel slides in visual_outputs so the Social Studio can render them
+    const carouselSlides = Array.isArray(parsed?.carousel?.slides)
+      ? parsed.carousel.slides
+      : [];
+    if (carouselSlides.length > 0) {
+      await admin.from('visual_outputs').insert({
+        user_id: user.id,
+        material_id: material.id,
+        output_type: 'autofeed_carousel',
+        format: '1:1',
+        language: lang,
+        variation_number: 1,
+        slides_data: {
+          slides: carouselSlides,
+          caption: parsed?.carousel?.caption || '',
+          hashtags: parsed?.carousel?.hashtags || '',
+          image_url: imageUrl,
+          source_title: material.title,
+          source_passage: material.passage || '',
+          quote: parsed?.quote || null,
+        },
+      }).then(({ error: voErr }) => {
+        if (voErr) console.warn('autofeed: visual_outputs insert warn:', voErr.message);
+      });
+    }
+
     // Log usage
     if (aiData.usage) {
       const cost =

@@ -8,7 +8,7 @@ import { useMemo } from 'react';
  * nome. "Moderna Natural" NÃO pode entregar pintura bíblica clássica, e
  * "Bíblica Cinematográfica" NÃO pode entregar foto de café da manhã.
  */
-export type ImageMode = 'biblica' | 'moderna' | 'editorial' | 'simbolica' | 'moody';
+export type ImageMode = 'biblica' | 'moderna' | 'editorial' | 'simbolica' | 'moody' | 'anime';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -133,6 +133,26 @@ const MODES: ModeDef[] = [
       'pressing a glowing mechanical switch in a dark industrial environment',
       'laptop screen illuminating a dark room with a cup of coffee on the side',
       'hands holding a journal in a dimly lit sophisticated room with warm ambient light',
+    ],
+  },
+  {
+    id: 'anime',
+    label: { PT: 'Anime / Ilustração', EN: 'Anime / Illustration', ES: 'Anime / Ilustración' },
+    desc: {
+      PT: 'Estilo Studio Ghibli, emocionante',
+      EN: 'Studio Ghibli style, emotional',
+      ES: 'Estilo Studio Ghibli, emotivo',
+    },
+    gradient: 'linear-gradient(135deg, #2b4b60, #142a38)',
+    glyph: '🌸',
+    glyphColor: 'rgba(255, 200, 220, 0.95)',
+    promptPrefix:
+      'High quality anime illustration, Studio Ghibli aesthetic, Makoto Shinkai style, highly detailed beautiful anime background, cinematic lighting, vibrant but soft colors, emotional atmosphere, gorgeous sky, aesthetic anime art',
+    negativePrompt:
+      'STRICT: no text, no low quality, no photorealism, no 3D render, no comic panels, no speech bubbles, no messy sketch, no horror, no dark grotesque themes',
+    defaultScenes: [
+      'anime style peaceful landscape with a single figure looking at the sky',
+      'anime aesthetic interior with morning light filtering through window',
     ],
   },
 ];

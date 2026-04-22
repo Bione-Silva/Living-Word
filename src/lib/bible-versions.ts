@@ -4,7 +4,7 @@
  * geração de conteúdo e comparação inline de versículos.
  */
 
-export type BibleVersionLang = 'PT' | 'EN' | 'ES';
+export type BibleVersionLang = 'PT' | 'EN' | 'ES' | 'ORIG';
 
 export interface BibleVersion {
   /** Código curto usado no banco e nas edge functions (ex: 'ARA', 'NVI'). */
@@ -27,6 +27,9 @@ export const BIBLE_VERSIONS: BibleVersion[] = [
   { code: 'NAA',   lang: 'PT', short: 'NAA',   full: 'NAA — Nova Almeida Atualizada' },
   { code: 'NTLH',  lang: 'PT', short: 'NTLH',  full: 'NTLH — Nova Tradução na Linguagem de Hoje' },
 
+  // Originais (Exegese)
+  { code: 'ORIG',  lang: 'ORIG', short: 'ORIG', full: 'ORIG — Texto Original (Hebraico / Grego)' },
+
   // English
   { code: 'KJV',   lang: 'EN', short: 'KJV',   full: 'KJV — King James Version' },
   { code: 'ESV',   lang: 'EN', short: 'ESV',   full: 'ESV — English Standard Version' },
@@ -48,6 +51,7 @@ export const DEFAULT_COMPARE_VERSIONS: Record<BibleVersionLang, [string, string]
   PT: ['NVI', 'ACF'],
   EN: ['ESV', 'NIV'],
   ES: ['NVI-ES', 'NTV'],
+  ORIG: ['ORIG', ''], // Default placeholder values
 };
 
 export function getVersionByCode(code: string | null | undefined): BibleVersion | null {

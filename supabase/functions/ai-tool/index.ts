@@ -95,6 +95,18 @@ serve(async (req) => {
       }
     }
 
+    // ── Choose model based on plan ──
+    const isPremium = await (async () => {
+      if (!userId) return false;
+      const { data: p } = await supabaseAdmin
+        .from("profiles")
+        .select("plan")
+        .eq("id", userId)
+        .maybeSingle();
+      return p?.plan === "premium" || p?.plan === "pro";
+    })();
+    const MODEL = isPremium ? "openai/gpt-4o" : "openai/gpt-4o-mini";
+
     // ── AI generation ──
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -103,7 +115,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: MODEL,
         messages: [
           { role: "system", content: systemPrompt },
           ...(Array.isArray(history) ? history.map((m: any) => ({ role: m.role, content: m.content })) : []),

@@ -32,7 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Sparkles, Loader2, Wand2, Image as ImageIcon, BookOpen,
-  Mountain, Brush, LayoutTemplate, Check, ArrowRight, Layers,
+  Mountain, Brush, LayoutTemplate, Check, ArrowRight, Layers, CalendarDays,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -178,7 +178,7 @@ export default function SocialStudio() {
   const [slideCount, setSlideCount] = useState<SlideCount>(1);
   const [slides, setSlides] = useState<SlideData[]>([]);
   const [selectedSlideIndex, setSelectedSlideIndex] = useState(0);
-  const [verseContext, setVerseContext] = useState<{ text: string; book: string } | null>(null);
+  const [verseContext, setVerseContext] = useState<{ text: string; book: string; isFreeText?: boolean } | null>(null);
   const [loadingDevotional, setLoadingDevotional] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
   const [activePaletteId, setActivePaletteId] = useState<string | null>(null);
@@ -376,7 +376,7 @@ export default function SocialStudio() {
         .find((l) => l.length > 30 && l.length < 280) || '';
 
       setSlides([{ text: headline, subtitle: firstParagraph, slideNumber: 1, totalSlides: 1 }]);
-      setVerseContext({ text: firstParagraph || headline, book: headline });
+      setVerseContext({ text: firstParagraph || headline, book: headline, isFreeText: false });
       setSlideCount(1);
       setPresentationMode(false);
       setGeneratedCaption(raw);
@@ -407,7 +407,7 @@ export default function SocialStudio() {
     }
 
     if (state.verseText && state.passage) {
-      setVerseContext({ text: state.verseText, book: state.passage });
+      setVerseContext({ text: state.verseText, book: state.passage, isFreeText: false });
       setSlides([{
         text: `"${state.verseText}"`,
         subtitle: withVersion(state.passage),
@@ -439,12 +439,30 @@ export default function SocialStudio() {
     reader.readAsDataURL(file);
   }, [lang]);
 
-  const handleVerseGenerated = useCallback((v: { text: string; book: string; topic_image: string }) => {
-    setVerseContext({ text: v.text, book: v.book });
-    setSlides([{ text: `"${v.text}"`, subtitle: withVersion(v.book), slideNumber: 1, totalSlides: 1 }]);
-    setGeneratedCaption(`"${v.text}"\n\n— ${withVersion(v.book)}`);
-    setSlideCount(1);
-    setPresentationMode(false);
+  const handleVerseGenerated = useCallback((verse: { text: string; book: string; topic_image: string; isFreeText?: boolean }) => {
+    setVerseContext({ text: verse.text, book: verse.book, isFreeText: verse.isFreeText });
+    
+    // Default flow: if it's a verse, show it on canvas. 
+    // If it's Free Text (topic), generate immediately as requested.
+    if (!verse.isFreeText) {
+      setSlides([
+        {
+          text: `"${verse.text}"`,
+          subtitle: withVersion(verse.book),
+          slideNumber: 1,
+          totalSlides: 1,
+        },
+      ]);
+      setSlideCount(1);
+      setPresentationMode(false);
+    } else {
+      setSlides([]); // Clear slides so the empty state encourages them to generate.
+      setStep('generate');
+      // Trigger generation after context is set (we'll pass override directly)
+      setTimeout(() => {
+         generateDevotionalCarousel(verse);
+      }, 50);
+    }
   }, [versionLabel]);
 
   const handleTextGenerated = useCallback((text: string) => {
@@ -456,27 +474,23 @@ export default function SocialStudio() {
     setPresentationMode(false);
   }, []);
 
-  const generateDevotionalCarousel = async () => {
-    if (!verseContext) {
+  const generateDevotionalCarousel = async (overrideVerse?: { text: string; book: string; isFreeText?: boolean }) => {
+    const activeVerse = overrideVerse || verseContext;
+    if (!activeVerse) {
       setStep('content');
       toast.error(h.needVerse);
       return;
     }
     setLoadingDevotional(true);
     try {
-      // Garante 1 imagem por slide: se o pool tiver menos cenas que o número
-      // de slides, completa com cenas distintas do banco compartilhado.
-      await ensureScenePool(slideCount);
-
+      // 1. Text from Gemini (3, 5, 7 slides)
       const { data, error } = await supabase.functions.invoke('generate-social-carousel', {
         body: {
-          verse: `${verseContext.book} — "${verseContext.text}"`,
-          topic: verseContext.book,
+          verse: activeVerse.isFreeText ? activeVerse.text : `${activeVerse.book} — "${activeVerse.text}"`,
+          topic: activeVerse.book,
           language: lang,
           slideCount,
-          // Visual mode (4 reais) — escolhido pelo usuário na etapa Estilo
           visualMode: imageMode,
-          // Mantidos para retrocompat até o backend migrar tudo
           imageMode,
           imageStyle: imageMode,
           stylePrompt: getImageModePromptFragment(imageMode),
@@ -484,11 +498,37 @@ export default function SocialStudio() {
       });
       if (error) throw error;
       const result = data?.slides as Array<{ slide: number; type: string; title: string; content: string }>;
+      
       if (result && result.length > 0) {
+        // 2. Images from Fal.ai (generate_batch)
+        // O usuário solicitou "imagens criadas do zero... a IA tem que trabalhar", então sempre geramos novas ao criar o carrossel.
+        let dynamicImages: string[] = [];
+        try {
+           const { data: imgData, error: imgError } = await supabase.functions.invoke('generate-biblical-scene', {
+             body: {
+               mode: 'generate_batch',
+               prompt: activeVerse.isFreeText ? activeVerse.text : `A beautiful representation of ${activeVerse.book || 'faith'}`,
+               visualMode: imageMode,
+               count: slideCount,
+             }
+           });
+           if (!imgError && imgData?.images?.length > 0) {
+              dynamicImages = imgData.images;
+              setScenePool(dynamicImages);
+              setSceneSourceType('ai_pool');
+              setSceneVariationMode('sequential');
+           } else {
+              await ensureScenePool(slideCount);
+           }
+        } catch(e) {
+           console.warn('Falhou ao gerar imagens exclusivas, caindo para o banco compartilhado.', e);
+           await ensureScenePool(slideCount);
+        }
+
         const total = result.length;
         const built: SlideData[] = result.map((s, i) => ({
           text: s.type === 'verse' ? `"${s.content}"` : s.title,
-          subtitle: s.type === 'verse' ? withVersion(verseContext.book) : s.content,
+          subtitle: s.type === 'verse' && !activeVerse.isFreeText ? withVersion(activeVerse.book) : s.content,
           slideNumber: i + 1,
           totalSlides: total,
         }));
@@ -496,6 +536,39 @@ export default function SocialStudio() {
         setSelectedSlideIndex(0);
         setPresentationMode(false);
         toast.success(h.carouselGenerated);
+
+        // ────────────────────────────────────────────────────────────
+        // AUTO-SAVE: persist carousel as draft in social_calendar_posts
+        // ────────────────────────────────────────────────────────────
+        if (user) {
+          try {
+            const firstImage = dynamicImages[0] || null;
+            const captionText = built[0]?.subtitle || activeVerse.book || '';
+            await supabase.from('social_calendar_posts').insert({
+              user_id: user.id,
+              network: 'instagram',
+              caption: captionText,
+              hashtags: '',
+              image_url: firstImage,
+              status: 'draft',
+              auto_generated: true,
+              slides_data: built as unknown as Parameters<typeof supabase.from>[0],
+              format_id: formatId,
+              canvas_template: template,
+              theme_config: theme as unknown as Parameters<typeof supabase.from>[0],
+              slide_count: built.length,
+              topic: activeVerse.isFreeText ? activeVerse.text : activeVerse.book,
+            });
+            toast.success(
+              lang === 'PT' ? '✅ Salvo no Calendário como rascunho!' :
+              lang === 'EN' ? '✅ Saved to Calendar as draft!' :
+              '✅ ¡Guardado en el Calendario como borrador!',
+              { duration: 3000, icon: <CalendarDays className="h-4 w-4" /> }
+            );
+          } catch (saveErr) {
+            console.warn('Auto-save to calendar failed (non-critical):', saveErr);
+          }
+        }
       }
     } catch {
       toast.error(h.carouselError);
@@ -838,7 +911,7 @@ export default function SocialStudio() {
                   })}
                   caption={generatedCaption}
                   lang={lang}
-                  onDownloadSingle={(idx) => variationGridRef.current?.downloadSlide(idx, 'png') ?? Promise.resolve()}
+                  onDownloadSingle={(idx) => variationGridRef.current?.downloadSlide(idx, 'jpg') ?? Promise.resolve()}
                   onDownloadZip={async () => {
                     // If only one destination, fall back to the single-format ZIP
                     if (selectedFormats.length <= 1) {

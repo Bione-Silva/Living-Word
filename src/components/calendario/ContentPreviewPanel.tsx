@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Download, Trash2, Calendar, Clock, ImageIcon, Instagram, Sparkles } from 'lucide-react';
+import { Copy, Download, Trash2, Calendar, Clock, ImageIcon, Instagram, Sparkles, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { NETWORK_META } from './NetworkFilterBar';
 import { InstagramMockup } from './InstagramMockup';
@@ -23,6 +23,7 @@ const COPY = {
   hashtags: { PT: 'Hashtags', EN: 'Hashtags', ES: 'Hashtags' },
   copyCaption: { PT: 'Copiar legenda', EN: 'Copy caption', ES: 'Copiar leyenda' },
   download: { PT: 'Baixar imagem', EN: 'Download image', ES: 'Descargar imagen' },
+  downloadAll: { PT: 'Baixar carrossel', EN: 'Download carousel', ES: 'Descargar carrusel' },
   openInsta: { PT: 'Abrir no Instagram', EN: 'Open in Instagram', ES: 'Abrir en Instagram' },
   remove: { PT: 'Remover', EN: 'Remove', ES: 'Eliminar' },
   copied: { PT: 'Copiado!', EN: 'Copied!', ES: '¡Copiado!' },
@@ -165,6 +166,34 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText, profile }
           </div>
         )}
 
+        {/* Carousel slides strip */}
+        {item.slides_data && item.slides_data.length > 1 && (
+          <div className="px-4 pb-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+              <Layers className="h-3 w-3" />
+              {lang === 'PT' ? 'Slides do Carrossel' : lang === 'EN' ? 'Carousel Slides' : 'Diapositivas'}
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-1">
+                {item.slides_data.length}
+              </Badge>
+            </p>
+            <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+              {item.slides_data.map((slide, i) => (
+                <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-muted/40 border border-border/50">
+                  <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-primary/15 text-primary text-[10px] font-bold mt-0.5">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    {slide.subtitle && (
+                      <p className="text-[10px] text-muted-foreground font-medium truncate mb-0.5">{slide.subtitle}</p>
+                    )}
+                    <p className="text-xs text-foreground/90 leading-snug line-clamp-2">{slide.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Body */}
         <div className="p-4 space-y-4">
           <h3 className="font-display text-base font-semibold text-foreground leading-snug">
@@ -215,16 +244,31 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText, profile }
           <Copy className="h-3.5 w-3.5" />
           <span className="truncate">{t('copyCaption')}</span>
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={downloadImage}
-          disabled={!item.image_url}
-          className="gap-1.5"
-        >
-          <Download className="h-3.5 w-3.5" />
-          <span className="truncate">{t('download')}</span>
-        </Button>
+        {item.slides_data && item.slides_data.length > 1 ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // Download individually as separate links for each slide image placeholder
+              toast.info(lang === 'PT' ? 'Abra o Estúdio para baixar o carrossel completo em JPG' : 'Open Studio to download the full carousel as JPG', { duration: 4000 });
+            }}
+            className="gap-1.5"
+          >
+            <Layers className="h-3.5 w-3.5" />
+            <span className="truncate">{t('downloadAll')}</span>
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={downloadImage}
+            disabled={!item.image_url}
+            className="gap-1.5"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="truncate">{t('download')}</span>
+          </Button>
+        )}
         <Button
           size="sm"
           onClick={openInInstagram}

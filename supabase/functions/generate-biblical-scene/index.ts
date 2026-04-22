@@ -295,11 +295,13 @@ Deno.serve(async (req) => {
       const angle = requestedCount > 1
         ? ANGLE_VARIATIONS[i % ANGLE_VARIATIONS.length]
         : '';
+      const characterRule = "Include ONLY ONE main subject or ONE coherent family group. STRICTLY NO duplicate characters or clones within the same image. Keep the main character's design consistent.";
       const enrichedPrompt =
         `Subject: ${prompt}.\n\n` +
         (angle ? `Camera/composition: ${angle}.\n\n` : '') +
         `Visual direction: ${visual.prefix}.\n\n` +
-        `Do NOT include: ${visual.negative}.`;
+        `${characterRule}\n\n` +
+        `Do NOT include: duplicate characters, identical twins, clones, multiple identical people, merged bodies, ${visual.negative}.`;
 
       const gen = await generateOneImage(enrichedPrompt);
       if (!gen.ok) {

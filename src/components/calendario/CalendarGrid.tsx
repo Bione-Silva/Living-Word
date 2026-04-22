@@ -16,6 +16,10 @@ export interface CalendarItem {
   status: string;
   editorial_type?: string;
   auto_generated?: boolean;
+  slides_data?: Array<{ text: string; subtitle?: string; slideNumber?: number; totalSlides?: number }> | null;
+  slide_count?: number | null;
+  topic?: string | null;
+  canvas_template?: string | null;
 }
 
 const WEEKDAYS: Record<L, string[]> = {
@@ -99,30 +103,49 @@ export function CalendarGrid({ year, month, items, selectedId, onSelect, lang }:
             cell.date.getMonth() === today.getMonth() &&
             cell.date.getFullYear() === today.getFullYear();
 
+          // The first item with an image gets a visual thumbnail cover
+          const coverItem = dayItems.find((it) => it.image_url);
+
           return (
             <div
               key={idx}
               className={cn(
-                'relative min-h-[88px] sm:min-h-[110px] rounded-xl border p-1.5 sm:p-2 flex flex-col gap-1 transition-colors',
+                'relative min-h-[88px] sm:min-h-[110px] rounded-xl border overflow-hidden flex flex-col transition-colors cursor-default',
                 cell.inMonth
                   ? 'bg-background border-border hover:bg-muted/30'
                   : 'bg-muted/20 border-transparent',
               )}
             >
-              <div
-                className={cn(
-                  'flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 text-[11px] sm:text-xs font-semibold rounded-full',
-                  isToday
-                    ? 'bg-primary text-primary-foreground'
-                    : cell.inMonth
-                      ? 'text-foreground'
-                      : 'text-muted-foreground/50',
-                )}
-              >
-                {cell.day}
+              {/* Background thumbnail */}
+              {coverItem && cell.inMonth && (
+                <div
+                  className="absolute inset-0 z-0 opacity-20 hover:opacity-30 transition-opacity"
+                  style={{
+                    backgroundImage: `url(${coverItem.image_url})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                />
+              )}
+
+              {/* Day number */}
+              <div className="relative z-10 p-1.5 sm:p-2">
+                <div
+                  className={cn(
+                    'flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 text-[11px] sm:text-xs font-semibold rounded-full',
+                    isToday
+                      ? 'bg-primary text-primary-foreground'
+                      : cell.inMonth
+                        ? 'text-foreground'
+                        : 'text-muted-foreground/50',
+                  )}
+                >
+                  {cell.day}
+                </div>
               </div>
 
-              <div className="flex-1 flex flex-col gap-1 overflow-hidden">
+              {/* Item pills */}
+              <div className="relative z-10 flex-1 flex flex-col gap-1 overflow-hidden px-1.5 pb-1.5">
                 {dayItems.slice(0, 3).map((it) => (
                   <ItemPill
                     key={it.id}

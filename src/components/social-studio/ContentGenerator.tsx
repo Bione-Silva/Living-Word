@@ -22,6 +22,8 @@ const labels: Record<string, Record<L, string>> = {
   searching: { PT: 'Buscando...', EN: 'Searching...', ES: 'Buscando...' },
   contentTitle: { PT: '✍️ Gerar Conteúdo', EN: '✍️ Generate Content', ES: '✍️ Generar Contenido' },
   contentDesc: { PT: 'Crie textos para suas redes sociais com IA', EN: 'Create social media texts with AI', ES: 'Crea textos para tus redes sociales con IA' },
+  freeTextTitle: { PT: '✏️ Tema Livre / Frase', EN: '✏️ Free Theme / Phrase', ES: '✏️ Tema Libre / Frase' },
+  freeTextPlaceholder: { PT: 'Ex: "A graça de Deus nos basta" ou "Culto Jovem Sábado às 19h"...', EN: 'E.g. "God is good"...', ES: 'Ej: "Dios es bueno"...' },
   topicPlaceholder: { PT: 'Tema ou passagem (Ex: "Gratidão", "Salmo 23")', EN: 'Topic or passage (E.g. "Gratitude", "Psalm 23")', ES: 'Tema o pasaje (Ej: "Gratitud", "Salmo 23")' },
   generate: { PT: 'Gerar', EN: 'Generate', ES: 'Generar' },
   generating: { PT: 'Gerando...', EN: 'Generating...', ES: 'Generando...' },
@@ -55,7 +57,7 @@ interface VerseResult {
 }
 
 interface Props {
-  onVerseGenerated: (verse: VerseResult) => void;
+  onVerseGenerated: (verse: { text: string; book: string; topic_image: string; isFreeText?: boolean }) => void;
   onTextGenerated: (text: string) => void;
   /** Tema/título pré-carregado (sermão, versículo, devocional vindos de outras telas). */
   prefillTopic?: string;
@@ -69,6 +71,8 @@ export function ContentGenerator({ onVerseGenerated, onTextGenerated, prefillTop
 
   const [passage, setPassage] = useState('');
   const [verseLoading, setVerseLoading] = useState(false);
+  
+  const [freeText, setFreeText] = useState('');
 
   const [topic, setTopic] = useState(prefillTopic ?? '');
   const [activeTool, setActiveTool] = useState('social-caption');
@@ -153,8 +157,46 @@ export function ContentGenerator({ onVerseGenerated, onTextGenerated, prefillTop
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleUseFreeText = () => {
+    if (!freeText.trim()) return;
+    onVerseGenerated({
+      text: freeText.trim(),
+      book: 'Tema Livre',
+      topic_image: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80',
+      isFreeText: true,
+    });
+  };
+
   return (
     <div className="space-y-4">
+      {/* Free Text Search */}
+      <Card className="bg-card border-border">
+        <CardContent className="p-4 space-y-3">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <Type className="h-4 w-4 text-primary" />
+            {lb('freeTextTitle')}
+          </h3>
+          <div className="flex gap-2">
+            <Textarea
+              value={freeText}
+              onChange={(e) => setFreeText(e.target.value)}
+              placeholder={lb('freeTextPlaceholder')}
+              className="min-h-[50px] bg-background text-foreground placeholder:text-muted-foreground text-sm resize-none"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleUseFreeText();
+                }
+              }}
+            />
+          </div>
+          <Button onClick={handleUseFreeText} disabled={!freeText.trim()} size="sm" className="w-full gap-2" variant="default">
+            <Sparkles className="h-4 w-4" />
+            {lang === 'PT' ? 'Gerar Post Direto' : 'Generate Post'}
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Verse Search */}
       <Card className="bg-card border-border">
         <CardContent className="p-4 space-y-3">

@@ -95,13 +95,17 @@ export default function Calendario() {
         id: p.id,
         kind: 'social',
         network: p.network as NetworkKey,
-        title: p.caption?.split('\n')[0]?.slice(0, 60) || '—',
+        title: p.caption?.split('\n')[0]?.slice(0, 60) || p.topic?.slice(0, 60) || '—',
         caption: p.caption || '',
         hashtags: p.hashtags || '',
         image_url: p.image_url || null,
         scheduled_at: p.scheduled_at,
         status: p.status,
         auto_generated: p.auto_generated === true,
+        slides_data: p.slides_data || null,
+        slide_count: p.slide_count || 1,
+        topic: p.topic || null,
+        canvas_template: p.canvas_template || null,
       }));
 
     const isSermonType = (type?: string) => !!type && /sermon|pastoral|sermao|sermão/i.test(type);

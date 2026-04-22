@@ -12,6 +12,7 @@ const VERSION_LANGUAGE: Record<string, string> = {
   ARA: 'PT', ACF: 'PT', ARC: 'PT', NVI: 'PT', NVT: 'PT', NAA: 'PT', NTLH: 'PT', almeida: 'PT',
   KJV: 'EN', ESV: 'EN', NIV: 'EN', NASB: 'EN', NLT: 'EN', NKJV: 'EN', WEB: 'EN', ASV: 'EN', BBE: 'EN', OEB: 'EN',
   RVR60: 'ES', RVC: 'ES', NTV: 'ES', 'NVI-ES': 'ES', DHH: 'ES',
+  ORIG: 'ORIG',
 }
 
 /** Default version per language */
@@ -38,7 +39,20 @@ async function fetchOneVersion(passage: string, requestedVersion: string, userLa
   const langForAi = versionLang
   const langLabel = langForAi === 'EN' ? 'English' : langForAi === 'ES' ? 'Spanish' : 'Portuguese'
 
-  const systemPrompt = `You are a precise Bible reference tool. Your ONLY job is to return the exact text of a Bible verse.
+  const isOriginal = effectiveVersion.toUpperCase() === 'ORIG'
+  let systemPrompt = ''
+
+  if (isOriginal) {
+    systemPrompt = `You are a precise Biblical scholar. Your ONLY job is to return the exact text of a Bible verse in its ORIGINAL ancient language.
+Rules:
+- If the passage is from the Old Testament, the text MUST be exclusively in Biblical Hebrew (or Aramaic where applicable).
+- If the passage is from the New Testament, the text MUST be exclusively in Koine Greek.
+- Return ONLY valid JSON with these fields: "text" (the verse text in the original language), "book" (the canonical reference in English)
+- If the passage spans multiple verses, concatenate them with single spaces.
+- Do NOT add commentary, translations, or explanations in the "text" field. Return pure, canonical text.
+- Do NOT hallucinate.`
+  } else {
+    systemPrompt = `You are a precise Bible reference tool. Your ONLY job is to return the exact text of a Bible verse.
 Rules:
 - Return ONLY valid JSON with these fields: "text" (the verse text), "book" (the canonical reference in ${langLabel})
 - Use the ${effectiveVersion} version/translation
@@ -47,6 +61,7 @@ Rules:
 - Do NOT add commentary, devotional thoughts, or explanations
 - Do NOT hallucinate — if you are unsure of the exact wording, return your best known canonical text
 - Return the verse text EXACTLY as it appears in the ${effectiveVersion} translation`
+  }
 
   const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',

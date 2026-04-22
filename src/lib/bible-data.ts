@@ -133,6 +133,9 @@ export const bibleVersions: BibleVersion[] = [
   { code: 'arc09',  name: 'Almeida Revista e Corrigida',    shortLabel: 'ARC',   language: 'PT', source: 'bolls', apiCode: 'ARC09', isAvailable: true, isPremium: false },
   { code: 'acf11',  name: 'Almeida Corrigida Fiel',         shortLabel: 'ACF',   language: 'PT', source: 'bolls', apiCode: 'ACF11', isAvailable: true, isPremium: false },
 
+  // ── Originais ──
+  { code: 'orig',   name: 'Texto Original',                 shortLabel: 'ORIG',  language: 'ORIG' as any, source: 'biblapi', apiCode: 'orig', isAvailable: true, isPremium: false },
+
   // ── Español ──
   { code: 'rv1960', name: 'Reina-Valera 1960',              shortLabel: 'RVR',   language: 'ES', source: 'bolls', apiCode: 'RV1960', isAvailable: true, isPremium: false, isDefault: true },
   { code: 'rv2004', name: 'Reina Valera Gómez',             shortLabel: 'RVG',   language: 'ES', source: 'bolls', apiCode: 'RV2004', isAvailable: true, isPremium: false },
@@ -156,7 +159,10 @@ export function getVersionsByLanguage(): Record<string, BibleVersion[]> {
   const pt = bibleVersions.filter(v => v.language === 'PT');
   const es = bibleVersions.filter(v => v.language === 'ES');
   const en = bibleVersions.filter(v => v.language === 'EN');
+  const orig = bibleVersions.filter(v => v.language === 'ORIG' as any);
   const groups: Record<string, BibleVersion[]> = {};
+  
+  if (orig.length) groups['Idiomas Originais'] = orig;
   if (pt.length) groups['Português'] = pt;
   if (es.length) groups['Español'] = es;
   if (en.length) groups['English'] = en;

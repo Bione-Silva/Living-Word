@@ -7,7 +7,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const MODEL = "google/gemini-2.5-flash";
+const MODEL_PREMIUM = "openai/gpt-4o";
+const MODEL_FREE = "openai/gpt-4o-mini";
 
 const depthRequirements = {
   basic: {
@@ -183,10 +184,12 @@ function validateStudy(candidate: Record<string, unknown>, requirements: StudyRe
 
 async function requestStudyGeneration({
   geminiApiKey,
+  model,
   systemPrompt,
   userPrompt,
 }: {
   geminiApiKey: string;
+  model: string;
   systemPrompt: string;
   userPrompt: string;
 }) {
@@ -197,7 +200,7 @@ async function requestStudyGeneration({
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: MODEL,
+      model,
       max_tokens: 16000,
       messages: [
         { role: "system", content: systemPrompt },
@@ -338,6 +341,10 @@ serve(async (req) => {
     const generationsLimit = profile?.generations_limit || 500;
     const creditCost = 30; // biblical study = 30 credits
 
+    // Determine model based on plan
+    const isPremium = profile?.plan === "premium" || profile?.plan === "pro";
+    const MODEL = isPremium ? MODEL_PREMIUM : MODEL_FREE;
+
     if ((generationsLimit - generationsUsed) < creditCost) {
       return jsonResponse({ error: "insufficient_credits", remaining: generationsLimit - generationsUsed, cost: creditCost }, 402);
     }
@@ -444,6 +451,7 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
 
       const generation = await requestStudyGeneration({
         geminiApiKey,
+        model: MODEL,
         systemPrompt,
         userPrompt: repairPrompt,
       });
@@ -513,7 +521,10 @@ Build every section fully. Do not summarize the whole study into 3 short paragra
         input_tokens: usageTotals.prompt_tokens,
         output_tokens: usageTotals.completion_tokens,
         total_tokens: usageTotals.total_tokens,
-        cost_usd: (usageTotals.prompt_tokens * 0.0000001 + usageTotals.completion_tokens * 0.0000004),
+        // gpt-4o-mini: $0.15/1M input, $0.60/1M output — gpt-4o: $5/1M input, $15/1M output
+        cost_usd: isPremium
+          ? (usageTotals.prompt_tokens / 1_000_000) * 5 + (usageTotals.completion_tokens / 1_000_000) * 15
+          : (usageTotals.prompt_tokens / 1_000_000) * 0.15 + (usageTotals.completion_tokens / 1_000_000) * 0.60,
       });
     }
 

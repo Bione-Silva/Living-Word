@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import JSZip from 'jszip';
 import PptxGenJS from 'pptxgenjs';
 import { SlideCanvas, type SlideData } from './SlideCanvas';
@@ -13,6 +13,8 @@ import { captureNodeAsPng, compressToJpeg } from './export-utils';
 import { toast } from 'sonner';
 import { DownloadSuccessDialog } from '@/components/DownloadSuccessDialog';
 import { openWhatsAppShare } from '@/lib/whatsapp';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { type CarouselApi } from '@/components/ui/carousel';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -94,6 +96,8 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
     const [zipBusy, setZipBusy] = useState(false);
     const [pptxBusy, setPptxBusy] = useState(false);
     const [savedDialog, setSavedDialog] = useState<{ open: boolean; fileName: string }>({ open: false, fileName: '' });
+    const [api, setApi] = useState<CarouselApi>();
+    const [currentSlide, setCurrentSlide] = useState(0);
 
     const refsMap = useRef<Map<number, HTMLDivElement | null>>(new Map());
     const setRef = (idx: number) => (el: HTMLDivElement | null) => {
@@ -107,6 +111,28 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
       downloadAllZip: () => handleDownloadAllZip(),
     }));
 
+    // Update current slide index when carousel changes
+    useEffect(() => {
+      if (!api) return;
+      
+      const onSelect = () => {
+        try {
+          const snap = api.selectedScrollSnap();
+          setCurrentSlide(snap);
+          onSelectIndex?.(snap);
+        } catch (e) {
+          console.warn('Carousel error', e);
+        }
+      };
+      
+      onSelect();
+      api.on("select", onSelect);
+      
+      return () => {
+        api.off("select", onSelect);
+      };
+    }, [api, onSelectIndex]);
+
     const handleDownload = async (slideIdx: number, format: 'png' | 'jpg') => {
       const node = getNode(slideIdx);
       if (!node) return;
@@ -116,7 +142,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
         let blob: Blob;
         let ext: string;
         if (format === 'jpg') {
-          blob = await compressToJpeg(pngDataUrl, 1_500_000);
+          blob = await compressToJpeg(pngDataUrl, 400_000); // MAX 400KB
           ext = 'jpg';
         } else {
           blob = dataUrlToBlob(pngDataUrl);
@@ -143,7 +169,7 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
       setBusyKey(`${slideIdx}-share`);
       try {
         const pngDataUrl = await captureNodeAsPng(node);
-        const blob = await compressToJpeg(pngDataUrl, 1_500_000);
+        const blob = await compressToJpeg(pngDataUrl, 350_000); // 350KB optimizado WhatsApp
         const fname = `living-word-${template}-${slideIdx + 1}.jpg`;
         const file = new File([blob], fname, { type: 'image/jpeg' });
 
@@ -181,7 +207,8 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           const node = getNode(i);
           if (!node) continue;
           const dataUrl = await captureNodeAsPng(node);
-          zip.file(`slide-${i + 1}.png`, dataUrlToBlob(dataUrl));
+          const jpgBlob = await compressToJpeg(dataUrl, 400_000);
+          zip.file(`slide-${i + 1}.jpg`, jpgBlob);
         }
         const blob = await zip.generateAsync({ type: 'blob' });
         const fname = `living-word-artes-${Date.now()}.zip`;
@@ -293,103 +320,125 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           </div>
         </div>
 
-        {/* Single-template grid: one card per slide.
-            • 1 slide  → ocupa todo o quadrado (limitado pelo aspect ratio)
-            • 2 slides → 2 colunas
-            • 3+       → até 3 colunas */}
-        <div
-          className={
-            slides.length === 1
-              ? 'grid grid-cols-1 gap-4 max-w-[640px] mx-auto'
-              : 'grid gap-4 w-full'
-          }
-          style={
-            slides.length > 1
-              ? { gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }
-              : undefined
-          }
-        >
-          {slides.map((slide, slideIdx) => {
-            const downloading = busyKey?.startsWith(`${slideIdx}-`);
-            return (
-              <div key={slideIdx} className="group relative">
-                <div
-                  onClick={() => onSelectIndex?.(slideIdx)}
-                  className={`relative rounded-xl overflow-hidden bg-muted/30 border-2 shadow-sm transition-all hover:shadow-lg cursor-pointer ${
-                    selectedIndex === slideIdx
-                      ? 'border-primary ring-2 ring-primary/30'
-                      : 'border-border hover:border-primary/40'
-                  }`}
-                >
-                  <SlideCanvas
-                    ref={setRef(slideIdx)}
-                    slide={slide}
-                    aspectRatio={aspectRatio}
-                    template={template}
-                    bgImageUrl={slide.bgImageUrl ?? theme.backgroundImageUrl}
-                    themeColor={theme.gradient}
-                    themeColors={getThemePalette(theme.gradient)}
-                    slideIndex={slideIdx}
-                    fontFamily={theme.fontFamily}
-                    textColor={theme.textColor}
-                    showWatermark
-                  />
-                  {/* Hover overlay with download buttons */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100">
-                    <div className="flex gap-1.5">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => handleDownload(slideIdx, 'png')}
-                        disabled={downloading}
-                        className="h-8 px-2.5 text-xs gap-1 shadow-lg"
+        {/* Single-template Carousel: one card per slide on the viewport horizontally */}
+        <div className="relative px-4 sm:px-12 w-full max-w-[640px] mx-auto">
+          <Carousel
+            setApi={setApi}
+            opts={{
+              align: 'center',
+              loop: false,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {slides.map((slide, slideIdx) => {
+                const downloading = busyKey?.startsWith(`${slideIdx}-`);
+                return (
+                  <CarouselItem key={slideIdx}>
+                    <div className="group relative w-full h-full">
+                      <div
+                        onClick={() => {
+                          onSelectIndex?.(slideIdx);
+                          api?.scrollTo(slideIdx);
+                        }}
+                        className={`relative rounded-xl overflow-hidden bg-muted/30 border-2 shadow-sm transition-all hover:shadow-lg cursor-pointer ${
+                          selectedIndex === slideIdx || currentSlide === slideIdx
+                            ? 'border-primary ring-2 ring-primary/30'
+                            : 'border-border hover:border-primary/40'
+                        }`}
                       >
-                        {downloading && busyKey?.endsWith('png') ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <ImageIcon className="h-3 w-3" />
-                        )}
-                        {l.png}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => handleDownload(slideIdx, 'jpg')}
-                        disabled={downloading}
-                        className="h-8 px-2.5 text-xs gap-1 shadow-lg"
-                      >
-                        {downloading && busyKey?.endsWith('jpg') ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <FileImage className="h-3 w-3" />
-                        )}
-                        {l.jpg}
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleShareWhatsApp(slideIdx)}
-                        disabled={downloading}
-                        className="h-8 px-2.5 text-xs gap-1 shadow-lg bg-[#25D366] hover:bg-[#20BD5A] text-white"
-                      >
-                        {downloading && busyKey?.endsWith('share') ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <Share2 className="h-3 w-3" />
-                        )}
-                        {l.whatsapp}
-                      </Button>
+                        <SlideCanvas
+                          ref={setRef(slideIdx)}
+                          slide={slide}
+                          aspectRatio={aspectRatio}
+                          template={template}
+                          bgImageUrl={slide.bgImageUrl ?? theme.backgroundImageUrl}
+                          themeColor={theme.gradient}
+                          themeColors={getThemePalette(theme.gradient)}
+                          slideIndex={slideIdx}
+                          fontFamily={theme.fontFamily}
+                          textColor={theme.textColor}
+                          showWatermark
+                        />
+                        {/* Hover overlay with download buttons */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100">
+                          <div className="flex gap-1.5 flex-wrap justify-center px-4">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={(e) => { e.stopPropagation(); handleDownload(slideIdx, 'png'); }}
+                              disabled={downloading}
+                              className="h-8 px-2.5 text-xs gap-1 shadow-lg"
+                            >
+                              {downloading && busyKey?.endsWith('png') ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <ImageIcon className="h-3 w-3" />
+                              )}
+                              {l.png}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={(e) => { e.stopPropagation(); handleDownload(slideIdx, 'jpg'); }}
+                              disabled={downloading}
+                              className="h-8 px-2.5 text-xs gap-1 shadow-lg"
+                            >
+                              {downloading && busyKey?.endsWith('jpg') ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <FileImage className="h-3 w-3" />
+                              )}
+                              {l.jpg}
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={(e) => { e.stopPropagation(); handleShareWhatsApp(slideIdx); }}
+                              disabled={downloading}
+                              className="h-8 px-2.5 text-xs gap-1 shadow-lg bg-[#25D366] hover:bg-[#20BD5A] text-white"
+                            >
+                              {downloading && busyKey?.endsWith('share') ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Share2 className="h-3 w-3" />
+                              )}
+                              {l.whatsapp}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="mt-2 flex items-center justify-between px-1">
-                  <span className="text-xs font-semibold text-muted-foreground">
-                    {l.slide.charAt(0).toUpperCase() + l.slide.slice(1)} {slideIdx + 1}
-                  </span>
-                  <Download className="h-3 w-3 text-muted-foreground/40" />
-                </div>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            
+            {slides.length > 1 && (
+              <>
+                <CarouselPrevious className="hidden sm:flex -left-12 h-10 w-10 border-2 border-[hsl(270,35%,78%)] text-[hsl(257,61%,32%)] shadow-sm hover:bg-[hsl(252,100%,99%)]" />
+                <CarouselNext className="hidden sm:flex -right-12 h-10 w-10 border-2 border-[hsl(270,35%,78%)] text-[hsl(257,61%,32%)] shadow-sm hover:bg-[hsl(252,100%,99%)]" />
+              </>
+            )}
+          </Carousel>
+          
+          {slides.length > 1 && (
+            <div className="flex items-center justify-between px-2 mt-4">
+              <span className="text-xs font-semibold text-muted-foreground">
+                {l.slide.charAt(0).toUpperCase() + l.slide.slice(1)} {currentSlide + 1} / {slides.length}
+              </span>
+              <div className="flex items-center gap-1.5">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => api?.scrollTo(i)}
+                    className={`h-2 rounded-full transition-all duration-300 ${i === currentSlide ? 'w-6 bg-[hsl(263,70%,50%)]' : 'w-2 bg-[hsl(270,35%,78%)] hover:bg-[hsl(263,70%,50%)]/50'}`}
+                    aria-label={`Slide ${i + 1}`}
+                  />
+                ))}
               </div>
-            );
-          })}
+              <Download className="h-4 w-4 text-transparent pointer-events-none" /> {/* Para balancear flex space-between */}
+            </div>
+          )}
         </div>
 
         <DownloadSuccessDialog

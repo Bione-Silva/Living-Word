@@ -29,6 +29,7 @@ import { Zap } from 'lucide-react';
 import { BlogArticleEditorDialog } from '@/components/BlogArticleEditorDialog';
 import { EditableBlogArticle } from '@/lib/blog-article';
 import { YouTubeMultiplierModal } from '@/components/YouTubeMultiplierModal';
+import { OriginalTextModal } from '@/components/tools/OriginalTextModal';
 
 interface ToolSheetProps {
   open: boolean;
@@ -190,6 +191,10 @@ export function ToolSheet({ open, onOpenChange, toolId, toolTitle }: ToolSheetPr
 
   if (toolId === 'youtube-blog') {
     return <YouTubeMultiplierModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
+  }
+
+  if (toolId === 'original-text') {
+    return <OriginalTextModal open={open} onOpenChange={onOpenChange} toolTitle={toolTitle} />;
   }
 
   const config = toolConfigs[toolId] || {

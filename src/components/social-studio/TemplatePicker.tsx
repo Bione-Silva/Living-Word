@@ -1,4 +1,4 @@
-export type CanvasTemplate = 'editorial' | 'swiss' | 'cinematic' | 'gradient' | 'lw-amber';
+export type CanvasTemplate = 'editorial' | 'swiss' | 'cinematic' | 'gradient' | 'lw-amber' | 'split-frame' | 'photo-card' | 'photo-overlay' | 'photo-top';
 
 interface Props {
   value: CanvasTemplate;
@@ -20,6 +20,24 @@ const templates: { id: CanvasTemplate; emoji: string; label: Record<string, stri
     desc: { PT: 'Texto massivo, puro design', EN: 'Massive text, pure design', ES: 'Texto masivo, diseño puro' },
   },
   {
+    id: 'photo-card',
+    emoji: '📱',
+    label: { PT: 'Card Realista', EN: 'Realistic Card', ES: 'Tarjeta Realista' },
+    desc: { PT: 'Foto central, título no topo', EN: 'Center photo, title on top', ES: 'Foto central, título arriba' },
+  },
+  {
+    id: 'photo-overlay',
+    emoji: '🏙️',
+    label: { PT: 'Impacto Visual', EN: 'Visual Impact', ES: 'Impacto Visual' },
+    desc: { PT: 'Foto total, texto no rodapé', EN: 'Full photo, bottom text', ES: 'Foto total, texto abajo' },
+  },
+  {
+    id: 'photo-top',
+    emoji: '📝',
+    label: { PT: 'Foco no Texto', EN: 'Text Focus', ES: 'Foco en el Texto' },
+    desc: { PT: 'Texto gigante no topo', EN: 'Giant text on top', ES: 'Texto gigante arriba' },
+  },
+  {
     id: 'cinematic',
     emoji: '🎬',
     label: { PT: 'Cinematic Overlay', EN: 'Cinematic Overlay', ES: 'Cinematic Overlay' },
@@ -37,30 +55,36 @@ const templates: { id: CanvasTemplate; emoji: string; label: Record<string, stri
     label: { PT: 'Living Word', EN: 'Living Word', ES: 'Living Word' },
     desc: { PT: 'Âmbar + ouro pastoral', EN: 'Amber + pastoral gold', ES: 'Ámbar + oro pastoral' },
   },
+  {
+    id: 'split-frame',
+    emoji: '🖼️',
+    label: { PT: 'Moldura Clássica', EN: 'Classic Frame', ES: 'Marco Clásico' },
+    desc: { PT: 'Texto acima e abaixo, imagem no meio', EN: 'Text above/below, image middle', ES: 'Texto arriba/abajo, imagen en medio' },
+  },
 ];
 
 export function TemplatePicker({ value, onChange, lang }: Props) {
   return (
-    <div className="space-y-1.5">
-      <span className="text-xs text-foreground font-semibold uppercase tracking-wider">
+    <div className="space-y-2 pb-2">
+      <span className="text-xs text-foreground font-semibold uppercase tracking-wider pl-1">
         {lang === 'PT' ? 'Estilo do Cartaz' : lang === 'EN' ? 'Poster Style' : 'Estilo del Cartel'}
       </span>
-      <div className="grid grid-cols-3 gap-2 px-0.5">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 px-1 pb-1">
         {templates.map((t) => {
           const active = value === t.id;
           return (
             <button
               key={t.id}
               onClick={() => onChange(t.id)}
-              className={`flex flex-col items-center justify-center gap-1 p-2 aspect-square rounded-xl text-center transition-all duration-200 border-2 ${
+              className={`flex flex-col items-center justify-center gap-1.5 p-2 w-full min-h-[95px] rounded-xl text-center transition-all duration-200 border-2 ${
                 active
                   ? 'bg-primary/10 border-primary text-foreground shadow-sm'
                   : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
               }`}
             >
-              <span className="text-lg">{t.emoji}</span>
+              <span className="text-xl mb-0.5">{t.emoji}</span>
               <span className="text-[10px] font-bold leading-tight">{t.label[lang]}</span>
-              <span className="text-[9px] opacity-60 leading-tight">{t.desc[lang]}</span>
+              <span className="text-[9px] opacity-70 leading-tight">{t.desc[lang]}</span>
             </button>
           );
         })}

@@ -6,10 +6,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const MODEL = "google/gemini-2.5-flash";
+const MODEL_PREMIUM = "openai/gpt-4o";
+const MODEL_FREE = "openai/gpt-4o-mini";
 
 const formatPrompts: Record<string, string> = {
   individual: `Você é um teólogo pastoral especialista no método E.X.P.O.S. Gere um estudo devocional individual e pessoal baseado na passagem fornecida.
+
+REGRA CRÍTICA DE TAMANHO: O devocional completo deve durar cerca de 2 minutos de leitura (máximo de 400 a 500 palavras no total). Seja profundo, mas muito conciso e direto.
 
 Estrutura obrigatória em Markdown:
 # [Título Devocional]
@@ -201,6 +204,16 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Determine model based on plan
+    const supabaseAdminProfile = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: userProfile } = await supabaseAdminProfile
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle();
+    const isPremium = userProfile?.plan === "premium" || userProfile?.plan === "pro";
+    const MODEL = isPremium ? MODEL_PREMIUM : MODEL_FREE;
+
     const systemPrompt = formatPrompts[formato];
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -242,7 +255,10 @@ Deno.serve(async (req) => {
       input_tokens: usage.prompt_tokens || 0,
       output_tokens: usage.completion_tokens || 0,
       total_tokens: usage.total_tokens || 0,
-      cost_usd: ((usage.total_tokens || 0) / 1_000_000) * 0.15,
+      // gpt-4o-mini: $0.15/1M input, $0.60/1M output — gpt-4o: $5/1M input, $15/1M output
+      cost_usd: isPremium
+        ? ((usage.prompt_tokens || 0) / 1_000_000) * 5 + ((usage.completion_tokens || 0) / 1_000_000) * 15
+        : ((usage.prompt_tokens || 0) / 1_000_000) * 0.15 + ((usage.completion_tokens || 0) / 1_000_000) * 0.60,
     });
 
     // Update generations_used
