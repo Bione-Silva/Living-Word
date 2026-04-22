@@ -106,6 +106,7 @@ export default function Calendario() {
         slide_count: p.slide_count || 1,
         topic: p.topic || null,
         canvas_template: p.canvas_template || null,
+        theme_config: p.theme_config || null,
       }));
 
     const isSermonType = (type?: string) => !!type && /sermon|pastoral|sermao|sermão/i.test(type);

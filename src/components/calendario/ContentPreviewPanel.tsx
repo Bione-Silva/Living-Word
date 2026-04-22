@@ -154,8 +154,21 @@ export function ContentPreviewPanel({ item, lang, onDelete, emptyText, profile }
             />
           </div>
         ) : (
-          <div className="aspect-square bg-muted/30 border-b border-border flex items-center justify-center overflow-hidden">
-            {item.image_url ? (
+          <div className="aspect-square bg-muted/30 border-b border-border flex items-center justify-center overflow-hidden relative">
+            {item.slides_data && item.slides_data.length > 0 && item.canvas_template && item.theme_config ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-full h-full transform origin-top-left" style={{ scale: '1' }}>
+                   <SlideCanvas 
+                     slide={item.slides_data[0] as any} 
+                     template={item.canvas_template as CanvasTemplate} 
+                     theme={item.theme_config} 
+                     bgImageUrl={item.image_url || undefined}
+                     lang={lang}
+                     aspectRatio="1:1"
+                   />
+                </div>
+              </div>
+            ) : item.image_url ? (
               <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
             ) : (
               <div className="text-center text-muted-foreground">

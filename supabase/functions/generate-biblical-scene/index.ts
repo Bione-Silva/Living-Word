@@ -224,14 +224,23 @@ Deno.serve(async (req) => {
       const { data: matches } = await query;
       let scenes: SceneRow[] = (matches as SceneRow[]) || [];
 
-      if (scenes.length === 0) {
+      if (scenes.length < 12) {
         const { data: fallback } = await adminClient
           .from('biblical_scene_library')
           .select('id, prompt, description, keywords, image_url, is_curated, use_count')
           .order('is_curated', { ascending: false })
           .order('use_count', { ascending: false })
           .limit(12);
-        scenes = (fallback as SceneRow[]) || [];
+          
+        const fallbackScenes = (fallback as SceneRow[]) || [];
+        const existingIds = new Set(scenes.map(s => s.id));
+        
+        for (const fs of fallbackScenes) {
+          if (!existingIds.has(fs.id) && scenes.length < 12) {
+            scenes.push(fs);
+            existingIds.add(fs.id);
+          }
+        }
       }
 
       const { data: usedCount } = await adminClient.rpc('count_user_scene_generations_this_month', {

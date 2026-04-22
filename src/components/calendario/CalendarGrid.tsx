@@ -20,6 +20,7 @@ export interface CalendarItem {
   slide_count?: number | null;
   topic?: string | null;
   canvas_template?: string | null;
+  theme_config?: any | null;
 }
 
 const WEEKDAYS: Record<L, string[]> = {
