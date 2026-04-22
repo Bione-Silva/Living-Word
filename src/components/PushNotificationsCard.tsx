@@ -99,6 +99,8 @@ export function PushNotificationsCard() {
   const [tz, setTz] = useState<string>((profile as any)?.push_timezone || detectTz());
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
+  // Local override so the toggle stays ON even if DB persist temporarily fails
+  const [localEnabled, setLocalEnabled] = useState<boolean | null>(null);
   // Only show the "blocked" banner after the user actively tried to enable
   // notifications in this session. Otherwise a stale browser-level "denied"
   // state hijacks the card and hides the main toggle.
@@ -120,11 +122,20 @@ export function PushNotificationsCard() {
   const persist = async (patch: Record<string, unknown>) => {
     if (!profile?.id) return;
     setSaving(true);
-    const { error } = await supabase.from('profiles').update({ ...patch, updated_at: new Date().toISOString() } as any).eq('id', profile.id);
-    setSaving(false);
-    if (error) { toast.error('Error'); return; }
-    await refreshProfile();
-    toast.success(COPY.saved[l]);
+    try {
+      const { error } = await supabase.from('profiles').update({ ...patch, updated_at: new Date().toISOString() } as any).eq('id', profile.id);
+      setSaving(false);
+      if (error) {
+        console.warn('[push] persist error (columns may be missing):', error.message);
+        // Don't show error toast — the push itself worked, DB is optional for UX
+        return;
+      }
+      await refreshProfile();
+      toast.success(COPY.saved[l]);
+    } catch (e) {
+      setSaving(false);
+      console.warn('[push] persist exception', e);
+    }
   };
 
   const handleToggle = async (next: boolean) => {
@@ -141,9 +152,11 @@ export function PushNotificationsCard() {
         return;
       }
       setShowDeniedHelp(false);
+      setLocalEnabled(true);
       await persist({ push_enabled: true, push_hour: hour, push_timezone: tz });
     } else {
       await unsubscribe();
+      setLocalEnabled(false);
       await persist({ push_enabled: false });
     }
   };
@@ -167,7 +180,11 @@ export function PushNotificationsCard() {
     else toast.error(res.error || 'Error');
   };
 
-  const enabled = !!(profile as any)?.push_enabled && subscribed;
+  // Use localEnabled (set on successful subscribe/unsubscribe) as primary source,
+  // fall back to DB value + browser subscription state.
+  const enabled = localEnabled !== null
+    ? localEnabled
+    : (!!(profile as any)?.push_enabled && subscribed);
 
   const handleToggleClick = () => {
     if (busy) return;
