@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { Crown, Camera, Loader2, Church } from 'lucide-react';
+import { Crown, Camera, Loader2, Church, Sparkles as SparklesIcon } from 'lucide-react';
 import { TrialCountdown } from '@/components/TrialCountdown';
 import { BlogThemeCustomizer } from '@/components/blog/BlogThemeCustomizer';
 import { CreditUsageReport } from '@/components/dashboard/CreditUsageReport';
@@ -20,6 +20,7 @@ import { PlanOverviewCard } from '@/components/dashboard/PlanOverviewCard';
 import { CreditTopUpButton } from '@/components/dashboard/CreditTopUpButton';
 import { PushNotificationsCard } from '@/components/PushNotificationsCard';
 import { ChurchProfileSection } from '@/components/settings/ChurchProfileSection';
+import { DnaSetupCard } from '@/components/settings/DnaSetupCard';
 import { AutoFeedSettingsCard } from '@/components/settings/AutoFeedSettingsCard';
 import { PLAN_CREDITS, LOW_CREDITS_THRESHOLD, PLAN_DISPLAY_NAMES, type PlanSlug } from '@/lib/plans';
 import { normalizePlan, isFreePlan } from '@/lib/plan-normalization';
@@ -200,6 +201,10 @@ export default function Configuracoes() {
             <Church className="h-3.5 w-3.5" />
             {lang === 'PT' ? 'Igreja' : lang === 'EN' ? 'Church' : 'Iglesia'}
           </TabsTrigger>
+          <TabsTrigger value="dna" className="text-xs sm:text-sm gap-1">
+            <SparklesIcon className="h-3.5 w-3.5" />
+            DNA
+          </TabsTrigger>
           <TabsTrigger value="blog" className="text-xs sm:text-sm">{t('settings.blog')}</TabsTrigger>
           <TabsTrigger value="plan" className="text-xs sm:text-sm">{t('settings.plan')}</TabsTrigger>
           <TabsTrigger value="doctrine" className="text-xs sm:text-sm">{t('settings.doctrine')}</TabsTrigger>
@@ -311,6 +316,11 @@ export default function Configuracoes() {
         {/* CHURCH TAB — Pastoral identity, logo, doctrine */}
         <TabsContent value="church">
           <ChurchProfileSection />
+        </TabsContent>
+
+        {/* DNA TAB */}
+        <TabsContent value="dna">
+          <DnaSetupCard lang={l} />
         </TabsContent>
 
         <TabsContent value="blog">
