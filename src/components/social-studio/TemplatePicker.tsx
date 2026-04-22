@@ -45,14 +45,14 @@ export function TemplatePicker({ value, onChange, lang }: Props) {
       <span className="text-xs text-foreground font-semibold uppercase tracking-wider">
         {lang === 'PT' ? 'Estilo do Cartaz' : lang === 'EN' ? 'Poster Style' : 'Estilo del Cartel'}
       </span>
-      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+      <div className="grid grid-cols-3 gap-2 px-0.5">
         {templates.map((t) => {
           const active = value === t.id;
           return (
             <button
               key={t.id}
               onClick={() => onChange(t.id)}
-              className={`flex flex-col items-center gap-1 px-2 py-3 rounded-xl text-center transition-all duration-200 border-2 ${
+              className={`flex flex-col items-center justify-center gap-1 p-2 aspect-square rounded-xl text-center transition-all duration-200 border-2 ${
                 active
                   ? 'bg-primary/10 border-primary text-foreground shadow-sm'
                   : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'

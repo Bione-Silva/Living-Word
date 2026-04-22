@@ -301,9 +301,12 @@ export const VariationGrid = forwardRef<VariationGridHandle, VariationGridProps>
           className={
             slides.length === 1
               ? 'grid grid-cols-1 gap-4 max-w-[640px] mx-auto'
-              : slides.length === 2
-              ? 'grid grid-cols-1 sm:grid-cols-2 gap-4'
-              : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+              : 'grid gap-4 w-full'
+          }
+          style={
+            slides.length > 1
+              ? { gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }
+              : undefined
           }
         >
           {slides.map((slide, slideIdx) => {
