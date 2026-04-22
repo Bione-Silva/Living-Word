@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Loader2, Sparkles, User, Mic, Church, Info } from 'lucide-react';
@@ -15,247 +14,247 @@ type L = 'PT' | 'EN' | 'ES';
 /* ─────────── DNA Shape ─────────── */
 export interface DnaData {
   profileType: 'personal' | 'pastor' | 'church';
-  // Personal
-  personalFocus?: string;
-  personalVibe?: string;
-  // Pastor
-  preachingStyle?: string;
-  preachingReference?: string;
-  audienceProfile?: string;
-  // Church
-  churchTone?: string;
-  churchPriority?: string;
-  // Shared
-  freeNotes?: string;
+  description: string;
+  audience: string;
+  communicationStyle: string;
 }
 
-const DEFAULT_DNA: DnaData = { profileType: 'personal' };
+const DEFAULT_DNA: DnaData = {
+  profileType: 'personal',
+  description: '',
+  audience: '',
+  communicationStyle: '',
+};
 
-/* ─────────── Labels ─────────── */
+/* ─────────── Static Labels ─────────── */
 const L_TITLE: Record<L, string> = {
   PT: 'DNA da Minha Marca',
   EN: 'My Brand DNA',
   ES: 'ADN de Mi Marca',
 };
 const L_SUBTITLE: Record<L, string> = {
-  PT: 'Configure como a IA aprende o seu estilo. Isso influencia Sermões, Devocionais, Legendas e todo conteúdo gerado.',
-  EN: 'Configure how the AI learns your style. This influences Sermons, Devotionals, Captions and all generated content.',
-  ES: 'Configure cómo la IA aprende su estilo. Esto influye en Sermones, Devocionales, Leyendas y todo el contenido generado.',
+  PT: 'Descreva quem você é com suas próprias palavras. A IA vai usar essas informações para gerar Sermões, Devocionais, Legendas e todo conteúdo com a sua cara.',
+  EN: 'Describe who you are in your own words. The AI will use this to generate Sermons, Devotionals, Captions and all content with your fingerprint.',
+  ES: 'Describa quién es con sus propias palabras. La IA usará esto para generar Sermones, Devocionales, Leyendas y todo contenido con su huella.',
 };
-
 const L_WHY: Record<L, string> = {
-  PT: '💡 Por que pedimos isso? Para que a IA aprenda a sua digital e gere conteúdo exatamente como se fosse você falando.',
-  EN: '💡 Why do we ask this? So the AI learns your fingerprint and generates content exactly as if you were speaking.',
-  ES: '💡 ¿Por qué lo pedimos? Para que la IA aprenda su huella y genere contenido exactamente como si usted hablara.',
+  PT: '💡 Por que pedimos isso? Para que a IA aprenda a sua digital e gere conteúdo exatamente como se fosse você falando. Quanto mais detalhes, melhor o resultado.',
+  EN: '💡 Why do we ask this? So the AI learns your fingerprint and generates content exactly as if you were speaking. The more detail, the better.',
+  ES: '💡 ¿Por qué? Para que la IA aprenda su huella y genere contenido exactamente como si usted hablara. Cuantos más detalles, mejor.',
 };
-
 const L_PROFILE_TYPE: Record<L, string> = {
   PT: 'Quem é você na hora de criar conteúdo?',
   EN: 'Who are you when creating content?',
   ES: '¿Quién eres al crear contenido?',
 };
 
-const PROFILE_TYPES: { value: DnaData['profileType']; icon: typeof User; label: Record<L, string>; desc: Record<L, string> }[] = [
+/* ─────────── Profile Type Cards ─────────── */
+const PROFILE_TYPES: {
+  value: DnaData['profileType'];
+  icon: typeof User;
+  label: Record<L, string>;
+  desc: Record<L, string>;
+}[] = [
   {
     value: 'personal',
     icon: User,
     label: { PT: 'Criador / Pessoa', EN: 'Creator / Personal', ES: 'Creador / Personal' },
-    desc: { PT: 'Influenciador cristão, coach, evangelista, mãe que inspira...', EN: 'Christian influencer, coach, evangelist, inspiring mom...', ES: 'Influencer cristiano, coach, evangelista, mamá que inspira...' },
+    desc: {
+      PT: 'Influenciador cristão, coach, evangelista, mãe que inspira...',
+      EN: 'Christian influencer, coach, evangelist, inspiring mom...',
+      ES: 'Influencer cristiano, coach, evangelista, mamá que inspira...',
+    },
   },
   {
     value: 'pastor',
     icon: Mic,
     label: { PT: 'Pastor / Líder / Pregador', EN: 'Pastor / Leader / Preacher', ES: 'Pastor / Líder / Predicador' },
-    desc: { PT: 'Quem prega, ensina e lidera espiritualmente.', EN: 'Someone who preaches, teaches and leads spiritually.', ES: 'Quien predica, enseña y lidera espiritualmente.' },
+    desc: {
+      PT: 'Quem prega, ensina e lidera espiritualmente.',
+      EN: 'Someone who preaches, teaches and leads spiritually.',
+      ES: 'Quien predica, enseña y lidera espiritualmente.',
+    },
   },
   {
     value: 'church',
     icon: Church,
     label: { PT: 'Igreja / Ministério', EN: 'Church / Ministry', ES: 'Iglesia / Ministerio' },
-    desc: { PT: 'Conta oficial da instituição (linguagem em 3ª pessoa).', EN: 'Official institution account (3rd person language).', ES: 'Cuenta oficial de la institución (lenguaje en 3ª persona).' },
+    desc: {
+      PT: 'Conta oficial da instituição (linguagem em 3ª pessoa).',
+      EN: 'Official institution account (3rd person language).',
+      ES: 'Cuenta oficial de la institución (lenguaje en 3ª persona).',
+    },
   },
 ];
 
-/* ─── Options per branch ─── */
-const PERSONAL_FOCUS: Record<L, { value: string; label: string }[]> = {
-  PT: [
-    { value: 'lifestyle', label: 'Lifestyle cristão moderno' },
-    { value: 'reflexoes', label: 'Reflexões de rotina e dia a dia' },
-    { value: 'familia', label: 'Família, casamento e relacionamentos' },
-    { value: 'encorajamento', label: 'Encorajamento e superação diária' },
-    { value: 'evangelismo', label: 'Evangelismo e mensagens de salvação' },
-  ],
-  EN: [
-    { value: 'lifestyle', label: 'Modern Christian lifestyle' },
-    { value: 'reflexoes', label: 'Daily reflections and routines' },
-    { value: 'familia', label: 'Family, marriage, and relationships' },
-    { value: 'encorajamento', label: 'Encouragement and daily overcoming' },
-    { value: 'evangelismo', label: 'Evangelism and salvation messages' },
-  ],
-  ES: [
-    { value: 'lifestyle', label: 'Estilo de vida cristiano moderno' },
-    { value: 'reflexoes', label: 'Reflexiones de rutina y día a día' },
-    { value: 'familia', label: 'Familia, matrimonio y relaciones' },
-    { value: 'encorajamento', label: 'Ánimo y superación diaria' },
-    { value: 'evangelismo', label: 'Evangelismo y mensajes de salvación' },
-  ],
+/* ─────────── Dynamic Placeholders per profileType ─────────── */
+const PLACEHOLDERS: Record<
+  DnaData['profileType'],
+  Record<L, { description: string; audience: string; communication: string }>
+> = {
+  personal: {
+    PT: {
+      description:
+        'Meu nome é Ana, sou líder de células e produzo conteúdo cristão voltado ao estilo de vida das mulheres modernas. Falo sobre conciliar maternidade, trabalho e devoção diária sem religiosidade tóxica. Quero ter autoridade no nicho de fé e lifestyle feminino.',
+      audience:
+        'Mulheres na faixa de 25 a 45 anos, mães e profissionais que lutam com a ansiedade da vida moderna e querem viver uma fé autêntica sem se sentirem presas a regras ultrapassadas.',
+      communication:
+        'Tom direto, promocional e acessível, com linguagem simples e foco em benefícios claros. Usar frases curtas, chamadas para ação objetivas. Falar com o público em segunda pessoa ("seu perfil", "cresça"), mantendo uma comunicação clara, amigável e orientada à conexão.',
+    },
+    EN: {
+      description:
+        'My name is Ana, I lead small groups and produce Christian content for modern women. I talk about balancing motherhood, career, and daily devotion without toxic religiosity. I want to be an authority in the faith and feminine lifestyle niche.',
+      audience:
+        'Women aged 25-45, mothers and professionals struggling with modern-life anxiety who want to live authentic faith without feeling trapped by outdated rules.',
+      communication:
+        'Direct, warm, and accessible tone with simple language. Use short sentences, clear calls to action. Speak in second person ("your profile", "grow"), keeping communication friendly and connection-oriented.',
+    },
+    ES: {
+      description:
+        'Mi nombre es Ana, lidero células y produzco contenido cristiano para mujeres modernas. Hablo sobre conciliar maternidad, trabajo y devoción diaria sin religiosidad tóxica.',
+      audience:
+        'Mujeres de 25 a 45 años, madres y profesionales que luchan con la ansiedad moderna y quieren vivir una fe auténtica sin sentirse atrapadas por reglas anticuadas.',
+      communication:
+        'Tono directo, cálido y accesible con lenguaje simple. Frases cortas, llamados a la acción claros. Hablar en segunda persona, manteniendo comunicación amigable.',
+    },
+  },
+  pastor: {
+    PT: {
+      description:
+        'Sou pastor focado na exposição bíblica profunda, lidero uma congregação em expansão com ênfase forte em cura emocional e restauração de casamentos. Minha pregação é verso-a-verso, com aplicações práticas que tocam a realidade de quem está no banco da igreja.',
+      audience:
+        'Famílias cristãs com filhos adolescentes, casais em crise que buscam restauração, e jovens adultos reformados que amam teologia acadêmica com pés no chão.',
+      communication:
+        'Tom didático e acolhedor, semelhante ao estilo de Hernandes Dias Lopes. Sempre com introduções narrativas, contexto histórico do trecho bíblico, e fechamento com aplicação pessoal direta. Evitar linguagem genérica e superficial.',
+    },
+    EN: {
+      description:
+        'I am a pastor focused on deep biblical exposition, leading a growing congregation with strong emphasis on emotional healing and marriage restoration. My preaching is verse-by-verse, with practical applications.',
+      audience:
+        'Christian families with teenage children, couples in crisis seeking restoration, and young reformed adults who love academic theology with practical grounding.',
+      communication:
+        'Didactic and welcoming tone, similar to John MacArthur\'s style. Always with narrative introductions, historical context, and closing with direct personal application. Avoid generic and superficial language.',
+    },
+    ES: {
+      description:
+        'Soy pastor enfocado en la exposición bíblica profunda, lidero una congregación en expansión con énfasis en la sanación emocional y la restauración de matrimonios.',
+      audience:
+        'Familias cristianas con hijos adolescentes, parejas en crisis que buscan restauración, y jóvenes adultos reformados que aman la teología académica con los pies en la tierra.',
+      communication:
+        'Tono didáctico y acogedor. Siempre con introducciones narrativas, contexto histórico del pasaje bíblico, y cierre con aplicación personal directa.',
+    },
+  },
+  church: {
+    PT: {
+      description:
+        'O Ministério Vida Plena é uma igreja pentecostal moderna que visa ser um farol na cidade. Nosso foco central é o ensino profundo da Palavra misturado ao acolhimento de pessoas marginalizadas. Oferecemos células semanais, escola bíblica dominical e projetos sociais.',
+      audience:
+        'Moradores do nosso bairro e região, incluindo pessoas sem igreja que buscam recomeços, famílias que querem crescer juntas na fé, e jovens que procuram comunidade genuína.',
+      communication:
+        'Tom oficial, sempre em terceira pessoa ("O Ministério convida...", "Nossa comunidade celebra..."). Linguagem acolhedora mas institucional. Evitar gírias e informalidade excessiva. Priorizar clareza nos avisos e calor humano nos convites.',
+    },
+    EN: {
+      description:
+        'Full Life Ministry is a modern Pentecostal church that aims to be a beacon in the city. Our central focus is deep Word teaching mixed with welcoming marginalized people.',
+      audience:
+        'Neighbors and community members, including unchurched people seeking fresh starts, families wanting to grow together in faith, and young people looking for genuine community.',
+      communication:
+        'Official tone, always in third person ("The Ministry invites...", "Our community celebrates..."). Welcoming but institutional language. Avoid slang and excessive informality.',
+    },
+    ES: {
+      description:
+        'El Ministerio Vida Plena es una iglesia pentecostal moderna que busca ser un faro en la ciudad. Nuestro enfoque central es la enseñanza profunda de la Palabra mezclada con la acogida de personas marginadas.',
+      audience:
+        'Vecinos y miembros de la comunidad, personas sin iglesia que buscan nuevos comienzos, familias que quieren crecer juntas en la fe.',
+      communication:
+        'Tono oficial, siempre en tercera persona ("El Ministerio invita...", "Nuestra comunidad celebra..."). Lenguaje acogedor pero institucional.',
+    },
+  },
 };
 
-const PERSONAL_VIBE: Record<L, { value: string; label: string }[]> = {
-  PT: [
-    { value: 'amigavel', label: 'Super amigável e próxima' },
-    { value: 'poetica', label: 'Poética e mais profunda' },
-    { value: 'descontraida', label: 'Descontraída e engraçada' },
-    { value: 'motivacional', label: 'Motivacional e energética' },
-    { value: 'didatica', label: 'Didática e explicativa' },
-  ],
-  EN: [
-    { value: 'amigavel', label: 'Super friendly and close' },
-    { value: 'poetica', label: 'Poetic and deep' },
-    { value: 'descontraida', label: 'Casual and fun' },
-    { value: 'motivacional', label: 'Motivational and energetic' },
-    { value: 'didatica', label: 'Didactic and explanatory' },
-  ],
-  ES: [
-    { value: 'amigavel', label: 'Super amigable y cercana' },
-    { value: 'poetica', label: 'Poética y profunda' },
-    { value: 'descontraida', label: 'Relajada y divertida' },
-    { value: 'motivacional', label: 'Motivacional y energética' },
-    { value: 'didatica', label: 'Didáctica y explicativa' },
-  ],
-};
-
-const PREACHING_STYLE: Record<L, { value: string; label: string }[]> = {
-  PT: [
-    { value: 'expositiva', label: 'Expositiva verso-a-verso' },
-    { value: 'tematica', label: 'Temática / Avivamento' },
-    { value: 'conselheira', label: 'Conselheiro e Vivência' },
-    { value: 'teologica', label: 'Teologia Profunda / Acadêmica' },
-  ],
-  EN: [
-    { value: 'expositiva', label: 'Expository verse-by-verse' },
-    { value: 'tematica', label: 'Topical / Revival' },
-    { value: 'conselheira', label: 'Counselor and Practical' },
-    { value: 'teologica', label: 'Deep Theology / Academic' },
-  ],
-  ES: [
-    { value: 'expositiva', label: 'Expositiva versículo a versículo' },
-    { value: 'tematica', label: 'Temática / Avivamiento' },
-    { value: 'conselheira', label: 'Consejero y Vivencia' },
-    { value: 'teologica', label: 'Teología Profunda / Académica' },
-  ],
-};
-
-const PREACHING_REF: Record<L, { value: string; label: string }[]> = {
-  PT: [
-    { value: 'spurgeon', label: 'Clássico e Fervoroso (ex: Charles Spurgeon)' },
-    { value: 'hernandes', label: 'Didático/Seminário (ex: Hernandes Dias Lopes)' },
-    { value: 'profetico', label: 'Profético e Encorajador' },
-    { value: 'cslewis', label: 'Intelectual e Apologético (ex: C.S. Lewis)' },
-    { value: 'proprio', label: 'Prefiro meu próprio estilo (sem referência)' },
-  ],
-  EN: [
-    { value: 'spurgeon', label: 'Classic and Fervent (e.g., Charles Spurgeon)' },
-    { value: 'hernandes', label: 'Didactic/Seminary (e.g., John MacArthur)' },
-    { value: 'profetico', label: 'Prophetic and Encouraging' },
-    { value: 'cslewis', label: 'Intellectual and Apologetic (e.g., C.S. Lewis)' },
-    { value: 'proprio', label: 'I prefer my own style (no reference)' },
-  ],
-  ES: [
-    { value: 'spurgeon', label: 'Clásico y Ferviente (ej: Charles Spurgeon)' },
-    { value: 'hernandes', label: 'Didáctico/Seminario (ej: John MacArthur)' },
-    { value: 'profetico', label: 'Profético y Alentador' },
-    { value: 'cslewis', label: 'Intelectual y Apologético (ej: C.S. Lewis)' },
-    { value: 'proprio', label: 'Prefiero mi propio estilo (sin referencia)' },
-  ],
-};
-
-const AUDIENCE_PROFILE: Record<L, { value: string; label: string }[]> = {
-  PT: [
-    { value: 'jovens', label: 'Jovens e estudantes dinâmicos' },
-    { value: 'casais', label: 'Casais e famílias' },
-    { value: 'congregacional', label: 'Igreja congregacional (várias faixas etárias)' },
-    { value: 'lideres', label: 'Líderes e pastores em formação' },
-  ],
-  EN: [
-    { value: 'jovens', label: 'Dynamic youth and students' },
-    { value: 'casais', label: 'Couples and families' },
-    { value: 'congregacional', label: 'Church-wide (multiple age groups)' },
-    { value: 'lideres', label: 'Leaders and pastors in training' },
-  ],
-  ES: [
-    { value: 'jovens', label: 'Jóvenes y estudiantes dinámicos' },
-    { value: 'casais', label: 'Parejas y familias' },
-    { value: 'congregacional', label: 'Congregacional (varias edades)' },
-    { value: 'lideres', label: 'Líderes y pastores en formación' },
-  ],
-};
-
-const CHURCH_TONE: Record<L, { value: string; label: string }[]> = {
-  PT: [
-    { value: 'tradicional', label: 'Sério e Tradicional' },
-    { value: 'jovem', label: 'Jovem e extremamente vibrante' },
-    { value: 'acolhedor', label: 'Focado no acolhimento solidário' },
-  ],
-  EN: [
-    { value: 'tradicional', label: 'Serious and Traditional' },
-    { value: 'jovem', label: 'Young and extremely vibrant' },
-    { value: 'acolhedor', label: 'Focused on welcoming and solidarity' },
-  ],
-  ES: [
-    { value: 'tradicional', label: 'Serio y Tradicional' },
-    { value: 'jovem', label: 'Joven y extremadamente vibrante' },
-    { value: 'acolhedor', label: 'Enfocado en la acogida solidaria' },
-  ],
-};
-
-const CHURCH_PRIORITY: Record<L, { value: string; label: string }[]> = {
-  PT: [
-    { value: 'engajar', label: 'Engajar membros de dentro da igreja' },
-    { value: 'evangelizar', label: 'Evangelizar pessoas que nunca pisaram lá' },
-    { value: 'avisos', label: 'Dar avisos operacionais e agenda' },
-  ],
-  EN: [
-    { value: 'engajar', label: 'Engage existing church members' },
-    { value: 'evangelizar', label: 'Evangelize people who have never visited' },
-    { value: 'avisos', label: 'Operational notices and schedule' },
-  ],
-  ES: [
-    { value: 'engajar', label: 'Involucrar miembros de la iglesia' },
-    { value: 'evangelizar', label: 'Evangelizar personas que nunca asistieron' },
-    { value: 'avisos', label: 'Avisos operativos y agenda' },
-  ],
+/* ─────────── Pillar labels ─────────── */
+const PILLAR_LABELS: Record<
+  'description' | 'audience' | 'communication',
+  Record<L, { title: string; hint: string }>
+> = {
+  description: {
+    PT: {
+      title: 'Descrição do seu Perfil / Ministério',
+      hint: 'O que você (ou sua igreja) faz? Quais problemas resolve? Quais são seus diferenciais?',
+    },
+    EN: {
+      title: 'Profile / Ministry Description',
+      hint: 'What do you (or your church) do? What problems do you solve? What makes you unique?',
+    },
+    ES: {
+      title: 'Descripción de su Perfil / Ministerio',
+      hint: '¿Qué hace usted (o su iglesia)? ¿Qué problemas resuelve? ¿Cuáles son sus diferenciales?',
+    },
+  },
+  audience: {
+    PT: {
+      title: 'Público-Alvo',
+      hint: 'Descreva quem é o seu público ideal. Idade, perfil, dores, aspirações.',
+    },
+    EN: {
+      title: 'Target Audience',
+      hint: 'Describe your ideal audience. Age, profile, pain points, aspirations.',
+    },
+    ES: {
+      title: 'Público Objetivo',
+      hint: 'Describa su público ideal. Edad, perfil, dolores, aspiraciones.',
+    },
+  },
+  communication: {
+    PT: {
+      title: 'Estilo de Comunicação & Referências',
+      hint: 'Como você fala? Quais são suas referências de pregação ou comunicação? (ex: profissional, casual, pastoral, confrontador...)',
+    },
+    EN: {
+      title: 'Communication Style & References',
+      hint: 'How do you speak? What are your preaching or communication references? (e.g., professional, casual, pastoral...)',
+    },
+    ES: {
+      title: 'Estilo de Comunicación & Referencias',
+      hint: '¿Cómo habla? ¿Cuáles son sus referencias de predicación o comunicación?',
+    },
+  },
 };
 
 /* ─────────── Helpers ─────────── */
 function Hint({ text }: { text: string }) {
   return (
-    <p className="flex items-start gap-1.5 text-xs text-muted-foreground bg-accent/40 rounded-lg px-3 py-2 mt-1">
+    <p className="flex items-start gap-1.5 text-xs text-muted-foreground bg-accent/40 rounded-lg px-3 py-2">
       <Info className="h-3.5 w-3.5 mt-0.5 shrink-0 text-primary" />
       {text}
     </p>
   );
 }
 
-function FieldSelect({ label, hint, options, value, onChange }: {
-  label: string;
-  hint?: string;
-  options: { value: string; label: string }[];
+function PillarField({
+  title,
+  hint,
+  placeholder,
+  value,
+  onChange,
+}: {
+  title: string;
+  hint: string;
+  placeholder: string;
   value: string;
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="space-y-1.5">
-      <Label className="text-sm font-semibold">{label}</Label>
-      {hint && <Hint text={hint} />}
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger><SelectValue /></SelectTrigger>
-        <SelectContent>
-          {options.map((o) => (
-            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="space-y-2">
+      <Label className="text-sm font-bold">{title}</Label>
+      <p className="text-xs text-muted-foreground">{hint}</p>
+      <Textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={5}
+        className="resize-y min-h-[120px] text-sm leading-relaxed"
+      />
     </div>
   );
 }
@@ -280,6 +279,8 @@ export function DnaSetupCard({ lang }: { lang: L }) {
 
   const patch = (partial: Partial<DnaData>) => setDna((prev) => ({ ...prev, ...partial }));
 
+  const ph = PLACEHOLDERS[dna.profileType][lang];
+
   const handleSave = async () => {
     if (!profile?.id) return;
     setSaving(true);
@@ -291,16 +292,20 @@ export function DnaSetupCard({ lang }: { lang: L }) {
       if (error) throw error;
       await refreshProfile();
       toast.success(
-        lang === 'PT' ? 'DNA salvo! A IA já está aprendendo o seu estilo. ✨' :
-        lang === 'EN' ? 'DNA saved! The AI is now learning your style. ✨' :
-        '¡ADN guardado! La IA ya está aprendiendo tu estilo. ✨'
+        lang === 'PT'
+          ? 'DNA salvo! A IA já está aprendendo o seu estilo. ✨'
+          : lang === 'EN'
+          ? 'DNA saved! The AI is now learning your style. ✨'
+          : '¡ADN guardado! La IA ya está aprendiendo tu estilo. ✨'
       );
     } catch (err) {
       console.error(err);
       toast.error(
-        lang === 'PT' ? 'Erro ao salvar DNA.' :
-        lang === 'EN' ? 'Error saving DNA.' :
-        'Error al guardar ADN.'
+        lang === 'PT'
+          ? 'Erro ao salvar DNA.'
+          : lang === 'EN'
+          ? 'Error saving DNA.'
+          : 'Error al guardar ADN.'
       );
     } finally {
       setSaving(false);
@@ -344,15 +349,23 @@ export function DnaSetupCard({ lang }: { lang: L }) {
                   }`}
                 >
                   <RadioGroupItem value={pt.value} className="sr-only" />
-                  <Icon className={`h-7 w-7 ${active ? 'text-primary' : 'text-muted-foreground'}`} />
-                  <span className={`text-sm font-bold text-center ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
+                  <Icon
+                    className={`h-7 w-7 ${active ? 'text-primary' : 'text-muted-foreground'}`}
+                  />
+                  <span
+                    className={`text-sm font-bold text-center ${
+                      active ? 'text-foreground' : 'text-muted-foreground'
+                    }`}
+                  >
                     {pt.label[lang]}
                   </span>
                   <span className="text-[11px] text-muted-foreground text-center leading-tight">
                     {pt.desc[lang]}
                   </span>
                   {active && (
-                    <span className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">✓</span>
+                    <span className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">
+                      ✓
+                    </span>
                   )}
                 </label>
               );
@@ -360,96 +373,52 @@ export function DnaSetupCard({ lang }: { lang: L }) {
           </RadioGroup>
         </div>
 
-        {/* ─── Step 2: Branch-specific questions ─── */}
-        <div className="space-y-5 border-t border-border pt-6">
-          {dna.profileType === 'personal' && (
-            <>
-              <FieldSelect
-                label={lang === 'PT' ? 'Qual o foco principal da sua mensagem?' : lang === 'EN' ? 'What is the main focus of your message?' : '¿Cuál es el enfoque principal de su mensaje?'}
-                hint={lang === 'PT' ? 'Isso guia os temas que a IA sugere e o vocabulário das legendas.' : lang === 'EN' ? 'This guides the topics the AI suggests and the vocabulary of captions.' : 'Esto guía los temas que la IA sugiere y el vocabulario de las leyendas.'}
-                options={PERSONAL_FOCUS[lang]}
-                value={dna.personalFocus || PERSONAL_FOCUS[lang][0].value}
-                onChange={(v) => patch({ personalFocus: v })}
-              />
-              <FieldSelect
-                label={lang === 'PT' ? 'Qual é a sua "Vibe" e estilo de escrita?' : lang === 'EN' ? 'What is your writing vibe and style?' : '¿Cuál es tu "Vibe" y estilo de escritura?'}
-                options={PERSONAL_VIBE[lang]}
-                value={dna.personalVibe || PERSONAL_VIBE[lang][0].value}
-                onChange={(v) => patch({ personalVibe: v })}
-              />
-            </>
-          )}
-
-          {dna.profileType === 'pastor' && (
-            <>
-              <FieldSelect
-                label={lang === 'PT' ? 'Qual sua principal linha de pregação?' : lang === 'EN' ? 'What is your main preaching style?' : '¿Cuál es su principal línea de predicación?'}
-                hint={lang === 'PT' ? 'A IA usa isso para montar a estrutura dos seus Sermões e Estudos Bíblicos.' : lang === 'EN' ? 'The AI uses this to structure your Sermons and Bible Studies.' : 'La IA usa esto para estructurar sus Sermones y Estudios Bíblicos.'}
-                options={PREACHING_STYLE[lang]}
-                value={dna.preachingStyle || PREACHING_STYLE[lang][0].value}
-                onChange={(v) => patch({ preachingStyle: v })}
-              />
-              <FieldSelect
-                label={lang === 'PT' ? 'Qual a sua referência de comunicação ou pregação?' : lang === 'EN' ? 'Who is your communication or preaching reference?' : '¿Cuál es su referencia de comunicación o predicación?'}
-                hint={lang === 'PT' ? 'Usamos isso para calibrar o "tom de voz" da IA, sem copiar — apenas aprender a cadência.' : lang === 'EN' ? 'We use this to calibrate the AI\'s "tone of voice" without copying — just learning the cadence.' : 'Usamos esto para calibrar el "tono de voz" de la IA, sin copiar — solo aprender la cadencia.'}
-                options={PREACHING_REF[lang]}
-                value={dna.preachingReference || PREACHING_REF[lang][0].value}
-                onChange={(v) => patch({ preachingReference: v })}
-              />
-              <FieldSelect
-                label={lang === 'PT' ? 'Qual a característica mais forte da sua audiência?' : lang === 'EN' ? 'What\'s the strongest trait of your audience?' : '¿Cuál es la característica más fuerte de su audiencia?'}
-                options={AUDIENCE_PROFILE[lang]}
-                value={dna.audienceProfile || AUDIENCE_PROFILE[lang][0].value}
-                onChange={(v) => patch({ audienceProfile: v })}
-              />
-            </>
-          )}
-
-          {dna.profileType === 'church' && (
-            <>
-              <FieldSelect
-                label={lang === 'PT' ? 'Qual é o tom oficial do Ministério?' : lang === 'EN' ? 'What is the official tone of the Ministry?' : '¿Cuál es el tono oficial del Ministerio?'}
-                hint={lang === 'PT' ? 'Vamos adaptar a linguagem para soar oficial e representar a instituição.' : lang === 'EN' ? 'We\'ll adapt the language to sound official and represent the institution.' : 'Adaptaremos el lenguaje para que suene oficial y represente la institución.'}
-                options={CHURCH_TONE[lang]}
-                value={dna.churchTone || CHURCH_TONE[lang][0].value}
-                onChange={(v) => patch({ churchTone: v })}
-              />
-              <FieldSelect
-                label={lang === 'PT' ? 'A prioridade dos posts que saem daqui focam mais em:' : lang === 'EN' ? 'The priority of posts from here focuses on:' : 'La prioridad de los posts de aquí se enfoca en:'}
-                options={CHURCH_PRIORITY[lang]}
-                value={dna.churchPriority || CHURCH_PRIORITY[lang][0].value}
-                onChange={(v) => patch({ churchPriority: v })}
-              />
-            </>
-          )}
-
-          {/* Free-form notes */}
-          <div className="space-y-1.5">
-            <Label className="text-sm font-semibold">
-              {lang === 'PT' ? 'Observações adicionais (opcional)' : lang === 'EN' ? 'Additional notes (optional)' : 'Observaciones adicionales (opcional)'}
-            </Label>
-            <Textarea
-              value={dna.freeNotes || ''}
-              onChange={(e) => patch({ freeNotes: e.target.value })}
-              placeholder={
-                lang === 'PT'
-                  ? 'Ex: "Eu nunca uso gírias no púlpito", "Sempre citar versículos na NVT", "Minha igreja é pentecostal assembleiana"...'
-                  : lang === 'EN'
-                  ? 'E.g., "I never use slang in the pulpit", "Always quote ESV", "My church is Pentecostal"...'
-                  : 'Ej: "Nunca uso jerga en el púlpito", "Siempre citar versículos en RVR60"...'
-              }
-              rows={3}
-              className="resize-none"
-            />
-            <p className="text-[11px] text-muted-foreground">
-              {lang === 'PT' ? 'Regras extras que a IA sempre obedecerá.' : lang === 'EN' ? 'Extra rules the AI will always follow.' : 'Reglas adicionales que la IA siempre obedecerá.'}
-            </p>
-          </div>
+        {/* ─── Step 2: Three Pillars ─── */}
+        <div className="space-y-6 border-t border-border pt-6">
+          <PillarField
+            title={PILLAR_LABELS.description[lang].title}
+            hint={PILLAR_LABELS.description[lang].hint}
+            placeholder={ph.description}
+            value={dna.description}
+            onChange={(v) => patch({ description: v })}
+          />
+          <PillarField
+            title={PILLAR_LABELS.audience[lang].title}
+            hint={PILLAR_LABELS.audience[lang].hint}
+            placeholder={ph.audience}
+            value={dna.audience}
+            onChange={(v) => patch({ audience: v })}
+          />
+          <PillarField
+            title={PILLAR_LABELS.communication[lang].title}
+            hint={PILLAR_LABELS.communication[lang].hint}
+            placeholder={ph.communication}
+            value={dna.communicationStyle}
+            onChange={(v) => patch({ communicationStyle: v })}
+          />
         </div>
 
         {/* Save */}
-        <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto bg-primary text-primary-foreground gap-2">
-          {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> {lang === 'PT' ? 'Salvando...' : lang === 'EN' ? 'Saving...' : 'Guardando...'}</> : <><Sparkles className="h-4 w-4" /> {lang === 'PT' ? 'Salvar meu DNA' : lang === 'EN' ? 'Save my DNA' : 'Guardar mi ADN'}</>}
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="w-full sm:w-auto bg-primary text-primary-foreground gap-2"
+        >
+          {saving ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />{' '}
+              {lang === 'PT' ? 'Salvando...' : lang === 'EN' ? 'Saving...' : 'Guardando...'}
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4" />{' '}
+              {lang === 'PT'
+                ? 'Salvar meu DNA'
+                : lang === 'EN'
+                ? 'Save my DNA'
+                : 'Guardar mi ADN'}
+            </>
+          )}
         </Button>
       </CardContent>
     </Card>
