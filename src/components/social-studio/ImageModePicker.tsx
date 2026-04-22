@@ -8,7 +8,7 @@ import { useMemo } from 'react';
  * nome. "Moderna Natural" NÃO pode entregar pintura bíblica clássica, e
  * "Bíblica Cinematográfica" NÃO pode entregar foto de café da manhã.
  */
-export type ImageMode = 'biblica' | 'moderna' | 'editorial' | 'simbolica';
+export type ImageMode = 'biblica' | 'moderna' | 'editorial' | 'simbolica' | 'moody';
 
 type L = 'PT' | 'EN' | 'ES';
 
@@ -111,6 +111,28 @@ const MODES: ModeDef[] = [
       'small wooden cross casting a soft shadow on a textured cream wall',
       'single white dove silhouette flying against pale sky',
       'a single lit candle on a dark surface, minimal composition',
+    ],
+  },
+  {
+    id: 'moody',
+    label: { PT: 'Realismo Moody', EN: 'Moody Realism', ES: 'Realismo Moody' },
+    desc: {
+      PT: 'Fotografia escura, luzes quentes',
+      EN: 'Dark photo, warm lights',
+      ES: 'Foto oscura, luces cálidas',
+    },
+    gradient: 'linear-gradient(135deg, #101010, #382010)',
+    glyph: '🌙',
+    glyphColor: 'rgba(255, 180, 100, 0.95)',
+    promptPrefix:
+      'Ultra-realistic dark moody photography, cinematic lighting with warm orange and amber highlights against deep shadows, professional prime lens (50mm f/1.4), intense photorealism, modern relatable scene, rich contrast, slight bokeh background, late night work or study aesthetic, high-end editorial photo style, 8k resolution',
+    negativePrompt:
+      'STRICT: no illustrations, no watercolor, no paintings, no daytime bright sunlight, no biblical period costumes, no ancient ruins, no overexposed flat lighting, no text, no captions, no clip art, no cartoon',
+    defaultScenes: [
+      'open notebook and pen on a dark wooden desk illuminated by a warm vintage desk lamp',
+      'pressing a glowing mechanical switch in a dark industrial environment',
+      'laptop screen illuminating a dark room with a cup of coffee on the side',
+      'hands holding a journal in a dimly lit sophisticated room with warm ambient light',
     ],
   },
 ];
