@@ -69,22 +69,22 @@ export function TemplatePicker({ value, onChange, lang }: Props) {
       <span className="text-xs text-foreground font-semibold uppercase tracking-wider pl-1">
         {lang === 'PT' ? 'Estilo do Cartaz' : lang === 'EN' ? 'Poster Style' : 'Estilo del Cartel'}
       </span>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 px-1 pb-1">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 px-1 pb-1 w-full overflow-hidden">
         {templates.map((t) => {
           const active = value === t.id;
           return (
             <button
               key={t.id}
               onClick={() => onChange(t.id)}
-              className={`flex flex-col items-center justify-center gap-1.5 p-2 w-full min-h-[95px] rounded-xl text-center transition-all duration-200 border-2 ${
+              className={`flex flex-col items-center justify-center gap-1 p-2 w-full min-w-0 min-h-[95px] overflow-hidden rounded-xl text-center transition-all duration-200 border-2 ${
                 active
                   ? 'bg-primary/10 border-primary text-foreground shadow-sm'
                   : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
               }`}
             >
-              <span className="text-xl mb-0.5">{t.emoji}</span>
-              <span className="text-[10px] font-bold leading-tight">{t.label[lang]}</span>
-              <span className="text-[9px] opacity-70 leading-tight">{t.desc[lang]}</span>
+              <span className="text-xl mb-0.5 flex-shrink-0">{t.emoji}</span>
+              <span className="text-[10px] font-bold leading-tight break-words w-full px-1">{t.label[lang]}</span>
+              <span className="text-[9px] opacity-70 leading-tight break-words w-full px-1">{t.desc[lang]}</span>
             </button>
           );
         })}
