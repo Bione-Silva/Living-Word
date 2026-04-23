@@ -399,7 +399,7 @@ export function BiblicalSceneGallery({ onChangeScenePool, lang, activeIds = [], 
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
+        <div className="grid grid-cols-2 gap-2 max-h-[480px] overflow-y-auto pr-1">
           {scenes.map((s) => {
             const isActive = activeIds.includes(s.id);
             return (

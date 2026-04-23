@@ -14,11 +14,11 @@ import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
 
-const HINT_STORAGE_KEY = 'bible_double_tap_hint_seen_v1';
+const HINT_STORAGE_KEY = 'bible_long_press_hint_seen_v1';
 const doubleTapHint: Record<L, string> = {
-  PT: 'Toque duas vezes em um versículo para abrir as ferramentas',
-  EN: 'Double-tap a verse to open the tools',
-  ES: 'Toca dos veces un versículo para abrir las herramientas',
+  PT: 'Pressione e segure um versículo para abrir as ferramentas',
+  EN: 'Long-press a verse to open the tools',
+  ES: 'Mantén presionado un versículo para abrir las herramientas',
 };
 const dragHintLabel: Record<L, string> = {
   PT: 'Arraste do versículo N até M para selecionar um trecho',
@@ -221,37 +221,38 @@ export function BibleReadingView({
     });
   };
 
-  // ─── Double-tap activation (mobile + desktop) ───
-  const lastTouchTapRef = useRef<{ verse: number; time: number } | null>(null);
-  const DOUBLE_TAP_MS = 300;
+  // ─── Long-press activation (mobile + desktop) ───
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const LONG_PRESS_MS = 1000;
 
-  const handleDoubleActivate = useCallback((verseNum: number) => {
+  const handleLongPress = useCallback((verseNum: number) => {
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       try { navigator.vibrate(15); } catch { /* noop */ }
     }
     toggleVerseSelection(verseNum);
   }, []);
 
-  const handleTouchDoubleTap = useCallback((verseNum: number) => {
-    const now = Date.now();
-    const last = lastTouchTapRef.current;
+  const handlePointerDown = useCallback((verseNum: number) => {
+    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+    longPressTimerRef.current = setTimeout(() => {
+      handleLongPress(verseNum);
+    }, LONG_PRESS_MS);
+  }, [handleLongPress]);
 
-    if (last && last.verse === verseNum && now - last.time < DOUBLE_TAP_MS) {
-      lastTouchTapRef.current = null;
-      handleDoubleActivate(verseNum);
-      return;
+  const cancelLongPress = useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
     }
-
-    lastTouchTapRef.current = { verse: verseNum, time: now };
-  }, [handleDoubleActivate]);
+  }, []);
 
   const clearSelection = useCallback(() => {
-    lastTouchTapRef.current = null;
+    cancelLongPress();
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       try { navigator.vibrate([10, 30, 10]); } catch { /* noop */ }
     }
     setSelectedVerses(new Set());
-  }, []);
+  }, [cancelLongPress]);
 
   // ─── Drag-to-select range (desktop only, via mouse) ───
   // Mousedown on a verse # → start anchor; mouseenter on others while dragging extends the range.
@@ -525,15 +526,15 @@ export function BibleReadingView({
                           : hlClass || 'hover:bg-muted/40'
                   } ${isDragging ? 'select-none' : ''}`}
                 >
-                  {/* Verse number badge — double-tap/double-click only */}
+                  {/* Verse number badge — long-press only */}
                   <button
-                    onPointerDown={(e) => handleDragStart(e, v.verse)}
-                    onDoubleClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleVerseSelection(v.verse);
+                    onPointerDown={(e) => {
+                      handleDragStart(e, v.verse);
+                      handlePointerDown(v.verse);
                     }}
-                    onTouchEnd={() => handleTouchDoubleTap(v.verse)}
+                    onPointerUp={cancelLongPress}
+                    onPointerLeave={cancelLongPress}
+                    onPointerCancel={cancelLongPress}
                     onContextMenu={(e) => e.preventDefault()}
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-colors select-none ${
                       isSelected
@@ -547,12 +548,10 @@ export function BibleReadingView({
                   {/* Verse text + inline toolbar */}
                   <div className="flex-1 min-w-0">
                     <span
-                      onDoubleClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleVerseSelection(v.verse);
-                      }}
-                      onTouchEnd={() => handleTouchDoubleTap(v.verse)}
+                      onPointerDown={() => handlePointerDown(v.verse)}
+                      onPointerUp={cancelLongPress}
+                      onPointerLeave={cancelLongPress}
+                      onPointerCancel={cancelLongPress}
                       onContextMenu={(e) => e.preventDefault()}
                       className="leading-[1.9] text-[16px] md:text-[17px] font-serif text-foreground/90 cursor-pointer"
                     >

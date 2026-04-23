@@ -3,7 +3,7 @@ import JSZip from 'jszip';
 import { SlideCanvas, type SlideData } from './SlideCanvas';
 import { getThemePalette, type ThemeConfig } from './ThemeCustomizer';
 import type { CanvasTemplate } from './TemplatePicker';
-import { captureNodeAsPng } from './export-utils';
+import { captureNodeAsPng, compressToJpeg } from './export-utils';
 import { getFormatById, type FormatId, type FormatDef } from './FormatPicker';
 
 interface Props {
@@ -14,19 +14,10 @@ interface Props {
 }
 
 export interface MultiFormatExporterHandle {
-  /** Build a ZIP containing one PNG per (format × slide). */
+  /** Build a ZIP containing one JPG per (format × slide). */
   buildZip: () => Promise<Blob>;
-  /** Capture a single (format, slideIdx) as PNG blob. */
+  /** Capture a single (format, slideIdx) as JPG blob. */
   capture: (formatId: FormatId, slideIdx: number) => Promise<Blob>;
-}
-
-function dataUrlToBlob(dataUrl: string) {
-  const parts = dataUrl.split(',');
-  const mime = parts[0].match(/:(.*?);/)?.[1] || 'image/png';
-  const binary = atob(parts[1]);
-  const array = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
-  return new Blob([array], { type: mime });
 }
 
 function slugify(s: string): string {
@@ -52,7 +43,7 @@ export const MultiFormatExporter = forwardRef<MultiFormatExporterHandle, Props>(
       const node = refsMap.current.get(key);
       if (!node) throw new Error(`No render node for ${key}`);
       const dataUrl = await captureNodeAsPng(node);
-      return dataUrlToBlob(dataUrl);
+      return await compressToJpeg(dataUrl, 400_000); // 400KB limit for high quality JPG
     };
 
     useImperativeHandle(ref, () => ({
@@ -68,8 +59,8 @@ export const MultiFormatExporter = forwardRef<MultiFormatExporterHandle, Props>(
             try {
               const blob = await captureBlob(fid, i);
               const fname = slides.length === 1
-                ? `${folderName}.png`
-                : `slide-${String(i + 1).padStart(2, '0')}.png`;
+                ? `${folderName}.jpg`
+                : `slide-${String(i + 1).padStart(2, '0')}.jpg`;
               folder.file(fname, blob);
             } catch (e) {
               console.warn('export skipped', fid, i, e);

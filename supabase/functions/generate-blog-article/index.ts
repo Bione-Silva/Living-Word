@@ -1,11 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { getCorsHeaders, handleCorsOptions, sanitizeField } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+// ═══ Input limits (security hardening) ═══
+const MAX_PASSAGE_LEN = 500;
+const MAX_TITLE_LEN = 200;
+const MAX_SOURCE_LEN = 50_000; // source_content can be large (YouTube transcripts)
+const MAX_BODY_SIZE = 60_000;
 
 const IMAGE_MODEL = "google/gemini-2.5-flash-image";
 
@@ -117,8 +118,10 @@ async function generateImageWithRetry(
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return handleCorsOptions(req);
   }
 
   try {
@@ -147,17 +150,34 @@ serve(async (req) => {
     });
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const userId = claimsData.claims.sub as string;
+    const userId = user.id;
 
-    const { passage, language: requestedLanguage, title: inputTitle, image_style, source_content, source_type } = await req.json();
+    // ═══ Input validation & sanitization ═══
+    const rawBody = await req.text();
+    if (rawBody.length > MAX_BODY_SIZE) {
+      return new Response(JSON.stringify({ error: "Request body too large" }), {
+        status: 413,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const reqBody = JSON.parse(rawBody);
+
+    const passage = sanitizeField(reqBody.passage, MAX_PASSAGE_LEN);
+    const requestedLanguage = sanitizeField(reqBody.language, 5, "");
+    const inputTitle = sanitizeField(reqBody.title, MAX_TITLE_LEN, "");
+    const image_style = sanitizeField(reqBody.image_style, 20, "");
+    const source_content = sanitizeField(reqBody.source_content, MAX_SOURCE_LEN, "");
+    const source_type = sanitizeField(reqBody.source_type, 30, "");
 
     if (!passage) {
       return new Response(JSON.stringify({ error: "passage is required" }), {
@@ -172,13 +192,18 @@ serve(async (req) => {
       .eq("id", userId)
       .maybeSingle();
 
-    // Credit check (15 credits for blog article)
-    const creditCost = 15;
-    const generationsUsed = profile?.generations_used || 0;
-    const generationsLimit = profile?.generations_limit || 500;
-    if ((generationsLimit - generationsUsed) < creditCost) {
+    // ═══ Atomic credit deduction (prevents race conditions) ═══
+    const skipImages = image_style === "none";
+    const creditCost = skipImages ? 5 : 15;
+
+    const { data: creditOk, error: creditErr } = await supabaseAdmin.rpc("debit_credits", {
+      p_user_id: userId,
+      p_cost: creditCost,
+    });
+
+    if (creditErr || creditOk !== true) {
       return new Response(
-        JSON.stringify({ error: "insufficient_credits", remaining: generationsLimit - generationsUsed, cost: creditCost }),
+        JSON.stringify({ error: "insufficient_credits", remaining: 0, cost: creditCost }),
         { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -303,28 +328,32 @@ The article MUST have between 500 and 800 words, rich with scriptural references
       }
     }
 
-    // Generate images SEQUENTIALLY with delays to avoid rate limiting
-    console.log(`[Image] Starting sequential image generation: 1 cover + ${bodyPrompts.length} body images...`);
+    // Skip image generation entirely when image_style is "none" (used by onboarding provisioning)
+    let allImages: string[] = [];
+    let coverImageUrl: string | null = null;
 
-    const coverImage = await generateImageWithRetry(geminiApiKey, coverPrompt, supabaseAdmin, userId);
+    if (skipImages) {
+      console.log("[Image] Skipping image generation (image_style=none)");
+    } else {
+      // Generate images SEQUENTIALLY with delays to avoid rate limiting
+      console.log(`[Image] Starting sequential image generation: 1 cover + ${bodyPrompts.length} body images...`);
 
-    const bodyImages: (string | null)[] = [];
-    for (let i = 0; i < bodyPrompts.length; i++) {
-      await new Promise(r => setTimeout(r, 2000)); // delay between generations
-      const img = await generateImageWithRetry(geminiApiKey, bodyPrompts[i], supabaseAdmin, userId);
-      bodyImages.push(img);
+      const coverImage = await generateImageWithRetry(geminiApiKey, coverPrompt, supabaseAdmin, userId);
+
+      const bodyImages: (string | null)[] = [];
+      for (let i = 0; i < bodyPrompts.length; i++) {
+        await new Promise(r => setTimeout(r, 2000)); // delay between generations
+        const img = await generateImageWithRetry(geminiApiKey, bodyPrompts[i], supabaseAdmin, userId);
+        bodyImages.push(img);
+      }
+
+      allImages = [coverImage, ...bodyImages].filter(Boolean) as string[];
+      coverImageUrl = coverImage || null;
+
+      console.log(`[Article] Images generated: ${allImages.length}/${1 + bodyPrompts.length} successful`);
     }
 
-    const allImages: string[] = [coverImage, ...bodyImages].filter(Boolean) as string[];
-    const coverImageUrl = coverImage || null;
-
-    console.log(`[Article] Images generated: ${allImages.length}/${1 + bodyPrompts.length} successful`);
-
-    // Deduct credits (15 for blog article)
-    await supabase
-      .from("profiles")
-      .update({ generations_used: generationsUsed + creditCost })
-      .eq("id", userId);
+    // Credits already deducted atomically above — no manual update needed
 
     // Save to materials table
     const { data: material, error: matErr } = await supabase

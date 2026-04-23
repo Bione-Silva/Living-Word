@@ -1,26 +1,39 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-}
-
+import { getCorsHeaders, handleCorsOptions, sanitizeField, stripHtml } from '../_shared/cors.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+// ═══ Input limits (security hardening) ═══
+const MAX_VERSE_LEN = 500;
+const MAX_TOPIC_LEN = 200;
+const MAX_BODY_SIZE = 5_000;
 
 const geminiApiKey = Deno.env.get('LOVABLE_API_KEY')
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return handleCorsOptions(req)
   }
 
   try {
-    const body = await req.json()
-    const { verse, topic, language = 'PT', slideCount: rawCount } = body
+    const rawBody = await req.text()
+    if (rawBody.length > MAX_BODY_SIZE) {
+      return new Response(
+        JSON.stringify({ error: 'Request body too large' }),
+        { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+    const body = JSON.parse(rawBody)
+    const verse = sanitizeField(body.verse, MAX_VERSE_LEN)
+    const topic = sanitizeField(body.topic, MAX_TOPIC_LEN, '')
+    const language = sanitizeField(body.language, 5, 'PT')
+    const rawCount = body.slideCount
     // Normalize slideCount to allowed values
     const allowed = [3, 5, 7] as const
     const slideCount: 3 | 5 | 7 =
       allowed.includes(rawCount) ? rawCount : 7
 
-    if (!verse || typeof verse !== 'string' || verse.trim().length < 5) {
+    if (!verse || verse.length < 5) {
       return new Response(
         JSON.stringify({ error: 'Missing or invalid "verse" field' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

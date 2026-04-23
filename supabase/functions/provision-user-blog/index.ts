@@ -1,14 +1,16 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { getCorsHeaders, handleCorsOptions, sanitizeField, isValidSlug } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+// ═══ Input limits (security hardening) ═══
+const MAX_HANDLE_LEN = 30;
+const MAX_NAME_LEN = 50;
+const MAX_BODY_SIZE = 5_000;
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleCorsOptions(req);
   }
 
   try {
@@ -42,17 +44,32 @@ Deno.serve(async (req) => {
     // Admin client for writes
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    const body = await req.json();
-    const {
-      language = "PT",
-      doctrine_line = "evangelical",
-      tone = "acolhedor",
-      theme_color = "amber",
-      font_family = "cormorant",
-      layout_style = "classic",
-      blog_handle,
-      blog_name,
-    } = body;
+    // ═══ Input validation & sanitization ═══
+    const rawBody = await req.text();
+    if (rawBody.length > MAX_BODY_SIZE) {
+      return new Response(JSON.stringify({ error: "Request body too large" }), {
+        status: 413,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const body = JSON.parse(rawBody);
+
+    const language = sanitizeField(body.language, 5, "PT");
+    const doctrine_line = sanitizeField(body.doctrine_line, 50, "evangelical");
+    const tone = sanitizeField(body.tone, 50, "acolhedor");
+    const theme_color = sanitizeField(body.theme_color, 20, "amber");
+    const font_family = sanitizeField(body.font_family, 30, "cormorant");
+    const layout_style = sanitizeField(body.layout_style, 20, "classic");
+    const blog_handle = sanitizeField(body.blog_handle, MAX_HANDLE_LEN, "").toLowerCase();
+    const blog_name = sanitizeField(body.blog_name, MAX_NAME_LEN, "");
+
+    // Validate blog_handle format (alphanumeric + hyphens only)
+    if (blog_handle && !isValidSlug(blog_handle, MAX_HANDLE_LEN)) {
+      return new Response(
+        JSON.stringify({ error: "blog_handle must be alphanumeric with hyphens only, max 30 chars" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // 1. Update profile with personalization + theme preferences
     await supabaseAdmin
@@ -108,7 +125,7 @@ Deno.serve(async (req) => {
             passage: topic.passage,
             title: topic.title,
             language,
-            image_style: "oil",
+            image_style: "none",  // Text-only for fast onboarding (skip image generation)
           }),
         });
 
@@ -140,8 +157,8 @@ Deno.serve(async (req) => {
 
         console.log(`[Provision] Article created: "${topic.title}" with ${articleData.article_images?.length || 0} images`);
 
-        // Delay between articles to avoid rate limiting
-        await new Promise(r => setTimeout(r, 3000));
+        // Short delay between articles to avoid rate limiting
+        await new Promise(r => setTimeout(r, 1000));
       } catch (e) {
         console.error("[Provision] Article generation failed:", e);
       }

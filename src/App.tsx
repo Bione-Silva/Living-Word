@@ -49,6 +49,7 @@ import Quiz from "./pages/Quiz";
 import Kids from "./pages/Kids";
 import Ferramentas from "./pages/Ferramentas";
 import Unsubscribe from "./pages/Unsubscribe";
+import CEAHome from "./pages/CEAHome";
 // MinhaIgreja agora vive como aba dentro de /configuracoes?tab=church
 import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
@@ -152,6 +153,13 @@ const App = () => (
                   <Route path="/minha-igreja" element={<Navigate to="/configuracoes?tab=church" replace />} />
                   <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
                   <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
+                  <Route path="/estudos" element={<CEAHome />} />
+                  <Route path="/estudos/parabolas" element={<CEAHome />} />
+                  <Route path="/estudos/personagens" element={<CEAHome />} />
+                  <Route path="/estudos/livros" element={<CEAHome />} />
+                  <Route path="/estudos/pesquisa" element={<CEAHome />} />
+                  <Route path="/estudos/quiz" element={<CEAHome />} />
+                  <Route path="/estudos/meu-progresso" element={<CEAHome />} />
                   <Route path="/expos" element={<ExposStudioPage />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/biblioteca" element={<Biblioteca />} />

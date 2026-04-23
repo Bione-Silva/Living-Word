@@ -215,7 +215,7 @@ Deno.serve(async (req) => {
         .select('id, prompt, description, keywords, image_url, is_curated, use_count')
         .order('is_curated', { ascending: false })
         .order('use_count', { ascending: false })
-        .limit(12);
+        .limit(30);
 
       if (keywords.length > 0) {
         query = query.overlaps('keywords', keywords);
@@ -224,19 +224,19 @@ Deno.serve(async (req) => {
       const { data: matches } = await query;
       let scenes: SceneRow[] = (matches as SceneRow[]) || [];
 
-      if (scenes.length < 12) {
+      if (scenes.length < 30) {
         const { data: fallback } = await adminClient
           .from('biblical_scene_library')
           .select('id, prompt, description, keywords, image_url, is_curated, use_count')
           .order('is_curated', { ascending: false })
           .order('use_count', { ascending: false })
-          .limit(12);
+          .limit(30);
           
         const fallbackScenes = (fallback as SceneRow[]) || [];
         const existingIds = new Set(scenes.map(s => s.id));
         
         for (const fs of fallbackScenes) {
-          if (!existingIds.has(fs.id) && scenes.length < 12) {
+          if (!existingIds.has(fs.id) && scenes.length < 30) {
             scenes.push(fs);
             existingIds.add(fs.id);
           }

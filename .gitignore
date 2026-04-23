@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Environment variables — NEVER commit secrets
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +27,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+pdf-decrypted/
+pdf-sources/
+files (2)/
+files (3)/
+files (5)/
+.gemini/
+.antigravity/
+Agents:Skills_LW/
+LW_Arsenal/
+*.pdf

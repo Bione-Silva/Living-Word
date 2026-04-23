@@ -1,11 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { getCorsHeaders, handleCorsOptions, sanitizeField } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+// ═══ Input limits (security hardening) ═══
+const MAX_PASSAGE_LEN = 500;
+const MAX_PAIN_POINT_LEN = 1000;
+const MAX_AUDIENCE_LEN = 100;
+const MAX_VOICE_LEN = 100;
+const MAX_BODY_SIZE = 10_000; // max request body in characters
 
 interface RequestBody {
   bible_passage: string;
@@ -19,8 +21,10 @@ interface RequestBody {
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return handleCorsOptions(req);
   }
 
   try {
@@ -58,16 +62,25 @@ serve(async (req) => {
     }
     const userId = claimsData.claims.sub as string;
 
-    const body: RequestBody = await req.json();
-    const {
-      bible_passage,
-      audience = "general",
-      pain_point = "",
-      language = "PT",
-      bible_version = "NVI",
-      output_modes = ["sermon", "outline", "devotional"],
-      pastoral_voice,
-    } = body;
+    // ═══ Input validation & sanitization ═══
+    const rawBody = await req.text();
+    if (rawBody.length > MAX_BODY_SIZE) {
+      return new Response(JSON.stringify({ error: "Request body too large" }), {
+        status: 413,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const body: RequestBody = JSON.parse(rawBody);
+
+    const bible_passage = sanitizeField(body.bible_passage, MAX_PASSAGE_LEN);
+    const audience = sanitizeField(body.audience, MAX_AUDIENCE_LEN, "general");
+    const pain_point = sanitizeField(body.pain_point, MAX_PAIN_POINT_LEN, "");
+    const language = sanitizeField(body.language, 5, "PT");
+    const bible_version = sanitizeField(body.bible_version, 10, "NVI");
+    const output_modes = Array.isArray(body.output_modes)
+      ? body.output_modes.filter((m): m is string => typeof m === "string").slice(0, 6)
+      : ["sermon", "outline", "devotional"];
+    const pastoral_voice = sanitizeField(body.pastoral_voice, MAX_VOICE_LEN);
 
     if (!bible_passage) {
       return new Response(JSON.stringify({ error: "bible_passage is required" }), {
@@ -84,12 +97,16 @@ serve(async (req) => {
       .maybeSingle();
 
     const isFree = profile?.plan === "free";
-    const generationsUsed = profile?.generations_used || 0;
-    const generationsLimit = profile?.generations_limit || 500;
-    const creditCostCheck = 20;
+    const creditCost = 20;
 
-    // Check credit balance
-    if ((generationsLimit - generationsUsed) < creditCostCheck) {
+    // ═══ Atomic credit deduction (prevents race conditions) ═══
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const { data: creditOk, error: creditErr } = await adminClient.rpc("debit_credits", {
+      p_user_id: userId,
+      p_cost: creditCost,
+    });
+
+    if (creditErr || creditOk !== true) {
       return new Response(
         JSON.stringify({
           error: "Generation limit reached",
@@ -111,8 +128,7 @@ serve(async (req) => {
     };
     const targetLang = langMap[language] || "Portuguese (Brazilian)";
     const doctrine = profile?.doctrine || "evangelical";
-    const requestedVoice = typeof pastoral_voice === "string" ? pastoral_voice.trim() : "";
-    const voice = requestedVoice || profile?.pastoral_voice || "acolhedor";
+    const voice = pastoral_voice || profile?.pastoral_voice || "acolhedor";
 
     // Determine which formats are free vs blocked
     const MODEL_PREMIUM = "openai/gpt-4o";
@@ -295,7 +311,6 @@ Tone: ${voice}. Always write in ${targetLang}.`;
         totalTokensAll += tokens;
         totalCostAll += cost;
         meta[mode] = { tokens, words: bestWordCount, cost_usd: cost, attempts: attemptsTaken };
-        const adminClient = createClient(supabaseUrl, serviceRoleKey);
         await adminClient.from("generation_logs").insert({
           user_id: userId,
           feature: mode,
@@ -313,14 +328,13 @@ Tone: ${voice}. Always write in ${targetLang}.`;
 
     const elapsedMs = Date.now() - startTime;
 
-    // Deduct credit cost (20 credits for pastoral material)
-    const creditCost = 20;
-    await supabase
+    // Credits already deducted atomically above — fetch remaining for response
+    const { data: updatedProfile } = await supabase
       .from("profiles")
-      .update({ generations_used: generationsUsed + creditCost })
-      .eq("id", userId);
-
-    const generationsRemaining = generationsLimit - generationsUsed - creditCost;
+      .select("generations_used, generations_limit")
+      .eq("id", userId)
+      .maybeSingle();
+    const generationsRemaining = (updatedProfile?.generations_limit || 500) - (updatedProfile?.generations_used || 0);
 
     // Build upgrade hint
     let upgradeHint: string | null = null;
