@@ -15,7 +15,7 @@ interface IngestRequest {
   force_reingest?: boolean // re-ingerir mesmo se documento já existir
 }
 
-type ItemType = 'parabola' | 'personagem' | 'livro' | 'quiz' | 'geral'
+type ItemType = 'parabola' | 'personagem' | 'livro' | 'quiz' | 'devocional' | 'milagre' | 'geral'
 
 interface Chunk {
   content: string
@@ -36,9 +36,10 @@ interface IngestResult {
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
-const CHUNK_SIZE = 1000       // chars de conteúdo por chunk
-const CHUNK_OVERLAP = 150     // chars de sobreposição entre chunks
-const EMBED_BATCH_SIZE = 20   // chunks por batch na API Gemini (rate limit)
+const CHUNK_SIZE = 800        // chars por chunk (reduzido para evitar memory limit)
+const CHUNK_OVERLAP = 100     // chars de sobreposição entre chunks
+const EMBED_BATCH_SIZE = 10   // chunks por batch (reduzido para evitar rate limit)
+const MAX_TEXT_CHARS = 800_000 // limite de chars para PDFs muito grandes (safety)
 const SIMILARITY_THRESHOLD = 0.70
 const MIND = 'cea'            // identificador no schema knowledge
 
@@ -280,7 +281,7 @@ serve(async (req: Request) => {
     )
   }
 
-  const validTypes: ItemType[] = ['parabola', 'personagem', 'livro', 'quiz', 'geral']
+  const validTypes: ItemType[] = ['parabola', 'personagem', 'livro', 'quiz', 'devocional', 'milagre', 'geral']
   if (!validTypes.includes(item_type)) {
     return new Response(
       JSON.stringify({ error: `item_type inválido. Use: ${validTypes.join(', ')}` }),
@@ -339,8 +340,14 @@ serve(async (req: Request) => {
     console.log(`[cea-ingest] PDF baixado: ${buffer.length} bytes`)
 
     // ── 3. Extrair texto ──────────────────────────────────────────────────────
-    const text = await extractTextFromPDF(buffer)
+    let text = await extractTextFromPDF(buffer)
     result.total_chars = text.length
+
+    // Truncar textos muito grandes para evitar WORKER_RESOURCE_LIMIT
+    if (text.length > MAX_TEXT_CHARS) {
+      console.warn(`[cea-ingest] Texto truncado: ${text.length} → ${MAX_TEXT_CHARS} chars (PDF muito grande)`)
+      text = text.slice(0, MAX_TEXT_CHARS)
+    }
 
     // ── 4. Chunking com overlap ───────────────────────────────────────────────
     const chunks = createChunks(text)

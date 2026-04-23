@@ -624,3 +624,66 @@ O CEA é a camada de inteligência teológica de nível seminário do Living Wor
 - Conteúdo bíblico é leitura pública (todos autenticados); progresso é por usuário (RLS por user_id)
 - Ingestão dos PDFs: `node scripts/ingest-bible-content.js all` (requer migration aplicada primeiro)
 
+
+# Living Word — CEA Intelligence Layer
+## Adição ao CLAUDE.md do repositório Antigravity
+
+---
+
+## Centro de Estudos Avançados (CEA)
+
+### Agente principal: cea-orchestrator
+### Rota base: /estudos
+### Registry: .antigravity/agents-registry.json
+
+### Stack de modelos por agente:
+| Agente | Modelo | Motivo |
+|--------|--------|--------|
+| cea-orchestrator | gpt-4o | roteamento inteligente |
+| lw-parables-agent | gpt-4o | profundidade teológica |
+| lw-characters-agent | gpt-4o | profundidade biográfica |
+| lw-panorama-agent | gpt-4o | contexto canônico |
+| lw-bible-research | gpt-4o | precisão linguística |
+| lw-sermon-agent | gpt-4o | qualidade homilética |
+| lw-social-studio | gemini-2.5-flash | velocidade + criatividade |
+| lw-quiz-agent | gpt-4o-mini | economia (não precisa GPT-4o) |
+| lw-devotional | gpt-4o | qualidade PT-BR |
+
+### Antes de qualquer task do CEA:
+1. Identificar agente pelo trigger (ver agents-registry.json)
+2. Ler SKILL.md do agente correspondente
+3. Verificar cache no Supabase (lw_deep_research)
+4. Chamar edge function com RAG ativo (mind='cea')
+5. Retornar resultado + SEMPRE oferecer ações downstream
+
+### Tabelas Supabase do CEA:
+lw_parables | lw_characters | lw_bible_books | lw_quiz |
+lw_quiz_sessions | lw_cea_progress | lw_achievements |
+lw_cea_materials | lw_word_studies | lw_verse_versions |
+lw_deep_research | lw_carousels
+
+### Edge Functions do CEA:
+cea-ingest-pdf | cea-search | cea-deep-study |
+cea-word-study | cea-generate-material | cea-quiz-session
+
+### RAG — Schema knowledge existente:
+- Embedding model: Gemini text-embedding-004 (768d)
+- Filtro obrigatório: mind='cea'
+- Filtro opcional: item_type (parabola|personagem|livro|quiz)
+- Threshold similarity: >= 0.70
+- Top-K: 6 chunks por query
+
+### Purple Ban (válido para todo o CEA):
+- Sem localStorage nos artifacts
+- Sem .env em commits
+- Sem `any` no TypeScript
+- Sem declaração de sucesso sem health check real
+- Sem embedding com null — verificar antes de salvar
+
+### Qualidade mínima por estudo gerado:
+✓ Contexto histórico do período
+✓ Mínimo 1 análise do idioma original (Strong's verificável)
+✓ Mensagem central em 1 frase
+✓ Mínimo 3 aplicações práticas
+✓ Conexão com outro texto bíblico
+✓ Ações downstream oferecidas ao usuário
