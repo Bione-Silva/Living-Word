@@ -18,9 +18,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('OPENAI_API_KEY');
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
+      return new Response(JSON.stringify({ error: 'OPENAI_API_KEY not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       { role: 'user', content: message },
     ];
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

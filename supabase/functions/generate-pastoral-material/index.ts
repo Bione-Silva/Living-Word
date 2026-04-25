@@ -39,10 +39,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const geminiApiKey = Deno.env.get('LOVABLE_API_KEY');
+    const geminiApiKey = Deno.env.get('OPENAI_API_KEY');
 
     if (!geminiApiKey) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
+      return new Response(JSON.stringify({ error: "OPENAI_API_KEY not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -131,8 +131,8 @@ serve(async (req) => {
     const voice = pastoral_voice || profile?.pastoral_voice || "acolhedor";
 
     // Determine which formats are free vs blocked
-    const MODEL_PREMIUM = "openai/gpt-4o";
-    const MODEL_FREE = "openai/gpt-4o-mini";
+    const MODEL_PREMIUM = "gpt-4o";
+    const MODEL_FREE = "gpt-4o-mini";
     const isPremium = profile?.plan === "premium" || profile?.plan === "pro";
     const MODEL = isPremium ? MODEL_PREMIUM : MODEL_FREE;
 
@@ -247,7 +247,7 @@ Tone: ${voice}. Always write in ${targetLang}.`;
           ? `\n\nCRITICAL: Your previous response had only ${bestWordCount} words. The ABSOLUTE MINIMUM is ${requiredMin} words. You MUST write significantly more. Expand every section with detailed explanations, examples, illustrations, and applications. Do NOT summarize.`
           : "";
 
-        const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${geminiApiKey}`,

@@ -42,22 +42,20 @@ async function generateWithHuggingFace(prompt: string, hfToken: string): Promise
   }
 }
 
-async function generateWithGemini(prompt: string, lovableApiKey: string): Promise<Uint8Array | null> {
-  console.log("[generate-article-cover] Trying Gemini (fallback)...");
+async function generateWithGemini(prompt: string, geminiKey: string): Promise<Uint8Array | null> {
+  console.log("[generate-article-cover] Trying Gemini (API nativa)...");
   try {
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${lovableApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [{ role: "user", content: prompt }],
-        modalities: ["image", "text"],
-        aspect_ratio: "16:9",
-      }),
-    });
+    const aiResp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+        }),
+      }
+    );
 
     if (!aiResp.ok) {
       const errText = await aiResp.text();
@@ -66,21 +64,20 @@ async function generateWithGemini(prompt: string, lovableApiKey: string): Promis
     }
 
     const aiData = await aiResp.json();
-    const imageUrl = aiData?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    const b64 = aiData?.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData)?.inlineData?.data;
 
-    if (!imageUrl || !imageUrl.startsWith("data:image")) {
+    if (!b64) {
       console.error("[generate-article-cover] No image in Gemini response");
       return null;
     }
 
-    const base64Data = imageUrl.split(",")[1];
-    const binaryStr = atob(base64Data);
+    const binaryStr = atob(b64);
     const bytes = new Uint8Array(binaryStr.length);
     for (let i = 0; i < binaryStr.length; i++) {
       bytes[i] = binaryStr.charCodeAt(i);
     }
 
-    console.log("[generate-article-cover] ✅ Image generated via Gemini (fallback)");
+    console.log("[generate-article-cover] ✅ Image generated via Gemini");
     return bytes;
   } catch (err) {
     console.error("[generate-article-cover] Gemini exception:", err);
@@ -106,7 +103,7 @@ Deno.serve(async (req) => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const hfToken = Deno.env.get("HF_TOKEN") || "";
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY")!;
+    const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
 
     // Auth
     const supabaseAuth = createClient(supabaseUrl, anonKey, {
@@ -152,7 +149,7 @@ Deno.serve(async (req) => {
 
     // Priority 2: Gemini fallback
     if (!imageBytes) {
-      imageBytes = await generateWithGemini(prompt, lovableApiKey);
+      imageBytes = await generateWithGemini(prompt, geminiKey);
     }
 
     if (!imageBytes) {

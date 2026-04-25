@@ -16,6 +16,8 @@ const LEGACY_PLAN_MAP: Record<string, PlanSlug> = {
   pastoral: 'starter',
   church: 'pro',
   ministry: 'igreja',
+  master: 'igreja',
+  lifetime: 'igreja',
 };
 
 export function normalizePlan(plan?: string | null): PlanSlug {

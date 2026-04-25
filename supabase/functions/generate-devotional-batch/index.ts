@@ -98,7 +98,7 @@ async function generateCoverImage(aiKey: string, title: string, category: string
     const artistic = isArtisticStyle(style.kind);
     const enforcement = artistic ? '' : REALISTIC_ENFORCEMENT;
     const prompt = `${style.desc}. Theme: "${category}", inspired by "${title}". NO people faces, NO cartoons, NO anime, NO text, NO watermarks, NO captions. Portrait 3:4 aspect ratio.${enforcement}`;
-    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${aiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -238,10 +238,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const aiKey = Deno.env.get('LOVABLE_API_KEY')
+    const aiKey = Deno.env.get('OPENAI_API_KEY')
     const openaiKey = Deno.env.get('OPENAI_API_KEY')
     const googleKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_CLOUD_API_KEY')
-    if (!aiKey) throw new Error('LOVABLE_API_KEY not configured')
+    if (!aiKey) throw new Error('OPENAI_API_KEY not configured')
     if (!openaiKey) throw new Error('OPENAI_API_KEY not configured')
     if (!googleKey) throw new Error('GEMINI_API_KEY not configured')
 

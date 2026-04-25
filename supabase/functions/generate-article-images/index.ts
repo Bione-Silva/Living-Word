@@ -15,7 +15,7 @@ function respond(body: Record<string, unknown>, status = 200) {
 
 // ── image generation (HF → Gemini fallback) ──────────────────────────
 
-async function generateImage(prompt: string, hfToken: string, lovableKey: string): Promise<Uint8Array | null> {
+async function generateImage(prompt: string, hfToken: string, geminiKey: string): Promise<Uint8Array | null> {
   if (hfToken) {
     try {
       const r = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0", {
@@ -36,26 +36,27 @@ async function generateImage(prompt: string, hfToken: string, lovableKey: string
     }
   }
 
-  // Gemini fallback
+  // Gemini nativo (API direta)
   try {
-    const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${lovableKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [{ role: "user", content: prompt }],
-        modalities: ["image", "text"],
-        aspect_ratio: "16:9",
-      }),
-    });
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+        }),
+      }
+    );
     if (!r.ok) {
-      console.warn(`[article-images] Gemini ${r.status}`);
+      console.warn(`[article-images] Gemini ${r.status}`, await r.text());
       return null;
     }
     const d = await r.json();
-    const url = d?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!url?.startsWith("data:image")) return null;
-    const bin = atob(url.split(",")[1]);
+    const b64 = d?.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData)?.inlineData?.data;
+    if (!b64) return null;
+    const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     console.log("[article-images] ✅ Gemini ok");
@@ -113,7 +114,7 @@ Deno.serve(async (req) => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const hfToken = Deno.env.get("HF_TOKEN") || "";
-    const lovableKey = Deno.env.get("LOVABLE_API_KEY")!;
+    const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
 
     const sbAuth = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
     const {
@@ -151,7 +152,7 @@ Deno.serve(async (req) => {
           aspectRatio: '16:9',
         });
 
-        const bytes = await generateImage(prompt, hfToken, lovableKey);
+        const bytes = await generateImage(prompt, hfToken, geminiKey);
         if (!bytes) return null;
 
         // Upload to storage

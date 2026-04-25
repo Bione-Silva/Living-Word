@@ -256,7 +256,7 @@ interface SermonSession {
   id: string;
   title: string;
   content: string;
-  passage: string;
+  bible_passage: string;
   date: string;
 }
 
@@ -494,7 +494,7 @@ export default function Sermoes() {
     (async () => {
       const { data } = await supabase
         .from('materials')
-        .select('id, title, content, passage, created_at')
+        .select('id, title, content, bible_passage, created_at')
         .eq('id', materialId)
         .eq('user_id', user.id)
         .maybeSingle();
@@ -503,7 +503,7 @@ export default function Sermoes() {
           id: data.id,
           title: data.title,
           content: data.content || '',
-          passage: data.passage || '',
+          bible_passage: (data as any).bible_passage || '',
           date: new Date(data.created_at).toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US'),
         };
         handleRestoreSession(session);
@@ -524,10 +524,10 @@ export default function Sermoes() {
 
   const refreshSessions = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase.from('materials').select('id, title, content, passage, created_at').eq('user_id', user.id).eq('type', 'sermon').order('created_at', { ascending: false }).limit(20);
+    const { data } = await supabase.from('materials').select('id, title, content, bible_passage, created_at').eq('user_id', user.id).eq('type', 'sermon').order('created_at', { ascending: false }).limit(20);
     if (data) {
       setSessions(data.map(d => ({
-        id: d.id, title: d.title, content: d.content, passage: d.passage || '',
+        id: d.id, title: d.title, content: d.content, bible_passage: (d as any).bible_passage || '',
         date: new Date(d.created_at).toLocaleDateString(lang === 'PT' ? 'pt-BR' : lang === 'ES' ? 'es-ES' : 'en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
       })));
     }
@@ -558,7 +558,7 @@ export default function Sermoes() {
 
       // Save to DB
       const { data: insertedData } = await supabase.from('materials').insert({
-        user_id: user.id, type: 'sermon', title, content, language: lang, passage: topicText.trim(),
+        user_id: user.id, type: 'sermon', title, content, language: lang, bible_passage: topicText.trim(),
       }).select('id').single();
       if (insertedData) {
         setActiveSessionId(insertedData.id);
@@ -571,8 +571,10 @@ export default function Sermoes() {
       await saveMessage(user.id, AGENT_ID, 'assistant', content);
 
       await refreshSessions();
-    } catch {
-      const errContent = lang === 'PT' ? 'Desculpe, ocorreu um erro. Tente novamente.' : lang === 'ES' ? 'Lo siento, ocurrió un error. Intenta de nuevo.' : 'Sorry, an error occurred. Please try again.';
+    } catch (err: any) {
+      console.error("Erro na geração:", err);
+      const errDetail = err.message || JSON.stringify(err);
+      const errContent = lang === 'PT' ? `Desculpe, ocorreu um erro. Tente novamente.\n\n**Detalhe Técnico:** \`${errDetail}\`` : lang === 'ES' ? `Lo siento, ocurrió un error. Intenta de nuevo.\n\n**Detalle:** \`${errDetail}\`` : `Sorry, an error occurred. Please try again.\n\n**Detail:** \`${errDetail}\``;
       setSermonContent(errContent);
       setSermonTitle('Erro');
     } finally {
@@ -587,7 +589,7 @@ export default function Sermoes() {
     // (causa direta do "tela preta da morte" no iOS Mobile ao abrir histórico).
     const safeContent = typeof session?.content === 'string' ? session.content : '';
     const safeTitle = typeof session?.title === 'string' && session.title.trim() ? session.title : (lang === 'PT' ? 'Sermão sem título' : lang === 'ES' ? 'Sermón sin título' : 'Untitled sermon');
-    const safePassage = typeof session?.passage === 'string' ? session.passage : '';
+    const safePassage = typeof session?.bible_passage === 'string' ? session.bible_passage : '';
 
     if (safeContent.trim().startsWith('{')) {
       try {
@@ -644,10 +646,10 @@ export default function Sermoes() {
     const payload = JSON.stringify({ _type: 'blocks', blocks, bigIdea, passageRef, markdown: md });
     try {
       if (activeSessionId) {
-        await (supabase as any).from('materials').update({ title, content: payload, passage: passageRef }).eq('id', activeSessionId);
+        await (supabase as any).from('materials').update({ title, content: payload, bible_passage: passageRef }).eq('id', activeSessionId);
       } else {
         const { data } = await (supabase as any).from('materials').insert({
-          user_id: user.id, type: 'sermon', title, content: payload, language: lang, passage: passageRef,
+          user_id: user.id, type: 'sermon', title, content: payload, language: lang, bible_passage: passageRef,
         }).select('id').single();
         if (data) {
           setActiveSessionId(data.id);
@@ -815,7 +817,7 @@ export default function Sermoes() {
     if (activeSessionId) {
       await supabase.from('materials').update({ content: sermonContent, title: sermonTitle }).eq('id', activeSessionId);
     } else {
-      const { data } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content: sermonContent, language: lang, passage: sermonTopic }).select('id').single();
+      const { data } = await supabase.from('materials').insert({ user_id: user.id, type: 'sermon', title: sermonTitle, content: sermonContent, language: lang, bible_passage: sermonTopic }).select('id').single();
       if (data) {
         setActiveSessionId(data.id);
         const { triggerAutoFeed } = await import('@/lib/autofeed-trigger');

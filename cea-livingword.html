@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Estudos Avançados — Living Word</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0a1e;--sidebar-bg:#0c0818;--surface:#160f2a;--surface-2:#1e1538;
+  --card:#1a1235;--card-hover:#211847;--border:rgba(255,255,255,0.07);
+  --border-light:rgba(124,58,237,0.2);--purple:#7C3AED;--purple-mid:#6d28d9;
+  --purple-glow:rgba(124,58,237,0.15);--purple-soft:rgba(124,58,237,0.08);
+  --gold:#F59E0B;--gold-soft:rgba(245,158,11,0.12);--green:#10B981;
+  --green-soft:rgba(16,185,129,0.1);--teal:#14B8A6;--coral:#F97316;
+  --blue:#3B82F6;--text-1:#F0EBF8;--text-2:#9B8FBF;--text-3:#5C5280;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-1);display:flex;font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(124,58,237,.3);border-radius:2px}
+
+/* SIDEBAR */
+.sidebar{width:210px;min-width:210px;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;position:relative;z-index:10}
+.sb-logo{display:flex;align-items:center;gap:10px;padding:16px 14px 14px;border-bottom:1px solid var(--border)}
+.sb-logo-icon{width:30px;height:30px;border-radius:8px;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.sb-logo-text{font-size:14px;font-weight:600;color:var(--text-1)}
+.sb-section{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);padding:14px 14px 5px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;font-size:13px;color:var(--text-2);border-left:2px solid transparent;transition:all .15s;position:relative}
+.nav-item:hover{color:var(--text-1);background:rgba(255,255,255,.03)}
+.nav-item.active{color:var(--text-1);background:var(--purple-soft);border-left-color:var(--purple)}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;letter-spacing:.04em}
+.nb-gold{background:var(--gold);color:#000}
+.nb-new{background:var(--purple);color:#fff}
+.nb-premium{background:linear-gradient(135deg,#9F67FF,#7C3AED);color:#fff}
+.sb-credits{padding:10px 14px;border-top:1px solid var(--border)}
+.credits-label{font-size:10px;color:var(--text-3);margin-bottom:5px}
+.credits-track{height:3px;background:rgba(255,255,255,.07);border-radius:2px;margin-bottom:5px}
+.credits-fill{height:100%;width:74%;background:var(--green);border-radius:2px}
+.credits-val{font-size:11px;color:var(--green);font-weight:500}
+.sb-user{display:flex;align-items:center;gap:9px;padding:10px 14px;border-top:1px solid var(--border);cursor:pointer}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#9F67FF);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.user-name{font-size:12px;font-weight:500;color:var(--text-1)}
+.user-sub{font-size:10px;color:var(--text-3)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;gap:12px;padding:0 24px;height:54px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--sidebar-bg)}
+.topbar-crumb{font-size:12px;color:var(--text-3)}
+.topbar-crumb b{color:var(--text-1);font-weight:500}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text-3);cursor:text;transition:border-color .15s;width:220px}
+.search-box:hover{border-color:var(--border-light)}
+.topbar-icon-btn{width:32px;height:32px;border-radius:8px;background:transparent;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);font-size:13px;transition:all .15s}
+.topbar-icon-btn:hover{background:var(--surface);color:var(--text-1)}
+
+/* PAGES */
+.page{display:none;flex:1;overflow:hidden;flex-direction:column}
+.page.active{display:flex}
+
+/* HOME */
+.home-scroll{flex:1;overflow-y:auto;padding:28px 28px 40px}
+.home-hero{background:linear-gradient(135deg,#1e1049 0%,#2d1b69 50%,#1a0f3a 100%);border:1px solid var(--border-light);border-radius:var(--r-lg);padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden}
+.home-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(124,58,237,.2),transparent 70%);pointer-events:none}
+.home-hero::after{content:'בְּחָנוּנִי';position:absolute;right:28px;bottom:-10px;font-family:'Crimson Pro',serif;font-size:110px;color:rgba(124,58,237,.06);pointer-events:none;line-height:1}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.hero-title{font-family:'Crimson Pro',serif;font-size:32px;font-weight:600;color:var(--text-1);line-height:1.15;margin-bottom:8px}
+.hero-title em{color:var(--gold);font-style:normal}
+.hero-sub{font-size:13px;color:var(--text-2);max-width:480px;line-height:1.6}
+.hero-stats{display:flex;gap:24px;margin-top:20px}
+.hero-stat .n{font-size:22px;font-weight:600;color:var(--text-1)}
+.hero-stat .l{font-size:11px;color:var(--text-3);margin-top:1px}
+.home-search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border-light);border-radius:10px;padding:10px 16px;margin-bottom:24px;cursor:text;transition:border-color .15s}
+.home-search:hover{border-color:rgba(124,58,237,.4)}
+.hs-text{font-size:13px;color:var(--text-3);flex:1}
+.hs-text b{color:var(--purple);font-weight:400}
+.hs-kbd{font-size:10px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:4px;padding:2px 6px;color:var(--text-3)}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:13px;font-weight:600;color:var(--text-1)}
+.section-link{font-size:12px;color:var(--purple);cursor:pointer}
+.modules-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+.module-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.module-card:hover{background:var(--card-hover);border-color:var(--border-light);transform:translateY(-2px)}
+.module-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r) var(--r) 0 0}
+.mc-teal::before{background:var(--teal)}
+.mc-blue::before{background:var(--blue)}
+.mc-gold::before{background:var(--gold)}
+.mc-coral::before{background:var(--coral)}
+.mc-purple::before{background:var(--purple)}
+.mc-green::before{background:var(--green)}
+.module-icon{font-size:22px;margin-bottom:10px;display:block}
+.module-name{font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:4px}
+.module-desc{font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:12px}
+.module-meta{display:flex;align-items:center;justify-content:space-between}
+.module-count{font-size:11px;font-weight:600;background:rgba(255,255,255,.06);border-radius:6px;padding:2px 8px;color:var(--text-2)}
+.continue-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px}
+.continue-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;cursor:pointer;transition:all .15s}
+.continue-card:hover{background:var(--card-hover);border-color:var(--border-light)}
+.cc-type{font-size:10px;color:var(--text-3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+.cc-title{font-size:13px;font-weight:500;color:var(--text-1);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-bar{height:2px;background:rgba(255,255,255,.07);border-radius:2px}
+.cc-fill{height:100%;border-radius:2px}
+.cc-meta{display:flex;align-items:center;justify-content:space-between;margin-top:5px}
+.cc-pct,.cc-ago{font-size:10px;color:var(--text-3)}
+.study-day{background:linear-gradient(135deg,#1a1235,#211545);border:1px solid var(--border-light);border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:20px;cursor:pointer;transition:all .2s}
+.study-day:hover{border-color:rgba(124,58,237,.4);transform:translateY(-1px)}
+.sd-left{flex:1}
+.sd-eyebrow{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.sd-title{font-family:'Crimson Pro',serif;font-size:22px;font-weight:600;color:var(--text-1);margin-bottom:6px;line-height:1.2}
+.sd-ref{font-size:12px;color:#9F67FF;margin-bottom:10px}
+.sd-desc{font-size:13px;color:var(--text-2);line-height:1.55;max-width:420px}
+.sd-actions{display:flex;gap:8px;margin-top:14px}
+.sd-btn{font-size:12px;padding:6px 14px;border-radius:7px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;font-weight:500}
+.sd-btn-primary{background:var(--purple);color:#fff;border:none}
+.sd-btn-primary:hover{background:#6d28d9}
+.sd-btn-ghost{background:transparent;border:1px solid var(--border-light);color:var(--text-2)}
+.sd-btn-ghost:hover{background:var(--purple-soft);color:var(--text-1)}
+.sd-right{width:90px;height:90px;background:rgba(124,58,237,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:44px;flex-shrink:0}
+
+/* GRID PAGE */
+.grid-main{flex:1;overflow-y:auto;padding:24px}
+.grid-header{margin-bottom:20px}
+.grid-title{font-size:20px;font-weight:600;color:var(--text-1);margin-bottom:4px}
+.grid-sub{font-size:13px;color:var(--text-2)}
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.filter-pill{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.filter-pill:hover{border-color:var(--border-light);color:var(--text-1)}
+.filter-pill.active{background:var(--purple-soft);border-color:var(--purple);color:var(--text-1)}
+.filter-sep{width:1px;height:16px;background:var(--border);margin:0 4px}
+.study-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.study-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .2s;position:relative}
+.study-card:hover{background:var(--card-hover);border-color:var(--border-light);transform:translateY(-2px)}
+.study-card.selected{border-color:var(--purple);background:var(--purple-soft)}
+.sc-num{font-size:10px;color:var(--text-3);margin-bottom:6px;font-weight:500}
+.sc-title{font-size:13px;font-weight:600;color:var(--text-1);margin-bottom:4px;line-height:1.3}
+.sc-ref{font-size:11px;color:var(--text-3);margin-bottom:10px}
+.sc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.tag{font-size:10px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--text-3)}
+.sc-prog-wrap{width:100%;height:2px;background:rgba(255,255,255,.07);border-radius:1px}
+.sc-prog-fill{height:100%;border-radius:1px;background:var(--purple)}
+
+/* DEEP PANEL */
+.deep-panel{width:0;overflow:hidden;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;transition:width .25s ease;flex-shrink:0}
+.deep-panel.open{width:460px}
+.dp-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;flex-shrink:0}
+.dp-close{width:28px;height:28px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--text-2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-left:auto;flex-shrink:0}
+.dp-close:hover{background:var(--surface-2);color:var(--text-1)}
+.dp-title-wrap{flex:1;min-width:0}
+.dp-ref{font-size:11px;color:#9F67FF;margin-bottom:3px;font-weight:500}
+.dp-title{font-family:'Crimson Pro',serif;font-size:20px;font-weight:600;color:var(--text-1);line-height:1.2}
+.dp-type{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--purple-soft);color:#9F67FF;font-weight:500;margin-top:4px;display:inline-block}
+.dp-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 20px;flex-shrink:0;overflow-x:auto}
+.dp-tab{padding:10px 14px;font-size:12px;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;font-weight:500}
+.dp-tab:hover{color:var(--text-2)}
+.dp-tab.active{color:var(--text-1);border-bottom-color:var(--purple)}
+.dp-body{flex:1;overflow-y:auto;padding:20px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.field-block{margin-bottom:20px}
+.field-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.field-text{font-family:'Crimson Pro',serif;font-size:15px;color:var(--text-2);line-height:1.7}
+.orig-box{background:var(--surface-2);border:1px solid var(--border-light);border-radius:var(--r);padding:16px 18px;margin-bottom:14px}
+.orig-word{font-family:'Crimson Pro',serif;font-size:36px;font-weight:600;color:var(--text-1);margin-bottom:4px}
+.orig-trans{font-size:13px;color:var(--text-3);margin-bottom:10px;font-style:italic}
+.orig-table{width:100%;border-collapse:collapse}
+.orig-table td{padding:5px 0;font-size:12px;border-bottom:1px solid var(--border)}
+.orig-table td:first-child{color:var(--text-3);width:110px}
+.orig-table td:last-child{color:var(--text-1);font-weight:500}
+.orig-table tr:last-child td{border-bottom:none}
+.strongs-badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:5px;background:var(--gold-soft);color:var(--gold);font-weight:600}
+.insight-box{background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(124,58,237,.04));border:1px solid rgba(124,58,237,.2);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--text-2);line-height:1.65}
+.insight-box strong{color:var(--text-1)}
+.ver-comp{margin-top:12px}
+.ver-item{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px}
+.ver-badge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:4px;margin-bottom:6px;display:inline-block}
+.vb-nvi{background:rgba(59,130,246,.15);color:#93C5FD}
+.vb-ara{background:rgba(16,185,129,.12);color:#6EE7B7}
+.vb-naa{background:rgba(245,158,11,.12);color:#FCD34D}
+.ver-text{font-family:'Crimson Pro',serif;font-size:15px;font-style:italic;color:var(--text-2);line-height:1.6}
+.app-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.app-item{display:flex;gap:10px;background:var(--surface-2);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:var(--text-2);line-height:1.55}
+.app-num{width:20px;height:20px;border-radius:50%;background:var(--purple-soft);border:1px solid rgba(124,58,237,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#9F67FF;flex-shrink:0;margin-top:1px}
+.dp-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;flex-shrink:0;background:var(--sidebar-bg)}
+.dp-action{flex:1;min-width:100px;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 10px;border-radius:var(--r-sm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text-2);transition:all .15s;font-family:'DM Sans',sans-serif}
+.dp-action:hover{background:var(--surface-2);border-color:var(--border-light);color:var(--text-1)}
+.dp-action.primary{background:var(--purple);border-color:var(--purple);color:#fff}
+.dp-action.primary:hover{background:#6d28d9}
+
+/* QUIZ */
+.quiz-scroll{flex:1;overflow-y:auto;padding:24px;max-width:720px;margin:0 auto;width:100%}
+.quiz-hub-header{background:linear-gradient(135deg,#1a0f3a,#2d1b69);border:1px solid var(--border-light);border-radius:var(--r-lg);padding:24px;margin-bottom:24px}
+.qh-title{font-size:18px;font-weight:600;color:var(--text-1);margin-bottom:6px}
+.qh-sub{font-size:13px;color:var(--text-2);margin-bottom:18px}
+.qh-stats{display:flex;gap:12px}
+.qh-stat{text-align:center;background:rgba(255,255,255,.05);border-radius:var(--r-sm);padding:10px 14px;flex:1}
+.qh-stat .n{font-size:22px;font-weight:600;color:var(--text-1)}
+.qh-stat .l{font-size:10px;color:var(--text-3);margin-top:2px}
+.quiz-options-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.quiz-opt-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .15s;text-align:center}
+.quiz-opt-card:hover{background:var(--card-hover);border-color:var(--border-light)}
+.quiz-opt-card.sel{background:var(--purple-soft);border-color:var(--purple)}
+.qoc-icon{font-size:24px;margin-bottom:6px}
+.qoc-name{font-size:12px;font-weight:600;color:var(--text-1);margin-bottom:3px}
+.qoc-count{font-size:11px;color:var(--text-3)}
+.quiz-level-row{display:flex;gap:8px;margin-bottom:20px;align-items:center}
+.quiz-level-label{font-size:12px;color:var(--text-3);margin-right:4px}
+.level-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;font-size:12px;color:var(--text-2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.level-btn:hover{border-color:var(--border-light);color:var(--text-1)}
+.level-btn.active{background:var(--purple-soft);border-color:var(--purple);color:var(--text-1)}
+.start-quiz-btn{width:100%;padding:12px;border-radius:var(--r);background:var(--purple);border:none;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.start-quiz-btn:hover{background:#6d28d9;transform:translateY(-1px)}
+.quiz-session{display:none}
+.quiz-session.active{display:block}
+.q-progress-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.qp-track{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:2px}
+.qp-fill{height:100%;border-radius:2px;background:var(--purple);transition:width .3s}
+.qp-label{font-size:12px;color:var(--text-3);white-space:nowrap}
+.q-card{background:var(--card);border:1px solid var(--border-light);border-radius:var(--r-lg);padding:28px;margin-bottom:16px}
+.q-num{font-size:11px;color:var(--text-3);font-weight:500;margin-bottom:10px;letter-spacing:.04em}
+.q-text{font-family:'Crimson Pro',serif;font-size:22px;font-weight:600;color:var(--text-1);line-height:1.35;margin-bottom:24px}
+.q-timer-row{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-bottom:16px}
+.timer-circle{width:36px;height:36px;position:relative}
+.timer-circle svg{transform:rotate(-90deg)}
+.timer-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:var(--text-1)}
+.q-options{display:flex;flex-direction:column;gap:10px}
+.q-opt{display:flex;align-items:center;gap:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 16px;cursor:pointer;transition:all .15s}
+.q-opt:hover{background:var(--card-hover);border-color:var(--border-light)}
+.q-opt.correct{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.4)}
+.q-opt.wrong{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3)}
+.opt-letter{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--text-2);flex-shrink:0;transition:all .15s}
+.q-opt.correct .opt-letter{background:var(--green);border-color:var(--green);color:#fff}
+.q-opt.wrong .opt-letter{background:#EF4444;border-color:#EF4444;color:#fff}
+.opt-text{font-size:13px;color:var(--text-1)}
+.q-feedback{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:var(--r);padding:16px;margin-top:14px;display:none}
+.q-feedback.show{display:block}
+.q-feedback.wrong{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2)}
+.qf-result{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--green)}
+.qf-result.wrong{color:#F87171}
+.qf-explain{font-size:13px;color:var(--text-2);line-height:1.6}
+.qf-ref{font-size:11px;color:var(--text-3);margin-top:6px}
+.q-next-btn{width:100%;padding:11px;border-radius:var(--r);background:var(--purple);border:none;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:12px;transition:all .15s;display:none}
+.q-next-btn.show{display:block}
+.q-next-btn:hover{background:#6d28d9}
+
+/* WORD STUDY */
+.ws-scroll{flex:1;overflow-y:auto;padding:24px}
+.ws-search{display:flex;gap:10px;margin-bottom:28px}
+.ws-input{flex:1;background:var(--surface);border:1px solid var(--border-light);border-radius:var(--r);padding:12px 16px;font-size:14px;color:var(--text-1);font-family:'DM Sans',sans-serif;transition:border-color .15s}
+.ws-input:focus{outline:none;border-color:var(--purple)}
+.ws-input::placeholder{color:var(--text-3)}
+.ws-search-btn{padding:12px 20px;background:var(--purple);border:none;border-radius:var(--r);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.ws-search-btn:hover{background:#6d28d9}
+.ws-result{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ws-main{background:var(--card);border:1px solid var(--border-light);border-radius:var(--r-lg);padding:24px}
+.ws-word-display{text-align:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.ws-original{font-family:'Crimson Pro',serif;font-size:52px;font-weight:300;color:var(--text-1);line-height:1;margin-bottom:6px}
+.ws-translit{font-size:15px;color:var(--text-3);font-style:italic;margin-bottom:8px}
+.ws-strongs{display:inline-block;background:var(--gold-soft);color:var(--gold);font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+.ws-morpho-table{width:100%;border-collapse:collapse;margin:12px 0}
+.ws-morpho-table tr{border-bottom:1px solid var(--border)}
+.ws-morpho-table tr:last-child{border-bottom:none}
+.ws-morpho-table td{padding:7px 0;font-size:12px}
+.ws-morpho-table td:first-child{color:var(--text-3);width:120px}
+.ws-morpho-table td:last-child{color:var(--text-1);font-weight:500}
+.ws-insight{background:linear-gradient(135deg,var(--purple-soft),transparent);border:1px solid rgba(124,58,237,.2);border-radius:var(--r-sm);padding:14px;font-size:13px;color:var(--text-2);line-height:1.65;margin-top:12px}
+.ws-insight strong{color:var(--text-1)}
+.ws-side{display:flex;flex-direction:column;gap:12px}
+.ws-ver-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.ws-ver-title{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.ws-ver-item{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.ws-ver-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.ws-ver-text{font-family:'Crimson Pro',serif;font-size:14px;font-style:italic;color:var(--text-2);line-height:1.55}
+
+/* PROGRESS */
+.prog-scroll{flex:1;overflow-y:auto;padding:24px}
+.prog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.prog-stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.psc-label{font-size:11px;color:var(--text-3);margin-bottom:6px}
+.psc-val{font-size:28px;font-weight:600;color:var(--text-1);margin-bottom:2px}
+.psc-sub{font-size:11px;color:var(--green)}
+.achievements-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.achievement{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;transition:all .15s;cursor:pointer}
+.achievement:hover{background:var(--card-hover);border-color:var(--border-light)}
+.achievement.locked{opacity:.4}
+.ach-icon{font-size:28px;margin-bottom:6px}
+.ach-name{font-size:11px;font-weight:600;color:var(--text-2);line-height:1.3}
+.ach-pts{font-size:10px;color:var(--gold);margin-top:3px}
+.module-prog-list{display:flex;flex-direction:column;gap:10px}
+.mp-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;display:flex;align-items:center;gap:14px}
+.mp-icon{font-size:20px;width:36px;text-align:center}
+.mp-info{flex:1}
+.mp-name{font-size:13px;font-weight:500;color:var(--text-1);margin-bottom:4px}
+.mp-track{height:4px;background:rgba(255,255,255,.07);border-radius:2px}
+.mp-fill{height:100%;border-radius:2px}
+.mp-pct{font-size:12px;font-weight:600;color:var(--text-2);min-width:32px;text-align:right}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .25s ease forwards}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">LW</div>
+    <span class="sb-logo-text">Living Word</span>
+  </div>
+  <div class="sb-section">Ferramentas</div>
+  <div class="nav-item" onclick="goPage('cea-home')"><span class="nav-icon">⊞</span> Dashboard</div>
+  <div class="nav-item"><span class="nav-icon">✦</span> Criar</div>
+  <div class="nav-item"><span class="nav-icon">⌕</span> Pesquisar</div>
+  <div class="nav-item"><span class="nav-icon">📖</span> Bíblia</div>
+  <div class="sb-section">Recursos</div>
+  <div class="nav-item"><span class="nav-icon">🧠</span> Mentes Brilhantes <span class="nav-badge nb-premium">Premium</span></div>
+  <div class="nav-item"><span class="nav-icon">🎙</span> Sermões</div>
+  <div class="nav-item"><span class="nav-icon">🎚</span> Modo Púlpito <span class="nav-badge nb-new">NOVO</span></div>
+  <div class="nav-item"><span class="nav-icon">📚</span> Biblioteca</div>
+  <div class="nav-item"><span class="nav-icon">📅</span> Calendário</div>
+  <div class="nav-item"><span class="nav-icon">✦</span> Estúdio Social</div>
+  <div class="nav-item active" id="nav-cea" onclick="goPage('cea-home')"><span class="nav-icon">🎓</span> Centro de Estudos <span class="nav-badge nb-gold">NOVO</span></div>
+  <div class="nav-item" id="nav-parabolas" onclick="goPage('parabolas')" style="padding-left:28px;font-size:12px"><span class="nav-icon" style="font-size:12px">📖</span> Parábolas</div>
+  <div class="nav-item" id="nav-personagens" onclick="goPage('personagens')" style="padding-left:28px;font-size:12px"><span class="nav-icon" style="font-size:12px">👤</span> Personagens</div>
+  <div class="nav-item" id="nav-livros" onclick="goPage('livros')" style="padding-left:28px;font-size:12px"><span class="nav-icon" style="font-size:12px">📚</span> Panorama</div>
+  <div class="nav-item" id="nav-pesquisa" onclick="goPage('pesquisa')" style="padding-left:28px;font-size:12px"><span class="nav-icon" style="font-size:12px">🔬</span> Original</div>
+  <div class="nav-item" id="nav-quiz" onclick="goPage('quiz')" style="padding-left:28px;font-size:12px"><span class="nav-icon" style="font-size:12px">🎯</span> Quiz</div>
+  <div class="nav-item" id="nav-progresso" onclick="goPage('progresso')" style="padding-left:28px;font-size:12px"><span class="nav-icon" style="font-size:12px">🏆</span> Meu Progresso</div>
+  <div class="nav-item"><span class="nav-icon">💬</span> Palavra Amiga</div>
+  <div class="nav-item"><span class="nav-icon">🧒</span> Kids</div>
+  <div class="sb-credits">
+    <div class="credits-label">CRÉDITOS</div>
+    <div class="credits-track"><div class="credits-fill"></div></div>
+    <div class="credits-val">18.985 disponíveis</div>
+  </div>
+  <div class="sb-user">
+    <div class="avatar">B</div>
+    <div class="user-info">
+      <div class="user-name">Bione</div>
+      <div class="user-sub">Igreja</div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-crumb" id="topbar-crumb">Centro de Estudos › <b>Home</b></div>
+    <div class="topbar-right">
+      <div class="search-box" onclick="goPage('pesquisa')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        &nbsp;Buscar no CEA…
+      </div>
+      <div class="topbar-icon-btn">🔔</div>
+      <div class="topbar-icon-btn" style="font-size:11px">?</div>
+      <div class="avatar" style="width:30px;height:30px;cursor:pointer">B</div>
+    </div>
+  </div>
+
+  <!-- ════ HOME ════ -->
+  <div class="page active fade-in" id="page-cea-home">
+    <div class="home-scroll">
+      <div class="home-hero">
+        <div class="hero-eyebrow">Centro de Estudos Avançados</div>
+        <div class="hero-title">Teologia de seminário<br>ao alcance de <em>todo líder</em></div>
+        <div class="hero-sub">40 parábolas, 200 personagens, 66 livros, grego e hebraico originais — tudo conectado à geração de sermões, carrosséis e materiais.</div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="n">40</div><div class="l">Parábolas</div></div>
+          <div class="hero-stat"><div class="n">200</div><div class="l">Personagens</div></div>
+          <div class="hero-stat"><div class="n">66</div><div class="l">Livros</div></div>
+          <div class="hero-stat"><div class="n">250+</div><div class="l">Questões</div></div>
+        </div>
+      </div>
+      <div class="home-search" onclick="goPage('pesquisa')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#7C3AED"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <span class="hs-text">Pesquise por qualquer <b>parábola, personagem, livro, palavra em grego ou hebraico</b>…</span>
+        <span class="hs-kbd">⌘K</span>
+      </div>
+      <div class="section-head"><div class="section-title">Módulos de estudo</div></div>
+      <div class="modules-grid">
+        <div class="module-card mc-teal" onclick="goPage('parabolas')">
+          <span class="module-icon">📖</span>
+          <div class="module-name">Parábolas</div>
+          <div class="module-desc">40 parábolas de Jesus com contexto histórico, análise do grego e aplicação pastoral.</div>
+          <div class="module-meta"><span class="module-count">40 itens</span><span style="font-size:11px;color:#14B8A6">20% concluído</span></div>
+        </div>
+        <div class="module-card mc-blue" onclick="goPage('personagens')">
+          <span class="module-icon">👤</span>
+          <div class="module-name">Personagens</div>
+          <div class="module-desc">200 personagens bíblicos com biografia, cronologia, lições e estudos tipológicos.</div>
+          <div class="module-meta"><span class="module-count">200 itens</span><span style="font-size:11px;color:#3B82F6">10% concluído</span></div>
+        </div>
+        <div class="module-card mc-gold" onclick="goPage('livros')">
+          <span class="module-icon">📚</span>
+          <div class="module-name">Panorama</div>
+          <div class="module-desc">66 livros da Bíblia com autor, contexto histórico, mensagem central e versículos-chave.</div>
+          <div class="module-meta"><span class="module-count">66 livros</span><span style="font-size:11px;color:#F59E0B">30% concluído</span></div>
+        </div>
+        <div class="module-card mc-coral" onclick="goPage('pesquisa')">
+          <span class="module-icon">🔬</span>
+          <div class="module-name">Pesquisa do Original</div>
+          <div class="module-desc">Grego · Hebraico · Aramaico — morfologia completa, Strong's e comparação de versões.</div>
+          <div class="module-meta"><span class="module-count">ilimitado</span></div>
+        </div>
+        <div class="module-card mc-purple" onclick="goPage('quiz')">
+          <span class="module-icon">🎯</span>
+          <div class="module-name">Quiz Bíblico</div>
+          <div class="module-desc">250 perguntas + geração automática por IA. Sessões gamificadas com conquistas.</div>
+          <div class="module-meta"><span class="module-count">250+ questões</span><span style="font-size:11px;color:#9F67FF">40% concluído</span></div>
+        </div>
+        <div class="module-card mc-green" onclick="goPage('progresso')">
+          <span class="module-icon">🏆</span>
+          <div class="module-name">Meu Progresso</div>
+          <div class="module-desc">Streak, conquistas, histórico de estudos e dashboard de desempenho completo.</div>
+          <div class="module-meta"><span class="module-count">dashboard</span></div>
+        </div>
+      </div>
+      <div class="section-head"><div class="section-title">Continue de onde parou</div><div class="section-link">Ver todos</div></div>
+      <div class="continue-grid">
+        <div class="continue-card" onclick="openStudy('parabola','O Filho Pródigo','Lucas 15:11-32')">
+          <div class="cc-type">Parábola</div>
+          <div class="cc-title">O Filho Pródigo</div>
+          <div class="cc-bar"><div class="cc-fill" style="width:68%;background:#7C3AED"></div></div>
+          <div class="cc-meta"><span class="cc-pct">68%</span><span class="cc-ago">há 2 dias</span></div>
+        </div>
+        <div class="continue-card" onclick="openStudy('personagem','Elias','1 Reis 17-19')">
+          <div class="cc-type">Personagem</div>
+          <div class="cc-title">Elias</div>
+          <div class="cc-bar"><div class="cc-fill" style="width:45%;background:#3B82F6"></div></div>
+          <div class="cc-meta"><span class="cc-pct">45%</span><span class="cc-ago">há 5 dias</span></div>
+        </div>
+        <div class="continue-card" onclick="goPage('livros')">
+          <div class="cc-type">Panorama</div>
+          <div class="cc-title">Romanos</div>
+          <div class="cc-bar"><div class="cc-fill" style="width:30%;background:#F59E0B"></div></div>
+          <div class="cc-meta"><span class="cc-pct">30%</span><span class="cc-ago">há 1 sem</span></div>
+        </div>
+      </div>
+      <div class="section-head"><div class="section-title">Estudo do dia</div></div>
+      <div class="study-day" onclick="openStudy('parabola','O Bom Samaritano','Lucas 10:30-37')">
+        <div class="sd-left">
+          <div class="sd-eyebrow">Parábola do dia · Qui, 23 Abr</div>
+          <div class="sd-title">O Bom Samaritano</div>
+          <div class="sd-ref">Lucas 10:30-37</div>
+          <div class="sd-desc">A parábola mais poderosa sobre amor ao próximo — contada em um contexto de tensão étnica real entre judeus e samaritanos no século I.</div>
+          <div class="sd-actions">
+            <button class="sd-btn sd-btn-primary" onclick="event.stopPropagation();openStudy('parabola','O Bom Samaritano','Lucas 10:30-37')">Estudar agora</button>
+            <button class="sd-btn sd-btn-ghost" onclick="event.stopPropagation()">Gerar sermão</button>
+            <button class="sd-btn sd-btn-ghost" onclick="event.stopPropagation()">Criar carrossel</button>
+          </div>
+        </div>
+        <div class="sd-right">📖</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARÁBOLAS ════ -->
+  <div class="page fade-in" id="page-parabolas">
+    <div style="display:flex;flex:1;overflow:hidden">
+      <div class="grid-main">
+        <div class="grid-header">
+          <div class="grid-title">📖 Parábolas de Jesus</div>
+          <div class="grid-sub">40 parábolas com contexto histórico, análise do grego original e aplicação pastoral</div>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-pill active" onclick="pill(this)">Todas</button>
+          <button class="filter-pill" onclick="pill(this)">Perdão / Graça</button>
+          <button class="filter-pill" onclick="pill(this)">Missão</button>
+          <button class="filter-pill" onclick="pill(this)">Reino</button>
+          <button class="filter-pill" onclick="pill(this)">Escatologia</button>
+          <button class="filter-pill" onclick="pill(this)">Oração</button>
+          <div class="filter-sep"></div>
+          <button class="filter-pill" onclick="pill(this)">Lucas</button>
+          <button class="filter-pill" onclick="pill(this)">Mateus</button>
+          <button class="filter-pill" onclick="pill(this)">Marcos</button>
+        </div>
+        <div class="study-grid" id="parabolas-grid"></div>
+      </div>
+      <div class="deep-panel" id="deep-panel">
+        <div class="dp-header">
+          <div class="dp-title-wrap">
+            <div class="dp-ref" id="dp-ref">Lucas 15:11-32</div>
+            <div class="dp-title" id="dp-title">O Filho Pródigo</div>
+            <div class="dp-type" id="dp-type">Parábola · Lucas</div>
+          </div>
+          <button class="dp-close" onclick="closePanel()">✕</button>
+        </div>
+        <div class="dp-tabs">
+          <div class="dp-tab active" onclick="tab(this,'contexto')">Contexto</div>
+          <div class="dp-tab" onclick="tab(this,'original')">Original</div>
+          <div class="dp-tab" onclick="tab(this,'mensagem')">Mensagem</div>
+          <div class="dp-tab" onclick="tab(this,'aplicacao')">Aplicação</div>
+          <div class="dp-tab" onclick="tab(this,'recursos')">Recursos</div>
+        </div>
+        <div class="dp-body">
+          <div class="tab-content active" id="tc-contexto">
+            <div class="field-block">
+              <div class="field-label">Contexto histórico</div>
+              <div class="field-text">A parábola foi contada em resposta aos fariseus que criticavam Jesus por receber pecadores. O contexto cultural é o da honra e vergonha — no Mediterrâneo do século I, um filho que pede a herança em vida está essencialmente desejando a morte do pai. A reação do pai ao correr ao encontro do filho seria escandalosa para a audiência original.</div>
+            </div>
+            <div class="field-block">
+              <div class="field-label">Personagens e papéis teológicos</div>
+              <div class="insight-box"><strong>Pai</strong> — representa Deus: amor que aguarda, corre e restaura sem condições<br><br><strong>Filho mais novo</strong> — o pecador arrependido; volta por necessidade, mas encontra graça<br><br><strong>Filho mais velho</strong> — o religioso ressentido; obediente por fora, morto por dentro</div>
+            </div>
+            <div class="field-block">
+              <div class="field-label">Conexão com o Antigo Testamento</div>
+              <div class="field-text">Ezequiel 34 usa a metáfora do pastor que busca a ovelha perdida — Jesus está cumprindo o que Deus prometeu fazer pessoalmente. Oséias 11:8 captura a emoção de Deus ao recusar abandonar Israel, semelhante ao pai desta parábola.</div>
+            </div>
+          </div>
+          <div class="tab-content" id="tc-original">
+            <div class="orig-box">
+              <div class="orig-word">σπλαγχνίζομαι</div>
+              <div class="orig-trans">splanchnizomai — "ser movido nas entranhas"</div>
+              <table class="orig-table">
+                <tr><td>Strong's</td><td><span class="strongs-badge">G4697</span></td></tr>
+                <tr><td>Categoria</td><td>Verbo, Aoristo, Passivo, Indicativo</td></tr>
+                <tr><td>Pessoa/Número</td><td>3ª Singular</td></tr>
+                <tr><td>Forma lexical</td><td>σπλαγχνίζομαι</td></tr>
+                <tr><td>Ocorrências NT</td><td>12x — sempre Jesus ou figuras divinas</td></tr>
+              </table>
+            </div>
+            <div class="insight-box"><strong>Insight teológico:</strong> Esta palavra descreve compaixão visceral, física. No mundo greco-romano, as entranhas (σπλάγχνα) eram o centro das emoções mais profundas. Quando o pai viu o filho "ainda longe", foi tomado por esta compaixão instintiva e <em>correu</em> — ato de profunda humilhação cultural para um patriarca da época.</div>
+            <div class="ver-comp" style="margin-top:16px">
+              <div class="field-label" style="margin-bottom:8px">Comparação de versões — Lucas 15:20</div>
+              <div class="ver-item"><div class="ver-badge vb-nvi">NVI</div><div class="ver-text">"Ainda estava longe quando seu pai o viu e, cheio de compaixão, correu ao seu encontro, lançou-se sobre o seu pescoço e o beijou."</div></div>
+              <div class="ver-item"><div class="ver-badge vb-ara">ARA</div><div class="ver-text">"Quando ainda estava longe, seu pai o viu e, compadecido, correu, lançou-se sobre o seu pescoço e o beijou."</div></div>
+              <div class="ver-item"><div class="ver-badge vb-naa">NAA</div><div class="ver-text">"Seu pai o viu e se encheu de compaixão. Correu, lançou-se sobre o seu pescoço e o beijou muito."</div></div>
+            </div>
+          </div>
+          <div class="tab-content" id="tc-mensagem">
+            <div class="field-block">
+              <div class="field-label">Mensagem central</div>
+              <div class="field-text" style="font-size:16px;font-weight:600;color:var(--text-1);line-height:1.5">A graça de Deus não é apenas misericordiosa com quem se arrepende — ela também desafia o ressentimento de quem acha que merece mais.</div>
+            </div>
+            <div class="field-block" style="margin-top:16px">
+              <div class="field-label">Desenvolvimento teológico</div>
+              <div class="field-text">Jesus conta esta parábola não para os pecadores, mas para os fariseus. O verdadeiro protagonista problemático é o filho mais velho. A parábola termina sem resolução deliberada — o pai suplica ao filho mais velho para entrar. A audiência dos fariseus se vê nessa posição: o convite está aberto, a decisão é deles.</div>
+            </div>
+          </div>
+          <div class="tab-content" id="tc-aplicacao">
+            <div class="field-label" style="margin-bottom:8px">Aplicações práticas</div>
+            <ul class="app-list">
+              <li class="app-item"><div class="app-num">1</div>O arrependimento genuíno não espera condições perfeitas — o filho voltou porque "entrou em si", não porque tinha certeza do acolhimento.</li>
+              <li class="app-item"><div class="app-num">2</div>A imagem do pai que "correu" comunica que Deus não aguarda passivamente — Ele vai ao encontro de quem se arrepende.</li>
+              <li class="app-item"><div class="app-num">3</div>O ressentimento religioso é tão perigoso quanto o pecado óbvio — o filho mais velho estava "em casa" mas perdendo a festa.</li>
+              <li class="app-item"><div class="app-num">4</div>A restauração do filho foi completa: anel (autoridade), sandálias (não mais escravo), festa (celebração pública). Deus não reintegra parcialmente.</li>
+              <li class="app-item"><div class="app-num">5</div>Para líderes: perguntar honestamente com qual filho você se identifica — e se você está comemorando ou ressentido quando alguém "indigno" é acolhido.</li>
+            </ul>
+            <div style="margin-top:16px">
+              <div class="field-label" style="margin-bottom:8px">Perguntas para grupo</div>
+              <div class="insight-box">1. Com qual dos dois filhos você se identifica mais esta semana?<br><br>2. Qual "festa" você já não conseguiu celebrar por ressentimento de alguém?<br><br>3. O que a imagem do pai correndo diz sobre Deus que você precisava ouvir hoje?</div>
+            </div>
+          </div>
+          <div class="tab-content" id="tc-recursos">
+            <div class="field-label" style="margin-bottom:8px">Textos relacionados</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="insight-box" style="font-size:12px">Lucas 15:1-10 — Parábolas da ovelha e da moeda: mesma estrutura de busca, perda e celebração</div>
+              <div class="insight-box" style="font-size:12px">Ezequiel 34:16 — "Buscarei a perdida, trarei de volta a desgarrada"</div>
+              <div class="insight-box" style="font-size:12px">Oséias 11:8 — "Como posso abandonar-te, ó Israel?"</div>
+              <div class="insight-box" style="font-size:12px">Romanos 5:8 — "Cristo morreu por nós enquanto ainda éramos pecadores"</div>
+            </div>
+          </div>
+        </div>
+        <div class="dp-footer">
+          <button class="dp-action primary">🎙 Sermão</button>
+          <button class="dp-action">📱 Carrossel</button>
+          <button class="dp-action">👥 Grupo</button>
+          <button class="dp-action" onclick="goPage('quiz')">🎯 Quiz</button>
+          <button class="dp-action">📄 PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PERSONAGENS ════ -->
+  <div class="page fade-in" id="page-personagens">
+    <div style="display:flex;flex:1;overflow:hidden">
+      <div class="grid-main">
+        <div class="grid-header">
+          <div class="grid-title">👤 Personagens Bíblicos</div>
+          <div class="grid-sub">200 personagens com biografia, cronologia, lições e estudos tipológicos</div>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-pill active" onclick="pill(this)">Todos</button>
+          <button class="filter-pill" onclick="pill(this)">AT</button>
+          <button class="filter-pill" onclick="pill(this)">NT</button>
+          <div class="filter-sep"></div>
+          <button class="filter-pill" onclick="pill(this)">Profetas</button>
+          <button class="filter-pill" onclick="pill(this)">Reis</button>
+          <button class="filter-pill" onclick="pill(this)">Mulheres</button>
+          <button class="filter-pill" onclick="pill(this)">Apóstolos</button>
+        </div>
+        <div class="study-grid" id="personagens-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ LIVROS ════ -->
+  <div class="page fade-in" id="page-livros">
+    <div style="display:flex;flex:1;overflow:hidden">
+      <div class="grid-main">
+        <div class="grid-header">
+          <div class="grid-title">📚 Panorama Bíblico</div>
+          <div class="grid-sub">66 livros com autor, contexto histórico, mensagem central e versículos-chave</div>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-pill active" onclick="pill(this)">Todos</button>
+          <button class="filter-pill" onclick="pill(this)">Antigo Testamento</button>
+          <button class="filter-pill" onclick="pill(this)">Novo Testamento</button>
+          <div class="filter-sep"></div>
+          <button class="filter-pill" onclick="pill(this)">Pentateuco</button>
+          <button class="filter-pill" onclick="pill(this)">Histórico</button>
+          <button class="filter-pill" onclick="pill(this)">Poético</button>
+          <button class="filter-pill" onclick="pill(this)">Profetas</button>
+          <button class="filter-pill" onclick="pill(this)">Evangelhos</button>
+          <button class="filter-pill" onclick="pill(this)">Paulinas</button>
+        </div>
+        <div class="study-grid" id="livros-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ WORD STUDY ════ -->
+  <div class="page fade-in" id="page-pesquisa">
+    <div class="ws-scroll">
+      <div class="grid-header" style="margin-bottom:20px">
+        <div class="grid-title">🔬 Pesquisa do Original</div>
+        <div class="grid-sub">Análise morfológica em Grego · Hebraico · Aramaico com Strong's e comparação de versões</div>
+      </div>
+      <div class="ws-search">
+        <input class="ws-input" id="ws-input" placeholder="Digite uma palavra (ex: ἀγάπη, שָׁלוֹם) ou referência (ex: João 3:16, Malaquias 3:10)…" />
+        <button class="ws-search-btn">Analisar →</button>
+      </div>
+      <div class="ws-result">
+        <div class="ws-main">
+          <div class="ws-word-display">
+            <div class="ws-original">σπλαγχνίζομαι</div>
+            <div class="ws-translit">splanchnizomai</div>
+            <div class="ws-strongs">Strong G4697</div>
+          </div>
+          <div class="field-label" style="margin-bottom:8px">Análise morfológica</div>
+          <table class="ws-morpho-table">
+            <tr><td>Categoria</td><td>Verbo</td></tr>
+            <tr><td>Forma lexical</td><td>σπλαγχνίζομαι</td></tr>
+            <tr><td>Tempo</td><td>Aoristo — ação completa, passada</td></tr>
+            <tr><td>Voz</td><td>Passivo</td></tr>
+            <tr><td>Modo</td><td>Indicativo — fato real</td></tr>
+            <tr><td>Pessoa / Número</td><td>3ª pessoa singular</td></tr>
+            <tr><td>Raiz</td><td>σπλάγχνον — "entranhas, vísceras"</td></tr>
+            <tr><td>Ocorrências NT</td><td>12 — sempre Jesus ou figuras divinas</td></tr>
+          </table>
+          <div class="ws-insight"><strong>Insight teológico:</strong> Esta palavra descreve compaixão visceral, física — "ser movido nas entranhas". Que Deus sinta isso por nós é uma das afirmações mais ousadas do NT.</div>
+        </div>
+        <div class="ws-side">
+          <div class="ws-ver-card">
+            <div class="ws-ver-title">Lucas 15:20 — Versões</div>
+            <div class="ws-ver-item"><div class="ver-badge vb-nvi">NVI</div><div class="ws-ver-text">"Ainda estava longe quando seu pai o viu e, cheio de compaixão, correu ao seu encontro"</div></div>
+            <div class="ws-ver-item"><div class="ver-badge vb-ara">ARA</div><div class="ws-ver-text">"Quando ainda estava longe, seu pai o viu e, compadecido, correu, lançou-se sobre o seu pescoço"</div></div>
+            <div class="ws-ver-item"><div class="ver-badge vb-naa">NAA</div><div class="ws-ver-text">"Seu pai o viu e se encheu de compaixão. Correu, lançou-se sobre o seu pescoço e o beijou muito."</div></div>
+          </div>
+          <div class="ws-ver-card">
+            <div class="ws-ver-title">Ocorrências no NT</div>
+            <div class="ws-ver-item"><div class="ws-ver-text" style="font-size:12px">Mt 9:36 — Jesus vendo as multidões<br>Mt 14:14 — cura dos enfermos<br>Mt 15:32 — multiplicação dos pães<br>Mc 1:41 — cura do leproso<br>Lc 7:13 — filho da viúva de Naim<br>Lc 10:33 — o bom samaritano<br>Lc 15:20 — o pai do filho pródigo</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ QUIZ ════ -->
+  <div class="page fade-in" id="page-quiz">
+    <div class="quiz-scroll">
+      <div id="quiz-hub-view">
+        <div class="quiz-hub-header">
+          <div class="qh-title">🎯 Quiz Bíblico</div>
+          <div class="qh-sub">Teste seu conhecimento com 250+ perguntas geradas dos ebooks bíblicos</div>
+          <div class="qh-stats">
+            <div class="qh-stat"><div class="n">222</div><div class="l">Respondidas</div></div>
+            <div class="qh-stat"><div class="n">78%</div><div class="l">Acerto</div></div>
+            <div class="qh-stat"><div class="n">14</div><div class="l">Streak dias</div></div>
+            <div class="qh-stat"><div class="n">5</div><div class="l">Conquistas</div></div>
+          </div>
+        </div>
+        <div class="section-head" style="margin-bottom:12px"><div class="section-title">Escolha a categoria</div></div>
+        <div class="quiz-options-grid">
+          <div class="quiz-opt-card sel" onclick="qCat(this)"><div class="qoc-icon">📖</div><div class="qoc-name">Parábolas</div><div class="qoc-count">40 itens</div></div>
+          <div class="quiz-opt-card" onclick="qCat(this)"><div class="qoc-icon">👤</div><div class="qoc-name">Personagens</div><div class="qoc-count">200 itens</div></div>
+          <div class="quiz-opt-card" onclick="qCat(this)"><div class="qoc-icon">📚</div><div class="qoc-name">Panorama</div><div class="qoc-count">66 livros</div></div>
+          <div class="quiz-opt-card" onclick="qCat(this)"><div class="qoc-icon">🕊</div><div class="qoc-name">Eventos</div><div class="qoc-count">misto</div></div>
+          <div class="quiz-opt-card" onclick="qCat(this)"><div class="qoc-icon">🗺</div><div class="qoc-name">Geografia</div><div class="qoc-count">lugares</div></div>
+          <div class="quiz-opt-card" onclick="qCat(this)"><div class="qoc-icon">✦</div><div class="qoc-name">Doutrina</div><div class="qoc-count">teologia</div></div>
+        </div>
+        <div class="quiz-level-row">
+          <span class="quiz-level-label">Nível:</span>
+          <button class="level-btn active" onclick="qLevel(this)">Todos</button>
+          <button class="level-btn" onclick="qLevel(this)">Básico</button>
+          <button class="level-btn" onclick="qLevel(this)">Intermediário</button>
+          <button class="level-btn" onclick="qLevel(this)">Avançado</button>
+        </div>
+        <button class="start-quiz-btn" onclick="startQ()">Iniciar Quiz — 10 perguntas →</button>
+      </div>
+      <div class="quiz-session" id="quiz-session">
+        <div class="q-progress-bar">
+          <div class="qp-track"><div class="qp-fill" id="qpf" style="width:10%"></div></div>
+          <span class="qp-label" id="qctr">1 / 5</span>
+          <button onclick="endQ()" style="background:transparent;border:1px solid var(--border);color:var(--text-3);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">Encerrar</button>
+        </div>
+        <div class="q-card">
+          <div class="q-num" id="qnum">PERGUNTA 1 · PARÁBOLAS · BÁSICO</div>
+          <div class="q-text" id="qtxt">Qual parábola narra a história de um pai que corre ao encontro de um filho que retorna arrependido?</div>
+          <div class="q-timer-row">
+            <span style="font-size:11px;color:var(--text-3)">Tempo:</span>
+            <div class="timer-circle">
+              <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="2.5"/><circle cx="18" cy="18" r="14" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-dasharray="87.96" stroke-dashoffset="0" stroke-linecap="round" id="tarc"/></svg>
+              <div class="timer-num" id="tnum">30</div>
+            </div>
+          </div>
+          <div class="q-options" id="qopts">
+            <div class="q-opt" onclick="ans(this,'A')"><div class="opt-letter">A</div><div class="opt-text">O Bom Samaritano</div></div>
+            <div class="q-opt" onclick="ans(this,'B')"><div class="opt-letter">B</div><div class="opt-text">A Ovelha Perdida</div></div>
+            <div class="q-opt" onclick="ans(this,'C')"><div class="opt-letter">C</div><div class="opt-text">O Filho Pródigo</div></div>
+            <div class="q-opt" onclick="ans(this,'D')"><div class="opt-letter">D</div><div class="opt-text">Os Talentos</div></div>
+          </div>
+          <div class="q-feedback" id="qfb"><div class="qf-result" id="qfr">✓ Correto!</div><div class="qf-explain" id="qfe">O Filho Pródigo (Lucas 15:11-32) é a parábola mais completa de Jesus sobre graça e restauração.</div><div class="qf-ref" id="qfref">Referência: Lucas 15:11-32</div></div>
+          <button class="q-next-btn" id="qnxt" onclick="nextQ()">Próxima pergunta →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PROGRESSO ════ -->
+  <div class="page fade-in" id="page-progresso">
+    <div class="prog-scroll">
+      <div class="grid-header" style="margin-bottom:20px"><div class="grid-title">🏆 Meu Progresso</div><div class="grid-sub">Histórico de estudos, conquistas e desempenho no CEA</div></div>
+      <div class="prog-grid">
+        <div class="prog-stat-card"><div class="psc-label">Streak atual</div><div class="psc-val">14 🔥</div><div class="psc-sub">+2 vs semana anterior</div></div>
+        <div class="prog-stat-card"><div class="psc-label">Estudos concluídos</div><div class="psc-val">47</div><div class="psc-sub">+8 esse mês</div></div>
+        <div class="prog-stat-card"><div class="psc-label">Quiz — % acerto</div><div class="psc-val">78%</div><div class="psc-sub">+5% vs mês anterior</div></div>
+        <div class="prog-stat-card"><div class="psc-label">Materiais gerados</div><div class="psc-val">23</div><div class="psc-sub">sermões + carrosséis</div></div>
+        <div class="prog-stat-card"><div class="psc-label">Palavras do original</div><div class="psc-val">89</div><div class="psc-sub">estudos de grego/heb</div></div>
+        <div class="prog-stat-card"><div class="psc-label">Tempo de estudo</div><div class="psc-val">31h</div><div class="psc-sub">este mês</div></div>
+      </div>
+      <div class="section-head" style="margin-bottom:12px"><div class="section-title">Conquistas</div><div class="section-link">Ver todas</div></div>
+      <div class="achievements-grid" style="margin-bottom:24px">
+        <div class="achievement"><div class="ach-icon">📖</div><div class="ach-name">Primeira Parábola</div><div class="ach-pts">+50 pts</div></div>
+        <div class="achievement"><div class="ach-icon">🔥</div><div class="ach-name">7 dias seguidos</div><div class="ach-pts">+100 pts</div></div>
+        <div class="achievement"><div class="ach-icon">🎯</div><div class="ach-name">Quiz Mestre</div><div class="ach-pts">+150 pts</div></div>
+        <div class="achievement"><div class="ach-icon">🌟</div><div class="ach-name">10 Personagens</div><div class="ach-pts">+100 pts</div></div>
+        <div class="achievement"><div class="ach-icon">🔬</div><div class="ach-name">Exegeta</div><div class="ach-pts">+200 pts</div></div>
+        <div class="achievement locked"><div class="ach-icon">👑</div><div class="ach-name">Mestre do CEA</div><div class="ach-pts">+500 pts</div></div>
+        <div class="achievement locked"><div class="ach-icon">📜</div><div class="ach-name">Panorama Completo</div><div class="ach-pts">+300 pts</div></div>
+        <div class="achievement locked"><div class="ach-icon">⚡</div><div class="ach-name">30 dias streak</div><div class="ach-pts">+250 pts</div></div>
+      </div>
+      <div class="section-head" style="margin-bottom:12px"><div class="section-title">Progresso por módulo</div></div>
+      <div class="module-prog-list">
+        <div class="mp-item"><div class="mp-icon">📖</div><div class="mp-info"><div class="mp-name">Parábolas — 8 de 40</div><div class="mp-track"><div class="mp-fill" style="width:20%;background:#14B8A6"></div></div></div><div class="mp-pct" style="color:#14B8A6">20%</div></div>
+        <div class="mp-item"><div class="mp-icon">👤</div><div class="mp-info"><div class="mp-name">Personagens — 19 de 200</div><div class="mp-track"><div class="mp-fill" style="width:10%;background:#3B82F6"></div></div></div><div class="mp-pct" style="color:#3B82F6">10%</div></div>
+        <div class="mp-item"><div class="mp-icon">📚</div><div class="mp-info"><div class="mp-name">Panorama — 20 de 66</div><div class="mp-track"><div class="mp-fill" style="width:30%;background:#F59E0B"></div></div></div><div class="mp-pct" style="color:#F59E0B">30%</div></div>
+        <div class="mp-item"><div class="mp-icon">🎯</div><div class="mp-info"><div class="mp-name">Quiz — 100 de 250</div><div class="mp-track"><div class="mp-fill" style="width:40%;background:#7C3AED"></div></div></div><div class="mp-pct" style="color:#9F67FF">40%</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const P=[
+  {n:1,t:"O Bom Samaritano",r:"Lucas 10:30-37",ev:"Lucas",tags:["missão","amor"],p:100},
+  {n:2,t:"A Ovelha Perdida",r:"Lucas 15:4-7",ev:"Lucas",tags:["graça"],p:60},
+  {n:3,t:"A Moeda Perdida",r:"Lucas 15:8-10",ev:"Lucas",tags:["graça"],p:0},
+  {n:4,t:"O Filho Pródigo",r:"Lucas 15:11-32",ev:"Lucas",tags:["perdão","graça"],p:68},
+  {n:5,t:"O Administrador Desonesto",r:"Lucas 16:1-8",ev:"Lucas",tags:["mordomia"],p:0},
+  {n:6,t:"O Rico e Lázaro",r:"Lucas 16:19-31",ev:"Lucas",tags:["eternidade"],p:0},
+  {n:8,t:"A Viúva e o Juiz",r:"Lucas 18:2-5",ev:"Lucas",tags:["oração"],p:30},
+  {n:9,t:"Os Talentos",r:"Lucas 19:12-27",ev:"Lucas",tags:["mordomia"],p:45},
+  {n:18,t:"O Amigo Persistente",r:"Lucas 11:5-8",ev:"Lucas",tags:["oração"],p:0},
+  {n:28,t:"O Fariseu e o Cobrador",r:"Lucas 18:10-14",ev:"Lucas",tags:["oração","humildade"],p:0},
+  {n:31,t:"O Joio",r:"Mateus 13:24-30",ev:"Mateus",tags:["escatologia"],p:0},
+  {n:32,t:"O Tesouro Escondido",r:"Mateus 13:44",ev:"Mateus",tags:["reino"],p:0},
+  {n:33,t:"A Pérola",r:"Mateus 13:45-46",ev:"Mateus",tags:["reino"],p:20},
+  {n:39,t:"As Dez Virgens",r:"Mateus 25:1-13",ev:"Mateus",tags:["escatologia"],p:0},
+  {n:40,t:"As Ovelhas e Cabras",r:"Mateus 25:31-36",ev:"Mateus",tags:["escatologia"],p:0},
+];
+const CR=[
+  {n:1,nome:"Abraão",cargo:"Patriarca",periodo:"~2000 aC",test:"AT",tags:["fé","aliança"]},
+  {n:2,nome:"Moisés",cargo:"Profeta / Libertador",periodo:"~1400 aC",test:"AT",tags:["liderança"]},
+  {n:3,nome:"Davi",cargo:"Rei",periodo:"~1000 aC",test:"AT",tags:["adoração","reino"]},
+  {n:4,nome:"Elias",cargo:"Profeta",periodo:"~850 aC",test:"AT",tags:["fé","confronto"]},
+  {n:5,nome:"Daniel",cargo:"Profeta / Estadista",periodo:"~600 aC",test:"AT",tags:["fidelidade"]},
+  {n:6,nome:"Ester",cargo:"Rainha",periodo:"~480 aC",test:"AT",tags:["coragem"]},
+  {n:7,nome:"Pedro",cargo:"Apóstolo",periodo:"~30 dC",test:"NT",tags:["liderança","falha"]},
+  {n:8,nome:"Paulo",cargo:"Apóstolo",periodo:"~35-67 dC",test:"NT",tags:["missão"]},
+  {n:9,nome:"Maria Madalena",cargo:"Discípula",periodo:"~30 dC",test:"NT",tags:["fé","restauração"]},
+  {n:10,nome:"Rute",cargo:"Estrangeira fiel",periodo:"~1100 aC",test:"AT",tags:["lealdade"]},
+];
+const L=[
+  {n:1,nome:"Gênesis",abrev:"Gn",test:"AT",secao:"Pentateuco",autor:"Moisés",caps:50},
+  {n:2,nome:"Êxodo",abrev:"Ex",test:"AT",secao:"Pentateuco",autor:"Moisés",caps:40},
+  {n:19,nome:"Salmos",abrev:"Sl",test:"AT",secao:"Poético",autor:"Davi e outros",caps:150},
+  {n:23,nome:"Isaías",abrev:"Is",test:"AT",secao:"Prof. Maior",autor:"Isaías",caps:66},
+  {n:39,nome:"Malaquias",abrev:"Ml",test:"AT",secao:"Prof. Menor",autor:"Malaquias",caps:4},
+  {n:40,nome:"Mateus",abrev:"Mt",test:"NT",secao:"Evangelho",autor:"Mateus",caps:28},
+  {n:43,nome:"João",abrev:"Jo",test:"NT",secao:"Evangelho",autor:"João",caps:21},
+  {n:45,nome:"Romanos",abrev:"Rm",test:"NT",secao:"Paulina",autor:"Paulo",caps:16},
+  {n:58,nome:"Hebreus",abrev:"Hb",test:"NT",secao:"Epístola Geral",autor:"Desconhecido",caps:13},
+  {n:66,nome:"Apocalipse",abrev:"Ap",test:"NT",secao:"Profecia",autor:"João",caps:22},
+];
+
+function renderG(id,items,type){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=items.map(i=>{
+    if(type==='p')return`<div class="study-card fade-in" onclick="openStudy('parabola','${i.t}','${i.r}')"><div class="sc-num">#${String(i.n).padStart(2,'0')} · ${i.ev}</div><div class="sc-title">${i.t}</div><div class="sc-ref">${i.r}</div><div class="sc-tags">${i.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="sc-prog-wrap"><div class="sc-prog-fill" style="width:${i.p}%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px"><span style="font-size:10px;color:var(--text-3)">${i.p}% concluído</span>${i.p===100?'<span style="font-size:10px;color:#10B981">✓</span>':''}</div></div>`;
+    if(type==='c')return`<div class="study-card fade-in" onclick="openStudy('personagem','${i.nome}','${i.cargo}')"><div class="sc-num">${i.test} · ${i.periodo}</div><div class="sc-title">${i.nome}</div><div class="sc-ref">${i.cargo}</div><div class="sc-tags">${i.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="sc-prog-wrap"><div class="sc-prog-fill" style="width:0%"></div></div></div>`;
+    if(type==='l')return`<div class="study-card fade-in"><div class="sc-num">#${String(i.n).padStart(2,'0')} · ${i.abrev}</div><div class="sc-title">${i.nome}</div><div class="sc-ref">${i.secao} · ${i.caps} caps</div><div class="sc-tags"><span class="tag">${i.test}</span><span class="tag">${i.autor}</span></div><div class="sc-prog-wrap"><div class="sc-prog-fill" style="width:0%"></div></div></div>`;
+  }).join('');
+}
+
+const PAGES={
+  'cea-home':'Centro de Estudos › <b>Home</b>',
+  'parabolas':'Centro de Estudos › <b>Parábolas</b>',
+  'personagens':'Centro de Estudos › <b>Personagens</b>',
+  'livros':'Centro de Estudos › <b>Panorama</b>',
+  'pesquisa':'Centro de Estudos › <b>Pesquisa do Original</b>',
+  'quiz':'Centro de Estudos › <b>Quiz Bíblico</b>',
+  'progresso':'Centro de Estudos › <b>Meu Progresso</b>',
+};
+
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  closePanel();
+  const pg=document.getElementById('page-'+id);
+  if(pg){pg.classList.add('active');pg.classList.add('fade-in')}
+  if(PAGES[id])document.getElementById('topbar-crumb').innerHTML=PAGES[id];
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const map={
+    'cea-home':'nav-cea','parabolas':'nav-parabolas',
+    'personagens':'nav-personagens','livros':'nav-livros',
+    'pesquisa':'nav-pesquisa','quiz':'nav-quiz','progresso':'nav-progresso'
+  };
+  if(map[id]){const el=document.getElementById(map[id]);if(el)el.classList.add('active')}
+  if(id==='parabolas')renderG('parabolas-grid',P,'p');
+  if(id==='personagens')renderG('personagens-grid',CR,'c');
+  if(id==='livros')renderG('livros-grid',L,'l');
+}
+
+function openStudy(type,title,ref){
+  if(type==='parabola'&&!document.getElementById('page-parabolas').classList.contains('active')){
+    goPage('parabolas');setTimeout(()=>openStudy(type,title,ref),80);return;
+  }
+  const p=document.getElementById('deep-panel');if(!p)return;
+  p.classList.add('open');
+  document.getElementById('dp-title').textContent=title;
+  document.getElementById('dp-ref').textContent=ref;
+  document.getElementById('dp-type').textContent=type==='parabola'?'Parábola':'Personagem';
+  tab(document.querySelector('.dp-tab'),'contexto');
+  document.querySelectorAll('.study-card').forEach(c=>c.classList.toggle('selected',c.querySelector('.sc-title')?.textContent===title));
+}
+
+function closePanel(){
+  const p=document.getElementById('deep-panel');if(p)p.classList.remove('open');
+  document.querySelectorAll('.study-card').forEach(c=>c.classList.remove('selected'));
+}
+
+function tab(el,id){
+  document.querySelectorAll('.dp-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const tc=document.getElementById('tc-'+id);if(tc)tc.classList.add('active');
+}
+
+function pill(el){
+  el.closest('.filter-bar').querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// QUIZ
+const QQ=[
+  {t:"Qual parábola narra a história de um pai que corre ao encontro do filho arrependido?",opts:{A:"O Bom Samaritano",B:"A Ovelha Perdida",C:"O Filho Pródigo",D:"Os Talentos"},c:"C",ex:"O Filho Pródigo (Lucas 15:11-32) é a parábola mais completa de Jesus sobre graça e restauração.",ref:"Lucas 15:11-32"},
+  {t:"Na parábola do Bom Samaritano, quem foi o único que socorreu o homem ferido?",opts:{A:"Um sacerdote",B:"Um levita",C:"Um fariseu",D:"Um samaritano"},c:"D",ex:"Um samaritano — etnicamente desprezado pelos judeus — foi quem demonstrou amor ao próximo.",ref:"Lucas 10:33"},
+  {t:"Qual palavra grega descreve a compaixão do pai em Lucas 15:20?",opts:{A:"ἀγάπη (agápē)",B:"σπλαγχνίζομαι (splanchnizomai)",C:"ἔλεος (éleos)",D:"χάρις (cháris)"},c:"B",ex:"σπλαγχνίζομαι significa 'ser movido nas entranhas' — compaixão visceral. Usado 12x no NT, sempre de Jesus ou figuras divinas.",ref:"Lucas 15:20"},
+  {t:"O que recebeu o servo que escondeu o talento por medo?",opts:{A:"Perdão total",B:"Segunda chance",C:"Repreensão e perda do talento",D:"Mais talentos"},c:"C",ex:"O servo que escondeu o talento foi chamado de 'mau e preguiçoso' e teve o talento removido.",ref:"Lucas 19:22-26"},
+  {t:"Em qual livro se encontra a parábola da Semente que Cresce sozinha?",opts:{A:"Mateus",B:"Lucas",C:"Marcos",D:"João"},c:"C",ex:"A Semente que Cresce sozinha (Marcos 4:26-29) é uma parábola exclusiva de Marcos, enfatizando o crescimento misterioso do Reino.",ref:"Marcos 4:26-29"},
+];
+let cq=0,answered=false,timer=null;
+
+function qCat(el){document.querySelectorAll('.quiz-opt-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel')}
+function qLevel(el){document.querySelectorAll('.level-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active')}
+function startQ(){cq=0;document.getElementById('quiz-hub-view').style.display='none';document.getElementById('quiz-session').classList.add('active');renderQ()}
+function endQ(){clearInterval(timer);document.getElementById('quiz-session').classList.remove('active');document.getElementById('quiz-hub-view').style.display='block'}
+
+function renderQ(){
+  const q=QQ[cq];answered=false;
+  let t=30;
+  document.getElementById('qnum').textContent=`PERGUNTA ${cq+1} · PARÁBOLAS`;
+  document.getElementById('qtxt').textContent=q.t;
+  document.getElementById('qctr').textContent=`${cq+1} / ${QQ.length}`;
+  document.getElementById('qpf').style.width=`${((cq+1)/QQ.length)*100}%`;
+  document.getElementById('qopts').innerHTML=Object.entries(q.opts).map(([k,v])=>`<div class="q-opt" onclick="ans(this,'${k}')"><div class="opt-letter">${k}</div><div class="opt-text">${v}</div></div>`).join('');
+  document.getElementById('qfb').classList.remove('show','wrong');
+  document.getElementById('qnxt').classList.remove('show');
+  document.getElementById('tnum').textContent='30';
+  document.getElementById('tarc').style.strokeDashoffset='0';
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    t--;document.getElementById('tnum').textContent=t;
+    document.getElementById('tarc').style.strokeDashoffset=87.96*(1-t/30);
+    if(t<=0){clearInterval(timer);showFB(null)}
+  },1000);
+}
+
+function ans(el,letter){
+  if(answered)return;answered=true;clearInterval(timer);
+  const q=QQ[cq];const ok=letter===q.c;
+  document.querySelectorAll('.q-opt').forEach(o=>{
+    const l=o.querySelector('.opt-letter').textContent;
+    if(l===q.c)o.classList.add('correct');
+    else if(l===letter&&!ok)o.classList.add('wrong');
+  });
+  showFB(ok);
+}
+
+function showFB(ok){
+  const fb=document.getElementById('qfb');const q=QQ[cq];
+  const r=document.getElementById('qfr');
+  if(ok===null){r.className='qf-result wrong';r.textContent='⏱ Tempo esgotado!';fb.classList.add('show','wrong')}
+  else if(ok){r.className='qf-result';r.textContent='✓ Correto!';fb.classList.add('show')}
+  else{r.className='qf-result wrong';r.textContent='✗ Incorreto';fb.classList.add('show','wrong')}
+  document.getElementById('qfe').textContent=q.ex;
+  document.getElementById('qfref').textContent='Referência: '+q.ref;
+  document.getElementById('qnxt').classList.add('show');
+}
+
+function nextQ(){cq++;if(cq>=QQ.length)endQ();else renderQ()}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  renderG('parabolas-grid',P,'p');
+  setTimeout(()=>{renderG('personagens-grid',CR,'c');renderG('livros-grid',L,'l')},300);
+});
+</script>
+</body>
+</html>

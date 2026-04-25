@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devocional — Quando Deus Diz: Prove-me</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,serif;background:#0f0a1e;color:#e8e4f0;line-height:1.7;padding:24px 16px;max-width:680px;margin:0 auto}
+  h1{font-size:24px;font-weight:normal;color:#fff;margin-bottom:6px;line-height:1.3}
+  .series-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#7c6fa0;margin-bottom:8px}
+  .subtitle{font-size:14px;color:#9b92b8;margin-bottom:20px;line-height:1.5}
+  .progress-wrap{background:#1a1040;border-radius:4px;height:4px;margin-bottom:20px}
+  .progress-fill{height:100%;background:#7c3aed;border-radius:4px;transition:width .4s}
+  .day-nav{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .day-btn{padding:6px 14px;font-size:12px;border-radius:20px;cursor:pointer;border:1px solid #2d1f6e;background:transparent;color:#7c6fa0;font-family:Georgia,serif;transition:all .15s}
+  .day-btn:hover{border-color:#7c3aed;color:#c4b5fd}
+  .day-btn.active{background:#2d1f6e;color:#e8e4f0;border-color:#7c3aed}
+  .day-btn.done{border-color:#10b981;color:#10b981;background:rgba(16,185,129,.1)}
+  .day-panel{display:none}
+  .day-panel.visible{display:block}
+  .day-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#7c6fa0;margin-bottom:4px;font-family:sans-serif}
+  .day-title{font-size:20px;color:#fff;margin-bottom:14px;line-height:1.3;font-weight:normal}
+  .verse-block{border-left:2px solid #7c3aed;padding:12px 16px;background:rgba(124,58,237,.08);border-radius:0 8px 8px 0;margin-bottom:16px;font-style:italic;font-size:14px;color:#e8e4f0;line-height:1.65}
+  .verse-ref{font-style:normal;font-size:11px;color:#7c6fa0;margin-top:6px;font-family:sans-serif}
+  .body-text{font-size:14px;color:#c4bdd8;line-height:1.78;margin-bottom:12px}
+  .original-pill{background:#1a1040;border:1px solid #2d1f6e;border-radius:8px;padding:10px 14px;margin:12px 0;display:flex;gap:12px;align-items:flex-start}
+  .orig-char{font-size:18px;color:#e8e4f0;min-width:90px;line-height:1.3;font-family:serif}
+  .orig-info{font-size:12px;color:#9b92b8;line-height:1.55;font-family:sans-serif}
+  .orig-info strong{color:#c4b5fd}
+  .divider{border:none;border-top:1px solid #1a1040;margin:14px 0}
+  .section-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#7c6fa0;margin-bottom:8px;font-family:sans-serif}
+  .reflect-q{font-size:13px;color:#c4bdd8;padding:10px 12px;border:1px solid #2d1f6e;border-radius:8px;margin-bottom:6px;line-height:1.65;font-family:sans-serif}
+  .prayer{font-size:14px;color:#c4bdd8;font-style:italic;background:rgba(124,58,237,.06);border-radius:8px;padding:14px 16px;line-height:1.78}
+  .challenge{font-size:13px;color:#fef3c7;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:12px 14px;line-height:1.65;font-family:sans-serif}
+  .deeper{font-size:12px;color:#7c6fa0;margin-top:10px;font-family:sans-serif}
+  .deeper span{color:#7c3aed}
+  .day-footer{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .btn-primary{padding:8px 20px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:Georgia,serif;transition:opacity .15s}
+  .btn-primary:hover{opacity:.85}
+  .btn-secondary{padding:8px 16px;background:transparent;color:#c4b5fd;border:1px solid #2d1f6e;border-radius:8px;font-size:13px;cursor:pointer;font-family:Georgia,serif;transition:all .15s}
+  .btn-secondary:hover{border-color:#7c3aed}
+  .complete-msg{display:none;text-align:center;padding:32px 16px;color:#c4b5fd}
+  .complete-msg h2{font-size:20px;color:#fff;margin-bottom:8px;font-weight:normal}
+</style>
+</head>
+<body>
+
+<div class="series-label">Série devocional · 5 dias · Malaquias 3</div>
+<h1>Quando Deus Diz: Prove-me</h1>
+<div class="subtitle">Cinco dias meditando sobre fidelidade, confiança e o convite extraordinário de Malaquias 3:10</div>
+
+<div class="progress-wrap"><div class="progress-fill" id="prog" style="width:20%"></div></div>
+
+<div class="day-nav">
+  <button class="day-btn active" onclick="showDay(1,this)">Dia 1</button>
+  <button class="day-btn" onclick="showDay(2,this)">Dia 2</button>
+  <button class="day-btn" onclick="showDay(3,this)">Dia 3</button>
+  <button class="day-btn" onclick="showDay(4,this)">Dia 4</button>
+  <button class="day-btn" onclick="showDay(5,this)">Dia 5</button>
+</div>
+
+<!-- DIA 1 -->
+<div class="day-panel visible" id="day-1">
+  <div class="day-label">Dia 1 · Segunda-feira</div>
+  <div class="day-title">O Coração que Voltou — Mas Não Voltou</div>
+  <div class="verse-block">
+    "Eu vos amei, diz o Senhor. E vós dizeis: Em que nos amaste?"
+    <div class="verse-ref">Malaquias 1:2 (ARA)</div>
+  </div>
+  <p class="body-text">Há uma diferença profunda entre estar presente e estar confiante. Israel havia retornado do exílio babilônico — fisicamente livre, espiritualmente preso. O templo estava reconstruído, os muros erguidos, os rituais restaurados. Tudo parecia certo por fora.</p>
+  <p class="body-text">Mas quando Deus diz "Eu vos amei", a resposta de Israel é devastadoramente honesta: <em>"Em que nos amaste?"</em> Não é blasfêmia — é dor. É a pergunta de quem passou décadas em cativeiro e ainda carrega as marcas. É a voz de quem serviu a Deus e não viu o que esperava ver.</p>
+  <div class="original-pill">
+    <div class="orig-char">אֲהַבְתִּי</div>
+    <div class="orig-info"><strong>ahavti</strong> · Strong H157 · Perfeito hebraico — ação completa com efeitos contínuos. "Amei e continuo amando." Deus não diz "amarei" como promessa futura. Diz "amei" como realidade já estabelecida. O amor divino não depende da percepção humana dele.</div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">Para refletir</div>
+  <div class="reflect-q">Em que área da sua vida você está fazendo a mesma pergunta de Israel — "Deus, em que você me amou?" — sem perceber que está fazendo?</div>
+  <div class="reflect-q">Qual é a diferença entre duvidar de Deus e estar com dor diante de Deus? Como Malaquias 1:2 acolhe ambos?</div>
+  <div class="divider"></div>
+  <div class="section-label">Oração do dia</div>
+  <div class="prayer">Senhor, há lugares em mim onde a mágoa falou mais alto do que a Tua Palavra. Onde a demora pareceu abandono. Onde o silêncio pareceu indiferença. Não me peças fé que eu não tenho. Mas dá-me a honestidade de Israel — a coragem de trazer a pergunta real diante de Ti. Porque só perante Ti a pergunta pode encontrar resposta. Amém.</div>
+  <div class="divider"></div>
+  <div class="section-label">Desafio do dia</div>
+  <div class="challenge">Escreva em um papel a pergunta que você realmente tem para Deus — a que você não diz em voz alta. Ore essa pergunta exatamente como ela é. Deus aguenta a honestidade dos seus filhos.</div>
+  <div class="deeper">Para aprofundar: <span>Salmo 77:7-10 · Lamentações 3:1-9 · Romanos 9:13</span></div>
+  <div class="day-footer">
+    <button class="btn-primary" onclick="goNext(1)">Próximo dia →</button>
+    <button class="btn-secondary" onclick="markDone(1)">Marcar como lido ✓</button>
+  </div>
+</div>
+
+<!-- DIA 2 -->
+<div class="day-panel" id="day-2">
+  <div class="day-label">Dia 2 · Terça-feira</div>
+  <div class="day-title">Quando a Desconfiança Vira Desobediência</div>
+  <div class="verse-block">
+    "Roubará o homem a Deus? Todavia vós me roubais. E dizeis: Em que te roubamos? Nos dízimos e nas ofertas."
+    <div class="verse-ref">Malaquias 3:8 (ARA)</div>
+  </div>
+  <p class="body-text">A acusação de Deus é forte — "vocês me roubam." Mas antes de ler isso como legislação financeira, é preciso entender o raciocínio por trás da retenção do dízimo. Malaquias 3:14-15 revela o pensamento: <em>"É inútil servir a Deus. Os soberbos são chamados bem-aventurados."</em></p>
+  <p class="body-text">Israel não estava com o dinheiro curto. Estava fazendo um cálculo: <em>Deus não cumpre o que promete. Então por que dar?</em> A desobediência financeira era sintoma de uma desconfiança teológica mais profunda. Toda desobediência tem uma crença errada por baixo dela.</p>
+  <div class="original-pill">
+    <div class="orig-char">קָבַע</div>
+    <div class="orig-info"><strong>qava</strong> · Strong H6906 · "roubar, fraudar, enganar com trapaça premeditada" — mais forte do que simples furto. Implica violação deliberada de confiança. A gravidade não é financeira; é relacional. É trair uma aliança.</div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">Para refletir</div>
+  <div class="reflect-q">Existe alguma área da sua vida onde você está retendo — tempo, talento, generosidade, obediência — porque no fundo não confia que Deus honrará o que prometeu?</div>
+  <div class="reflect-q">Qual crença errada sobre Deus você precisa examinar hoje?</div>
+  <div class="divider"></div>
+  <div class="section-label">Oração do dia</div>
+  <div class="prayer">Pai, perdoa-me pelas vezes em que calculei a fidelidade antes de agir. Pelas vezes em que retive porque duvidei. Mostra-me qual crença errada está alimentando minha desobediência. E dá-me coragem para agir antes de ver — porque é isso que se chama fé. Amém.</div>
+  <div class="divider"></div>
+  <div class="section-label">Desafio do dia</div>
+  <div class="challenge">Identifique uma área de desobediência na sua vida. Pergunte: "Qual crença sobre Deus está por baixo disso?" Confronte essa crença com o que a Escritura diz sobre o caráter de Deus.</div>
+  <div class="deeper">Para aprofundar: <span>Malaquias 3:13-15 · Hebreus 11:6 · Tiago 2:17</span></div>
+  <div class="day-footer">
+    <button class="btn-primary" onclick="goNext(2)">Próximo dia →</button>
+    <button class="btn-secondary" onclick="markDone(2)">Marcar como lido ✓</button>
+  </div>
+</div>
+
+<!-- DIA 3 -->
+<div class="day-panel" id="day-3">
+  <div class="day-label">Dia 3 · Quarta-feira</div>
+  <div class="day-title">O Convite Que Deus Nunca Fez Antes</div>
+  <div class="verse-block">
+    "Trazei todos os dízimos à casa do tesouro... e provai-me nisto, diz o Senhor dos Exércitos, se eu não vos abrir as janelas do céu."
+    <div class="verse-ref">Malaquias 3:10 (ARA)</div>
+  </div>
+  <p class="body-text">Este é o versículo central de toda a semana — e ele contém algo sem precedente em toda a Escritura. Em 275 capítulos do Antigo Testamento, Deus nunca usou o verbo <em>beḥanuni</em> em relação a Si mesmo. Sempre é o ser humano que é testado por Deus: Abraão no Moriá, Jó nas provações, Jesus no deserto.</p>
+  <p class="body-text">Aqui a direção inverte. Deus desce ao nível da fragilidade humana e diz: <em>"Eu sei que você está com medo de agir. Então aja uma vez — e Me observe."</em> Não é arrogância divina. É ternura. É o Pai que estende a mão ao filho com medo do mar.</p>
+  <div class="original-pill">
+    <div class="orig-char">בְּחָנוּנִי</div>
+    <div class="orig-info"><strong>beḥanuni</strong> · Strong H974 · Único uso em toda a Bíblia com Deus como objeto. "Testai-me, examinai-me." Forma imperativa plural — o convite é para toda a comunidade, não apenas para o indivíduo. Fé em ação como prática comunitária.</div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">Para refletir</div>
+  <div class="reflect-q">O que impede você de "testar" Deus com fé em ação? Qual é o risco real que você sente?</div>
+  <div class="reflect-q">Em que área específica da sua vida Deus está te convidando a dar um passo antes de ver o resultado?</div>
+  <div class="divider"></div>
+  <div class="section-label">Oração do dia</div>
+  <div class="prayer">Senhor, obrigado por seres o único Deus que Se humilha ao ponto de dizer "Me prove." Eu não tenho fé perfeita — mas tenho o Teu convite. Hoje eu escolho dar um passo. Não porque estou sem dúvida, mas porque confio mais no Teu caráter do que nas minhas incertezas. Aqui estou. Amém.</div>
+  <div class="divider"></div>
+  <div class="section-label">Desafio do dia</div>
+  <div class="challenge">Decida hoje um passo de fé concreto — algo que você fará como ato de confiança em Deus, antes de ver o resultado. Escreva. Diga para alguém de confiança. E faça.</div>
+  <div class="deeper">Para aprofundar: <span>Hebreus 11:1 · Mateus 14:28-29 · Romanos 4:18-21</span></div>
+  <div class="day-footer">
+    <button class="btn-primary" onclick="goNext(3)">Próximo dia →</button>
+    <button class="btn-secondary" onclick="markDone(3)">Marcar como lido ✓</button>
+  </div>
+</div>
+
+<!-- DIA 4 -->
+<div class="day-panel" id="day-4">
+  <div class="day-label">Dia 4 · Quinta-feira</div>
+  <div class="day-title">As Janelas do Céu — O Que Deus Realmente Prometeu</div>
+  <div class="verse-block">
+    "...se eu não vos abrir as janelas do céu e não derramar sobre vós bênção sem medida. Por vós repreenderei também o devorador..."
+    <div class="verse-ref">Malaquias 3:10b–11a (ARA)</div>
+  </div>
+  <p class="body-text">A imagem das "janelas do céu" é deliberada. Deus usa a mesma expressão do dilúvio em Gênesis 7:11. Quando as comportas se abriram naquele dia, não havia como conter. A metáfora não é de pingos — é de torrente.</p>
+  <p class="body-text">Mas o que Deus está prometendo? O texto vai além do material: proteção contra o devorador (v.11), e depois: <em>"Todas as nações vos chamarão bem-aventurados"</em> (v.12) — testemunho. A bênção prometida é <em>shalom</em> — completude, vida funcionando como criada para funcionar. E não termina em você — passa por você.</p>
+  <div class="original-pill">
+    <div class="orig-char">שָׁלוֹם</div>
+    <div class="orig-info"><strong>shalom</strong> · Strong H7965 · Frequentemente traduzido como "paz", mas o conceito é muito mais rico: inteireza, completude, nada faltando, nada quebrado. A bênção da aliança não é prosperidade isolada — é a vida inteira alinhada com o propósito de Deus.</div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">Para refletir</div>
+  <div class="reflect-q">Você tem limitado a "bênção de Deus" a uma categoria quando Deus está prometendo algo muito mais abrangente — shalom completo?</div>
+  <div class="reflect-q">Como a ideia de que a bênção "passa por você" muda a forma como você enxerga seus recursos, talentos e tempo?</div>
+  <div class="divider"></div>
+  <div class="section-label">Oração do dia</div>
+  <div class="prayer">Senhor, expande minha visão do que significa ser abençoado. Livra-me de uma fé que só enxerga o retorno pessoal. Que a bênção que derramas sobre mim transborde para as pessoas ao meu redor — para que elas vejam em mim a evidência do Teu caráter fiel. Amém.</div>
+  <div class="divider"></div>
+  <div class="section-label">Desafio do dia</div>
+  <div class="challenge">Pense em alguém ao seu redor que precisa ver a fidelidade de Deus demonstrada através de você — um ato de generosidade, presença ou encorajamento. Faça isso hoje como expressão de que a bênção de Deus passa por você.</div>
+  <div class="deeper">Para aprofundar: <span>Gênesis 12:2-3 · 2 Coríntios 9:8 · Lucas 6:38</span></div>
+  <div class="day-footer">
+    <button class="btn-primary" onclick="goNext(4)">Último dia →</button>
+    <button class="btn-secondary" onclick="markDone(4)">Marcar como lido ✓</button>
+  </div>
+</div>
+
+<!-- DIA 5 -->
+<div class="day-panel" id="day-5">
+  <div class="day-label">Dia 5 · Sexta-feira</div>
+  <div class="day-title">O Deus Que Não Muda — A Garantia Por Trás do Convite</div>
+  <div class="verse-block">
+    "Porque eu, o Senhor, não mudo; por isso vós, ó filhos de Jacó, não sois consumidos."
+    <div class="verse-ref">Malaquias 3:6 (ARA)</div>
+  </div>
+  <p class="body-text">Chegamos ao fundamento de tudo. Por que Deus pode dizer "prove-me"? Por que o convite de Malaquias 3:10 tem peso real? Por causa do versículo 6: <em>Deus não muda.</em></p>
+  <p class="body-text">A imutabilidade de Deus não é uma abstração filosófica — é a rocha sobre a qual toda confiança é construída. E há uma consequência extraordinária: <em>"por isso vós não sois consumidos."</em> A sobrevivência de Israel não dependia da fidelidade deles — dependia do caráter imutável de Deus. Da mesma forma, sua segurança hoje não repousa na consistência da sua fé. Repousa no Deus que não muda.</p>
+  <div class="original-pill">
+    <div class="orig-char">לֹא שָׁנִיתִי</div>
+    <div class="orig-info"><strong>lo shaniti</strong> · Strong H3808 + H8138 · "não mudei" — negação enfática do perfeito. A imutabilidade divina é aqui fundamento pastoral: o amor que Deus prometeu não está sujeito a revisão. Em Cristo, isso culmina em Romanos 8:38-39.</div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">Para refletir</div>
+  <div class="reflect-q">Durante esses 5 dias, o que mudou na forma como você enxerga a fidelidade de Deus?</div>
+  <div class="reflect-q">Qual passo de fé você deu — ou decidiu dar — nesta semana? Como foi?</div>
+  <div class="reflect-q">Você consegue agora responder à pergunta de Malaquias 1:2 com exemplos concretos da sua própria vida?</div>
+  <div class="divider"></div>
+  <div class="section-label">Oração do dia</div>
+  <div class="prayer">Senhor imutável, obrigado. Obrigado por seres o mesmo hoje que eras quando fizeste a promessa. Obrigado por não revisares o Teu amor quando eu falho. Que o que começou neste devocional se torne um estilo de vida: obedecer antes de ver, confiar antes de entender, agir antes de ter certeza — porque o Deus que não muda está comigo. Amém.</div>
+  <div class="divider"></div>
+  <div class="section-label">Desafio da semana</div>
+  <div class="challenge">Releia os 5 desafios desta semana. Qual você não completou? Volte a ele hoje. E escolha uma prática de fidelidade — algo pequeno e concreto — que você manterá nas próximas 4 semanas como memorial da fidelidade de Deus.</div>
+  <div class="deeper">Para aprofundar: <span>Hebreus 13:8 · Romanos 8:38-39 · Lamentações 3:22-23</span></div>
+  <div class="day-footer">
+    <button class="btn-primary" onclick="finishSeries()">Concluir série ✓</button>
+  </div>
+</div>
+
+<div class="complete-msg" id="complete-msg">
+  <h2>Série concluída</h2>
+  <p style="color:#9b92b8;font-size:14px;margin-bottom:16px">"Porque eu, o Senhor, não mudo." — Malaquias 3:6</p>
+  <p style="color:#7c6fa0;font-size:13px;font-family:sans-serif">Que esta semana tenha plantado uma semente de confiança que cresce por muito tempo.</p>
+</div>
+
+<script>
+const done = new Set();
+
+function showDay(n, btn) {
+  document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('day-' + n);
+  if (panel) { panel.classList.add('visible'); }
+  if (btn) btn.classList.add('active');
+  updateProgress();
+}
+
+function markDone(n) {
+  done.add(n);
+  const btns = document.querySelectorAll('.day-btn');
+  if (btns[n-1]) {
+    btns[n-1].classList.remove('active');
+    btns[n-1].classList.add('done');
+    btns[n-1].textContent = 'Dia ' + n + ' ✓';
+  }
+  updateProgress();
+}
+
+function goNext(n) {
+  markDone(n);
+  if (n < 5) {
+    const nextBtn = document.querySelectorAll('.day-btn')[n];
+    showDay(n + 1, nextBtn);
+  }
+}
+
+function finishSeries() {
+  markDone(5);
+  document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('visible'));
+  document.getElementById('complete-msg').style.display = 'block';
+  document.getElementById('prog').style.width = '100%';
+}
+
+function updateProgress() {
+  const pct = Math.max(20, Math.round((done.size / 5) * 100));
+  document.getElementById('prog').style.width = pct + '%';
+}
+</script>
+
+</body>
+</html>

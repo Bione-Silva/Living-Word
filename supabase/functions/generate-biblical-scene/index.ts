@@ -17,7 +17,7 @@ import {
   SCENE_STUDIO_PLANS as ALLOWED_PLANS,
 } from '../_shared/plan.ts';
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -86,31 +86,30 @@ const ANGLE_VARIATIONS = [
 async function generateOneImage(
   enrichedPrompt: string,
 ): Promise<{ ok: true; dataUrl: string } | { ok: false; status: number; error: string }> {
-  const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash-image',
-      messages: [{ role: 'user', content: enrichedPrompt }],
-      modalities: ['image', 'text'],
-    }),
-  });
+  const aiResponse = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: enrichedPrompt }] }],
+        generationConfig: { responseModalities: ['TEXT', 'IMAGE'] },
+      }),
+    }
+  );
 
   if (!aiResponse.ok) {
     const errText = await aiResponse.text().catch(() => '');
-    console.error('AI gateway error:', aiResponse.status, errText);
+    console.error('Gemini API error:', aiResponse.status, errText);
     return { ok: false, status: aiResponse.status, error: errText };
   }
 
   const aiData = await aiResponse.json();
-  const dataUrl: string | undefined = aiData?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-  if (!dataUrl || !dataUrl.startsWith('data:image/')) {
+  const b64 = aiData?.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData)?.inlineData?.data;
+  if (!b64) {
     return { ok: false, status: 500, error: 'No image returned' };
   }
-  return { ok: true, dataUrl };
+  return { ok: true, dataUrl: `data:image/png;base64,${b64}` };
 }
 
 async function uploadToStorage(
@@ -258,7 +257,7 @@ Deno.serve(async (req) => {
     // ──────────────────────────────────────────
     // MODO GENERATE (single) ou GENERATE_BATCH (carrossel)
     // ──────────────────────────────────────────
-    if (!LOVABLE_API_KEY) {
+    if (!GEMINI_API_KEY) {
       return new Response(JSON.stringify({ error: 'AI not configured' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

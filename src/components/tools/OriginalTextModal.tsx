@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { Loader2, Copy, Save, BookOpen, Wand2, FileText, Minimize2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Globe, BookA } from 'lucide-react';
+import { Globe, Zap, BookA } from 'lucide-react';
 import type { Language } from '@/lib/i18n';
 
 interface OriginalTextModalProps {
@@ -88,89 +88,86 @@ export function OriginalTextModal({ open, onOpenChange, toolTitle }: OriginalTex
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="theme-app max-w-4xl w-[95vw] h-[90vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0 max-md:w-full max-md:h-[100dvh] max-md:max-h-full max-md:rounded-none max-md:m-0 break-words p-0">
+      <DialogContent className="theme-app max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col bg-background text-foreground min-h-0 max-md:w-full max-md:h-full max-md:max-h-full max-md:rounded-none max-md:m-0 break-words p-0">
         
-        {/* Header */}
-        <div className="space-y-2 p-6 pb-4 border-b border-border shrink-0 bg-muted/20">
-          <div className="flex items-start gap-4">
-            <div className="shrink-0 w-12 h-12 rounded-xl bg-purple-500/15 flex items-center justify-center">
-              <BookA className="h-6 w-6 text-purple-600" />
+        {/* Header - matched to ToolSheet */}
+        <div className="space-y-2 pt-6 px-6 pb-1 border-b border-border shrink-0">
+          <div className="flex items-start gap-3">
+            <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
+              <FileText className="h-6 w-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <DialogHeader className="p-0 space-y-1 text-left">
+              <DialogHeader className="p-0 space-y-0.5 text-left">
                 <DialogTitle className="font-display text-xl leading-tight text-foreground">
                   {toolTitle}
                 </DialogTitle>
-                <DialogDescription className="text-sm text-purple-600 font-medium italic">
+                <DialogDescription className="text-sm text-primary font-medium italic">
                   {lang === 'PT' ? 'Grego e Hebraico ao seu alcance' : lang === 'EN' ? 'Greek & Hebrew at your fingertips' : 'Griego y Hebreo a tu alcance'}
                 </DialogDescription>
               </DialogHeader>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+          
+          <p className="text-sm text-muted-foreground leading-relaxed mt-2 mb-2">
             {lang === 'PT' 
               ? 'Acesse o texto bíblico nas línguas originais com análise palavra por palavra, sem precisar de anos de seminário.'
               : 'Access the biblical text in original languages with word-by-word analysis, without seminary degrees.'}
           </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-foreground/80">
+              <Zap className="h-3 w-3 text-primary shrink-0" />
+              <span className="leading-snug">{lang === 'PT' ? 'Resultados em segundos, prontos para uso' : 'Results in seconds, ready to use'}</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-foreground/80">
+              <Zap className="h-3 w-3 text-primary shrink-0" />
+              <span className="leading-snug">{lang === 'PT' ? 'Interface simples e intuitiva' : 'Simple and intuitive interface'}</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-foreground/80">
+              <Zap className="h-3 w-3 text-primary shrink-0" />
+              <span className="leading-snug">{lang === 'PT' ? 'Disponível em português, inglês e espanhol' : 'Available in PT, EN, and ES'}</span>
+            </div>
+          </div>
         </div>
 
         {/* Input Form area */}
         {!result && !loading && (
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-foreground/80">
-                <Wand2 className="h-5 w-5 text-purple-500 shrink-0" />
-                <span className="leading-snug">Resultados em segundos, prontos para uso</span>
-              </div>
-              <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-foreground/80">
-                <FileText className="h-5 w-5 text-purple-500 shrink-0" />
-                <span className="leading-snug">Interface simples e intuitiva</span>
-              </div>
-              <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-foreground/80">
-                <Globe className="h-5 w-5 text-purple-500 shrink-0" />
-                <span className="leading-snug">Disponível em português, inglês e espanhol</span>
-              </div>
+          <div className="space-y-4 mt-1 min-h-0 flex-1 overflow-y-auto px-6">
+            <div className="space-y-2 mt-4">
+              <Label className="font-medium">{lang === 'PT' ? 'Passagem bíblica' : 'Bible passage'}</Label>
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={lang === 'PT' ? 'Ex: João 3:16 ou Gênesis 1:1' : 'E.g.: John 3:16 or Genesis 1:1'}
+                onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+              />
             </div>
 
-            <div className="space-y-4 pt-6">
-              <div className="space-y-2">
-                <Label className="font-semibold text-base">Passagem bíblica</Label>
-                <Input
-                  className="h-12 text-base border-purple-500 focus-visible:ring-purple-500"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ex: João 3:16 ou Gênesis 1:1"
-                  onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
-                />
-              </div>
-
-              <div className="flex items-center gap-3 bg-muted/30 p-4 rounded-xl">
-                <Globe className="h-5 w-5 text-muted-foreground shrink-0" />
-                <Label className="text-sm font-medium text-foreground shrink-0">
-                  {lang === 'PT' ? 'Gerar em:' : 'Generate in:'}
-                </Label>
-                <Select value={generationLang} onValueChange={(v) => setGenerationLang(v as Language)}>
-                  <SelectTrigger className="w-[180px] border bg-background">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="PT">Português</SelectItem>
-                    <SelectItem value="EN">English</SelectItem>
-                    <SelectItem value="ES">Español</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Button
-                size="lg"
-                onClick={handleGenerate}
-                disabled={loading || !input.trim() || input.length < 3}
-                className="w-full gap-2 bg-purple-600 hover:bg-purple-700 text-white h-14 text-lg"
-              >
-                <Wand2 className="h-5 w-5" />
-                {lang === 'PT' ? 'Gerar Análise Original' : 'Generate Original Analysis'}
-              </Button>
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+              <Label className="text-sm text-muted-foreground shrink-0">
+                {lang === 'PT' ? 'Gerar em:' : 'Generate in:'}
+              </Label>
+              <Select value={generationLang} onValueChange={(v) => setGenerationLang(v as Language)}>
+                <SelectTrigger className="w-[160px] h-8 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PT">Português</SelectItem>
+                  <SelectItem value="EN">English</SelectItem>
+                  <SelectItem value="ES">Español</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
+            <Button
+              onClick={handleGenerate}
+              disabled={loading || !input.trim() || input.length < 3}
+              className="w-full gap-2 bg-primary text-primary-foreground mb-4"
+            >
+              <Wand2 className="h-4 w-4" />
+              {lang === 'PT' ? 'Gerar Análise Original' : 'Generate Original Analysis'}
+            </Button>
           </div>
         )}
 

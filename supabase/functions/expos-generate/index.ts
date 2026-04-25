@@ -6,8 +6,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const MODEL_PREMIUM = "openai/gpt-4o";
-const MODEL_FREE = "openai/gpt-4o-mini";
+const MODEL_PREMIUM = "gpt-4o";
+const MODEL_FREE = "gpt-4o-mini";
 
 const formatPrompts: Record<string, string> = {
   individual: `Você é um teólogo pastoral especialista no método E.X.P.O.S. Gere um estudo devocional individual e pessoal baseado na passagem fornecida.
@@ -167,7 +167,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const geminiApiKey = Deno.env.get('LOVABLE_API_KEY')!;
+    const geminiApiKey = Deno.env.get('OPENAI_API_KEY')!;
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
@@ -216,7 +216,7 @@ Deno.serve(async (req) => {
 
     const systemPrompt = formatPrompts[formato];
 
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

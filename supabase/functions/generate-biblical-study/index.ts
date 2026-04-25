@@ -7,8 +7,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const MODEL_PREMIUM = "openai/gpt-4o";
-const MODEL_FREE = "openai/gpt-4o-mini";
+const MODEL_PREMIUM = "gpt-4o";
+const MODEL_FREE = "gpt-4o-mini";
 
 const depthRequirements = {
   basic: {
@@ -193,7 +193,7 @@ async function requestStudyGeneration({
   systemPrompt: string;
   userPrompt: string;
 }) {
-  const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${geminiApiKey}`,
@@ -297,10 +297,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const geminiApiKey = Deno.env.get('LOVABLE_API_KEY');
+    const geminiApiKey = Deno.env.get('OPENAI_API_KEY');
 
     if (!geminiApiKey) {
-      return jsonResponse({ error: "LOVABLE_API_KEY not configured" }, 500);
+      return jsonResponse({ error: "OPENAI_API_KEY not configured" }, 500);
     }
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {

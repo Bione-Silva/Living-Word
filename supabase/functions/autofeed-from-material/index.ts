@@ -12,7 +12,7 @@ const corsHeaders = {
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { normalizePlan } from '../_shared/plan.ts';
 
-const geminiApiKey = Deno.env.get('LOVABLE_API_KEY');
+const geminiApiKey = Deno.env.get('OPENAI_API_KEY');
 
 interface Body {
   material_id: string;
@@ -143,7 +143,7 @@ Rules:
 - image_keywords: 3 short visual themes for picking a biblical scene (e.g. ["light", "mountain", "prayer"]).
 - All output in ${langLabel}.`;
 
-    const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiResp = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${geminiApiKey}`,

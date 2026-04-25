@@ -44,21 +44,20 @@ async function generateWithHuggingFace(prompt: string, hfToken: string): Promise
   }
 }
 
-async function generateWithGemini(prompt: string, lovableApiKey: string): Promise<string | null> {
-  console.log("[generate-kids-illustration] Trying Gemini (fallback)...");
+async function generateWithGemini(prompt: string, geminiKey: string): Promise<string | null> {
+  console.log("[generate-kids-illustration] Trying Gemini (API nativa)...");
   try {
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${lovableApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [{ role: "user", content: prompt }],
-        modalities: ["image", "text"],
-      }),
-    });
+    const aiResp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+        }),
+      }
+    );
 
     if (!aiResp.ok) {
       const errText = await aiResp.text();
@@ -67,15 +66,15 @@ async function generateWithGemini(prompt: string, lovableApiKey: string): Promis
     }
 
     const aiData = await aiResp.json();
-    const imageUrl = aiData?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    const b64 = aiData?.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData)?.inlineData?.data;
 
-    if (!imageUrl || !imageUrl.startsWith("data:image")) {
+    if (!b64) {
       console.error("[generate-kids-illustration] No image in Gemini response");
       return null;
     }
 
-    console.log("[generate-kids-illustration] ✅ Image generated via Gemini (fallback)");
-    return imageUrl;
+    console.log("[generate-kids-illustration] ✅ Image generated via Gemini");
+    return `data:image/png;base64,${b64}`;
   } catch (err) {
     console.error("[generate-kids-illustration] Gemini exception:", err);
     return null;
@@ -99,7 +98,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const hfToken = Deno.env.get("HF_TOKEN") || "";
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY")!;
+    const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
 
     // Auth
     const supabaseAuth = createClient(supabaseUrl, anonKey, {
@@ -139,7 +138,7 @@ Deno.serve(async (req) => {
 
     // Priority 2: Gemini fallback
     if (!imageDataUrl) {
-      imageDataUrl = await generateWithGemini(prompt, lovableApiKey);
+      imageDataUrl = await generateWithGemini(prompt, geminiKey);
     }
 
     if (!imageDataUrl) {

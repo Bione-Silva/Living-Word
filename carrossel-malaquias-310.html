@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Carrossel — Malaquias 3:10</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+    gap: 24px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: #1a1a1a;
+    padding: 12px 20px;
+    border-radius: 40px;
+    border: 1px solid #2a2a2a;
+  }
+  .controls span { color: #666; font-size: 13px; }
+  .controls button {
+    background: #2a2a2a;
+    color: #ccc;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .2s;
+  }
+  .controls button:hover { background: #3a3a3a; color: #fff; }
+  .controls button.active { background: #c9a84c; color: #000; font-weight: 500; }
+
+  .slide-wrap {
+    position: relative;
+    width: 540px;
+  }
+
+  /* Each slide is 1080x1350 scaled to 540x675 for preview */
+  .slide {
+    display: none;
+    width: 540px;
+    height: 675px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .slide.active { display: block; }
+
+  /* ─── DESIGN SYSTEM ─────────────────────────────── */
+  /* Dark stone / editorial theology aesthetic */
+  /* Palette: near-black #0d0b09, stone #1c1812, gold #c9a84c, cream #f0e8d8, warm-gray #8a7f72 */
+
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,.6);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #fff;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+    transition: background .2s;
+  }
+  .nav-btn:hover { background: rgba(201,168,76,.3); }
+  .nav-btn.prev { left: -52px; }
+  .nav-btn.next { right: -52px; }
+
+  .dots {
+    display: flex; gap: 6px; justify-content: center; margin-top: 16px;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #333; cursor: pointer; transition: all .2s;
+  }
+  .dot.active { background: #c9a84c; width: 20px; border-radius: 3px; }
+
+  .slide-num {
+    color: #555; font-size: 12px; text-align: center; margin-top: 8px;
+    font-family: 'DM Sans', sans-serif; letter-spacing: .05em;
+  }
+
+  /* ─── SLIDE BACKGROUNDS ─────────────────────────── */
+  .bg-deep    { background: #0d0b09; }
+  .bg-stone   { background: #12100d; }
+  .bg-warm    { background: #16130e; }
+  .bg-gold    { background: #0f0d09; }
+
+  /* subtle grain texture overlay */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .4;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* decorative diagonal line */
+  .diag-line {
+    position: absolute;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(201,168,76,.3), transparent);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* gold accent bar */
+  .gold-bar {
+    position: absolute;
+    height: 2px;
+    background: #c9a84c;
+  }
+
+  /* corner accent */
+  .corner-tl, .corner-br {
+    position: absolute;
+    width: 40px; height: 40px;
+    border-color: rgba(201,168,76,.35);
+    border-style: solid;
+  }
+  .corner-tl { top: 28px; left: 28px; border-width: 1px 0 0 1px; }
+  .corner-br { bottom: 28px; right: 28px; border-width: 0 1px 1px 0; }
+
+  /* consistent typography classes */
+  .label-sm {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #c9a84c;
+  }
+  .hebrew {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    color: rgba(201,168,76,.25);
+    line-height: 1;
+    letter-spacing: .02em;
+  }
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: #f0e8d8;
+    line-height: 1.15;
+  }
+  .subhead {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 300;
+    font-style: italic;
+    color: #a09282;
+    line-height: 1.5;
+  }
+  .body-copy {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 400;
+    color: #c8bfb0;
+    line-height: 1.65;
+  }
+  .verse-text {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    color: #f0e8d8;
+    line-height: 1.6;
+  }
+  .ref-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: #6a5f52;
+    letter-spacing: .06em;
+  }
+  .gold-text { color: #c9a84c; }
+  .strong-num {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    color: rgba(201,168,76,.15);
+    line-height: 1;
+    position: absolute;
+  }
+
+  /* ─── SLIDE 1: CAPA ─────────────────────────────── */
+  #s1 {
+    background: #0d0b09;
+    display: none;
+  }
+  #s1.active { display: flex; flex-direction: column; justify-content: center; }
+  #s1 .inner {
+    position: relative;
+    z-index: 3;
+    padding: 52px 52px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  #s1 .bg-hebrew {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 200px;
+    color: rgba(201,168,76,.04);
+    top: -20px; right: -20px;
+    z-index: 2;
+    line-height: 1;
+    pointer-events: none;
+  }
+  #s1 .gold-line {
+    position: absolute;
+    top: 0; left: 72px;
+    width: 1px; height: 100%;
+    background: linear-gradient(to bottom, transparent 5%, rgba(201,168,76,.2) 30%, rgba(201,168,76,.2) 70%, transparent 95%);
+    z-index: 2;
+  }
+
+  /* ─── SLIDE 2 ─────────────────────────────────── */
+  #s2 { background: #12100d; }
+  #s2.active { display: flex; }
+
+  /* ─── SLIDES inner layout ─────────────────────── */
+  .s-inner {
+    position: relative;
+    z-index: 3;
+    padding: 48px 48px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,.5);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <span>Pré-visualização</span>
+  <button class="active">1080×1350</button>
+  <button onclick="toggleSize(this)">Exportar dica</button>
+</div>
+
+<!-- SLIDE WRAP -->
+<div class="slide-wrap">
+  <button class="nav-btn prev" onclick="prevSlide()">‹</button>
+  <button class="nav-btn next" onclick="nextSlide()">›</button>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 1 — CAPA                                   -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-deep active" id="s1">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div style="position:absolute;font-family:'Playfair Display',serif;font-size:280px;color:rgba(201,168,76,.03);top:-40px;right:-10px;z-index:2;line-height:1;pointer-events:none;">בְּחָנוּנִי</div>
+    <div style="position:absolute;top:0;left:80px;width:1px;height:100%;background:linear-gradient(to bottom,transparent 8%,rgba(201,168,76,.15) 25%,rgba(201,168,76,.15) 75%,transparent 92%);z-index:2;"></div>
+
+    <div class="s-inner" style="justify-content:space-between;">
+      <div>
+        <div class="label-sm" style="margin-bottom:10px;">Malaquias 3:10</div>
+        <div style="width:32px;height:1px;background:#c9a84c;margin-bottom:32px;"></div>
+      </div>
+
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:58px;font-weight:900;color:#f0e8d8;line-height:1.05;margin-bottom:20px;">Ouse<br><span style="color:#c9a84c;">Testar</span><br>a Deus</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:20px;font-style:italic;color:#7a6e62;line-height:1.5;max-width:300px;">O único convite nas Escrituras onde Deus pede para ser provado</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:32px;height:1px;background:rgba(201,168,76,.3);"></div>
+        <div class="brand-tag">Living Word · Série Malaquias</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 2 — CONTEXTO                              -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-stone" id="s2">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div style="position:absolute;font-family:'Playfair Display',serif;font-size:160px;font-weight:900;color:rgba(201,168,76,.04);bottom:-20px;right:20px;z-index:2;line-height:1;">432<br>aC</div>
+
+    <div class="s-inner" style="justify-content:space-between;">
+      <div class="label-sm">O contexto que muda tudo</div>
+
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#f0e8d8;line-height:1.2;margin-bottom:20px;">Israel voltou do exílio.<br><span style="color:#c9a84c;font-style:italic;">Mas algo ainda estava quebrado.</span></div>
+        <div style="font-family:'Crimson Pro',serif;font-size:18px;color:#9a8e80;line-height:1.7;">O templo estava reconstruído. Os rituais, restaurados. Mas o coração de Israel fazia a pergunta mais perigosa que uma congregação pode fazer:</div>
+      </div>
+
+      <div style="border-left:2px solid rgba(201,168,76,.4);padding-left:20px;">
+        <div style="font-family:'Crimson Pro',serif;font-size:22px;font-style:italic;color:#f0e8d8;line-height:1.5;">"Deus, em que você nos amou?"</div>
+        <div class="ref-tag" style="margin-top:8px;">— Malaquias 1:2</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 3 — O PROBLEMA REAL                       -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-warm" id="s3">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <div class="s-inner" style="justify-content:space-between;">
+      <div class="label-sm">O problema por baixo</div>
+
+      <div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:#6a5f52;letter-spacing:.06em;margin-bottom:12px;">MALAQUIAS 3:14–15</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:22px;font-style:italic;color:#c8bfb0;line-height:1.6;border-left:1px solid rgba(201,168,76,.3);padding-left:20px;margin-bottom:24px;">"É inútil servir a Deus. Os soberbos são chamados bem-aventurados."</div>
+        <div style="font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#f0e8d8;line-height:1.2;margin-bottom:16px;">Reter o dízimo não era um problema contábil.</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:19px;color:#9a8e80;line-height:1.6;">Era uma declaração teológica: <span style="color:#c9a84c;font-style:italic;">"Não confio que Deus seja bom."</span></div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div style="width:6px;height:6px;border-radius:50%;background:#c9a84c;"></div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#5a5048;letter-spacing:.04em;">Toda desobediência tem uma crença errada por baixo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 4 — VERSÍCULO CENTRAL                     -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-deep" id="s4">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(201,168,76,.06) 0%,transparent 65%);z-index:2;pointer-events:none;"></div>
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <div class="s-inner" style="justify-content:center;gap:28px;">
+      <div class="label-sm" style="text-align:center;">Texto base</div>
+
+      <div style="text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:#f0e8d8;line-height:1.65;margin-bottom:20px;">"Trazei todos os dízimos à casa do tesouro… e <span style="color:#c9a84c;">provai-me nisto</span>, diz o Senhor dos Exércitos, se eu não vos abrir as janelas do céu e não derramar sobre vós bênção sem medida."</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#5a5048;letter-spacing:.08em;">MALAQUIAS 3:10 — ARA</div>
+      </div>
+
+      <div style="width:40px;height:1px;background:rgba(201,168,76,.4);margin:0 auto;"></div>
+
+      <div style="text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:64px;color:rgba(201,168,76,.15);line-height:1;margin-bottom:4px;">בְּחָנוּנִי</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:#5a5048;letter-spacing:.1em;">BEḤANUNI · H974 · "PROVAI-ME"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 5 — O CONVITE ÚNICO                       -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-stone" id="s5">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div style="position:absolute;font-family:'Playfair Display',serif;font-size:220px;font-weight:900;color:rgba(201,168,76,.03);top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;white-space:nowrap;pointer-events:none;">1x</div>
+
+    <div class="s-inner" style="justify-content:space-between;">
+      <div class="label-sm">Único na Escritura inteira</div>
+
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:700;color:#f0e8d8;line-height:1.15;margin-bottom:20px;">Em <span style="color:#c9a84c;">275 capítulos</span> do Antigo Testamento, Deus nunca pediu para ser testado.</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:18px;color:#8a7e70;line-height:1.65;margin-bottom:16px;">Sempre é o ser humano que é testado: Abraão no Moriá. Jó nas provações. Jesus no deserto.</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:20px;color:#c8bfb0;line-height:1.6;">Aqui — uma única vez — a direção <span style="color:#c9a84c;font-style:italic;">inverte.</span></div>
+      </div>
+
+      <div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#4a4038;letter-spacing:.04em;">Não é arrogância divina. É ternura.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 6 — A MÃO ESTENDIDA                       -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-warm" id="s6">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <div class="s-inner" style="justify-content:space-between;">
+      <div class="label-sm">O Pai que aguarda</div>
+
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:#f0e8d8;line-height:1.2;margin-bottom:24px;">"Me teste.<br>Age em fé <span style="color:#c9a84c;">uma vez.</span><br>E Me observe."</div>
+
+        <div style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:4px;padding:16px 20px;margin-bottom:20px;">
+          <div style="font-family:'Crimson Pro',serif;font-size:17px;color:#c8bfb0;line-height:1.65;">Não é um desafio arrogante. É o Pai que estende a mão ao filho com medo do mar e diz: "Eu sei que você está com medo. Dá um passo. E veja."</div>
+        </div>
+
+        <div style="font-family:'Crimson Pro',serif;font-size:16px;font-style:italic;color:#7a6e62;line-height:1.5;">A fé não é ausência de medo. É agir apesar dele.</div>
+      </div>
+
+      <div class="brand-tag">slide 6 / 9</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 7 — AS JANELAS DO CÉU                     -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-deep" id="s7">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.08) 0%,transparent 55%);z-index:2;pointer-events:none;"></div>
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <div class="s-inner" style="justify-content:space-between;">
+      <div>
+        <div class="label-sm" style="margin-bottom:8px;">A promessa que vai além</div>
+        <div style="font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:rgba(201,168,76,.12);line-height:1;margin-bottom:-10px;">שָׁלוֹם</div>
+      </div>
+
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#f0e8d8;line-height:1.2;margin-bottom:18px;">A bênção prometida não é riqueza. É <span style="color:#c9a84c;">shalom.</span></div>
+        <div style="font-family:'Crimson Pro',serif;font-size:18px;color:#9a8e80;line-height:1.65;margin-bottom:16px;"><em>Shalom</em> = inteireza, completude, nada faltando, nada quebrado. A vida inteira funcionando como Deus criou para funcionar.</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:17px;color:#c8bfb0;line-height:1.6;">E ela não termina em você — <span style="color:#c9a84c;font-style:italic;">passa por você.</span> (Malaquias 3:12)</div>
+      </div>
+
+      <div style="width:100%;height:1px;background:linear-gradient(to right,rgba(201,168,76,.3),transparent);"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 8 — O FUNDAMENTO                          -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-stone" id="s8">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div style="position:absolute;font-family:'Playfair Display',serif;font-size:200px;font-weight:900;color:rgba(201,168,76,.03);bottom:-30px;right:-10px;z-index:2;line-height:1;pointer-events:none;">לֹא<br>שָׁנִיתִי</div>
+
+    <div class="s-inner" style="justify-content:space-between;">
+      <div class="label-sm">Por que confiar?</div>
+
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:#c8bfb0;line-height:1.65;border-left:2px solid rgba(201,168,76,.4);padding-left:20px;margin-bottom:24px;">"Porque eu, o Senhor, não mudo; por isso vós, ó filhos de Jacó, não sois consumidos."</div>
+        <div class="ref-tag" style="margin-bottom:24px;">— Malaquias 3:6</div>
+
+        <div style="font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:#f0e8d8;line-height:1.2;">Deus pode ser testado porque <span style="color:#c9a84c;">Ele não muda.</span></div>
+      </div>
+
+      <div style="font-family:'Crimson Pro',serif;font-size:16px;color:#6a5f52;font-style:italic;line-height:1.5;">Sua segurança não repousa na consistência da sua fé. Repousa no Deus que é o mesmo ontem, hoje e para sempre.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SLIDE 9 — CTA / CHAMADA                         -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="slide bg-deep" id="s9">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(201,168,76,.07) 0%,transparent 60%);z-index:2;pointer-events:none;"></div>
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <div class="s-inner" style="justify-content:space-between;align-items:center;text-align:center;">
+
+      <div>
+        <div class="label-sm" style="text-align:center;margin-bottom:16px;">Pergunta final</div>
+        <div style="font-family:'Playfair Display',serif;font-size:46px;font-weight:700;color:#f0e8d8;line-height:1.15;">Qual é o seu passo de fé <span style="color:#c9a84c;">hoje?</span></div>
+      </div>
+
+      <div style="width:100%;">
+        <div style="width:1px;height:60px;background:linear-gradient(to bottom,transparent,rgba(201,168,76,.4));margin:0 auto 20px;"></div>
+        <div style="font-family:'Crimson Pro',serif;font-size:19px;color:#8a7e70;line-height:1.65;max-width:380px;margin:0 auto;">O convite de Malaquias 3:10 ainda está aberto. Deus não mudou. Sua fidelidade não expirou.</div>
+      </div>
+
+      <div style="width:100%;">
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:#c9a84c;margin-bottom:16px;">"Ouse testar a Deus."</div>
+        <div style="width:40px;height:1px;background:rgba(201,168,76,.3);margin:0 auto 20px;"></div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:#4a4038;letter-spacing:.18em;">LIVING WORD · SERIE MALAQUIAS</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:#3a3028;letter-spacing:.1em;margin-top:4px;">Salve · Compartilhe com alguém que precisa ouvir isso</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end slide-wrap -->
+
+<div class="dots" id="dots"></div>
+<div class="slide-num" id="slide-num">Slide 1 de 9</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('dots');
+  const numEl = document.getElementById('slide-num');
+
+  // build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    numEl.textContent = `Slide ${current + 1} de ${slides.length}`;
+  }
+
+  function nextSlide() { goTo(current + 1); }
+  function prevSlide() { goTo(current - 1); }
+
+  // keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  function toggleSize(btn) {
+    btn.textContent = 'Para exportar: abra cada slide no navegador, use Cmd+Shift+4 (Mac) ou Snipping Tool (Win) em 1080×1350px';
+    setTimeout(() => btn.textContent = 'Exportar dica', 4000);
+  }
+</script>
+
+</body>
+</html>

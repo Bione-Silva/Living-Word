@@ -1,282 +1,196 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, BookOpen, Users, Library, Search, Brain, Trophy, ArrowRight, Star, Clock, Zap } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import '@/styles/cea-theme.css';
 
-interface ProgressItem {
-  modulo: string;
-  status: string;
-  percentual: number;
-}
+/* ─── i18n ─── */
+const T: Record<string, Record<string, string>> = {
+  eyebrow:     { PT: 'Centro de Estudos Avançados', EN: 'Advanced Studies Center', ES: 'Centro de Estudios Avanzados' },
+  heroTitle1:  { PT: 'Teologia de seminário', EN: 'Seminary-level theology', ES: 'Teología de seminario' },
+  heroTitle2:  { PT: 'ao alcance de ', EN: 'within reach of ', ES: 'al alcance de ' },
+  heroTitle3:  { PT: 'todo líder', EN: 'every leader', ES: 'todo líder' },
+  heroSub:     { PT: '40 parábolas, 200 personagens, 66 livros, grego e hebraico originais — tudo conectado à geração de sermões, carrosséis e materiais.', EN: '40 parables, 200 characters, 66 books, original Greek and Hebrew — all connected to sermon, carousel and material generation.', ES: '40 parábolas, 200 personajes, 66 libros, griego y hebreo originales — todo conectado a la generación de sermones, carruseles y materiales.' },
+  parables:    { PT: 'Parábolas', EN: 'Parables', ES: 'Parábolas' },
+  characters:  { PT: 'Personagens', EN: 'Characters', ES: 'Personajes' },
+  books:       { PT: 'Livros', EN: 'Books', ES: 'Libros' },
+  questions:   { PT: 'Questões', EN: 'Questions', ES: 'Preguntas' },
+  searchPh:    { PT: 'Pesquise por qualquer ', EN: 'Search for any ', ES: 'Busque cualquier ' },
+  searchBold:  { PT: 'parábola, personagem, livro, palavra em grego ou hebraico', EN: 'parable, character, book, Greek or Hebrew word', ES: 'parábola, personaje, libro, palabra en griego o hebreo' },
+  modules:     { PT: 'Módulos de estudo', EN: 'Study modules', ES: 'Módulos de estudio' },
+  continueT:   { PT: 'Continue de onde parou', EN: 'Continue where you left off', ES: 'Continúa donde lo dejaste' },
+  viewAll:     { PT: 'Ver todos', EN: 'View all', ES: 'Ver todos' },
+  studyDay:    { PT: 'Estudo do dia', EN: 'Study of the day', ES: 'Estudio del día' },
+  studyNow:    { PT: 'Estudar agora', EN: 'Study now', ES: 'Estudiar ahora' },
+  genSermon:   { PT: 'Gerar sermão', EN: 'Generate sermon', ES: 'Generar sermón' },
+  makeCarousel:{ PT: 'Criar carrossel', EN: 'Create carousel', ES: 'Crear carrusel' },
+  items:       { PT: 'itens', EN: 'items', ES: 'ítems' },
+  booksLabel:  { PT: 'livros', EN: 'books', ES: 'libros' },
+  unlimited:   { PT: 'ilimitado', EN: 'unlimited', ES: 'ilimitado' },
+  questLabel:  { PT: 'questões', EN: 'questions', ES: 'preguntas' },
+  dashboard:   { PT: 'dashboard', EN: 'dashboard', ES: 'panel' },
+  done:        { PT: 'concluído', EN: 'completed', ES: 'completado' },
+  dayLabel:    { PT: 'Parábola do dia', EN: 'Parable of the day', ES: 'Parábola del día' },
+  ago2d:       { PT: 'há 2 dias', EN: '2 days ago', ES: 'hace 2 días' },
+  ago5d:       { PT: 'há 5 dias', EN: '5 days ago', ES: 'hace 5 días' },
+  ago1w:       { PT: 'há 1 sem', EN: '1 week ago', ES: 'hace 1 sem' },
+  // Module names
+  mParabolas:     { PT: 'Parábolas', EN: 'Parables', ES: 'Parábolas' },
+  mParabolasDesc: { PT: '40 parábolas de Jesus com contexto histórico, análise do grego e aplicação pastoral.', EN: '40 parables of Jesus with historical context, Greek analysis and pastoral application.', ES: '40 parábolas de Jesús con contexto histórico, análisis del griego y aplicación pastoral.' },
+  mPersonagens:     { PT: 'Personagens', EN: 'Characters', ES: 'Personajes' },
+  mPersonagensDesc: { PT: '200 personagens bíblicos com biografia, cronologia, lições e estudos tipológicos.', EN: '200 biblical characters with biography, chronology, lessons and typological studies.', ES: '200 personajes bíblicos con biografía, cronología, lecciones y estudios tipológicos.' },
+  mPanorama:     { PT: 'Panorama', EN: 'Overview', ES: 'Panorama' },
+  mPanoramaDesc: { PT: '66 livros da Bíblia com autor, contexto histórico, mensagem central e versículos-chave.', EN: '66 books of the Bible with author, historical context, central message and key verses.', ES: '66 libros de la Biblia con autor, contexto histórico, mensaje central y versículos clave.' },
+  mOriginal:     { PT: 'Pesquisa do Original', EN: 'Original Language', ES: 'Idioma Original' },
+  mOriginalDesc: { PT: 'Grego · Hebraico · Aramaico — morfologia completa, Strong\'s e comparação de versões.', EN: 'Greek · Hebrew · Aramaic — full morphology, Strong\'s and version comparison.', ES: 'Griego · Hebreo · Arameo — morfología completa, Strong\'s y comparación de versiones.' },
+  mQuiz:     { PT: 'Quiz Bíblico', EN: 'Bible Quiz', ES: 'Quiz Bíblico' },
+  mQuizDesc: { PT: '250 perguntas + geração automática por IA. Sessões gamificadas com conquistas.', EN: '250 questions + AI auto-generation. Gamified sessions with achievements.', ES: '250 preguntas + generación automática por IA. Sesiones gamificadas con logros.' },
+  mProgress:     { PT: 'Meu Progresso', EN: 'My Progress', ES: 'Mi Progreso' },
+  mProgressDesc: { PT: 'Streak, conquistas, histórico de estudos e dashboard de desempenho completo.', EN: 'Streak, achievements, study history and full performance dashboard.', ES: 'Racha, logros, historial de estudios y panel de rendimiento completo.' },
+};
+const t = (key: string, lang: string) => T[key]?.[lang] || T[key]?.PT || key;
 
-interface Module {
-  id: string;
-  title: string;
-  subtitle: string;
-  icon: React.ElementType;
-  href: string;
-  color: string;
-  bg: string;
-  count: string;
-  description: string;
-}
+/* ─── Module config ─── */
+const MODULES = [
+  { id: 'parabolas', icon: '📖', nameKey: 'mParabolas', descKey: 'mParabolasDesc', countLabel: '40 ', countKey: 'items', color: 'cea-mc-teal', pct: 20, pctColor: '#14B8A6', href: '/estudos/parabolas' },
+  { id: 'personagens', icon: '👤', nameKey: 'mPersonagens', descKey: 'mPersonagensDesc', countLabel: '200 ', countKey: 'items', color: 'cea-mc-blue', pct: 10, pctColor: '#3B82F6', href: '/estudos/personagens' },
+  { id: 'panorama', icon: '📚', nameKey: 'mPanorama', descKey: 'mPanoramaDesc', countLabel: '66 ', countKey: 'booksLabel', color: 'cea-mc-gold', pct: 30, pctColor: '#F59E0B', href: '/estudos/livros' },
+  { id: 'original', icon: '🔬', nameKey: 'mOriginal', descKey: 'mOriginalDesc', countLabel: '', countKey: 'unlimited', color: 'cea-mc-coral', pct: -1, pctColor: '', href: '/estudos/pesquisa' },
+  { id: 'quiz', icon: '🎯', nameKey: 'mQuiz', descKey: 'mQuizDesc', countLabel: '250+ ', countKey: 'questLabel', color: 'cea-mc-purple', pct: 40, pctColor: '#9F67FF', href: '/estudos/quiz' },
+  { id: 'progress', icon: '🏆', nameKey: 'mProgress', descKey: 'mProgressDesc', countLabel: '', countKey: 'dashboard', color: 'cea-mc-green', pct: -1, pctColor: '', href: '/estudos/meu-progresso' },
+];
 
-const MODULES: Module[] = [
-  {
-    id: 'parabolas',
-    title: 'Parábolas de Jesus',
-    subtitle: '40 parábolas completas',
-    icon: BookOpen,
-    href: '/estudos/parabolas',
-    color: 'from-amber-500 to-orange-600',
-    bg: 'bg-amber-500/10 border-amber-500/30',
-    count: '40',
-    description: 'Contexto histórico do século I, análise do grego original e aplicação pastoral'
-  },
-  {
-    id: 'personagens',
-    title: 'Personagens Bíblicos',
-    subtitle: '200 perfis biográficos',
-    icon: Users,
-    href: '/estudos/personagens',
-    color: 'from-blue-500 to-cyan-600',
-    bg: 'bg-blue-500/10 border-blue-500/30',
-    count: '200',
-    description: 'Biografia, teologia e lições de cada personagem do Gênesis ao Apocalipse'
-  },
-  {
-    id: 'panorama',
-    title: 'Panorama Bíblico',
-    subtitle: '66 livros da Bíblia',
-    icon: Library,
-    href: '/estudos/livros',
-    color: 'from-emerald-500 to-teal-600',
-    bg: 'bg-emerald-500/10 border-emerald-500/30',
-    count: '66',
-    description: 'Autor, data, propósito e mensagem central de cada livro do cânon'
-  },
-  {
-    id: 'pesquisa',
-    title: 'Pesquisa do Original',
-    subtitle: 'Grego • Hebraico • Aramaico',
-    icon: Search,
-    href: '/estudos/pesquisa',
-    color: 'from-purple-500 to-violet-600',
-    bg: 'bg-purple-500/10 border-purple-500/30',
-    count: '∞',
-    description: 'Análise morfológica, Strong\'s Concordance e insight teológico do texto original'
-  },
-  {
-    id: 'quiz',
-    title: 'Quiz Bíblico',
-    subtitle: '250+ perguntas gamificadas',
-    icon: Brain,
-    href: '/estudos/quiz',
-    color: 'from-rose-500 to-pink-600',
-    bg: 'bg-rose-500/10 border-rose-500/30',
-    count: '250+',
-    description: 'Teste seu conhecimento com perguntas de múltipla escolha, score e conquistas'
-  }
+const CONTINUE = [
+  { type: 'Parábola', title: 'O Filho Pródigo', pct: 68, color: '#7C3AED', agoKey: 'ago2d', href: '/estudos/parabolas' },
+  { type: 'Personagem', title: 'Elias', pct: 45, color: '#3B82F6', agoKey: 'ago5d', href: '/estudos/personagens' },
+  { type: 'Panorama', title: 'Romanos', pct: 30, color: '#F59E0B', agoKey: 'ago1w', href: '/estudos/livros' },
 ];
 
 export default function CEAHome() {
-  const { user } = useAuth();
+  const { lang } = useLanguage();
   const navigate = useNavigate();
-  const [progress, setProgress] = useState<ProgressItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searching, setSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<Record<string, unknown>[]>([]);
 
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('lw_cea_progress')
-      .select('modulo, status, percentual')
-      .eq('user_id', user.id)
-      .then(({ data }) => { if (data) setProgress(data); });
-  }, [user]);
-
-  const getModuleProgress = (modulo: string) => {
-    const items = progress.filter(p => p.modulo === modulo);
-    if (items.length === 0) return 0;
-    const concluded = items.filter(i => i.status === 'concluido').length;
-    return Math.round((concluded / items.length) * 100);
+  const today = new Date();
+  const dayNames: Record<string, string[]> = {
+    PT: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
+    EN: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    ES: ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],
   };
-
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    setSearching(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('cea-search', {
-        body: { query: searchQuery, limit: 6 }
-      });
-      if (error) throw error;
-      setSearchResults(data.results || []);
-    } catch (err) {
-      console.error('Erro na busca:', err);
-    } finally {
-      setSearching(false);
-    }
+  const monthNames: Record<string, string[]> = {
+    PT: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+    EN: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    ES: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
   };
+  const dayStr = `${dayNames[lang]?.[today.getDay()] || dayNames.PT[today.getDay()]}, ${today.getDate()} ${monthNames[lang]?.[today.getMonth()] || monthNames.PT[today.getMonth()]}`;
 
   return (
-    <div className="min-h-screen bg-[#0F0A1E] text-white">
-      {/* Hero */}
-      <div className="relative overflow-hidden border-b border-[#2D1F6E]">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-transparent to-transparent pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2.5 rounded-xl bg-amber-500/20 border border-amber-500/30">
-              <GraduationCap className="w-6 h-6 text-amber-400" />
-            </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-              NOVO
-            </span>
-          </div>
+    <div className="cea-scope cea-fade-in" style={{ padding: '28px 28px 40px', overflowY: 'auto', flex: 1 }}>
 
-          <h1 className="text-3xl md:text-5xl font-bold mb-3" style={{ fontFamily: "'Crimson Pro', serif" }}>
-            Centro de Estudos Avançados
-          </h1>
-          <p className="text-lg text-gray-400 mb-8 max-w-2xl">
-            Teologia de seminário. Profundidade real.
-          </p>
-
-          {/* Stats rápidos */}
-          <div className="flex flex-wrap gap-4 mb-8">
-            {[
-              { icon: BookOpen, label: '40 Parábolas', value: '40' },
-              { icon: Users, label: 'Personagens', value: '200' },
-              { icon: Library, label: 'Livros do Cânon', value: '66' },
-              { icon: Brain, label: 'Perguntas de Quiz', value: '250+' },
-            ].map(stat => (
-              <div key={stat.label} className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
-                <stat.icon className="w-4 h-4 text-purple-400" />
-                <span className="text-sm font-semibold text-white">{stat.value}</span>
-                <span className="text-xs text-gray-400">{stat.label}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Busca semântica unificada */}
-          <form onSubmit={handleSearch} className="flex gap-3 max-w-2xl">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Buscar parábolas, personagens, livros ou temas..."
-                className="w-full bg-[#1A1040] border border-[#2D1F6E] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={searching}
-              className="px-5 py-3 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-xl text-sm font-medium transition-colors flex items-center gap-2"
-            >
-              {searching ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Zap className="w-4 h-4" />}
-              Buscar
-            </button>
-          </form>
-
-          {/* Resultados da busca */}
-          {searchResults.length > 0 && (
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl">
-              {searchResults.map((result: Record<string, unknown>, i) => (
-                <button
-                  key={i}
-                  onClick={() => navigate(`/estudos/${result.tipo === 'parabola' ? 'parabolas' : result.tipo === 'personagem' ? 'personagens' : 'livros'}/${result.id}`)}
-                  className="text-left p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 capitalize">{String(result.tipo)}</span>
-                    <span className="text-xs text-gray-500">{Math.round((result.similarity as number) * 100)}% relevante</span>
-                  </div>
-                  <p className="text-sm font-medium text-white">{String(result.titulo || result.nome)}</p>
-                  {result.referencia && <p className="text-xs text-gray-400 mt-0.5">{String(result.referencia)}</p>}
-                </button>
-              ))}
-            </div>
-          )}
+      {/* ═══ HERO ═══ */}
+      <div className="cea-hero" style={{ marginBottom: 24 }}>
+        <div className="cea-hero-eyebrow">{t('eyebrow', lang)}</div>
+        <div className="cea-hero-title">
+          {t('heroTitle1', lang)}<br />
+          {t('heroTitle2', lang)}<em>{t('heroTitle3', lang)}</em>
+        </div>
+        <div className="cea-hero-sub">{t('heroSub', lang)}</div>
+        <div className="cea-hero-stats">
+          <div className="cea-hero-stat"><div className="n">40</div><div className="l">{t('parables', lang)}</div></div>
+          <div className="cea-hero-stat"><div className="n">200</div><div className="l">{t('characters', lang)}</div></div>
+          <div className="cea-hero-stat"><div className="n">66</div><div className="l">{t('books', lang)}</div></div>
+          <div className="cea-hero-stat"><div className="n">250+</div><div className="l">{t('questions', lang)}</div></div>
         </div>
       </div>
 
-      {/* Módulos */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h2 className="text-xl font-semibold text-gray-200 mb-6">Módulos de Estudo</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {MODULES.map(mod => {
-            const prog = getModuleProgress(mod.id);
-            return (
-              <button
-                key={mod.id}
-                onClick={() => navigate(mod.href)}
-                className={`group text-left p-6 ${mod.bg} border rounded-2xl hover:border-opacity-60 transition-all duration-200 hover:scale-[1.02]`}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${mod.color} bg-opacity-10`}>
-                    <mod.icon className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-2xl font-bold text-white">{mod.count}</span>
-                    {prog > 0 && (
-                      <span className="text-xs text-gray-400">{prog}% concluído</span>
-                    )}
-                  </div>
-                </div>
-                <h3 className="font-semibold text-white mb-1">{mod.title}</h3>
-                <p className="text-xs text-gray-400 mb-3">{mod.subtitle}</p>
-                <p className="text-sm text-gray-300 leading-relaxed">{mod.description}</p>
-                <div className="mt-4 flex items-center gap-1.5 text-xs text-gray-400 group-hover:text-white transition-colors">
-                  <span>Estudar agora</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
+      {/* ═══ SEARCH ═══ */}
+      <div className="cea-search-bar" style={{ marginBottom: 24, cursor: 'text' }}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#7C3AED" style={{ flexShrink: 0 }}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input 
+          type="text"
+          placeholder={`${t('searchPh', lang)}${t('searchBold', lang)}…`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.currentTarget.value.trim().length >= 3) {
+              navigate(`/estudos/pesquisa?q=${encodeURIComponent(e.currentTarget.value.trim())}`);
+            }
+          }}
+          style={{ 
+            background: 'transparent', 
+            border: 'none', 
+            outline: 'none', 
+            color: 'var(--cea-text-1)',
+            flex: 1,
+            fontSize: '14px',
+            fontFamily: "'Inter', sans-serif"
+          }}
+        />
+        <span className="cea-kbd" style={{ flexShrink: 0 }}>⌘K</span>
+      </div>
 
-        {/* Continue de onde parou */}
-        {progress.filter(p => p.status === 'em_andamento').length > 0 && (
-          <div className="mt-10">
-            <h2 className="text-xl font-semibold text-gray-200 mb-4 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-purple-400" />
-              Continue de onde parou
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {progress.filter(p => p.status === 'em_andamento').slice(0, 3).map((item, i) => (
-                <div key={i} className="p-4 bg-[#1A1040] border border-[#2D1F6E] rounded-xl">
-                  <p className="text-sm font-medium text-white capitalize">{item.modulo}</p>
-                  <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-purple-500 to-violet-500 rounded-full"
-                      style={{ width: `${item.percentual}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">{item.percentual}% concluído</p>
-                </div>
-              ))}
+      {/* ═══ MODULES GRID ═══ */}
+      <div className="cea-section-head"><div className="cea-section-title">{t('modules', lang)}</div></div>
+      <div className="cea-modules-grid" style={{ marginBottom: 24 }}>
+        {MODULES.map(m => (
+          <div key={m.id} className={`cea-module-card ${m.color}`} onClick={() => navigate(m.href)}>
+            <span className="cea-module-icon">{m.icon}</span>
+            <div className="cea-module-name">{t(m.nameKey, lang)}</div>
+            <div className="cea-module-desc">{t(m.descKey, lang)}</div>
+            <div className="cea-module-meta">
+              <span className="cea-module-count">{m.countLabel}{t(m.countKey, lang)}</span>
+              {m.pct >= 0 && (
+                <span style={{ fontSize: 11, color: m.pctColor }}>{m.pct}% {t('done', lang)}</span>
+              )}
             </div>
           </div>
-        )}
+        ))}
+      </div>
 
-        {/* Conquistas recentes */}
-        <div className="mt-10">
-          <h2 className="text-xl font-semibold text-gray-200 mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-400" />
-            Progresso & Conquistas
-          </h2>
-          <button
-            onClick={() => navigate('/estudos/meu-progresso')}
-            className="group inline-flex items-center gap-2 px-5 py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl text-amber-300 text-sm font-medium transition-colors"
-          >
-            <Star className="w-4 h-4" />
-            Ver meu painel de progresso
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </button>
+      {/* ═══ CONTINUE ═══ */}
+      <div className="cea-section-head">
+        <div className="cea-section-title">{t('continueT', lang)}</div>
+        <div className="cea-section-link">{t('viewAll', lang)}</div>
+      </div>
+      <div className="cea-continue-grid" style={{ marginBottom: 24 }}>
+        {CONTINUE.map((c, i) => (
+          <div key={i} className="cea-continue-card" onClick={() => navigate(c.href)}>
+            <div className="cea-cc-type">{c.type}</div>
+            <div className="cea-cc-title">{c.title}</div>
+            <div className="cea-cc-bar"><div className="cea-cc-fill" style={{ width: `${c.pct}%`, background: c.color }} /></div>
+            <div className="cea-cc-meta">
+              <span className="cea-cc-pct">{c.pct}%</span>
+              <span className="cea-cc-ago">{t(c.agoKey, lang)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ═══ STUDY OF THE DAY ═══ */}
+      <div className="cea-section-head"><div className="cea-section-title">{t('studyDay', lang)}</div></div>
+      <div className="cea-study-day" onClick={() => navigate('/estudos/parabolas')}>
+        <div style={{ flex: 1 }}>
+          <div className="cea-sd-eyebrow">{t('dayLabel', lang)} · {dayStr}</div>
+          <div className="cea-sd-title">O Bom Samaritano</div>
+          <div className="cea-sd-ref">Lucas 10:30-37</div>
+          <div className="cea-sd-desc">
+            {lang === 'EN'
+              ? 'The most powerful parable about loving your neighbor — told in a context of real ethnic tension between Jews and Samaritans in the 1st century.'
+              : lang === 'ES'
+              ? 'La parábola más poderosa sobre el amor al prójimo — contada en un contexto de tensión étnica real entre judíos y samaritanos en el siglo I.'
+              : 'A parábola mais poderosa sobre amor ao próximo — contada em um contexto de tensão étnica real entre judeus e samaritanos no século I.'}
+          </div>
+          <div className="cea-sd-actions">
+            <button className="cea-btn cea-btn-primary" onClick={e => { e.stopPropagation(); navigate('/estudos/parabolas'); }}>
+              {t('studyNow', lang)}
+            </button>
+            <button className="cea-btn cea-btn-ghost" onClick={e => { e.stopPropagation(); navigate('/sermoes'); }}>
+              {t('genSermon', lang)}
+            </button>
+            <button className="cea-btn cea-btn-ghost" onClick={e => { e.stopPropagation(); navigate('/social-studio'); }}>
+              {t('makeCarousel', lang)}
+            </button>
+          </div>
         </div>
+        <div className="cea-sd-icon">📖</div>
       </div>
     </div>
   );

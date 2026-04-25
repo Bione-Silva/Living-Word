@@ -5,7 +5,7 @@ const corsHeaders = {
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
+const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
 
 const UNSPLASH_TOPICS = [
   'nature', 'sky', 'landscape', 'mountains', 'ocean', 'sunset',
@@ -55,8 +55,8 @@ Deno.serve(async (req) => {
     }
 
     // Use AI to generate a verse recommendation
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
+    if (!OPENAI_API_KEY) {
+      return new Response(JSON.stringify({ error: 'OPENAI_API_KEY not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -70,10 +70,10 @@ Return JSON with exactly these fields:
 - "topic": a single english word describing the verse theme (nature, hope, love, peace, light, faith, grace, strength)
 Do NOT repeat common verses like John 3:16 or Psalm 23 frequently. Choose from the full Bible.`
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

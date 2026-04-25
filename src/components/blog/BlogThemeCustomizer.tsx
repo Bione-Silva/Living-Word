@@ -129,8 +129,9 @@ export function BlogThemeCustomizer() {
       if (error) throw error;
       await refreshProfile();
       toast.success(lb('saved'));
-    } catch {
-      toast.error(lb('error'));
+    } catch (err: any) {
+      console.error('Theme save error:', err);
+      toast.error(`${lb('error')} ${err?.message || ''}`);
     } finally {
       setSaving(false);
     }

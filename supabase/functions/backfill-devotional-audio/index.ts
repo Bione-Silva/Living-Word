@@ -5,31 +5,43 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-async function generateAudio(openaiKey: string, text: string, voice: 'nova' | 'alloy' | 'onyx'): Promise<Uint8Array | null> {
+async function generateAudio(googleKey: string, text: string, voice: 'nova' | 'alloy' | 'onyx'): Promise<Uint8Array | null> {
+  // Mapeamento de vozes OpenAI → Google Cloud TTS
+  const voiceMap: Record<string, { name: string; gender: string }> = {
+    nova:  { name: 'pt-BR-Wavenet-A', gender: 'FEMALE' },
+    alloy: { name: 'pt-BR-Wavenet-B', gender: 'MALE' },
+    onyx:  { name: 'pt-BR-Wavenet-C', gender: 'MALE' },
+  };
+  const gVoice = voiceMap[voice] || voiceMap.nova;
+  const ttsText = text.length > 4800 ? text.slice(0, 4800) + '...' : text;
+
   try {
-    const ttsText = text.length > 4000 ? text.slice(0, 4000) + '...' : text
-    const resp = await fetch('https://api.openai.com/v1/audio/speech', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'tts-1',
-        input: ttsText,
-        voice,
-        response_format: 'mp3',
-        speed: 0.95,
-      }),
-    })
+    const resp = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${googleKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text: ttsText },
+          voice: { languageCode: 'pt-BR', name: gVoice.name, ssmlGender: gVoice.gender },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: 0.95 },
+        }),
+      }
+    );
     if (!resp.ok) {
-      console.error(`TTS error (${voice}):`, resp.status, await resp.text())
-      return null
+      console.error(`Google TTS error (${voice}):`, resp.status, await resp.text());
+      return null;
     }
-    return new Uint8Array(await resp.arrayBuffer())
+    const json = await resp.json();
+    const b64 = json.audioContent;
+    if (!b64) return null;
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
   } catch (e) {
-    console.error(`TTS failed (${voice}):`, e)
-    return null
+    console.error(`Google TTS failed (${voice}):`, e);
+    return null;
   }
 }
 
@@ -51,8 +63,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const openaiKey = Deno.env.get('OPENAI_API_KEY')
-    if (!openaiKey) throw new Error('OPENAI_API_KEY not configured')
+    const googleKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_TTS_KEY')
+    if (!googleKey) throw new Error('GEMINI_API_KEY not configured')
 
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -94,7 +106,7 @@ Deno.serve(async (req) => {
     const fullText = `${dev.title}.\n\n${dev.anchor_verse_text}\n\n${dev.body_text}\n\n${dev.closing_prayer || ''}`
     console.log(`Generating ${voice} audio for ${dev.language} ${dev.scheduled_date}: ${dev.title}`)
 
-    const audioData = await generateAudio(openaiKey, fullText, voice)
+    const audioData = await generateAudio(googleKey, fullText, voice)
     if (!audioData) {
       return new Response(JSON.stringify({ error: `Failed to generate ${voice} audio` }), {
         status: 500,

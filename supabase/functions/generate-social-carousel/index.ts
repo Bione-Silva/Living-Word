@@ -6,7 +6,7 @@ const MAX_VERSE_LEN = 500;
 const MAX_TOPIC_LEN = 200;
 const MAX_BODY_SIZE = 5_000;
 
-const geminiApiKey = Deno.env.get('LOVABLE_API_KEY')
+const geminiApiKey = Deno.env.get('OPENAI_API_KEY')
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
     }
 
     if (!geminiApiKey) {
-      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
+      return new Response(JSON.stringify({ error: 'OPENAI_API_KEY not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -107,7 +107,7 @@ Rules:
       ? `Create a ${slideCount}-slide carousel for: "${verse}" with focus on the topic: "${topic}"`
       : `Create a ${slideCount}-slide carousel for: "${verse}"`
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${geminiApiKey}`,

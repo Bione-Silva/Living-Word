@@ -136,7 +136,7 @@ async function embedBatch(texts: string[], apiKey: string): Promise<number[][]> 
 
 // Tradução EN→PT via Lovable AI Gateway (gemini-2.5-flash)
 async function translateToPortuguese(text: string, lovableKey: string): Promise<string> {
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${lovableKey}`,
@@ -289,7 +289,7 @@ Deno.serve(async (req) => {
   const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
   const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
   if (!GEMINI_API_KEY) return jsonResponse({ error: "GEMINI_API_KEY missing" }, 500);
 
@@ -394,7 +394,7 @@ Deno.serve(async (req) => {
     const results: Array<{ id: string; status: string; chunks?: number; error?: string }> = [];
     for (const job of jobs as JobRow[]) {
       try {
-        const r = await processJob(admin, job, GEMINI_API_KEY, LOVABLE_API_KEY ?? "");
+        const r = await processJob(admin, job, GEMINI_API_KEY, OPENAI_API_KEY ?? "");
         if (r.ok) {
           results.push({ id: job.id, status: "ingested", chunks: r.chunks });
         }

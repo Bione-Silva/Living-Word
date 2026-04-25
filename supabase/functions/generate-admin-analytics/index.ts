@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get('Authorization');
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('OPENAI_API_KEY');
 
     // Verify caller is admin
     const supabase = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
@@ -66,7 +66,7 @@ Dê insights sobre:
 
 Seja direto, use números e percentuais. Responda em português.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

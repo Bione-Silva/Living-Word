@@ -1,5 +1,21 @@
 # CLAUDE.md — Living Word
 
+---
+## ⚠️ INFRAESTRUTURA CRÍTICA — LEIA ANTES DE QUALQUER AÇÃO
+
+```
+SUPABASE PROJECT:  priumwdestycikzfcysg
+SUPABASE URL:      https://priumwdestycikzfcysg.supabase.co
+DASHBOARD:         https://supabase.com/dashboard/project/priumwdestycikzfcysg
+```
+
+> **REGRA ABSOLUTA:** Antes de criar qualquer Edge Function, migration, script, bucket
+> ou configuração Supabase, confirme que está usando `priumwdestycikzfcysg`.
+> O projeto `osusqcbyybfuwdewvbai` pertence ao Lovable e NÃO temos controle sobre ele.
+> O `supabase/config.toml` DEVE sempre ter `project_id = "priumwdestycikzfcysg"`.
+
+---
+
 ## Visão do projeto
 
 Living Word é uma plataforma digital SaaS trilingual para líderes cristãos — pastores, pregadores e líderes de ministério — que combina leitura, estudo, organização e aprofundamento de conteúdo bíblico e formativo com o **Pastoral Minds System**: um conjunto de agentes de IA modelados a partir de pregadores históricos.

@@ -431,13 +431,39 @@ export default function AppLayout() {
                 <LayoutDashboard className="h-[18px] w-[18px] shrink-0" />
                 <span>{lang === 'PT' ? 'Início' : lang === 'EN' ? 'Home' : 'Inicio'}</span>
               </Link>
-              <button
-                onClick={() => { setMobileMenuOpen(false); setMobileToolsOpen(true); }}
-                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium text-foreground hover:bg-muted transition-colors text-left"
+              <Link
+                to="/criar"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname.startsWith('/criar') ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
               >
                 <Sparkles className="h-[18px] w-[18px] shrink-0" />
                 <span>{lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear'}</span>
-              </button>
+              </Link>
+              <Link
+                to="/pesquisar"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname.startsWith('/pesquisar') ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <Search className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Pesquisar' : lang === 'EN' ? 'Research' : 'Investigar'}</span>
+              </Link>
+              <Link
+                to="/estudos"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname.startsWith('/estudos') ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <GraduationCap className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Centro de Estudos' : lang === 'EN' ? 'Advanced Studies' : 'Centro de Estudios'}</span>
+                <Badge variant="outline" className="ml-auto text-[9px] border-amber-500/40 text-amber-500 px-1.5 py-0">
+                  {lang === 'PT' ? 'NOVO' : 'NEW'}
+                </Badge>
+              </Link>
               <Link
                 to="/sermoes"
                 onClick={() => setMobileMenuOpen(false)}
@@ -500,6 +526,16 @@ export default function AppLayout() {
               >
                 <Heart className="h-[18px] w-[18px] shrink-0" />
                 <span>{lang === 'PT' ? 'Palavra Amiga' : lang === 'EN' ? 'Friendly Word' : 'Palabra Amiga'}</span>
+              </Link>
+              <Link
+                to="/estudos/quiz"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                  location.pathname === '/estudos/quiz' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                }`}
+              >
+                <HelpCircle className="h-[18px] w-[18px] shrink-0" />
+                <span>{lang === 'PT' ? 'Quiz Bíblico' : lang === 'EN' ? 'Bible Trivia' : 'Trivia Bíblica'}</span>
               </Link>
               <Link
                 to="/kids"
@@ -700,58 +736,35 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
-          {/* 1.2 & 1.3 — Criar + Pesquisar (collapsible, only one open) */}
-          {sidebarGroups.map((group) => {
-            const isOpen = openGroup === group.key;
-            const GroupIcon = group.icon;
+          {/* 1.2 — Criar */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear'}>
+            <Link
+              to="/criar"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname.startsWith('/criar')
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Sparkles className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Criar' : lang === 'EN' ? 'Create' : 'Crear')}
+            </Link>
+          </SidebarTooltipWrap>
 
-            return (
-              <div key={group.key}>
-                <SidebarTooltipWrap collapsed={collapsed} label={group.label[lang]}>
-                  <button
-                    onClick={() => !collapsed && toggleGroup(group.key)}
-                    className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isOpen
-                        ? 'text-sidebar-foreground bg-sidebar-accent/30'
-                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-                    }`}
-                  >
-                    <GroupIcon className="h-4 w-4 shrink-0" />
-                    {!collapsed && (
-                      <>
-                        <span className="flex-1 text-left">{group.label[lang]}</span>
-                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'} ${isOpen ? 'text-sidebar-foreground' : 'text-sidebar-foreground/40'}`} />
-                      </>
-                    )}
-                  </button>
-                </SidebarTooltipWrap>
-
-                {isOpen && !collapsed && (
-                  <div className="ml-4 pl-3 border-l border-sidebar-border space-y-0.5 max-h-[280px] overflow-y-auto">
-                    {group.tools.map((tool) => {
-                      const Icon = tool.icon;
-                      const isLocked = isToolLockedForPlan(tool.id, userPlan);
-                      return (
-                        <button
-                          key={tool.id}
-                          onClick={() => handleToolClick(tool)}
-                          className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors text-left ${
-                            isLocked
-                              ? 'text-sidebar-foreground/40 hover:bg-sidebar-accent/30'
-                              : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground'
-                          }`}
-                        >
-                          <Icon className="h-3.5 w-3.5" />
-                          <span className="truncate">{tool.label[lang]}</span>
-                          {isLocked && <ToolLockBadge userPlan={userPlan} toolId={tool.id} />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {/* 1.3 — Pesquisar */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Pesquisar' : lang === 'EN' ? 'Research' : 'Investigar'}>
+            <Link
+              to="/pesquisar"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname.startsWith('/pesquisar')
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <Search className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Pesquisar' : lang === 'EN' ? 'Research' : 'Investigar')}
+            </Link>
+          </SidebarTooltipWrap>
 
           {/* 1.4 — Bíblia */}
           <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Bíblia' : lang === 'EN' ? 'Bible' : 'Biblia'}>
@@ -802,7 +815,29 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
-          {/* 2.2 — Sermões */}
+          {/* 2.2 — Centro de Estudos Avançados */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'EN' ? 'Advanced Studies' : lang === 'ES' ? 'Centro de Estudios' : 'Centro de Estudos'}>
+            <Link
+              to="/estudos"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname.startsWith('/estudos')
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <GraduationCap className="h-4 w-4 shrink-0" />
+              {!collapsed && (
+                <>
+                  {lang === 'EN' ? '🎓 Advanced Studies' : lang === 'ES' ? '🎓 Centro de Estudios' : '🎓 Centro de Estudos'}
+                  <Badge variant="outline" className="ml-auto text-[9px] border-amber-500/40 text-amber-500 px-1.5 py-0">
+                    {lang === 'PT' ? 'NOVO' : 'NEW'}
+                  </Badge>
+                </>
+              )}
+            </Link>
+          </SidebarTooltipWrap>
+
+          {/* 2.3 — Sermões */}
           <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Sermões' : lang === 'EN' ? 'Sermons' : 'Sermones'}>
             <Link
               to="/sermoes"
@@ -902,7 +937,22 @@ export default function AppLayout() {
             </Link>
           </SidebarTooltipWrap>
 
-          {/* 2.9 — Kids */}
+          {/* 2.9 — Quiz Bíblico */}
+          <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Quiz Bíblico' : lang === 'EN' ? 'Bible Trivia' : 'Trivia Bíblica'}>
+            <Link
+              to="/estudos/quiz"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/estudos/quiz'
+                  ? 'bg-sidebar-accent text-sidebar-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              }`}
+            >
+              <HelpCircle className="h-4 w-4 shrink-0" />
+              {!collapsed && (lang === 'PT' ? 'Quiz Bíblico' : lang === 'EN' ? 'Bible Trivia' : 'Trivia Bíblica')}
+            </Link>
+          </SidebarTooltipWrap>
+
+          {/* 2.10 — Kids */}
           <SidebarTooltipWrap collapsed={collapsed} label={lang === 'PT' ? 'Kids' : lang === 'EN' ? 'Kids' : 'Niños'}>
             <Link
               to="/kids"

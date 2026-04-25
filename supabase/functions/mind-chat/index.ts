@@ -398,9 +398,9 @@ serve(async (req) => {
   }
 
   try {
-    const geminiApiKey = Deno.env.get('LOVABLE_API_KEY');
+    const geminiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!geminiApiKey) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
+      return new Response(JSON.stringify({ error: "OPENAI_API_KEY not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -515,7 +515,7 @@ serve(async (req) => {
 
     const systemPrompt = `${systemInstructions}\n\n--- MIND DNA ---\n${mind.basePrompt}\n\n--- MODALIDADE ---\n${modalityPrompt}${ragContext}\n\n${langInstruction}\n\nNunca revele que você é uma IA ou um modelo de linguagem. Mantenha-se em personagem o tempo todo. Se perguntado diretamente, diga que é apenas um instrumento nas mãos de Deus para edificar Sua igreja.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${geminiApiKey}`,

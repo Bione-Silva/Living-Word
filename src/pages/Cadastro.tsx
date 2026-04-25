@@ -62,7 +62,7 @@ export default function Cadastro() {
         if (plan) {
           navigate(`/upgrade?autoCheckout=${plan}`);
         } else {
-          navigate('/blog-onboarding');
+          navigate('/dashboard');
         }
       }
     });
@@ -95,7 +95,7 @@ export default function Cadastro() {
       }
 
       toast.success(copy.success[language]);
-      navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/blog-onboarding');
+      navigate(planParam ? `/upgrade?autoCheckout=${planParam}` : '/dashboard');
     } catch (err: any) {
       console.error('Signup error:', err);
       toast.error(err.message || 'Erro ao criar conta');

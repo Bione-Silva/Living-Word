@@ -1,6 +1,6 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -50,6 +50,14 @@ import Kids from "./pages/Kids";
 import Ferramentas from "./pages/Ferramentas";
 import Unsubscribe from "./pages/Unsubscribe";
 import CEAHome from "./pages/CEAHome";
+import CEAParabolas from "./pages/CEAParabolas";
+import CEAPersonagens from "./pages/CEAPersonagens";
+import CEAPanorama from "./pages/CEAPanorama";
+import CEAPesquisa from "./pages/CEAPesquisa";
+import CEAQuiz from "./pages/CEAQuiz";
+import CEAProgresso from "./pages/CEAProgresso";
+import CriarHub from "./pages/CriarHub";
+import PesquisarHub from "./pages/PesquisarHub";
 // MinhaIgreja agora vive como aba dentro de /configuracoes?tab=church
 import { SubdomainRedirect } from "./components/SubdomainRedirect";
 
@@ -58,8 +66,7 @@ const queryClient = new QueryClient();
 const MASTER_EMAIL = 'bionicaosilva@gmail.com';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, profile, loading } = useAuth();
-  const location = useLocation();
+  const { user, loading } = useAuth();
   const [timedOut, setTimedOut] = React.useState(false);
 
   React.useEffect(() => {
@@ -76,19 +83,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   if (!user) return <Navigate to="/login" replace />;
 
-  // Master email skips onboarding redirect
-  const isMaster = user.email === MASTER_EMAIL;
-
-  // Redirect to blog onboarding if profile not completed (except if already there or on upgrade, or master)
-  const skipRedirectPaths = ['/onboarding', '/upgrade', '/blog-onboarding'];
-  if (
-    !isMaster &&
-    profile &&
-    !profile.profile_completed &&
-    !skipRedirectPaths.some(p => location.pathname.startsWith(p))
-  ) {
-    return <Navigate to="/blog-onboarding" replace />;
-  }
+  // Onboarding is handled by OnboardingNudgeCard in Dashboard (non-blocking)
+  // No automatic redirect to avoid infinite loop issues
 
   return <>{children}</>;
 }
@@ -151,15 +147,17 @@ const App = () => (
                   <Route path="/kids" element={<Kids />} />
                   <Route path="/ferramentas" element={<Ferramentas />} />
                   <Route path="/minha-igreja" element={<Navigate to="/configuracoes?tab=church" replace />} />
+                  <Route path="/criar" element={<CriarHub />} />
+                  <Route path="/pesquisar" element={<PesquisarHub />} />
                   <Route path="/estudio" element={<Navigate to="/dashboard?tool=studio" replace />} />
                   <Route path="/estudos/novo" element={<EstudoBiblicoPage />} />
                   <Route path="/estudos" element={<CEAHome />} />
-                  <Route path="/estudos/parabolas" element={<CEAHome />} />
-                  <Route path="/estudos/personagens" element={<CEAHome />} />
-                  <Route path="/estudos/livros" element={<CEAHome />} />
-                  <Route path="/estudos/pesquisa" element={<CEAHome />} />
-                  <Route path="/estudos/quiz" element={<CEAHome />} />
-                  <Route path="/estudos/meu-progresso" element={<CEAHome />} />
+                  <Route path="/estudos/parabolas" element={<CEAParabolas />} />
+                  <Route path="/estudos/personagens" element={<CEAPersonagens />} />
+                  <Route path="/estudos/livros" element={<CEAPanorama />} />
+                  <Route path="/estudos/pesquisa" element={<CEAPesquisa />} />
+                  <Route path="/estudos/quiz" element={<CEAQuiz />} />
+                  <Route path="/estudos/meu-progresso" element={<CEAProgresso />} />
                   <Route path="/expos" element={<ExposStudioPage />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/biblioteca" element={<Biblioteca />} />

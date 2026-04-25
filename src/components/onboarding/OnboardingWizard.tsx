@@ -4,13 +4,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import {
   ArrowRight, ArrowLeft, Globe, Check, Sparkles,
-  BookOpen, Palette, Type, Layout, Mic, Church
+  BookOpen, Mic, Church
 } from 'lucide-react';
 import { useForceLightTheme } from '@/hooks/useForceLightTheme';
 import { BrandIcon } from '@/components/BrandIcon';
@@ -18,8 +17,7 @@ import { BrandIcon } from '@/components/BrandIcon';
 type L = 'PT' | 'EN' | 'ES';
 
 const STEPS = [
-  'welcome', 'language', 'doctrine', 'tone', 'handle',
-  'theme_color', 'font_family', 'layout_style', 'confirm'
+  'welcome', 'language', 'doctrine', 'tone', 'confirm'
 ] as const;
 
 const DOCTRINES = [
@@ -41,52 +39,25 @@ const TONES = [
   { id: 'contemplativo', label: { PT: 'Contemplativo', EN: 'Contemplative', ES: 'Contemplativo' }, icon: '🕊️' },
 ];
 
-const COLORS = [
-  { id: 'amber', label: 'Âmbar', color: '#5B21B6' },
-  { id: 'blue', label: 'Azul', color: '#2563EB' },
-  { id: 'green', label: 'Verde', color: '#16A34A' },
-  { id: 'rose', label: 'Rosa', color: '#E11D48' },
-  { id: 'purple', label: 'Roxo', color: '#7C3AED' },
-  { id: 'teal', label: 'Turquesa', color: '#0D9488' },
-  { id: 'indigo', label: 'Índigo', color: '#4F46E5' },
-  { id: 'orange', label: 'Laranja', color: '#EA580C' },
-];
-
-const FONTS = [
-  { id: 'cormorant', label: 'Cormorant Garamond', preview: 'Aa', style: 'font-serif' },
-  { id: 'montserrat', label: 'Montserrat', preview: 'Aa', style: 'font-sans' },
-  { id: 'playfair', label: 'Playfair Display', preview: 'Aa', style: 'font-serif italic' },
-  { id: 'inter', label: 'Inter', preview: 'Aa', style: 'font-sans' },
-  { id: 'merriweather', label: 'Merriweather', preview: 'Aa', style: 'font-serif' },
-];
-
-const LAYOUTS = [
-  { id: 'classic', label: { PT: 'Clássico', EN: 'Classic', ES: 'Clásico' }, desc: { PT: 'Limpo e tradicional', EN: 'Clean and traditional', ES: 'Limpio y tradicional' } },
-  { id: 'modern', label: { PT: 'Moderno', EN: 'Modern', ES: 'Moderno' }, desc: { PT: 'Visual contemporâneo', EN: 'Contemporary visual', ES: 'Visual contemporáneo' } },
-  { id: 'magazine', label: { PT: 'Revista', EN: 'Magazine', ES: 'Revista' }, desc: { PT: 'Estilo editorial', EN: 'Editorial style', ES: 'Estilo editorial' } },
-];
 
 const LOADING_MESSAGES: Record<L, string[]> = {
   PT: [
-    'Semeando suas palavras...',
-    'Preparando a capa do seu blog...',
-    'Gerando seus 3 primeiros devocionais...',
-    'Aplicando sua identidade visual...',
-    'Quase lá! Finalizando seu blog...',
+    'Configurando sua conta...',
+    'Aplicando suas preferências...',
+    'Treinando a IA com seu perfil...',
+    'Quase lá! Finalizando...',
   ],
   EN: [
-    'Sowing your words...',
-    'Preparing your blog cover...',
-    'Generating your first 3 devotionals...',
-    'Applying your visual identity...',
-    'Almost there! Finishing your blog...',
+    'Setting up your account...',
+    'Applying your preferences...',
+    'Training the AI with your profile...',
+    'Almost there! Finishing...',
   ],
   ES: [
-    'Sembrando tus palabras...',
-    'Preparando la portada de tu blog...',
-    'Generando tus 3 primeros devocionales...',
-    'Aplicando tu identidad visual...',
-    '¡Casi listo! Finalizando tu blog...',
+    'Configurando tu cuenta...',
+    'Aplicando tus preferencias...',
+    'Entrenando la IA con tu perfil...',
+    '¡Casi listo! Finalizando...',
   ],
 };
 
@@ -100,32 +71,23 @@ export default function OnboardingWizard() {
   const [language, setLanguage] = useState<L>(lang);
   const [doctrine, setDoctrine] = useState('');
   const [tone, setTone] = useState('');
-  const [handle, setHandle] = useState(profile?.blog_handle || '');
-  const [themeColor, setThemeColor] = useState('amber');
-  const [fontFamily, setFontFamily] = useState('cormorant');
-  const [layoutStyle, setLayoutStyle] = useState('classic');
   const [provisioning, setProvisioning] = useState(false);
   const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
 
   const currentStep = STEPS[stepIndex];
   const progress = ((stepIndex + 1) / STEPS.length) * 100;
   const blogName = profile?.full_name || 'Meu Blog';
-  const cleanHandle = handle.toLowerCase().replace(/[^a-z0-9-]/g, '') || 'meu-blog';
 
   const labels: Record<string, Record<L, string>> = {
     welcome_title: { PT: `${blogName.split(' ')[0]}, vamos personalizar tudo!`, EN: `${blogName.split(' ')[0]}, let's personalize everything!`, ES: `${blogName.split(' ')[0]}, ¡personalicemos todo!` },
-    welcome_desc: { PT: 'Em poucos passos, seu blog estará no ar com sua cara.', EN: 'In a few steps, your blog will be live with your identity.', ES: 'En pocos pasos, tu blog estará en línea con tu identidad.' },
+    welcome_desc: { PT: 'Em poucos passos, a IA será treinada com seu perfil pastoral.', EN: 'In a few steps, the AI will be trained with your pastoral profile.', ES: 'En pocos pasos, la IA será entrenada con tu perfil pastoral.' },
     language_title: { PT: 'Qual idioma do seu conteúdo?', EN: 'What language is your content?', ES: '¿En qué idioma es tu contenido?' },
     doctrine_title: { PT: 'Qual sua linha doutrinária?', EN: 'What is your doctrinal line?', ES: '¿Cuál es tu línea doctrinal?' },
     tone_title: { PT: 'Como é seu tom pastoral?', EN: 'What is your pastoral tone?', ES: '¿Cuál es tu tono pastoral?' },
-    handle_title: { PT: 'Escolha o link do seu blog', EN: 'Choose your blog link', ES: 'Elige el link de tu blog' },
-    color_title: { PT: 'Escolha a cor do seu blog', EN: 'Choose your blog color', ES: 'Elige el color de tu blog' },
-    font_title: { PT: 'Escolha a tipografia', EN: 'Choose the typography', ES: 'Elige la tipografía' },
-    layout_title: { PT: 'Escolha o estilo de layout', EN: 'Choose the layout style', ES: 'Elige el estilo de layout' },
-    confirm_title: { PT: 'Tudo pronto! Confirme e lance.', EN: 'All set! Confirm and launch.', ES: '¡Todo listo! Confirma y lanza.' },
+    confirm_title: { PT: 'Tudo pronto! Vamos começar.', EN: 'All set! Let\'s begin.', ES: '¡Todo listo! Vamos a comenzar.' },
     next: { PT: 'Próximo', EN: 'Next', ES: 'Siguiente' },
     back: { PT: 'Voltar', EN: 'Back', ES: 'Volver' },
-    launch: { PT: '🚀 Lançar meu blog', EN: '🚀 Launch my blog', ES: '🚀 Lanzar mi blog' },
+    launch: { PT: '🚀 Ir para o Dashboard', EN: '🚀 Go to Dashboard', ES: '🚀 Ir al Dashboard' },
     skip: { PT: 'Pular e ativar conta', EN: 'Skip and activate', ES: 'Saltar y activar' },
   };
 
@@ -133,6 +95,45 @@ export default function OnboardingWizard() {
 
   const next = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1));
   const prev = () => setStepIndex((i) => Math.max(i - 1, 0));
+
+  /** Mark profile as completed directly in Supabase (no Edge Function dependency) */
+  const markProfileCompleted = async () => {
+    if (!user?.id) return;
+
+    // CRITICAL: Set profile_completed FIRST, alone, to guarantee it succeeds
+    // even if other column names have issues
+    const { error: completedError } = await supabase
+      .from('profiles')
+      .update({ profile_completed: true })
+      .eq('id', user.id);
+
+    if (completedError) {
+      console.error('[Onboarding] Failed to mark profile_completed:', completedError);
+    }
+
+    // Then update pastoral preferences (non-blocking — these are optional)
+    const extras: Record<string, unknown> = {};
+    if (language) extras.language = language;
+    if (doctrine) extras.doctrine = doctrine;
+    if (tone) extras.pastoral_voice = tone;
+
+    if (Object.keys(extras).length > 0) {
+      supabase
+        .from('profiles')
+        .update(extras)
+        .eq('id', user.id)
+        .then(({ error }) => {
+          if (error) console.warn('[Onboarding] Non-critical profile update failed:', error);
+        });
+    }
+  };
+
+  const handleSkip = async () => {
+    await markProfileCompleted();
+    try { localStorage.setItem('lw-onboarding-done', '1'); } catch {}
+    // Use full page reload to avoid ProtectedRoute race condition
+    window.location.href = '/dashboard';
+  };
 
   const handleProvision = async () => {
     setProvisioning(true);
@@ -143,43 +144,33 @@ export default function OnboardingWizard() {
     try {
       setLang(language);
 
-      const { data, error } = await supabase.functions.invoke('provision-user-blog', {
+      // Always mark profile_completed directly first (prevents redirect loop)
+      await markProfileCompleted();
+      try { localStorage.setItem('lw-onboarding-done', '1'); } catch {}
+
+      // Try Edge Function for blog provisioning (optional — not blocking)
+      supabase.functions.invoke('provision-user-blog', {
         body: {
           language,
           doctrine_line: doctrine,
           tone,
-          theme_color: themeColor,
-          font_family: fontFamily,
-          layout_style: layoutStyle,
-          blog_handle: cleanHandle,
           blog_name: blogName,
         },
-      });
-
-      if (error) throw error;
+      }).catch((e) => console.warn('[Provision] Blog provision failed (non-blocking):', e));
 
       await refreshProfile();
 
-      const blogUrl = cleanHandle ? `https://livingwordgo.com/blog/${cleanHandle}` : undefined;
-      void supabase.functions.invoke('send-welcome-email', {
-        body: { emailType: 'altar-digital-ready', blogUrl },
-      }).catch((e) => console.warn('[Welcome email] altar-digital-ready failed:', e));
-      void supabase.functions.invoke('schedule-drip', { body: {} })
-        .catch((e) => console.warn('[Drip] schedule failed:', e));
-
       toast.success(
-        language === 'PT' ? `Blog criado com ${data?.articles_created || 3} artigos!` :
-        language === 'EN' ? `Blog created with ${data?.articles_created || 3} articles!` :
-        `¡Blog creado con ${data?.articles_created || 3} artículos!`
+        language === 'PT' ? 'Conta ativada com sucesso!' :
+        language === 'EN' ? 'Account activated successfully!' :
+        '¡Cuenta activada con éxito!'
       );
-      navigate('/dashboard');
+      // Use full page reload to avoid ProtectedRoute race condition
+      window.location.href = '/dashboard';
     } catch (err: any) {
       console.error('Provision error:', err);
-      toast.error(
-        language === 'PT' ? 'Erro ao criar blog. Tente novamente.' :
-        language === 'EN' ? 'Error creating blog. Try again.' :
-        'Error al crear blog. Intenta de nuevo.'
-      );
+      // Even on error, navigate — profile_completed is already true
+      window.location.href = '/dashboard';
     } finally {
       clearInterval(interval);
       setProvisioning(false);
@@ -273,7 +264,7 @@ export default function OnboardingWizard() {
 
         {/* Skip */}
         <div className="text-center mb-4">
-          <button onClick={() => navigate('/dashboard')} className="text-xs text-muted-foreground hover:text-primary transition-colors">
+          <button onClick={handleSkip} className="text-xs text-muted-foreground hover:text-primary transition-colors">
             {t('skip')}
           </button>
         </div>
@@ -294,9 +285,9 @@ export default function OnboardingWizard() {
                 <div className="flex items-start gap-3">
                   <BookOpen className="w-5 h-5 text-primary mt-0.5 shrink-0" />
                   <p className="text-xs text-muted-foreground">
-                    {language === 'PT' ? 'Ao final, vamos gerar automaticamente 3 artigos devocionais para seu blog com imagens de capa profissionais.' :
-                     language === 'EN' ? 'At the end, we will automatically generate 3 devotional articles for your blog with professional cover images.' :
-                     'Al final, generaremos automáticamente 3 artículos devocionales para tu blog con imágenes de portada profesionales.'}
+                    {language === 'PT' ? 'Configure suas preferências pastorais para que a IA se adapte ao seu estilo de comunicação.' :
+                     language === 'EN' ? 'Set up your pastoral preferences so the AI adapts to your communication style.' :
+                     'Configura tus preferencias pastorales para que la IA se adapte a tu estilo de comunicación.'}
                   </p>
                 </div>
               </Card>
@@ -355,105 +346,18 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          {/* Step: Handle */}
-          {currentStep === 'handle' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-2">
-                <Globe className="w-5 h-5 text-primary" />
-                <h2 className="font-display text-xl font-bold">{t('handle_title')}</h2>
-              </div>
-              <div className="flex items-center border border-input rounded-lg overflow-hidden bg-background">
-                <Input
-                  value={handle}
-                  onChange={(e) => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                  className="border-0 focus-visible:ring-0 text-base"
-                  placeholder="pastor-marcos"
-                />
-                <span className="text-sm text-muted-foreground px-3 whitespace-nowrap bg-muted/50 py-2.5 border-l border-input">
-                  .livingword.app
-                </span>
-              </div>
-              {handle && (
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-mono font-semibold text-primary">{cleanHandle}.livingword.app</span>
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Step: Theme Color */}
-          {currentStep === 'theme_color' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-2">
-                <Palette className="w-5 h-5 text-primary" />
-                <h2 className="font-display text-xl font-bold">{t('color_title')}</h2>
-              </div>
-              <div className="grid grid-cols-4 gap-3">
-                {COLORS.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => setThemeColor(c.id)}
-                    className={`w-full aspect-square rounded-xl border-2 transition-all flex items-center justify-center ${
-                      themeColor === c.id ? 'border-foreground scale-110 shadow-lg' : 'border-transparent hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: c.color }}
-                    title={c.label}
-                  >
-                    {themeColor === c.id && <Check className="w-6 h-6 text-white" />}
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-muted-foreground text-center">
-                {COLORS.find((c) => c.id === themeColor)?.label}
-              </p>
-            </div>
-          )}
-
-          {/* Step: Font Family */}
-          {currentStep === 'font_family' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-2">
-                <Type className="w-5 h-5 text-primary" />
-                <h2 className="font-display text-xl font-bold">{t('font_title')}</h2>
-              </div>
-              {renderOptionGrid(
-                FONTS.map((f) => ({ id: f.id, label: f.label, style: f.style })),
-                fontFamily,
-                setFontFamily,
-                2
-              )}
-            </div>
-          )}
-
-          {/* Step: Layout Style */}
-          {currentStep === 'layout_style' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-2">
-                <Layout className="w-5 h-5 text-primary" />
-                <h2 className="font-display text-xl font-bold">{t('layout_title')}</h2>
-              </div>
-              {renderOptionGrid(
-                LAYOUTS.map((l) => ({ id: l.id, label: l.label, desc: l.desc })),
-                layoutStyle,
-                setLayoutStyle,
-                3
-              )}
-            </div>
-          )}
-
           {/* Step: Confirm */}
           {currentStep === 'confirm' && (
             <div className="space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-100 flex items-center justify-center">
+                <Check className="w-8 h-8 text-emerald-600" />
+              </div>
               <h2 className="font-display text-xl font-bold text-center">{t('confirm_title')}</h2>
               <div className="space-y-2 text-sm">
                 {[
                   { label: language === 'PT' ? 'Idioma' : language === 'EN' ? 'Language' : 'Idioma', value: language },
-                  { label: language === 'PT' ? 'Doutrina' : language === 'EN' ? 'Doctrine' : 'Doctrina', value: DOCTRINES.find((d) => d.id === doctrine)?.label[language] || doctrine },
-                  { label: language === 'PT' ? 'Tom' : language === 'EN' ? 'Tone' : 'Tono', value: TONES.find((t) => t.id === tone)?.label[language] || tone },
-                  { label: 'Blog', value: `${cleanHandle}.livingword.app` },
-                  { label: language === 'PT' ? 'Cor' : language === 'EN' ? 'Color' : 'Color', value: COLORS.find((c) => c.id === themeColor)?.label || themeColor },
-                  { label: language === 'PT' ? 'Fonte' : language === 'EN' ? 'Font' : 'Fuente', value: FONTS.find((f) => f.id === fontFamily)?.label || fontFamily },
-                  { label: 'Layout', value: LAYOUTS.find((l) => l.id === layoutStyle)?.label[language] || layoutStyle },
+                  { label: language === 'PT' ? 'Doutrina' : language === 'EN' ? 'Doctrine' : 'Doctrina', value: DOCTRINES.find((d) => d.id === doctrine)?.label[language] || doctrine || '—' },
+                  { label: language === 'PT' ? 'Tom' : language === 'EN' ? 'Tone' : 'Tono', value: TONES.find((t) => t.id === tone)?.label[language] || tone || '—' },
                 ].map((item) => (
                   <div key={item.label} className="flex justify-between py-2 border-b border-border/50">
                     <span className="text-muted-foreground">{item.label}</span>

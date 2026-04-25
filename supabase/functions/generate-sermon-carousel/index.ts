@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const lovableKey = Deno.env.get("LOVABLE_API_KEY")!;
+    const lovableKey = Deno.env.get("OPENAI_API_KEY")!;
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
@@ -87,7 +87,7 @@ Rules:
 - Make titles impactful and memorable`;
     }
 
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${lovableKey}`,

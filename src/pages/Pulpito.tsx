@@ -48,8 +48,8 @@ const copy = {
 interface SermonItem {
   id: string;
   title: string;
-  passage: string | null;
-  updated_at: string;
+  bible_passage: string | null;
+  created_at: string;
 }
 
 export default function Pulpito() {
@@ -67,10 +67,10 @@ export default function Pulpito() {
     (async () => {
       const { data } = await supabase
         .from('materials')
-        .select('id, title, passage, updated_at')
+        .select('id, title, bible_passage, created_at')
         .eq('user_id', user.id)
         .eq('type', 'sermon')
-        .order('updated_at', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(30);
       if (alive) {
         setSermons((data as SermonItem[]) || []);
@@ -155,8 +155,8 @@ export default function Pulpito() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-foreground truncate">{s.title}</p>
-                    {s.passage && (
-                      <p className="text-xs text-muted-foreground truncate">{s.passage}</p>
+                    {s.bible_passage && (
+                      <p className="text-xs text-muted-foreground truncate">{s.bible_passage}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 text-xs font-medium text-primary shrink-0 group-hover:translate-x-0.5 transition-transform">

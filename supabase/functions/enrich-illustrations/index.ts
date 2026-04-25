@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const IMAGE_MODEL = "google/gemini-2.5-flash-image";
+const IMAGE_MODEL = "gemini-2.0-flash-exp-image-generation";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -17,9 +17,10 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY")!;
-    if (!lovableApiKey) {
-      return new Response(JSON.stringify({ error: "AI gateway not configured" }), {
+    const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
+    const openAIApiKey = Deno.env.get("OPENAI_API_KEY")!;
+    if (!geminiKey) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -80,55 +81,22 @@ Deno.serve(async (req) => {
       ? material.content.substring(0, 2000)
       : JSON.stringify(material.content).substring(0, 2000);
 
-    const sceneResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${lovableApiKey}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        tools: [{
-          type: "function",
-          function: {
-            name: "extract_scenes",
-            description: "Extract 3 visual scenes from a biblical study for watercolor illustration",
-            parameters: {
-              type: "object",
-              properties: {
-                scenes: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      prompt: {
-                        type: "string",
-                        description: "A detailed prompt for generating a biblical watercolor illustration. Include the scene, characters, setting, and mood. Always include: 'subtle biblical watercolor style, warm earth tones, elegant and reverent, soft lighting'"
-                      }
-                    },
-                    required: ["prompt"]
-                  },
-                  minItems: 3,
-                  maxItems: 3
-                }
-              },
-              required: ["scenes"]
-            }
-          }
-        }],
-        tool_choice: { type: "function", function: { name: "extract_scenes" } },
-        messages: [
-          {
-            role: "system",
-            content: "You are a biblical art director. Extract 3 key visual moments from a biblical study that would make beautiful watercolor illustrations. Focus on dramatic or emotionally resonant scenes from the passage."
-          },
-          {
-            role: "user",
-            content: `Study title: ${material.title}\nPassage: ${material.passage || "N/A"}\n\nContent:\n${contentText}`
-          }
-        ],
-      }),
-    });
+    // Extrai 3 cenas visuais usando Gemini nativo (text)
+    const sceneResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `You are a biblical art director. Extract 3 key visual moments from this biblical study that would make beautiful watercolor illustrations. Study title: ${material.title}\nPassage: ${material.passage || "N/A"}\n\nContent:\n${contentText}\n\nRespond with JSON: {"scenes": [{"prompt": "..."}]}`
+            }]
+          }],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
+      }
+    );
 
     if (!sceneResponse.ok) {
       console.error("Scene extraction failed:", await sceneResponse.text());
@@ -139,11 +107,11 @@ Deno.serve(async (req) => {
     }
 
     const sceneData = await sceneResponse.json();
-    const toolCall = sceneData.choices?.[0]?.message?.tool_calls?.[0];
     let scenes: { prompt: string }[] = [];
     try {
-      const args = JSON.parse(toolCall.function.arguments);
-      scenes = args.scenes;
+      const text = sceneData?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+      const parsed = JSON.parse(text);
+      scenes = parsed.scenes || [];
     } catch {
       return new Response(JSON.stringify({ error: "Failed to parse scenes" }), {
         status: 500,
@@ -154,31 +122,29 @@ Deno.serve(async (req) => {
     // Generate 3 images in parallel
     const imagePromises = scenes.slice(0, 3).map(async (scene, idx) => {
       try {
-        const imgResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${lovableApiKey}`,
-          },
-          body: JSON.stringify({
-            model: "google/gemini-2.5-flash-image",
-            messages: [{ role: "user", content: scene.prompt }],
-            modalities: ["image", "text"],
-          }),
-        });
+        const imgResp = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: scene.prompt }] }],
+              generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+            }),
+          }
+        );
 
         if (!imgResp.ok) {
-          console.error(`Image ${idx} generation failed:`, imgResp.status);
+          console.error(`Image ${idx} generation failed:`, imgResp.status, await imgResp.text());
           return null;
         }
 
         const imgData = await imgResp.json();
-        const imageUrl = imgData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-        if (!imageUrl) return null;
+        const b64 = imgData?.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData)?.inlineData?.data;
+        if (!b64) return null;
 
         // Upload to storage
-        const base64 = imageUrl.replace(/^data:image\/\w+;base64,/, "");
-        const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+        const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
         const filePath = `${user.id}/study-illustrations/${material_id}_${idx}.png`;
 
         const { error: uploadErr } = await supabaseAdmin.storage
