@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
+      disable: true, // TEMP: disabled to clear Vercel stale build cache — re-enable after first successful deploy
       registerType: "autoUpdate",
       injectRegister: false, // we register manually via useRegisterSW
       devOptions: {
