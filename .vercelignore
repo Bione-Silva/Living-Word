@@ -1,0 +1,29 @@
+# Large data directories — not needed at build time
+# Bible corpus, classics, lexicons are stored in Supabase Storage/pgvector
+data/
+
+# Scripts — server-side only, not part of the frontend bundle
+scripts/
+
+# Supabase functions — deployed separately via Supabase CLI
+supabase/
+
+# Dev/local files
+*.local
+.env.*
+!.env.example
+
+# PDFs and media
+*.pdf
+pdf-sources/
+pdf-decrypted/
+
+# Agent skills and internal tools
+.antigravity/
+Agents:Skills_LW/
+LW_Arsenal/
+
+# Misc
+CLAUDE_CODE_FIX.md
+CLAUDE.md
+SECURITY.md
