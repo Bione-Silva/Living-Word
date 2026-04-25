@@ -2,7 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import { VitePWA } from "vite-plugin-pwa";
+// VitePWA temporarily removed to force Vercel cache reset — re-add after first successful build
+// import { VitePWA } from "vite-plugin-pwa";
 
 const BUILD_ID = new Date().toISOString();
 
@@ -18,9 +19,9 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    VitePWA({
+    false && VitePWA({
       registerType: "autoUpdate",
-      injectRegister: false, // we register manually via useRegisterSW
+      injectRegister: false,
       devOptions: {
         enabled: false,
       },
