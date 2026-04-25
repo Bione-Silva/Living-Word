@@ -6,7 +6,8 @@ data/
 scripts/
 
 # Supabase functions — deployed separately via Supabase CLI
-supabase/
+# Leading slash = only root-level /supabase/, NOT src/integrations/supabase/
+/supabase/
 
 # Dev/local files
 *.local
